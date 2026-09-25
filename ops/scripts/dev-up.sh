@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Starts the local development stack: PostgreSQL, the backend API and the Development Console.
+# Sobe o ambiente local de desenvolvimento: PostgreSQL, a API do backend e o Painel de Desenvolvimento.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -8,35 +8,37 @@ COMPOSE_FILE="$REPO_ROOT/ops/docker-compose.yml"
 cd "$REPO_ROOT"
 
 if [[ ! -f .env ]]; then
-  echo "No .env found. Creating one from .env.example."
+  echo "Nenhum arquivo .env encontrado. Criando um a partir de .env.example."
   cp .env.example .env
 fi
 
 # shellcheck disable=SC1091
 set -a; source .env; set +a
 
-echo "Building and starting the stack..."
+echo "Construindo e subindo o ambiente..."
 docker compose --env-file .env -f "$COMPOSE_FILE" up --build -d
 
 echo
-echo "Waiting for PostgreSQL to report healthy..."
+echo "Esperando o PostgreSQL ficar saudável..."
 for _ in $(seq 1 60); do
   if [[ "$(docker inspect -f '{{.State.Health.Status}}' fishing-idle-postgres 2>/dev/null || echo starting)" == "healthy" ]]; then
-    echo "PostgreSQL is healthy."
+    echo "PostgreSQL saudável."
     break
   fi
   sleep 2
 done
 
 echo
-echo "Applying database migrations..."
+echo "Aplicando as migrations do banco..."
 "$REPO_ROOT/ops/scripts/migrate.sh"
 
 echo
-echo "Stack is up:"
-echo "  API                  http://localhost:${API_HOST_PORT:-5080}/health"
-echo "  Development Console  http://localhost:${DEV_CONSOLE_HOST_PORT:-3000}"
-echo "  PostgreSQL           localhost:${POSTGRES_HOST_PORT:-5432}"
+echo "Ambiente no ar:"
+echo "  Painel de Desenvolvimento  http://localhost:${DEV_CONSOLE_HOST_PORT:-3000}"
+echo "  Saúde da API               http://localhost:${API_HOST_PORT:-5080}/health"
+echo "  PostgreSQL                 localhost:${POSTGRES_HOST_PORT:-5432}"
 echo
-echo "Then open client-unity in Unity Hub and press Play; the overlay reports the connection."
-echo "Stop everything with ops/scripts/dev-down.sh"
+echo "Agora abra a pasta client-unity no Unity Hub e aperte Play; o painel no canto"
+echo "superior esquerdo mostra o estado da conexão."
+echo
+echo "Para parar tudo: ops/scripts/dev-down.sh"

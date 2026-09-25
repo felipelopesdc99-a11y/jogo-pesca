@@ -31,7 +31,7 @@
     "minimum_price_coins": 1
   },
   "shells": {
-    "source": "apenas_pesca_na_v0_1",
+    "source": "fishing_only_in_v0_1",
     "base_drop_chance_per_catch": 0.05,
     "amount_per_drop": {
       "min": 1,

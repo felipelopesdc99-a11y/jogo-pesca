@@ -217,6 +217,10 @@ precisa vir primeiro.
 
 ## TD-014 — PT-BR em tudo que uma pessoa lê; inglês no que só programador lê
 
+**Origem.** Regra obrigatória definida pelo proprietário. Não é uma inferência técnica e não
+pode ser relaxada sem pedido explícito dele. O texto completo da regra está em `CLAUDE.md`, na
+raiz do repositório, que é lido no início de toda sessão de trabalho.
+
 **Decisão.** Está em **PT-BR**: a interface do painel, a interface do jogo, os nomes das espécies,
 varas, expedições, raridades e categorias de tamanho, as mensagens de erro exibidas na tela, os
 títulos e descrições das tarefas do roadmap, as descrições dos arquivos de configuração e toda a
@@ -233,8 +237,16 @@ futuros desenvolvedores e para as ferramentas, e uma chave técnica não deve mu
 muda. Por isso os status são armazenados em inglês e traduzidos apenas na hora de exibir
 (`web/dev-console/src/lib/strings.ts`).
 
-O texto da interface do painel está concentrado em um único arquivo, `strings.ts`, de modo que um
-eventual segundo idioma seja uma mudança pequena, e não uma caçada pelo código.
+O texto da interface do painel está concentrado em um único arquivo,
+`web/dev-console/src/lib/strings.ts`, de modo que um eventual segundo idioma seja uma mudança
+pequena, e não uma caçada pelo código. Ao acrescentar uma tela ou um rótulo, o texto vai para
+lá — nunca escrito direto no JSX.
+
+Isso alcança também o que é fácil esquecer: as mensagens que o proprietário vê no terminal ao
+rodar os scripts de `ops/scripts`, os comentários dos arquivos que ele abre para editar
+(`.env.example`, os arquivos de `/config`), e os valores técnicos que chegam à tela vindos da
+API — o overlay do Unity traduz `database` e `healthy` na hora de exibir, em vez de mostrar a
+chave crua.
 
 **Exceção deliberada.** `docs/GDD_V0_1.md` e `docs/CLAUDE_START_HERE_V0_1.md` permanecem no original
 em inglês. São os documentos de design travados; traduzi-los correria o risco de deslocar o sentido

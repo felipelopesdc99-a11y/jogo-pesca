@@ -4,12 +4,12 @@
   "current_milestone": "M0",
   "convention": "0.<menor>.<correção>-m<milestone>.<build>  —  veja docs/VERSIONAMENTO.md",
   "components": {
-    "client": "0.1.0-m0.2",
-    "server": "0.1.0-m0.2",
-    "web": "0.1.0-m0.2"
+    "client": "0.1.0-m0.3",
+    "server": "0.1.0-m0.3",
+    "web": "0.1.0-m0.3"
   },
   "build": {
-    "number": 2,
+    "number": 3,
     "channel": "internal-dev",
     "date": "2026-09-25",
     "commit": null

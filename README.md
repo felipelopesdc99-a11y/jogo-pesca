@@ -171,8 +171,12 @@ Quatro regras que explicam a maior parte da estrutura:
 ### Idioma
 
 Tudo que uma pessoa lê numa tela está em **PT-BR**: o painel, o jogo, as mensagens de erro, o
-roadmap, os nomes dos peixes e a documentação. Comentários de código e logs técnicos ficam em
-inglês, porque quem os lê é quem programa. A regra completa está em `docs/DECISOES.md`, TD-014.
+roadmap, os nomes dos peixes, as mensagens dos scripts no terminal e a documentação. Comentários de
+código, logs técnicos e as chaves técnicas gravadas em dados ficam em inglês, porque quem os lê é
+quem programa — e uma chave não pode mudar quando o idioma muda.
+
+A regra é obrigatória e está escrita em **`CLAUDE.md`**, na raiz do repositório, que é lido no
+início de toda sessão de trabalho. O raciocínio por trás dela está em `docs/DECISOES.md`, TD-014.
 
 A única exceção é `docs/GDD_V0_1.md`, mantido no original em inglês de propósito: é o documento de
 design travado, e traduzi-lo correria o risco de mudar o sentido de uma decisão já fechada.

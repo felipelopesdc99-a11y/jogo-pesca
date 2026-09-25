@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# Creates a new EF Core migration.  Usage: ops/scripts/new-migration.sh AddPlayerProfile
+# Cria uma nova migration do EF Core.  Uso: ops/scripts/new-migration.sh AddPlayerProfile
+#
+# O nome da migration fica em inglês por ser um identificador técnico que vira nome de classe C#.
 set -euo pipefail
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: $0 <MigrationName>" >&2
+  echo "Uso: $0 <NomeDaMigration>" >&2
+  echo "Exemplo: $0 AddPlayerProfile" >&2
   exit 1
 fi
 
@@ -16,5 +19,5 @@ dotnet ef migrations add "$1" \
   --output-dir Persistence/Migrations
 
 echo
-echo "Migration '$1' created. Review the generated Up/Down before committing,"
-echo "then apply it with ops/scripts/migrate.sh"
+echo "Migration '$1' criada. Revise o Up/Down gerado antes de versionar,"
+echo "e depois aplique com ops/scripts/migrate.sh"

@@ -3,6 +3,33 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m0.3] — 25/09/2026
+
+A regra de idioma passa a ser obrigatória e permanente, por definição do proprietário.
+
+### Adicionado
+
+- **`CLAUDE.md` na raiz do repositório**, lido automaticamente no início de toda sessão de trabalho.
+  Ele carrega a regra obrigatória de idioma na íntegra, mais os outros princípios permanentes do
+  projeto: o servidor é a autoridade, balanceamento mora em dados, o escopo da V0.1 é pequeno de
+  propósito, o painel reflete o repositório, e `verify.sh` precisa passar antes de versionar.
+
+### Corrigido — texto visível que ainda estava em inglês
+
+- **As mensagens dos scripts de `ops/scripts`**, que são a primeira coisa que o proprietário lê ao
+  subir o projeto: `dev-up.sh`, `dev-down.sh`, `migrate.sh`, `new-migration.sh` e `verify.sh`.
+- **Os comentários de `.env.example`** na raiz e em `web/dev-console`, arquivos que o proprietário
+  abre para editar.
+- **Os valores técnicos que chegam à tela vindos da API**: o overlay do Unity agora traduz
+  `database` para "banco de dados" e `healthy` para "saudável", em vez de exibir a chave crua.
+
+### Corrigido — consistência das chaves técnicas
+
+- `economy.json` tinha `shells.source` traduzido para `apenas_pesca_na_v0_1` enquanto todas as
+  outras chaves técnicas seguiam em inglês. Revertido para `fishing_only_in_v0_1`. Chaves técnicas
+  são armazenadas em inglês e traduzidas apenas na exibição; traduzir uma delas quebraria dados já
+  gravados.
+
 ## [0.1.0-m0.2] — 25/09/2026
 
 Tradução completa para PT-BR. Nenhum comportamento mudou.

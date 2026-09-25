@@ -96,7 +96,9 @@ namespace FishingIdle.Client.Diagnostics
                 var latency = dependency.latency_ms.HasValue
                     ? $"{dependency.latency_ms.Value:0} ms"
                     : "—";
-                GUILayout.Label($"  {dependency.name}: {dependency.status}  ({latency})", _bodyStyle);
+                GUILayout.Label(
+                    $"  {DescribeDependency(dependency.name)}: {DescribeStatus(dependency.status)}  ({latency})",
+                    _bodyStyle);
             }
 
             GUILayout.Space(4);
@@ -104,6 +106,34 @@ namespace FishingIdle.Client.Diagnostics
 
             GUILayout.EndVertical();
             GUILayout.EndArea();
+        }
+
+        /// <summary>
+        /// Traduz o nome técnico de uma dependência para exibição.
+        /// </summary>
+        /// <remarks>
+        /// O servidor armazena e transmite chaves técnicas em inglês; quem lê a tela lê PT-BR.
+        /// Um nome desconhecido é mostrado como veio, em vez de sumir da tela.
+        /// </remarks>
+        private static string DescribeDependency(string name)
+        {
+            switch (name)
+            {
+                case "database": return "banco de dados";
+                default: return name;
+            }
+        }
+
+        /// <summary>Traduz o status técnico de uma dependência para exibição.</summary>
+        private static string DescribeStatus(string status)
+        {
+            switch (status)
+            {
+                case "healthy": return "saudável";
+                case "degraded": return "degradado";
+                case "unhealthy": return "com problema";
+                default: return status;
+            }
         }
 
         private static string Describe(ConnectionStatus status)
