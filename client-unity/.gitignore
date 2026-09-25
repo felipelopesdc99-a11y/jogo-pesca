@@ -1,0 +1,31 @@
+# Unity generated
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Unity generates these on first open; only ProjectVersion.txt is committed until the owner has
+# opened the project once and set Product Name / Company Name.
+/ProjectSettings/*
+!/ProjectSettings/ProjectVersion.txt
+
+# Local backend settings asset (see Assets/Resources/README.md)
+/Assets/Resources/BackendSettings.asset
+/Assets/Resources/BackendSettings.asset.meta
+
+# IDE / OS
+.vs/
+.idea/
+*.csproj
+*.sln
+*.user
+.DS_Store
+
+# Asset meta files for ignored folders
+/[Ll]ibrary.meta
+/[Tt]emp.meta

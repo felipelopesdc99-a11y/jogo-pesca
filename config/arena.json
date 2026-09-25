@@ -1,0 +1,150 @@
+{
+  "config_file": "arena",
+  "config_schema_version": 1,
+  "balance_status": "PROVISIONAL",
+  "description": "Arena rules, Honor values and the combat constants used by the server-side battle resolver.",
+  "energy": {
+    "max": 24,
+    "regeneration_seconds_per_point": 3600,
+    "cost_per_initiated_attack": 1,
+    "charged_on_defeat": true,
+    "daily_attack_cap": null
+  },
+  "opponent_selection": {
+    "opponents_per_set": 3,
+    "rank_window_percent_above": 10.0,
+    "unique_opponents": true,
+    "can_target_self": false,
+    "rerolls_per_set": 1,
+    "locked_after_reroll": true,
+    "new_set_requires_attack": true,
+    "reroll_survives_client_restart": true,
+    "near_top_rank_note": "Near rank #1 the window rounds to the nearest valid candidate set."
+  },
+  "opponent_card_visibility": {
+    "show": [
+      "player_name",
+      "rank",
+      "cardume_fish",
+      "fish_level",
+      "fish_rarity"
+    ],
+    "hide": [
+      "cardume_strength",
+      "predicted_win_percentage",
+      "difficulty_label"
+    ]
+  },
+  "ranking": {
+    "model": "positional_direct_swap",
+    "attacker_victory_swaps_positions": true,
+    "intermediate_ranks_shift": false,
+    "attacker_defeat_changes_rank": false,
+    "defender_can_move_while_offline": true
+  },
+  "honor": {
+    "attacker_victory_gain": 12,
+    "successful_defense_gain": 8,
+    "defeat_loss": 4,
+    "minimum_balance": 0,
+    "cap_on_defense_gains": null
+  },
+  "combat": {
+    "stats": [
+      "hp",
+      "attack",
+      "defense",
+      "speed"
+    ],
+    "forbidden_stats": [
+      "crit",
+      "dodge",
+      "accuracy",
+      "penetration",
+      "luck"
+    ],
+    "damage_roll": {
+      "min": 0.97,
+      "max": 1.03,
+      "note": "The only RNG in combat. Stats decide the fight; luck slightly perturbs close fights."
+    },
+    "defense_mitigation": {
+      "formula": "damage = attack * damage_roll * (1 - defense / (defense + constant))",
+      "constant": 100.0,
+      "minimum_damage_ratio_of_attack": 0.1,
+      "note": "Diminishing returns, never flat subtraction. The minimum damage floor makes immunity impossible."
+    },
+    "speed": {
+      "formula": "attack_interval_seconds = base_interval * (reference_speed / speed)",
+      "base_interval_seconds": 2.0,
+      "reference_speed": 100.0,
+      "first_attack_uses_same_interval_from_t0": true,
+      "note": "The narrow 88-110 species speed band keeps Speed a secondary axis."
+    },
+    "offensive_bias_note": "Combat should moderately favour offence to keep battles moving. Target: most battles finish within about 60s at 1x, with no hard timeout.",
+    "target_battle_duration_seconds": 60,
+    "hard_battle_timeout": null,
+    "replay_speeds": [
+      1,
+      2
+    ],
+    "replay_allows_skip_to_result": true
+  },
+  "formation": {
+    "layout": "3_front_3_back",
+    "front_positions": [
+      1,
+      2,
+      3
+    ],
+    "back_positions": [
+      4,
+      5,
+      6
+    ],
+    "target_priority": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "defeated_slot_stays_empty": true,
+    "formation_recomputes_on_death": false,
+    "composition_synergy_bonuses": false
+  },
+  "cardume": {
+    "min_fish": 1,
+    "max_fish": 6,
+    "cardumes_per_player": 1,
+    "separate_defense_cardume": false,
+    "complete_bonus": {
+      "requires_filled_slots": 6,
+      "hp_percent": 3.0,
+      "attack_percent": 3.0,
+      "defense_percent": 3.0,
+      "speed_percent": 3.0,
+      "applies_to": "all_cardume_activities",
+      "written_permanently_to_fish": false
+    }
+  },
+  "cardume_strength": {
+    "visibility": "private_to_owner",
+    "formula": "FishStrengthRaw = attack*2 + defense*1.5 + hp/10 + speed*0.5",
+    "weights": {
+      "attack": 2.0,
+      "defense": 1.5,
+      "hp_divisor": 10.0,
+      "speed": 0.5
+    },
+    "applies_active_modifiers": true,
+    "display_scale": 1.0,
+    "determines_pvp_outcome": false
+  },
+  "shop": {
+    "currency": "honor",
+    "note": "Seed a minimal configurable inventory. Do not implement future item systems just to populate it.",
+    "items": []
+  }
+}

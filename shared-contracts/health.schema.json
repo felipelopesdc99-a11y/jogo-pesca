@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fishing Idle health contracts",
+  "$defs": {
+    "healthStatus": {
+      "description": "Overall or per-dependency verdict.",
+      "enum": ["healthy", "degraded", "unhealthy"]
+    },
+    "dependencyHealth": {
+      "type": "object",
+      "required": ["name", "status"],
+      "properties": {
+        "name": { "type": "string", "description": "Dependency identifier, e.g. \"database\"." },
+        "status": { "$ref": "#/$defs/healthStatus" },
+        "latency_ms": { "type": ["number", "null"], "description": "Probe round-trip in milliseconds." },
+        "detail": {
+          "type": ["string", "null"],
+          "description": "Human-readable cause when not healthy. Never contains credentials."
+        }
+      }
+    },
+    "healthReport": {
+      "description": "GET /health — API status with a per-dependency breakdown. Always HTTP 200 so a client can read which dependency failed.",
+      "type": "object",
+      "required": ["status", "service", "version", "environment", "server_time_utc", "dependencies"],
+      "properties": {
+        "status": { "$ref": "#/$defs/healthStatus" },
+        "service": { "const": "fishing-idle-api" },
+        "version": { "type": "string", "description": "Server component version from version.json." },
+        "environment": { "type": "string" },
+        "server_time_utc": { "type": "string", "format": "date-time" },
+        "dependencies": { "type": "array", "items": { "$ref": "#/$defs/dependencyHealth" } }
+      }
+    },
+    "livenessReport": {
+      "description": "GET /health/live — dependency-free liveness signal. Answering here while /health reports degraded means the server is up and a dependency is not.",
+      "type": "object",
+      "required": ["status", "service", "version", "server_time_utc"],
+      "properties": {
+        "status": { "$ref": "#/$defs/healthStatus" },
+        "service": { "const": "fishing-idle-api" },
+        "version": { "type": "string" },
+        "server_time_utc": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/healthReport" },
+    { "$ref": "#/$defs/livenessReport" }
+  ]
+}

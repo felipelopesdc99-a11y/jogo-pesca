@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FishingIdle.Api", "src\FishingIdle.Api\FishingIdle.Api.csproj", "{1A1F0A2B-3C4D-4E5F-8A9B-0C1D2E3F4A5B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FishingIdle.Api.Tests", "tests\FishingIdle.Api.Tests\FishingIdle.Api.Tests.csproj", "{2B2F1B3C-4D5E-4F60-9BAC-1D2E3F4A5B6C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A1F0A2B-3C4D-4E5F-8A9B-0C1D2E3F4A5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A1F0A2B-3C4D-4E5F-8A9B-0C1D2E3F4A5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A1F0A2B-3C4D-4E5F-8A9B-0C1D2E3F4A5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A1F0A2B-3C4D-4E5F-8A9B-0C1D2E3F4A5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B2F1B3C-4D5E-4F60-9BAC-1D2E3F4A5B6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B2F1B3C-4D5E-4F60-9BAC-1D2E3F4A5B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B2F1B3C-4D5E-4F60-9BAC-1D2E3F4A5B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2F1B3C-4D5E-4F60-9BAC-1D2E3F4A5B6C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

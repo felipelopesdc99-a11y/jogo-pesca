@@ -1,0 +1,562 @@
+{
+  "config_file": "progression",
+  "config_schema_version": 1,
+  "balance_status": "PROVISIONAL",
+  "description": "Fisher XP curve, fish XP curve, size distribution and the rarity/size/level modifier rules used to derive deterministic fish attributes. Nothing here may be duplicated in gameplay code.",
+  "fisher": {
+    "max_level": 100,
+    "calibration_target": {
+      "level_1_to_10_online_hours": 2.0,
+      "level_1_to_10_catches_approx": 240,
+      "level_1_to_100_days_approx": 90,
+      "note": "Provisional. Weighted average Map 1 fisher XP per catch is about 8.1 before size multipliers, so the level 1-10 total below targets roughly 240 Map 1 catches. Recalibrate from real play data."
+    },
+    "xp_curve_generator": {
+      "formula": "round(base * level^exponent) to nearest 5",
+      "base": 18.0,
+      "exponent": 1.5,
+      "note": "The table below is authoritative. The generator is recorded so the shape can be regenerated deliberately."
+    },
+    "total_xp_level_1_to_10": 2000,
+    "total_xp_level_1_to_100": 711000,
+    "xp_table": [
+      {
+        "level": 1,
+        "xp_to_next_level": 20
+      },
+      {
+        "level": 2,
+        "xp_to_next_level": 50
+      },
+      {
+        "level": 3,
+        "xp_to_next_level": 95
+      },
+      {
+        "level": 4,
+        "xp_to_next_level": 145
+      },
+      {
+        "level": 5,
+        "xp_to_next_level": 200
+      },
+      {
+        "level": 6,
+        "xp_to_next_level": 265
+      },
+      {
+        "level": 7,
+        "xp_to_next_level": 335
+      },
+      {
+        "level": 8,
+        "xp_to_next_level": 405
+      },
+      {
+        "level": 9,
+        "xp_to_next_level": 485
+      },
+      {
+        "level": 10,
+        "xp_to_next_level": 570
+      },
+      {
+        "level": 11,
+        "xp_to_next_level": 655
+      },
+      {
+        "level": 12,
+        "xp_to_next_level": 750
+      },
+      {
+        "level": 13,
+        "xp_to_next_level": 845
+      },
+      {
+        "level": 14,
+        "xp_to_next_level": 945
+      },
+      {
+        "level": 15,
+        "xp_to_next_level": 1045
+      },
+      {
+        "level": 16,
+        "xp_to_next_level": 1150
+      },
+      {
+        "level": 17,
+        "xp_to_next_level": 1260
+      },
+      {
+        "level": 18,
+        "xp_to_next_level": 1375
+      },
+      {
+        "level": 19,
+        "xp_to_next_level": 1490
+      },
+      {
+        "level": 20,
+        "xp_to_next_level": 1610
+      },
+      {
+        "level": 21,
+        "xp_to_next_level": 1730
+      },
+      {
+        "level": 22,
+        "xp_to_next_level": 1855
+      },
+      {
+        "level": 23,
+        "xp_to_next_level": 1985
+      },
+      {
+        "level": 24,
+        "xp_to_next_level": 2115
+      },
+      {
+        "level": 25,
+        "xp_to_next_level": 2250
+      },
+      {
+        "level": 26,
+        "xp_to_next_level": 2385
+      },
+      {
+        "level": 27,
+        "xp_to_next_level": 2525
+      },
+      {
+        "level": 28,
+        "xp_to_next_level": 2665
+      },
+      {
+        "level": 29,
+        "xp_to_next_level": 2810
+      },
+      {
+        "level": 30,
+        "xp_to_next_level": 2960
+      },
+      {
+        "level": 31,
+        "xp_to_next_level": 3105
+      },
+      {
+        "level": 32,
+        "xp_to_next_level": 3260
+      },
+      {
+        "level": 33,
+        "xp_to_next_level": 3410
+      },
+      {
+        "level": 34,
+        "xp_to_next_level": 3570
+      },
+      {
+        "level": 35,
+        "xp_to_next_level": 3725
+      },
+      {
+        "level": 36,
+        "xp_to_next_level": 3890
+      },
+      {
+        "level": 37,
+        "xp_to_next_level": 4050
+      },
+      {
+        "level": 38,
+        "xp_to_next_level": 4215
+      },
+      {
+        "level": 39,
+        "xp_to_next_level": 4385
+      },
+      {
+        "level": 40,
+        "xp_to_next_level": 4555
+      },
+      {
+        "level": 41,
+        "xp_to_next_level": 4725
+      },
+      {
+        "level": 42,
+        "xp_to_next_level": 4900
+      },
+      {
+        "level": 43,
+        "xp_to_next_level": 5075
+      },
+      {
+        "level": 44,
+        "xp_to_next_level": 5255
+      },
+      {
+        "level": 45,
+        "xp_to_next_level": 5435
+      },
+      {
+        "level": 46,
+        "xp_to_next_level": 5615
+      },
+      {
+        "level": 47,
+        "xp_to_next_level": 5800
+      },
+      {
+        "level": 48,
+        "xp_to_next_level": 5985
+      },
+      {
+        "level": 49,
+        "xp_to_next_level": 6175
+      },
+      {
+        "level": 50,
+        "xp_to_next_level": 6365
+      },
+      {
+        "level": 51,
+        "xp_to_next_level": 6555
+      },
+      {
+        "level": 52,
+        "xp_to_next_level": 6750
+      },
+      {
+        "level": 53,
+        "xp_to_next_level": 6945
+      },
+      {
+        "level": 54,
+        "xp_to_next_level": 7145
+      },
+      {
+        "level": 55,
+        "xp_to_next_level": 7340
+      },
+      {
+        "level": 56,
+        "xp_to_next_level": 7545
+      },
+      {
+        "level": 57,
+        "xp_to_next_level": 7745
+      },
+      {
+        "level": 58,
+        "xp_to_next_level": 7950
+      },
+      {
+        "level": 59,
+        "xp_to_next_level": 8155
+      },
+      {
+        "level": 60,
+        "xp_to_next_level": 8365
+      },
+      {
+        "level": 61,
+        "xp_to_next_level": 8575
+      },
+      {
+        "level": 62,
+        "xp_to_next_level": 8785
+      },
+      {
+        "level": 63,
+        "xp_to_next_level": 9000
+      },
+      {
+        "level": 64,
+        "xp_to_next_level": 9215
+      },
+      {
+        "level": 65,
+        "xp_to_next_level": 9435
+      },
+      {
+        "level": 66,
+        "xp_to_next_level": 9650
+      },
+      {
+        "level": 67,
+        "xp_to_next_level": 9870
+      },
+      {
+        "level": 68,
+        "xp_to_next_level": 10095
+      },
+      {
+        "level": 69,
+        "xp_to_next_level": 10315
+      },
+      {
+        "level": 70,
+        "xp_to_next_level": 10540
+      },
+      {
+        "level": 71,
+        "xp_to_next_level": 10770
+      },
+      {
+        "level": 72,
+        "xp_to_next_level": 10995
+      },
+      {
+        "level": 73,
+        "xp_to_next_level": 11225
+      },
+      {
+        "level": 74,
+        "xp_to_next_level": 11460
+      },
+      {
+        "level": 75,
+        "xp_to_next_level": 11690
+      },
+      {
+        "level": 76,
+        "xp_to_next_level": 11925
+      },
+      {
+        "level": 77,
+        "xp_to_next_level": 12160
+      },
+      {
+        "level": 78,
+        "xp_to_next_level": 12400
+      },
+      {
+        "level": 79,
+        "xp_to_next_level": 12640
+      },
+      {
+        "level": 80,
+        "xp_to_next_level": 12880
+      },
+      {
+        "level": 81,
+        "xp_to_next_level": 13120
+      },
+      {
+        "level": 82,
+        "xp_to_next_level": 13365
+      },
+      {
+        "level": 83,
+        "xp_to_next_level": 13610
+      },
+      {
+        "level": 84,
+        "xp_to_next_level": 13860
+      },
+      {
+        "level": 85,
+        "xp_to_next_level": 14105
+      },
+      {
+        "level": 86,
+        "xp_to_next_level": 14355
+      },
+      {
+        "level": 87,
+        "xp_to_next_level": 14605
+      },
+      {
+        "level": 88,
+        "xp_to_next_level": 14860
+      },
+      {
+        "level": 89,
+        "xp_to_next_level": 15115
+      },
+      {
+        "level": 90,
+        "xp_to_next_level": 15370
+      },
+      {
+        "level": 91,
+        "xp_to_next_level": 15625
+      },
+      {
+        "level": 92,
+        "xp_to_next_level": 15885
+      },
+      {
+        "level": 93,
+        "xp_to_next_level": 16145
+      },
+      {
+        "level": 94,
+        "xp_to_next_level": 16405
+      },
+      {
+        "level": 95,
+        "xp_to_next_level": 16665
+      },
+      {
+        "level": 96,
+        "xp_to_next_level": 16930
+      },
+      {
+        "level": 97,
+        "xp_to_next_level": 17195
+      },
+      {
+        "level": 98,
+        "xp_to_next_level": 17465
+      },
+      {
+        "level": 99,
+        "xp_to_next_level": 17730
+      }
+    ]
+  },
+  "fish_level": {
+    "max_level": 10,
+    "stat_bonus_per_level_percent": 4.0,
+    "stat_bonus_note": "Applied as (1 + 0.04 * (level - 1)) to every derived attribute. Level 10 is +36%.",
+    "player_distributed_stat_points": false,
+    "xp_curve_generator": {
+      "formula": "round(base * level^exponent) to nearest 5",
+      "base": 9.0,
+      "exponent": 1.5
+    },
+    "total_xp_level_1_to_10": 995,
+    "xp_table": [
+      {
+        "level": 1,
+        "xp_to_next_level": 10
+      },
+      {
+        "level": 2,
+        "xp_to_next_level": 25
+      },
+      {
+        "level": 3,
+        "xp_to_next_level": 45
+      },
+      {
+        "level": 4,
+        "xp_to_next_level": 70
+      },
+      {
+        "level": 5,
+        "xp_to_next_level": 100
+      },
+      {
+        "level": 6,
+        "xp_to_next_level": 130
+      },
+      {
+        "level": 7,
+        "xp_to_next_level": 165
+      },
+      {
+        "level": 8,
+        "xp_to_next_level": 205
+      },
+      {
+        "level": 9,
+        "xp_to_next_level": 245
+      }
+    ]
+  },
+  "size": {
+    "model": "A catch draws a size category by weight, then an exact size uniformly inside that category's percentile band mapped onto the species size_cm range. Size is individual and permanent.",
+    "categories": [
+      {
+        "id": "small",
+        "display_name": "Small",
+        "draw_weight": 20.0,
+        "percentile_min": 0.0,
+        "percentile_max": 0.2,
+        "fisher_xp_multiplier": 1.0
+      },
+      {
+        "id": "adult",
+        "display_name": "Adult",
+        "draw_weight": 60.0,
+        "percentile_min": 0.2,
+        "percentile_max": 0.8,
+        "fisher_xp_multiplier": 1.02
+      },
+      {
+        "id": "large",
+        "display_name": "Large",
+        "draw_weight": 19.0,
+        "percentile_min": 0.8,
+        "percentile_max": 0.99,
+        "fisher_xp_multiplier": 1.05
+      },
+      {
+        "id": "exceptional",
+        "display_name": "Exceptional",
+        "draw_weight": 1.0,
+        "percentile_min": 0.99,
+        "percentile_max": 1.0,
+        "fisher_xp_multiplier": 1.1
+      }
+    ],
+    "stat_influence": {
+      "formula": "1 + influence * (percentile - 0.5)",
+      "influence": 0.2,
+      "note": "Modest by design: 0.90x at the smallest specimen, 1.10x at the largest."
+    },
+    "sale_value_influence": {
+      "formula": "1 + influence * (percentile - 0.5)",
+      "influence": 1.2,
+      "note": "Continuous, not stepped by category, per GDD section 36."
+    },
+    "feed_xp_influence": {
+      "formula": "1 + influence * (percentile - 0.5)",
+      "influence": 0.3
+    }
+  },
+  "rarity": {
+    "note": "Rarity is a power hierarchy and is distinct from size category. A Common fish can be Exceptional-sized.",
+    "tiers": [
+      {
+        "id": "common",
+        "display_name": "Common",
+        "stat_multiplier": 1.0,
+        "fisher_xp_multiplier": 1.0,
+        "feed_xp_multiplier": 1.0,
+        "sale_value_multiplier": 1.0
+      },
+      {
+        "id": "rare",
+        "display_name": "Rare",
+        "stat_multiplier": 1.15,
+        "fisher_xp_multiplier": 2.5,
+        "feed_xp_multiplier": 2.0,
+        "sale_value_multiplier": 2.0
+      }
+    ]
+  },
+  "feeding": {
+    "feed_fish_consumed": true,
+    "invested_xp_recovery_ratio": 0.5,
+    "recovery_note": "Sacrificing an already-levelled fish grants its normal feed value plus 50% of the XP previously invested in it. No lossless recycling.",
+    "warn_on_valuable_feed": true,
+    "valuable_feed_rules": {
+      "rarity_at_or_above": "rare",
+      "size_categories": [
+        "exceptional"
+      ],
+      "min_level": 2
+    }
+  },
+  "fishing": {
+    "online_cycle_seconds": 30,
+    "offline_cycle_seconds": 60,
+    "offline_accumulation_cap_hours": 24,
+    "offline_note": "After the cap no further offline catches accumulate until the player returns."
+  }
+}

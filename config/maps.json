@@ -1,0 +1,163 @@
+{
+  "config_file": "maps",
+  "config_schema_version": 1,
+  "balance_status": "PROVISIONAL",
+  "description": "Playable maps, their fish pools with catch weights, unlock requirements and travel rules. Only Maps 1-2 are playable in V0.1; the unlock ladder for Maps 3-10 is recorded as reference data only and no map beyond 2 is defined here.",
+  "travel": {
+    "duration_seconds": 30,
+    "fishing_paused_during_travel": true,
+    "requires_manual_confirmation": true,
+    "auto_travel_on_level_up": false,
+    "fuel_cost": 0,
+    "fee_coins": 0,
+    "cooldown_seconds": 0
+  },
+  "unlock_ladder_reference": {
+    "note": "Design ladder from GDD section 17. Maps 3-10 are out of V0.1 scope and intentionally not defined below.",
+    "fisher_level_per_map": {
+      "map_01": 1,
+      "map_02": 10,
+      "map_03": 20,
+      "map_04": 30,
+      "map_05": 40,
+      "map_06": 50,
+      "map_07": 60,
+      "map_08": 70,
+      "map_09": 80,
+      "map_10": 90
+    },
+    "minimum_rod_tier_per_map": {
+      "map_01": 0,
+      "map_02": 1,
+      "map_03": 1,
+      "map_04": 2,
+      "map_05": 2,
+      "map_06": 3,
+      "map_07": 3,
+      "map_08": 4,
+      "map_09": 4,
+      "map_10": 5
+    }
+  },
+  "maps": [
+    {
+      "id": "map_01",
+      "display_name": "Lago Sereno",
+      "playable_in_v0_1": true,
+      "unlock_fisher_level": 1,
+      "minimum_rod_tier": 0,
+      "visual_theme": {
+        "summary": "Calm freshwater lake: vegetation, soft water motion, warm relaxing light, safe starter atmosphere.",
+        "water": "calm",
+        "light": "warm",
+        "mood": "relaxing"
+      },
+      "available_rarities": [
+        "common"
+      ],
+      "fish_pool": [
+        {
+          "species_id": "lambari",
+          "catch_weight": 220
+        },
+        {
+          "species_id": "tilapia",
+          "catch_weight": 170
+        },
+        {
+          "species_id": "piau",
+          "catch_weight": 130
+        },
+        {
+          "species_id": "cascudo",
+          "catch_weight": 110
+        },
+        {
+          "species_id": "curimbata",
+          "catch_weight": 100
+        },
+        {
+          "species_id": "traira",
+          "catch_weight": 90
+        },
+        {
+          "species_id": "pacu",
+          "catch_weight": 70
+        },
+        {
+          "species_id": "matrinxa",
+          "catch_weight": 50
+        },
+        {
+          "species_id": "carpa",
+          "catch_weight": 40
+        },
+        {
+          "species_id": "tambaqui",
+          "catch_weight": 20
+        }
+      ],
+      "fish_pool_weight_total": 1000
+    },
+    {
+      "id": "map_02",
+      "display_name": "Rio Selvagem",
+      "playable_in_v0_1": true,
+      "unlock_fisher_level": 10,
+      "minimum_rod_tier": 1,
+      "visual_theme": {
+        "summary": "Larger river with visible current, rocks, denser vegetation, waterfall and mist, deeper darker water. Adventurous but still relaxing.",
+        "water": "flowing",
+        "light": "cooler",
+        "mood": "adventurous"
+      },
+      "available_rarities": [
+        "common",
+        "rare"
+      ],
+      "fish_pool": [
+        {
+          "species_id": "piranha",
+          "catch_weight": 210
+        },
+        {
+          "species_id": "piracanjuba",
+          "catch_weight": 170
+        },
+        {
+          "species_id": "peixe_cachorra",
+          "catch_weight": 140
+        },
+        {
+          "species_id": "tucunare",
+          "catch_weight": 130
+        },
+        {
+          "species_id": "cachara",
+          "catch_weight": 110
+        },
+        {
+          "species_id": "dourado",
+          "catch_weight": 90
+        },
+        {
+          "species_id": "pintado",
+          "catch_weight": 70
+        },
+        {
+          "species_id": "jau",
+          "catch_weight": 45
+        },
+        {
+          "species_id": "pirarucu",
+          "catch_weight": 30
+        },
+        {
+          "species_id": "aruana",
+          "catch_weight": 5
+        }
+      ],
+      "fish_pool_weight_total": 1000
+    }
+  ]
+}

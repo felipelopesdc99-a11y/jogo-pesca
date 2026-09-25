@@ -1,0 +1,24 @@
+{
+  "name": "fishing-idle-dev-console",
+  "version": "0.1.0-m0.1",
+  "private": true,
+  "description": "Private Development Console for Fishing Idle. Reads project status from the backend, which reads docs/roadmap.json.",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "15.5.4",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
+    "typescript": "5.7.2"
+  }
+}

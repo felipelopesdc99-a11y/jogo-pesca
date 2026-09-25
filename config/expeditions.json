@@ -1,0 +1,80 @@
+{
+  "config_file": "expeditions",
+  "config_schema_version": 1,
+  "balance_status": "PROVISIONAL",
+  "description": "Expedition durations, Recommended Strength and reward values.",
+  "rules": {
+    "cardume_required": true,
+    "works_offline": true,
+    "fishing_continues": true,
+    "fish_loss_risk": false,
+    "grants_fisher_xp": false,
+    "grants_fish_xp": false,
+    "grants_shells": false,
+    "found_fish_destination": "fishing_box",
+    "concurrent_expeditions_per_player": 1
+  },
+  "activity_lock": {
+    "owner_cannot": [
+      "initiate_arena_attack",
+      "change_formation",
+      "feed_participating_fish",
+      "sell_participating_fish",
+      "list_participating_fish",
+      "start_another_cardume_activity"
+    ],
+    "others_can_still_attack_this_player": true
+  },
+  "efficiency": {
+    "below_recommended": {
+      "formula": "(strength / recommended) ^ exponent",
+      "exponent": 0.8,
+      "floor": 0.25
+    },
+    "at_recommended_multiplier": 1.0,
+    "above_recommended": {
+      "formula": "1 + slope * (strength / recommended - 1)",
+      "slope": 0.35,
+      "cap": 1.5
+    }
+  },
+  "expeditions": [
+    {
+      "id": "exp_30m",
+      "display_name": "Short Trip",
+      "duration_minutes": 30,
+      "recommended_strength": 250,
+      "reward_coins": 120,
+      "fish_find_chance": 0.02
+    },
+    {
+      "id": "exp_1h",
+      "display_name": "Coastal Run",
+      "duration_minutes": 60,
+      "recommended_strength": 450,
+      "reward_coins": 260,
+      "fish_find_chance": 0.04
+    },
+    {
+      "id": "exp_3h",
+      "display_name": "Deep Water Run",
+      "duration_minutes": 180,
+      "recommended_strength": 800,
+      "reward_coins": 900,
+      "fish_find_chance": 0.1
+    },
+    {
+      "id": "exp_6h",
+      "display_name": "Long Voyage",
+      "duration_minutes": 360,
+      "recommended_strength": 1400,
+      "reward_coins": 2000,
+      "fish_find_chance": 0.18
+    }
+  ],
+  "completion_presentation": {
+    "online": "toast_then_reward_result",
+    "offline": "pending_completion_on_next_login",
+    "highlight_found_fish": true
+  }
+}

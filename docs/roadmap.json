@@ -1,0 +1,1708 @@
+{
+  "$schema": "./roadmap.schema.json",
+  "project": "Fishing Idle",
+  "target_version": "0.1.0",
+  "updated_at": "2026-09-25T00:00:00Z",
+  "current_milestone": "M0",
+  "statuses": [
+    "TODO",
+    "IN_PROGRESS",
+    "DONE",
+    "BLOCKED",
+    "NEEDS_OWNER_DECISION"
+  ],
+  "notes": "This file is the single source of truth for development status. The Development Console reads it through the backend (GET /api/dev/roadmap) and falls back to reading it directly from the repository. Update it as part of the same change that completes the work - never as a separate claim of progress.",
+  "owner_decisions": [
+    {
+      "id": "OD-001",
+      "task_id": "M0-T14",
+      "title": "Confirm the Unity 6.3 LTS patch version to pin, and run the local stack once",
+      "detail": "ProjectSettings/ProjectVersion.txt pins 6000.3.0f1 as a placeholder for Unity 6.3 LTS. Only you can say which patch you actually install: open client-unity in Unity Hub, accept the upgrade prompt, and commit the updated file. While you are there, run ./ops/scripts/dev-up.sh once to confirm the Docker Compose stack starts end to end. Neither Docker nor the Unity Editor was available where this code was written, so these two runs are the only part of Milestone 0 that could not be verified.",
+      "raised_at": "2026-09-25T00:00:00Z",
+      "status": "OPEN"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M0",
+      "title": "Repository / workflow foundation",
+      "goal": "Create the project foundation so the owner can visibly track development before gameplay implementation begins.",
+      "completion_criteria": [
+        "Developer can launch server + database + web locally.",
+        "Unity client can call a health endpoint.",
+        "Dev Console displays project/build/roadmap status."
+      ],
+      "tasks": [
+        {
+          "id": "M0-T01",
+          "title": "Monorepo structure",
+          "subsystem": "repo",
+          "description": "Create the /client-unity, /server, /web, /shared-contracts, /config, /docs and /ops top-level layout described in GDD section 4.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "Layout created exactly as specified in GDD section 4. /web contains dev-console (implemented) and public-site (placeholder reserved for M11).",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T02",
+          "title": "Versioning convention",
+          "subsystem": "repo",
+          "description": "Define a single source of truth for client/server/web version numbers plus build metadata, and document the convention.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T01"
+          ],
+          "completion_notes": "version.json at repo root is the single source of truth; convention documented in docs/VERSIONING.md. Server exposes it via GET /api/dev/version and the Dev Console Build page renders it.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T03",
+          "title": "Docs folder and locked decisions",
+          "subsystem": "docs",
+          "description": "Create /docs with the GDD copy, DECISIONS.md (locked V0.1 principles), ROADMAP.md, CHANGELOG.md, API.md and SECURITY.md.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T01"
+          ],
+          "completion_notes": "docs/GDD_V0_1.md is the verbatim source of truth. DECISIONS.md carries the 50 locked principles from GDD section 47 plus the technical decisions taken during M0.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T04",
+          "title": "roadmap.json with Milestones 0-12",
+          "subsystem": "docs",
+          "description": "Author the machine-readable roadmap that both Claude and the Dev Console read, covering every milestone and task with status metadata.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T03"
+          ],
+          "completion_notes": "docs/roadmap.json holds all 13 milestones. Status values are restricted to TODO / IN_PROGRESS / DONE / BLOCKED / NEEDS_OWNER_DECISION and validated by the server on load.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T05",
+          "title": "Data-driven config files",
+          "subsystem": "config",
+          "description": "Seed /config with the balance files (fish_catalog, maps, rods, progression, economy, arena, expeditions) so no balance value is hardcoded in gameplay code.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T01"
+          ],
+          "completion_notes": "All 20 V0.1 species, both maps, Starter Rod + Rod 1 with Lv.1-10 upgrade costs, XP curve, economy, arena and expedition values seeded as provisional balance data. Values are placeholders to be tuned via the Dev Console.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T06",
+          "title": "ASP.NET Core server shell",
+          "subsystem": "server",
+          "description": "Bootstrap the authoritative backend project with structured logging, configuration binding, CORS for the Dev Console and a clean endpoint layout.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T01"
+          ],
+          "completion_notes": "server/src/FishingIdle.Api on .NET 10 LTS. Minimal API with endpoint modules, structured console logging, options binding, problem-details error handling and exact-origin CORS for the Dev Console (never a wildcard, GET only). Builds clean with warnings-as-errors; 36 automated tests pass.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T07",
+          "title": "Health endpoint",
+          "subsystem": "server",
+          "description": "Expose GET /health returning service status plus a database connectivity probe, and GET /health/live for a dependency-free liveness signal.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T06"
+          ],
+          "completion_notes": "GET /health reports overall status with a per-dependency breakdown (database). GET /health/live never touches the database so the Unity client can show 'server up, database down' distinctly.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T08",
+          "title": "PostgreSQL and migrations",
+          "subsystem": "server",
+          "description": "Add EF Core + Npgsql, the initial DbContext, a migration-based schema workflow and a bootstrap table set for M0.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T06"
+          ],
+          "completion_notes": "EF Core 10 with Npgsql. The initial migration creates config_versions (with a unique filtered index allowing at most one active balance version) and admin_audit_log, the two tables the Milestone 1 config pipeline and audit trail need. snake_case column naming, timestamptz for every timestamp. Verified: the migration was applied to a real PostgreSQL 16 database and the resulting schema, keys and indexes were inspected. Migrations run via ops/scripts/migrate.sh; the server never auto-migrates.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T09",
+          "title": "Local Docker Compose environment",
+          "subsystem": "ops",
+          "description": "Provide a one-command local stack (PostgreSQL + server + Dev Console) with healthchecks and persistent volumes.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T08"
+          ],
+          "completion_notes": "ops/docker-compose.yml defines postgres (healthcheck, named volume, deterministic locale), api and dev-console, with the repository mounted read-only at /repo so the server can read project state but never write it. Dockerfiles for both services; the API container runs as a non-root user. ops/scripts/dev-up.sh, dev-down.sh, migrate.sh, new-migration.sh and verify.sh wrap the workflow. The compose stack itself was not executed in the authoring environment - no Docker daemon. See M0-T14.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T10",
+          "title": "Shared environment config",
+          "subsystem": "ops",
+          "description": "Single .env.example driving database credentials, ports and service URLs for server, web and scripts.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T09"
+          ],
+          "completion_notes": ".env.example at repo root is consumed by docker-compose, the API and the Dev Console. No secrets are committed.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T11",
+          "title": "Dev Console shell reading roadmap",
+          "subsystem": "web",
+          "description": "Private Next.js console with Dashboard and Roadmap pages rendering live roadmap state, plus Build/Version and Config/Content placeholders for later milestones.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T04",
+            "M0-T07"
+          ],
+          "completion_notes": "Next.js 15 + TypeScript. Dashboard shows V0.1 completion percentage, current milestone with a per-status bar, current build version, blockers and owner decisions, the in-progress task, the next 5 queued tasks and the 5 most recently completed. Roadmap page lists every milestone and task with status filtering, completion criteria and completion notes. Game Config and Build / Version pages render live server data and state plainly which parts arrive in later milestones. Typechecks and builds clean; all four pages were rendered against the running API and verified.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T12",
+          "title": "Dev Console reads server as single source",
+          "subsystem": "web",
+          "description": "The console must not keep its own copy of roadmap state; it reads the backend, with a repository-file fallback so it still works when the API is down.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T11"
+          ],
+          "completion_notes": "Server-side data layer fetches GET /api/dev/roadmap and falls back to reading docs/roadmap.json directly from the repository. The console renders which source answered so status is never silently stale.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T13",
+          "title": "Unity client shell with health diagnostic",
+          "subsystem": "client",
+          "description": "Unity project shell that calls /health on start and shows connection status in a dev-only diagnostic overlay.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T07"
+          ],
+          "completion_notes": "client-unity project with a code-driven bootstrap (RuntimeInitializeOnLoadMethod, so pressing Play in any scene works without a committed scene asset), a settings-driven ApiClient, a ServerHealthProbe polling /health, and a dev-only DiagnosticOverlay (F1) that distinguishes connected, degraded and unreachable. The backend URL comes from a ScriptableObject or the FISHING_IDLE_API_BASE_URL environment variable, never from code. Not compiled in the authoring environment - no Unity Editor. See M0-T14.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T14",
+          "title": "Verify full local stack on owner machine",
+          "subsystem": "ops",
+          "description": "Docker and the Unity Editor are unavailable in the authoring environment, so the Docker Compose stack and the Unity compile must each be confirmed once on the owner's machine before Milestone 0 can be called closed.",
+          "status": "BLOCKED",
+          "dependencies": [
+            "M0-T09",
+            "M0-T13"
+          ],
+          "completion_notes": "Verified in the authoring environment: the server builds with warnings-as-errors and its 36 tests pass; the initial migration applies to a real PostgreSQL 16 and the schema was inspected; the API serves /health as healthy against that database; the Dev Console builds and all four pages render correctly against the running API. Still unverified, because the authoring environment has neither a Docker daemon nor the Unity Editor: (1) docker compose up for the three-service stack; (2) the Unity project compiling and the pinned Unity 6.3 LTS patch version in ProjectSettings/ProjectVersion.txt, which is currently the placeholder 6000.3.0f1. Owner action: run ./ops/scripts/dev-up.sh once and open client-unity in Unity Hub once, then report back so this task can close as DONE.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M1",
+      "title": "Accounts / player state / config pipeline",
+      "goal": "Authenticated players with persistent server-side state, and a validated configuration pipeline the owner can edit from the Dev Console.",
+      "completion_criteria": [
+        "Player can authenticate.",
+        "Server creates player state.",
+        "Admin can change a safe config value and the server uses the new validated config version."
+      ],
+      "tasks": [
+        {
+          "id": "M1-T01",
+          "title": "Development authentication",
+          "subsystem": "server",
+          "description": "Authentication suitable for development with a clear upgrade path to production identity. Every gameplay request must be authenticated.",
+          "status": "TODO",
+          "dependencies": [
+            "M0-T08"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M1-T02",
+          "title": "UserAccount and PlayerProfile",
+          "subsystem": "server",
+          "description": "Account and player profile entities, created on first authentication.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M1-T03",
+          "title": "PlayerWallet",
+          "subsystem": "server",
+          "description": "Coins and Shells balances with auditable mutations. Balances are never accepted from the client.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M1-T04",
+          "title": "PlayerProgression",
+          "subsystem": "server",
+          "description": "Fisher level and XP state, plus PlayerMapState for unlocks and the active map.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M1-T05",
+          "title": "Config loading and versioning",
+          "subsystem": "server",
+          "description": "Load /config files into a GameConfigVersion record so any outcome can be traced to the balance version that produced it.",
+          "status": "TODO",
+          "dependencies": [
+            "M0-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M1-T06",
+          "title": "Config validation",
+          "subsystem": "server",
+          "description": "Schema and range validation. Invalid configuration must not be deployable.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M1-T07",
+          "title": "Admin config read/edit workflow",
+          "subsystem": "web",
+          "description": "Dev Console Game Config section reading and editing every value listed in GDD section 43 through authenticated admin APIs.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T06"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M1-T08",
+          "title": "Admin audit log",
+          "subsystem": "server",
+          "description": "Immutable AdminAuditLog entries for every configuration change, with admin role separation.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T07"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M1-T09",
+          "title": "Idempotency and rate limiting foundation",
+          "subsystem": "server",
+          "description": "Reusable idempotency-key handling and rate limiting applied to economic mutations, established before any economy code exists.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M2",
+      "title": "Fishing vertical loop",
+      "goal": "The authoritative fishing loop: the player leaves the game fishing and the server owns every outcome.",
+      "completion_criteria": [
+        "Player can leave fishing running.",
+        "Modified or repeated requests cannot accelerate catches.",
+        "Reconnect resolves the correct state.",
+        "Offline rewards work."
+      ],
+      "tasks": [
+        {
+          "id": "M2-T01",
+          "title": "Map 1 scene - Lago Sereno",
+          "subsystem": "client",
+          "description": "2.5D calm freshwater lake scene: layered water, vegetation, warm relaxing light, parallax.",
+          "status": "TODO",
+          "dependencies": [
+            "M0-T13"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T02",
+          "title": "Fishing start/stop intent API",
+          "subsystem": "server",
+          "description": "Client sends start/stop/sync intent only. FishingSession is owned by the server.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T04"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T03",
+          "title": "Authoritative 30s online cycle",
+          "subsystem": "server",
+          "description": "Eligible cycle count derived from server timestamps and a cycle cursor, not from per-player timers.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T04",
+          "title": "Cycle idempotency cursor",
+          "subsystem": "server",
+          "description": "Persisted session/cycle cursor so reconnects and repeated requests cannot process a cycle twice.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T05",
+          "title": "Catch generation",
+          "subsystem": "server",
+          "description": "Server-side RNG producing species, rarity and exact size from the map pool, weights and rod bonuses.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T03",
+            "M1-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T06",
+          "title": "Size system and categories",
+          "subsystem": "server",
+          "description": "Species-relative size ranges with Small/Adult/Large/Exceptional category thresholds, all data-driven.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T07",
+          "title": "Fisher XP award",
+          "subsystem": "server",
+          "description": "Fisher XP per catch varying by species and rarity, with the configurable size multipliers.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T08",
+          "title": "Fishing Box compact storage",
+          "subsystem": "server",
+          "description": "Compact catch representation. Catching a fish must not create a full FishInstance.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T09",
+          "title": "Offline fishing",
+          "subsystem": "server",
+          "description": "60s cycles capped at 24h of accumulation, generated in aggregate on return.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T04"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T10",
+          "title": "Fishing animation loop",
+          "subsystem": "client",
+          "description": "Continuous prepare/cast/wait/bite/reel/reveal/store presentation synchronized to the authoritative cycle.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T01",
+            "M2-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T11",
+          "title": "Environmental motion",
+          "subsystem": "client",
+          "description": "Visual-only randomized ambience: boat bobbing, water motion, light variation, particles, distant fish jump, birds, clouds.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T12",
+          "title": "Important-catch visual feedback",
+          "subsystem": "client",
+          "description": "Glow, pulsing light and particles that make rare, Exceptional and newly discovered catches stand out before the text is read.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T10"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T13",
+          "title": "Fishing Box UI",
+          "subsystem": "client",
+          "description": "Catch buffer UI with one primary filter at a time, bulk actions and the single valuable-item confirmation.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T08"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T14",
+          "title": "Basic notifications",
+          "subsystem": "client",
+          "description": "Non-blocking toasts plus a bounded Notification Center, generated client-side from authoritative responses where possible.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M2-T15",
+          "title": "Fishing exploit tests",
+          "subsystem": "server",
+          "description": "Automated tests proving a modified client requesting many cycles instantly gains nothing.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T04",
+            "M2-T09"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M3",
+      "title": "Aquarium / fish identity / feeding",
+      "goal": "Fish become persistent owned entities with deterministic stats, levels and feeding.",
+      "completion_criteria": [
+        "Fish identity persists correctly.",
+        "The same deterministic inputs produce the same stats.",
+        "Duplicate consume/sell exploits are prevented."
+      ],
+      "tasks": [
+        {
+          "id": "M3-T01",
+          "title": "Keep catch to FishInstance",
+          "subsystem": "server",
+          "description": "Promote a compact Fishing Box catch into a full persistent FishInstance when kept, if an Aquarium slot is free.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T08"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M3-T02",
+          "title": "Aquarium 100 cap",
+          "subsystem": "server",
+          "description": "Hard permanent cap of 100. The Fishing Box keeps receiving catches when full; no expansion system.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M3-T03",
+          "title": "Deterministic stat calculation",
+          "subsystem": "server",
+          "description": "HP/Attack/Defense/Speed derived deterministically from species, rarity, size and level. No hidden IVs or random rolls.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M3-T04",
+          "title": "Fish level 1-10",
+          "subsystem": "server",
+          "description": "Fish XP and levels 1-10 applying a percentage bonus curve to the deterministic attributes.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M3-T05",
+          "title": "Feeding with 50% invested-XP recovery",
+          "subsystem": "server",
+          "description": "Consume fish for XP from species base feed XP plus rarity and size influence, plus 50% of the fed fish's invested XP.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T04"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M3-T06",
+          "title": "Fish state concurrency protection",
+          "subsystem": "server",
+          "description": "Transactional state/version guards so two simultaneous requests cannot sell and feed the same FishInstance.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M3-T07",
+          "title": "NPC fish sale",
+          "subsystem": "server",
+          "description": "Continuous size-based sale value from species base value and rarity influence. Invested fish XP is not reimbursed.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M3-T08",
+          "title": "Visual Aquarium cards",
+          "subsystem": "client",
+          "description": "Card inventory with prominent fish art, species name, size, level and rarity styling, ordered Exceptional > Large > Adult > Small.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M3-T09",
+          "title": "Fish detail view",
+          "subsystem": "client",
+          "description": "Full fish detail with the size number plus visual representation, stats, level progress and the feed flow.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T08",
+            "M3-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M3-T10",
+          "title": "Encyclopedia discovery tracking",
+          "subsystem": "server",
+          "description": "Persistent per-species discovered status and largest specimen ever caught, retained after the fish is sold or fed.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M4",
+      "title": "Profile / Cardume / Inventory / Rods",
+      "goal": "Player identity surfaces, the single Cardume, and the rod progression axis.",
+      "completion_criteria": [
+        "Cardume and equipment state persists.",
+        "Private Cardume Strength is not exposed publicly."
+      ],
+      "tasks": [
+        {
+          "id": "M4-T01",
+          "title": "Own Profile",
+          "subsystem": "client",
+          "description": "Identity and management surface: name, Fisher level, Arena rank, private Cardume Strength, Equipment, Inventory, Cardume, Encyclopedia and personal records.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T08"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T02",
+          "title": "Public Profile",
+          "subsystem": "client",
+          "description": "Other players see name, Fisher level, PvP rank, Cardume details, Encyclopedia progress and records.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T03",
+          "title": "Private/public field separation",
+          "subsystem": "server",
+          "description": "Server-enforced projection so Cardume Strength, balances, Fishing Box, Inventory and Aquarium never leak through the public profile API.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T04",
+          "title": "Cardume 1-6",
+          "subsystem": "server",
+          "description": "Exactly one Cardume per player referencing owned Aquarium FishInstances, used by every Cardume activity.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T05",
+          "title": "Complete Cardume 6/6 bonus",
+          "subsystem": "server",
+          "description": "Dynamic +3% HP/Attack/Defense/Speed when all six slots are filled, never written permanently to the fish.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T04"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T06",
+          "title": "Equipment rod slot",
+          "subsystem": "server",
+          "description": "The single active equipment slot. No dead or locked future slots in the UI.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T07",
+          "title": "Inventory inside Profile",
+          "subsystem": "server",
+          "description": "InventoryItem storage surfaced inside Profile, not as a ninth main menu.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T08",
+          "title": "Starter Rod",
+          "subsystem": "server",
+          "description": "Free Tier 0 rod: no bonuses, cannot catch Rare fish, generates no Shells.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T06"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T09",
+          "title": "Rod 1 and internal levels 1-10",
+          "subsystem": "server",
+          "description": "Purchasable rod with direct Coin purchase per level: no XP bar, no failure chance, no materials, escalating cost.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T08"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T10",
+          "title": "Rod bonus axes",
+          "subsystem": "server",
+          "description": "Rarity chance, size quality and Shell yield bonuses that preserve rarity scarcity and never create a rarity the map does not support.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T09",
+            "M2-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T11",
+          "title": "Rod buy / equip / resale / destroy",
+          "subsystem": "server",
+          "description": "Old rods stay owned. NPC resale returns part of the historical upgrade investment. Market-traded rods retain tier, level and bonuses.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T09"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T12",
+          "title": "Shell accumulation",
+          "subsystem": "server",
+          "description": "Shells drop from fishing with better rods improving yield. No spending use in V0.1.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T10"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M4-T13",
+          "title": "Private Cardume Strength metric",
+          "subsystem": "server",
+          "description": "Attack*2 + Defense*1.5 + HP/10 + Speed*0.5 summed after active modifiers, with a configurable display scale. Never determines PvP outcome.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M5",
+      "title": "Map 2 / travel / content",
+      "goal": "The second map, manual travel, and the full 20-species catalog including the first Rare.",
+      "completion_criteria": [
+        "Travel is manual only.",
+        "Starter Rod cannot fish Map 2.",
+        "Map 2 Rare cannot be generated through Starter Rod exploits."
+      ],
+      "tasks": [
+        {
+          "id": "M5-T01",
+          "title": "Map menu",
+          "subsystem": "client",
+          "description": "Map selection listing unlocked and eligible maps with an explicit Travel action.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M5-T02",
+          "title": "Level-based map unlock",
+          "subsystem": "server",
+          "description": "Map 2 at Fisher Lv.10, with the 10-map unlock ladder already data-driven.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T04"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M5-T03",
+          "title": "Rod minimum per map",
+          "subsystem": "server",
+          "description": "Rod 1 minimum for Map 2, enforced server-side on travel and on every catch.",
+          "status": "TODO",
+          "dependencies": [
+            "M5-T02",
+            "M4-T09"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M5-T04",
+          "title": "30s travel transition",
+          "subsystem": "server",
+          "description": "Server-owned travel window during which fishing is paused. No fuel, fee or cooldown. The map becomes active on arrival.",
+          "status": "TODO",
+          "dependencies": [
+            "M5-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M5-T05",
+          "title": "Travel presentation",
+          "subsystem": "client",
+          "description": "Boat transition visual for the 30 second travel, never driving the authoritative state.",
+          "status": "TODO",
+          "dependencies": [
+            "M5-T04",
+            "M5-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M5-T06",
+          "title": "Map 2 scene - Rio Selvagem",
+          "subsystem": "client",
+          "description": "Larger river with visible current, rocks, denser vegetation, waterfall/mist and deeper water. Adventurous but still relaxing.",
+          "status": "TODO",
+          "dependencies": [
+            "M5-T04"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M5-T07",
+          "title": "All 20 species seeded",
+          "subsystem": "config",
+          "description": "Both map pools complete: 19 Common plus Aruana as the single Rare, with provisional balance data.",
+          "status": "TODO",
+          "dependencies": [
+            "M0-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M5-T08",
+          "title": "Rare catch eligibility",
+          "subsystem": "server",
+          "description": "Rare generation gated by map pool and rod eligibility together, with tests covering the Starter Rod exploit path.",
+          "status": "TODO",
+          "dependencies": [
+            "M5-T03",
+            "M5-T07"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M6",
+      "title": "Expeditions",
+      "goal": "The Cardume can be sent away for Coin rewards without blocking incoming Arena attacks.",
+      "completion_criteria": [
+        "The same Cardume cannot perform conflicting owner actions while away.",
+        "Incoming Arena attacks remain possible."
+      ],
+      "tasks": [
+        {
+          "id": "M6-T01",
+          "title": "Expedition durations",
+          "subsystem": "server",
+          "description": "30 minutes, 1 hour, 3 hours and 6 hours, working online and offline while fishing continues.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T04"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M6-T02",
+          "title": "Recommended Strength and efficiency",
+          "subsystem": "server",
+          "description": "Reduced efficiency below recommended, 100% at recommended, bonus above with a configurable superiority cap.",
+          "status": "TODO",
+          "dependencies": [
+            "M6-T01",
+            "M4-T13"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M6-T03",
+          "title": "Rewards",
+          "subsystem": "server",
+          "description": "Guaranteed moderate Coins plus a very small fish-find chance. No XP and no Shells. Found fish goes to the Fishing Box.",
+          "status": "TODO",
+          "dependencies": [
+            "M6-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M6-T04",
+          "title": "Activity locks",
+          "subsystem": "server",
+          "description": "While away the owner cannot attack in Arena, change formation, feed/sell/list participating fish, or start another Cardume activity. No fish death or loss risk.",
+          "status": "TODO",
+          "dependencies": [
+            "M6-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M6-T05",
+          "title": "Offline completion",
+          "subsystem": "server",
+          "description": "Completion resolved from timestamps, shown as pending on the next login.",
+          "status": "TODO",
+          "dependencies": [
+            "M6-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M6-T06",
+          "title": "Completion presentation",
+          "subsystem": "client",
+          "description": "Online completion toast opening the reward result, with found fish shown prominently.",
+          "status": "TODO",
+          "dependencies": [
+            "M6-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M7",
+      "title": "Arena / PvP",
+      "goal": "Asynchronous PvP with positional ranking, Energy, Honor and server-resolved combat.",
+      "completion_criteria": [
+        "Battle results cannot be altered client-side.",
+        "Opponent reroll cannot be abused by reopening the client.",
+        "Rank swap is atomic."
+      ],
+      "tasks": [
+        {
+          "id": "M7-T01",
+          "title": "Energy 24 with 1/h regeneration",
+          "subsystem": "server",
+          "description": "Timestamp-derived Energy regeneration. Every initiated attack costs 1 Energy, win or lose.",
+          "status": "TODO",
+          "dependencies": [
+            "M1-T04"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T02",
+          "title": "Opponent selection",
+          "subsystem": "server",
+          "description": "Three unique server-selected opponents from a window up to roughly 10% above the current rank, never including the player.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T03",
+          "title": "One reroll then locked",
+          "subsystem": "server",
+          "description": "One reroll per set, then locked until an attack happens. Leaving Arena or restarting the client must not reroll.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T04",
+          "title": "Opponent cards",
+          "subsystem": "client",
+          "description": "Show name, rank, Cardume fish, levels and rarities. Never show Cardume Strength, predicted win chance or difficulty labels.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T02",
+            "M4-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T05",
+          "title": "Combat engine",
+          "subsystem": "server",
+          "description": "Deterministic stats with a configurable micro damage roll of 0.97-1.03. No crit, dodge, accuracy, penetration or abilities.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T03",
+            "M4-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T06",
+          "title": "Defense mitigation and speed mapping",
+          "subsystem": "server",
+          "description": "Diminishing-returns mitigation with a minimum damage floor, and a narrow speed-to-attack-interval mapping so Speed stays secondary.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T07",
+          "title": "Formation and target order",
+          "subsystem": "server",
+          "description": "3 front + 3 back with fixed 1-6 targeting. Defeated slots stay empty and the formation never recomputes.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T08",
+          "title": "Instant server resolution and replay data",
+          "subsystem": "server",
+          "description": "The full battle resolves when the attack is accepted, returning the authoritative result plus replay events.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T07"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T09",
+          "title": "Atomic rank swap",
+          "subsystem": "server",
+          "description": "Attacker victory swaps the two positions transactionally, leaving intermediate ranks untouched. A loss leaves the rank unchanged.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T08"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T10",
+          "title": "Honor",
+          "subsystem": "server",
+          "description": "Honor gained on attack victory and successful defense, a much smaller loss on defeat, floored at 0 and never capped on defenses.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T09"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T11",
+          "title": "PvP replay presentation",
+          "subsystem": "client",
+          "description": "1x / 2x / skip-to-result replay with simple attack tics, splash effects, damage numbers and HP bars. Target under roughly 60s at 1x.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T08"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T12",
+          "title": "PvP history",
+          "subsystem": "server",
+          "description": "Attack and defense history with results, visible to the player.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T08"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M7-T13",
+          "title": "Arena Shop surface",
+          "subsystem": "web",
+          "description": "Minimal configurable Arena Shop inventory spending Honor, without inventing future item systems to populate it.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T10",
+            "M1-T07"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M8",
+      "title": "Fixed-price Market",
+      "goal": "A player-driven fixed-price marketplace with unified custody.",
+      "completion_criteria": [
+        "No double-sell or double-buy is possible.",
+        "The Market cannot bypass the Aquarium usable cap."
+      ],
+      "tasks": [
+        {
+          "id": "M8-T01",
+          "title": "Listing rules",
+          "subsystem": "server",
+          "description": "Max 5 active listings per player, max 7 day duration, no listing fee, any seller price, 3% fee on completed sale.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T06"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M8-T02",
+          "title": "Listing state lock",
+          "subsystem": "server",
+          "description": "Listed fish and items are unusable while listed, with transactional guards against double-sell and double-buy.",
+          "status": "TODO",
+          "dependencies": [
+            "M8-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M8-T03",
+          "title": "Items to Withdraw",
+          "subsystem": "server",
+          "description": "Unified custody for purchased, cancelled and expired items. Nothing returns directly to the Aquarium or Inventory.",
+          "status": "TODO",
+          "dependencies": [
+            "M8-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M8-T04",
+          "title": "Aquarium-full purchase behavior",
+          "subsystem": "server",
+          "description": "Purchases are always allowed; withdrawal to a full Aquarium is blocked until a slot is freed. Storage limits must not block commerce.",
+          "status": "TODO",
+          "dependencies": [
+            "M8-T03",
+            "M3-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M8-T05",
+          "title": "Buy tab with filters",
+          "subsystem": "client",
+          "description": "Multi-filter search (species, rarity, size category, min/max size, level, min/max price) with sorting, rendered as compact visual cards.",
+          "status": "TODO",
+          "dependencies": [
+            "M8-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M8-T06",
+          "title": "Sell and My Listings tabs",
+          "subsystem": "client",
+          "description": "Listing creation, active listing management and cancellation.",
+          "status": "TODO",
+          "dependencies": [
+            "M8-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M8-T07",
+          "title": "Market transaction audit",
+          "subsystem": "server",
+          "description": "Immutable audit records for every market transaction and fee.",
+          "status": "TODO",
+          "dependencies": [
+            "M8-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M9",
+      "title": "Auction",
+      "goal": "A transactionally safe auction tab with reserved bid funds and anti-sniping.",
+      "completion_criteria": [
+        "Simultaneous bid races are handled transactionally.",
+        "Fees and principal are correct under retry and reconnect."
+      ],
+      "tasks": [
+        {
+          "id": "M9-T01",
+          "title": "Auction creation rules",
+          "subsystem": "server",
+          "description": "One active auction per seller, fish or items, fixed 6 hour duration, seller-defined starting bid, no cancellation because demand is disliked.",
+          "status": "TODO",
+          "dependencies": [
+            "M8-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M9-T02",
+          "title": "Bid rules",
+          "subsystem": "server",
+          "description": "Each bid at least 3% above the current highest, with a 1% non-refundable fee charged every time.",
+          "status": "TODO",
+          "dependencies": [
+            "M9-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M9-T03",
+          "title": "Bid fund reservation and refund",
+          "subsystem": "server",
+          "description": "The full principal is reserved server-side while the bidder leads, and returned immediately on being outbid. The 1% fee is never returned.",
+          "status": "TODO",
+          "dependencies": [
+            "M9-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M9-T04",
+          "title": "Bid race safety",
+          "subsystem": "server",
+          "description": "Row or version locking across simultaneous bids, timeout completion and seller early-end, with retry and reconnect tests.",
+          "status": "TODO",
+          "dependencies": [
+            "M9-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M9-T05",
+          "title": "Anti-sniping reset",
+          "subsystem": "server",
+          "description": "A valid bid inside the final minute resets the remaining time to 1:00, repeatable.",
+          "status": "TODO",
+          "dependencies": [
+            "M9-T04"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M9-T06",
+          "title": "Seller early close",
+          "subsystem": "server",
+          "description": "End Now only when a bid exists, charging the seller 3% of the accepted bid. No early-close fee at normal timed completion.",
+          "status": "TODO",
+          "dependencies": [
+            "M9-T04"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M9-T07",
+          "title": "No-bid expiry",
+          "subsystem": "server",
+          "description": "With no bids the seller waits the full 6 hours and the item then goes to Items to Withdraw.",
+          "status": "TODO",
+          "dependencies": [
+            "M9-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M9-T08",
+          "title": "Auction tab UI",
+          "subsystem": "client",
+          "description": "Auction browsing, bidding with the minimum-increment and fee clearly shown, and outbid notifications.",
+          "status": "TODO",
+          "dependencies": [
+            "M9-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M10",
+      "title": "Tutorial / taskbar / UX polish",
+      "goal": "First-session onboarding and the presentation polish that makes the game pleasant to leave open.",
+      "completion_criteria": [
+        "The tutorial teaches by doing and ends quickly.",
+        "Taskbar Mode is treated by the backend exactly as normal online fishing."
+      ],
+      "tasks": [
+        {
+          "id": "M10-T01",
+          "title": "Tutorial flow",
+          "subsystem": "client",
+          "description": "The 13 step teach-by-doing flow from welcome through claiming the Starter Rod to a brief Expedition introduction. No advanced PvP, Market or Auction explanations.",
+          "status": "TODO",
+          "dependencies": [
+            "M6-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M10-T02",
+          "title": "Taskbar / compact mode",
+          "subsystem": "client",
+          "description": "Compact always-visible window showing only water, boat, fisherman, the fishing animation and minimal catch feedback. Purely presentation.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T10"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M10-T03",
+          "title": "Catch effect polish",
+          "subsystem": "client",
+          "description": "Refined important-catch effects: elegant, distinct from rarity styling, never visually exhausting.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T12"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M10-T04",
+          "title": "Toast and notification polish",
+          "subsystem": "client",
+          "description": "Bounded recent notification set with polished non-blocking toasts.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T14"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M10-T05",
+          "title": "Audio placeholders",
+          "subsystem": "client",
+          "description": "Ambient water, cast, catch and UI placeholder audio.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T10"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M10-T06",
+          "title": "Menu transitions",
+          "subsystem": "client",
+          "description": "Smooth transitions across the eight main menus with fishing continuing underneath.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T04",
+            "M8-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M10-T07",
+          "title": "Visual optimization",
+          "subsystem": "client",
+          "description": "Keep the scene cheap enough to leave running on a second monitor.",
+          "status": "TODO",
+          "dependencies": [
+            "M10-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M11",
+      "title": "Public website / direct distribution",
+      "goal": "The player-facing site and the version pipeline that lets Steam be added cleanly later.",
+      "completion_criteria": [
+        "A visitor can read what the game is and download the current Windows build.",
+        "Direct-download and Steam builds come from the same codebase."
+      ],
+      "tasks": [
+        {
+          "id": "M11-T01",
+          "title": "Landing page",
+          "subsystem": "web",
+          "description": "Attractive landing page matching the game visual identity, with a fishing-scene hero and a short explanation.",
+          "status": "TODO",
+          "dependencies": [
+            "M0-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M11-T02",
+          "title": "Screenshots and media placeholders",
+          "subsystem": "web",
+          "description": "Media section ready for real screenshots and video.",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M11-T03",
+          "title": "Windows download section",
+          "subsystem": "web",
+          "description": "Download for Windows button wired to the current versioned build.",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M11-T04",
+          "title": "Version and release notes",
+          "subsystem": "web",
+          "description": "Public version display and release notes, plus minimum requirements, privacy and terms placeholders.",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M11-T05",
+          "title": "Build metadata endpoint",
+          "subsystem": "server",
+          "description": "Public build/version API designed so a lightweight launcher or updater can be added later without redesign.",
+          "status": "TODO",
+          "dependencies": [
+            "M0-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M11-T06",
+          "title": "Steam placeholder",
+          "subsystem": "web",
+          "description": "Steam button and link system that activates once the Steam page exists.",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T01"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M12",
+      "title": "V0.1 stabilization",
+      "goal": "Simulate, harden, tune and ship a versioned Windows build.",
+      "completion_criteria": [
+        "Economy and combat behave within intended ranges.",
+        "Security, race and reconnect tests pass.",
+        "A versioned Windows build exists with release notes."
+      ],
+      "tasks": [
+        {
+          "id": "M12-T01",
+          "title": "Combat simulation harness",
+          "subsystem": "server",
+          "description": "Headless harness running thousands of Cardume battles to estimate duration, check offense/defense balance, verify Speed is secondary and calibrate the Strength metric.",
+          "status": "TODO",
+          "dependencies": [
+            "M7-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M12-T02",
+          "title": "Economy simulation",
+          "subsystem": "server",
+          "description": "Model catches/hour, NPC sale inflow, rod upgrade sinks, the 3% market sink, auction bid-fee and early-close sinks and Honor progression.",
+          "status": "TODO",
+          "dependencies": [
+            "M9-T06",
+            "M4-T09"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M12-T03",
+          "title": "Security tests",
+          "subsystem": "server",
+          "description": "Authorization, ownership, replay, double-spend and client-authority tests across every economic mutation.",
+          "status": "TODO",
+          "dependencies": [
+            "M9-T04",
+            "M8-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M12-T04",
+          "title": "API load smoke tests",
+          "subsystem": "server",
+          "description": "Baseline load profile for the fishing sync, Arena and Market endpoints.",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M12-T05",
+          "title": "Save and reconnect tests",
+          "subsystem": "server",
+          "description": "State correctness across disconnects, offline windows and repeated sync requests.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T15"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M12-T06",
+          "title": "Market and auction race tests",
+          "subsystem": "server",
+          "description": "Concurrency tests for simultaneous buys, bids, expiry and early close.",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T03"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M12-T07",
+          "title": "Bug pass",
+          "subsystem": "server",
+          "description": "Triage and fix pass across every milestone.",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T05"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M12-T08",
+          "title": "Balance pass",
+          "subsystem": "config",
+          "description": "Tune provisional values through the Dev Console using the simulation output.",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T01",
+            "M12-T02"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M12-T09",
+          "title": "Windows build",
+          "subsystem": "client",
+          "description": "Produce the versioned Windows build for direct download.",
+          "status": "TODO",
+          "dependencies": [
+            "M10-T07",
+            "M12-T07"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M12-T10",
+          "title": "Versioned release notes",
+          "subsystem": "docs",
+          "description": "Release notes tied to the client, server and web versions and the config version used.",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T09"
+          ],
+          "completion_notes": "",
+          "updated_at": "2026-09-25T00:00:00Z"
+        }
+      ]
+    }
+  ]
+}

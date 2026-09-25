@@ -1,0 +1,166 @@
+{
+  "config_file": "rods",
+  "config_schema_version": 1,
+  "balance_status": "PROVISIONAL",
+  "description": "Rod definitions and upgrade costs. V0.1 implements Tier 0 (Starter Rod) and Tier 1 (Rod 1) only. The long-term tier ladder is recorded as reference data and intentionally has no rod entries.",
+  "upgrade_rules": {
+    "internal_levels": {
+      "min": 1,
+      "max": 10
+    },
+    "purchase_model": "Pay Coins to buy the next level directly.",
+    "has_xp_bar": false,
+    "has_failure_chance": false,
+    "requires_materials": false,
+    "uses_shells": false
+  },
+  "bonus_axes": {
+    "note": "Only fishing-related bonuses exist. Bonuses are modest because small percentages compound over thousands of catches.",
+    "rarity_efficiency": {
+      "formula": "effective_weight(rare) = base_weight(rare) * (1 + rarity_efficiency)",
+      "clamp_note": "Scales the rare slice of the existing pool weight. It can never introduce a rarity the map does not list in available_rarities, and a +5% efficiency must not turn a 1% chance into 6%."
+    },
+    "size_quality": {
+      "formula": "draw_weight(large) and draw_weight(exceptional) are multiplied by (1 + size_quality); the remaining weight is renormalised."
+    },
+    "shell_yield": {
+      "formula": "shell_drop_chance = base_chance * (1 + shell_yield)"
+    }
+  },
+  "tier_ladder_reference": {
+    "note": "Design ladder from GDD section 19. Rods 2-5 are out of V0.1 scope and intentionally not defined below.",
+    "purchase_unlock_fisher_level": {
+      "rod_01": 10,
+      "rod_02": 30,
+      "rod_03": 50,
+      "rod_04": 70,
+      "rod_05": 90
+    }
+  },
+  "rods": [
+    {
+      "id": "rod_00_starter",
+      "display_name": "Starter Rod",
+      "tier": 0,
+      "implemented_in_v0_1": true,
+      "acquisition": {
+        "method": "free_claim_in_shop",
+        "purchase_cost_coins": 0,
+        "unlock_fisher_level": 1
+      },
+      "has_internal_levels": false,
+      "can_catch_rarities": [
+        "common"
+      ],
+      "generates_shells": false,
+      "bonuses": {
+        "rarity_efficiency": 0.0,
+        "size_quality": 0.0,
+        "shell_yield": 0.0
+      },
+      "npc_resale_value_coins": 0,
+      "tradable_on_market": false
+    },
+    {
+      "id": "rod_01",
+      "display_name": "Rod 1",
+      "tier": 1,
+      "implemented_in_v0_1": true,
+      "acquisition": {
+        "method": "coin_purchase",
+        "purchase_cost_coins": 2500,
+        "unlock_fisher_level": 10
+      },
+      "has_internal_levels": true,
+      "can_catch_rarities": [
+        "common",
+        "rare"
+      ],
+      "generates_shells": true,
+      "bonuses_per_level": {
+        "note": "Values are the total bonus at that internal level, not a per-level increment.",
+        "rarity_efficiency": [
+          0.0,
+          0.02,
+          0.04,
+          0.06,
+          0.08,
+          0.1,
+          0.13,
+          0.16,
+          0.19,
+          0.22
+        ],
+        "size_quality": [
+          0.0,
+          0.02,
+          0.04,
+          0.06,
+          0.08,
+          0.1,
+          0.12,
+          0.15,
+          0.18,
+          0.21
+        ],
+        "shell_yield": [
+          0.0,
+          0.05,
+          0.1,
+          0.15,
+          0.2,
+          0.26,
+          0.32,
+          0.38,
+          0.45,
+          0.52
+        ]
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "cost_coins": 1500
+        },
+        {
+          "to_level": 3,
+          "cost_coins": 2300
+        },
+        {
+          "to_level": 4,
+          "cost_coins": 3600
+        },
+        {
+          "to_level": 5,
+          "cost_coins": 5600
+        },
+        {
+          "to_level": 6,
+          "cost_coins": 8650
+        },
+        {
+          "to_level": 7,
+          "cost_coins": 13400
+        },
+        {
+          "to_level": 8,
+          "cost_coins": 20800
+        },
+        {
+          "to_level": 9,
+          "cost_coins": 32250
+        },
+        {
+          "to_level": 10,
+          "cost_coins": 49950
+        }
+      ],
+      "npc_resale": {
+        "base_value_ratio": 0.4,
+        "upgrade_investment_ratio": 0.25,
+        "note": "NPC resale returns 40% of the purchase cost plus 25% of the total Coins spent on internal upgrades."
+      },
+      "tradable_on_market": true,
+      "market_note": "A traded rod retains tier, internal level and bonuses."
+    }
+  ]
+}

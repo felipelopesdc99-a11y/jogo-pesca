@@ -1,0 +1,87 @@
+# Local development stack: PostgreSQL + backend API + Development Console.
+#
+#   ops/scripts/dev-up.sh     start everything
+#   ops/scripts/dev-down.sh   stop everything
+#   ops/scripts/migrate.sh    apply database migrations
+#
+# Values come from the repository-root .env file (copy .env.example first).
+# This file is for local development only. It is not a production deployment.
+
+name: fishing-idle
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fishing-idle-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-fishing_idle}
+      POSTGRES_USER: ${POSTGRES_USER:-fishing_idle}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fishing_idle_dev}
+      # Deterministic collation so ordering does not drift between machines.
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fishing_idle} -d ${POSTGRES_DB:-fishing_idle}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  api:
+    build:
+      context: ..
+      dockerfile: server/src/FishingIdle.Api/Dockerfile
+    container_name: fishing-idle-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:8080
+      FISHINGIDLE_ConnectionStrings__Postgres: >-
+        Host=postgres;Port=5432;Database=${POSTGRES_DB:-fishing_idle};Username=${POSTGRES_USER:-fishing_idle};Password=${POSTGRES_PASSWORD:-fishing_idle_dev}
+      # The repository is mounted read-only below; point the server at that mount.
+      FISHINGIDLE_Repository__RootPath: /repo
+      FISHINGIDLE_DevConsole__AllowedOrigins__0: http://localhost:${DEV_CONSOLE_HOST_PORT:-3000}
+      FISHINGIDLE_DevConsole__AllowedOrigins__1: http://127.0.0.1:${DEV_CONSOLE_HOST_PORT:-3000}
+    ports:
+      - "${API_HOST_PORT:-5080}:8080"
+    volumes:
+      # version.json, docs/roadmap.json and config/*.json are read from here.
+      # Read-only: the server reads project state, it never writes it.
+      - ..:/repo:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:8080/health/live || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+
+  dev-console:
+    build:
+      context: ../web/dev-console
+      dockerfile: Dockerfile
+    container_name: fishing-idle-dev-console
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      # Server-side rendering runs inside this container, so it reaches the API by service name.
+      FISHING_IDLE_API_BASE_URL: http://api:8080
+      FISHING_IDLE_REPO_ROOT: /repo
+    ports:
+      - "${DEV_CONSOLE_HOST_PORT:-3000}:3000"
+    volumes:
+      # Fallback source for docs/roadmap.json when the API is unreachable.
+      - ..:/repo:ro
+
+volumes:
+  postgres-data:
+    name: fishing-idle-postgres-data

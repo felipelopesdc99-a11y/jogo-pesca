@@ -1,0 +1,78 @@
+{
+  "config_file": "economy",
+  "config_schema_version": 1,
+  "balance_status": "PROVISIONAL",
+  "description": "Currencies, NPC sale rules, Shell acquisition, Market and Auction values.",
+  "currencies": [
+    {
+      "id": "coins",
+      "display_name": "Coins",
+      "is_primary": true,
+      "spendable_in_v0_1": true
+    },
+    {
+      "id": "shells",
+      "display_name": "Shells",
+      "is_primary": false,
+      "spendable_in_v0_1": false,
+      "note": "Earnable in V0.1 but intentionally has no spending use yet. Must not be used to upgrade rods or fish."
+    },
+    {
+      "id": "honor",
+      "display_name": "Honor",
+      "is_primary": false,
+      "spendable_in_v0_1": true,
+      "note": "Arena-earned. Spent only in the Arena Shop."
+    }
+  ],
+  "npc_fish_sale": {
+    "formula": "round(base_sale_value_coins * rarity.sale_value_multiplier * size.sale_value_influence)",
+    "reimburses_invested_fish_xp": false,
+    "minimum_price_coins": 1
+  },
+  "shells": {
+    "source": "fishing_only_in_v0_1",
+    "base_drop_chance_per_catch": 0.05,
+    "amount_per_drop": {
+      "min": 1,
+      "max": 2
+    },
+    "starter_rod_generates_shells": false,
+    "rod_bonus_axis": "shell_yield"
+  },
+  "market_fixed_price": {
+    "max_active_listings_per_player": 5,
+    "max_listing_duration_days": 7,
+    "listing_fee_coins": 0,
+    "completed_sale_fee_ratio": 0.03,
+    "seller_chooses_price": true,
+    "minimum_listing_price_coins": 1,
+    "artificial_minimum_market_value": false,
+    "purchase_allowed_when_buyer_aquarium_full": true,
+    "withdrawal_blocked_when_aquarium_full": true,
+    "withdrawal_expiry_days": null
+  },
+  "auction": {
+    "max_active_auctions_per_seller": 1,
+    "duration_hours": 6,
+    "seller_defines_starting_bid": true,
+    "min_bid_increment_ratio": 0.03,
+    "bid_fee_ratio": 0.01,
+    "bid_fee_refundable": false,
+    "principal_reserved_while_highest_bidder": true,
+    "principal_refunded_immediately_on_outbid": true,
+    "anti_snipe_window_seconds": 60,
+    "anti_snipe_reset_to_seconds": 60,
+    "anti_snipe_repeatable": true,
+    "seller_early_close_requires_bid": true,
+    "seller_early_close_fee_ratio": 0.03,
+    "timed_completion_fee_ratio": 0.0,
+    "seller_cancellation_without_bids": false,
+    "max_auctions_a_buyer_can_join": null
+  },
+  "aquarium": {
+    "hard_capacity": 100,
+    "expansion_allowed": false,
+    "fishing_box_keeps_receiving_when_full": true
+  }
+}
