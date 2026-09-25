@@ -1,8 +1,8 @@
 {
   "config_file": "maps",
   "config_schema_version": 1,
-  "balance_status": "PROVISIONAL",
-  "description": "Playable maps, their fish pools with catch weights, unlock requirements and travel rules. Only Maps 1-2 are playable in V0.1; the unlock ladder for Maps 3-10 is recorded as reference data only and no map beyond 2 is defined here.",
+  "balance_status": "PROVISÓRIO",
+  "description": "Mapas jogáveis, seus pools de peixes com pesos de captura, requisitos de desbloqueio e regras de viagem. Só os Mapas 1 e 2 são jogáveis na V0.1; a escada de desbloqueio dos Mapas 3 a 10 fica registrada apenas como referência e nenhum mapa além do 2 está definido aqui.",
   "travel": {
     "duration_seconds": 30,
     "fishing_paused_during_travel": true,
@@ -13,7 +13,7 @@
     "cooldown_seconds": 0
   },
   "unlock_ladder_reference": {
-    "note": "Design ladder from GDD section 17. Maps 3-10 are out of V0.1 scope and intentionally not defined below.",
+    "note": "Escada de progressão da seção 17 do GDD. Os Mapas 3 a 10 estão fora do escopo da V0.1 e de propósito não são definidos abaixo.",
     "fisher_level_per_map": {
       "map_01": 1,
       "map_02": 10,
@@ -47,10 +47,10 @@
       "unlock_fisher_level": 1,
       "minimum_rod_tier": 0,
       "visual_theme": {
-        "summary": "Calm freshwater lake: vegetation, soft water motion, warm relaxing light, safe starter atmosphere.",
-        "water": "calm",
-        "light": "warm",
-        "mood": "relaxing"
+        "summary": "Lago calmo de água doce: vegetação, movimento suave da água, luz quente e relaxante, clima seguro de início de jogo.",
+        "water": "calma",
+        "light": "quente",
+        "mood": "relaxante"
       },
       "available_rarities": [
         "common"
@@ -106,10 +106,10 @@
       "unlock_fisher_level": 10,
       "minimum_rod_tier": 1,
       "visual_theme": {
-        "summary": "Larger river with visible current, rocks, denser vegetation, waterfall and mist, deeper darker water. Adventurous but still relaxing.",
-        "water": "flowing",
-        "light": "cooler",
-        "mood": "adventurous"
+        "summary": "Rio maior com correnteza visível, pedras, vegetação mais densa, cachoeira e névoa, água mais funda e escura. Aventureiro, mas ainda relaxante.",
+        "water": "corrente",
+        "light": "mais fria",
+        "mood": "aventureiro"
       },
       "available_rarities": [
         "common",

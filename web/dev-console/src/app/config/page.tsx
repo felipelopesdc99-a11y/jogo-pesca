@@ -1,10 +1,11 @@
 import { Notice, SourceNotices } from "@/components/Notice";
 import { apiBaseUrl, loadConfigListing } from "@/lib/data";
+import { t } from "@/lib/strings";
 
 export const dynamic = "force-dynamic";
 
 function formatSize(bytes: number): string {
-  return bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`;
+  return bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1).replace(".", ",")} KB`;
 }
 
 export default async function ConfigPage() {
@@ -12,36 +13,27 @@ export default async function ConfigPage() {
 
   return (
     <>
-      <h1 className="page-title">Game Config</h1>
-      <p className="page-lede">
-        Every balance value the game runs on lives in <code>/config</code>, never in gameplay code.
-        Base stats are stated at level 1 and size percentile 0.50; rarity, size and level modifiers
-        are applied on top by the server.
-      </p>
+      <h1 className="page-title">{t.config.title}</h1>
+      <p className="page-lede">{t.config.lede}</p>
 
       <SourceNotices error={listing.error} warning={listing.warning} />
 
       {listing.data === null ? null : (
         <>
-          <Notice kind="info" title="Read-only in Milestone 0">
-            {listing.data.editing_note} Until then, edit the files in <code>/config</code> directly
-            and restart the server. Every file is marked{" "}
-            <code>&quot;balance_status&quot;: &quot;PROVISIONAL&quot;</code> — the numbers are
-            placeholder-balanced with a clear hierarchy, to be tuned through simulation. The
-            structure is not provisional.
+          <Notice kind="info" title={t.config.readOnlyTitle}>
+            {listing.data.editing_note} {t.config.readOnlyBody}
           </Notice>
 
           <section className="section">
-            <h2 className="section-title">Balance files</h2>
             <div className="card">
               <table className="table">
                 <thead>
                   <tr>
-                    <th>File</th>
-                    <th>Owns</th>
-                    <th>Schema</th>
-                    <th>Balance</th>
-                    <th>Size</th>
+                    <th>{t.config.tableFile}</th>
+                    <th>{t.config.tableOwns}</th>
+                    <th>{t.config.tableSchema}</th>
+                    <th>{t.config.tableBalance}</th>
+                    <th>{t.config.tableSize}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -50,10 +42,10 @@ export default async function ConfigPage() {
                       <td className="mono">
                         <a href={`${apiBaseUrl()}/api/dev/config/${file.name}`}>{file.name}</a>
                       </td>
-                      <td>{file.description ?? "—"}</td>
-                      <td className="mono">{file.schema_version ?? "—"}</td>
+                      <td>{file.description ?? t.common.none}</td>
+                      <td className="mono">{file.schema_version ?? t.common.none}</td>
                       <td>
-                        <span className="chip">{file.balance_status ?? "unknown"}</span>
+                        <span className="chip">{file.balance_status ?? t.common.none}</span>
                       </td>
                       <td className="mono">{formatSize(file.size_bytes)}</td>
                     </tr>
@@ -62,25 +54,21 @@ export default async function ConfigPage() {
               </table>
             </div>
             {listing.data.files.length === 0 ? (
-              <p className="empty">
-                No config files found{listing.data.directory ? ` in ${listing.data.directory}` : ""}.
-              </p>
+              <p className="empty">{t.config.emptyFiles(listing.data.directory)}</p>
             ) : null}
           </section>
         </>
       )}
 
       <section className="section">
-        <h2 className="section-title">Content Browser</h2>
-        <Notice kind="info">
-          Visual tables and cards for Fish, Maps, Rods and Expeditions are part of Milestone 1
-          (task M1-T07), alongside validated config editing, config versioning and the admin audit
-          trail. The raw files are linked above in the meantime.
-        </Notice>
+        <h2 className="section-title">{t.config.contentBrowserTitle}</h2>
+        <Notice kind="info">{t.config.contentBrowserBody}</Notice>
       </section>
 
       {listing.data?.directory ? (
-        <div className="source-line mono">Source: {listing.data.directory}</div>
+        <div className="source-line mono">
+          {t.common.sourcePrefix} {listing.data.directory}
+        </div>
       ) : null}
     </>
   );

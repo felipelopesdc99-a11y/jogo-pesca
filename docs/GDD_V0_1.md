@@ -1,3 +1,8 @@
+> **Nota de idioma.** Este documento é mantido no original em inglês de propósito: é a fonte
+> de verdade travada do design da V0.1, citada por todo o restante do projeto, e traduzi-lo
+> correria o risco de deslocar o sentido de uma decisão já fechada. Todo o resto do projeto —
+> painel, jogo, roadmap e documentação — está em PT-BR. Veja `docs/DECISOES.md`, TD-014.
+
 # FISHING IDLE — V0.1
 ## Game Design Document + Technical Specification for Claude
 

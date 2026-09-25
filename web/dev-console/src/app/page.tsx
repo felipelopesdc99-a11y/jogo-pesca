@@ -1,7 +1,9 @@
 import { SourceNotices } from "@/components/Notice";
 import { ProgressBar, StatusBar } from "@/components/Progress";
+import { SourceLine } from "@/components/SourceLine";
 import { TaskRefList } from "@/components/TaskCard";
 import { loadBuildInfo, loadRoadmap } from "@/lib/data";
+import { formatNumber, t } from "@/lib/strings";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +13,7 @@ export default async function DashboardPage() {
   if (roadmap.data === null) {
     return (
       <>
-        <h1 className="page-title">Dashboard</h1>
+        <h1 className="page-title">{t.dashboard.title}</h1>
         <SourceNotices error={roadmap.error} warning={roadmap.warning} />
       </>
     );
@@ -21,27 +23,22 @@ export default async function DashboardPage() {
   const currentMilestone = summary.milestones.find(
     (m) => m.milestone_id === summary.current_milestone,
   );
-  const serverVersion = build.data?.components?.server ?? "unavailable";
-  const buildNumber = build.data?.build?.number;
-  const environment = build.data?.environment;
+  const serverVersion = build.data?.components?.server ?? t.common.unavailable;
 
   return (
     <>
-      <h1 className="page-title">Dashboard</h1>
-      <p className="page-lede">
-        {summary.project} — target {summary.target_version}. Completion is measured over every task
-        in the V0.1 roadmap, Milestones 0 through 12.
-      </p>
+      <h1 className="page-title">{t.dashboard.title}</h1>
+      <p className="page-lede">{t.dashboard.lede(summary.project, summary.target_version)}</p>
 
       <SourceNotices error={roadmap.error} warning={roadmap.warning} />
 
       <section className="section">
         <div className="grid grid-stats">
           <div className="card">
-            <div className="stat-label">V0.1 completion</div>
-            <div className="stat-value">{summary.completion_percent}%</div>
+            <div className="stat-label">{t.dashboard.completionLabel}</div>
+            <div className="stat-value">{formatNumber(summary.completion_percent)}%</div>
             <div className="stat-detail">
-              {summary.done_tasks} of {summary.total_tasks} tasks done
+              {t.dashboard.completionDetail(summary.done_tasks, summary.total_tasks)}
             </div>
             <div style={{ marginTop: 12 }}>
               <ProgressBar percent={summary.completion_percent} />
@@ -49,14 +46,17 @@ export default async function DashboardPage() {
           </div>
 
           <div className="card">
-            <div className="stat-label">Current milestone</div>
+            <div className="stat-label">{t.dashboard.currentMilestoneLabel}</div>
             <div className="stat-value">{summary.current_milestone}</div>
-            <div className="stat-detail">{summary.current_milestone_title ?? "—"}</div>
+            <div className="stat-detail">{summary.current_milestone_title ?? t.common.none}</div>
             {currentMilestone ? (
               <>
                 <div className="stat-detail">
-                  {currentMilestone.done_tasks} of {currentMilestone.total_tasks} tasks (
-                  {currentMilestone.completion_percent}%)
+                  {t.dashboard.milestoneTaskDetail(
+                    currentMilestone.done_tasks,
+                    currentMilestone.total_tasks,
+                    formatNumber(currentMilestone.completion_percent),
+                  )}
                 </div>
                 <div style={{ marginTop: 8 }}>
                   <StatusBar
@@ -69,34 +69,35 @@ export default async function DashboardPage() {
           </div>
 
           <div className="card">
-            <div className="stat-label">Current build</div>
+            <div className="stat-label">{t.dashboard.currentBuildLabel}</div>
             <div className="stat-value mono" style={{ fontSize: 18 }}>
               {serverVersion}
             </div>
             <div className="stat-detail">
-              {buildNumber !== undefined ? `build ${buildNumber}` : "build unknown"}
-              {environment ? ` · ${environment}` : ""}
+              {t.dashboard.buildDetail(build.data?.build?.number, build.data?.environment)}
             </div>
-            {build.error ? <div className="stat-detail">Server unreachable.</div> : null}
+            {build.error ? (
+              <div className="stat-detail">{t.dashboard.serverUnreachable}</div>
+            ) : null}
           </div>
 
           <div className="card">
-            <div className="stat-label">Needs your attention</div>
+            <div className="stat-label">{t.dashboard.attentionLabel}</div>
             <div className="stat-value">{summary.needs_attention.length}</div>
             <div className="stat-detail">
               {summary.needs_attention.length === 0
-                ? "Nothing blocked, no decisions waiting"
-                : "Blocked tasks and owner decisions"}
+                ? t.dashboard.attentionNone
+                : t.dashboard.attentionSome}
             </div>
           </div>
         </div>
       </section>
 
       <section className="section">
-        <h2 className="section-title">Blockers and owner decisions</h2>
+        <h2 className="section-title">{t.dashboard.sectionBlockers}</h2>
         <TaskRefList
           items={summary.needs_attention}
-          emptyText="Nothing is blocked and no design decision is waiting on you."
+          emptyText={t.dashboard.emptyBlockers}
           showDescription
         />
         {summary.open_owner_decisions.length > 0 ? (
@@ -121,33 +122,30 @@ export default async function DashboardPage() {
 
       <div className="grid grid-two section">
         <div>
-          <h2 className="section-title">In progress</h2>
+          <h2 className="section-title">{t.dashboard.sectionInProgress}</h2>
           <TaskRefList
             items={summary.in_progress}
-            emptyText="No task is currently marked in progress."
+            emptyText={t.dashboard.emptyInProgress}
             showDescription
           />
         </div>
 
         <div>
-          <h2 className="section-title">Next up</h2>
-          <TaskRefList
-            items={summary.next_up}
-            emptyText="No queued tasks."
-          />
+          <h2 className="section-title">{t.dashboard.sectionNextUp}</h2>
+          <TaskRefList items={summary.next_up} emptyText={t.dashboard.emptyNextUp} />
         </div>
       </div>
 
       <section className="section">
-        <h2 className="section-title">Most recently completed</h2>
-        <TaskRefList items={summary.recently_completed} emptyText="Nothing completed yet." />
+        <h2 className="section-title">{t.dashboard.sectionRecent}</h2>
+        <TaskRefList items={summary.recently_completed} emptyText={t.dashboard.emptyRecent} />
       </section>
 
-      <div className="source-line mono">
-        Source: {roadmap.origin === "api" ? "backend API" : "repository file"} ·{" "}
-        {roadmap.data.source_path ?? "unknown path"} · read{" "}
-        {new Date(roadmap.data.loaded_at_utc).toISOString().replace("T", " ").slice(0, 19)} UTC
-      </div>
+      <SourceLine
+        origin={roadmap.origin}
+        path={roadmap.data.source_path}
+        loadedAtUtc={roadmap.data.loaded_at_utc}
+      />
     </>
   );
 }

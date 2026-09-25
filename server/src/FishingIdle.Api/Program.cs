@@ -46,9 +46,9 @@ builder.Services.AddDbContext<FishingIdleDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("Postgres")
         ?? throw new InvalidOperationException(
-            "No PostgreSQL connection string configured. Set ConnectionStrings:Postgres "
-            + "(environment variable FISHINGIDLE_ConnectionStrings__Postgres), or copy .env.example to .env "
-            + "and start the stack with ops/scripts/dev-up.sh.");
+            "Nenhuma string de conexão com o PostgreSQL foi configurada. Defina ConnectionStrings:Postgres "
+            + "(variável de ambiente FISHINGIDLE_ConnectionStrings__Postgres), ou copie .env.example para .env "
+            + "e suba o ambiente com ops/scripts/dev-up.sh.");
 
     options.UseNpgsql(connectionString);
 });

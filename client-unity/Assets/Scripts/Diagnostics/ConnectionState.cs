@@ -39,7 +39,7 @@ namespace FishingIdle.Client.Diagnostics
 
         public DateTimeOffset? LastProbeAtUtc { get; private set; }
 
-        public string Message { get; private set; } = "Waiting for the first health probe…";
+        public string Message { get; private set; } = "Aguardando a primeira checagem de saúde…";
 
         public IReadOnlyList<DependencyHealthDto> Dependencies { get; private set; }
             = Array.Empty<DependencyHealthDto>();
@@ -56,7 +56,7 @@ namespace FishingIdle.Client.Diagnostics
             LastProbeAtUtc = DateTimeOffset.UtcNow;
             Dependencies = report.dependencies ?? new List<DependencyHealthDto>();
             Message = Status == ConnectionStatus.Healthy
-                ? "Server and database healthy."
+                ? "Servidor e banco de dados saudáveis."
                 : BuildDegradedMessage(Dependencies);
         }
 
@@ -71,10 +71,10 @@ namespace FishingIdle.Client.Diagnostics
             Message = error;
         }
 
-        /// <summary>Names which dependency is unhealthy, so "degraded" is actionable.</summary>
+        /// <summary>Nomeia qual dependência está com problema, para que "degradado" seja acionável.</summary>
         private static string BuildDegradedMessage(IReadOnlyList<DependencyHealthDto> dependencies)
         {
-            var builder = new StringBuilder("Server is up but a dependency is not: ");
+            var builder = new StringBuilder("O servidor está no ar, mas uma dependência não está: ");
             var first = true;
 
             foreach (var dependency in dependencies)
@@ -98,7 +98,7 @@ namespace FishingIdle.Client.Diagnostics
                 first = false;
             }
 
-            return first ? "Server reported a degraded status." : builder.ToString();
+            return first ? "O servidor relatou estado degradado." : builder.ToString();
         }
     }
 }

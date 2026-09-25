@@ -1,49 +1,41 @@
 import { Notice, SourceNotices } from "@/components/Notice";
 import { loadBuildInfo, loadRoadmap } from "@/lib/data";
+import { formatDateTime, formatUptime, t } from "@/lib/strings";
 
 export const dynamic = "force-dynamic";
-
-function formatUptime(seconds: number | undefined): string {
-  if (seconds === undefined) {
-    return "—";
-  }
-  const total = Math.floor(seconds);
-  const hours = Math.floor(total / 3600);
-  const minutes = Math.floor((total % 3600) / 60);
-  const rest = total % 60;
-  return hours > 0 ? `${hours}h ${minutes}m` : minutes > 0 ? `${minutes}m ${rest}s` : `${rest}s`;
-}
 
 export default async function BuildPage() {
   const [build, roadmap] = await Promise.all([loadBuildInfo(), loadRoadmap()]);
 
+  const currentMilestone = roadmap.data
+    ? `${roadmap.data.summary.current_milestone} — ${
+        roadmap.data.summary.current_milestone_title ?? ""
+      }`.trim()
+    : null;
+
   return (
     <>
-      <h1 className="page-title">Build / Version</h1>
-      <p className="page-lede">
-        Component versions come from <code>version.json</code> at the repository root, the single
-        source of truth for the convention documented in <code>docs/VERSIONING.md</code>. Runtime
-        facts come from the running server.
-      </p>
+      <h1 className="page-title">{t.build.title}</h1>
+      <p className="page-lede">{t.build.lede}</p>
 
       <SourceNotices error={build.error} warning={build.warning} />
 
       {build.data === null ? null : (
         <>
           <section className="section">
-            <h2 className="section-title">Component versions</h2>
+            <h2 className="section-title">{t.build.sectionComponents}</h2>
             <div className="card">
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Component</th>
-                    <th>Version</th>
+                    <th>{t.build.tableComponent}</th>
+                    <th>{t.build.tableVersion}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {Object.entries(build.data.components ?? {}).map(([component, version]) => (
                     <tr key={component}>
-                      <td>{component}</td>
+                      <td>{t.build.componentNames[component] ?? component}</td>
                       <td className="mono">{version}</td>
                     </tr>
                   ))}
@@ -53,75 +45,77 @@ export default async function BuildPage() {
           </section>
 
           <section className="section">
-            <h2 className="section-title">Build</h2>
+            <h2 className="section-title">{t.build.sectionBuild}</h2>
             <div className="grid grid-stats">
               <div className="card">
-                <div className="stat-label">Build number</div>
-                <div className="stat-value">{build.data.build?.number ?? "—"}</div>
-                <div className="stat-detail">{build.data.build?.channel ?? "unknown channel"}</div>
-              </div>
-              <div className="card">
-                <div className="stat-label">Build date</div>
-                <div className="stat-value" style={{ fontSize: 18 }}>
-                  {build.data.build?.date ?? "—"}
+                <div className="stat-label">{t.build.buildNumber}</div>
+                <div className="stat-value">{build.data.build?.number ?? t.common.none}</div>
+                <div className="stat-detail">
+                  {build.data.build?.channel ?? t.build.unknownChannel}
                 </div>
-                <div className="stat-detail mono">{build.data.build?.commit ?? "no commit recorded"}</div>
               </div>
               <div className="card">
-                <div className="stat-label">Environment</div>
+                <div className="stat-label">{t.build.buildDate}</div>
                 <div className="stat-value" style={{ fontSize: 18 }}>
-                  {build.data.environment ?? "—"}
+                  {build.data.build?.date
+                    ? build.data.build.date.split("-").reverse().join("/")
+                    : t.common.none}
                 </div>
-                <div className="stat-detail">.NET {build.data.dotnet_version ?? "—"}</div>
+                <div className="stat-detail mono">
+                  {build.data.build?.commit ?? t.build.noCommit}
+                </div>
               </div>
               <div className="card">
-                <div className="stat-label">Server uptime</div>
+                <div className="stat-label">{t.build.environment}</div>
+                <div className="stat-value" style={{ fontSize: 18 }}>
+                  {build.data.environment ?? t.common.none}
+                </div>
+                <div className="stat-detail">.NET {build.data.dotnet_version ?? t.common.none}</div>
+              </div>
+              <div className="card">
+                <div className="stat-label">{t.build.uptime}</div>
                 <div className="stat-value" style={{ fontSize: 18 }}>
                   {formatUptime(build.data.uptime_seconds)}
                 </div>
                 <div className="stat-detail mono">
-                  {build.data.server_time_utc?.slice(0, 19).replace("T", " ") ?? "—"} UTC
+                  {formatDateTime(build.data.server_time_utc) ?? t.common.none} UTC
                 </div>
               </div>
             </div>
           </section>
 
           <section className="section">
-            <h2 className="section-title">Downloads</h2>
+            <h2 className="section-title">{t.build.sectionDownloads}</h2>
             <div className="card">
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Channel</th>
-                    <th>Link</th>
+                    <th>{t.build.tableChannel}</th>
+                    <th>{t.build.tableLink}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Windows (direct download)</td>
+                    <td>{t.build.windowsLabel}</td>
                     <td>
                       {build.data.downloads?.windows ? (
                         <a className="mono" href={build.data.downloads.windows}>
                           {build.data.downloads.windows}
                         </a>
                       ) : (
-                        <span className="empty">
-                          No build yet — the first Windows build is task M12-T09.
-                        </span>
+                        <span className="empty">{t.build.noWindowsBuild}</span>
                       )}
                     </td>
                   </tr>
                   <tr>
-                    <td>Steam</td>
+                    <td>{t.build.steamLabel}</td>
                     <td>
                       {build.data.downloads?.steam ? (
                         <a className="mono" href={build.data.downloads.steam}>
                           {build.data.downloads.steam}
                         </a>
                       ) : (
-                        <span className="empty">
-                          Placeholder until a Steam page exists — task M11-T06.
-                        </span>
+                        <span className="empty">{t.build.noSteam}</span>
                       )}
                     </td>
                   </tr>
@@ -133,17 +127,8 @@ export default async function BuildPage() {
       )}
 
       <section className="section">
-        <h2 className="section-title">Changelog</h2>
-        <Notice kind="info">
-          The changelog lives in <code>docs/CHANGELOG.md</code> and is updated with every milestone.
-          {roadmap.data
-            ? ` Current milestone: ${roadmap.data.summary.current_milestone} — ${
-                roadmap.data.summary.current_milestone_title ?? ""
-              }.`
-            : ""}{" "}
-          Rendering it in this panel is part of Milestone 11 (task M11-T04), which also delivers the
-          public version and release-notes surface.
-        </Notice>
+        <h2 className="section-title">{t.build.sectionChangelog}</h2>
+        <Notice kind="info">{t.build.changelogBody(currentMilestone)}</Notice>
       </section>
     </>
   );

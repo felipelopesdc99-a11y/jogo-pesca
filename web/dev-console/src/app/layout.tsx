@@ -1,29 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { t } from "@/lib/strings";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Fishing Idle — Development Console",
-  description: "Private development console: roadmap, build status and game configuration.",
+  title: t.app.title,
+  description: t.app.metaDescription,
   robots: { index: false, follow: false },
 };
 
 const NAV = [
-  { href: "/", label: "Dashboard" },
-  { href: "/roadmap", label: "Roadmap" },
-  { href: "/config", label: "Game Config" },
-  { href: "/build", label: "Build / Version" },
+  { href: "/", label: t.app.nav.dashboard },
+  { href: "/roadmap", label: t.app.nav.roadmap },
+  { href: "/config", label: t.app.nav.config },
+  { href: "/build", label: t.app.nav.build },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body>
         <div className="shell">
           <aside className="sidebar">
-            <div className="sidebar-brand">Fishing Idle</div>
-            <div className="sidebar-sub">Development Console</div>
+            <div className="sidebar-brand">{t.app.brand}</div>
+            <div className="sidebar-sub">{t.app.subtitle}</div>
 
             <nav className="nav">
               {NAV.map((item) => (
@@ -33,10 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               ))}
             </nav>
 
-            <div className="nav-note">
-              This panel reflects repository state, not background activity. Status changes when a
-              task is completed and <code>docs/roadmap.json</code> is updated as part of that change.
-            </div>
+            <div className="nav-note">{t.app.sidebarNote}</div>
           </aside>
 
           <main className="main">{children}</main>

@@ -1,11 +1,11 @@
 {
   "config_file": "fish_catalog",
   "config_schema_version": 1,
-  "balance_status": "PROVISIONAL",
-  "description": "Species-intrinsic data only. Per-map catch weights live in maps.json so a species that later appears on several maps is not duplicated here. Base stats are the Lv.1 values for a mid-range (50th percentile) Common specimen; rarity, size and level modifiers are applied on top by the server using progression.json.",
+  "balance_status": "PROVISÓRIO",
+  "description": "Apenas dados próprios da espécie. Os pesos de captura por mapa ficam em maps.json, para que uma espécie que apareça em vários mapas não seja duplicada aqui. Os atributos base valem para nível 1 e tamanho no percentil 0,50, antes dos modificadores; raridade, tamanho e nível são aplicados por cima pelo servidor usando progression.json.",
   "stat_reference": {
-    "stats_are_for": "level 1, size percentile 0.50, before rarity/size/level modifiers",
-    "speed_note": "Speed is intentionally kept in a narrow band (88-110) so it stays a secondary balance axis."
+    "stats_are_for": "nível 1, tamanho no percentil 0,50, antes dos modificadores de raridade, tamanho e nível",
+    "speed_note": "A Velocidade é mantida de propósito numa faixa estreita (88 a 110) para continuar sendo um eixo secundário de balanceamento."
   },
   "species": [
     {
@@ -29,7 +29,7 @@
     },
     {
       "id": "tilapia",
-      "display_name": "Tilapia",
+      "display_name": "Tilápia",
       "primary_map_id": "map_01",
       "rarity": "common",
       "size_cm": {
@@ -86,7 +86,7 @@
     },
     {
       "id": "curimbata",
-      "display_name": "Curimbata",
+      "display_name": "Curimbatá",
       "primary_map_id": "map_01",
       "rarity": "common",
       "size_cm": {
@@ -105,7 +105,7 @@
     },
     {
       "id": "traira",
-      "display_name": "Traira",
+      "display_name": "Traíra",
       "primary_map_id": "map_01",
       "rarity": "common",
       "size_cm": {
@@ -143,7 +143,7 @@
     },
     {
       "id": "matrinxa",
-      "display_name": "Matrinxa",
+      "display_name": "Matrinxã",
       "primary_map_id": "map_01",
       "rarity": "common",
       "size_cm": {
@@ -257,7 +257,7 @@
     },
     {
       "id": "tucunare",
-      "display_name": "Tucunare",
+      "display_name": "Tucunaré",
       "primary_map_id": "map_02",
       "rarity": "common",
       "size_cm": {
@@ -333,7 +333,7 @@
     },
     {
       "id": "jau",
-      "display_name": "Jau",
+      "display_name": "Jaú",
       "primary_map_id": "map_02",
       "rarity": "common",
       "size_cm": {
@@ -371,7 +371,7 @@
     },
     {
       "id": "aruana",
-      "display_name": "Aruana",
+      "display_name": "Aruanã",
       "primary_map_id": "map_02",
       "rarity": "rare",
       "size_cm": {

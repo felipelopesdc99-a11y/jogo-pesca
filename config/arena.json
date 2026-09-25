@@ -1,8 +1,8 @@
 {
   "config_file": "arena",
   "config_schema_version": 1,
-  "balance_status": "PROVISIONAL",
-  "description": "Arena rules, Honor values and the combat constants used by the server-side battle resolver.",
+  "balance_status": "PROVISÓRIO",
+  "description": "Regras da Arena, valores de Honra e as constantes de combate usadas pelo resolvedor de batalha do servidor.",
   "energy": {
     "max": 24,
     "regeneration_seconds_per_point": 3600,
@@ -19,7 +19,7 @@
     "locked_after_reroll": true,
     "new_set_requires_attack": true,
     "reroll_survives_client_restart": true,
-    "near_top_rank_note": "Near rank #1 the window rounds to the nearest valid candidate set."
+    "near_top_rank_note": "Perto da posição #1, a janela arredonda para o conjunto de candidatos válidos mais próximo."
   },
   "opponent_card_visibility": {
     "show": [
@@ -66,22 +66,22 @@
     "damage_roll": {
       "min": 0.97,
       "max": 1.03,
-      "note": "The only RNG in combat. Stats decide the fight; luck slightly perturbs close fights."
+      "note": "É o único sorteio do combate. Os atributos decidem a luta; a sorte apenas perturba levemente as disputas apertadas."
     },
     "defense_mitigation": {
-      "formula": "damage = attack * damage_roll * (1 - defense / (defense + constant))",
+      "formula": "dano = ataque × sorteio_de_dano × (1 − defesa / (defesa + constante))",
       "constant": 100.0,
       "minimum_damage_ratio_of_attack": 0.1,
-      "note": "Diminishing returns, never flat subtraction. The minimum damage floor makes immunity impossible."
+      "note": "Retornos decrescentes, nunca subtração direta. O piso mínimo de dano torna a imunidade impossível."
     },
     "speed": {
-      "formula": "attack_interval_seconds = base_interval * (reference_speed / speed)",
+      "formula": "intervalo_de_ataque_segundos = intervalo_base × (velocidade_de_referência / velocidade)",
       "base_interval_seconds": 2.0,
       "reference_speed": 100.0,
       "first_attack_uses_same_interval_from_t0": true,
-      "note": "The narrow 88-110 species speed band keeps Speed a secondary axis."
+      "note": "A faixa estreita de velocidade das espécies (88 a 110) mantém a Velocidade como eixo secundário."
     },
-    "offensive_bias_note": "Combat should moderately favour offence to keep battles moving. Target: most battles finish within about 60s at 1x, with no hard timeout.",
+    "offensive_bias_note": "O combate deve favorecer moderadamente o ataque para manter as batalhas andando. Meta: a maioria das batalhas termina em cerca de 60s em 1x, sem tempo limite rígido.",
     "target_battle_duration_seconds": 60,
     "hard_battle_timeout": null,
     "replay_speeds": [
@@ -131,7 +131,7 @@
   },
   "cardume_strength": {
     "visibility": "private_to_owner",
-    "formula": "FishStrengthRaw = attack*2 + defense*1.5 + hp/10 + speed*0.5",
+    "formula": "ForçaBrutaDoPeixe = ataque×2 + defesa×1,5 + vida÷10 + velocidade×0,5",
     "weights": {
       "attack": 2.0,
       "defense": 1.5,
@@ -144,7 +144,7 @@
   },
   "shop": {
     "currency": "honor",
-    "note": "Seed a minimal configurable inventory. Do not implement future item systems just to populate it.",
+    "note": "Cadastrar um estoque mínimo e configurável. Não implementar sistemas de itens futuros só para preencher a loja.",
     "items": []
   }
 }

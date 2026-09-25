@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 
+import { t } from "@/lib/strings";
+
 type NoticeKind = "error" | "warning" | "info";
 
-/** Surfaces a data-source problem plainly instead of letting the page look authoritative. */
+/** Mostra um problema de origem de dados abertamente, em vez de deixar a página parecer confiável. */
 export function Notice({
   kind,
   title,
@@ -24,12 +26,12 @@ export function SourceNotices({ error, warning }: { error: string | null; warnin
   return (
     <>
       {error ? (
-        <Notice kind="error" title="Status could not be read">
+        <Notice kind="error" title={t.notices.errorTitle}>
           {error}
         </Notice>
       ) : null}
       {warning ? (
-        <Notice kind="warning" title="Rendered from the repository file">
+        <Notice kind="warning" title={t.notices.fallbackTitle}>
           {warning}
         </Notice>
       ) : null}

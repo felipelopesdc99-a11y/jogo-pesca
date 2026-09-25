@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 
 import { buildSummary } from "./summary";
+import { t } from "./strings";
 import type {
   BuildInfo,
   GameConfigListing,
@@ -20,7 +21,7 @@ const REQUEST_TIMEOUT_MS = 4000;
 const ROOT_MARKER_FILE = "version.json";
 const MAX_WALK_UP_LEVELS = 8;
 
-/** The console never caches project status: a stale panel is worse than a slow one. */
+/** O painel nunca guarda cache do status: um painel desatualizado é pior que um painel lento. */
 const NO_STORE: RequestInit = { cache: "no-store" };
 
 export function apiBaseUrl(): string {
@@ -28,8 +29,9 @@ export function apiBaseUrl(): string {
 }
 
 /**
- * Locates the repository root so the fallback can read `docs/roadmap.json` directly.
- * Set FISHING_IDLE_REPO_ROOT when the console runs somewhere the walk-up cannot reach it.
+ * Localiza a raiz do repositório para que a leitura alternativa consiga abrir
+ * `docs/roadmap.json` diretamente. Defina FISHING_IDLE_REPO_ROOT quando o painel rodar
+ * em um lugar de onde a busca para cima não alcança a raiz.
  */
 export function repositoryRoot(): string | null {
   const configured = process.env.FISHING_IDLE_REPO_ROOT;
@@ -69,18 +71,19 @@ async function fetchJson<T>(route: string): Promise<T> {
 function describe(error: unknown): string {
   if (error instanceof Error) {
     return error.name === "TimeoutError"
-      ? `the API did not answer within ${REQUEST_TIMEOUT_MS / 1000}s`
+      ? t.errors.apiTimedOut(REQUEST_TIMEOUT_MS / 1000)
       : error.message;
   }
   return String(error);
 }
 
 /**
- * Roadmap state, preferring the backend and falling back to the repository file.
+ * Estado do roadmap, preferindo o backend e recorrendo ao arquivo do repositório.
  *
- * The backend is the normal path because it is also the source every other consumer reads.
- * The fallback exists so the owner can still see project status when the server is down —
- * and the returned `origin` says which one answered, so the panel is never silently stale.
+ * O backend é o caminho normal porque é também a fonte que todos os outros consumidores leem.
+ * A leitura alternativa existe para que o dono ainda veja o status quando o servidor estiver
+ * fora do ar — e o `origin` devolvido diz qual das duas respondeu, para que o painel nunca
+ * fique desatualizado em silêncio.
  */
 export async function loadRoadmap(): Promise<Sourced<RoadmapResponse>> {
   try {
@@ -94,10 +97,7 @@ export async function loadRoadmap(): Promise<Sourced<RoadmapResponse>> {
       return {
         data: null,
         origin: null,
-        error:
-          `The API at ${API_BASE_URL} could not be reached (${apiReason}), and the repository ` +
-          `root could not be located for the fallback. Start the server with ops/scripts/dev-up.sh, ` +
-          `or set FISHING_IDLE_REPO_ROOT.`,
+        error: t.errors.noRepositoryRoot(API_BASE_URL, apiReason),
         warning: null,
       };
     }
@@ -115,25 +115,20 @@ export async function loadRoadmap(): Promise<Sourced<RoadmapResponse>> {
         },
         origin: "repository-file",
         error: null,
-        warning:
-          `The API at ${API_BASE_URL} could not be reached (${apiReason}), so this page was ` +
-          `rendered from docs/roadmap.json directly. Statuses are current; anything that needs ` +
-          `the server (health, build runtime facts, config files) is unavailable.`,
+        warning: t.errors.fallbackUsed(API_BASE_URL, apiReason),
       };
     } catch (fileError) {
       return {
         data: null,
         origin: null,
-        error:
-          `The API at ${API_BASE_URL} could not be reached (${apiReason}) and ${roadmapPath} ` +
-          `could not be read (${describe(fileError)}).`,
+        error: t.errors.bothFailed(API_BASE_URL, apiReason, roadmapPath, describe(fileError)),
         warning: null,
       };
     }
   }
 }
 
-/** Build and version information. Only the server can answer this, so there is no fallback. */
+/** Informações de build e versão. Só o servidor responde isso, então não há leitura alternativa. */
 export async function loadBuildInfo(): Promise<Sourced<BuildInfo>> {
   try {
     const data = await fetchJson<BuildInfo>("/api/dev/version");
@@ -142,13 +137,13 @@ export async function loadBuildInfo(): Promise<Sourced<BuildInfo>> {
     return {
       data: null,
       origin: null,
-      error: `The API at ${API_BASE_URL} could not be reached (${describe(error)}).`,
+      error: t.errors.apiUnreachable(API_BASE_URL, describe(error)),
       warning: null,
     };
   }
 }
 
-/** The /config balance files. Read-only until Milestone 1 delivers validated editing. */
+/** Os arquivos de balanceamento em /config. Somente leitura até o Milestone 1 entregar a edição validada. */
 export async function loadConfigListing(): Promise<Sourced<GameConfigListing>> {
   try {
     const data = await fetchJson<GameConfigListing>("/api/dev/config");
@@ -157,7 +152,7 @@ export async function loadConfigListing(): Promise<Sourced<GameConfigListing>> {
     return {
       data: null,
       origin: null,
-      error: `The API at ${API_BASE_URL} could not be reached (${describe(error)}).`,
+      error: t.errors.apiUnreachable(API_BASE_URL, describe(error)),
       warning: null,
     };
   }

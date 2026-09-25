@@ -1,37 +1,37 @@
 {
   "config_file": "economy",
   "config_schema_version": 1,
-  "balance_status": "PROVISIONAL",
-  "description": "Currencies, NPC sale rules, Shell acquisition, Market and Auction values.",
+  "balance_status": "PROVISÓRIO",
+  "description": "Moedas, regras de venda ao NPC, obtenção de Conchas e os valores do Mercado e do Leilão.",
   "currencies": [
     {
       "id": "coins",
-      "display_name": "Coins",
+      "display_name": "Moedas",
       "is_primary": true,
       "spendable_in_v0_1": true
     },
     {
       "id": "shells",
-      "display_name": "Shells",
+      "display_name": "Conchas",
       "is_primary": false,
       "spendable_in_v0_1": false,
-      "note": "Earnable in V0.1 but intentionally has no spending use yet. Must not be used to upgrade rods or fish."
+      "note": "Ganháveis na V0.1, mas de propósito ainda não têm onde ser gastas. Não podem ser usadas para melhorar varas nem peixes."
     },
     {
       "id": "honor",
-      "display_name": "Honor",
+      "display_name": "Honra",
       "is_primary": false,
       "spendable_in_v0_1": true,
-      "note": "Arena-earned. Spent only in the Arena Shop."
+      "note": "Ganha na Arena. Gasta apenas na Loja da Arena."
     }
   ],
   "npc_fish_sale": {
-    "formula": "round(base_sale_value_coins * rarity.sale_value_multiplier * size.sale_value_influence)",
+    "formula": "arredondar(base_sale_value_coins × multiplicador_de_raridade × influência_do_tamanho)",
     "reimburses_invested_fish_xp": false,
     "minimum_price_coins": 1
   },
   "shells": {
-    "source": "fishing_only_in_v0_1",
+    "source": "apenas_pesca_na_v0_1",
     "base_drop_chance_per_catch": 0.05,
     "amount_per_drop": {
       "min": 1,

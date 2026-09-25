@@ -1,3 +1,4 @@
+import { statusLabel } from "@/lib/strings";
 import { ROADMAP_STATUSES } from "@/lib/types";
 import type { RoadmapStatus } from "@/lib/types";
 
@@ -25,16 +26,10 @@ export function ProgressBar({ percent }: { percent: number }) {
 }
 
 /**
- * A single bar split by status, so the owner sees at a glance how much is done, moving,
- * waiting on them, or untouched — not just one completion number.
+ * Uma barra única dividida por status, para que o dono veja de relance quanto está pronto,
+ * andando, esperando por ele ou intocado — e não apenas um número de conclusão.
  */
-export function StatusBar({
-  counts,
-  total,
-}: {
-  counts: Record<string, number>;
-  total: number;
-}) {
+export function StatusBar({ counts, total }: { counts: Record<string, number>; total: number }) {
   if (total === 0) {
     return <div className="bar" />;
   }
@@ -50,10 +45,7 @@ export function StatusBar({
           <div
             key={status}
             className="bar-segment"
-            style={{
-              width: `${(count / total) * 100}%`,
-              background: SEGMENT_COLORS[status],
-            }}
+            style={{ width: `${(count / total) * 100}%`, background: SEGMENT_COLORS[status] }}
           />
         );
       })}
@@ -63,6 +55,6 @@ export function StatusBar({
 
 function describe(counts: Record<string, number>): string {
   return ROADMAP_STATUSES.filter((status) => (counts[status] ?? 0) > 0)
-    .map((status) => `${status}: ${counts[status]}`)
+    .map((status) => `${statusLabel(status)}: ${counts[status]}`)
     .join("  ·  ");
 }

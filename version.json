@@ -2,14 +2,14 @@
   "project": "Fishing Idle",
   "target_version": "0.1.0",
   "current_milestone": "M0",
-  "convention": "0.<minor>.<patch>-m<milestone>.<build>  —  see docs/VERSIONING.md",
+  "convention": "0.<menor>.<correção>-m<milestone>.<build>  —  veja docs/VERSIONAMENTO.md",
   "components": {
-    "client": "0.1.0-m0.1",
-    "server": "0.1.0-m0.1",
-    "web": "0.1.0-m0.1"
+    "client": "0.1.0-m0.2",
+    "server": "0.1.0-m0.2",
+    "web": "0.1.0-m0.2"
   },
   "build": {
-    "number": 1,
+    "number": 2,
     "channel": "internal-dev",
     "date": "2026-09-25",
     "commit": null
@@ -18,5 +18,5 @@
     "windows": null,
     "steam": null
   },
-  "notes": "Single source of truth for every component version. The server reads this file and serves it at GET /api/dev/version; the Dev Console Build page renders it. Bump build.number on every internal build and the component versions when a milestone closes."
+  "notes": "Fonte única da versão de cada componente. O servidor lê este arquivo e o serve em GET /api/dev/version; a página Build / Versão do painel o exibe. Aumente build.number a cada build interno, e as versões dos componentes quando um milestone fecha."
 }

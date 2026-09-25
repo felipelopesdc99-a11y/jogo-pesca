@@ -1,8 +1,8 @@
 {
   "config_file": "expeditions",
   "config_schema_version": 1,
-  "balance_status": "PROVISIONAL",
-  "description": "Expedition durations, Recommended Strength and reward values.",
+  "balance_status": "PROVISÓRIO",
+  "description": "Durações das expedições, Força Recomendada e valores de recompensa.",
   "rules": {
     "cardume_required": true,
     "works_offline": true,
@@ -27,13 +27,13 @@
   },
   "efficiency": {
     "below_recommended": {
-      "formula": "(strength / recommended) ^ exponent",
+      "formula": "(força / recomendada) ^ expoente",
       "exponent": 0.8,
       "floor": 0.25
     },
     "at_recommended_multiplier": 1.0,
     "above_recommended": {
-      "formula": "1 + slope * (strength / recommended - 1)",
+      "formula": "1 + inclinação × (força / recomendada − 1)",
       "slope": 0.35,
       "cap": 1.5
     }
@@ -41,7 +41,7 @@
   "expeditions": [
     {
       "id": "exp_30m",
-      "display_name": "Short Trip",
+      "display_name": "Saída Rápida",
       "duration_minutes": 30,
       "recommended_strength": 250,
       "reward_coins": 120,
@@ -49,7 +49,7 @@
     },
     {
       "id": "exp_1h",
-      "display_name": "Coastal Run",
+      "display_name": "Volta na Margem",
       "duration_minutes": 60,
       "recommended_strength": 450,
       "reward_coins": 260,
@@ -57,7 +57,7 @@
     },
     {
       "id": "exp_3h",
-      "display_name": "Deep Water Run",
+      "display_name": "Águas Profundas",
       "duration_minutes": 180,
       "recommended_strength": 800,
       "reward_coins": 900,
@@ -65,7 +65,7 @@
     },
     {
       "id": "exp_6h",
-      "display_name": "Long Voyage",
+      "display_name": "Viagem Longa",
       "duration_minutes": 360,
       "recommended_strength": 1400,
       "reward_coins": 2000,

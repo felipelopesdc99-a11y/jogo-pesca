@@ -1,34 +1,34 @@
 {
   "config_file": "rods",
   "config_schema_version": 1,
-  "balance_status": "PROVISIONAL",
-  "description": "Rod definitions and upgrade costs. V0.1 implements Tier 0 (Starter Rod) and Tier 1 (Rod 1) only. The long-term tier ladder is recorded as reference data and intentionally has no rod entries.",
+  "balance_status": "PROVISÓRIO",
+  "description": "Definições das varas e custos de melhoria. A V0.1 implementa apenas o Tier 0 (Vara Inicial) e o Tier 1 (Vara 1). A escada de tiers de longo prazo fica registrada como referência e de propósito não tem nenhuma vara definida.",
   "upgrade_rules": {
     "internal_levels": {
       "min": 1,
       "max": 10
     },
-    "purchase_model": "Pay Coins to buy the next level directly.",
+    "purchase_model": "Pagar Moedas para comprar o próximo nível diretamente.",
     "has_xp_bar": false,
     "has_failure_chance": false,
     "requires_materials": false,
     "uses_shells": false
   },
   "bonus_axes": {
-    "note": "Only fishing-related bonuses exist. Bonuses are modest because small percentages compound over thousands of catches.",
+    "note": "Só existem bônus ligados à pesca. Os bônus são modestos porque percentuais pequenos se acumulam ao longo de milhares de capturas.",
     "rarity_efficiency": {
-      "formula": "effective_weight(rare) = base_weight(rare) * (1 + rarity_efficiency)",
-      "clamp_note": "Scales the rare slice of the existing pool weight. It can never introduce a rarity the map does not list in available_rarities, and a +5% efficiency must not turn a 1% chance into 6%."
+      "formula": "peso_efetivo(raro) = peso_base(raro) × (1 + rarity_efficiency)",
+      "clamp_note": "Escala a fatia rara do peso já existente no pool. Nunca pode introduzir uma raridade que o mapa não lista em available_rarities, e uma eficiência de +5% não pode transformar uma chance de 1% em 6%."
     },
     "size_quality": {
-      "formula": "draw_weight(large) and draw_weight(exceptional) are multiplied by (1 + size_quality); the remaining weight is renormalised."
+      "formula": "draw_weight(grande) e draw_weight(excepcional) são multiplicados por (1 + size_quality); o peso restante é renormalizado."
     },
     "shell_yield": {
-      "formula": "shell_drop_chance = base_chance * (1 + shell_yield)"
+      "formula": "chance_de_concha = chance_base × (1 + shell_yield)"
     }
   },
   "tier_ladder_reference": {
-    "note": "Design ladder from GDD section 19. Rods 2-5 are out of V0.1 scope and intentionally not defined below.",
+    "note": "Escada de progressão da seção 19 do GDD. As Varas 2 a 5 estão fora do escopo da V0.1 e de propósito não são definidas abaixo.",
     "purchase_unlock_fisher_level": {
       "rod_01": 10,
       "rod_02": 30,
@@ -40,7 +40,7 @@
   "rods": [
     {
       "id": "rod_00_starter",
-      "display_name": "Starter Rod",
+      "display_name": "Vara Inicial",
       "tier": 0,
       "implemented_in_v0_1": true,
       "acquisition": {
@@ -63,7 +63,7 @@
     },
     {
       "id": "rod_01",
-      "display_name": "Rod 1",
+      "display_name": "Vara 1",
       "tier": 1,
       "implemented_in_v0_1": true,
       "acquisition": {
@@ -78,7 +78,7 @@
       ],
       "generates_shells": true,
       "bonuses_per_level": {
-        "note": "Values are the total bonus at that internal level, not a per-level increment.",
+        "note": "Os valores são o bônus total naquele nível interno, não um acréscimo por nível.",
         "rarity_efficiency": [
           0.0,
           0.02,
@@ -157,10 +157,10 @@
       "npc_resale": {
         "base_value_ratio": 0.4,
         "upgrade_investment_ratio": 0.25,
-        "note": "NPC resale returns 40% of the purchase cost plus 25% of the total Coins spent on internal upgrades."
+        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
       },
       "tradable_on_market": true,
-      "market_note": "A traded rod retains tier, internal level and bonuses."
+      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus."
     }
   ]
 }

@@ -69,24 +69,24 @@ namespace FishingIdle.Client.Diagnostics
 
             var previous = GUI.contentColor;
             GUI.contentColor = ColorFor(state.Status);
-            GUILayout.Label($"Backend: {Describe(state.Status)}", _titleStyle);
+            GUILayout.Label($"Servidor: {Describe(state.Status)}", _titleStyle);
             GUI.contentColor = previous;
 
             GUILayout.Label(state.Message, _bodyStyle);
             GUILayout.Space(4);
-            GUILayout.Label($"Endpoint   {_probe.BaseUrl}", _bodyStyle);
+            GUILayout.Label($"Endereço     {_probe.BaseUrl}", _bodyStyle);
 
             if (!string.IsNullOrEmpty(state.ServerVersion))
             {
                 GUILayout.Label(
-                    $"Server     {state.ServerVersion}  ({state.Environment})",
+                    $"Servidor     {state.ServerVersion}  ({state.Environment})",
                     _bodyStyle);
             }
 
             if (state.LastProbeAtUtc.HasValue)
             {
                 GUILayout.Label(
-                    $"Last probe {state.LastProbeAtUtc.Value:HH:mm:ss} UTC  ·  " +
+                    $"Última checagem  {state.LastProbeAtUtc.Value:HH:mm:ss} UTC  ·  " +
                     $"{state.LatencySeconds * 1000f:0} ms",
                     _bodyStyle);
             }
@@ -100,7 +100,7 @@ namespace FishingIdle.Client.Diagnostics
             }
 
             GUILayout.Space(4);
-            GUILayout.Label($"F1 hides this panel  ·  development builds only", _bodyStyle);
+            GUILayout.Label("F1 esconde este painel  ·  apenas em builds de desenvolvimento", _bodyStyle);
 
             GUILayout.EndVertical();
             GUILayout.EndArea();
@@ -110,10 +110,10 @@ namespace FishingIdle.Client.Diagnostics
         {
             switch (status)
             {
-                case ConnectionStatus.Healthy: return "connected";
-                case ConnectionStatus.Degraded: return "degraded";
-                case ConnectionStatus.Unreachable: return "unreachable";
-                default: return "checking…";
+                case ConnectionStatus.Healthy: return "conectado";
+                case ConnectionStatus.Degraded: return "degradado";
+                case ConnectionStatus.Unreachable: return "inacessível";
+                default: return "verificando…";
             }
         }
 

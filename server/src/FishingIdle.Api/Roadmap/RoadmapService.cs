@@ -55,14 +55,14 @@ public sealed class RoadmapService
         if (path is null)
         {
             return RoadmapLoadResult.Fail(
-                "The repository root could not be resolved, so docs/roadmap.json cannot be read. "
-                + "Set Repository:RootPath (FISHINGIDLE_Repository__RootPath).");
+                "A raiz do repositório não pôde ser localizada, então docs/roadmap.json não pode ser lido. "
+                + "Defina Repository:RootPath (variável FISHINGIDLE_Repository__RootPath).");
         }
 
         var file = new FileInfo(path);
         if (!file.Exists)
         {
-            return RoadmapLoadResult.Fail($"Roadmap file not found at {path}.");
+            return RoadmapLoadResult.Fail($"Arquivo do roadmap não encontrado em {path}.");
         }
 
         lock (_gate)
@@ -93,17 +93,17 @@ public sealed class RoadmapService
         catch (JsonException ex)
         {
             _logger.LogError(ex, "Roadmap file {Path} is not valid JSON for the expected shape.", file.FullName);
-            return RoadmapLoadResult.Fail($"Roadmap file is not valid: {ex.Message}");
+            return RoadmapLoadResult.Fail($"O arquivo do roadmap não é válido: {ex.Message}");
         }
         catch (IOException ex)
         {
             _logger.LogError(ex, "Roadmap file {Path} could not be read.", file.FullName);
-            return RoadmapLoadResult.Fail($"Roadmap file could not be read: {ex.Message}");
+            return RoadmapLoadResult.Fail($"O arquivo do roadmap não pôde ser lido: {ex.Message}");
         }
 
         if (document is null || document.Milestones.Count == 0)
         {
-            return RoadmapLoadResult.Fail("Roadmap file parsed to an empty document.");
+            return RoadmapLoadResult.Fail("O arquivo do roadmap foi lido, mas está vazio.");
         }
 
         if (Validate(document) is { } validationError)
@@ -138,13 +138,13 @@ public sealed class RoadmapService
             {
                 if (!RoadmapStatus.All.Contains(task.Status))
                 {
-                    return $"Task {task.Id} has unknown status '{task.Status}'. "
-                        + $"Allowed: {string.Join(", ", RoadmapStatus.All)}.";
+                    return $"A tarefa {task.Id} tem o status desconhecido '{task.Status}'. "
+                        + $"Valores permitidos: {string.Join(", ", RoadmapStatus.All)}.";
                 }
 
                 if (!ids.Add(task.Id))
                 {
-                    return $"Task id {task.Id} appears more than once.";
+                    return $"O identificador de tarefa {task.Id} aparece mais de uma vez.";
                 }
             }
         }
@@ -157,7 +157,7 @@ public sealed class RoadmapService
                 {
                     if (!ids.Contains(dependency))
                     {
-                        return $"Task {task.Id} depends on unknown task {dependency}.";
+                        return $"A tarefa {task.Id} depende da tarefa inexistente {dependency}.";
                     }
                 }
             }
@@ -165,7 +165,7 @@ public sealed class RoadmapService
 
         if (document.Milestones.All(m => m.Id != document.CurrentMilestone))
         {
-            return $"current_milestone '{document.CurrentMilestone}' does not match any milestone id.";
+            return $"current_milestone '{document.CurrentMilestone}' não corresponde a nenhum milestone.";
         }
 
         return null;

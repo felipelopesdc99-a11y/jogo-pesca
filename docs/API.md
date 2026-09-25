@@ -1,26 +1,27 @@
 # API
 
-Base URL in local development: `http://localhost:5080`.
+Endereço base em desenvolvimento local: `http://localhost:5080`.
 
-Wire format is `snake_case`. Timestamps are UTC ISO 8601. Errors use
+O formato na rede é `snake_case`. Os carimbos de tempo são UTC em ISO 8601. Os erros usam
 `application/problem+json`.
 
-## The rule this API is built around
+## A regra em torno da qual esta API foi construída
 
-> **Client = intent + presentation. Server = truth + validation + RNG + persistence.**
+> **Cliente = intenção + apresentação. Servidor = verdade + validação + sorteio + persistência.**
 
-The client never states an outcome. It says what the player wants to do and reads what the server
-decided. Milestone 0 has no gameplay endpoints yet, so this file documents what exists and the
-conventions every later endpoint follows.
+O cliente nunca declara um resultado. Ele diz o que o jogador quer fazer e lê o que o servidor
+decidiu. O Milestone 0 ainda não tem endpoints de jogo, então este arquivo documenta o que existe
+hoje e as convenções que todo endpoint futuro vai seguir.
 
 ---
 
-## Health
+## Saúde
 
 ### `GET /health`
 
-API status with a per-dependency breakdown. **Always HTTP 200** — the body carries the verdict, so a
-client can tell which dependency failed rather than only seeing a transport error.
+Estado da API com detalhamento por dependência. **Sempre HTTP 200** — o corpo carrega o veredito,
+para que um cliente consiga saber qual dependência falhou em vez de ver apenas um erro de
+transporte.
 
 ```json
 {
@@ -35,12 +36,13 @@ client can tell which dependency failed rather than only seeing a transport erro
 }
 ```
 
-`status` is `healthy` when every dependency is healthy, and `degraded` when the API is serving but a
-dependency is not. `detail` names the cause in plain words and never contains credentials.
+`status` é `healthy` quando todas as dependências estão saudáveis, e `degraded` quando a API está
+servindo mas alguma dependência não está. O campo `detail` nomeia a causa em português claro e nunca
+contém credenciais.
 
 ### `GET /health/live`
 
-Liveness only — touches no dependency.
+Só sinal de vida — não toca em nenhuma dependência.
 
 ```json
 {
@@ -51,20 +53,21 @@ Liveness only — touches no dependency.
 }
 ```
 
-**Why both.** The Unity diagnostic overlay has three states to show, not two: *unreachable* (nothing
-answers), *degraded* (`/health/live` answers, `/health` reports the database down), and *connected*.
+**Por que os dois.** O overlay de diagnóstico do Unity tem três estados para mostrar, não dois:
+*inacessível* (nada responde), *degradado* (`/health/live` responde e `/health` reporta o banco
+fora) e *conectado*.
 
 ---
 
-## Development Console endpoints
+## Endpoints do Painel de Desenvolvimento
 
-> **Unauthenticated in Milestone 0.** These are admin surfaces. The stack binds to localhost and must
-> not be exposed publicly until authentication and admin role separation land (`M1-T01`, `M1-T08`).
-> See `docs/SECURITY.md`.
+> **Sem autenticação no Milestone 0.** São telas administrativas. O ambiente sobe apenas em
+> localhost e não pode ser exposto publicamente até a autenticação e a separação de papéis chegarem
+> (`M1-T01`, `M1-T08`). Veja `docs/SEGURANCA.md`.
 
 ### `GET /api/dev/roadmap`
 
-The validated roadmap plus the summary the Dashboard renders.
+O roadmap validado mais o resumo que a Visão geral exibe.
 
 ```json
 {
@@ -72,11 +75,11 @@ The validated roadmap plus the summary the Dashboard renders.
     "project": "Fishing Idle",
     "target_version": "0.1.0",
     "current_milestone": "M0",
-    "current_milestone_title": "Repository / workflow foundation",
+    "current_milestone_title": "Fundação do repositório e do fluxo de trabalho",
     "total_tasks": 126,
     "done_tasks": 13,
     "completion_percent": 10.3,
-    "status_counts": { "TODO": 112, "IN_PROGRESS": 0, "DONE": 13, "BLOCKED": 0, "NEEDS_OWNER_DECISION": 1 },
+    "status_counts": { "TODO": 112, "IN_PROGRESS": 0, "DONE": 13, "BLOCKED": 1, "NEEDS_OWNER_DECISION": 0 },
     "milestones": [ { "milestone_id": "M0", "done_tasks": 13, "total_tasks": 14, "completion_percent": 92.9, "status_counts": {} } ],
     "in_progress": [],
     "recently_completed": [ { "milestone_id": "M0", "milestone_title": "…", "task": {} } ],
@@ -90,88 +93,96 @@ The validated roadmap plus the summary the Dashboard renders.
 }
 ```
 
-Notes on the summary, so the numbers are not guessed at:
+Sobre o resumo, para que os números não precisem ser adivinhados:
 
-- `completion_percent` is `done_tasks / total_tasks` over **every** task in Milestones 0–12, rounded
-  to one decimal.
-- `next_up` is at most 5 `TODO` tasks, **ordered so tasks whose dependencies are all `DONE` come
-  first** — that is, what can actually be started now.
-- `recently_completed` is at most 5 `DONE` tasks, newest `updated_at` first.
-- `needs_attention` is every `BLOCKED` and `NEEDS_OWNER_DECISION` task, in roadmap order.
-- `status_counts` always includes all five statuses, including zeros, so a legend stays stable.
+- `completion_percent` é `done_tasks / total_tasks` sobre **todas** as tarefas dos Milestones 0 a 12,
+  arredondado para uma casa decimal.
+- `next_up` traz no máximo 5 tarefas `TODO`, **ordenadas de modo que as tarefas cujas dependências
+  já estão `DONE` venham primeiro** — ou seja, o que realmente pode ser começado agora.
+- `recently_completed` traz no máximo 5 tarefas `DONE`, da `updated_at` mais recente para a mais
+  antiga.
+- `needs_attention` traz todas as tarefas `BLOCKED` e `NEEDS_OWNER_DECISION`, na ordem do roadmap.
+- `status_counts` sempre inclui os cinco status, inclusive os zerados, para que a legenda do painel
+  não mude de forma.
 
-**503** when the roadmap cannot be read or fails validation — an unknown status, a duplicate task
-id, a dependency pointing nowhere, or a `current_milestone` that matches no milestone. The
-`detail` says which. Rendering an invalid roadmap as if it were true would be worse than saying so.
+**503** quando o roadmap não pode ser lido ou falha na validação — status desconhecido, id de tarefa
+duplicado, dependência apontando para o nada, ou `current_milestone` que não corresponde a nenhum
+milestone. O campo `detail` diz qual foi o caso. Exibir um roadmap inválido como se fosse verdade
+seria pior do que admitir a falha.
 
-The response is cached only until the file's timestamp changes, so editing the roadmap as part of a
-change shows up without restarting the server.
+A resposta fica em cache apenas até o arquivo mudar de data de modificação, então editar o roadmap
+como parte de uma mudança aparece sem precisar reiniciar o servidor.
 
 ### `GET /api/dev/version`
 
-Component versions from `version.json`, plus what only the running process knows: `environment`,
-`server_time_utc`, `process_started_utc`, `uptime_seconds`, `dotnet_version`. The file's own keys are
-passed through verbatim so the console needs no second mapping layer.
+As versões dos componentes vindas de `version.json`, mais o que só o processo em execução sabe:
+`environment`, `server_time_utc`, `process_started_utc`, `uptime_seconds`, `dotnet_version`. As
+chaves do próprio arquivo são repassadas como estão, para que o painel não precise de uma segunda
+camada de mapeamento que poderia divergir.
 
-When the file cannot be read, `version_file_available` is `false` and `version_file_error` says why.
+Quando o arquivo não pode ser lido, `version_file_available` vem `false` e `version_file_error` diz
+o motivo.
 
 ### `GET /api/dev/config`
 
-Lists the `/config` balance files with `balance_status`, `schema_version`, `description`, size and
-last-modified time. `editable` is `false` and `editing_note` says why: validated editing, config
-versioning and the audit trail arrive in `M1-T06` to `M1-T08`.
+Lista os arquivos de balanceamento de `/config` com `balance_status`, `schema_version`,
+`description`, tamanho e data da última modificação. O campo `editable` é `false` e `editing_note`
+explica por quê: a edição validada, o versionamento de configuração e a auditoria chegam nas tarefas
+`M1-T06` a `M1-T08`.
 
 ### `GET /api/dev/config/{fileName}`
 
-The raw contents of one balance file. Only a bare `*.json` file name is accepted, so a crafted name
-cannot escape the `/config` directory. **404** for anything else.
+O conteúdo bruto de um arquivo de balanceamento. Só aceita um nome simples terminado em `.json`,
+para que um nome forjado não consiga escapar da pasta `/config`. **404** para qualquer outra coisa.
 
 ---
 
-## Conventions every later endpoint follows
+## Convenções que todo endpoint futuro segue
 
-These are the rules the gameplay API is committed to, so they are stated before there is any
-gameplay to apply them to.
+Estas são as regras com que a API de jogo se compromete, declaradas antes de existir jogo a que
+aplicá-las.
 
-### Authentication and authorization
+### Autenticação e autorização
 
-Every gameplay request is authenticated. Every request touching an entity checks ownership before
-acting. Admin endpoints require an admin role, separate from a player identity.
+Toda requisição de jogo é autenticada. Toda requisição que toca uma entidade verifica a posse antes
+de agir. Endpoints administrativos exigem um papel de administrador, separado da identidade de
+jogador.
 
-### The server owns time
+### O servidor é dono do tempo
 
-No request body may contain a client timestamp that affects an outcome. Fishing cycles, Energy
-regeneration, offline accumulation, expedition completion and auction expiry are all derived from
-server timestamps.
+Nenhum corpo de requisição pode conter um carimbo de tempo do cliente que afete um resultado. Ciclos
+de pesca, regeneração de Energia, acúmulo offline, conclusão de expedição e expiração de leilão são
+todos derivados de carimbos de tempo do servidor.
 
-### Idempotency on economic mutations
+### Idempotência nas mutações econômicas
 
-Any request that moves Coins, Shells, Honor, XP, fish, listings, bids or rewards carries an
-idempotency key. A repeated request returns the original result instead of applying the change twice.
-This covers reconnects and retries, which are normal, not exceptional.
+Toda requisição que movimenta Moedas, Conchas, Honra, XP, peixes, anúncios, lances ou recompensas
+carrega uma chave de idempotência. Uma requisição repetida devolve o resultado original em vez de
+aplicar a mudança duas vezes. Isso cobre reconexões e reenvios, que são normais, não excepcionais.
 
 ```http
 POST /api/fishing/sync
 Idempotency-Key: 9f1c8a5e-3b42-4a7d-8f10-2c6b9e4d1a03
 ```
 
-### Concurrency
+### Concorrência
 
-Anything where two requests could race — selling and feeding the same fish, two bids on one auction,
-a rank swap, an auction closing while a bid arrives — runs in a database transaction with row or
-version locking. Exactly one mutation wins and the other gets a clear rejection.
+Tudo em que duas requisições poderiam competir — vender e alimentar o mesmo peixe, dois lances no
+mesmo leilão, uma troca de posições, um leilão fechando enquanto chega um lance — roda dentro de uma
+transação de banco com trava de linha ou de versão. Exatamente uma mutação vence e a outra recebe
+uma rejeição clara.
 
-### Rate limiting
+### Limite de requisições
 
-Applied per account. A modified client sending a thousand fishing syncs a second gains nothing from
-the cycle cursor, and is throttled anyway.
+Aplicado por conta. Um cliente modificado enviando mil sincronizações de pesca por segundo não ganha
+nada por causa do cursor de ciclo, e ainda assim é limitado.
 
-### Audit
+### Auditoria
 
-Economy, market and admin operations write immutable audit records. Audit rows are never updated or
-deleted by application code.
+Operações de economia, mercado e administração gravam registros imutáveis de auditoria. Linhas de
+auditoria nunca são atualizadas nem apagadas pelo código da aplicação.
 
-### Errors
+### Erros
 
-`application/problem+json` with a `title` a person can read and a `detail` that says what to do.
-Error bodies never contain credentials, connection strings or tokens.
+`application/problem+json` com um `title` que uma pessoa consegue ler e um `detail` que diz o que
+fazer. Corpos de erro nunca contêm credenciais, strings de conexão ou tokens.

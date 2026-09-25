@@ -25,7 +25,7 @@ public static class DevEndpoints
                 return result.Succeeded
                     ? Results.Ok(result.Response)
                     : Results.Problem(
-                        title: "Roadmap unavailable",
+                        title: "Roadmap indisponível",
                         detail: result.Error,
                         statusCode: StatusCodes.Status503ServiceUnavailable);
             })
@@ -46,8 +46,8 @@ public static class DevEndpoints
 
                 return contents is null
                     ? Results.Problem(
-                        title: "Config file not found",
-                        detail: $"No readable config file named '{fileName}' exists under /config.",
+                        title: "Arquivo de configuração não encontrado",
+                        detail: $"Não existe um arquivo de configuração legível chamado '{fileName}' em /config.",
                         statusCode: StatusCodes.Status404NotFound)
                     : Results.Ok(contents);
             })

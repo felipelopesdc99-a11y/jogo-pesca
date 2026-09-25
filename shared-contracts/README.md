@@ -1,31 +1,33 @@
 # /shared-contracts
 
-Definitions that the server, the Unity client and the web surfaces must agree on.
+Definições com que o servidor, o cliente Unity e as telas web precisam concordar.
 
-## Why this exists
+## Por que isto existe
 
-The server is authoritative, so every contract is written from the server's side and the client
-mirrors it. Keeping the shapes here — rather than only inside each project — makes a mismatch a
-review question instead of a runtime surprise.
+O servidor é autoritativo, então todo contrato é escrito do lado dele e o cliente o espelha. Manter
+os formatos aqui — em vez de apenas dentro de cada projeto — transforma uma divergência em uma
+pergunta de revisão, e não em uma surpresa em tempo de execução.
 
-## What is here now
+## O que existe hoje
 
-| File | Describes |
+| Arquivo | Descreve |
 |---|---|
-| `health.schema.json` | The `/health` and `/health/live` payloads |
+| `health.schema.json` | As respostas de `/health` e `/health/live` |
 
-## Conventions
+## Convenções
 
-- **Wire format is `snake_case`**, matching the repository's JSON files. The C# records use
-  PascalCase properties and the API applies a snake_case naming policy; the Unity DTOs and the
-  Development Console's TypeScript types use the wire spelling directly. One field, one name.
-- **Timestamps are UTC, ISO 8601.** The client never sends a time that matters.
-- **Money, XP, levels and counts are integers.** Ratios and multipliers are decimals and live in
-  `/config`, never in a contract.
+- **O formato na rede é `snake_case`**, igual aos arquivos JSON do repositório. Os registros em C#
+  usam propriedades em PascalCase e a API aplica uma política de conversão; os DTOs do Unity e os
+  tipos TypeScript do painel usam a grafia da rede diretamente. Um campo, um nome.
+- **Carimbos de tempo são UTC, ISO 8601.** O cliente nunca envia uma hora que importe.
+- **Dinheiro, XP, níveis e contagens são inteiros.** Proporções e multiplicadores são decimais e
+  moram em `/config`, nunca em um contrato.
+- **Os textos dos contratos ficam em inglês**, porque descrevem campos técnicos lidos por quem
+  programa. O que o usuário lê na tela está em PT-BR. Veja `docs/DECISOES.md`, TD-014.
 
-## What comes later
+## O que vem depois
 
-- Config file schemas, once configuration validation lands (`M1-T06`). The console must not be able
-  to deploy an invalid balance file.
-- Gameplay request/response contracts, each added by the milestone that owns the feature. See
-  `docs/roadmap.json`.
+- Esquemas dos arquivos de configuração, quando a validação de configuração chegar (`M1-T06`). O
+  painel não pode ser capaz de publicar um balanceamento inválido.
+- Contratos de requisição e resposta do jogo, cada um adicionado pelo milestone dono da
+  funcionalidade. Veja `docs/roadmap.json`.

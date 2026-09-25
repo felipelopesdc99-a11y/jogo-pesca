@@ -28,7 +28,8 @@ public sealed record GameConfigListing(
 public sealed class GameConfigFileService
 {
     private const string EditingNote =
-        "Read-only in Milestone 0. Validated editing, config versioning and the admin audit trail arrive in Milestone 1.";
+        "A edição validada, o versionamento de configuração e o registro de auditoria chegam no Milestone 1 "
+        + "(tarefas M1-T06 a M1-T08).";
 
     private readonly RepositoryRootLocator _locator;
     private readonly ILogger<GameConfigFileService> _logger;

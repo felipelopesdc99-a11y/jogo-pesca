@@ -91,7 +91,7 @@ namespace FishingIdle.Client.Core
                 catch (JsonException exception)
                 {
                     onComplete?.Invoke(ApiResult<T>.Fail(
-                        $"Response from {route} could not be parsed: {exception.Message}",
+                        $"A resposta de {route} não pôde ser interpretada: {exception.Message}",
                         request.responseCode,
                         latency));
                     yield break;
@@ -100,7 +100,7 @@ namespace FishingIdle.Client.Core
                 if (parsed == null)
                 {
                     onComplete?.Invoke(ApiResult<T>.Fail(
-                        $"Response from {route} was empty.",
+                        $"A resposta de {route} veio vazia.",
                         request.responseCode,
                         latency));
                     yield break;
@@ -119,13 +119,13 @@ namespace FishingIdle.Client.Core
             switch (request.result)
             {
                 case UnityWebRequest.Result.ConnectionError:
-                    return $"Could not reach {url}. Is the server running? (ops/scripts/dev-up.sh)";
+                    return $"Não foi possível alcançar {url}. O servidor está rodando? (ops/scripts/dev-up.sh)";
                 case UnityWebRequest.Result.ProtocolError:
-                    return $"{url} answered HTTP {request.responseCode}.";
+                    return $"{url} respondeu HTTP {request.responseCode}.";
                 case UnityWebRequest.Result.DataProcessingError:
-                    return $"The response from {url} could not be processed: {request.error}";
+                    return $"A resposta de {url} não pôde ser processada: {request.error}";
                 default:
-                    return $"Request to {url} failed: {request.error}";
+                    return $"A requisição para {url} falhou: {request.error}";
             }
         }
     }

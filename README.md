@@ -1,87 +1,104 @@
 # Fishing Idle — V0.1
 
-A relaxing 2.5D idle collectible fishing game with asynchronous PvP. Unity 6.3 LTS client,
-server-authoritative ASP.NET Core backend, PostgreSQL.
+Um jogo idle 2.5D relaxante de pesca e coleção, com PvP assíncrono. Cliente em Unity 6.3 LTS,
+backend autoritativo em ASP.NET Core, banco PostgreSQL.
 
-**Current state: Milestone 0 complete — the foundation, not the game.** There is no gameplay yet.
-What exists is a running server, a database with migrations, a Unity client that proves it can reach
-the server, and a Development Console where you can see exactly what is done and what is next.
+**Situação atual: Milestone 0 concluído — a fundação, não o jogo.** Ainda não existe jogabilidade.
+O que existe é um servidor funcionando, um banco com migrations, um cliente Unity que prova que
+consegue falar com o servidor, e um Painel de Desenvolvimento onde você vê exatamente o que está
+pronto e o que vem a seguir.
 
-Progress: **`docs/roadmap.json`** is the source of truth, and the Development Console renders it.
+Progresso: **`docs/roadmap.json`** é a fonte de verdade, e o painel o exibe.
 
 ---
 
-## Start here
+## Comece por aqui
 
-| If you want to… | Read |
+| Se você quer… | Leia |
 |---|---|
-| See what is done and what is next | The Development Console, or `docs/ROADMAP.md` |
-| Understand the game design | `docs/GDD_V0_1.md` — the source of truth for V0.1 |
-| Know why something was built a certain way | `docs/DECISIONS.md` |
-| Change a balance number | `config/README.md` |
-| Call the API | `docs/API.md` |
-| Understand the anti-cheat model | `docs/SECURITY.md` |
-| Know what version anything is | `docs/VERSIONING.md` |
+| Ver o que está pronto e o que vem a seguir | O painel, ou `docs/ROADMAP.md` |
+| Entender o design do jogo | `docs/GDD_V0_1.md` — a fonte de verdade da V0.1 (original em inglês) |
+| Saber por que algo foi feito de determinado jeito | `docs/DECISOES.md` |
+| Mudar um número de balanceamento | `config/README.md` |
+| Chamar a API | `docs/API.md` |
+| Entender o modelo anti-trapaça | `docs/SEGURANCA.md` |
+| Saber qual é a versão de cada coisa | `docs/VERSIONAMENTO.md` |
 
 ---
 
-## Running it locally
+## Rodando na sua máquina
 
-### What you need
+### O que você precisa
 
-| Tool | Why | Notes |
+| Ferramenta | Para quê | Observação |
 |---|---|---|
-| **Docker Desktop** | Runs PostgreSQL, the API and the console | The only requirement for the backend |
-| **.NET 10 SDK** | Applies database migrations from your machine | [Download](https://dotnet.microsoft.com/download/dotnet/10.0) |
-| **Unity Hub + Unity 6.3 LTS** | Opens the game client | Only needed for the client |
-| **Node.js 22+** | Running the console outside Docker | Optional |
+| **Docker Desktop** | Roda o PostgreSQL, a API e o painel | É o único requisito do backend |
+| **SDK do .NET 10** | Aplica as migrations do banco a partir da sua máquina | [Baixar](https://dotnet.microsoft.com/download/dotnet/10.0) |
+| **Unity Hub + Unity 6.3 LTS** | Abre o cliente do jogo | Só necessário para o cliente |
+| **Node.js 22+** | Rodar o painel fora do Docker | Opcional |
 
-### One command
+### Um comando
 
 ```bash
-cp .env.example .env          # first time only
+cp .env.example .env          # só na primeira vez
 ./ops/scripts/dev-up.sh
 ```
 
-That builds and starts everything, waits for PostgreSQL to report healthy, and applies the database
-migrations. When it finishes:
+Isso constrói e sobe tudo, espera o PostgreSQL ficar saudável e aplica as migrations do banco.
+Ao terminar:
 
-| Service | URL |
+| Serviço | Endereço |
 |---|---|
-| **Development Console** | <http://localhost:3000> |
-| API health | <http://localhost:5080/health> |
+| **Painel de Desenvolvimento** | <http://localhost:3000> |
+| Saúde da API | <http://localhost:5080/health> |
 | PostgreSQL | `localhost:5432` |
 
-Stop it with `./ops/scripts/dev-down.sh` (add `--purge` to also delete the database).
+Para parar: `./ops/scripts/dev-down.sh` (com `--purge` também apaga o banco).
 
-### Then open the game client
+### Só o painel, sem Docker
 
-1. Open Unity Hub, **Add project**, pick the `client-unity` folder.
-2. Unity will offer to upgrade the project to your installed 6.3 patch version — accept it.
-3. Press **Play**.
+Se você quer apenas ver o andamento do projeto, isso basta — e não precisa de Docker, .NET nem
+banco de dados:
 
-A panel appears in the top-left showing one of:
+```bash
+cd web/dev-console
+npm install
+npm run dev
+```
 
-- **connected** — the server answered and its database is healthy;
-- **degraded** — the server answered but it cannot reach PostgreSQL;
-- **unreachable** — nothing is listening at the configured URL.
+Abra <http://localhost:3000>. Uma faixa amarela avisa que o servidor não está no ar e que a página
+foi montada lendo `docs/roadmap.json` direto do repositório. **Isso não é erro**: as páginas de
+Visão geral e Roadmap ficam completas; as de Configuração e Build dependem do servidor.
 
-Press **F1** to hide it. It is compiled out of release builds. See `client-unity/README.md`.
+### Depois, abra o cliente do jogo
+
+1. Abra o Unity Hub, **Adicionar projeto**, escolha a pasta `client-unity`.
+2. O Unity vai oferecer atualizar o projeto para a sua versão 6.3 instalada — aceite.
+3. Aperte **Play**.
+
+Um painel aparece no canto superior esquerdo mostrando um destes estados:
+
+- **conectado** — o servidor respondeu e o banco dele está saudável;
+- **degradado** — o servidor respondeu, mas ele não alcança o PostgreSQL;
+- **inacessível** — nada está escutando no endereço configurado.
+
+Aperte **F1** para esconder. Ele é removido dos builds de lançamento.
+Veja `client-unity/README.md`.
 
 ---
 
-## Running the pieces separately
+## Rodando as partes separadamente
 
-Useful while developing one part.
+Útil enquanto se desenvolve uma parte só.
 
-### Just the database
+### Só o banco
 
 ```bash
 docker compose -f ops/docker-compose.yml up -d postgres
 ./ops/scripts/migrate.sh
 ```
 
-### The API, from source
+### A API, a partir do código
 
 ```bash
 cd server
@@ -89,86 +106,84 @@ dotnet run --project src/FishingIdle.Api
 # http://localhost:5080/health
 ```
 
-It reads `ConnectionStrings:Postgres` from `appsettings.Development.json`, which points at
-`localhost:5432` — so start the database container first.
-
-### The Development Console, from source
-
-```bash
-cd web/dev-console
-npm install
-FISHING_IDLE_API_BASE_URL=http://localhost:5080 npm run dev
-# http://localhost:3000
-```
-
-The console prefers the API and falls back to reading `docs/roadmap.json` directly if the server is
-down, so you can always see project status. It tells you at the bottom of the page which source
-answered.
+Ela lê `ConnectionStrings:Postgres` de `appsettings.Development.json`, que aponta para
+`localhost:5432` — então suba o container do banco antes.
 
 ---
 
-## Before you commit
+## Antes de versionar uma mudança
 
 ```bash
 ./ops/scripts/verify.sh
 ```
 
-Builds and tests the server, then typechecks and builds the console.
+Compila e testa o servidor, depois faz o typecheck e o build do painel.
 
-### Database changes
+### Mudanças no banco
 
 ```bash
-./ops/scripts/new-migration.sh AddPlayerProfile   # create it
-./ops/scripts/migrate.sh                          # apply it
+./ops/scripts/new-migration.sh AddPlayerProfile   # criar
+./ops/scripts/migrate.sh                          # aplicar
 ```
 
-Migrations are never applied automatically on server startup — see `docs/DECISIONS.md` TD-002.
+As migrations nunca são aplicadas sozinhas quando o servidor sobe — veja `docs/DECISOES.md`, TD-002.
 
 ---
 
-## Repository layout
+## Estrutura do repositório
 
 ```
 fishing-idle/
-├── client-unity/        Unity 6.3 LTS client. Presentation and player intent only.
-├── server/              ASP.NET Core API. The authority on everything that matters.
+├── client-unity/        Cliente Unity 6.3 LTS. Só apresentação e intenção do jogador.
+├── server/              API ASP.NET Core. A autoridade sobre tudo que importa.
 │   ├── src/FishingIdle.Api/
 │   └── tests/FishingIdle.Api.Tests/
 ├── web/
-│   ├── dev-console/     Private Development Console (Next.js). This panel.
-│   └── public-site/     Player-facing website. Milestone 11.
-├── shared-contracts/    Shapes the server, client and web must agree on.
-├── config/              Every balance value. Never hardcoded in gameplay code.
-├── docs/                GDD, decisions, roadmap, API, security, versioning, changelog.
-├── ops/                 docker-compose.yml and the scripts above.
-├── version.json         Single source of truth for every component version.
-└── .env.example         Local environment template. Copy to .env.
+│   ├── dev-console/     Painel de Desenvolvimento privado (Next.js). Este painel.
+│   └── public-site/     Site voltado ao jogador. Milestone 11.
+├── shared-contracts/    Formatos que servidor, cliente e web precisam combinar.
+├── config/              Todos os valores de balanceamento. Nunca dentro do código.
+├── docs/                GDD, decisões, roadmap, API, segurança, versionamento, histórico.
+├── ops/                 docker-compose.yml e os scripts acima.
+├── version.json         Fonte única da versão de cada componente.
+└── .env.example         Modelo do ambiente local. Copie para .env.
 ```
 
 ---
 
-## How this project is built
+## Como este projeto é construído
 
-Four rules that explain most of the structure:
+Quatro regras que explicam a maior parte da estrutura:
 
-1. **The server decides; the client shows.** Anything with economic, progression or competitive value
-   is computed, validated and persisted server-side. A modified client gains nothing.
-   (`docs/SECURITY.md`)
-2. **Balance lives in data, not code.** Fish, maps, rods, XP curves, prices, chances, timers, fees —
-   all editable in `/config` without touching gameplay code. (`config/README.md`)
-3. **Scope is deliberately small.** V0.1 is a vertical slice of the real game. Systems outside it are
-   not built "because they would be useful". When something genuinely seems missing, it becomes a
-   `NEEDS_OWNER_DECISION` task rather than an invented mechanic.
-4. **The panel reflects the repository, not a claim.** A task becomes `DONE` in the same change that
-   completes the work. Progress is auditable in git, independent of any one session.
+1. **O servidor decide; o cliente mostra.** Tudo com valor econômico, de progressão ou competitivo é
+   calculado, validado e gravado no servidor. Um cliente modificado não ganha nada com isso.
+   (`docs/SEGURANCA.md`)
+2. **O balanceamento mora em dados, não em código.** Peixes, mapas, varas, curvas de XP, preços,
+   chances, tempos e taxas — todos editáveis em `/config` sem tocar no código do jogo.
+   (`config/README.md`)
+3. **O escopo é pequeno de propósito.** A V0.1 é uma fatia vertical do jogo real. Sistemas fora dela
+   não são construídos "porque seriam úteis". Quando algo parece realmente faltar, isso vira uma
+   tarefa com status `NEEDS_OWNER_DECISION`, nunca um sistema inventado.
+4. **O painel reflete o repositório, não uma promessa.** Uma tarefa vira concluída na mesma mudança
+   que termina o trabalho. O progresso é auditável no histórico do git, independente de qualquer
+   conversa.
+
+### Idioma
+
+Tudo que uma pessoa lê numa tela está em **PT-BR**: o painel, o jogo, as mensagens de erro, o
+roadmap, os nomes dos peixes e a documentação. Comentários de código e logs técnicos ficam em
+inglês, porque quem os lê é quem programa. A regra completa está em `docs/DECISOES.md`, TD-014.
+
+A única exceção é `docs/GDD_V0_1.md`, mantido no original em inglês de propósito: é o documento de
+design travado, e traduzi-lo correria o risco de mudar o sentido de uma decisão já fechada.
 
 ---
 
-## Where things stand
+## Onde as coisas estão
 
-Milestone 0 is complete except for one item that needs your machine: **`M0-T14`** asks you to run
-`./ops/scripts/dev-up.sh` once and open the Unity project once, because Docker and the Unity Editor
-were not available where this code was written. The Dashboard shows it under *Blockers and owner
-decisions*, and `docs/CHANGELOG.md` lists what was and was not verified.
+O Milestone 0 está completo, com um item que depende da sua máquina: a tarefa **`M0-T14`** pede que
+você rode `./ops/scripts/dev-up.sh` uma vez e abra o projeto no Unity uma vez, porque o Docker e o
+Editor do Unity não existiam onde este código foi escrito. O painel mostra isso em *Bloqueios e
+decisões suas*, e `docs/CHANGELOG.md` lista o que foi e o que não foi verificado.
 
-Milestone 1 — accounts, player state and the config editing pipeline — starts after that.
+O Milestone 1 — contas, estado do jogador e o pipeline de edição de configuração — começa depois disso.

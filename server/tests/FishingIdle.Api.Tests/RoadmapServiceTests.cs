@@ -128,7 +128,7 @@ public sealed class RoadmapServiceTests : IDisposable
         var result = service.Load();
 
         Assert.False(result.Succeeded);
-        Assert.Contains("unknown status", result.Error!, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("status desconhecido", result.Error!, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public sealed class RoadmapServiceTests : IDisposable
         var result = service.Load();
 
         Assert.False(result.Succeeded);
-        Assert.Contains("more than once", result.Error!, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("mais de uma vez", result.Error!, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public sealed class RoadmapServiceTests : IDisposable
         var result = service.Load();
 
         Assert.False(result.Succeeded);
-        Assert.Contains("unknown task", result.Error!, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("tarefa inexistente", result.Error!, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public sealed class RoadmapServiceTests : IDisposable
         var result = service.Load();
 
         Assert.False(result.Succeeded);
-        Assert.Contains("not found", result.Error!, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("não encontrado", result.Error!, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

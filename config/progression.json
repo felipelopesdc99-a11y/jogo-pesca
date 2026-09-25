@@ -1,21 +1,21 @@
 {
   "config_file": "progression",
   "config_schema_version": 1,
-  "balance_status": "PROVISIONAL",
-  "description": "Fisher XP curve, fish XP curve, size distribution and the rarity/size/level modifier rules used to derive deterministic fish attributes. Nothing here may be duplicated in gameplay code.",
+  "balance_status": "PROVISÓRIO",
+  "description": "Curva de XP do Pescador, curva de XP do peixe, distribuição de tamanho e as regras de modificador de raridade, tamanho e nível usadas para derivar os atributos determinísticos do peixe. Nada disso pode ser duplicado dentro do código do jogo.",
   "fisher": {
     "max_level": 100,
     "calibration_target": {
       "level_1_to_10_online_hours": 2.0,
       "level_1_to_10_catches_approx": 240,
       "level_1_to_100_days_approx": 90,
-      "note": "Provisional. Weighted average Map 1 fisher XP per catch is about 8.1 before size multipliers, so the level 1-10 total below targets roughly 240 Map 1 catches. Recalibrate from real play data."
+      "note": "Provisório. A média ponderada de XP do Pescador por captura no Mapa 1 fica em torno de 8,1 antes dos multiplicadores de tamanho, então o total de nível 1 a 10 abaixo mira aproximadamente 240 capturas no Mapa 1. Recalibrar com dados reais de jogo."
     },
     "xp_curve_generator": {
-      "formula": "round(base * level^exponent) to nearest 5",
+      "formula": "arredondar(base × nível^expoente) para o múltiplo de 5 mais próximo",
       "base": 18.0,
       "exponent": 1.5,
-      "note": "The table below is authoritative. The generator is recorded so the shape can be regenerated deliberately."
+      "note": "A tabela abaixo é a que vale. A fórmula fica registrada para que o formato da curva possa ser regerado de propósito."
     },
     "total_xp_level_1_to_10": 2000,
     "total_xp_level_1_to_100": 711000,
@@ -421,10 +421,10 @@
   "fish_level": {
     "max_level": 10,
     "stat_bonus_per_level_percent": 4.0,
-    "stat_bonus_note": "Applied as (1 + 0.04 * (level - 1)) to every derived attribute. Level 10 is +36%.",
+    "stat_bonus_note": "Aplicado como (1 + 0,04 × (nível − 1)) sobre cada atributo derivado. No nível 10 são +36%.",
     "player_distributed_stat_points": false,
     "xp_curve_generator": {
-      "formula": "round(base * level^exponent) to nearest 5",
+      "formula": "arredondar(base × nível^expoente) para o múltiplo de 5 mais próximo",
       "base": 9.0,
       "exponent": 1.5
     },
@@ -469,11 +469,11 @@
     ]
   },
   "size": {
-    "model": "A catch draws a size category by weight, then an exact size uniformly inside that category's percentile band mapped onto the species size_cm range. Size is individual and permanent.",
+    "model": "Uma captura sorteia uma categoria de tamanho por peso e, depois, um tamanho exato de forma uniforme dentro da faixa de percentil daquela categoria, mapeada sobre o intervalo size_cm da espécie. O tamanho é individual e permanente.",
     "categories": [
       {
         "id": "small",
-        "display_name": "Small",
+        "display_name": "Pequeno",
         "draw_weight": 20.0,
         "percentile_min": 0.0,
         "percentile_max": 0.2,
@@ -481,7 +481,7 @@
       },
       {
         "id": "adult",
-        "display_name": "Adult",
+        "display_name": "Adulto",
         "draw_weight": 60.0,
         "percentile_min": 0.2,
         "percentile_max": 0.8,
@@ -489,7 +489,7 @@
       },
       {
         "id": "large",
-        "display_name": "Large",
+        "display_name": "Grande",
         "draw_weight": 19.0,
         "percentile_min": 0.8,
         "percentile_max": 0.99,
@@ -497,7 +497,7 @@
       },
       {
         "id": "exceptional",
-        "display_name": "Exceptional",
+        "display_name": "Excepcional",
         "draw_weight": 1.0,
         "percentile_min": 0.99,
         "percentile_max": 1.0,
@@ -505,26 +505,26 @@
       }
     ],
     "stat_influence": {
-      "formula": "1 + influence * (percentile - 0.5)",
+      "formula": "1 + influência × (percentil − 0,5)",
       "influence": 0.2,
-      "note": "Modest by design: 0.90x at the smallest specimen, 1.10x at the largest."
+      "note": "Modesto de propósito: 0,90× no menor exemplar e 1,10× no maior."
     },
     "sale_value_influence": {
-      "formula": "1 + influence * (percentile - 0.5)",
+      "formula": "1 + influência × (percentil − 0,5)",
       "influence": 1.2,
-      "note": "Continuous, not stepped by category, per GDD section 36."
+      "note": "Contínuo, não em degraus por categoria, conforme a seção 36 do GDD."
     },
     "feed_xp_influence": {
-      "formula": "1 + influence * (percentile - 0.5)",
+      "formula": "1 + influência × (percentil − 0,5)",
       "influence": 0.3
     }
   },
   "rarity": {
-    "note": "Rarity is a power hierarchy and is distinct from size category. A Common fish can be Exceptional-sized.",
+    "note": "A raridade é uma hierarquia de poder e é diferente da categoria de tamanho. Um peixe Comum pode ser de tamanho Excepcional.",
     "tiers": [
       {
         "id": "common",
-        "display_name": "Common",
+        "display_name": "Comum",
         "stat_multiplier": 1.0,
         "fisher_xp_multiplier": 1.0,
         "feed_xp_multiplier": 1.0,
@@ -532,7 +532,7 @@
       },
       {
         "id": "rare",
-        "display_name": "Rare",
+        "display_name": "Raro",
         "stat_multiplier": 1.15,
         "fisher_xp_multiplier": 2.5,
         "feed_xp_multiplier": 2.0,
@@ -543,7 +543,7 @@
   "feeding": {
     "feed_fish_consumed": true,
     "invested_xp_recovery_ratio": 0.5,
-    "recovery_note": "Sacrificing an already-levelled fish grants its normal feed value plus 50% of the XP previously invested in it. No lossless recycling.",
+    "recovery_note": "Sacrificar um peixe já evoluído concede o valor normal de alimento dele mais 50% do XP que havia sido investido nele. Não existe reciclagem de XP sem perda.",
     "warn_on_valuable_feed": true,
     "valuable_feed_rules": {
       "rarity_at_or_above": "rare",
@@ -557,6 +557,6 @@
     "online_cycle_seconds": 30,
     "offline_cycle_seconds": 60,
     "offline_accumulation_cap_hours": 24,
-    "offline_note": "After the cap no further offline catches accumulate until the player returns."
+    "offline_note": "Depois do limite, nenhuma captura offline a mais se acumula até o jogador voltar."
   }
 }

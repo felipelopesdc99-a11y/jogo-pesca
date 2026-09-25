@@ -1,14 +1,16 @@
 import { SourceNotices } from "@/components/Notice";
 import { StatusBar } from "@/components/Progress";
+import { SourceLine } from "@/components/SourceLine";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TaskCard } from "@/components/TaskCard";
 import { loadRoadmap } from "@/lib/data";
+import { formatNumber, statusLabel, t } from "@/lib/strings";
 import { ROADMAP_STATUSES } from "@/lib/types";
 import type { RoadmapStatus } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-/** `?status=IN_PROGRESS` narrows the page to one status. */
+/** `?status=IN_PROGRESS` restringe a página a um único status. */
 function parseStatusFilter(value: string | string[] | undefined): RoadmapStatus | null {
   const candidate = Array.isArray(value) ? value[0] : value;
   if (!candidate) {
@@ -29,7 +31,7 @@ export default async function RoadmapPage({
   if (roadmap.data === null) {
     return (
       <>
-        <h1 className="page-title">Roadmap</h1>
+        <h1 className="page-title">{t.roadmap.title}</h1>
         <SourceNotices error={roadmap.error} warning={roadmap.warning} />
       </>
     );
@@ -40,12 +42,8 @@ export default async function RoadmapPage({
 
   return (
     <>
-      <h1 className="page-title">Roadmap</h1>
-      <p className="page-lede">
-        Every V0.1 task with its status, dependencies and completion notes. Statuses are{" "}
-        <code>TODO</code>, <code>IN_PROGRESS</code>, <code>DONE</code>, <code>BLOCKED</code> and{" "}
-        <code>NEEDS_OWNER_DECISION</code>.
-      </p>
+      <h1 className="page-title">{t.roadmap.title}</h1>
+      <p className="page-lede">{t.roadmap.lede}</p>
 
       <SourceNotices error={roadmap.error} warning={roadmap.warning} />
 
@@ -53,15 +51,15 @@ export default async function RoadmapPage({
         <div className="card">
           <div className="task-head" style={{ marginBottom: 10 }}>
             <span className="stat-label" style={{ margin: 0 }}>
-              Filter by status
+              {t.roadmap.filterLabel}
             </span>
             <span className="task-meta">
               <a className="chip" href="/roadmap">
-                All ({summary.total_tasks})
+                {t.roadmap.filterAll} ({summary.total_tasks})
               </a>
               {ROADMAP_STATUSES.map((status) => (
                 <a key={status} className="chip" href={`/roadmap?status=${status}`}>
-                  {status} ({summary.status_counts[status] ?? 0})
+                  {statusLabel(status)} ({summary.status_counts[status] ?? 0})
                 </a>
               ))}
             </span>
@@ -72,7 +70,8 @@ export default async function RoadmapPage({
 
       {filter ? (
         <p className="page-lede">
-          Showing <StatusBadge status={filter} /> only. Milestones with no matching task are hidden.
+          {t.roadmap.showingOnly} <StatusBadge status={filter} />
+          {t.roadmap.showingOnlySuffix}
         </p>
       ) : null}
 
@@ -93,11 +92,14 @@ export default async function RoadmapPage({
             <div className="milestone-head">
               <span className="milestone-id">{milestone.id}</span>
               <span className="milestone-title">{milestone.title}</span>
-              {isCurrent ? <span className="chip">current</span> : null}
+              {isCurrent ? <span className="chip">{t.roadmap.current}</span> : null}
               {progress ? (
                 <span className="milestone-count">
-                  {progress.done_tasks}/{progress.total_tasks} done ·{" "}
-                  {progress.completion_percent}%
+                  {t.roadmap.milestoneProgress(
+                    progress.done_tasks,
+                    progress.total_tasks,
+                    formatNumber(progress.completion_percent),
+                  )}
                 </span>
               ) : null}
             </div>
@@ -111,7 +113,7 @@ export default async function RoadmapPage({
             {milestone.completion_criteria && milestone.completion_criteria.length > 0 ? (
               <div className="criteria">
                 <div className="stat-label" style={{ marginBottom: 0 }}>
-                  Completion criteria
+                  {t.roadmap.criteriaTitle}
                 </div>
                 <ul>
                   {milestone.completion_criteria.map((criterion) => (
@@ -123,18 +125,22 @@ export default async function RoadmapPage({
 
             <ul className="task-list" style={{ marginTop: 14 }}>
               {tasks.map((task) => (
-                <TaskCard key={task.id} task={task} milestoneId={milestone.id} />
+                <TaskCard key={task.id} task={task} />
               ))}
             </ul>
           </section>
         );
       })}
 
-      <div className="source-line mono">
-        Source: {roadmap.origin === "api" ? "backend API" : "repository file"} ·{" "}
-        {roadmap.data.source_path ?? "unknown path"}
-        {document.updated_at ? ` · roadmap updated_at ${document.updated_at}` : ""}
-      </div>
+      <SourceLine
+        origin={roadmap.origin}
+        path={roadmap.data.source_path}
+        extra={
+          document.updated_at
+            ? `${t.roadmap.roadmapUpdatedAt} ${document.updated_at.slice(0, 10)}`
+            : undefined
+        }
+      />
     </>
   );
 }

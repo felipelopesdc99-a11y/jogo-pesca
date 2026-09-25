@@ -1,6 +1,6 @@
 {
   "name": "fishing-idle-dev-console",
-  "version": "0.1.0-m0.1",
+  "version": "0.1.0-m0.2",
   "private": true,
   "description": "Private Development Console for Fishing Idle. Reads project status from the backend, which reads docs/roadmap.json.",
   "scripts": {

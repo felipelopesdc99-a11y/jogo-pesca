@@ -73,20 +73,20 @@ public sealed class HealthService
             return canConnect
                 ? new DependencyHealth("database", HealthStatus.Healthy, Round(stopwatch), null)
                 : new DependencyHealth("database", HealthStatus.Unhealthy, Round(stopwatch),
-                    "PostgreSQL refused the connection. Is the database container running?");
+                    "O PostgreSQL recusou a conexão. O container do banco está rodando?");
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
             stopwatch.Stop();
             return new DependencyHealth("database", HealthStatus.Unhealthy, Round(stopwatch),
-                $"PostgreSQL did not answer within {DatabaseProbeTimeout.TotalSeconds:0}s.");
+                $"O PostgreSQL não respondeu em {DatabaseProbeTimeout.TotalSeconds:0}s.");
         }
         catch (Exception ex)
         {
             stopwatch.Stop();
             _logger.LogWarning(ex, "Database health probe failed.");
 
-            // The message is safe to surface: it names the failure, never the credentials.
+            // A mensagem é segura de exibir: nomeia a falha, nunca as credenciais.
             return new DependencyHealth("database", HealthStatus.Unhealthy, Round(stopwatch), ex.GetType().Name);
         }
     }

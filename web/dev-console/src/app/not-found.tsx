@@ -1,13 +1,16 @@
 import Link from "next/link";
 
+import { t } from "@/lib/strings";
+
 export default function NotFound() {
   return (
     <>
-      <h1 className="page-title">Page not found</h1>
+      <h1 className="page-title">{t.notFound.title}</h1>
       <p className="page-lede">
-        This console has four sections: <Link href="/">Dashboard</Link>,{" "}
-        <Link href="/roadmap">Roadmap</Link>, <Link href="/config">Game Config</Link> and{" "}
-        <Link href="/build">Build / Version</Link>.
+        {t.notFound.lede} <Link href="/">{t.app.nav.dashboard}</Link>,{" "}
+        <Link href="/roadmap">{t.app.nav.roadmap}</Link>,{" "}
+        <Link href="/config">{t.app.nav.config}</Link> e{" "}
+        <Link href="/build">{t.app.nav.build}</Link>.
       </p>
     </>
   );
