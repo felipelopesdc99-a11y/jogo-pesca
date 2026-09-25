@@ -103,6 +103,10 @@ o proprietário — nunca inventar a mecânica.
 conclui o trabalho**, com uma nota em `completion_notes` dizendo o que foi entregue. Nunca declarar
 progresso separadamente do código que o produziu.
 
+O painel pode estar publicado e lendo esse arquivo direto do GitHub, então **todo commit enviado
+aparece para o proprietário em menos de um minuto**. Nunca existe um indicador de "trabalho em
+segundo plano": o painel reflete commits, nunca atividade (seção 5 do GDD).
+
 ## 6. Antes de versionar
 
 ```bash
@@ -124,3 +128,4 @@ Compila e testa o servidor, faz typecheck e build do painel. Precisa passar.
 | Segurança e anti-trapaça | `docs/SEGURANCA.md` |
 | Versionamento | `docs/VERSIONAMENTO.md` |
 | Balanceamento | `config/README.md` |
+| Painel publicado na internet | `docs/PAINEL_ONLINE.md` |

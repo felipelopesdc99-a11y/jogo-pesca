@@ -130,8 +130,14 @@ export interface GameConfigListing {
   editing_note: string;
 }
 
-/** Where a piece of data came from, so the console never renders stale state as if it were live. */
-export type DataOrigin = "api" | "repository-file";
+/**
+ * Where a piece of data came from, so the console never renders stale state as if it were live.
+ *
+ * - `api`: the backend at FISHING_IDLE_API_BASE_URL. The only source with live runtime facts.
+ * - `repository-file`: the checkout on disk. Used when the console runs from a local clone.
+ * - `github`: the repository on GitHub. Used when the console is deployed and has no checkout.
+ */
+export type DataOrigin = "api" | "repository-file" | "github";
 
 export interface Sourced<T> {
   data: T | null;

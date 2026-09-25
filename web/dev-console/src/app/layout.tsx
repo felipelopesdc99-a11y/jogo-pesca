@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { AutoRefresh } from "@/components/AutoRefresh";
 import { t } from "@/lib/strings";
 import "./globals.css";
 
@@ -33,6 +34,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </Link>
               ))}
             </nav>
+
+            <AutoRefresh seconds={60} />
 
             <div className="nav-note">{t.app.sidebarNote}</div>
           </aside>

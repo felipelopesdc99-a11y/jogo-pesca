@@ -62,6 +62,7 @@ export const t = {
   common: {
     sourceApi: "API do servidor",
     sourceFile: "arquivo do repositório",
+    sourceGitHub: "GitHub",
     sourcePrefix: "Fonte:",
     readAt: "lido em",
     dependsOn: "depende de",
@@ -76,7 +77,15 @@ export const t = {
 
   notices: {
     errorTitle: "Não foi possível ler o status",
-    fallbackTitle: "Exibindo a partir do arquivo do repositório",
+    fallbackTitle: "Fonte alternativa em uso",
+  },
+
+  refresh: {
+    auto: (segundos: number) => `Atualiza sozinho a cada ${segundos}s`,
+    lastAt: (hora: string) => `última atualização às ${hora}`,
+    now: "atualizando…",
+    manual: "Atualizar agora",
+    commitPrefix: "commit",
   },
 
   dashboard: {
@@ -125,6 +134,8 @@ export const t = {
   config: {
     title: "Configuração do jogo",
     lede: "Todos os valores de balanceamento ficam em /config, nunca dentro do código do jogo. Os atributos base valem para nível 1 e tamanho no percentil 0,50; os modificadores de raridade, tamanho e nível são aplicados por cima disso pelo servidor.",
+    editingNoteFallback:
+      "A edição validada, o versionamento de configuração e o registro de auditoria chegam no Milestone 1 (tarefas M1-T06 a M1-T08).",
     readOnlyTitle: "Somente leitura no Milestone 0",
     readOnlyBody:
       "Por enquanto, edite os arquivos em /config diretamente e reinicie o servidor. Todo arquivo está marcado como PROVISÓRIO: os números são um balanceamento inicial com hierarquia clara, a ser ajustado por simulação. A estrutura não é provisória.",
@@ -180,15 +191,13 @@ export const t = {
   },
 
   errors: {
-    apiUnreachable: (url: string, reason: string) =>
-      `A API em ${url} não respondeu (${reason}).`,
-    apiTimedOut: (seconds: number) => `a API não respondeu em ${seconds}s`,
-    noRepositoryRoot: (url: string, reason: string) =>
-      `A API em ${url} não respondeu (${reason}) e a raiz do repositório não foi localizada para a leitura alternativa. Inicie o servidor com ops/scripts/dev-up.sh ou defina a variável FISHING_IDLE_REPO_ROOT.`,
-    fallbackUsed: (url: string, reason: string) =>
-      `A API em ${url} não respondeu (${reason}), então esta página foi montada lendo docs/roadmap.json diretamente. Os status estão atualizados; o que depende do servidor (saúde, dados de build, arquivos de configuração) está indisponível.`,
-    bothFailed: (url: string, apiReason: string, filePath: string, fileReason: string) =>
-      `A API em ${url} não respondeu (${apiReason}) e o arquivo ${filePath} não pôde ser lido (${fileReason}).`,
+    apiTimedOut: (seconds: number) => `não respondeu em ${seconds}s`,
+    fallbackUsed: (origemUsada: string, falhas: string) =>
+      `Esta página foi montada a partir de: ${origemUsada}. O que foi tentado antes e não respondeu — ${falhas}. Os status estão atualizados; o que depende de um servidor rodando pode aparecer vazio.`,
+    noRuntimeFacts: (origemUsada: string) =>
+      `As versões vêm de ${origemUsada}. Ambiente, tempo no ar e horário do servidor só existem quando há um backend rodando, então aparecem vazios aqui.`,
+    allSourcesFailed: (falhas: string) =>
+      `Nenhuma fonte respondeu. Tentativas — ${falhas}. Se você roda o projeto na sua máquina, suba o ambiente com ops/scripts/dev-up.sh; se este painel está publicado, confira a variável FISHING_IDLE_GITHUB_REPO.`,
   },
 } as const;
 

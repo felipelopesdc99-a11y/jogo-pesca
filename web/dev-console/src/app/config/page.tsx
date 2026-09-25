@@ -1,5 +1,5 @@
 import { Notice, SourceNotices } from "@/components/Notice";
-import { apiBaseUrl, loadConfigListing } from "@/lib/data";
+import { configFileHref, loadConfigListing } from "@/lib/data";
 import { t } from "@/lib/strings";
 
 export const dynamic = "force-dynamic";
@@ -40,7 +40,7 @@ export default async function ConfigPage() {
                   {listing.data.files.map((file) => (
                     <tr key={file.name}>
                       <td className="mono">
-                        <a href={`${apiBaseUrl()}/api/dev/config/${file.name}`}>{file.name}</a>
+                        <a href={configFileHref(listing.origin, file.name)}>{file.name}</a>
                       </td>
                       <td>{file.description ?? t.common.none}</td>
                       <td className="mono">{file.schema_version ?? t.common.none}</td>

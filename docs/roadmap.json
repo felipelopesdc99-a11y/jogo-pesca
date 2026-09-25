@@ -20,6 +20,14 @@
       "detail": "O arquivo ProjectSettings/ProjectVersion.txt fixa 6000.3.0f1 como valor provisório para o Unity 6.3 LTS. Só você pode dizer qual versão exata instalou: abra client-unity no Unity Hub, aceite a atualização do projeto e versione o arquivo atualizado. Aproveite e rode ./ops/scripts/dev-up.sh uma vez para confirmar que o ambiente Docker Compose sobe de ponta a ponta. Nem o Docker nem o Editor do Unity existiam no ambiente onde este código foi escrito, então essas duas execuções são a única parte do Milestone 0 que não pôde ser verificada.",
       "raised_at": "2026-09-25T00:00:00Z",
       "status": "OPEN"
+    },
+    {
+      "id": "OD-002",
+      "task_id": "M0-T17",
+      "title": "Criar a conta na Vercel e publicar o painel",
+      "detail": "O painel já sabe ler o repositório direto do GitHub, então publicá-lo é só conectar a conta. Só você pode criar a conta. São cinco passos, sem instalar nada e sem custo, descritos em docs/PAINEL_ONLINE.md. Depois disso o painel passa a ter um endereço fixo que se atualiza sozinho poucos segundos depois de cada commit enviado.",
+      "raised_at": "2026-09-25T00:00:00Z",
+      "status": "OPEN"
     }
   ],
   "milestones": [
@@ -199,6 +207,44 @@
             "M0-T13"
           ],
           "completion_notes": "Verificado no ambiente de autoria: o servidor compila com warnings-as-errors e seus 36 testes passam; a migration inicial é aplicada em um PostgreSQL 16 real e o schema foi inspecionado; a API responde /health como saudável contra esse banco; o painel compila e as quatro páginas renderizam corretamente contra a API rodando. Ainda não verificado, porque o ambiente de autoria não tem daemon do Docker nem o Editor do Unity: (1) o docker compose up dos três serviços; (2) a compilação do projeto Unity e a versão exata do Unity 6.3 LTS fixada em ProjectSettings/ProjectVersion.txt, hoje o valor provisório 6000.3.0f1. Ação do dono: rodar ./ops/scripts/dev-up.sh uma vez e abrir client-unity no Unity Hub uma vez, e então avisar para esta tarefa ser fechada como concluída.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T15",
+          "title": "Painel lê o repositório direto do GitHub",
+          "subsystem": "web",
+          "description": "Para o painel poder rodar publicado, sem um clone do repositório e sem um backend, e ainda assim mostrar o andamento atual poucos segundos depois de um commit ser enviado.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T11",
+            "M0-T12"
+          ],
+          "completion_notes": "A camada de dados agora tenta três fontes em ordem, e sempre diz na tela qual respondeu: a API do servidor (única com dados de execução), o arquivo do clone local, e o GitHub. Rodando de um clone, a ordem é a de antes; publicado, só o GitHub responde e a API nem é tentada, para a página não esperar um tempo limite inútil. A listagem de /config usa a API do GitHub quando possível e, quando o limite de 60 chamadas por hora por IP é atingido, cai para leitura direta dos arquivos conhecidos, que não tem esse limite — verificado com o limite realmente estourado. A Visão geral mostra o commit que a branch aponta agora.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T16",
+          "title": "Atualização automática do painel",
+          "subsystem": "web",
+          "description": "Para o painel acompanhar o repositório sozinho, sem precisar apertar F5, enquanto o desenvolvimento acontece.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T15"
+          ],
+          "completion_notes": "O painel relê a página a cada 60 segundos e mostra no canto o horário da última leitura, mais um botão de atualizar agora. É apenas releitura do estado do repositório — não existe e não deve existir um indicador mágico de 'trabalho em segundo plano', conforme a seção 5 do GDD. Respeita a preferência de movimento reduzido do sistema.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M0-T17",
+          "title": "Publicar o painel para acesso pelo navegador",
+          "subsystem": "ops",
+          "description": "Publicar o painel em um endereço fixo, para que o proprietário acompanhe o andamento de qualquer aparelho sem instalar nada.",
+          "status": "BLOCKED",
+          "dependencies": [
+            "M0-T15",
+            "M0-T16"
+          ],
+          "completion_notes": "O código está pronto e testado: uma simulação do ambiente publicado, sem clone e sem backend, renderizou as quatro páginas lendo apenas o GitHub. O passo que falta depende de uma conta que só o proprietário pode criar. O passo a passo está em docs/PAINEL_ONLINE.md.",
           "updated_at": "2026-09-25T00:00:00Z"
         }
       ]

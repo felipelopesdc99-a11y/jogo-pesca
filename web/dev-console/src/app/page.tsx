@@ -2,13 +2,17 @@ import { SourceNotices } from "@/components/Notice";
 import { ProgressBar, StatusBar } from "@/components/Progress";
 import { SourceLine } from "@/components/SourceLine";
 import { TaskRefList } from "@/components/TaskCard";
-import { loadBuildInfo, loadRoadmap } from "@/lib/data";
-import { formatNumber, t } from "@/lib/strings";
+import { loadBuildInfo, loadHeadCommit, loadRoadmap } from "@/lib/data";
+import { formatDateTime, formatNumber, t } from "@/lib/strings";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [roadmap, build] = await Promise.all([loadRoadmap(), loadBuildInfo()]);
+  const [roadmap, build, headCommit] = await Promise.all([
+    loadRoadmap(),
+    loadBuildInfo(),
+    loadHeadCommit(),
+  ]);
 
   if (roadmap.data === null) {
     return (
@@ -140,6 +144,13 @@ export default async function DashboardPage() {
         <h2 className="section-title">{t.dashboard.sectionRecent}</h2>
         <TaskRefList items={summary.recently_completed} emptyText={t.dashboard.emptyRecent} />
       </section>
+
+      {headCommit ? (
+        <div className="commit-line mono">
+          {t.refresh.commitPrefix} {headCommit.sha} · {headCommit.message} ·{" "}
+          {formatDateTime(headCommit.committedAt)} UTC
+        </div>
+      ) : null}
 
       <SourceLine
         origin={roadmap.origin}

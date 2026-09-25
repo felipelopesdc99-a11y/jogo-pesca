@@ -1,3 +1,4 @@
+import { describeOrigin } from "@/lib/data";
 import { formatDateTime, t } from "@/lib/strings";
 import type { DataOrigin } from "@/lib/types";
 
@@ -13,12 +14,11 @@ export function SourceLine({
   loadedAtUtc?: string;
   extra?: string;
 }) {
-  const source = origin === "api" ? t.common.sourceApi : t.common.sourceFile;
   const readAt = loadedAtUtc ? formatDateTime(loadedAtUtc) : null;
 
   return (
     <div className="source-line mono">
-      {t.common.sourcePrefix} {source} · {path ?? t.common.unknownPath}
+      {t.common.sourcePrefix} {describeOrigin(origin)} · {path ?? t.common.unknownPath}
       {readAt ? ` · ${t.common.readAt} ${readAt} UTC` : ""}
       {extra ? ` · ${extra}` : ""}
     </div>

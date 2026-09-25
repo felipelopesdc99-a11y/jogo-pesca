@@ -3,6 +3,37 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m0.4] — 25/09/2026
+
+O painel passa a poder rodar publicado na internet e a se atualizar sozinho.
+
+### Adicionado
+
+- **O painel lê o repositório direto do GitHub** (`M0-T15`). A camada de dados tenta três fontes em
+  ordem e sempre diz na tela qual respondeu: a API do servidor (única com dados de execução), o
+  arquivo do clone local, e o GitHub. Rodando de um clone, a ordem é a de antes; publicado, só o
+  GitHub responde e a API nem chega a ser tentada, para a página não esperar um tempo limite inútil.
+- **Atualização automática** (`M0-T16`). O painel relê a página a cada 60 segundos, mostra o horário
+  da última leitura e oferece um botão de atualizar agora. Respeita a preferência de movimento
+  reduzido do sistema.
+- **O commit atual na Visão geral** — identificador curto, assunto e data — para deixar explícito o
+  que a tela está refletindo.
+- **`docs/PAINEL_ONLINE.md`**, o passo a passo para publicar o painel na Vercel sem instalar nenhum
+  programa.
+
+### Corrigido antes de existir
+
+- A listagem de `/config` usava a API do GitHub, limitada a 60 consultas por hora por endereço de
+  IP — um limite que um host compartilhado consome sozinho. Agora, quando esse limite é atingido, o
+  painel lê os arquivos por um caminho que não tem esse limite. Verificado com o limite realmente
+  estourado: as sete linhas continuaram aparecendo com suas descrições.
+
+### Pendente com o proprietário
+
+- `M0-T17` e `OD-002`: criar a conta na Vercel e publicar. O código está pronto e testado — uma
+  simulação do ambiente publicado, sem clone e sem backend, renderizou as quatro páginas lendo
+  apenas o GitHub — mas a conta só o proprietário pode criar.
+
 ## [0.1.0-m0.3] — 25/09/2026
 
 A regra de idioma passa a ser obrigatória e permanente, por definição do proprietário.

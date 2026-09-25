@@ -476,6 +476,73 @@ code,
   font-style: italic;
 }
 
+/* ---------------------------------------------------------------- auto-atualização */
+
+.refresh {
+  margin-top: 22px;
+  padding: 10px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--text-faint);
+  font-size: 11.5px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.refresh-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--done);
+  flex: none;
+}
+
+.refresh-dot-active {
+  background: var(--accent);
+  animation: refresh-pulse 1s ease-in-out infinite;
+}
+
+@keyframes refresh-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+.refresh-button {
+  appearance: none;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-sunken);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.refresh-button:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--accent-dim);
+}
+
+.refresh-button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.commit-line {
+  color: var(--text-faint);
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .refresh-dot-active { animation: none; }
+}
+
 @media (max-width: 760px) {
   .shell { flex-direction: column; }
   .sidebar { width: 100%; flex: none; height: auto; position: static; }

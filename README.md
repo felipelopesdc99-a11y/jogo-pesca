@@ -17,6 +17,7 @@ Progresso: **`docs/roadmap.json`** é a fonte de verdade, e o painel o exibe.
 | Se você quer… | Leia |
 |---|---|
 | Ver o que está pronto e o que vem a seguir | O painel, ou `docs/ROADMAP.md` |
+| Deixar o painel online, atualizando sozinho | `docs/PAINEL_ONLINE.md` |
 | Entender o design do jogo | `docs/GDD_V0_1.md` — a fonte de verdade da V0.1 (original em inglês) |
 | Saber por que algo foi feito de determinado jeito | `docs/DECISOES.md` |
 | Mudar um número de balanceamento | `config/README.md` |
@@ -54,6 +55,14 @@ Ao terminar:
 | PostgreSQL | `localhost:5432` |
 
 Para parar: `./ops/scripts/dev-down.sh` (com `--purge` também apaga o banco).
+
+### Painel online, sem instalar nada (recomendado para acompanhar)
+
+O painel pode ficar publicado em um endereço fixo, lendo o repositório direto do GitHub e se
+atualizando sozinho poucos segundos depois de cada mudança enviada. São cinco passos, sem instalar
+programa nenhum e sem custo.
+
+**Passo a passo completo: [`docs/PAINEL_ONLINE.md`](docs/PAINEL_ONLINE.md).**
 
 ### Só o painel, sem Docker
 
