@@ -3,6 +3,21 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m1.2] — 28/09/2026
+
+O projeto deixa de usar a Vercel, a pedido do proprietário.
+
+### Removido
+
+- `docs/PAINEL_ONLINE.md`, o guia de publicação do painel na Vercel.
+- A tarefa de publicar o painel web (`M12-T12`). A decisão `OD-002` foi encerrada como descartada.
+
+### Adicionado
+
+- `vercel.json` na raiz e em `web/dev-console`, desligando as publicações automáticas da Vercel
+  enquanto o projeto da Vercel ainda estiver conectado ao repositório (TD-021). Isso para os e-mails
+  de "preview" a cada envio. Os arquivos podem ser apagados depois que a Vercel for desconectada.
+
 ## [0.1.0-m1.1] — 28/09/2026
 
 **Mudança de prioridade: MVP local jogável no PC** (`docs/CLAUDE_START_HERE_V0_1_1.md`). O jogo

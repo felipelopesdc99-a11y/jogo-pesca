@@ -342,3 +342,19 @@ digitação só apareceria quando o proprietário abrisse o projeto. As bibliote
 2021.3, então o código evita de propósito APIs que só existem no Unity 6.
 
 **Limite.** Compilar não é rodar: comportamento visual só se confirma no Editor (tarefa `M0-T13`).
+
+## TD-021 — Sem Vercel
+
+**Origem.** Pedido do proprietário (28/09/2026): "não quero usar o Vercel, quero simplificar".
+
+**Decisão.** O projeto não usa a Vercel. O guia de publicação (`docs/PAINEL_ONLINE.md`), a tarefa de
+publicar o painel e a decisão pendente sobre a conta foram removidos ou encerrados. O painel web
+continua no repositório (Milestone 12) apenas para uso local.
+
+Um projeto da Vercel já estava conectado a este repositório no GitHub e publicava uma prévia a cada
+envio, mandando e-mail ao proprietário. Até ele ser desconectado, os arquivos `vercel.json` (na raiz
+e em `web/dev-console`) com `git.deploymentEnabled: false` mandam a Vercel ignorar os envios. Nenhum
+dos dois é usado pelo jogo.
+
+**Rever se.** O projeto da Vercel for desconectado do GitHub ou apagado: aí os dois `vercel.json`
+podem ser removidos.

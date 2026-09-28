@@ -168,4 +168,3 @@ verificado depois que o proprietário apertar Play. Diga isso com clareza no rel
 | Versionamento | `docs/VERSIONAMENTO.md` |
 | Balanceamento | `config/README.md` |
 | Infraestrutura online (adiada) | `docs/INFRA_ONLINE.md` |
-| Painel web publicado (adiado) | `docs/PAINEL_ONLINE.md` |

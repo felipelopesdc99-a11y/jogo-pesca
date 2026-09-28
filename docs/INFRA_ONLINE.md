@@ -52,11 +52,15 @@ npm run dev
 Abra <http://localhost:3000>. Sem o servidor, uma faixa amarela avisa que a página foi montada
 lendo `docs/roadmap.json` direto do repositório — isso não é erro.
 
-## Painel publicado na internet
+## Painel publicado na internet — descartado
 
-O passo a passo para publicar o painel web está em `docs/PAINEL_ONLINE.md`. **Adiado:** o START
-HERE V0.1.1 pede para não usar Vercel, domínio nem hospedagem enquanto o MVP local não for validado
-(tarefa `M12-T12`).
+O proprietário decidiu **não usar a Vercel** (28/09/2026). O guia de publicação foi removido e o
+painel web só roda localmente, se alguém precisar dele. O acompanhamento do projeto é pelo Painel de
+Desenvolvimento dentro do Unity.
+
+Os arquivos `vercel.json` (na raiz e em `web/dev-console`) desligam as publicações automáticas da
+Vercel enquanto o projeto da Vercel ainda estiver conectado ao GitHub. Depois que o proprietário
+desconectar a Vercel, eles podem ser apagados. Veja `docs/DECISOES.md`, TD-021.
 
 ## Partes separadas
 

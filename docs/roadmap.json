@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-28T22:23:54Z",
+  "updated_at": "2026-09-28T22:42:12Z",
   "current_milestone": "M1",
   "statuses": [
     "TODO",
@@ -23,12 +23,11 @@
     },
     {
       "id": "OD-002",
-      "task_id": "M12-T12",
-      "title": "Criar a conta na Vercel e publicar o painel",
+      "title": "Publicar o painel web na Vercel",
       "detail": "O painel já sabe ler o repositório direto do GitHub, então publicá-lo é só conectar a conta. Só você pode criar a conta. São cinco passos, sem instalar nada e sem custo, descritos em docs/PAINEL_ONLINE.md. Depois disso o painel passa a ter um endereço fixo que se atualiza sozinho poucos segundos depois de cada commit enviado.",
       "raised_at": "2026-09-25T00:00:00Z",
       "status": "RESOLVED",
-      "resolution": "Adiado pelo próprio proprietário no START HERE V0.1.1: nada de Vercel, domínio ou hospedagem enquanto o MVP local não estiver validado. A tarefa fica no M12 como A FAZER."
+      "resolution": "Descartado pelo proprietário em 28/09/2026: o projeto não vai usar Vercel. O acompanhamento é pelo Painel de Desenvolvimento dentro do Unity. O repositório tem um vercel.json que desliga as publicações automáticas até o proprietário desconectar a Vercel do GitHub."
     },
     {
       "id": "OD-003",
@@ -1120,7 +1119,7 @@
     {
       "id": "M12",
       "title": "Infraestrutura online (adiada)",
-      "goal": "O que já foi construído para a versão online (servidor ASP.NET, PostgreSQL, Docker, painel web) fica guardado aqui. Pela prioridade atual (docs/CLAUDE_START_HERE_V0_1_1.md), nada disto é necessário para jogar; volta depois que o MVP local for validado.",
+      "goal": "O que já foi construído para a versão online (servidor ASP.NET, PostgreSQL, Docker, painel web local) fica guardado aqui. Pela prioridade atual (docs/CLAUDE_START_HERE_V0_1_1.md), nada disto é necessário para jogar; volta depois que o MVP local for validado.",
       "completion_criteria": [
         "Os serviços locais do jogo ganham versões remotas (Remote...Service) sem reescrever a jogabilidade.",
         "Nenhum passo pago acontece sem o proprietário aprovar."
@@ -1248,17 +1247,6 @@
           "status": "TODO",
           "dependencies": [
             "M12-T04"
-          ],
-          "updated_at": "2026-09-28T22:23:54Z"
-        },
-        {
-          "id": "M12-T12",
-          "title": "Publicar o painel web para acesso pelo navegador",
-          "subsystem": "ops",
-          "description": "Publicar o painel em um endereço fixo, para que o proprietário acompanhe o andamento de qualquer aparelho sem instalar nada. Adiado: o START HERE V0.1.1 pede não usar Vercel nem hospedagem por enquanto.",
-          "status": "TODO",
-          "dependencies": [
-            "M12-T09"
           ],
           "updated_at": "2026-09-28T22:23:54Z"
         },
