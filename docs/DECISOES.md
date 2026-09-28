@@ -323,7 +323,8 @@ gera capturas online: o serviço entrega o que foi pescado até ali e recomeça 
 
 **Por quê.** O GDD define 30s online e 60s offline com limite de 24h. Sem essa regra, fechar o jogo
 por 10 horas renderia 1.200 capturas "online" ao voltar, e adiantar o relógio do PC também. O
-intervalo detectado é justamente o que a pesca offline (Milestone 5) vai recompensar. Registrado
+intervalo detectado é justamente o que a pesca offline (Milestone 5) recompensa: desde então ele é
+creditado no ritmo offline (60s, até 24h), numa passada só, continuando a mesma sequência de sorteio. Registrado
 como design em `GDD_ADENDO.md`, A-001.
 
 **Limite conhecido.** No MVP local, o relógio é o do PC; um jogador pode adiantá-lo. A regra acima

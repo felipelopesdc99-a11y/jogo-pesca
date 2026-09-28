@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-28T23:53:13Z",
-  "current_milestone": "M4",
+  "updated_at": "2026-09-28T23:58:36Z",
+  "current_milestone": "M5",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -60,6 +60,14 @@
       "title": "Testar mapas e varas",
       "detail": "Quando chegar ao Nível 10: compre a Vara 1 na Loja, viaje ao Rio Selvagem pelo menu Mapa e veja a cena nova. No Perfil → Inventário, melhore a vara. Para chegar mais rápido, o Painel de Desenvolvimento → Balanceamento → Pesca permite pôr 5 segundos por captura. Não bloqueia: eu sigo com o Milestone 5.",
       "raised_at": "2026-09-28T23:53:13Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-007",
+      "task_id": "M5-T04",
+      "title": "Testar a pesca offline",
+      "detail": "Com a pesca ligada, feche o jogo (pare o Play) e volte alguns minutos depois: deve aparecer o Bem-vindo de volta com os peixes pescados (1 a cada 60 segundos). Não bloqueia: eu sigo com o Milestone 6.",
+      "raised_at": "2026-09-28T23:58:36Z",
       "status": "OPEN"
     }
   ],
@@ -769,33 +777,47 @@
           "title": "Cálculo offline por carimbo de tempo",
           "subsystem": "server",
           "description": "60s por captura, limite de 24h, processamento agregado.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M4-T08"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Ao abrir o jogo (ou quando o PC volta da suspensão com o jogo aberto), o tempo sem o jogo rodando vira pesca offline: 1 captura a cada 60 s (offline_cycle_seconds), no máximo 24 h (offline_accumulation_cap_hours). Tudo calculado de uma vez pelos carimbos de tempo, sem timer rodando enquanto o jogador está fora. Abrir o jogo duas vezes não credita o mesmo período de novo. Só pesca offline quem deixou a pesca ligada. Testado.",
+          "updated_at": "2026-09-28T23:58:36Z"
         },
         {
           "id": "M5-T02",
           "title": "Capturas offline vão para a Caixa",
           "subsystem": "server",
           "description": "Mesma representação compacta.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M5-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Cada captura offline entra na Caixa com a hora em que teria sido pescada, dá XP de Pescador, Conchas e conta para descobertas e recordes, como uma captura online.",
+          "updated_at": "2026-09-28T23:58:36Z"
         },
         {
           "id": "M5-T03",
           "title": "Tela simples de retorno",
           "subsystem": "client",
           "description": "Resumo do que foi pescado enquanto você estava fora.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M5-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Bem-vindo de volta: tempo fora (avisa quando passou do limite de 24 h), peixes pescados, XP, espécies novas, Conchas, subida de nível e até 4 capturas em destaque, com botão para abrir a Caixa de Pesca. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-28T23:58:36Z"
+        },
+        {
+          "id": "M5-T04",
+          "title": "Teste da pesca offline pelo proprietário",
+          "subsystem": "client",
+          "description": "Deixar a pesca ligada, fechar o jogo e voltar depois.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M5-T03"
+          ],
+          "updated_at": "2026-09-28T23:58:36Z"
         }
       ]
     },

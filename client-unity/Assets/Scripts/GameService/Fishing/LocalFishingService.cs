@@ -35,6 +35,9 @@ namespace FishingIdle.GameService.Fishing
         /// <summary>The Fishing Box, newest first.</summary>
         IReadOnlyList<CatchView> GetFishingBox();
 
+        /// <summary>The offline summary produced since it was last taken, or null. Taking it clears it.</summary>
+        OfflineReport TakeOfflineReport();
+
         SalePreview PreviewSale(IReadOnlyCollection<long> catchIds);
 
         ServiceResult<SaleResult> SellCatches(IReadOnlyCollection<long> catchIds);
@@ -46,6 +49,7 @@ namespace FishingIdle.GameService.Fishing
         private const int MaxCyclesPerSettle = 10000;
 
         private readonly GameSession _session;
+        private OfflineReport _pendingOffline;
 
         public LocalFishingService(GameSession session)
         {
@@ -126,12 +130,13 @@ namespace FishingIdle.GameService.Fishing
 
             if (now - fishing.LastSeenAtMs > GapLimitMs(fishing.CycleMs))
             {
-                // The game was not observed running (closed, asleep, clock jump). Only time it was
-                // seen running counts as online fishing; offline catches are Milestone 5.
+                // The game was not observed running (asleep, clock jump). Time it was seen running is
+                // online fishing; the gap is offline fishing, at the offline rate and cap.
                 Settle(fishing.LastSeenAtMs, update);
+                CatchUpOffline(fishing.LastSeenAtMs, now);
                 StartNewRun(now);
                 rebased = true;
-                _session.Log("Gap in online time detected; fishing cycle restarted.");
+                _session.Log("Gap in online time detected; offline catch-up applied and cycle restarted.");
             }
             else
             {
@@ -158,6 +163,13 @@ namespace FishingIdle.GameService.Fishing
             }
 
             _session.Persist();
+        }
+
+        public OfflineReport TakeOfflineReport()
+        {
+            var report = _pendingOffline;
+            _pendingOffline = null;
+            return report;
         }
 
         public IReadOnlyList<CatchView> GetFishingBox()
@@ -272,11 +284,13 @@ namespace FishingIdle.GameService.Fishing
                 return;
             }
 
-            // Time since the game was last seen running is not online time. Settle what was earned
-            // while it ran, then keep fishing from now on.
+            // Time since the game was last seen running is not online time: settle what was earned
+            // while it ran, credit the closed period as offline fishing, then keep fishing from now.
             var update = new FishingUpdate();
+            var now = Now;
             Settle(fishing.LastSeenAtMs, update);
-            StartNewRun(Now);
+            CatchUpOffline(fishing.LastSeenAtMs, now);
+            StartNewRun(now);
             _session.Persist();
             _session.Log("Resumed fishing after startup (" + update.NewCatches.Count + " catches settled from the previous run).");
         }
@@ -302,6 +316,52 @@ namespace FishingIdle.GameService.Fishing
             fishing.CyclesProcessed = 0;
             fishing.CycleMs = (long)Math.Round((configForTiming ?? Config).Fishing.OnlineCycleSeconds * 1000.0);
             fishing.LastSeenAtMs = now;
+        }
+
+        /// <summary>
+        /// Offline fishing (GDD section 10): one catch per offline cycle (60 s) for the time between
+        /// <paramref name="fromMs"/> and <paramref name="toMs"/>, never more than the cap (24 h).
+        /// Computed in one pass from timestamps; no timer ran while the player was away. The catches
+        /// continue the current run's RNG stream, and the caller starts a new run right after, so
+        /// the same offline period can never be credited twice.
+        /// </summary>
+        private void CatchUpOffline(long fromMs, long toMs)
+        {
+            var away = Math.Max(0, toMs - fromMs);
+            var cycleMs = (long)Math.Round(Config.Fishing.OfflineCycleSeconds * 1000.0);
+            var capMs = (long)Math.Round(Config.Fishing.OfflineAccumulationCapHours * 3600000.0);
+            var counted = Math.Min(away, capMs);
+            var cycles = cycleMs > 0 ? Math.Min(counted / cycleMs, MaxCyclesPerSettle) : 0;
+            var fishing = Save.Fishing;
+
+            var update = new FishingUpdate();
+            if (cycles > 0)
+            {
+                var map = CurrentMap();
+                var rod = CurrentRod();
+                var rodLevel = Save.EquippedRodItem()?.Level ?? 1;
+                for (long k = 1; k <= cycles; k++)
+                {
+                    var rng = Rng.For(Save.RngSeed, fishing.SessionIndex, fishing.CyclesProcessed + k);
+                    var rolled = CatchRules.Roll(Config, map, rod, rodLevel, rng);
+                    ApplyCatch(rolled, fromMs + k * cycleMs, update);
+                }
+
+                fishing.CyclesProcessed += cycles;
+            }
+
+            if (away >= cycleMs && cycleMs > 0)
+            {
+                _pendingOffline = new OfflineReport
+                {
+                    AwayMs = away,
+                    CountedMs = counted,
+                    Capped = away > capMs,
+                    CycleSeconds = cycleMs / 1000.0,
+                    Update = update,
+                };
+                _session.Log("Offline fishing: " + cycles + " catches for " + (counted / 1000) + " s away.");
+            }
         }
 
         /// <summary>Produces the catch of every cycle completed by <paramref name="horizonMs"/>.</summary>

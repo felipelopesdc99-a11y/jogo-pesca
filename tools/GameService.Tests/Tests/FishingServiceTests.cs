@@ -104,7 +104,7 @@ public sealed class FishingServiceTests
     }
 
     [Fact]
-    public void Time_the_game_was_closed_is_not_counted_as_online_fishing()
+    public void Time_the_game_was_closed_counts_as_offline_fishing_at_60_seconds()
     {
         var saveDir = TestSupport.NewTempDirectory();
         var clock = new ManualClock(TestSupport.StartMs);
@@ -115,14 +115,70 @@ public sealed class FishingServiceTests
 
         clock.AdvanceSeconds(3 * 3600); // three hours closed
         var (reopened, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
+        var report = reopened.Fishing.TakeOfflineReport();
 
-        Assert.Equal(2, reopened.Fishing.GetFishingBox().Count);
+        Assert.Equal(2 + 180, reopened.Fishing.GetFishingBox().Count);
+        Assert.Equal(180, report.Update.NewCatches.Count);
+        Assert.False(report.Capped);
+        Assert.Null(reopened.Fishing.TakeOfflineReport());
         Assert.True(reopened.Fishing.GetStatus().IsFishing); // still fishing, from now on
         Assert.Single(TestSupport.PlayFor(reopened, clock, 30));
     }
 
     [Fact]
-    public void A_clock_jump_while_open_does_not_grant_a_pile_of_catches()
+    public void Offline_fishing_stops_accumulating_after_24_hours()
+    {
+        var saveDir = TestSupport.NewTempDirectory();
+        var clock = new ManualClock(TestSupport.StartMs);
+        var (game, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
+        game.Fishing.StartFishing();
+        game.Fishing.MarkSeen();
+
+        clock.AdvanceSeconds(3 * 24 * 3600);
+        var (reopened, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
+        var report = reopened.Fishing.TakeOfflineReport();
+
+        Assert.Equal(1440, reopened.Fishing.GetFishingBox().Count);
+        Assert.True(report.Capped);
+        Assert.Equal(24 * 3600 * 1000L, report.CountedMs);
+    }
+
+    [Fact]
+    public void Reopening_twice_does_not_credit_the_same_offline_time_again()
+    {
+        var saveDir = TestSupport.NewTempDirectory();
+        var clock = new ManualClock(TestSupport.StartMs);
+        var (game, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
+        game.Fishing.StartFishing();
+        game.Fishing.MarkSeen();
+        clock.AdvanceSeconds(3600);
+
+        var (first, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
+        var (second, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
+
+        Assert.Equal(60, first.Fishing.GetFishingBox().Count);
+        Assert.Equal(60, second.Fishing.GetFishingBox().Count);
+        Assert.Null(second.Fishing.TakeOfflineReport());
+    }
+
+    [Fact]
+    public void Stopped_fishing_earns_nothing_offline()
+    {
+        var saveDir = TestSupport.NewTempDirectory();
+        var clock = new ManualClock(TestSupport.StartMs);
+        var (game, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
+        game.Fishing.StartFishing();
+        game.Fishing.StopFishing();
+        clock.AdvanceSeconds(5 * 3600);
+
+        var (reopened, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
+
+        Assert.Empty(reopened.Fishing.GetFishingBox());
+        Assert.Null(reopened.Fishing.TakeOfflineReport());
+    }
+
+    [Fact]
+    public void A_sleeping_pc_while_open_is_offline_time_not_online_time()
     {
         var (game, clock, _) = TestSupport.NewGame();
         game.Fishing.StartFishing();
@@ -130,9 +186,11 @@ public sealed class FishingServiceTests
 
         clock.AdvanceSeconds(24 * 3600);
         var afterJump = game.Fishing.Sync().NewCatches.Count;
+        var report = game.Fishing.TakeOfflineReport();
 
-        Assert.Equal(0, afterJump);
-        Assert.Single(game.Fishing.GetFishingBox());
+        Assert.Equal(0, afterJump); // nothing counted at the 30 s online rate
+        Assert.Equal(1440, report.Update.NewCatches.Count); // 24 h at the 60 s offline rate
+        Assert.Equal(1 + 1440, game.Fishing.GetFishingBox().Count);
     }
 
     [Fact]

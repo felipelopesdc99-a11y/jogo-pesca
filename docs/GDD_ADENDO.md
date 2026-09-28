@@ -38,7 +38,7 @@ ficar sem rodar por mais de 2 minutos (fechado, PC em suspensão, relógio adian
 não gera capturas online: o ciclo recomeça do zero quando o jogo volta. Esse período é exatamente o
 que a pesca offline (60s por captura, até 24h) vai recompensar no **Milestone 5**.
 
-Até o Milestone 5, fechar o jogo simplesmente pausa a pesca.
+Desde o Milestone 5, esse período vira pesca offline (A-034).
 
 ### A-002 · A pesca continua ligada depois de fechar e abrir o jogo
 **Seção do GDD:** 10 · **Situação:** Confirmar
@@ -272,3 +272,21 @@ jogador nunca ficar sem vara.
 
 Morros mais altos, mata densa e escura, água mais funda, brilhos que correm com a correnteza,
 pedras com espuma e uma cachoeira ao longe com névoa. A luz é mais fria que a do Lago Sereno.
+
+---
+
+## Milestone 5 — Pesca offline
+
+### A-034 · Pesca offline
+**Seção do GDD:** 10 · **Situação:** Em vigor
+
+Se a pesca estava ligada quando o jogo fechou (ou quando o PC entrou em suspensão), o tempo fora
+vira capturas: 1 a cada 60 segundos, contando no máximo 24 horas. Tudo é calculado ao voltar. Se a
+pesca estava parada, ou se o jogo fechou no meio de uma viagem, não há pesca offline nesse período.
+
+### A-035 · Tela de retorno
+**Seção do GDD:** 10 · **Situação:** Em vigor
+
+Aparece ao voltar, se houve pelo menos um ciclo offline: tempo fora (e o aviso de limite de 24 h,
+quando passou), peixes pescados, XP, espécies novas, Conchas, subida de nível e até 4 capturas em
+destaque. Botões: "Abrir a Caixa de Pesca" e "Continuar".

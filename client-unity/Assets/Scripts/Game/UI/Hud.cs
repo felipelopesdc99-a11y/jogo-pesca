@@ -143,7 +143,7 @@ namespace FishingIdle.Game.UI
             }
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _root.WelcomeBack != null;
             GUI.enabled = !windowOpen;
             DrawTopBar(skin);
             DrawPlayerCard(skin);
@@ -159,11 +159,19 @@ namespace FishingIdle.Game.UI
             GUI.enabled = true;
             if (windowOpen)
             {
-                // The navigation stays usable above the windows.
+                // The navigation stays usable above the windows (not above the welcome-back summary).
+                GUI.enabled = _root.WelcomeBack == null;
                 DrawNavigation(skin);
+                GUI.enabled = true;
             }
 
             DrawToasts(skin);
+
+            if (WelcomeBackDialog.Draw(skin, _root, _width, _height))
+            {
+                CloseAllWindows();
+                _box.Open();
+            }
         }
 
         // ------------------------------------------------------------------ pieces

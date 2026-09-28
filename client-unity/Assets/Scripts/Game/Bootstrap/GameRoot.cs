@@ -46,6 +46,9 @@ namespace FishingIdle.Game.Bootstrap
 
         public PlayerView Player { get; private set; }
 
+        /// <summary>The "while you were away" summary waiting to be shown, or null.</summary>
+        public OfflineReport WelcomeBack { get; set; }
+
         /// <summary>The trip between maps in progress, refreshed every frame.</summary>
         public TravelView Travel { get; private set; }
 
@@ -120,6 +123,8 @@ namespace FishingIdle.Game.Bootstrap
                     {
                         Publish(update);
                     }
+
+                    TakeOfflineReport();
                 });
             }
 
@@ -501,11 +506,25 @@ namespace FishingIdle.Game.Bootstrap
                           ", save at " + Game.Session.SaveLocation);
                 AnnounceSaveStatus(Game.Session.LoadStatus);
                 Refresh();
+                TakeOfflineReport();
             }
             catch (Exception exception)
             {
                 Fail(exception);
             }
+        }
+
+        private void TakeOfflineReport()
+        {
+            var report = Game.Fishing.TakeOfflineReport();
+            if (report == null)
+            {
+                return;
+            }
+
+            WelcomeBack = report;
+            Refresh();
+            BoxChanged?.Invoke();
         }
 
         private void AnnounceSaveStatus(SaveLoadStatus status)

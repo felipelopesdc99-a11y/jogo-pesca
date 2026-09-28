@@ -115,10 +115,11 @@ A cada `Sync()` (a interface chama 4 vezes por segundo), o serviço calcula
 `ciclos completos = (agora − início) ÷ ciclo` e processa só os que faltam. Chamar `Sync()` mil vezes
 não gera peixe a mais; chamar cedo não gera nada.
 
-**Tempo com o jogo fechado não é pesca online.** Se o jogo ficou mais de `max(3 ciclos, 2 minutos)`
-sem ser visto (fechado, PC dormindo, relógio adiantado), o serviço entrega só o que foi pescado
-até `last_seen_at_ms` e recomeça o ciclo a partir de agora. A pesca offline (60s por captura, até
-24h) é o Milestone 5 e vai usar exatamente esse intervalo.
+**Tempo com o jogo fechado não é pesca online; é pesca offline.** Se o jogo ficou mais de
+`max(3 ciclos, 2 minutos)` sem ser visto (fechado, PC dormindo, relógio adiantado), o serviço entrega
+o que foi pescado até `last_seen_at_ms`, credita o intervalo no ritmo offline (`CatchUpOffline`: 60s
+por captura, no máximo 24h, numa passada só, continuando a mesma sequência de sorteio) e recomeça o
+ciclo online a partir de agora. O resumo fica disponível uma vez em `TakeOfflineReport()`.
 
 ### Sorteio determinístico
 

@@ -140,6 +140,25 @@ namespace FishingIdle.Texts
             public static string SellBody(string coins) => "Você recebe " + coins + " moedas. O XP investido neste peixe não volta. Esta ação não pode ser desfeita.";
         }
 
+        // ------------------------------------------------------------------ offline return (GDD section 10)
+
+        public static class Offline
+        {
+            public const string Title = "Bem-vindo de volta!";
+            public const string Continue = "Continuar";
+            public const string OpenBox = "Abrir a Caixa de Pesca";
+            public const string Best = "Destaques";
+            public const string NothingCaught = "Nenhum peixe desta vez.";
+            public const string Note = "Enquanto o jogo fica fechado, o pescador continua: 1 peixe a cada 60 segundos, por até 24 horas. Os peixes esperam na Caixa de Pesca.";
+
+            public static string Away(string duration) => "Você ficou fora por " + duration + ".";
+            public static string CappedAt(string duration) => "Só as primeiras " + duration + " contam para a pesca offline.";
+            public static string Caught(int count) => count == 1 ? "1 peixe pescado" : count + " peixes pescados";
+            public static string Xp(string xp) => "+" + xp + " XP de Pescador";
+            public static string Levels(int level) => "Subiu para o Nível " + level + "!";
+            public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
+        }
+
         // ------------------------------------------------------------------ Map and travel (GDD section 18)
 
         public static class Map

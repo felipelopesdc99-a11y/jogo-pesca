@@ -108,6 +108,20 @@ namespace FishingIdle.GameService.Fishing
         public bool HasChanges => NewCatches.Count > 0;
     }
 
+    /// <summary>What was fished while the game was closed (GDD section 10, offline fishing).</summary>
+    public sealed class OfflineReport
+    {
+        /// <summary>How long the game was away (closed, asleep).</summary>
+        public long AwayMs { get; internal set; }
+
+        /// <summary>The part of that time that counted: at most the offline cap (24 h).</summary>
+        public long CountedMs { get; internal set; }
+
+        public bool Capped { get; internal set; }
+        public double CycleSeconds { get; internal set; }
+        public FishingUpdate Update { get; internal set; }
+    }
+
     public sealed class SalePreview
     {
         public int Count { get; internal set; }

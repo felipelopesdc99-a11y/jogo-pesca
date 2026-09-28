@@ -3,6 +3,23 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m5.1] — 28/09/2026
+
+Milestone 5 — Pesca offline.
+
+### Adicionado
+
+- **Pesca offline**: com a pesca ligada, fechar o jogo não para o pescador. Ao voltar, sai 1 peixe a
+  cada 60 segundos do tempo fora, por até 24 horas. Os peixes vão para a Caixa de Pesca.
+- **Bem-vindo de volta**: tela com o tempo fora, os peixes, o XP, espécies novas, Conchas e as
+  melhores capturas.
+- O PC em suspensão com o jogo aberto também conta como tempo offline.
+- 5 testes novos (87 no total).
+
+### Não verificado
+
+- A tela de retorno ainda não foi aberta no Editor do Unity (`M5-T04`).
+
 ## [0.1.0-m4.1] — 28/09/2026
 
 Milestone 4 — Mapas e Varas.
