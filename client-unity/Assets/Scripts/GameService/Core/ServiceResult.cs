@@ -12,6 +12,10 @@ namespace FishingIdle.GameService.Core
         CatchNotFound,
         DuplicateCatchInRequest,
         SpeciesMissingFromConfig,
+        AquariumFull,
+        FishNotFound,
+        CannotFeedItself,
+        FishAtMaxLevel,
     }
 
     /// <summary>

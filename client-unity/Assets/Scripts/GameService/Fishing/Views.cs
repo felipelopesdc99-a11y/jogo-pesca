@@ -26,6 +26,8 @@ namespace FishingIdle.GameService.Fishing
         public long TotalCatches { get; internal set; }
         public int FishingBoxCount { get; internal set; }
         public int SpeciesDiscovered { get; internal set; }
+        public int AquariumCount { get; internal set; }
+        public int AquariumCapacity { get; internal set; }
     }
 
     public sealed class FishingStatus
@@ -77,6 +79,13 @@ namespace FishingIdle.GameService.Fishing
         public double SizePercentile { get; internal set; }
 
         public long SalePriceCoins { get; internal set; }
+
+        /// <summary>XP this catch gives when used as food.</summary>
+        public long FeedXp { get; internal set; }
+
+        /// <summary>Asks for confirmation before being consumed as food.</summary>
+        public bool IsValuableFood { get; internal set; }
+
         public long CaughtAtMs { get; internal set; }
         public bool IsNewSpecies { get; internal set; }
         public bool IsPersonalRecord { get; internal set; }
@@ -104,7 +113,11 @@ namespace FishingIdle.GameService.Fishing
         public int Count { get; internal set; }
         public long TotalCoins { get; internal set; }
         public List<CatchView> ProtectedCatches { get; } = new List<CatchView>();
-        public bool NeedsConfirmation => ProtectedCatches.Count > 0;
+
+        /// <summary>For Aquarium sales: valuable fish in the sale, already described for the dialog.</summary>
+        public List<string> ProtectedFishNames { get; } = new List<string>();
+
+        public bool NeedsConfirmation => ProtectedCatches.Count > 0 || ProtectedFishNames.Count > 0;
     }
 
     public sealed class SaleResult

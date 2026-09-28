@@ -339,6 +339,24 @@ namespace FishingIdle.Editor
             Number(file, "feeding.invested_xp_recovery_ratio", T.FeedRecovery, 0);
             EditorGUILayout.Space(6);
 
+            var fishTable = (JArray)_documents[file].SelectToken("fish_level.xp_table");
+            if (fishTable != null)
+            {
+                EditorGUILayout.LabelField(T.FishXpTable, EditorStyles.boldLabel);
+                Header(new[] { T.XpLevel, T.XpToNext });
+                for (var i = 0; i < fishTable.Count; i++)
+                {
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        GUILayout.Label(fishTable[i].Value<int>("level").ToString(), GUILayout.Width(130));
+                        Cell(file, "fish_level.xp_table[" + i + "].xp_to_next_level");
+                    }
+                }
+
+                EditorGUILayout.Space(10);
+            }
+
+            EditorGUILayout.LabelField(T.FisherXpTable, EditorStyles.boldLabel);
             Header(new[] { T.XpLevel, T.XpToNext });
             for (var i = 0; i < table.Count; i++)
             {
@@ -396,6 +414,7 @@ namespace FishingIdle.Editor
         private void DrawEconomy()
         {
             const string file = GameConfigLoader.EconomyFile;
+            Number(file, "aquarium.hard_capacity", T.AquariumCapacity, 1);
             Number(file, "npc_fish_sale.minimum_price_coins", T.MinimumPrice, 0);
             Number(file, "shells.base_drop_chance_per_catch", T.ShellChance, 0);
             Number(file, "shells.amount_per_drop.min", T.ShellMin, 0);

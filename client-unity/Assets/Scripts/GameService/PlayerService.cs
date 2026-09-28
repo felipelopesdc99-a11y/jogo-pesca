@@ -42,6 +42,8 @@ namespace FishingIdle.GameService
                 TotalCatches = save.Stats.TotalCatches,
                 FishingBoxCount = save.FishingBox.Count,
                 SpeciesDiscovered = save.SpeciesRecords.Count,
+                AquariumCount = save.Aquarium.Count,
+                AquariumCapacity = config.AquariumCapacity,
             };
         }
     }

@@ -37,9 +37,9 @@ namespace FishingIdle.Texts
 
         public static class Navigation
         {
-            // Only menus that already exist in the game are listed. Mapa, Aquário, Arena,
-            // Expedição, Mercado, Loja and Perfil are added with their milestones.
+            // Only menus that already exist in the game are listed; the rest arrive with their milestones.
             public const string Fishing = "Pesca";
+            public const string Aquarium = "Aquário";
         }
 
         // ------------------------------------------------------------------ fishing HUD
@@ -75,7 +75,6 @@ namespace FishingIdle.Texts
             public const string NewSpeciesBadge = "NOVA ESPÉCIE";
             public const string RecordBadge = "RECORDE";
             public const string Value = "Valor";
-            public const string AquariumSoon = "Guardar no Aquário chega no Milestone 2. Por enquanto seus peixes ficam guardados aqui na Caixa.";
 
             // Filters (GDD section 11: one primary filter at a time).
             public const string FilterAll = "Todos";
@@ -83,6 +82,58 @@ namespace FishingIdle.Texts
             public static string Count(int count) => count == 1 ? "1 peixe" : count + " peixes";
             public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : count + " selecionados") + " · " + coins + " moedas";
             public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : count + " peixes vendidos") + " por " + coins + " moedas.";
+        }
+
+        // ------------------------------------------------------------------ Aquarium (GDD sections 12, 13, 22)
+
+        public static class Aquarium
+        {
+            public const string Title = "Aquário";
+            public const string Empty = "O Aquário está vazio. Na Caixa de Pesca, selecione peixes e clique em \"Guardar no Aquário\".";
+            public const string KeepSelected = "Guardar no Aquário";
+            public const string SortLabel = "Ordenar:";
+            public const string SortSize = "Tamanho";
+            public const string SortLevel = "Nível";
+            public const string SortSpecies = "Espécie";
+            public const string SortNewest = "Mais recentes";
+            public const string PickFish = "Clique num peixe para ver a ficha dele.";
+            public const string Size = "Tamanho";
+            public const string Level = "Nível";
+            public const string Stats = "Atributos";
+            public const string Hp = "Vida";
+            public const string Attack = "Ataque";
+            public const string Defense = "Defesa";
+            public const string Speed = "Velocidade";
+            public const string CaughtAt = "Pescado em";
+            public const string SaleValue = "Valor de venda";
+            public const string FeedValue = "Vale como alimento";
+            public const string Feed = "Alimentar";
+            public const string Sell = "Vender";
+            public const string MaxLevelReached = "Nível máximo";
+            public const string StatsNote = "Atributos vêm da espécie, da raridade, do tamanho e do nível. Dois peixes iguais nesses quatro pontos são sempre iguais.";
+
+            public const string FeedTitle = "Alimentar";
+            public const string FeedFromBox = "Da Caixa de Pesca";
+            public const string FeedFromAquarium = "Do Aquário";
+            public const string FeedPickHint = "Escolha os peixes que serão consumidos. Eles deixam de existir.";
+            public const string FeedNothingSelected = "Nenhum alimento selecionado.";
+            public const string FeedConfirm = "Alimentar agora";
+            public const string Back = "Voltar";
+            public const string FeedValuableTitle = "Confirmar alimentação";
+            public const string FeedValuableBody = "Estes peixes valiosos serão consumidos:";
+
+            public static string Count(int count, int capacity) => count + " / " + capacity + " peixes";
+            public static string Slots(int count, int capacity) => "Aquário: " + count + " / " + capacity;
+            public static string Kept(int kept, int count, int capacity) => (kept == 1 ? "1 peixe guardado" : kept + " peixes guardados") + " no Aquário (" + count + " / " + capacity + ").";
+            public static string Fed(string xp, int level) => "Alimentado: +" + xp + " XP. Agora no Nível " + level + ".";
+            public static string LevelOf(int level, int max) => "Nível " + level + " de " + max;
+            public static string Xp(string current, string needed) => "XP " + current + " / " + needed;
+            public static string FeedXp(string xp) => "+" + xp + " XP";
+            public static string FeedSummary(int count, string xp) => (count == 1 ? "1 alimento" : count + " alimentos") + " · +" + xp + " XP";
+            public static string FeedResult(int levelBefore, int levelAfter) => levelAfter > levelBefore ? "Nível " + levelBefore + " → Nível " + levelAfter : "Continua no Nível " + levelBefore;
+            public static string Wasted(string xp) => xp + " XP passam do nível máximo e serão perdidos.";
+            public static string SellTitle(string species) => "Vender " + species + "?";
+            public static string SellBody(string coins) => "Você recebe " + coins + " moedas. O XP investido neste peixe não volta. Esta ação não pode ser desfeita.";
         }
 
         // ------------------------------------------------------------------ confirmation (GDD section 11)
@@ -144,6 +195,10 @@ namespace FishingIdle.Texts
                 case "EmptySelection": return "Selecione pelo menos um peixe.";
                 case "CatchNotFound": return "Um dos peixes selecionados não está mais na Caixa de Pesca.";
                 case "DuplicateCatchInRequest": return "O mesmo peixe foi selecionado duas vezes.";
+                case "AquariumFull": return "O Aquário não tem vagas suficientes. Venda ou use peixes como alimento para liberar espaço.";
+                case "FishNotFound": return "Um dos peixes selecionados não está mais no Aquário.";
+                case "CannotFeedItself": return "Um peixe não pode ser alimento dele mesmo.";
+                case "FishAtMaxLevel": return "Este peixe já está no nível máximo.";
                 case "SpeciesMissingFromConfig": return "Um dos peixes é de uma espécie que não existe mais no balanceamento, então não pode ser vendido agora.";
                 default: return "Não foi possível fazer isso agora.";
             }
@@ -183,6 +238,8 @@ namespace FishingIdle.Texts
             public static string AtLeast(string file, string what, int min) => file + ": \"" + what + "\" precisa ser pelo menos " + min + ".";
             public static string BadPercentileBand(string category) => "progression.json: a categoria de tamanho \"" + category + "\" precisa de percentis entre 0 e 1, com o mínimo menor que o máximo.";
             public static string WeightsSumToZero(string file, string what) => file + ": os pesos de \"" + what + "\" somam zero — nada poderia ser sorteado.";
+            public static string FishXpTableGap(int level) => "progression.json: a tabela de XP do peixe (fish_level.xp_table) não tem o nível " + level + ".";
+            public static string BadBaseStats(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de base_stats com Vida e Velocidade maiores que zero e Ataque e Defesa não negativos.";
             public static string XpTableGap(int level) => "progression.json: a tabela de XP do Pescador não tem o nível " + level + ".";
             public static string UnknownRarity(string species, string rarity) => "fish_catalog.json: a espécie \"" + species + "\" usa a raridade \"" + (rarity ?? "") + "\", que não existe em progression.json.";
             public static string BadSizeRange(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de size_cm com mínimo maior que zero e máximo maior que o mínimo.";
@@ -288,6 +345,9 @@ namespace FishingIdle.Texts
             public const string StatInfluence = "Influência do tamanho nos atributos";
             public const string FeedInfluence = "Influência do tamanho no XP de alimento";
             public const string XpTotalTo10 = "XP total do nível 1 ao 10";
+            public const string FishXpTable = "XP do peixe por nível";
+            public const string FisherXpTable = "XP do Pescador por nível";
+            public const string AquariumCapacity = "Capacidade do Aquário";
             public const string FishLevelBonus = "Bônus de atributo por nível do peixe (%)";
             public const string FeedRecovery = "Recuperação do XP investido ao alimentar (0 a 1)";
             public const string RodPrice = "Preço de compra (moedas)";

@@ -120,6 +120,11 @@ namespace FishingIdle.GameService.Config
                 }
 
                 var levels = new HashSet<int>(fisher.XpTable.Select(x => x.Level));
+                if (levels.Count != fisher.XpTable.Count)
+                {
+                    errors.Add(V.DuplicateOrEmptyId(GameConfigLoader.ProgressionFile, "fisher.xp_table", "level"));
+                }
+
                 for (var level = 1; level < fisher.MaxLevel; level++)
                 {
                     if (!levels.Contains(level))
@@ -133,6 +138,63 @@ namespace FishingIdle.GameService.Config
                 {
                     errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fisher.xp_table xp_to_next_level", 1));
                 }
+            }
+
+            var fishLevel = progression.FishLevel;
+            if (fishLevel == null || fishLevel.XpTable == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ProgressionFile, "fish_level.xp_table"));
+            }
+            else
+            {
+                if (fishLevel.MaxLevel < 1)
+                {
+                    errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fish_level.max_level", 1));
+                }
+
+                var fishLevels = new HashSet<int>(fishLevel.XpTable.Select(x => x.Level));
+                if (fishLevels.Count != fishLevel.XpTable.Count)
+                {
+                    errors.Add(V.DuplicateOrEmptyId(GameConfigLoader.ProgressionFile, "fish_level.xp_table", "level"));
+                }
+
+                for (var level = 1; level < fishLevel.MaxLevel; level++)
+                {
+                    if (!fishLevels.Contains(level))
+                    {
+                        errors.Add(V.FishXpTableGap(level));
+                        break;
+                    }
+                }
+
+                if (fishLevel.XpTable.Any(x => x.XpToNextLevel <= 0))
+                {
+                    errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fish_level.xp_table xp_to_next_level", 1));
+                }
+
+                if (fishLevel.StatBonusPerLevelPercent < 0)
+                {
+                    errors.Add(V.NegativeValue(GameConfigLoader.ProgressionFile, "fish_level.stat_bonus_per_level_percent"));
+                }
+            }
+
+            if (progression.Feeding == null || progression.Feeding.ValuableFeedRules == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ProgressionFile, "feeding"));
+            }
+            else if (progression.Feeding.InvestedXpRecoveryRatio < 0 || progression.Feeding.InvestedXpRecoveryRatio > 1)
+            {
+                errors.Add(V.ChanceOutOfRange(GameConfigLoader.ProgressionFile, "feeding.invested_xp_recovery_ratio"));
+            }
+
+            if (progression.Size?.StatInfluence == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ProgressionFile, "size.stat_influence"));
+            }
+
+            if (progression.Size?.FeedXpInfluence == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ProgressionFile, "size.feed_xp_influence"));
             }
 
             // ---- fish_catalog.json
@@ -161,6 +223,11 @@ namespace FishingIdle.GameService.Config
                     if (!rarityIds.Contains(species.Rarity ?? string.Empty))
                     {
                         errors.Add(V.UnknownRarity(species.Id, species.Rarity));
+                    }
+
+                    if (species.BaseStats == null || species.BaseStats.Hp <= 0 || species.BaseStats.Attack < 0 || species.BaseStats.Defense < 0 || species.BaseStats.Speed <= 0)
+                    {
+                        errors.Add(V.BadBaseStats(species.Id));
                     }
 
                     if (species.SizeCm == null || species.SizeCm.Min <= 0 || species.SizeCm.Max <= species.SizeCm.Min)
@@ -289,6 +356,11 @@ namespace FishingIdle.GameService.Config
                 {
                     errors.Add(V.BadIntRange(GameConfigLoader.EconomyFile, "shells.amount_per_drop"));
                 }
+            }
+
+            if (economy.Aquarium == null || economy.Aquarium.HardCapacity < 1)
+            {
+                errors.Add(V.AtLeast(GameConfigLoader.EconomyFile, "aquarium.hard_capacity", 1));
             }
 
             if (economy.FishingBox?.BulkSaleProtection == null)

@@ -3,6 +3,32 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m2.1] — 28/09/2026
+
+Milestone 2 — Aquário e peixe persistente.
+
+### Adicionado
+
+- **Aquário** (menu na barra superior): até 100 peixes, cards visuais e quatro ordenações.
+- **Guardar no Aquário**, na Caixa de Pesca: a captura vira um peixe completo, com identidade
+  própria, só nesse momento.
+- **Ficha do peixe**: tamanho dentro da faixa da espécie, raridade, nível 1 a 10 com XP, e os quatro
+  atributos (Vida, Ataque, Defesa, Velocidade), calculados sem nenhum sorteio escondido.
+- **Alimentação**: peixes da Caixa ou do Aquário viram XP; um peixe já evoluído devolve 50% do XP
+  investido. Prévia com o nível resultante e aviso de XP perdido acima do nível 10.
+- **Venda de peixe do Aquário** para o jogo, com confirmação.
+- **Painel de Desenvolvimento**: tabela de XP do peixe e capacidade do Aquário editáveis; aba Save
+  mostra quantos peixes há no Aquário.
+- 13 testes novos (65 no total).
+
+### Mudado
+
+- **Formato do save: versão 2.** Saves antigos são atualizados sozinhos ao abrir o jogo.
+
+### Não verificado
+
+- A tela do Aquário ainda não foi aberta no Editor do Unity (`M2-T09`).
+
 ## [0.1.0-m1.2] — 28/09/2026
 
 O projeto deixa de usar a Vercel, a pedido do proprietário.

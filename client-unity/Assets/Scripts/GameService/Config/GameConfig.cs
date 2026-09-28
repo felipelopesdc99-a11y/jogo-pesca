@@ -20,6 +20,8 @@ namespace FishingIdle.GameService.Config
         private readonly Dictionary<string, SizeCategoryConfig> _sizeCategories;
         private readonly Dictionary<string, RarityTierConfig> _rarities;
         private readonly Dictionary<int, long> _fisherXpTable;
+        private readonly Dictionary<int, long> _fishXpTable;
+        private readonly Dictionary<string, int> _rarityRank;
 
         internal GameConfig(
             FishCatalogConfig fishCatalog,
@@ -42,6 +44,8 @@ namespace FishingIdle.GameService.Config
             _sizeCategories = progression.Size.Categories.ToDictionary(c => c.Id, StringComparer.Ordinal);
             _rarities = progression.Rarity.Tiers.ToDictionary(t => t.Id, StringComparer.Ordinal);
             _fisherXpTable = progression.Fisher.XpTable.ToDictionary(x => x.Level, x => x.XpToNextLevel);
+            _fishXpTable = progression.FishLevel.XpTable.ToDictionary(x => x.Level, x => x.XpToNextLevel);
+            _rarityRank = progression.Rarity.Tiers.Select((t, i) => new { t.Id, i }).ToDictionary(x => x.Id, x => x.i, StringComparer.Ordinal);
         }
 
         public FishCatalogConfig FishCatalog { get; }
@@ -82,6 +86,25 @@ namespace FishingIdle.GameService.Config
 
             return _fisherXpTable.TryGetValue(level, out var xp) ? xp : 0;
         }
+
+        /// <summary>XP a fish needs to go from <paramref name="level"/> to the next; 0 at the max level.</summary>
+        public long FishXpToNextLevel(int level)
+        {
+            if (level >= Progression.FishLevel.MaxLevel)
+            {
+                return 0;
+            }
+
+            return _fishXpTable.TryGetValue(level, out var xp) ? xp : 0;
+        }
+
+        /// <summary>Position of a rarity in the power hierarchy (order of rarity.tiers); unknown = -1.</summary>
+        public int RarityRank(string rarityId)
+        {
+            return rarityId != null && _rarityRank.TryGetValue(rarityId, out var rank) ? rank : -1;
+        }
+
+        public int AquariumCapacity => Economy.Aquarium.HardCapacity;
 
         /// <summary>The rod's bonuses at an internal level (1–10). Rods without levels ignore it.</summary>
         public RodBonusesConfig RodBonusesAt(RodConfig rod, int level)

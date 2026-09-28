@@ -81,6 +81,30 @@ namespace FishingIdle.GameService.Config
         public SizeConfig Size { get; set; }
         public RarityConfig Rarity { get; set; }
         public FishingConfig Fishing { get; set; }
+        public FishLevelConfig FishLevel { get; set; }
+        public FeedingConfig Feeding { get; set; }
+    }
+
+    public sealed class FishLevelConfig
+    {
+        public int MaxLevel { get; set; }
+        public double StatBonusPerLevelPercent { get; set; }
+        public List<XpLevelConfig> XpTable { get; set; }
+    }
+
+    public sealed class FeedingConfig
+    {
+        public double InvestedXpRecoveryRatio { get; set; }
+        public bool WarnOnValuableFeed { get; set; }
+        public ValuableFeedRulesConfig ValuableFeedRules { get; set; }
+    }
+
+    /// <summary>Which fish ask for confirmation before being consumed as food.</summary>
+    public sealed class ValuableFeedRulesConfig
+    {
+        public string RarityAtOrAbove { get; set; }
+        public List<string> SizeCategories { get; set; }
+        public int MinLevel { get; set; }
     }
 
     public sealed class FisherConfig
@@ -99,6 +123,8 @@ namespace FishingIdle.GameService.Config
     {
         public List<SizeCategoryConfig> Categories { get; set; }
         public InfluenceConfig SaleValueInfluence { get; set; }
+        public InfluenceConfig StatInfluence { get; set; }
+        public InfluenceConfig FeedXpInfluence { get; set; }
     }
 
     public sealed class SizeCategoryConfig
@@ -184,6 +210,12 @@ namespace FishingIdle.GameService.Config
         public NpcFishSaleConfig NpcFishSale { get; set; }
         public ShellsConfig Shells { get; set; }
         public FishingBoxConfig FishingBox { get; set; }
+        public AquariumConfig Aquarium { get; set; }
+    }
+
+    public sealed class AquariumConfig
+    {
+        public int HardCapacity { get; set; }
     }
 
     public sealed class NpcFishSaleConfig

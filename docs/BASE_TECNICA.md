@@ -46,7 +46,8 @@ client-unity/Assets/
 │   │   ├── Config/        Modelos de /config, carregamento, validação, impressão digital da versão
 │   │   ├── Core/          Relógio (IClock), sorteio determinístico (Rng), ServiceResult/ServiceError
 │   │   ├── Persistence/   Save (PlayerSave), repositório JSON com backup, validação e migrações
-│   │   ├── Fishing/       Serviço de pesca, fórmulas de captura (CatchRules), visões para a tela
+│   │   ├── Fishing/       Serviço de pesca, fórmulas de captura (CatchRules) e de peixe (FishRules), visões
+│   │   ├── Aquarium/      Serviço do Aquário: guardar, alimentar, vender, ordenar
 │   │   ├── GameSession.cs Estado vivo de um jogador (config + save + relógio + armazenamento)
 │   │   ├── PlayerService.cs
 │   │   └── LocalGame.cs   Ponto de entrada: monta os serviços locais
@@ -86,7 +87,8 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | Interface | Implementação atual | Faz |
 |---|---|---|
 | `IFishingService` | `LocalFishingService` | Iniciar/parar pesca, sincronizar ciclos, Caixa de Pesca, prévia de venda, venda |
-| `IPlayerService` | `LocalPlayerService` | Resumo do jogador (nível, XP, Moedas, mapa, vara) |
+| `IPlayerService` | `LocalPlayerService` | Resumo do jogador (nível, XP, Moedas, mapa, vara, Aquário) |
+| `IAquariumService` | `LocalAquariumService` | Guardar capturas, ficha do peixe, alimentar, vender do Aquário |
 | `IPlayerRepository` | `JsonFilePlayerRepository` | Ler/gravar/resetar o save |
 | `IClock` | `SystemClock` | A única fonte de "agora" das regras |
 
@@ -128,6 +130,8 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 | XP do Pescador | XP base da espécie × raridade × multiplicador da categoria, arredondado, mínimo 1 | `fish_catalog.json`, `progression.json` |
 | Conchas | Só varas que geram Conchas; chance base × (1 + bônus da vara) | `economy.json → shells` |
 | Preço de venda | Valor base × raridade × (1 + influência × (percentil − 0,5)), mínimo configurável | `economy.json`, `progression.json` |
+| Atributos do peixe | Base × raridade × (1 + influência × (percentil − 0,5)) × (1 + bônus por nível × (nível − 1)) | `fish_catalog.json`, `progression.json` |
+| XP como alimento | XP base × raridade × fator de tamanho + 50% do XP investido | `progression.json → feeding` |
 
 ## 4. Balanceamento (/config)
 
@@ -164,6 +168,9 @@ Regras:
 - Valores derivados do config (preço, XP, nomes) não são gravados; só o que é do jogador.
 - A Caixa de Pesca é compacta (seção 11 do GDD): cada captura guarda id, espécie, milímetros,
   categoria, hora e marcas (espécie nova, recorde). Não é um peixe completo.
+- O Aquário (desde a versão 2 do save) guarda peixes completos (`FishInstance`): id, espécie,
+  milímetros, categoria, nível, XP do nível, XP investido, datas e a captura de origem. Os atributos
+  nunca são gravados; `FishRules.Stats` os calcula.
 
 ## 6. Apresentação (Game)
 

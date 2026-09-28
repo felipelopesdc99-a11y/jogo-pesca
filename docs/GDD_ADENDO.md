@@ -77,7 +77,7 @@ O GDD define o limite do Aquário (100), mas não da Caixa. Por enquanto a Caixa
 quantidade. Se o proprietário quiser um limite, ele entra como um valor em `/config`.
 
 ### A-007 · "Guardar" no Milestone 1
-**Seção do GDD:** 11, 12 · **Situação:** Em vigor
+**Seção do GDD:** 11, 12 · **Situação:** Substituído pelo Milestone 2 (A-015)
 
 No Milestone 1, o peixe que você não vende **fica guardado na Caixa de Pesca**, que é persistente.
 O botão "Guardar no Aquário", que transforma a captura num peixe completo com nível e atributos,
@@ -134,3 +134,53 @@ balanceamento atual.
 XP do Pescador por captura e preço de venda são arredondados para inteiro (mínimo 1 XP; preço
 mínimo configurável). No Mapa 1, o Nível 10 sai em cerca de 2 horas de pesca online, como pede o
 GDD (verificado por simulação nos testes).
+
+---
+
+## Milestone 2 — Aquário e peixe persistente
+
+### A-015 · Guardar no Aquário
+**Seção do GDD:** 11, 12 · **Situação:** Em vigor
+
+Na Caixa de Pesca, selecione os peixes e clique em **Guardar no Aquário**. Se não houver vagas para
+todos, nada é guardado e o jogo avisa quantas vagas faltam. O Aquário mostra a ocupação no menu
+(ex.: `Aquário 12/100`).
+
+### A-016 · Fórmula dos atributos
+**Seção do GDD:** 13, 24 · **Situação:** Confirmar
+
+`atributo = base da espécie × raridade × tamanho × nível`, onde tamanho vai de −10% (menor exemplar)
+a +10% (maior) e cada nível acima do 1 soma +4% (nível 10 = +36%). Raro = ×1,15. Os quatro atributos
+usam a mesma conta. Todos os números estão em `/config` e no Painel de Desenvolvimento.
+
+### A-017 · Alimento pode vir da Caixa ou do Aquário
+**Seção do GDD:** 11, 22 · **Situação:** Em vigor
+
+O GDD permite usar a Caixa como fonte de alimento. Na tela de alimentação há duas abas: **Da Caixa
+de Pesca** e **Do Aquário**. Dá para misturar as duas numa mesma alimentação.
+
+### A-018 · XP acima do nível 10 é perdido
+**Seção do GDD:** 22 · **Situação:** Confirmar
+
+Um peixe no nível 10 não pode mais ser alimentado. Se uma alimentação passar do nível 10, o que
+sobrar é perdido; a prévia mostra quanto e pede confirmação antes.
+
+### A-019 · Quais alimentos pedem confirmação
+**Seção do GDD:** 22 · **Situação:** Confirmar
+
+Pede confirmação consumir peixe **Raro**, de tamanho **Excepcional** ou já **evoluído (nível 2+)**
+(`progression.json → feeding.valuable_feed_rules`). Vender um peixe do Aquário sempre pede
+confirmação, porque ele é único.
+
+### A-020 · Ordenação do Aquário
+**Seção do GDD:** 12 · **Situação:** Confirmar
+
+Padrão: Excepcional → Grande → Adulto → Pequeno; dentro da categoria, primeiro o maior **para a sua
+espécie** (percentual dentro da faixa de tamanho), não o maior em centímetros — assim um lambari
+recorde não fica atrás de qualquer pirarucu. Também dá para ordenar por nível, espécie ou mais
+recentes.
+
+### A-021 · Venda de peixe do Aquário
+**Seção do GDD:** 36 · **Situação:** Em vigor
+
+Mesmo preço que teria na Caixa (espécie, raridade e tamanho). O XP investido não é reembolsado.

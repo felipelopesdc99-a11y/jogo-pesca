@@ -22,6 +22,7 @@ namespace FishingIdle.Game.UI
         private GameRoot _root;
         private FishingScene _scene;
         private FishingBoxWindow _box;
+        private AquariumWindow _aquarium;
         private bool _cardExpanded = true;
         private float _boxPulseUntil;
         private float _width;
@@ -32,6 +33,7 @@ namespace FishingIdle.Game.UI
             _root = GetComponent<GameRoot>();
             _scene = GetComponent<FishingScene>();
             _box = new FishingBoxWindow(_root);
+            _aquarium = new AquariumWindow(_root);
             _root.CatchesArrived += OnCatchesArrived;
         }
 
@@ -100,16 +102,25 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape && _box.IsOpen)
+            if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
             {
-                _box.Close();
-                Event.current.Use();
+                if (_aquarium.IsOpen)
+                {
+                    _aquarium.Close();
+                    Event.current.Use();
+                }
+                else if (_box.IsOpen)
+                {
+                    _box.Close();
+                    Event.current.Use();
+                }
             }
 
             _root.Toasts.Prune();
 
-            // While the Fishing Box is open, it owns the input; the HUD underneath is shown but inert.
-            GUI.enabled = !_box.IsOpen;
+            // While a window is open, it owns the input; the HUD underneath is shown but inert.
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen;
+            GUI.enabled = !windowOpen;
             DrawTopBar(skin);
             DrawPlayerCard(skin);
             DrawFishingControls(skin);
@@ -117,6 +128,14 @@ namespace FishingIdle.Game.UI
             GUI.enabled = true;
 
             _box.Draw(skin, _width, _height);
+            _aquarium.Draw(skin, _width, _height);
+            GUI.enabled = true;
+            if (windowOpen)
+            {
+                // The navigation stays usable above the windows.
+                DrawNavigation(skin);
+            }
+
             DrawToasts(skin);
         }
 
@@ -136,8 +155,7 @@ namespace FishingIdle.Game.UI
 
             // Primary navigation (GDD section 7). Only menus that exist are shown; the others
             // appear as their milestones arrive, never as dead buttons.
-            var navWidth = 140f;
-            GUI.Toggle(new Rect(_width / 2f - navWidth / 2f, 12, navWidth, 40), true, GameTexts.Navigation.Fishing, skin.ChipActive);
+            DrawNavigation(skin);
 
             if (player == null)
             {
@@ -162,6 +180,42 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, 18, coinsWidth, 30), coins, skin.Number);
             x -= 34;
             skin.CoinIcon(new Rect(x, 20, 26, 26));
+        }
+
+        /// <summary>Main menus (GDD section 7). Pesca closes any window; the others open theirs.</summary>
+        private void DrawNavigation(UiSkin skin)
+        {
+            const float navWidth = 150f;
+            var x = _width / 2f - navWidth - 5f;
+            var fishingActive = !_aquarium.IsOpen;
+            if (GUI.Button(new Rect(x, 12, navWidth, 40), GameTexts.Navigation.Fishing, fishingActive ? skin.ChipActive : skin.Chip))
+            {
+                while (_aquarium.IsOpen)
+                {
+                    _aquarium.Close();
+                }
+
+                while (_box.IsOpen)
+                {
+                    _box.Close();
+                }
+            }
+
+            var aquariumLabel = GameTexts.Navigation.Aquarium;
+            if (_root.Player != null)
+            {
+                aquariumLabel += "  " + _root.Player.AquariumCount + "/" + _root.Player.AquariumCapacity;
+            }
+
+            if (GUI.Button(new Rect(x + navWidth + 10f, 12, navWidth, 40), aquariumLabel, _aquarium.IsOpen ? skin.ChipActive : skin.Chip) && !_aquarium.IsOpen)
+            {
+                while (_box.IsOpen)
+                {
+                    _box.Close();
+                }
+
+                _aquarium.Open();
+            }
         }
 
         private void DrawPlayerCard(UiSkin skin)

@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-28T22:42:12Z",
-  "current_milestone": "M1",
+  "updated_at": "2026-09-28T22:56:49Z",
+  "current_milestone": "M2",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -35,6 +35,14 @@
       "title": "Pescar de 10 a 20 minutos e dizer o que achou",
       "detail": "É o critério de conclusão do Milestone 1. Aperte Iniciar pesca, deixe rodar, abra a Caixa de Pesca, venda alguns peixes. Diga o que agradou e o que incomodou: ritmo, visual, sons que faltam, tamanho dos textos. Para testar mais rápido, o Painel de Desenvolvimento → Balanceamento → Pesca deixa o tempo por captura em 5 segundos, aplicando com o jogo rodando.",
       "raised_at": "2026-09-28T22:23:54Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-004",
+      "task_id": "M2-T09",
+      "title": "Testar o Aquário",
+      "detail": "Junto com o teste de pesca: guarde alguns peixes pela Caixa de Pesca, abra o menu Aquário, clique num peixe para ver a ficha, alimente-o com outros peixes e veja o nível subir. Diga se os números (atributos, XP por nível) e a tela fazem sentido. Não precisa esperar: se não puder testar agora, eu sigo com o Milestone 3.",
+      "raised_at": "2026-09-28T22:56:49Z",
       "status": "OPEN"
     }
   ],
@@ -384,77 +392,109 @@
           "title": "Aquário com limite fixo de 100",
           "subsystem": "server",
           "description": "Capacidade rígida, sem expansão; com 100/100 a Caixa continua recebendo.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M1-T12"
+            "M1-T07"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Capacidade em economy.json → aquarium.hard_capacity (100). Guardar além das vagas é recusado por inteiro; a pesca continua enchendo a Caixa normalmente. Testado.",
+          "updated_at": "2026-09-28T22:56:49Z"
         },
         {
           "id": "M2-T02",
           "title": "Guardar peixe da Caixa no Aquário",
           "subsystem": "server",
           "description": "Cria o peixe persistente (FishInstance) só neste momento.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M2-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "KeepCatches transforma capturas selecionadas em peixes completos (id próprio, espécie, tamanho exato, categoria, nível 1, datas, captura de origem) e as tira da Caixa. Tudo-ou-nada; guardar duas vezes é recusado. Save passou para a versão 2, com migração automática dos saves antigos.",
+          "updated_at": "2026-09-28T22:56:49Z"
         },
         {
           "id": "M2-T03",
           "title": "Atributos determinísticos",
           "subsystem": "server",
           "description": "Vida, Ataque, Defesa e Velocidade a partir de espécie, raridade, tamanho e nível; sem atributos ocultos.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M2-T01"
+            "M2-T02"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "FishRules.Stats: base da espécie × raridade × tamanho (±10%) × nível (+4% por nível). Nada é sorteado nem gravado; mesmos quatro dados sempre dão os mesmos atributos (testado).",
+          "updated_at": "2026-09-28T22:56:49Z"
         },
         {
           "id": "M2-T04",
           "title": "Nível do peixe de 1 a 10",
           "subsystem": "server",
           "description": "Bônus percentual por nível, sem pontos distribuídos.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M2-T01"
+            "M2-T03"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Tabela de XP do peixe em progression.json → fish_level; nível 10 = +36% nos atributos.",
+          "updated_at": "2026-09-28T22:56:49Z"
         },
         {
           "id": "M2-T05",
           "title": "Alimentação com recuperação de 50% do XP investido",
           "subsystem": "server",
           "description": "Consumir um peixe dá o XP de alimento dele mais 50% do XP que tinha sido investido.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M2-T01"
+            "M2-T04"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Alimento pode vir da Caixa ou do Aquário. Valor do alimento: XP base × raridade × tamanho, mais 50% do XP investido se o peixe já tinha sido alimentado. XP além do nível 10 é perdido e avisado antes. Um peixe não come a si mesmo; peixe no nível máximo não come. Testado.",
+          "updated_at": "2026-09-28T22:56:49Z"
         },
         {
           "id": "M2-T06",
           "title": "Tela do Aquário com cards e ficha do peixe",
           "subsystem": "client",
-          "description": "Cards visuais, ordenação Excepcional → Grande → Adulto → Pequeno, ficha com tamanho, raridade, nível e atributos.",
-          "status": "TODO",
+          "description": "Cards visuais, ordenação e ficha com tamanho, raridade, nível e atributos.",
+          "status": "DONE",
           "dependencies": [
-            "M2-T01"
+            "M2-T02"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Menu Aquário na barra superior (com a ocupação, ex.: 12/100). Ordenação por tamanho (Excepcional → Grande → Adulto → Pequeno), nível, espécie ou mais recentes. Ficha com arte, tamanho e faixa da espécie, nível e XP, os quatro atributos, valor de venda e valor como alimento. Botão Guardar no Aquário na Caixa de Pesca. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-28T22:56:49Z"
         },
         {
           "id": "M2-T07",
           "title": "Proteções de confirmação",
           "subsystem": "client",
-          "description": "Aviso ao consumir peixe valioso.",
-          "status": "TODO",
+          "description": "Aviso ao consumir ou vender peixe valioso.",
+          "status": "DONE",
           "dependencies": [
-            "M2-T01"
+            "M2-T05",
+            "M2-T06"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Alimentação com peixe Raro, Excepcional ou já evoluído (regra em progression.json → feeding.valuable_feed_rules), ou com XP que seria perdido, pede confirmação listando os peixes. Vender do Aquário sempre pede confirmação. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-28T22:56:49Z"
+        },
+        {
+          "id": "M2-T08",
+          "title": "Vender peixe do Aquário para o jogo",
+          "subsystem": "server",
+          "description": "Venda ao NPC pelo mesmo preço da Caixa; o XP investido não volta (GDD seção 36).",
+          "status": "DONE",
+          "dependencies": [
+            "M2-T02"
+          ],
+          "completion_notes": "SellFish valida tudo antes de pagar; vender duas vezes é recusado. Testado.",
+          "updated_at": "2026-09-28T22:56:49Z"
+        },
+        {
+          "id": "M2-T09",
+          "title": "Teste do Aquário pelo proprietário",
+          "subsystem": "client",
+          "description": "Guardar peixes, abrir a ficha, alimentar e vender dentro do Unity.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M2-T06",
+            "M2-T07"
+          ],
+          "updated_at": "2026-09-28T22:56:49Z"
         }
       ]
     },

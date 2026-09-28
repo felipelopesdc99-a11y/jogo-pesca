@@ -274,8 +274,15 @@ namespace FishingIdle.GameService.Persistence
     {
         public static void Upgrade(PlayerSave save)
         {
-            // Version 1 is the first format; nothing to upgrade yet. A future step looks like:
-            // if (save.SaveVersion == 1) { ...reshape...; save.SaveVersion = 2; }
+            if (save.SaveVersion == 1)
+            {
+                // v2 adds the Aquarium (Milestone 2).
+                save.Aquarium = new List<FishInstance>();
+                save.NextFishId = 1;
+                save.SaveVersion = 2;
+            }
+
+            save.Aquarium = save.Aquarium ?? new List<FishInstance>();
             save.FishingBox = save.FishingBox ?? new List<BoxCatch>();
             save.SpeciesRecords = save.SpeciesRecords ?? new Dictionary<string, SpeciesRecord>();
             save.Stats = save.Stats ?? new PlayerStats();
@@ -323,6 +330,18 @@ namespace FishingIdle.GameService.Persistence
             }
 
             if (save.SpeciesRecords == null) problems.Add("species_records missing");
+            if (save.Aquarium == null) problems.Add("aquarium missing");
+            else
+            {
+                if (save.Aquarium.Any(f => f == null || string.IsNullOrWhiteSpace(f.SpeciesId) || f.SizeMm <= 0 || f.Level < 1 || f.Xp < 0 || f.InvestedXp < 0))
+                {
+                    problems.Add("aquarium has malformed entries");
+                }
+
+                var fishIds = save.Aquarium.Where(f => f != null).Select(f => f.Id).ToList();
+                if (fishIds.Count != fishIds.Distinct().Count()) problems.Add("aquarium has duplicate ids");
+                if (fishIds.Any(id => id <= 0 || id >= save.NextFishId)) problems.Add("aquarium id outside issued range");
+            }
             if (save.Stats == null) problems.Add("stats missing");
 
             return problems;

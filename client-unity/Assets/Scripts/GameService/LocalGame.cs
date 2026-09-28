@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
@@ -21,11 +22,13 @@ namespace FishingIdle.GameService
             Session = session;
             Fishing = new LocalFishingService(session);
             Player = new LocalPlayerService(session);
+            Aquarium = new LocalAquariumService(session);
         }
 
         public GameSession Session { get; }
         public IFishingService Fishing { get; }
         public IPlayerService Player { get; }
+        public IAquariumService Aquarium { get; }
 
         /// <summary>Starts the game service, or explains in PT-BR why it cannot.</summary>
         public static LocalGameStartResult Start(string configDirectory, string saveDirectory, IClock clock, Action<string> log)

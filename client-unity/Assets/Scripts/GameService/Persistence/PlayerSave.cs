@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 1;
+        public const int CurrentVersion = 2;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -50,6 +50,12 @@ namespace FishingIdle.GameService.Persistence
         /// because it cannot be reconstructed later; the Encyclopedia (Milestone 3) displays it.
         /// </summary>
         public Dictionary<string, SpeciesRecord> SpeciesRecords { get; set; } = new Dictionary<string, SpeciesRecord>();
+
+        /// <summary>Next id handed to an Aquarium fish. Ids are never reused.</summary>
+        public long NextFishId { get; set; } = 1;
+
+        /// <summary>Fish kept in the Aquarium: full persistent entities (GDD sections 12–13). Added in save version 2.</summary>
+        public List<FishInstance> Aquarium { get; set; } = new List<FishInstance>();
 
         public PlayerStats Stats { get; set; } = new PlayerStats();
     }
@@ -106,6 +112,32 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Bit flags, see <see cref="BoxCatchFlags"/>.</summary>
         [JsonProperty("f")] public int Flags { get; set; }
+    }
+
+    /// <summary>
+    /// A fish the player kept. It exists only from the moment it is moved to the Aquarium and keeps
+    /// its identity until consumed or sold. Combat stats are not stored: they are derived from
+    /// species, rarity, size and level, so identical inputs always give identical stats.
+    /// </summary>
+    public sealed class FishInstance
+    {
+        public long Id { get; set; }
+        public string SpeciesId { get; set; }
+        public int SizeMm { get; set; }
+        public string SizeCategoryId { get; set; }
+        public int Level { get; set; } = 1;
+
+        /// <summary>XP inside the current level.</summary>
+        public long Xp { get; set; }
+
+        /// <summary>All XP ever fed to this fish; half comes back when it is consumed (GDD section 22).</summary>
+        public long InvestedXp { get; set; }
+
+        public long CaughtAtMs { get; set; }
+        public long KeptAtMs { get; set; }
+
+        /// <summary>The Fishing Box catch it came from, for audit.</summary>
+        public long SourceCatchId { get; set; }
     }
 
     public static class BoxCatchFlags

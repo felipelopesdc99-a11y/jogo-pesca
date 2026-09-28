@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using FishingIdle.Game.Scene;
 using FishingIdle.Game.UI;
 using FishingIdle.GameService;
+using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Config;
+using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.Texts;
@@ -48,6 +50,9 @@ namespace FishingIdle.Game.Bootstrap
 
         /// <summary>Raised after anything that may change what the Fishing Box shows.</summary>
         public event Action BoxChanged;
+
+        /// <summary>Raised after anything that may change what the Aquarium shows.</summary>
+        public event Action AquariumChanged;
 
         public bool IsRunning => Game != null;
 
@@ -183,6 +188,92 @@ namespace FishingIdle.Game.Bootstrap
             return sold;
         }
 
+        // ------------------------------------------------------------------ Aquarium intents
+
+        public AquariumView GetAquarium(AquariumSort sort)
+        {
+            return IsRunning ? Game.Aquarium.GetAquarium(sort) : null;
+        }
+
+        public FishView GetFish(long fishId)
+        {
+            return IsRunning ? Game.Aquarium.GetFish(fishId) : null;
+        }
+
+        /// <summary>Moves Fishing Box catches to the Aquarium. Returns true when it happened.</summary>
+        public bool KeepCatches(IReadOnlyCollection<long> catchIds)
+        {
+            var kept = false;
+            Guard(() =>
+            {
+                var result = Game.Aquarium.KeepCatches(catchIds);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                kept = true;
+                Toasts.Push(GameTexts.Aquarium.Kept(result.Value.Kept.Count, result.Value.AquariumCount, result.Value.Capacity), ToastKind.Info);
+                Refresh();
+                BoxChanged?.Invoke();
+                AquariumChanged?.Invoke();
+            });
+            return kept;
+        }
+
+        public ServiceResult<FeedPreview> PreviewFeed(long targetId, IReadOnlyCollection<long> boxIds, IReadOnlyCollection<long> fishIds)
+        {
+            return Game.Aquarium.PreviewFeed(targetId, boxIds, fishIds);
+        }
+
+        public bool Feed(long targetId, IReadOnlyCollection<long> boxIds, IReadOnlyCollection<long> fishIds)
+        {
+            var fed = false;
+            Guard(() =>
+            {
+                var result = Game.Aquarium.Feed(targetId, boxIds, fishIds);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                fed = true;
+                var p = result.Value;
+                Toasts.Push(GameTexts.Aquarium.Fed(Format.Number(p.XpGained), p.LevelAfter), p.LevelAfter > p.LevelBefore ? ToastKind.LevelUp : ToastKind.Info);
+                Refresh();
+                BoxChanged?.Invoke();
+                AquariumChanged?.Invoke();
+            });
+            return fed;
+        }
+
+        public SalePreview PreviewFishSale(IReadOnlyCollection<long> fishIds)
+        {
+            return Game.Aquarium.PreviewSale(fishIds);
+        }
+
+        public bool SellFish(IReadOnlyCollection<long> fishIds)
+        {
+            var sold = false;
+            Guard(() =>
+            {
+                var result = Game.Aquarium.SellFish(fishIds);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                sold = true;
+                Toasts.Push(GameTexts.Box.Sold(result.Value.Count, Format.Number(result.Value.CoinsGained)), ToastKind.Coins);
+                Refresh();
+                AquariumChanged?.Invoke();
+            });
+            return sold;
+        }
+
         // ------------------------------------------------------------------ Dev Panel hooks
 
         /// <summary>Reloads /config into the running game (Dev Panel "Salvar e aplicar").</summary>
@@ -200,6 +291,7 @@ namespace FishingIdle.Game.Bootstrap
                 Toasts.Push(GameTexts.Toasts.ConfigReloaded, ToastKind.Info);
                 Refresh();
                 BoxChanged?.Invoke();
+                AquariumChanged?.Invoke();
             });
             return Array.Empty<string>();
         }
@@ -214,6 +306,7 @@ namespace FishingIdle.Game.Bootstrap
                 Toasts.Push(GameTexts.Toasts.SaveReset, ToastKind.Info);
                 Refresh();
                 BoxChanged?.Invoke();
+                AquariumChanged?.Invoke();
             });
             return kept;
         }

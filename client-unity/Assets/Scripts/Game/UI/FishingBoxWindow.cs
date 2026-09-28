@@ -241,9 +241,20 @@ namespace FishingIdle.Game.UI
             // Recomputed only when the selection or the box changes, not on every GUI event.
             var preview = _preview ?? (_preview = _root.PreviewSale(_selected.ToList()));
             var info = preview.Count == 0 ? GameTexts.Box.NothingSelected : GameTexts.Box.Selected(preview.Count, Format.Number(preview.TotalCoins));
-            GUI.Label(new Rect(x + 380, y + 10, panel.width - 700, 24), info, skin.Body);
+            GUI.Label(new Rect(x + 380, y + 10, panel.width - 950, 24), info, skin.Body);
 
             GUI.enabled = GUI.enabled && preview.Count > 0;
+            if (GUI.Button(new Rect(panel.xMax - 528, y, 250, 40), GameTexts.Aquarium.KeepSelected, skin.Button))
+            {
+                if (_root.KeepCatches(_selected.ToList()))
+                {
+                    _selected.Clear();
+                    _preview = null;
+                }
+
+                Reload();
+            }
+
             if (GUI.Button(new Rect(panel.xMax - 268, y, 240, 40), GameTexts.Box.SellSelected, skin.ButtonPrimary))
             {
                 if (preview.NeedsConfirmation)
@@ -257,7 +268,11 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.enabled = _pendingConfirmation == null;
-            GUI.Label(new Rect(x, y + 50, panel.width - 56, 22), GameTexts.Box.AquariumSoon, skin.SmallMuted);
+            var player = _root.Player;
+            if (player != null)
+            {
+                GUI.Label(new Rect(x, y + 50, panel.width - 56, 22), GameTexts.Aquarium.Slots(player.AquariumCount, player.AquariumCapacity), skin.SmallMuted);
+            }
         }
 
         private void DrawConfirmation(UiSkin skin, float screenWidth, float screenHeight)
