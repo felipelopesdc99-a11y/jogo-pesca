@@ -53,15 +53,6 @@ Essas chaves são **armazenadas** em inglês e **traduzidas na hora de exibir**.
 
 ### Onde ficam os textos da interface
 
-Todo o texto do Painel de Desenvolvimento está em um único arquivo:
-
-```
-web/dev-console/src/lib/strings.ts
-```
-
-Ao adicionar uma tela ou um rótulo, o texto vai para lá — nunca escrito direto no JSX. Isso mantém
-o painel traduzível por inteiro e evita que uma frase em inglês volte a aparecer por descuido.
-
 No jogo (Unity), todo texto — do jogo, do Painel de Desenvolvimento do Unity e das mensagens de
 validação — fica em um único arquivo:
 
@@ -69,12 +60,13 @@ validação — fica em um único arquivo:
 client-unity/Assets/Scripts/Texts/GameTexts.cs
 ```
 
-A formatação brasileira do Unity está em `client-unity/Assets/Scripts/Texts/Format.cs`.
+Ao adicionar uma tela ou um rótulo, o texto vai para lá — nunca escrito direto no código. Isso
+mantém tudo traduzível e evita que uma frase em inglês volte a aparecer por descuido.
 
 ### Formatação brasileira
 
 Datas em `DD/MM/AAAA`. Números com vírgula decimal (`10,3%`, `8,5 KB`). Horas em 24h.
-As funções já existem em `strings.ts`: `formatDate`, `formatDateTime`, `formatNumber`, `formatUptime`.
+As funções ficam em `client-unity/Assets/Scripts/Texts/Format.cs`.
 
 ### Exceção registrada
 
@@ -120,8 +112,7 @@ conclui o trabalho**, com uma nota em `completion_notes` dizendo o que foi entre
 progresso separadamente do código que o produziu.
 
 O proprietário vê esse arquivo no Painel de Desenvolvimento dentro do Unity (menu Fishing Idle →
-Painel de Desenvolvimento) e no painel web, que pode ler o arquivo direto do GitHub — então **todo
-commit enviado aparece para o proprietário**. Nunca existe um indicador de "trabalho em
+Painel de Desenvolvimento) — então **todo commit enviado aparece para o proprietário**. Nunca existe um indicador de "trabalho em
 segundo plano": o painel reflete commits, nunca atividade (seção 5 do GDD).
 
 ## 6. Onde registrar o que for criado
@@ -145,11 +136,23 @@ mudança**, o documento certo:
 
 Precisa do SDK do .NET 8+. Roda os testes das regras do jogo e compila o código do Unity (jogo e
 Painel de Desenvolvimento) contra as bibliotecas de referência do Unity, sem precisar do Editor.
-Servidor e painel web (adiados) só entram se o .NET 10 e o Node estiverem instalados. Precisa
-passar.
+Precisa passar. As partes arquivadas só entram com `--completo`.
 
 Compilar não é rodar: o que depende do Editor do Unity (visual, jogabilidade) só é declarado
 verificado depois que o proprietário apertar Play. Diga isso com clareza no relatório.
+
+## 8. Partes arquivadas: não gastar tokens com elas
+
+A infraestrutura online (Milestone 12) fica guardada no repositório, mas **não é lida, buscada,
+testada nem alterada**, a não ser que o proprietário peça explicitamente:
+
+- `server/`, `web/`, `shared-contracts/`
+- `ops/docker-compose.yml` e `ops/scripts/dev-up.sh`, `dev-down.sh`, `migrate.sh`, `new-migration.sh`
+- `client-unity/Assets/Scripts/Core/` e `Diagnostics/` (cliente HTTP dormente)
+- `docs/API.md` e `docs/INFRA_ONLINE.md`
+
+O arquivo `.ignore` na raiz faz as buscas pularem essas pastas. Nada de ler esses arquivos "para
+entender o contexto": tudo que o MVP precisa está em `client-unity/`, `config/`, `docs/` e `tools/`.
 
 ---
 
@@ -163,7 +166,6 @@ verificado depois que o proprietário apertar Play. Diga isso com clareza no rel
 | Como o código funciona | `docs/BASE_TECNICA.md` |
 | Decisões técnicas e princípios travados | `docs/DECISOES.md` |
 | Progresso | `docs/roadmap.json` e `docs/ROADMAP.md` |
-| API | `docs/API.md` |
 | Segurança e anti-trapaça | `docs/SEGURANCA.md` |
 | Versionamento | `docs/VERSIONAMENTO.md` |
 | Balanceamento | `config/README.md` |

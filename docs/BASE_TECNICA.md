@@ -204,7 +204,8 @@ painel, mensagens de validação). `Format.cs` formata números (`1.234`, `35,2 
 ## 9. Testes e checagens (sem precisar do Unity)
 
 ```bash
-./ops/scripts/verify.sh
+./ops/scripts/verify.sh              # o jogo (padrão)
+./ops/scripts/verify.sh --completo   # também o servidor e o painel web arquivados
 ```
 
 | Projeto | O que garante |

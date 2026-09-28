@@ -12,6 +12,12 @@ O projeto deixa de usar a Vercel, a pedido do proprietário.
 - `docs/PAINEL_ONLINE.md`, o guia de publicação do painel na Vercel.
 - A tarefa de publicar o painel web (`M12-T12`). A decisão `OD-002` foi encerrada como descartada.
 
+### Mudado
+
+- A infraestrutura online (servidor, painel web, Docker) fica arquivada: continua no repositório,
+  mas fora das buscas (`.ignore`), das regras de trabalho (`CLAUDE.md`, seção 8) e do `verify.sh`
+  padrão, que agora só a inclui com `--completo` (TD-022).
+
 ### Adicionado
 
 - `vercel.json` na raiz e em `web/dev-console`, desligando as publicações automáticas da Vercel

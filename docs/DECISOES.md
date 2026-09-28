@@ -358,3 +358,15 @@ dos dois é usado pelo jogo.
 
 **Rever se.** O projeto da Vercel for desconectado do GitHub ou apagado: aí os dois `vercel.json`
 podem ser removidos.
+
+## TD-022 — Partes arquivadas ficam fora do trabalho do dia a dia
+
+**Origem.** Pedido do proprietário (28/09/2026): manter a infraestrutura online guardada, mas sem
+gastar tokens com ela.
+
+**Decisão.** `server/`, `web/`, `shared-contracts/`, os scripts do Docker e o cliente HTTP dormente
+do Unity continuam versionados, mas: o `CLAUDE.md` (seção 8) proíbe lê-los ou alterá-los sem pedido
+do proprietário; o arquivo `.ignore` faz as buscas pularem essas pastas; e `verify.sh` só os
+compila com `--completo`.
+
+**Rever se.** O jogo for para a internet (Milestone 12): aí essas regras saem.
