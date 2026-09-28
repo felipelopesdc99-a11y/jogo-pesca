@@ -70,6 +70,17 @@
     "seller_cancellation_without_bids": false,
     "max_auctions_a_buyer_can_join": null
   },
+  "fishing_box": {
+    "bulk_sale_protection": {
+      "note": "Peixes que disparam a confirmação única \"Revisar peixes / Confirmar\" quando entram numa venda da Caixa de Pesca (seção 11 do GDD). Por raridade e por categoria de tamanho.",
+      "rarities": [
+        "rare"
+      ],
+      "size_categories": [
+        "exceptional"
+      ]
+    }
+  },
   "aquarium": {
     "hard_capacity": 100,
     "expansion_allowed": false,

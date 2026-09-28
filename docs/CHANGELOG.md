@@ -3,6 +3,64 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m1.1] — 28/09/2026
+
+**Mudança de prioridade: MVP local jogável no PC** (`docs/CLAUDE_START_HERE_V0_1_1.md`). O jogo
+agora roda inteiro dentro do Unity, sem servidor, Docker, internet ou serviço pago. Entregues o
+novo Milestone 0 (jogo abre e é editável) e o Milestone 1 (loop de pesca jogável).
+
+### Adicionado — o jogo
+
+- **Serviço de jogo local** (`Assets/Scripts/GameService`): as regras, separadas da parte visual e
+  sem depender do Unity. Ciclo online de 30s por carimbo de tempo e cursor gravado no save
+  (repetir pedidos não gera peixe a mais), sorteio determinístico de espécie e tamanho
+  (20/60/19/1), XP do Pescador, Conchas, preço contínuo por tamanho e venda tudo-ou-nada.
+- **Cena 2.5D do Lago Sereno** gerada por código: céu, sol, nuvens, morros em camadas com
+  paralaxe, mata, água com brilhos, juncos, vitórias-régias, pássaros, peixes saltando ao longe,
+  barco balançando e pescador de chapéu de palha.
+- **Animação da pesca sincronizada ao serviço**: arremesso, espera, mordida, puxada, e o peixe
+  pescado saindo da água, com aura para capturas importantes, antes de ir para a Caixa.
+- **Caixa de Pesca**: cards visuais com o peixe, tamanho, barra de tamanho, preço e marcas de
+  espécie nova e recorde; filtros; seleção múltipla; venda com confirmação para peixes valiosos.
+- **HUD**: barra superior com Moedas, card retrátil do jogador com nível e XP, painel de pesca com
+  contagem regressiva, botão da Caixa e avisos na tela.
+- **Save local** com versão, backup a cada gravação, recuperação de arquivo danificado, proteção
+  contra save de versão mais nova e reset que guarda uma cópia.
+- **Balanceamento validado ao iniciar**: se `/config` tiver um problema, o jogo mostra a lista em
+  PT-BR em vez de rodar com valores quebrados.
+
+### Adicionado — ferramentas
+
+- **Painel de Desenvolvimento dentro do Unity** (menu Fishing Idle → Painel de Desenvolvimento):
+  visão geral, roadmap com filtro, edição de balanceamento (inclusive com o jogo rodando) e save.
+- **Primeira abertura automática**: cria e abre a cena `Principal`, registra no build e ajusta nome
+  do produto, janela e "rodar em segundo plano".
+- **Checagens sem o Unity** (`tools/`): 52 testes das regras e compilação do código do jogo e do
+  painel contra as bibliotecas de referência do Unity. Tudo em `./ops/scripts/verify.sh`.
+
+### Adicionado — documentação
+
+- `docs/BASE_TECNICA.md` — como o código é organizado, para qualquer desenvolvedor.
+- `docs/GDD_ADENDO.md` — detalhes de design decididos na implementação, sem editar o GDD travado.
+- `docs/CLAUDE_START_HERE_V0_1_1.md` — a nova prioridade do projeto.
+- `docs/INFRA_ONLINE.md` — instruções da infraestrutura online, agora adiada.
+- Decisões TD-015 a TD-020 em `docs/DECISOES.md`.
+
+### Mudado
+
+- **Roadmap reorganizado** nos milestones do MVP local (M0 a M11). O que foi construído para a
+  versão online foi preservado no **M12 — Infraestrutura online (adiada)**, com o histórico.
+- **README** reescrito com o passo a passo para jogar.
+- `config/economy.json` ganhou `fishing_box.bulk_sale_protection`.
+- O diagnóstico de conexão com o servidor no Unity ficou dormente (o jogo não precisa de servidor).
+- `verify.sh` roda as checagens do jogo e só roda servidor e painel web se houver .NET 10 e Node.
+
+### Não verificado
+
+- **O projeto ainda não foi aberto no Editor do Unity**: o ambiente de trabalho não tem o Unity.
+  As regras passaram nos testes e o código compilou contra as bibliotecas de referência, mas o
+  visual e a jogabilidade só se confirmam apertando Play (`M0-T13`, `M1-T12`).
+
 ## [0.1.0-m0.4] — 25/09/2026
 
 O painel passa a poder rodar publicado na internet e a se atualizar sozinho.

@@ -24,6 +24,7 @@ Todo conteúdo visível ao proprietário ou ao jogador:
 - descrições
 - textos de interface
 - relatórios de progresso
+- **todas as respostas no chat com o proprietário**
 - mensagens de erro amigáveis
 - conteúdo do site público
 - conteúdo exibido dentro do jogo
@@ -61,8 +62,14 @@ web/dev-console/src/lib/strings.ts
 Ao adicionar uma tela ou um rótulo, o texto vai para lá — nunca escrito direto no JSX. Isso mantém
 o painel traduzível por inteiro e evita que uma frase em inglês volte a aparecer por descuido.
 
-O jogo (Unity) ainda não tem textos de interface. Quando tiver, seguir o mesmo princípio: um ponto
-central, nunca texto solto no código.
+No jogo (Unity), todo texto — do jogo, do Painel de Desenvolvimento do Unity e das mensagens de
+validação — fica em um único arquivo:
+
+```
+client-unity/Assets/Scripts/Texts/GameTexts.cs
+```
+
+A formatação brasileira do Unity está em `client-unity/Assets/Scripts/Texts/Format.cs`.
 
 ### Formatação brasileira
 
@@ -79,19 +86,28 @@ tradução, nunca substituindo o original.
 
 ---
 
-## 2. O servidor é a autoridade
+## 2. As regras são a autoridade, separadas da apresentação
 
-**Cliente = intenção + apresentação. Servidor = verdade + validação + sorteio + persistência.**
+**Apresentação = intenção + tela. Serviço de jogo = verdade + validação + sorteio + persistência.**
 
-Nunca calcular no cliente uma captura, um atributo, um preço, um resultado de batalha ou uma
-recompensa. Nunca confiar no relógio local para nada que importe. Detalhes em `docs/SEGURANCA.md`.
+No MVP local, o "servidor" é o serviço de jogo em `client-unity/Assets/Scripts/GameService`, que não
+pode usar `UnityEngine`. A parte visual (`Assets/Scripts/Game`) nunca calcula uma captura, um
+atributo, um preço, um resultado de batalha ou uma recompensa: ela pede ao serviço e mostra a
+resposta. Todo sorteio de jogo usa o `Rng` do serviço; o relógio é o `IClock`. No futuro, os mesmos
+serviços ganham versões remotas e o servidor vira a autoridade. Detalhes em `docs/BASE_TECNICA.md`
+e `docs/SEGURANCA.md`.
 
 ## 3. Balanceamento mora em dados
 
 Peixes, mapas, varas, curvas de XP, preços, chances, tempos e taxas ficam em `/config`, nunca dentro
 do código do jogo. Detalhes em `config/README.md`.
 
-## 4. O escopo da V0.1 é pequeno de propósito
+## 4. O escopo da V0.1 é pequeno de propósito — e a prioridade é o MVP local
+
+A ordem de trabalho é a de `docs/CLAUDE_START_HERE_V0_1_1.md`: primeiro um MVP **local, jogável no
+PC do proprietário**, um milestone de cada vez. Não usar Vercel, domínio, hospedagem, banco na
+nuvem, Docker obrigatório nem nenhum serviço pago. Se algum passo exigir pagamento, **parar e
+explicar antes**: por que é necessário, quanto custa, se há alternativa gratuita e se pode esperar.
 
 Não construir sistemas fora da lista da V0.1 do GDD "porque seriam úteis". Quando algo parecer
 realmente faltar, registrar como uma tarefa `NEEDS_OWNER_DECISION` no `docs/roadmap.json` e avisar
@@ -103,17 +119,37 @@ o proprietário — nunca inventar a mecânica.
 conclui o trabalho**, com uma nota em `completion_notes` dizendo o que foi entregue. Nunca declarar
 progresso separadamente do código que o produziu.
 
-O painel pode estar publicado e lendo esse arquivo direto do GitHub, então **todo commit enviado
-aparece para o proprietário em menos de um minuto**. Nunca existe um indicador de "trabalho em
+O proprietário vê esse arquivo no Painel de Desenvolvimento dentro do Unity (menu Fishing Idle →
+Painel de Desenvolvimento) e no painel web, que pode ler o arquivo direto do GitHub — então **todo
+commit enviado aparece para o proprietário**. Nunca existe um indicador de "trabalho em
 segundo plano": o painel reflete commits, nunca atividade (seção 5 do GDD).
 
-## 6. Antes de versionar
+## 6. Onde registrar o que for criado
+
+Todo o projeto fica organizado como o de um jogo profissional. Cada mudança atualiza, **na mesma
+mudança**, o documento certo:
+
+| O que mudou | Onde registrar |
+|---|---|
+| Um detalhe de design (o que o jogador vê, sente ou pode fazer) decidido na implementação | `docs/GDD_ADENDO.md` — nunca editar o GDD travado |
+| Arquitetura, pastas, fluxos, como adicionar um sistema | `docs/BASE_TECNICA.md` |
+| Uma escolha técnica e o porquê | `docs/DECISOES.md` (nova TD) |
+| Progresso | `docs/roadmap.json` |
+| O que entrou numa versão | `docs/CHANGELOG.md` |
+
+## 7. Antes de versionar
 
 ```bash
 ./ops/scripts/verify.sh
 ```
 
-Compila e testa o servidor, faz typecheck e build do painel. Precisa passar.
+Precisa do SDK do .NET 8+. Roda os testes das regras do jogo e compila o código do Unity (jogo e
+Painel de Desenvolvimento) contra as bibliotecas de referência do Unity, sem precisar do Editor.
+Servidor e painel web (adiados) só entram se o .NET 10 e o Node estiverem instalados. Precisa
+passar.
+
+Compilar não é rodar: o que depende do Editor do Unity (visual, jogabilidade) só é declarado
+verificado depois que o proprietário apertar Play. Diga isso com clareza no relatório.
 
 ---
 
@@ -121,11 +157,15 @@ Compila e testa o servidor, faz typecheck e build do painel. Precisa passar.
 
 | Assunto | Arquivo |
 |---|---|
+| Prioridade atual (MVP local) | `docs/CLAUDE_START_HERE_V0_1_1.md` |
 | Design do jogo (fonte de verdade) | `docs/GDD_V0_1.md` |
+| Detalhes de design decididos na implementação | `docs/GDD_ADENDO.md` |
+| Como o código funciona | `docs/BASE_TECNICA.md` |
 | Decisões técnicas e princípios travados | `docs/DECISOES.md` |
 | Progresso | `docs/roadmap.json` e `docs/ROADMAP.md` |
 | API | `docs/API.md` |
 | Segurança e anti-trapaça | `docs/SEGURANCA.md` |
 | Versionamento | `docs/VERSIONAMENTO.md` |
 | Balanceamento | `config/README.md` |
-| Painel publicado na internet | `docs/PAINEL_ONLINE.md` |
+| Infraestrutura online (adiada) | `docs/INFRA_ONLINE.md` |
+| Painel web publicado (adiado) | `docs/PAINEL_ONLINE.md` |

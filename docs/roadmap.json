@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-25T00:00:00Z",
-  "current_milestone": "M0",
+  "updated_at": "2026-09-28T22:23:54Z",
+  "current_milestone": "M1",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -11,1742 +11,1290 @@
     "BLOCKED",
     "NEEDS_OWNER_DECISION"
   ],
-  "notes": "Este arquivo é a fonte única de verdade do status de desenvolvimento. O Painel de Desenvolvimento o lê através do backend (GET /api/dev/roadmap) e, se o servidor estiver fora, lê este arquivo diretamente do repositório. Atualize-o na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os valores de status e de subsistema são chaves técnicas e permanecem em inglês; todo o texto lido por humanos está em PT-BR.",
+  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR.",
   "owner_decisions": [
     {
       "id": "OD-001",
-      "task_id": "M0-T14",
-      "title": "Confirmar a versão exata do Unity 6.3 LTS e rodar o ambiente local uma vez",
-      "detail": "O arquivo ProjectSettings/ProjectVersion.txt fixa 6000.3.0f1 como valor provisório para o Unity 6.3 LTS. Só você pode dizer qual versão exata instalou: abra client-unity no Unity Hub, aceite a atualização do projeto e versione o arquivo atualizado. Aproveite e rode ./ops/scripts/dev-up.sh uma vez para confirmar que o ambiente Docker Compose sobe de ponta a ponta. Nem o Docker nem o Editor do Unity existiam no ambiente onde este código foi escrito, então essas duas execuções são a única parte do Milestone 0 que não pôde ser verificada.",
-      "raised_at": "2026-09-25T00:00:00Z",
+      "task_id": "M0-T13",
+      "title": "Abrir o projeto no Unity e apertar Play",
+      "detail": "O ambiente onde o código foi escrito não tem o Editor do Unity. As regras passaram em 52 testes e o código do Unity compilou contra as bibliotecas de referência, mas só você pode confirmar que o projeto abre e roda. Passo a passo no README.md: instale o Unity 6.3 LTS pelo Unity Hub, adicione a pasta client-unity, aceite atualizar para a sua versão e aperte Play. Se aparecer qualquer erro no Console, copie a mensagem e mande no chat. Depois, versione os arquivos que o Unity gerou (ProjectSettings, arquivos .meta e a cena Principal).",
+      "raised_at": "2026-09-28T22:23:54Z",
       "status": "OPEN"
     },
     {
       "id": "OD-002",
-      "task_id": "M0-T17",
+      "task_id": "M12-T12",
       "title": "Criar a conta na Vercel e publicar o painel",
       "detail": "O painel já sabe ler o repositório direto do GitHub, então publicá-lo é só conectar a conta. Só você pode criar a conta. São cinco passos, sem instalar nada e sem custo, descritos em docs/PAINEL_ONLINE.md. Depois disso o painel passa a ter um endereço fixo que se atualiza sozinho poucos segundos depois de cada commit enviado.",
       "raised_at": "2026-09-25T00:00:00Z",
+      "status": "RESOLVED",
+      "resolution": "Adiado pelo próprio proprietário no START HERE V0.1.1: nada de Vercel, domínio ou hospedagem enquanto o MVP local não estiver validado. A tarefa fica no M12 como A FAZER."
+    },
+    {
+      "id": "OD-003",
+      "task_id": "M1-T12",
+      "title": "Pescar de 10 a 20 minutos e dizer o que achou",
+      "detail": "É o critério de conclusão do Milestone 1. Aperte Iniciar pesca, deixe rodar, abra a Caixa de Pesca, venda alguns peixes. Diga o que agradou e o que incomodou: ritmo, visual, sons que faltam, tamanho dos textos. Para testar mais rápido, o Painel de Desenvolvimento → Balanceamento → Pesca deixa o tempo por captura em 5 segundos, aplicando com o jogo rodando.",
+      "raised_at": "2026-09-28T22:23:54Z",
       "status": "OPEN"
     }
   ],
   "milestones": [
     {
       "id": "M0",
-      "title": "Fundação do repositório e do fluxo de trabalho",
-      "goal": "Criar a base do projeto para que o dono consiga acompanhar o desenvolvimento visualmente antes de qualquer código de jogo existir.",
+      "title": "Jogo abre e é editável",
+      "goal": "O proprietário abre o projeto no Unity, aperta Play e vê o jogo rodando, sem configurar nenhum serviço externo. Balanceamento, save e roadmap já são editáveis e visíveis pelo Painel de Desenvolvimento dentro do Unity.",
       "completion_criteria": [
-        "O desenvolvedor consegue subir servidor + banco de dados + web localmente.",
-        "O cliente Unity consegue chamar um endpoint de saúde.",
-        "O Painel de Desenvolvimento mostra o status do projeto, do build e do roadmap."
+        "O proprietário abre o projeto, aperta Play e vê a aplicação rodando sem configurar serviços externos.",
+        "O balanceamento é editável sem mexer em código.",
+        "O save local tem versão, backup, validação e reset pelo painel.",
+        "O roadmap e o status do projeto aparecem em PT-BR dentro do Unity."
       ],
       "tasks": [
         {
           "id": "M0-T01",
-          "title": "Estrutura do monorepo",
+          "title": "Estrutura do repositório",
           "subsystem": "repo",
-          "description": "Criar o layout de pastas /client-unity, /server, /web, /shared-contracts, /config, /docs e /ops descrito na seção 4 do GDD.",
+          "description": "Monorepo com /client-unity, /server, /web, /shared-contracts, /config, /docs, /ops e /tools.",
           "status": "DONE",
           "dependencies": [],
-          "completion_notes": "Layout criado exatamente como especificado na seção 4 do GDD. A pasta /web contém dev-console (implementado) e public-site (espaço reservado para o M11).",
+          "completion_notes": "Layout criado exatamente como especificado na seção 4 do GDD. A pasta /web contém dev-console (implementado) e public-site (espaço reservado para o M11). A pasta /tools foi adicionada para as checagens que rodam sem o Unity.",
           "updated_at": "2026-09-25T00:00:00Z"
         },
         {
           "id": "M0-T02",
           "title": "Convenção de versionamento",
           "subsystem": "repo",
-          "description": "Definir uma fonte única para os números de versão do cliente, servidor e web, mais os dados do build, e documentar a convenção.",
+          "description": "Fonte única de versão (version.json) e convenção documentada.",
           "status": "DONE",
           "dependencies": [
             "M0-T01"
           ],
-          "completion_notes": "O arquivo version.json na raiz é a fonte única; a convenção está documentada em docs/VERSIONAMENTO.md. O servidor o expõe em GET /api/dev/version e a página Build / Versão do painel o exibe.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "version.json na raiz é a fonte única; convenção em docs/VERSIONAMENTO.md. O Painel de Desenvolvimento do Unity mostra a versão do jogo e o ProjectSetup copia a versão do cliente para o Player Settings na primeira abertura.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T03",
-          "title": "Pasta de documentação e decisões travadas",
-          "subsystem": "docs",
-          "description": "Criar a pasta /docs com a cópia do GDD, DECISOES.md (princípios travados da V0.1), ROADMAP.md, CHANGELOG.md, API.md e SEGURANCA.md.",
+          "title": "Balanceamento em /config",
+          "subsystem": "config",
+          "description": "Todos os valores de balanceamento (peixes, mapas, varas, XP, economia, arena, expedições) em arquivos JSON, nunca no código.",
           "status": "DONE",
           "dependencies": [
             "M0-T01"
           ],
-          "completion_notes": "docs/GDD_V0_1.md é a fonte de verdade, mantida no original em inglês. DECISOES.md traz os 50 princípios travados da seção 47 do GDD mais as decisões técnicas tomadas durante o M0, em PT-BR.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "As 20 espécies da V0.1, os dois mapas, a Vara Inicial e a Vara 1 com custos de melhoria de nível 1 a 10, a curva de XP, os valores de economia, arena e expedições, todos preenchidos como balanceamento provisório. São valores iniciais, a serem ajustados pelo painel. Acrescentada em economy.json a regra de quais peixes pedem confirmação na venda em lote (fishing_box.bulk_sale_protection).",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T04",
-          "title": "roadmap.json com os Milestones 0 a 12",
-          "subsystem": "docs",
-          "description": "Escrever o roadmap legível por máquina que tanto o Claude quanto o painel leem, cobrindo todos os milestones e tarefas com seus metadados de status.",
+          "title": "Projeto Unity e assemblies organizados",
+          "subsystem": "client",
+          "description": "Projeto Unity 6.3 LTS com o código separado em assemblies: Texts (textos PT-BR), GameService (regras, sem dependência do Unity), Game (cena e interface) e Editor (ferramentas).",
           "status": "DONE",
           "dependencies": [
-            "M0-T03"
+            "M0-T01"
           ],
-          "completion_notes": "docs/roadmap.json contém os 13 milestones. Os status são restritos a TODO / IN_PROGRESS / DONE / BLOCKED / NEEDS_OWNER_DECISION e validados pelo servidor ao carregar. Todo o texto legível por humanos está em PT-BR.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "client-unity/Assets/Scripts dividido em FishingIdle.Texts, FishingIdle.GameService (noEngineReferences: as regras não podem tocar no Unity), FishingIdle.Game e FishingIdle.Editor. O código antigo de diagnóstico de servidor (Core/Diagnostics) foi mantido, dormente, como base para os futuros serviços remotos. link.xml protege o serviço de jogo no IL2CPP. Compilado e testado fora do Editor (regras com 52 testes automáticos; código do Unity checado contra as bibliotecas de referência do Unity 2021.3). Ainda não foi aberto no Editor do Unity — isso é a tarefa de verificação do proprietário.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T05",
-          "title": "Arquivos de configuração orientados a dados",
-          "subsystem": "config",
-          "description": "Preencher a pasta /config com os arquivos de balanceamento (fish_catalog, maps, rods, progression, economy, arena, expeditions) para que nenhum valor de balanceamento fique dentro do código do jogo.",
+          "title": "Cena principal inicial",
+          "subsystem": "client",
+          "description": "Cena principal que abre sozinha e entra direto no jogo ao apertar Play.",
           "status": "DONE",
           "dependencies": [
-            "M0-T01"
+            "M0-T04"
           ],
-          "completion_notes": "As 20 espécies da V0.1, os dois mapas, a Vara Inicial e a Vara 1 com custos de melhoria de nível 1 a 10, a curva de XP, os valores de economia, arena e expedições, todos preenchidos como balanceamento provisório. São valores iniciais, a serem ajustados pelo painel.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "Na primeira abertura, o Editor cria Assets/Scenes/Principal.unity, registra no Build Settings e abre a cena. O jogo inteiro é montado por código ao apertar Play (GameBootstrap), então funciona em qualquer cena, até numa vazia. Veja DECISOES.md, TD-016. Compilado e testado fora do Editor (regras com 52 testes automáticos; código do Unity checado contra as bibliotecas de referência do Unity 2021.3). Ainda não foi aberto no Editor do Unity — isso é a tarefa de verificação do proprietário.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T06",
-          "title": "Esqueleto do servidor ASP.NET Core",
+          "title": "Configuração data-driven no jogo",
           "subsystem": "server",
-          "description": "Criar o projeto do backend autoritativo com log estruturado, leitura de configuração, CORS para o painel e uma organização limpa de endpoints.",
+          "description": "O serviço de jogo lê /config, valida tudo com mensagens em PT-BR e identifica a versão do balanceamento.",
           "status": "DONE",
           "dependencies": [
-            "M0-T01"
+            "M0-T03",
+            "M0-T04"
           ],
-          "completion_notes": "server/src/FishingIdle.Api em .NET 10 LTS. Minimal API com módulos de endpoint, log estruturado em console, binding de opções, tratamento de erro em problem-details e CORS de origem exata para o painel (nunca curinga, somente GET). Compila sem avisos com warnings-as-errors; 36 testes automatizados passam.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "GameConfigLoader lê os arquivos, GameConfigValidator recusa valores impossíveis (pesos negativos, faixas de tamanho invertidas, espécie inexistente num mapa, tabela de XP com buraco etc.) e nenhum balanceamento inválido chega ao jogo: o jogo mostra a lista de problemas na tela. Cada conjunto de arquivos tem uma impressão digital curta (versão do balanceamento). No Editor, lê direto de /config; no build, de uma cópia em StreamingAssets feita pelo ConfigBuildStep.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T07",
-          "title": "Endpoint de saúde",
+          "title": "Save local",
           "subsystem": "server",
-          "description": "Expor GET /health devolvendo o status do serviço mais uma verificação de conectividade com o banco, e GET /health/live como sinal de vida sem dependências.",
+          "description": "Save em JSON no PC, com versão, backup, validação e reset.",
           "status": "DONE",
           "dependencies": [
-            "M0-T06"
+            "M0-T04"
           ],
-          "completion_notes": "GET /health informa o status geral com o detalhamento por dependência (banco de dados). GET /health/live nunca toca no banco, para que o cliente Unity consiga distinguir 'servidor no ar, banco fora' das demais situações.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "JsonFilePlayerRepository grava em arquivo temporário e só então substitui o save; o save anterior vira o backup. Save danificado é restaurado do backup e guardado de lado com data; save de versão mais nova do jogo nunca é sobrescrito. Reset guarda uma cópia antes de apagar. Tudo coberto por testes automáticos.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T08",
-          "title": "PostgreSQL e migrations",
-          "subsystem": "server",
-          "description": "Adicionar EF Core + Npgsql, o DbContext inicial, o fluxo de schema baseado em migrations e as tabelas iniciais do M0.",
+          "title": "Painel de Desenvolvimento local",
+          "subsystem": "client",
+          "description": "Janela dentro do Editor do Unity com visão geral, roadmap, balanceamento e save, em PT-BR.",
           "status": "DONE",
           "dependencies": [
-            "M0-T06"
+            "M0-T06",
+            "M0-T07"
           ],
-          "completion_notes": "EF Core 10 com Npgsql. A migration inicial cria config_versions (com índice único filtrado permitindo no máximo uma versão de balanceamento ativa) e admin_audit_log, as duas tabelas de que o pipeline de configuração e a auditoria do Milestone 1 precisam. Nomes de coluna em snake_case e timestamptz para toda data. Verificado: a migration foi aplicada em um PostgreSQL 16 real e o schema, as chaves e os índices resultantes foram inspecionados. As migrations rodam por ops/scripts/migrate.sh; o servidor nunca migra sozinho.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "Menu Fishing Idle → Painel de Desenvolvimento. Abas: Visão geral (milestone atual, concluídas/pendentes, próximo passo, bloqueios, versões, última atualização do roadmap), Roadmap (filtro por status, detalhes por tarefa), Balanceamento (pesca, espécies, chances por mapa, tamanhos, XP, varas, economia, mercado, leilão, arena e expedições; valida antes de gravar e, com o jogo rodando, aplica na hora) e Save (pasta, resumo, reset com confirmação). Compilado e testado fora do Editor (regras com 52 testes automáticos; código do Unity checado contra as bibliotecas de referência do Unity 2021.3). Ainda não foi aberto no Editor do Unity — isso é a tarefa de verificação do proprietário.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T09",
-          "title": "Ambiente local com Docker Compose",
-          "subsystem": "ops",
-          "description": "Fornecer um ambiente local de um comando (PostgreSQL + servidor + painel) com healthchecks e volumes persistentes.",
+          "title": "Roadmap local em PT-BR",
+          "subsystem": "docs",
+          "description": "docs/roadmap.json reorganizado nos milestones do MVP local, com status traduzidos na tela.",
           "status": "DONE",
           "dependencies": [
             "M0-T08"
           ],
-          "completion_notes": "ops/docker-compose.yml define postgres (com healthcheck, volume nomeado e locale determinístico), api e dev-console, com o repositório montado como somente leitura em /repo para que o servidor leia o estado do projeto mas nunca o escreva. Dockerfiles para os dois serviços; o container da API roda com usuário sem privilégios de root. Os scripts dev-up.sh, dev-down.sh, migrate.sh, new-migration.sh e verify.sh encapsulam o fluxo. O ambiente Compose em si não foi executado no ambiente de autoria: não há daemon do Docker. Veja M0-T14.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "Milestones M0 a M11 seguem o docs/CLAUDE_START_HERE_V0_1_1.md. A infraestrutura online já construída foi preservada no M12 (adiado), sem perder o histórico.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T10",
-          "title": "Configuração de ambiente compartilhada",
-          "subsystem": "ops",
-          "description": "Um único .env.example alimentando as credenciais do banco, as portas e as URLs dos serviços para servidor, web e scripts.",
+          "title": "Documentação: decisões, histórico, base técnica e adendo do GDD",
+          "subsystem": "docs",
+          "description": "DECISOES.md, CHANGELOG.md, BASE_TECNICA.md (para desenvolvedores) e GDD_ADENDO.md (detalhes de design definidos durante a implementação).",
           "status": "DONE",
           "dependencies": [
-            "M0-T09"
+            "M0-T01"
           ],
-          "completion_notes": "O arquivo .env.example na raiz é consumido pelo docker-compose, pela API e pelo painel. Nenhum segredo é versionado.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "Decisões TD-015 a TD-020 registradas. docs/BASE_TECNICA.md explica arquitetura, pastas, fluxo de dados, save, configuração e como adicionar um sistema. docs/GDD_ADENDO.md registra cada detalhe de design decidido na implementação, separado do GDD travado.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T11",
-          "title": "Esqueleto do painel lendo o roadmap",
-          "subsystem": "web",
-          "description": "Painel privado em Next.js com as páginas Visão geral e Roadmap mostrando o estado real do roadmap, mais as páginas de Build/Versão e Configuração para os milestones seguintes.",
+          "title": "README com instruções simples",
+          "subsystem": "docs",
+          "description": "Passo a passo para abrir e jogar sem configurar nada.",
           "status": "DONE",
           "dependencies": [
-            "M0-T04",
-            "M0-T07"
+            "M0-T05"
           ],
-          "completion_notes": "Next.js 15 + TypeScript, com toda a interface em PT-BR. A Visão geral mostra o percentual de conclusão da V0.1, o milestone atual com barra por status, a versão do build atual, bloqueios e decisões do dono, a tarefa em andamento, as próximas 5 da fila e as 5 concluídas mais recentemente. A página de Roadmap lista todos os milestones e tarefas com filtro por status, critérios de conclusão e notas de conclusão. Typecheck e build limpos; as quatro páginas foram renderizadas contra a API rodando e conferidas.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "README.md reescrito: instalar o Unity, abrir client-unity, apertar Play. O que era do servidor e do Docker foi para a seção de infraestrutura adiada.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T12",
-          "title": "Painel lê o servidor como fonte única",
-          "subsystem": "web",
-          "description": "O painel não pode manter sua própria cópia do roadmap; ele lê o backend, com leitura alternativa do arquivo do repositório para continuar funcionando quando a API estiver fora.",
+          "title": "Checagens automáticas sem o Unity",
+          "subsystem": "ops",
+          "description": "Testes das regras e checagem de compilação do código do Unity, rodando em qualquer máquina com .NET.",
           "status": "DONE",
           "dependencies": [
-            "M0-T11"
+            "M0-T04"
           ],
-          "completion_notes": "A camada de dados do painel busca GET /api/dev/roadmap e, em caso de falha, lê docs/roadmap.json diretamente do repositório. O painel exibe qual das duas fontes respondeu, para que o status nunca fique desatualizado em silêncio.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "tools/GameService.Tests: 52 testes (ciclo de 30s, idempotência, sorteio, distribuição de tamanho, Vara Inicial sem raros, XP, venda, save, backup, reset, formatação PT-BR, ida e volta do balanceamento pelo painel). tools/UnityCheck.Game e tools/UnityCheck.Editor compilam o código do jogo e do painel contra as bibliotecas de referência do Unity. Tudo roda em ./ops/scripts/verify.sh.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M0-T13",
-          "title": "Esqueleto do cliente Unity com diagnóstico de conexão",
+          "title": "Primeira abertura no Unity pelo proprietário",
           "subsystem": "client",
-          "description": "Projeto Unity que chama /health ao iniciar e mostra o status da conexão em uma camada de diagnóstico exclusiva de desenvolvimento.",
-          "status": "DONE",
+          "description": "Abrir client-unity no Unity Hub, apertar Play e confirmar que o jogo aparece.",
+          "status": "NEEDS_OWNER_DECISION",
           "dependencies": [
-            "M0-T07"
+            "M0-T05",
+            "M0-T08"
           ],
-          "completion_notes": "Projeto client-unity com inicialização por código (RuntimeInitializeOnLoadMethod, para que dar Play em qualquer cena funcione sem depender de um arquivo de cena versionado), um ApiClient guiado por configuração, um ServerHealthProbe consultando /health e um DiagnosticOverlay exclusivo de desenvolvimento (tecla F1) que distingue conectado, degradado e inacessível. Todo o texto do overlay está em PT-BR. A URL do backend vem de um ScriptableObject ou da variável FISHING_IDLE_API_BASE_URL, nunca do código. Não foi compilado no ambiente de autoria: não há Editor do Unity. Veja M0-T14.",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M0-T14",
-          "title": "Verificar o ambiente local completo na máquina do dono",
-          "subsystem": "ops",
-          "description": "O Docker e o Editor do Unity não existem no ambiente de autoria, então o ambiente Docker Compose e a compilação do Unity precisam ser confirmados uma vez na máquina do dono antes do Milestone 0 ser considerado fechado.",
-          "status": "BLOCKED",
-          "dependencies": [
-            "M0-T09",
-            "M0-T13"
-          ],
-          "completion_notes": "Verificado no ambiente de autoria: o servidor compila com warnings-as-errors e seus 36 testes passam; a migration inicial é aplicada em um PostgreSQL 16 real e o schema foi inspecionado; a API responde /health como saudável contra esse banco; o painel compila e as quatro páginas renderizam corretamente contra a API rodando. Ainda não verificado, porque o ambiente de autoria não tem daemon do Docker nem o Editor do Unity: (1) o docker compose up dos três serviços; (2) a compilação do projeto Unity e a versão exata do Unity 6.3 LTS fixada em ProjectSettings/ProjectVersion.txt, hoje o valor provisório 6000.3.0f1. Ação do dono: rodar ./ops/scripts/dev-up.sh uma vez e abrir client-unity no Unity Hub uma vez, e então avisar para esta tarefa ser fechada como concluída.",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M0-T15",
-          "title": "Painel lê o repositório direto do GitHub",
-          "subsystem": "web",
-          "description": "Para o painel poder rodar publicado, sem um clone do repositório e sem um backend, e ainda assim mostrar o andamento atual poucos segundos depois de um commit ser enviado.",
-          "status": "DONE",
-          "dependencies": [
-            "M0-T11",
-            "M0-T12"
-          ],
-          "completion_notes": "A camada de dados agora tenta três fontes em ordem, e sempre diz na tela qual respondeu: a API do servidor (única com dados de execução), o arquivo do clone local, e o GitHub. Rodando de um clone, a ordem é a de antes; publicado, só o GitHub responde e a API nem é tentada, para a página não esperar um tempo limite inútil. A listagem de /config usa a API do GitHub quando possível e, quando o limite de 60 chamadas por hora por IP é atingido, cai para leitura direta dos arquivos conhecidos, que não tem esse limite — verificado com o limite realmente estourado. A Visão geral mostra o commit que a branch aponta agora.",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M0-T16",
-          "title": "Atualização automática do painel",
-          "subsystem": "web",
-          "description": "Para o painel acompanhar o repositório sozinho, sem precisar apertar F5, enquanto o desenvolvimento acontece.",
-          "status": "DONE",
-          "dependencies": [
-            "M0-T15"
-          ],
-          "completion_notes": "O painel relê a página a cada 60 segundos e mostra no canto o horário da última leitura, mais um botão de atualizar agora. É apenas releitura do estado do repositório — não existe e não deve existir um indicador mágico de 'trabalho em segundo plano', conforme a seção 5 do GDD. Respeita a preferência de movimento reduzido do sistema.",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M0-T17",
-          "title": "Publicar o painel para acesso pelo navegador",
-          "subsystem": "ops",
-          "description": "Publicar o painel em um endereço fixo, para que o proprietário acompanhe o andamento de qualquer aparelho sem instalar nada.",
-          "status": "BLOCKED",
-          "dependencies": [
-            "M0-T15",
-            "M0-T16"
-          ],
-          "completion_notes": "O código está pronto e testado: uma simulação do ambiente publicado, sem clone e sem backend, renderizou as quatro páginas lendo apenas o GitHub. O passo que falta depende de uma conta que só o proprietário pode criar. O passo a passo está em docs/PAINEL_ONLINE.md.",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M1",
-      "title": "Contas, estado do jogador e pipeline de configuração",
-      "goal": "Jogadores autenticados com estado persistente no servidor, e um pipeline de configuração validado que o dono edita pelo painel.",
+      "title": "Loop de pesca jogável",
+      "goal": "O coração do jogo: o pescador pesca sozinho, o peixe aparece, vai para a Caixa de Pesca, e o jogador vende, ganha moedas e sobe de nível.",
       "completion_criteria": [
-        "O jogador consegue se autenticar.",
-        "O servidor cria o estado do jogador.",
-        "O administrador altera um valor seguro de configuração e o servidor passa a usar a nova versão validada."
+        "O proprietário consegue ficar 10 a 20 minutos pescando e sentir o loop do jogo.",
+        "Toda captura vem do serviço de jogo local; a apresentação só mostra.",
+        "Requisições repetidas não geram peixe a mais."
       ],
       "tasks": [
         {
           "id": "M1-T01",
-          "title": "Autenticação de desenvolvimento",
-          "subsystem": "server",
-          "description": "Autenticação adequada ao desenvolvimento, com caminho claro de evolução para identidade de produção. Toda requisição de jogo precisa ser autenticada.",
-          "status": "TODO",
-          "dependencies": [
-            "M0-T08"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M1-T02",
-          "title": "UserAccount e PlayerProfile",
-          "subsystem": "server",
-          "description": "Entidades de conta e perfil do jogador, criadas na primeira autenticação.",
-          "status": "TODO",
-          "dependencies": [
-            "M1-T01"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M1-T03",
-          "title": "Carteira do jogador",
-          "subsystem": "server",
-          "description": "Saldos de Moedas e Conchas com mutações auditáveis. Saldos nunca são aceitos vindos do cliente.",
-          "status": "TODO",
-          "dependencies": [
-            "M1-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M1-T04",
-          "title": "Progressão do jogador",
-          "subsystem": "server",
-          "description": "Estado de nível e XP do Pescador, mais o PlayerMapState com os desbloqueios e o mapa ativo.",
-          "status": "TODO",
-          "dependencies": [
-            "M1-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M1-T05",
-          "title": "Carregamento e versionamento de configuração",
-          "subsystem": "server",
-          "description": "Carregar os arquivos de /config em um registro GameConfigVersion para que qualquer resultado possa ser rastreado até a versão de balanceamento que o produziu.",
-          "status": "TODO",
+          "title": "Cena 2.5D provisória do Lago Sereno",
+          "subsystem": "client",
+          "description": "Céu, sol, nuvens, morros em camadas com paralaxe, mata, água com brilhos, juncos, barco e pescador.",
+          "status": "DONE",
           "dependencies": [
             "M0-T05"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "Arte provisória gerada por código (Art.cs), sem nenhum asset importado: gradientes, silhuetas, barco de madeira, pescador de chapéu de palha. Movimento ambiente só visual: barco balançando, nuvens, pássaros, peixes saltando ao longe, juncos ao vento, brilho do sol na água. Compilado e testado fora do Editor (regras com 52 testes automáticos; código do Unity checado contra as bibliotecas de referência do Unity 2021.3). Ainda não foi aberto no Editor do Unity — isso é a tarefa de verificação do proprietário.",
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
-          "id": "M1-T06",
-          "title": "Validação de configuração",
-          "subsystem": "server",
-          "description": "Validação de esquema e de faixa de valores. Configuração inválida não pode ser publicada.",
-          "status": "TODO",
-          "dependencies": [
-            "M1-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M1-T07",
-          "title": "Fluxo de leitura e edição de configuração",
-          "subsystem": "web",
-          "description": "Seção de Configuração do Jogo no painel lendo e editando todos os valores listados na seção 43 do GDD, por APIs administrativas autenticadas.",
-          "status": "TODO",
-          "dependencies": [
-            "M1-T06"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M1-T08",
-          "title": "Registro de auditoria administrativa",
-          "subsystem": "server",
-          "description": "Registros imutáveis em AdminAuditLog para toda mudança de configuração, com separação de papéis administrativos.",
-          "status": "TODO",
-          "dependencies": [
-            "M1-T07"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M1-T09",
-          "title": "Base de idempotência e limite de requisições",
-          "subsystem": "server",
-          "description": "Tratamento reutilizável de chave de idempotência e limitação de requisições aplicados às mutações econômicas, estabelecidos antes de existir qualquer código de economia.",
-          "status": "TODO",
+          "id": "M1-T02",
+          "title": "Animação do ciclo de pesca",
+          "subsystem": "client",
+          "description": "Arremesso, espera, mordida, puxada, peixe saindo da água e indo para a Caixa.",
+          "status": "DONE",
           "dependencies": [
             "M1-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "completion_notes": "FishermanRig sincroniza a animação com o ciclo do serviço: arremessa no início, a boia balança, mordida nos últimos segundos, puxada, e o peixe só aparece quando o serviço entrega a captura. Tempos se ajustam sozinhos a ciclos curtos (útil para testar). Compilado e testado fora do Editor (regras com 52 testes automáticos; código do Unity checado contra as bibliotecas de referência do Unity 2021.3). Ainda não foi aberto no Editor do Unity — isso é a tarefa de verificação do proprietário.",
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M1-T03",
+          "title": "Iniciar e parar pesca",
+          "subsystem": "client",
+          "description": "Botão Iniciar/Parar pesca; ao parar, o que já completou é entregue.",
+          "status": "DONE",
+          "dependencies": [
+            "M1-T04"
+          ],
+          "completion_notes": "Pedido de intenção ao serviço (StartFishing/StopFishing). Iniciar duas vezes é recusado sem reiniciar o ciclo.",
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M1-T04",
+          "title": "Ciclo online de 30s controlado pelo serviço local",
+          "subsystem": "server",
+          "description": "O serviço calcula as capturas a partir de carimbos de tempo e de um cursor de ciclos gravado no save.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T06",
+            "M0-T07"
+          ],
+          "completion_notes": "LocalFishingService: capturas = ciclos completos desde o início menos os já processados; o cursor fica no save, então nada é processado duas vezes. O tempo vem de config (online_cycle_seconds). Tempo com o jogo fechado, PC dormindo ou relógio pulando não conta como pesca online (isso é pesca offline, Milestone 5).",
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M1-T05",
+          "title": "Sorteio de espécie e tamanho",
+          "subsystem": "server",
+          "description": "Espécie por peso de captura do mapa, categoria de tamanho 20/60/19/1 e tamanho exato dentro da faixa da espécie.",
+          "status": "DONE",
+          "dependencies": [
+            "M1-T04"
+          ],
+          "completion_notes": "CatchRules com gerador determinístico (SplitMix64) semeado por save, sessão e ciclo. A vara limita as raridades possíveis (Vara Inicial nunca pega Raro) e os bônus de vara ficam prontos para o Milestone 4. Distribuições verificadas por teste com 200 mil sorteios.",
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M1-T06",
+          "title": "Captura aparece visualmente",
+          "subsystem": "client",
+          "description": "O peixe pescado aparece na cena, com destaque para capturas importantes.",
+          "status": "DONE",
+          "dependencies": [
+            "M1-T02",
+            "M1-T05"
+          ],
+          "completion_notes": "Peixe provisório desenhado por espécie (cores e padrões próprios), tamanho na tela proporcional ao exemplar, aura dourada para tamanho Excepcional, lilás para Raro e azul para espécie nova. Compilado e testado fora do Editor (regras com 52 testes automáticos; código do Unity checado contra as bibliotecas de referência do Unity 2021.3). Ainda não foi aberto no Editor do Unity — isso é a tarefa de verificação do proprietário.",
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M1-T07",
+          "title": "Caixa de Pesca",
+          "subsystem": "client",
+          "description": "Janela com cards visuais, um filtro por vez, seleção múltipla e confirmação para peixes valiosos.",
+          "status": "DONE",
+          "dependencies": [
+            "M1-T05"
+          ],
+          "completion_notes": "Armazenamento compacto no save (id, espécie, milímetros, categoria, hora, marcas). Janela com filtros por raridade e tamanho, selecionar todos, marcas de NOVA ESPÉCIE e RECORDE, e a confirmação única Revisar peixes / Confirmar quando a venda inclui Raros ou Excepcionais (regra em economy.json). Compilado e testado fora do Editor (regras com 52 testes automáticos; código do Unity checado contra as bibliotecas de referência do Unity 2021.3). Ainda não foi aberto no Editor do Unity — isso é a tarefa de verificação do proprietário.",
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M1-T08",
+          "title": "Venda para o jogo e Moedas",
+          "subsystem": "server",
+          "description": "Preço pela espécie, raridade e tamanho exato (contínuo); venda tudo-ou-nada.",
+          "status": "DONE",
+          "dependencies": [
+            "M1-T07"
+          ],
+          "completion_notes": "Venda validada por inteiro antes de mudar qualquer coisa; peixe já vendido ou id repetido é recusado. Moedas no topo da tela.",
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M1-T09",
+          "title": "XP do Pescador",
+          "subsystem": "server",
+          "description": "XP por espécie, raridade e tamanho; subida de nível pela tabela de progression.json.",
+          "status": "DONE",
+          "dependencies": [
+            "M1-T04"
+          ],
+          "completion_notes": "Simulação nos testes: o Nível 10 sai em cerca de 2 horas de pesca online, como o GDD pede. Card do jogador com barra de XP.",
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M1-T10",
+          "title": "Primeiro mapa e primeiros peixes por dados",
+          "subsystem": "config",
+          "description": "Lago Sereno e seus 10 peixes vindos de /config.",
+          "status": "DONE",
+          "dependencies": [
+            "M0-T03"
+          ],
+          "completion_notes": "Nenhum peixe está no código; nomes, faixas de tamanho, preços, XP e chances vêm dos arquivos e são editáveis no painel.",
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M1-T11",
+          "title": "Avisos na tela",
+          "subsystem": "client",
+          "description": "Avisos que não bloqueiam: captura, espécie nova, recorde, Excepcional, subida de nível, venda.",
+          "status": "DONE",
+          "dependencies": [
+            "M1-T06"
+          ],
+          "completion_notes": "ToastFeed limitado aos 5 mais recentes, montado a partir das respostas do serviço (nenhum pedido extra). Compilado e testado fora do Editor (regras com 52 testes automáticos; código do Unity checado contra as bibliotecas de referência do Unity 2021.3). Ainda não foi aberto no Editor do Unity — isso é a tarefa de verificação do proprietário.",
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M1-T12",
+          "title": "Teste de 10 a 20 minutos pelo proprietário",
+          "subsystem": "client",
+          "description": "Pescar por 10 a 20 minutos e dizer se o loop já tem gosto de jogo.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M1-T01",
+            "M1-T02",
+            "M1-T07",
+            "M1-T08",
+            "M1-T09"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M2",
-      "title": "Ciclo vertical de pesca",
-      "goal": "O ciclo de pesca autoritativo: o jogador deixa o jogo pescando e o servidor decide todos os resultados.",
+      "title": "Aquário e peixe persistente",
+      "goal": "Guardar peixes da Caixa no Aquário, com identidade própria, atributos, nível e alimentação.",
       "completion_criteria": [
-        "O jogador consegue deixar a pesca rodando.",
-        "Requisições modificadas ou repetidas não aceleram as capturas.",
-        "A reconexão resolve o estado correto.",
-        "As recompensas offline funcionam."
+        "O peixe só vira entidade persistente quando é guardado.",
+        "Mesma espécie, raridade, tamanho e nível sempre dão os mesmos atributos.",
+        "Consumir ou vender o mesmo peixe duas vezes é impossível."
       ],
       "tasks": [
         {
           "id": "M2-T01",
-          "title": "Cena do Mapa 1 — Lago Sereno",
-          "subsystem": "client",
-          "description": "Cena 2.5D de lago calmo de água doce: água em camadas, vegetação, luz quente e relaxante, parallax.",
+          "title": "Aquário com limite fixo de 100",
+          "subsystem": "server",
+          "description": "Capacidade rígida, sem expansão; com 100/100 a Caixa continua recebendo.",
           "status": "TODO",
           "dependencies": [
-            "M0-T13"
+            "M1-T12"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M2-T02",
-          "title": "API de intenção de iniciar e parar a pesca",
+          "title": "Guardar peixe da Caixa no Aquário",
           "subsystem": "server",
-          "description": "O cliente envia apenas a intenção de iniciar, parar ou sincronizar. A sessão de pesca pertence ao servidor.",
-          "status": "TODO",
-          "dependencies": [
-            "M1-T04"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T03",
-          "title": "Ciclo online autoritativo de 30s",
-          "subsystem": "server",
-          "description": "Quantidade de ciclos elegíveis derivada dos carimbos de tempo do servidor e de um cursor de ciclo, nunca de temporizadores por jogador.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T04",
-          "title": "Cursor de idempotência do ciclo",
-          "subsystem": "server",
-          "description": "Cursor de sessão e ciclo persistido para que reconexões e requisições repetidas não processem o mesmo ciclo duas vezes.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T03"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T05",
-          "title": "Geração da captura",
-          "subsystem": "server",
-          "description": "Sorteio no servidor produzindo espécie, raridade e tamanho exato a partir do pool do mapa, dos pesos e dos bônus da vara.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T03",
-            "M1-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T06",
-          "title": "Sistema de tamanho e categorias",
-          "subsystem": "server",
-          "description": "Faixas de tamanho relativas à espécie com os limiares das categorias Pequeno, Adulto, Grande e Excepcional, todos orientados a dados.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T07",
-          "title": "Concessão de XP do Pescador",
-          "subsystem": "server",
-          "description": "XP do Pescador por captura variando por espécie e raridade, com os multiplicadores de tamanho configuráveis.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T08",
-          "title": "Armazenamento compacto da Caixa de Pesca",
-          "subsystem": "server",
-          "description": "Representação compacta da captura. Pescar um peixe não pode criar um FishInstance completo.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T09",
-          "title": "Pesca offline",
-          "subsystem": "server",
-          "description": "Ciclos de 60s limitados a 24h de acúmulo, gerados em lote no retorno do jogador.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T04"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T10",
-          "title": "Animação em loop da pesca",
-          "subsystem": "client",
-          "description": "Apresentação contínua de preparar, lançar, esperar, fisgada, recolher, revelar e guardar, sincronizada com o ciclo autoritativo.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T01",
-            "M2-T03"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T11",
-          "title": "Movimento ambiental",
-          "subsystem": "client",
-          "description": "Ambientação puramente visual e aleatória: balanço do barco, movimento da água, variação de luz, partículas, peixe saltando ao longe, pássaros, nuvens.",
+          "description": "Cria o peixe persistente (FishInstance) só neste momento.",
           "status": "TODO",
           "dependencies": [
             "M2-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
-          "id": "M2-T12",
-          "title": "Retorno visual de captura importante",
-          "subsystem": "client",
-          "description": "Brilho, pulso de luz e partículas que destacam capturas raras, Excepcionais e espécies recém-descobertas antes do jogador ler qualquer texto.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T10"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T13",
-          "title": "Interface da Caixa de Pesca",
-          "subsystem": "client",
-          "description": "Tela da caixa de capturas com um filtro principal por vez, ações em lote e a confirmação única para itens valiosos.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T08"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T14",
-          "title": "Notificações básicas",
-          "subsystem": "client",
-          "description": "Avisos flutuantes não bloqueantes mais uma Central de Notificações limitada, gerados no cliente a partir das respostas autoritativas sempre que possível.",
-          "status": "TODO",
-          "dependencies": [
-            "M2-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M2-T15",
-          "title": "Testes de exploit da pesca",
+          "id": "M2-T03",
+          "title": "Atributos determinísticos",
           "subsystem": "server",
-          "description": "Testes automatizados provando que um cliente modificado pedindo muitos ciclos de uma vez não ganha nada com isso.",
+          "description": "Vida, Ataque, Defesa e Velocidade a partir de espécie, raridade, tamanho e nível; sem atributos ocultos.",
           "status": "TODO",
           "dependencies": [
-            "M2-T04",
-            "M2-T09"
+            "M2-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M2-T04",
+          "title": "Nível do peixe de 1 a 10",
+          "subsystem": "server",
+          "description": "Bônus percentual por nível, sem pontos distribuídos.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M2-T05",
+          "title": "Alimentação com recuperação de 50% do XP investido",
+          "subsystem": "server",
+          "description": "Consumir um peixe dá o XP de alimento dele mais 50% do XP que tinha sido investido.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M2-T06",
+          "title": "Tela do Aquário com cards e ficha do peixe",
+          "subsystem": "client",
+          "description": "Cards visuais, ordenação Excepcional → Grande → Adulto → Pequeno, ficha com tamanho, raridade, nível e atributos.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M2-T07",
+          "title": "Proteções de confirmação",
+          "subsystem": "client",
+          "description": "Aviso ao consumir peixe valioso.",
+          "status": "TODO",
+          "dependencies": [
+            "M2-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M3",
-      "title": "Aquário, identidade do peixe e alimentação",
-      "goal": "Peixes viram entidades persistentes com atributos determinísticos, níveis e alimentação.",
+      "title": "Perfil, Cardume, Inventário e Vara",
+      "goal": "Perfil do jogador com Equipamentos, Inventário, Cardume de 1 a 6 e Enciclopédia.",
       "completion_criteria": [
-        "A identidade do peixe persiste corretamente.",
-        "As mesmas entradas determinísticas produzem os mesmos atributos.",
-        "Exploits de consumo ou venda duplicada são impedidos."
+        "Cardume e equipamento persistem.",
+        "A Força do Cardume só aparece para o dono."
       ],
       "tasks": [
         {
           "id": "M3-T01",
-          "title": "Guardar a captura como FishInstance",
-          "subsystem": "server",
-          "description": "Promover uma captura compacta da Caixa de Pesca a um FishInstance persistente completo ao guardá-la, se houver vaga no Aquário.",
+          "title": "Perfil em PT-BR",
+          "subsystem": "client",
+          "description": "Nome, nível, rank, Força privada e seções do Perfil.",
           "status": "TODO",
           "dependencies": [
-            "M2-T08"
+            "M2-T07"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M3-T02",
-          "title": "Limite de 100 no Aquário",
+          "title": "Equipamentos com o slot de Vara",
           "subsystem": "server",
-          "description": "Limite rígido e permanente de 100. A Caixa de Pesca continua recebendo capturas quando o Aquário está cheio; não existe sistema de expansão.",
+          "description": "Único slot de equipamento da V0.1.",
           "status": "TODO",
           "dependencies": [
             "M3-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M3-T03",
-          "title": "Cálculo determinístico de atributos",
+          "title": "Inventário dentro do Perfil",
           "subsystem": "server",
-          "description": "Vida, Ataque, Defesa e Velocidade derivados de forma determinística da espécie, raridade, tamanho e nível. Sem atributos ocultos nem sorteios aleatórios.",
+          "description": "Itens do jogador, separados dos peixes.",
           "status": "TODO",
           "dependencies": [
             "M3-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M3-T04",
-          "title": "Nível do peixe de 1 a 10",
+          "title": "Cardume de 1 a 6",
           "subsystem": "server",
-          "description": "XP e níveis do peixe de 1 a 10 aplicando uma curva de bônus percentual sobre os atributos determinísticos.",
-          "status": "TODO",
-          "dependencies": [
-            "M3-T03"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M3-T05",
-          "title": "Alimentação com recuperação de 50% do XP investido",
-          "subsystem": "server",
-          "description": "Consumir peixes por XP a partir do XP base de alimento da espécie mais a influência de raridade e tamanho, mais 50% do XP já investido no peixe consumido.",
-          "status": "TODO",
-          "dependencies": [
-            "M3-T04"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M3-T06",
-          "title": "Proteção de concorrência no estado do peixe",
-          "subsystem": "server",
-          "description": "Travas transacionais de estado e versão para que duas requisições simultâneas não consigam vender e alimentar o mesmo FishInstance.",
-          "status": "TODO",
-          "dependencies": [
-            "M3-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M3-T07",
-          "title": "Venda de peixe para o NPC",
-          "subsystem": "server",
-          "description": "Valor de venda contínuo em função do tamanho, a partir do valor base da espécie e da influência de raridade. O XP investido no peixe não é reembolsado.",
-          "status": "TODO",
-          "dependencies": [
-            "M3-T03"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M3-T08",
-          "title": "Cards visuais do Aquário",
-          "subsystem": "client",
-          "description": "Inventário em cards com a arte do peixe em destaque, nome da espécie, tamanho, nível e estilo de raridade, ordenados Excepcional > Grande > Adulto > Pequeno.",
-          "status": "TODO",
-          "dependencies": [
-            "M3-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M3-T09",
-          "title": "Tela de detalhe do peixe",
-          "subsystem": "client",
-          "description": "Detalhe completo do peixe com o número do tamanho mais a representação visual, atributos, progresso de nível e o fluxo de alimentação.",
-          "status": "TODO",
-          "dependencies": [
-            "M3-T08",
-            "M3-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M3-T10",
-          "title": "Registro de descobertas da Enciclopédia",
-          "subsystem": "server",
-          "description": "Status de descoberta por espécie e maior exemplar já capturado, mantidos para sempre mesmo depois do peixe ser vendido ou consumido.",
+          "description": "Formação 3 na frente + 3 atrás, ordem fixa de 1 a 6.",
           "status": "TODO",
           "dependencies": [
             "M3-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M3-T05",
+          "title": "Bônus de +3% com 6/6",
+          "subsystem": "server",
+          "description": "Aplicado dinamicamente em todas as atividades do Cardume.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M3-T06",
+          "title": "Força do Cardume visível só ao dono",
+          "subsystem": "server",
+          "description": "Fórmula da seção 31 do GDD, com escala de exibição.",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M3-T07",
+          "title": "Enciclopédia e recordes pessoais",
+          "subsystem": "client",
+          "description": "Silhueta escura antes da descoberta; recorde de tamanho por espécie (os dados já estão sendo gravados desde a primeira captura).",
+          "status": "TODO",
+          "dependencies": [
+            "M3-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M4",
-      "title": "Perfil, Cardume, Inventário e Varas",
-      "goal": "As telas de identidade do jogador, o Cardume único e o eixo de progressão das varas.",
+      "title": "Mapas e Varas",
+      "goal": "Menu de mapas, Rio Selvagem, viagem de 30s, Vara 1 comprável e com melhorias de nível 1 a 10.",
       "completion_criteria": [
-        "O estado do Cardume e do equipamento persiste.",
-        "A Força do Cardume privada não é exposta publicamente."
+        "Viagem só manual.",
+        "A Vara Inicial não pesca no Mapa 2.",
+        "O Raro do Mapa 2 não sai pela Vara Inicial."
       ],
       "tasks": [
         {
           "id": "M4-T01",
-          "title": "Perfil próprio",
+          "title": "Menu Mapa",
           "subsystem": "client",
-          "description": "Tela de identidade e gestão: nome, nível de Pescador, posição na Arena, Força do Cardume privada, Equipamento, Inventário, Cardume, Enciclopédia e recordes pessoais.",
+          "description": "Lista de mapas liberados e botão Viajar.",
           "status": "TODO",
           "dependencies": [
-            "M3-T08"
+            "M3-T07"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M4-T02",
-          "title": "Perfil público",
+          "title": "Cena do Rio Selvagem",
           "subsystem": "client",
-          "description": "Outros jogadores veem nome, nível de Pescador, posição no PvP, detalhes do Cardume, progresso na Enciclopédia e recordes.",
+          "description": "Tema visual próprio: correnteza, pedras, mata densa, água mais escura.",
           "status": "TODO",
           "dependencies": [
             "M4-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M4-T03",
-          "title": "Separação entre campos privados e públicos",
+          "title": "Desbloqueio do Mapa 2 no Nível 10",
           "subsystem": "server",
-          "description": "Projeção garantida pelo servidor para que Força do Cardume, saldos, Caixa de Pesca, Inventário e Aquário nunca vazem pela API de perfil público.",
-          "status": "TODO",
-          "dependencies": [
-            "M4-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M4-T04",
-          "title": "Cardume de 1 a 6 peixes",
-          "subsystem": "server",
-          "description": "Exatamente um Cardume por jogador, referenciando FishInstances do próprio Aquário, usado por todas as atividades de Cardume.",
-          "status": "TODO",
-          "dependencies": [
-            "M3-T01"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M4-T05",
-          "title": "Bônus de Cardume completo (6/6)",
-          "subsystem": "server",
-          "description": "Bônus dinâmico de +3% em Vida, Ataque, Defesa e Velocidade quando as seis vagas estão preenchidas, nunca gravado permanentemente nos peixes.",
-          "status": "TODO",
-          "dependencies": [
-            "M4-T04"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M4-T06",
-          "title": "Slot de equipamento da vara",
-          "subsystem": "server",
-          "description": "O único slot de equipamento ativo. Nenhum slot futuro bloqueado ou morto aparece na interface.",
-          "status": "TODO",
-          "dependencies": [
-            "M1-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M4-T07",
-          "title": "Inventário dentro do Perfil",
-          "subsystem": "server",
-          "description": "Armazenamento de InventoryItem exibido dentro do Perfil, nunca como um nono menu principal.",
+          "description": "Exige também a Vara 1.",
           "status": "TODO",
           "dependencies": [
             "M4-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M4-T04",
+          "title": "Viagem visual de 30s com pesca pausada",
+          "subsystem": "server",
+          "description": "Sem combustível, taxa ou tempo de recarga.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M4-T05",
+          "title": "Compra da Vara 1",
+          "subsystem": "server",
+          "description": "Liberada no Nível 10, paga em Moedas.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M4-T06",
+          "title": "Melhoria da vara de 1 a 10",
+          "subsystem": "server",
+          "description": "Compra direta do próximo nível, sem falha e sem material.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M4-T07",
+          "title": "Bônus de raridade, tamanho e Conchas",
+          "subsystem": "server",
+          "description": "Já implementados no sorteio; passam a valer com a Vara 1.",
+          "status": "TODO",
+          "dependencies": [
+            "M4-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M4-T08",
-          "title": "Vara Inicial",
+          "title": "Varas antigas no Inventário",
           "subsystem": "server",
-          "description": "Vara gratuita de Tier 0: sem bônus, não pesca peixes Raros e não gera Conchas.",
+          "description": "Manter, reequipar, revender ao jogo ou destruir.",
           "status": "TODO",
           "dependencies": [
-            "M4-T06"
+            "M4-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M4-T09",
-          "title": "Vara 1 e níveis internos de 1 a 10",
-          "subsystem": "server",
-          "description": "Vara comprável com compra direta de cada nível por Moedas: sem barra de XP, sem chance de falha, sem materiais, com custo crescente.",
-          "status": "TODO",
-          "dependencies": [
-            "M4-T08"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M4-T10",
-          "title": "Eixos de bônus da vara",
-          "subsystem": "server",
-          "description": "Bônus de chance de raridade, qualidade de tamanho e rendimento de Conchas que preservam a escassez das raridades e nunca criam uma raridade que o mapa não oferece.",
-          "status": "TODO",
-          "dependencies": [
-            "M4-T09",
-            "M2-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M4-T11",
-          "title": "Comprar, equipar, revender e destruir varas",
-          "subsystem": "server",
-          "description": "Varas antigas continuam sendo do jogador. A revenda ao NPC devolve parte do investimento histórico em melhorias. Varas negociadas no Mercado mantêm tier, nível e bônus.",
-          "status": "TODO",
-          "dependencies": [
-            "M4-T09"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M4-T12",
-          "title": "Acúmulo de Conchas",
-          "subsystem": "server",
-          "description": "Conchas caem da pesca, com varas melhores aumentando o rendimento. Sem nenhum uso para gastar na V0.1.",
-          "status": "TODO",
-          "dependencies": [
-            "M4-T10"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M4-T13",
-          "title": "Métrica privada de Força do Cardume",
-          "subsystem": "server",
-          "description": "Ataque×2 + Defesa×1,5 + Vida÷10 + Velocidade×0,5 somado após os modificadores ativos, com fator de escala configurável para exibição. Nunca determina o resultado do PvP.",
-          "status": "TODO",
-          "dependencies": [
-            "M4-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M5",
-      "title": "Mapa 2, viagem e conteúdo",
-      "goal": "O segundo mapa, a viagem manual e o catálogo completo de 20 espécies, incluindo o primeiro peixe Raro.",
+      "title": "Pesca offline",
+      "goal": "Capturas enquanto o jogo está fechado: 1 a cada 60s, até 24h, calculadas na volta.",
       "completion_criteria": [
-        "A viagem é apenas manual.",
-        "A Vara Inicial não consegue pescar no Mapa 2.",
-        "O peixe Raro do Mapa 2 não pode ser gerado por exploits com a Vara Inicial."
+        "Nenhum timer individual roda com o jogador fora.",
+        "Voltar ao jogo entrega exatamente as capturas devidas."
       ],
       "tasks": [
         {
           "id": "M5-T01",
-          "title": "Menu de mapas",
-          "subsystem": "client",
-          "description": "Seleção de mapa listando os mapas desbloqueados e elegíveis, com uma ação explícita de Viajar.",
+          "title": "Cálculo offline por carimbo de tempo",
+          "subsystem": "server",
+          "description": "60s por captura, limite de 24h, processamento agregado.",
           "status": "TODO",
           "dependencies": [
-            "M2-T01"
+            "M4-T08"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M5-T02",
-          "title": "Desbloqueio de mapa por nível",
+          "title": "Capturas offline vão para a Caixa",
           "subsystem": "server",
-          "description": "Mapa 2 no nível 10 de Pescador, com a escada de desbloqueio dos 10 mapas já orientada a dados.",
+          "description": "Mesma representação compacta.",
           "status": "TODO",
           "dependencies": [
-            "M1-T04"
+            "M5-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M5-T03",
-          "title": "Vara mínima por mapa",
-          "subsystem": "server",
-          "description": "Vara 1 como mínimo para o Mapa 2, exigida pelo servidor tanto na viagem quanto em cada captura.",
-          "status": "TODO",
-          "dependencies": [
-            "M5-T02",
-            "M4-T09"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M5-T04",
-          "title": "Transição de viagem de 30s",
-          "subsystem": "server",
-          "description": "Janela de viagem controlada pelo servidor, durante a qual a pesca fica pausada. Sem combustível, taxa ou tempo de espera. O mapa passa a valer na chegada.",
-          "status": "TODO",
-          "dependencies": [
-            "M5-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M5-T05",
-          "title": "Apresentação da viagem",
+          "title": "Tela simples de retorno",
           "subsystem": "client",
-          "description": "Visual do barco durante os 30 segundos de viagem, nunca comandando o estado autoritativo.",
+          "description": "Resumo do que foi pescado enquanto você estava fora.",
           "status": "TODO",
           "dependencies": [
-            "M5-T04",
             "M5-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M5-T06",
-          "title": "Cena do Mapa 2 — Rio Selvagem",
-          "subsystem": "client",
-          "description": "Rio maior com correnteza visível, pedras, vegetação mais densa, cachoeira e névoa, e água mais profunda. Aventureiro, mas ainda relaxante.",
-          "status": "TODO",
-          "dependencies": [
-            "M5-T04"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M5-T07",
-          "title": "Todas as 20 espécies cadastradas",
-          "subsystem": "config",
-          "description": "Pools dos dois mapas completos: 19 Comuns mais o Aruanã como único Raro, com dados de balanceamento provisórios.",
-          "status": "TODO",
-          "dependencies": [
-            "M0-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M5-T08",
-          "title": "Elegibilidade de captura Rara",
-          "subsystem": "server",
-          "description": "Geração de Raros limitada pelo cruzamento do pool do mapa com a elegibilidade da vara, com testes cobrindo a tentativa de exploit pela Vara Inicial.",
-          "status": "TODO",
-          "dependencies": [
-            "M5-T03",
-            "M5-T07"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M6",
       "title": "Expedições",
-      "goal": "O Cardume pode ser enviado para fora em troca de Moedas, sem bloquear ataques recebidos na Arena.",
+      "goal": "Enviar o Cardume em expedições de 30min, 1h, 3h ou 6h, online ou offline.",
       "completion_criteria": [
-        "O mesmo Cardume não consegue executar ações conflitantes do dono enquanto está fora.",
-        "Ataques recebidos na Arena continuam possíveis."
+        "O Cardume em expedição não pode fazer ações conflitantes.",
+        "Outros jogadores continuam podendo atacar."
       ],
       "tasks": [
         {
           "id": "M6-T01",
-          "title": "Durações das expedições",
+          "title": "Envio do Cardume e travas de atividade",
           "subsystem": "server",
-          "description": "30 minutos, 1 hora, 3 horas e 6 horas, funcionando online e offline enquanto a pesca continua.",
+          "description": "Uma expedição por vez; o dono não mexe no Cardume enquanto ele está fora.",
           "status": "TODO",
           "dependencies": [
-            "M4-T04"
+            "M5-T03"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M6-T02",
           "title": "Força Recomendada e eficiência",
           "subsystem": "server",
-          "description": "Eficiência reduzida abaixo da recomendada, 100% na recomendada e bônus acima dela com teto de superioridade configurável.",
+          "description": "Redução abaixo da recomendada e bônus limitado acima.",
           "status": "TODO",
           "dependencies": [
-            "M6-T01",
-            "M4-T13"
+            "M6-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M6-T03",
           "title": "Recompensas",
           "subsystem": "server",
-          "description": "Moedas garantidas em quantidade moderada mais uma chance bem pequena de encontrar um peixe. Sem XP e sem Conchas. O peixe encontrado vai para a Caixa de Pesca.",
-          "status": "TODO",
-          "dependencies": [
-            "M6-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M6-T04",
-          "title": "Travas de atividade",
-          "subsystem": "server",
-          "description": "Enquanto está fora, o dono não pode atacar na Arena, mudar a formação, alimentar, vender ou anunciar os peixes participantes, nem iniciar outra atividade de Cardume. Sem risco de morte ou perda de peixe.",
+          "description": "Moedas moderadas e pequena chance de peixe, que vai para a Caixa.",
           "status": "TODO",
           "dependencies": [
             "M6-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
-          "id": "M6-T05",
-          "title": "Conclusão offline",
-          "subsystem": "server",
-          "description": "Conclusão resolvida pelos carimbos de tempo, exibida como pendente no próximo login.",
-          "status": "TODO",
-          "dependencies": [
-            "M6-T03"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M6-T06",
-          "title": "Apresentação da conclusão",
+          "id": "M6-T04",
+          "title": "Tela de Expedição e aviso de conclusão",
           "subsystem": "client",
-          "description": "Aviso de conclusão online que abre o resultado da recompensa, com o peixe encontrado em destaque.",
+          "description": "Popup ao concluir, com o peixe encontrado em destaque.",
           "status": "TODO",
           "dependencies": [
-            "M6-T05"
+            "M6-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M7",
-      "title": "Arena e PvP",
-      "goal": "PvP assíncrono com ranking posicional, Energia, Honra e combate resolvido no servidor.",
+      "title": "Arena local jogável",
+      "goal": "Arena com adversários simulados localmente (bots), combate automático e ranking.",
       "completion_criteria": [
-        "O resultado da batalha não pode ser alterado pelo cliente.",
-        "A rerrolagem de oponentes não pode ser burlada reabrindo o cliente.",
-        "A troca de posições no ranking é atômica."
+        "O resultado da batalha vem da simulação, separada da apresentação.",
+        "Reabrir o jogo não troca os adversários."
       ],
       "tasks": [
         {
           "id": "M7-T01",
-          "title": "Energia 24 com regeneração de 1/h",
+          "title": "Energia (24, +1 por hora, 1 por ataque)",
           "subsystem": "server",
-          "description": "Regeneração de Energia derivada de carimbos de tempo. Todo ataque iniciado custa 1 de Energia, com vitória ou derrota.",
+          "description": "Regeneração por carimbo de tempo.",
           "status": "TODO",
           "dependencies": [
-            "M1-T04"
+            "M6-T04"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M7-T02",
-          "title": "Seleção de oponentes",
+          "title": "Ranking e bots locais",
           "subsystem": "server",
-          "description": "Três oponentes únicos escolhidos pelo servidor dentro de uma janela de até cerca de 10% acima da posição atual, nunca incluindo o próprio jogador.",
+          "description": "Ranking posicional com troca direta de posições.",
           "status": "TODO",
           "dependencies": [
             "M7-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M7-T03",
-          "title": "Uma rerrolagem e depois travado",
+          "title": "Seleção de 3 adversários",
           "subsystem": "server",
-          "description": "Uma rerrolagem por conjunto, depois travado até acontecer um ataque. Sair da Arena ou reiniciar o cliente não pode rerrolar.",
+          "description": "Janela de ~10% acima do rank, uma troca por ciclo, travada até atacar.",
           "status": "TODO",
           "dependencies": [
-            "M7-T02"
+            "M7-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M7-T04",
-          "title": "Cards de oponente",
-          "subsystem": "client",
-          "description": "Mostrar nome, posição, peixes do Cardume, níveis e raridades. Nunca mostrar Força do Cardume, previsão de vitória ou rótulo de dificuldade.",
+          "title": "Motor de combate",
+          "subsystem": "server",
+          "description": "Micro variação de dano, prioridade 1→6, vaga derrotada continua vazia.",
           "status": "TODO",
           "dependencies": [
-            "M7-T02",
-            "M4-T03"
+            "M7-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M7-T05",
-          "title": "Motor de combate",
+          "title": "Honra",
           "subsystem": "server",
-          "description": "Atributos determinísticos com uma micro variação de dano configurável de 0,97 a 1,03. Sem crítico, esquiva, precisão, penetração ou habilidades.",
+          "description": "Ganha em vitória e defesa, perde pouco na derrota, nunca abaixo de 0.",
           "status": "TODO",
           "dependencies": [
-            "M3-T03",
-            "M4-T05"
+            "M7-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M7-T06",
-          "title": "Mitigação de defesa e mapeamento de velocidade",
-          "subsystem": "server",
-          "description": "Mitigação com retornos decrescentes e piso mínimo de dano, e um mapeamento estreito de velocidade para intervalo de ataque, mantendo a Velocidade como eixo secundário.",
+          "title": "Tela da Arena e cards de adversário",
+          "subsystem": "client",
+          "description": "Cardume, nível e raridade; nunca a Força do adversário.",
           "status": "TODO",
           "dependencies": [
-            "M7-T05"
+            "M7-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M7-T07",
-          "title": "Formação e ordem de alvo",
-          "subsystem": "server",
-          "description": "3 na frente e 3 atrás, com alvo fixo de 1 a 6. Vagas derrotadas continuam vazias e a formação nunca se reorganiza.",
-          "status": "TODO",
-          "dependencies": [
-            "M7-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M7-T08",
-          "title": "Resolução instantânea no servidor e dados de replay",
-          "subsystem": "server",
-          "description": "A batalha inteira é resolvida quando o ataque é aceito, devolvendo o resultado autoritativo mais os eventos de replay.",
-          "status": "TODO",
-          "dependencies": [
-            "M7-T07"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M7-T09",
-          "title": "Troca atômica de posições",
-          "subsystem": "server",
-          "description": "A vitória do atacante troca as duas posições de forma transacional, sem mexer nas posições intermediárias. A derrota não altera a posição.",
-          "status": "TODO",
-          "dependencies": [
-            "M7-T08"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M7-T10",
-          "title": "Honra",
-          "subsystem": "server",
-          "description": "Honra ganha na vitória do atacante e na defesa bem-sucedida, perda bem menor na derrota, com piso em 0 e sem teto nas defesas.",
-          "status": "TODO",
-          "dependencies": [
-            "M7-T09"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M7-T11",
-          "title": "Apresentação do replay de PvP",
+          "title": "Replay 1x, 2x e Pular",
           "subsystem": "client",
-          "description": "Replay em 1x, 2x e pular para o resultado, com avanços curtos de ataque, efeito de respingo, números de dano e barras de vida. Meta de menos de 60s em 1x.",
+          "description": "Mira em lutas de até ~60s, sem limite rígido.",
           "status": "TODO",
           "dependencies": [
-            "M7-T08"
+            "M7-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M7-T12",
-          "title": "Histórico de PvP",
-          "subsystem": "server",
-          "description": "Histórico de ataques e defesas com os resultados, visível para o jogador.",
-          "status": "TODO",
-          "dependencies": [
-            "M7-T08"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M7-T13",
-          "title": "Tela da Loja da Arena",
-          "subsystem": "web",
-          "description": "Estoque mínimo e configurável da Loja da Arena gastando Honra, sem inventar sistemas de itens futuros só para preenchê-la.",
-          "status": "TODO",
-          "dependencies": [
-            "M7-T10",
-            "M1-T07"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M8",
-      "title": "Mercado de preço fixo",
-      "goal": "Um mercado entre jogadores com preço fixo e uma área de custódia unificada.",
+      "title": "Mercado local",
+      "goal": "Comprar, Vender, Meus Anúncios e Itens a Retirar, com anúncios simulados localmente.",
       "completion_criteria": [
-        "Não é possível vender ou comprar em duplicidade.",
-        "O Mercado não permite burlar o limite útil do Aquário."
+        "Nada é vendido ou comprado duas vezes.",
+        "O Mercado não fura o limite do Aquário."
       ],
       "tasks": [
         {
           "id": "M8-T01",
-          "title": "Regras de anúncio",
+          "title": "Anúncios de preço fixo",
           "subsystem": "server",
-          "description": "Máximo de 5 anúncios ativos por jogador, duração máxima de 7 dias, sem taxa de anúncio, preço livre para o vendedor e taxa de 3% na venda concluída.",
+          "description": "5 ativos, 7 dias, preço livre, sem taxa para anunciar.",
           "status": "TODO",
           "dependencies": [
-            "M3-T06"
+            "M7-T07"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M8-T02",
-          "title": "Trava de estado do anúncio",
+          "title": "Compra com taxa de 3% na venda",
           "subsystem": "server",
-          "description": "Peixes e itens anunciados ficam indisponíveis para uso enquanto anunciados, com proteção transacional contra venda e compra em duplicidade.",
+          "description": "Taxa descontada do vendedor.",
           "status": "TODO",
           "dependencies": [
             "M8-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M8-T03",
           "title": "Itens a Retirar",
           "subsystem": "server",
-          "description": "Custódia unificada para itens comprados, cancelados e expirados. Nada volta direto para o Aquário ou o Inventário.",
-          "status": "TODO",
-          "dependencies": [
-            "M8-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M8-T04",
-          "title": "Comportamento de compra com Aquário cheio",
-          "subsystem": "server",
-          "description": "A compra é sempre permitida; a retirada para um Aquário cheio fica bloqueada até liberar vaga. Limites de armazenamento não podem travar o comércio.",
-          "status": "TODO",
-          "dependencies": [
-            "M8-T03",
-            "M3-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M8-T05",
-          "title": "Aba de compra com filtros",
-          "subsystem": "client",
-          "description": "Busca com vários filtros ao mesmo tempo (espécie, raridade, categoria de tamanho, tamanho mínimo e máximo, nível, preço mínimo e máximo) com ordenação, exibida em cards visuais compactos.",
+          "description": "Toda saída do Mercado passa por aqui; não retira peixe com Aquário 100/100.",
           "status": "TODO",
           "dependencies": [
             "M8-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
-          "id": "M8-T06",
-          "title": "Abas de venda e meus anúncios",
-          "subsystem": "client",
-          "description": "Criação de anúncio, gestão dos anúncios ativos e cancelamento.",
-          "status": "TODO",
-          "dependencies": [
-            "M8-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M8-T07",
-          "title": "Auditoria de transações do Mercado",
+          "id": "M8-T04",
+          "title": "Anúncios simulados por bots",
           "subsystem": "server",
-          "description": "Registros imutáveis de auditoria para toda transação e toda taxa do mercado.",
+          "description": "Fluxo real com vendedores locais.",
           "status": "TODO",
           "dependencies": [
-            "M8-T02"
+            "M8-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M8-T05",
+          "title": "Telas do Mercado em cards",
+          "subsystem": "client",
+          "description": "Filtros e ordenação, painel de detalhes, comprar.",
+          "status": "TODO",
+          "dependencies": [
+            "M8-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M9",
-      "title": "Leilão",
-      "goal": "Uma aba de leilão transacionalmente segura, com valor de lance reservado e proteção contra lance de última hora.",
+      "title": "Leilão local",
+      "goal": "Aba Leilão dentro do Mercado.",
       "completion_criteria": [
-        "Lances simultâneos são tratados transacionalmente.",
-        "Taxas e valores principais ficam corretos mesmo com repetição de requisição e reconexão."
+        "Lances, taxas e valores bloqueados corretos mesmo com repetição de pedidos."
       ],
       "tasks": [
         {
           "id": "M9-T01",
-          "title": "Regras de criação do leilão",
+          "title": "Leilão de 6h, um por vendedor",
           "subsystem": "server",
-          "description": "Um leilão ativo por vendedor, aceitando peixes ou itens, duração fixa de 6 horas, lance inicial definido pelo vendedor e sem cancelamento por não gostar da demanda.",
+          "description": "Lance inicial definido pelo vendedor; sem cancelamento sem oferta.",
           "status": "TODO",
           "dependencies": [
-            "M8-T03"
+            "M8-T05"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M9-T02",
-          "title": "Regras de lance",
+          "title": "Lances com +3% mínimo e taxa de 1%",
           "subsystem": "server",
-          "description": "Cada lance precisa ser pelo menos 3% acima do maior lance atual, com taxa não reembolsável de 1% cobrada a cada lance.",
+          "description": "Principal bloqueado e devolvido ao ser superado; taxa nunca devolvida.",
           "status": "TODO",
           "dependencies": [
             "M9-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M9-T03",
-          "title": "Reserva e devolução do valor do lance",
+          "title": "Proteção de último minuto",
           "subsystem": "server",
-          "description": "O valor principal fica integralmente reservado no servidor enquanto o participante lidera, e é devolvido imediatamente quando ele é superado. A taxa de 1% nunca volta.",
-          "status": "TODO",
-          "dependencies": [
-            "M9-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M9-T04",
-          "title": "Segurança contra corrida de lances",
-          "subsystem": "server",
-          "description": "Travas de linha ou versão cobrindo lances simultâneos, encerramento por tempo e encerramento antecipado pelo vendedor, com testes de repetição de requisição e reconexão.",
-          "status": "TODO",
-          "dependencies": [
-            "M9-T03"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M9-T05",
-          "title": "Reinício contra lance de última hora",
-          "subsystem": "server",
-          "description": "Um lance válido no último minuto reinicia o tempo restante para 1:00, quantas vezes for preciso.",
-          "status": "TODO",
-          "dependencies": [
-            "M9-T04"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M9-T06",
-          "title": "Encerramento antecipado pelo vendedor",
-          "subsystem": "server",
-          "description": "Encerrar Agora só quando existe lance, cobrando do vendedor 3% do lance aceito. Sem taxa de encerramento antecipado no fim normal por tempo.",
-          "status": "TODO",
-          "dependencies": [
-            "M9-T04"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M9-T07",
-          "title": "Expiração sem lances",
-          "subsystem": "server",
-          "description": "Sem lances, o vendedor espera as 6 horas completas e o item vai para Itens a Retirar.",
+          "description": "Lance com menos de 60s volta o cronômetro para 60s.",
           "status": "TODO",
           "dependencies": [
             "M9-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
-          "id": "M9-T08",
-          "title": "Interface da aba de leilão",
-          "subsystem": "client",
-          "description": "Navegação pelos leilões, lance com o incremento mínimo e a taxa exibidos claramente, e notificação de lance superado.",
+          "id": "M9-T04",
+          "title": "Encerramento antecipado com taxa de 3%",
+          "subsystem": "server",
+          "description": "Só quando já existe oferta.",
           "status": "TODO",
           "dependencies": [
-            "M9-T05"
+            "M9-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M9-T05",
+          "title": "Tela do Leilão",
+          "subsystem": "client",
+          "description": "Aba dentro do Mercado.",
+          "status": "TODO",
+          "dependencies": [
+            "M9-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M10",
-      "title": "Tutorial, modo barra de tarefas e polimento de UX",
-      "goal": "A introdução da primeira sessão e o polimento visual que torna o jogo agradável de deixar aberto.",
+      "title": "Tutorial, UX e polimento",
+      "goal": "Tutorial curto, interface principal completa e acabamento visual e sonoro.",
       "completion_criteria": [
-        "O tutorial ensina fazendo e termina rápido.",
-        "O servidor trata o Modo Barra de Tarefas exatamente como pesca online normal."
+        "Um jogador novo entende o jogo sem explicação externa."
       ],
       "tasks": [
         {
           "id": "M10-T01",
-          "title": "Fluxo do tutorial",
+          "title": "Tutorial curto",
           "subsystem": "client",
-          "description": "O fluxo de 13 passos que ensina fazendo, do boas-vindas até pegar a Vara Inicial e uma introdução breve à Expedição. Sem explicar PvP avançado, Mercado ou Leilão.",
+          "description": "Primeira vara, primeira pesca, Caixa, primeira venda, Cardume, Expedição.",
           "status": "TODO",
           "dependencies": [
-            "M6-T01"
+            "M9-T05"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M10-T02",
-          "title": "Modo compacto / barra de tarefas",
+          "title": "Menus superiores completos e card retrátil",
           "subsystem": "client",
-          "description": "Janela compacta sempre visível mostrando apenas a água, o barco, o pescador, a animação de pesca e um retorno mínimo de captura. Puramente visual.",
+          "description": "Navegação principal do GDD.",
           "status": "TODO",
           "dependencies": [
-            "M2-T10"
+            "M10-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M10-T03",
-          "title": "Polimento dos efeitos de captura",
+          "title": "Modo compacto / barra de tarefas",
           "subsystem": "client",
-          "description": "Efeitos refinados de captura importante: elegantes, distintos do estilo de raridade e nunca visualmente cansativos.",
+          "description": "Janela pequena com água, barco e pescador.",
           "status": "TODO",
           "dependencies": [
-            "M2-T12"
+            "M10-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M10-T04",
-          "title": "Polimento de avisos e notificações",
+          "title": "Áudio provisório",
           "subsystem": "client",
-          "description": "Conjunto limitado de notificações recentes com avisos flutuantes polidos e não bloqueantes.",
+          "description": "Sons de água, arremesso e captura.",
           "status": "TODO",
           "dependencies": [
-            "M2-T14"
+            "M10-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M10-T05",
-          "title": "Áudio provisório",
+          "title": "Animações e feedback visual melhores",
           "subsystem": "client",
-          "description": "Áudio provisório de ambiente de água, lançamento, captura e interface.",
+          "description": "Capturas importantes com mais brilho, transições de menu.",
           "status": "TODO",
           "dependencies": [
-            "M2-T10"
+            "M10-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M10-T06",
-          "title": "Transições entre menus",
-          "subsystem": "client",
-          "description": "Transições suaves entre os oito menus principais, com a pesca continuando por baixo.",
-          "status": "TODO",
-          "dependencies": [
-            "M7-T04",
-            "M8-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M10-T07",
-          "title": "Otimização visual",
-          "subsystem": "client",
-          "description": "Manter a cena leve o suficiente para ficar rodando em um segundo monitor.",
-          "status": "TODO",
-          "dependencies": [
-            "M10-T03"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M11",
-      "title": "Site público e distribuição direta",
-      "goal": "O site voltado ao jogador e o pipeline de versão que permite adicionar a Steam depois sem retrabalho.",
+      "title": "Balanceamento do MVP",
+      "goal": "Só depois de tudo jogável: revisar economia, progressão, raridades, combate e expedições.",
       "completion_criteria": [
-        "Um visitante entende o que é o jogo e baixa o build atual para Windows.",
-        "O download direto e o build da Steam saem da mesma base de código."
+        "Save/load e testes de abuso local passando."
       ],
       "tasks": [
         {
           "id": "M11-T01",
-          "title": "Página inicial",
-          "subsystem": "web",
-          "description": "Página inicial atraente, alinhada à identidade visual do jogo, com uma cena de pesca em destaque e uma explicação curta.",
+          "title": "Revisar progressão do Nível 1 ao 20",
+          "subsystem": "config",
+          "description": "Com dados de jogo real.",
           "status": "TODO",
           "dependencies": [
-            "M0-T01"
+            "M10-T05"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M11-T02",
-          "title": "Espaços para imagens e vídeos",
-          "subsystem": "web",
-          "description": "Seção de mídia pronta para receber capturas de tela e vídeo reais.",
+          "title": "Revisar economia e preços",
+          "subsystem": "config",
+          "description": "Entradas e saídas de Moedas.",
           "status": "TODO",
           "dependencies": [
             "M11-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
         },
         {
           "id": "M11-T03",
-          "title": "Seção de download para Windows",
-          "subsystem": "web",
-          "description": "Botão de download para Windows ligado ao build versionado atual.",
-          "status": "TODO",
-          "dependencies": [
-            "M11-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M11-T04",
-          "title": "Versão e notas de lançamento",
-          "subsystem": "web",
-          "description": "Exibição pública da versão e das notas de lançamento, mais os espaços de requisitos mínimos, privacidade e termos.",
-          "status": "TODO",
-          "dependencies": [
-            "M11-T05"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M11-T05",
-          "title": "Endpoint de dados do build",
-          "subsystem": "server",
-          "description": "API pública de build e versão projetada para que um atualizador leve possa ser adicionado depois sem retrabalho.",
-          "status": "TODO",
-          "dependencies": [
-            "M0-T02"
-          ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
-        },
-        {
-          "id": "M11-T06",
-          "title": "Espaço reservado da Steam",
-          "subsystem": "web",
-          "description": "Botão e sistema de link da Steam que passam a valer quando a página na Steam existir.",
+          "title": "Revisar raridades, tamanhos e atributos",
+          "subsystem": "config",
+          "description": "Frequências e hierarquia.",
           "status": "TODO",
           "dependencies": [
             "M11-T01"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M11-T04",
+          "title": "Revisar duração do combate e força das Expedições",
+          "subsystem": "config",
+          "description": "Simulações.",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M11-T05",
+          "title": "Revisar varas, Mercado e Leilão",
+          "subsystem": "config",
+          "description": "Custos e taxas.",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M11-T06",
+          "title": "Testes de save/load e de abuso local",
+          "subsystem": "ops",
+          "description": "Relógio adiantado, pedidos repetidos, arquivos editados.",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M11-T07",
+          "title": "Rodada de correção de bugs",
+          "subsystem": "client",
+          "description": "Tudo que aparecer nos testes.",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T01"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     },
     {
       "id": "M12",
-      "title": "Estabilização da V0.1",
-      "goal": "Simular, endurecer, ajustar e publicar um build versionado para Windows.",
+      "title": "Infraestrutura online (adiada)",
+      "goal": "O que já foi construído para a versão online (servidor ASP.NET, PostgreSQL, Docker, painel web) fica guardado aqui. Pela prioridade atual (docs/CLAUDE_START_HERE_V0_1_1.md), nada disto é necessário para jogar; volta depois que o MVP local for validado.",
       "completion_criteria": [
-        "A economia e o combate se comportam dentro das faixas pretendidas.",
-        "Os testes de segurança, concorrência e reconexão passam.",
-        "Existe um build versionado para Windows com notas de lançamento."
+        "Os serviços locais do jogo ganham versões remotas (Remote...Service) sem reescrever a jogabilidade.",
+        "Nenhum passo pago acontece sem o proprietário aprovar."
       ],
       "tasks": [
         {
           "id": "M12-T01",
-          "title": "Simulador de combate",
+          "title": "Esqueleto do servidor ASP.NET Core",
           "subsystem": "server",
-          "description": "Simulador sem interface rodando milhares de batalhas de Cardume para estimar a duração, conferir o equilíbrio entre ataque e defesa, verificar que a Velocidade é secundária e calibrar a métrica de Força.",
-          "status": "TODO",
-          "dependencies": [
-            "M7-T05"
-          ],
-          "completion_notes": "",
+          "description": "Criar o projeto do backend autoritativo com log estruturado, leitura de configuração, CORS para o painel e uma organização limpa de endpoints.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "server/src/FishingIdle.Api em .NET 10 LTS. Minimal API com módulos de endpoint, log estruturado em console, binding de opções, tratamento de erro em problem-details e CORS de origem exata para o painel (nunca curinga, somente GET). Compila sem avisos com warnings-as-errors; 36 testes automatizados passam.",
           "updated_at": "2026-09-25T00:00:00Z"
         },
         {
           "id": "M12-T02",
-          "title": "Simulação de economia",
+          "title": "Endpoint de saúde",
           "subsystem": "server",
-          "description": "Modelar capturas por hora, entrada de Moedas por venda ao NPC, gasto com melhoria de varas, a taxa de 3% do mercado, a taxa de lance e a de encerramento antecipado do leilão, e a progressão de Honra.",
-          "status": "TODO",
+          "description": "Expor GET /health devolvendo o status do serviço mais uma verificação de conectividade com o banco, e GET /health/live como sinal de vida sem dependências.",
+          "status": "DONE",
           "dependencies": [
-            "M9-T06",
-            "M4-T09"
+            "M12-T01"
           ],
-          "completion_notes": "",
+          "completion_notes": "GET /health informa o status geral com o detalhamento por dependência (banco de dados). GET /health/live nunca toca no banco, para que o cliente Unity consiga distinguir 'servidor no ar, banco fora' das demais situações.",
           "updated_at": "2026-09-25T00:00:00Z"
         },
         {
           "id": "M12-T03",
-          "title": "Testes de segurança",
+          "title": "PostgreSQL e migrations",
           "subsystem": "server",
-          "description": "Testes de autorização, posse, repetição de requisição, gasto duplicado e autoridade do cliente em todas as mutações econômicas.",
-          "status": "TODO",
+          "description": "Adicionar EF Core + Npgsql, o DbContext inicial, o fluxo de schema baseado em migrations e as tabelas iniciais do M0.",
+          "status": "DONE",
           "dependencies": [
-            "M9-T04",
-            "M8-T02"
+            "M12-T01"
           ],
-          "completion_notes": "",
+          "completion_notes": "EF Core 10 com Npgsql. A migration inicial cria config_versions (com índice único filtrado permitindo no máximo uma versão de balanceamento ativa) e admin_audit_log, as duas tabelas de que o pipeline de configuração e a auditoria do Milestone 1 precisam. Nomes de coluna em snake_case e timestamptz para toda data. Verificado: a migration foi aplicada em um PostgreSQL 16 real e o schema, as chaves e os índices resultantes foram inspecionados. As migrations rodam por ops/scripts/migrate.sh; o servidor nunca migra sozinho.",
           "updated_at": "2026-09-25T00:00:00Z"
         },
         {
           "id": "M12-T04",
-          "title": "Testes de carga da API",
-          "subsystem": "server",
-          "description": "Perfil de carga de referência para os endpoints de sincronização da pesca, Arena e Mercado.",
-          "status": "TODO",
+          "title": "Ambiente local com Docker Compose",
+          "subsystem": "ops",
+          "description": "Fornecer um ambiente local de um comando (PostgreSQL + servidor + painel) com healthchecks e volumes persistentes.",
+          "status": "DONE",
           "dependencies": [
-            "M12-T03"
+            "M12-T01"
           ],
-          "completion_notes": "",
+          "completion_notes": "ops/docker-compose.yml define postgres (com healthcheck, volume nomeado e locale determinístico), api e dev-console, com o repositório montado como somente leitura em /repo para que o servidor leia o estado do projeto mas nunca o escreva. Dockerfiles para os dois serviços; o container da API roda com usuário sem privilégios de root. Os scripts dev-up.sh, dev-down.sh, migrate.sh, new-migration.sh e verify.sh encapsulam o fluxo. O ambiente Compose em si não foi executado no ambiente de autoria: não há daemon do Docker. Veja M0-T14.",
           "updated_at": "2026-09-25T00:00:00Z"
         },
         {
           "id": "M12-T05",
-          "title": "Testes de salvamento e reconexão",
-          "subsystem": "server",
-          "description": "Correção do estado ao longo de quedas de conexão, janelas offline e requisições de sincronização repetidas.",
-          "status": "TODO",
+          "title": "Configuração de ambiente compartilhada",
+          "subsystem": "ops",
+          "description": "Um único .env.example alimentando as credenciais do banco, as portas e as URLs dos serviços para servidor, web e scripts.",
+          "status": "DONE",
           "dependencies": [
-            "M2-T15"
+            "M12-T04"
           ],
-          "completion_notes": "",
+          "completion_notes": "O arquivo .env.example na raiz é consumido pelo docker-compose, pela API e pelo painel. Nenhum segredo é versionado.",
           "updated_at": "2026-09-25T00:00:00Z"
         },
         {
           "id": "M12-T06",
-          "title": "Testes de concorrência no Mercado e no Leilão",
-          "subsystem": "server",
-          "description": "Testes de concorrência para compras simultâneas, lances, expiração e encerramento antecipado.",
-          "status": "TODO",
-          "dependencies": [
-            "M12-T03"
-          ],
-          "completion_notes": "",
+          "title": "Esqueleto do painel lendo o roadmap",
+          "subsystem": "web",
+          "description": "Painel privado em Next.js com as páginas Visão geral e Roadmap mostrando o estado real do roadmap, mais as páginas de Build/Versão e Configuração para os milestones seguintes.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "Next.js 15 + TypeScript, com toda a interface em PT-BR. A Visão geral mostra o percentual de conclusão da V0.1, o milestone atual com barra por status, a versão do build atual, bloqueios e decisões do dono, a tarefa em andamento, as próximas 5 da fila e as 5 concluídas mais recentemente. A página de Roadmap lista todos os milestones e tarefas com filtro por status, critérios de conclusão e notas de conclusão. Typecheck e build limpos; as quatro páginas foram renderizadas contra a API rodando e conferidas.",
           "updated_at": "2026-09-25T00:00:00Z"
         },
         {
           "id": "M12-T07",
-          "title": "Rodada de correção de bugs",
-          "subsystem": "server",
-          "description": "Rodada de triagem e correção cobrindo todos os milestones.",
-          "status": "TODO",
+          "title": "Painel lê o servidor como fonte única",
+          "subsystem": "web",
+          "description": "O painel não pode manter sua própria cópia do roadmap; ele lê o backend, com leitura alternativa do arquivo do repositório para continuar funcionando quando a API estiver fora.",
+          "status": "DONE",
           "dependencies": [
-            "M12-T05"
+            "M12-T06"
           ],
-          "completion_notes": "",
+          "completion_notes": "A camada de dados do painel busca GET /api/dev/roadmap e, em caso de falha, lê docs/roadmap.json diretamente do repositório. O painel exibe qual das duas fontes respondeu, para que o status nunca fique desatualizado em silêncio.",
           "updated_at": "2026-09-25T00:00:00Z"
         },
         {
           "id": "M12-T08",
-          "title": "Rodada de balanceamento",
-          "subsystem": "config",
-          "description": "Ajustar os valores provisórios pelo painel usando os resultados das simulações.",
-          "status": "TODO",
-          "dependencies": [
-            "M12-T01",
-            "M12-T02"
-          ],
-          "completion_notes": "",
+          "title": "Diagnóstico de conexão do cliente Unity (dormente)",
+          "subsystem": "client",
+          "description": "Projeto Unity que chama /health ao iniciar e mostra o status da conexão em uma camada de diagnóstico exclusiva de desenvolvimento.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "Projeto client-unity com inicialização por código (RuntimeInitializeOnLoadMethod, para que dar Play em qualquer cena funcione sem depender de um arquivo de cena versionado), um ApiClient guiado por configuração, um ServerHealthProbe consultando /health e um DiagnosticOverlay exclusivo de desenvolvimento (tecla F1) que distingue conectado, degradado e inacessível. Todo o texto do overlay está em PT-BR. A URL do backend vem de um ScriptableObject ou da variável FISHING_IDLE_API_BASE_URL, nunca do código. Não foi compilado no ambiente de autoria: não há Editor do Unity. Veja M0-T14. Desde o MVP local, fica dormente: o jogo não precisa de servidor, e o ClientBootstrap não é mais instalado automaticamente.",
           "updated_at": "2026-09-25T00:00:00Z"
         },
         {
           "id": "M12-T09",
-          "title": "Build para Windows",
-          "subsystem": "client",
-          "description": "Gerar o build versionado para Windows do download direto.",
-          "status": "TODO",
+          "title": "Painel lê o repositório direto do GitHub",
+          "subsystem": "web",
+          "description": "Para o painel poder rodar publicado, sem um clone do repositório e sem um backend, e ainda assim mostrar o andamento atual poucos segundos depois de um commit ser enviado.",
+          "status": "DONE",
           "dependencies": [
-            "M10-T07",
-            "M12-T07"
+            "M12-T06"
           ],
-          "completion_notes": "",
+          "completion_notes": "A camada de dados agora tenta três fontes em ordem, e sempre diz na tela qual respondeu: a API do servidor (única com dados de execução), o arquivo do clone local, e o GitHub. Rodando de um clone, a ordem é a de antes; publicado, só o GitHub responde e a API nem é tentada, para a página não esperar um tempo limite inútil. A listagem de /config usa a API do GitHub quando possível e, quando o limite de 60 chamadas por hora por IP é atingido, cai para leitura direta dos arquivos conhecidos, que não tem esse limite — verificado com o limite realmente estourado. A Visão geral mostra o commit que a branch aponta agora.",
           "updated_at": "2026-09-25T00:00:00Z"
         },
         {
           "id": "M12-T10",
-          "title": "Notas de lançamento versionadas",
-          "subsystem": "docs",
-          "description": "Notas de lançamento ligadas às versões do cliente, servidor e web e à versão de configuração usada.",
+          "title": "Atualização automática do painel",
+          "subsystem": "web",
+          "description": "Para o painel acompanhar o repositório sozinho, sem precisar apertar F5, enquanto o desenvolvimento acontece.",
+          "status": "DONE",
+          "dependencies": [
+            "M12-T09"
+          ],
+          "completion_notes": "O painel relê a página a cada 60 segundos e mostra no canto o horário da última leitura, mais um botão de atualizar agora. É apenas releitura do estado do repositório — não existe e não deve existir um indicador mágico de 'trabalho em segundo plano', conforme a seção 5 do GDD. Respeita a preferência de movimento reduzido do sistema.",
+          "updated_at": "2026-09-25T00:00:00Z"
+        },
+        {
+          "id": "M12-T11",
+          "title": "Verificar o ambiente Docker na máquina do proprietário",
+          "subsystem": "ops",
+          "description": "O Docker e o Editor do Unity não existem no ambiente de autoria, então o ambiente Docker Compose e a compilação do Unity precisam ser confirmados uma vez na máquina do dono antes do Milestone 0 ser considerado fechado.",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T04"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M12-T12",
+          "title": "Publicar o painel web para acesso pelo navegador",
+          "subsystem": "ops",
+          "description": "Publicar o painel em um endereço fixo, para que o proprietário acompanhe o andamento de qualquer aparelho sem instalar nada. Adiado: o START HERE V0.1.1 pede não usar Vercel nem hospedagem por enquanto.",
           "status": "TODO",
           "dependencies": [
             "M12-T09"
           ],
-          "completion_notes": "",
-          "updated_at": "2026-09-25T00:00:00Z"
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M12-T13",
+          "title": "Serviços remotos (Remote...Service)",
+          "subsystem": "server",
+          "description": "Implementações remotas de IFishingService e dos demais serviços, com o servidor como autoridade, quando o jogo for para a internet.",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T01",
+            "M11-T07"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M12-T14",
+          "title": "Contas e autenticação",
+          "subsystem": "server",
+          "description": "Login de jogador e separação de papéis administrativos.",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T13"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M12-T15",
+          "title": "Site público e download direto",
+          "subsystem": "web",
+          "description": "Página do jogo, download para Windows, notas de versão, espaço da Steam.",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T07"
+          ],
+          "updated_at": "2026-09-28T22:23:54Z"
         }
       ]
     }

@@ -31,37 +31,42 @@ e depois se perder.
 ```
 docs/roadmap.json
       │
-      ├── GET /api/dev/roadmap   (o servidor valida e calcula o resumo)
-      │         │
-      │         └── Painel de Desenvolvimento  ← caminho normal
+      ├── Painel de Desenvolvimento do Unity   ← caminho principal no MVP local
+      │   (menu Fishing Idle → Painel de Desenvolvimento; lê o arquivo do repositório)
       │
-      └── lido diretamente pelo painel  ← quando a API está fora
+      └── Painel web (adiado, M12)
+          ├── GET /api/dev/roadmap   (o servidor valida e calcula o resumo)
+          └── lido diretamente, do clone ou do GitHub, quando a API está fora
 ```
 
-O painel marca qual das duas fontes respondeu. Veja `DECISOES.md`, TD-005 e TD-006.
+A integridade do arquivo é verificada por testes em `tools/GameService.Tests`
+(`RoadmapIntegrityTests`) e, quando o .NET 10 está instalado, também pelos testes do servidor.
 
 ## Os milestones
 
+A ordem segue `docs/CLAUDE_START_HERE_V0_1_1.md`: **primeiro um MVP local, jogável no PC**. A
+infraestrutura online que já existia foi preservada no M12, adiada.
+
 | # | Título | Entrega |
 |---|---|---|
-| **M0** | Fundação do repositório e do fluxo de trabalho | Monorepo, esqueleto do Unity, esqueleto do servidor, PostgreSQL + migrations, Docker Compose, arquivos de configuração, documentação, roadmap, painel, versionamento |
-| **M1** | Contas, estado do jogador e pipeline de configuração | Autenticação de desenvolvimento, perfil, carteira, progressão, carregamento e versionamento de configuração, edição pelo painel, auditoria, base de idempotência |
-| **M2** | Ciclo vertical de pesca | Cena do Mapa 1, ciclo autoritativo de 30s, geração de captura, XP do Pescador, Caixa de Pesca, pesca offline, retorno visual de captura, notificações |
-| **M3** | Aquário, identidade do peixe e alimentação | FishInstance persistente, limite de 100, atributos determinísticos, nível do peixe de 1 a 10, alimentação com 50% de recuperação de XP, venda ao NPC, Enciclopédia |
-| **M4** | Perfil, Cardume, Inventário e Varas | Perfil próprio e público com separação de campos, slot da vara, Inventário, Cardume de 1 a 6 com bônus 6/6, Vara Inicial, Vara 1 e melhorias, Conchas, Força privada |
-| **M5** | Mapa 2, viagem e conteúdo | Menu de mapas, desbloqueio por nível, vara mínima, viagem de 30s, Rio Selvagem, as 20 espécies, elegibilidade de Raros |
-| **M6** | Expedições | Quatro durações, Força Recomendada, curvas de eficiência, recompensas em Moedas e peixe raro, conclusão offline, travas de atividade |
-| **M7** | Arena e PvP | Energia, seleção de oponentes com uma rerrolagem, motor de combate com micro variação, formação 3+3, troca atômica de posições, Honra, replay, histórico, Loja da Arena |
-| **M8** | Mercado de preço fixo | Regras de anúncio, travas de estado, Itens a Retirar, compra com Aquário cheio, filtros, auditoria |
-| **M9** | Leilão | Leilões de 6h, regras de lance com valor reservado, segurança contra corrida, proteção de última hora, encerramento antecipado, expiração sem lances |
-| **M10** | Tutorial, barra de tarefas e polimento | Tutorial que ensina fazendo, modo compacto, efeitos de captura, avisos, áudio provisório, transições, otimização |
-| **M11** | Site público e distribuição | Página inicial, espaços de mídia, download para Windows, versão e notas de lançamento, endpoint de dados do build, espaço da Steam |
-| **M12** | Estabilização da V0.1 | Simulação de combate e economia, testes de segurança, testes de carga, testes de reconexão e concorrência, rodadas de bug e balanceamento, build para Windows, notas de lançamento |
+| **M0** | Jogo abre e é editável | Projeto Unity organizado em assemblies, cena principal, balanceamento por dados, save local, Painel de Desenvolvimento no Unity, roadmap em PT-BR, documentação, checagens sem o Unity |
+| **M1** | Loop de pesca jogável | Cena 2.5D do Lago Sereno, animação sincronizada, iniciar/parar, ciclo de 30s pelo serviço local, sorteio de espécie e tamanho, Caixa de Pesca, venda, Moedas, XP do Pescador, avisos |
+| **M2** | Aquário e peixe persistente | Aquário de 100, peixe persistente só ao guardar, ficha, atributos determinísticos, nível 1–10, alimentação com 50% de recuperação de XP, ordenação, confirmações |
+| **M3** | Perfil, Cardume, Inventário e Vara | Perfil, slot de Vara, Inventário, Cardume 1–6 em 3+3, bônus 6/6, Força privada, Enciclopédia, recordes |
+| **M4** | Mapas e Varas | Menu Mapa, Rio Selvagem, desbloqueio no Nv.10, viagem de 30s, Vara 1, melhorias 1–10, bônus, varas antigas no Inventário |
+| **M5** | Pesca offline | 60s por captura, limite de 24h, cálculo por carimbo de tempo, tela de retorno |
+| **M6** | Expedições | 30min/1h/3h/6h, Força Recomendada, recompensas, travas, aviso de conclusão |
+| **M7** | Arena local | Bots locais, Energia, Honra, ranking com troca direta, 3 adversários, combate automático, replay |
+| **M8** | Mercado local | Comprar, Vender, Meus Anúncios, Itens a Retirar, taxa de 3%, anúncios simulados |
+| **M9** | Leilão local | Leilão de 6h, lances +3%, taxa de 1%, proteção de último minuto, encerramento antecipado |
+| **M10** | Tutorial, UX e polimento | Tutorial, menus completos, modo compacto, áudio provisório, animações melhores |
+| **M11** | Balanceamento do MVP | Progressão, economia, raridades, combate, expedições, testes de save e de abuso |
+| **M12** | Infraestrutura online (adiada) | Servidor ASP.NET, PostgreSQL, Docker, painel web (já construídos), serviços remotos, contas, site público |
 
 ## Regras que o roadmap impõe a si mesmo
 
-1. **O Milestone 0 precisa estar funcionando antes do Milestone 1 começar.** O dono tem que
-   conseguir ver o painel primeiro.
+1. **Um milestone de cada vez, na ordem.** O proprietário joga e dá retorno antes de o projeto
+   avançar muito além do que ele já testou.
 2. **Os critérios de conclusão fazem parte do milestone, não são enfeite.** Um milestone não está
    pronto porque as tarefas foram marcadas; está pronto quando os critérios se sustentam.
 3. **Nada fora do escopo da V0.1 ganha uma tarefa.** Se algo parece necessário e não está na lista da

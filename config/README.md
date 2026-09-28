@@ -8,9 +8,16 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | `maps.json` | Mapas, pools de peixes por mapa com pesos de captura, nível de desbloqueio, vara mínima, regras de viagem |
 | `progression.json` | Curva de XP do Pescador, curva de XP do peixe, distribuição de tamanho, regras de modificador de raridade/tamanho/nível, regras de alimentação, intervalos de pesca |
 | `rods.json` | Definições das varas, bônus por nível interno, custos de melhoria, regras de revenda |
-| `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, valores de Mercado e Leilão, limite do Aquário |
+| `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário |
 | `arena.json` | Energia, seleção de oponentes, Honra, constantes de combate, formação, regras de Cardume, métrica de Força, Loja da Arena |
 | `expeditions.json` | Durações, Força Recomendada, curvas de eficiência, recompensas |
+
+## Como editar
+
+O jeito mais fácil é pelo **Painel de Desenvolvimento dentro do Unity** (menu Fishing Idle → Painel
+de Desenvolvimento → Balanceamento). Ele valida tudo antes de gravar, só altera os valores que você
+mudou e, com o jogo rodando, aplica na hora. Editar os arquivos à mão também funciona: o jogo valida
+ao apertar Play e, se algo estiver errado, mostra a lista de problemas na tela.
 
 ## Regras
 

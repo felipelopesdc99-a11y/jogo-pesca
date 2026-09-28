@@ -6,6 +6,9 @@ Este arquivo guarda dois tipos de decisão.
 está aberta a reinterpretação. Trate cada linha como fechada, a menos que o dono reabra
 explicitamente.
 
+Detalhes de **design** decididos durante a implementação (o que o jogador vê e sente) ficam em
+`GDD_ADENDO.md`. Como o código funciona está em `BASE_TECNICA.md`.
+
 **A Parte 2** são as decisões técnicas tomadas durante a implementação, nos pontos em que o GDD
 deixa margem. Cada uma registra o que foi escolhido, por quê, e o que faria valer a pena rever.
 Conforme a instrução inicial do projeto: escolhas puramente técnicas, que não mudam a experiência
@@ -257,3 +260,85 @@ substituindo o original.
 **Rever se.** O projeto ganhar jogadores fora do Brasil. Aí o painel troca `strings.ts` e o jogo
 precisa de um sistema de textos de verdade — que seria um sistema novo, e portanto uma decisão do
 dono, não algo a inventar durante a V0.1.
+
+## TD-015 — MVP local primeiro; as regras rodam num "serviço de jogo" dentro do Unity
+
+**Origem.** Nova prioridade definida pelo proprietário em `docs/CLAUDE_START_HERE_V0_1_1.md`:
+primeiro um MVP local, jogável no PC, sem servidor, sem Docker, sem hospedagem e sem custo.
+
+**Decisão.** As regras do jogo ficam no assembly `FishingIdle.GameService`, dentro do projeto Unity,
+com `noEngineReferences: true` (proibido usar `UnityEngine`). A apresentação (`FishingIdle.Game`)
+fala com ele só por interfaces (`IFishingService`, `IPlayerService`), enviando intenção e recebendo
+resultados. O servidor ASP.NET, o PostgreSQL, o Docker e o painel web continuam no repositório,
+funcionando, guardados no Milestone 12.
+
+**Por quê.** Mantém o princípio "cliente = intenção + apresentação" já no MVP, sem exigir nada
+além do Unity. Por não depender do Unity, o mesmo código pode ser testado fora dele e, depois,
+rodar dentro do servidor .NET como autoridade.
+
+**Rever se.** O jogo for para a internet: aí entram os `Remote...Service` (tarefa `M12-T13`).
+
+## TD-016 — A cena é montada por código; a cena salva só existe para o build
+
+**Decisão.** Ao apertar Play, `GameBootstrap` (RuntimeInitializeOnLoadMethod) cria o `GameRoot`,
+que monta céu, água, barco, pescador e interface por código. Na primeira abertura, o Editor cria
+`Assets/Scenes/Principal.unity` (com o Unity salvando o arquivo, não escrito à mão) e a registra no
+Build Settings. Continuação da TD-008.
+
+**Por quê.** O proprietário aperta Play e joga, em qualquer cena. Nenhum arquivo de cena ou prefab
+foi escrito fora do Editor, o que evitaria formatos quebrados. Toda a arte provisória também é
+gerada por código (`Art.cs`), então o projeto não depende de nenhum asset importado.
+
+**Rever se.** A arte final chegar: aí faz sentido montar a cena no Editor, com prefabs. A troca é
+local: `FishingScene` e `Art` são os únicos pontos que mudam.
+
+## TD-017 — Interface do MVP em IMGUI
+
+**Decisão.** HUD, Caixa de Pesca e avisos usam o IMGUI do Unity (`OnGUI`), com estilos gerados por
+código em `UiSkin` e uma tela virtual de 1080 px escalada.
+
+**Por quê.** Funciona no instante do Play, sem prefabs, sem fontes importadas, sem configurar
+EventSystem nem o sistema de input (que muda entre projetos do Unity 6). É inteiramente checável
+fora do Editor. O visual fica aceitável como provisório.
+
+**Rever se.** A interface final for desenhada (Milestone 10): o caminho natural é UI Toolkit. Todos
+os estilos estão em `UiSkin` e as telas só leem visões do serviço, então a troca não toca nas regras.
+
+## TD-018 — Pipeline de renderização padrão (Built-in) no MVP
+
+**Decisão.** Nenhum pacote de pipeline é adicionado; o projeto usa o pipeline padrão, com sprites
+e câmera ortográfica com paralaxe. Encerra a TD-009 para o MVP.
+
+**Por quê.** O visual 2.5D do MVP é feito de camadas de sprites, que não precisam de luzes 2D nem de
+pós-processamento. Adicionar o URP agora exigiria assets de pipeline criados no Editor.
+
+**Rever se.** A arte final pedir luz dinâmica, bloom ou shaders de água: aí o URP entra junto com
+ela.
+
+## TD-019 — Tempo com o jogo fechado não é pesca online
+
+**Decisão.** O serviço guarda a última vez em que viu o jogo rodando. Um intervalo maior que
+`max(3 ciclos, 2 minutos)` sem ser visto (jogo fechado, PC em suspensão, relógio adiantado) não
+gera capturas online: o serviço entrega o que foi pescado até ali e recomeça o ciclo.
+
+**Por quê.** O GDD define 30s online e 60s offline com limite de 24h. Sem essa regra, fechar o jogo
+por 10 horas renderia 1.200 capturas "online" ao voltar, e adiantar o relógio do PC também. O
+intervalo detectado é justamente o que a pesca offline (Milestone 5) vai recompensar. Registrado
+como design em `GDD_ADENDO.md`, A-001.
+
+**Limite conhecido.** No MVP local, o relógio é o do PC; um jogador pode adiantá-lo. A regra acima
+evita o abuso grosseiro, mas a proteção real só existe com o servidor (Milestone 12).
+
+## TD-020 — Checagens sem o Unity: testes em .NET e compilação contra bibliotecas de referência
+
+**Decisão.** `tools/` tem quatro projetos .NET: um compila o `GameService` exatamente como o Unity
+(.NET Standard 2.1, C# 9), outro roda os testes, e dois compilam o código do jogo e do Editor contra
+as bibliotecas de referência públicas do Unity (NuGet `UnityEngine.Modules` 2021.3 e `Unity3D.SDK`).
+`ops/scripts/verify.sh` roda tudo; o servidor e o painel web só entram se o .NET 10 e o Node
+estiverem instalados.
+
+**Por quê.** O código é escrito num ambiente sem o Editor do Unity. Sem essas checagens, um erro de
+digitação só apareceria quando o proprietário abrisse o projeto. As bibliotecas de referência são
+2021.3, então o código evita de propósito APIs que só existem no Unity 6.
+
+**Limite.** Compilar não é rodar: comportamento visual só se confirma no Editor (tarefa `M0-T13`).

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Compiles the Unity game-service sources exactly as Unity would: .NET Standard 2.1 and C# 9.
+    This catches any API or language feature Unity does not support before the owner opens the
+    editor. The sources stay inside client-unity; this project only points at them.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <AssemblyName>FishingIdle.GameService</AssemblyName>
+    <RootNamespace>FishingIdle.GameService</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../client-unity/Assets/Scripts/Texts/**/*.cs" />
+    <Compile Include="../../client-unity/Assets/Scripts/GameService/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="FishingIdle.GameService.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Same Newtonsoft.Json as Unity's com.unity.nuget.newtonsoft-json 3.2.1. -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+</Project>

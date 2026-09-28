@@ -1,0 +1,447 @@
+namespace FishingIdle.Texts
+{
+    /// <summary>
+    /// Every sentence a person reads in the game or in the Dev Panel, in PT-BR, in one place.
+    /// </summary>
+    /// <remarks>
+    /// Project rule (CLAUDE.md, section 1): no player- or owner-facing text is written inline in
+    /// code. Add new text here and reference it. Technical keys (status ids, species ids) stay in
+    /// English in data and are translated by the helpers below at display time. Names of species,
+    /// maps, rods, rarities and size categories come from /config, which is already PT-BR.
+    /// </remarks>
+    public static class GameTexts
+    {
+        public const string GameTitle = "Fishing Idle";
+
+        // ------------------------------------------------------------------ player
+
+        public static class Player
+        {
+            public const string DefaultName = "Pescador";
+            public const string Level = "Nível";
+            public const string LevelShort = "Nv.";
+            public const string MaxLevel = "Nível máximo";
+            public const string Coins = "Moedas";
+            public const string Shells = "Conchas";
+            public const string Map = "Mapa";
+            public const string Rod = "Vara";
+            public const string TotalCatches = "Capturas";
+            public const string SpeciesDiscovered = "Espécies descobertas";
+            public const string CollapseCard = "Recolher";
+            public const string ExpandCard = "Perfil";
+
+            public static string Xp(string current, string needed) => "XP " + current + " / " + needed;
+        }
+
+        // ------------------------------------------------------------------ navigation (GDD section 7)
+
+        public static class Navigation
+        {
+            // Only menus that already exist in the game are listed. Mapa, Aquário, Arena,
+            // Expedição, Mercado, Loja and Perfil are added with their milestones.
+            public const string Fishing = "Pesca";
+        }
+
+        // ------------------------------------------------------------------ fishing HUD
+
+        public static class Fishing
+        {
+            public const string Start = "Iniciar pesca";
+            public const string Stop = "Parar pesca";
+            public const string Idle = "Pesca parada. Aperte \"Iniciar pesca\" para começar.";
+            public const string Casting = "Arremessando…";
+            public const string Waiting = "Esperando o peixe morder…";
+            public const string Bite = "Mordeu!";
+            public const string Reeling = "Puxando a linha…";
+            public const string Caught = "Pegou!";
+
+            public static string NextCatchIn(string countdown) => "Próxima captura em " + countdown;
+            public static string CycleInfo(string duration) => "1 captura a cada " + duration;
+        }
+
+        // ------------------------------------------------------------------ Fishing Box
+
+        public static class Box
+        {
+            public const string Title = "Caixa de Pesca";
+            public const string Open = "Caixa de Pesca";
+            public const string Close = "Fechar";
+            public const string Empty = "A Caixa de Pesca está vazia. Os peixes que você pescar aparecem aqui.";
+            public const string EmptyFilter = "Nenhum peixe neste filtro.";
+            public const string SelectAll = "Selecionar todos";
+            public const string ClearSelection = "Limpar seleção";
+            public const string SellSelected = "Vender selecionados";
+            public const string NothingSelected = "Clique nos peixes para selecionar.";
+            public const string NewSpeciesBadge = "NOVA ESPÉCIE";
+            public const string RecordBadge = "RECORDE";
+            public const string Value = "Valor";
+            public const string AquariumSoon = "Guardar no Aquário chega no Milestone 2. Por enquanto seus peixes ficam guardados aqui na Caixa.";
+
+            // Filters (GDD section 11: one primary filter at a time).
+            public const string FilterAll = "Todos";
+
+            public static string Count(int count) => count == 1 ? "1 peixe" : count + " peixes";
+            public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : count + " selecionados") + " · " + coins + " moedas";
+            public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : count + " peixes vendidos") + " por " + coins + " moedas.";
+        }
+
+        // ------------------------------------------------------------------ confirmation (GDD section 11)
+
+        public static class Dialogs
+        {
+            public const string ValuableTitle = "Peixes valiosos na venda";
+            public const string Review = "Revisar peixes";
+            public const string ConfirmButton = "Confirmar";
+            public const string Cancel = "Cancelar";
+
+            public static string ValuableBody(int count) =>
+                (count == 1 ? "1 peixe valioso" : count + " peixes valiosos") +
+                " (raros ou de tamanho Excepcional) estão nesta venda. Deseja vender mesmo assim?";
+
+            public const string ResetTitle = "Apagar o save?";
+            public const string ResetBody = "Isso começa um jogo novo do zero. Uma cópia do save atual é guardada na pasta do save, então nada se perde de verdade.";
+            public const string ResetConfirm = "Apagar e começar de novo";
+        }
+
+        // ------------------------------------------------------------------ toasts
+
+        public static class Toasts
+        {
+            public static string Catch(string species, string size, string category) => species + " · " + size + " (" + category + ")";
+            public static string NewSpecies(string species) => "Nova espécie descoberta: " + species + "!";
+            public static string PersonalRecord(string species, string size) => "Novo recorde de " + species + ": " + size + "!";
+            public static string Exceptional(string species) => "Captura Excepcional: " + species + "!";
+            public static string LevelUp(int level) => "Você subiu para o Nível " + level + "!";
+            public static string Shells(string amount) => "+" + amount + " Conchas";
+            public const string FishingStarted = "Pesca iniciada.";
+            public const string FishingStopped = "Pesca parada.";
+            public const string ConfigReloaded = "Balanceamento recarregado.";
+            public const string SaveReset = "Save apagado. Um jogo novo começou.";
+        }
+
+        // ------------------------------------------------------------------ startup / fatal screens
+
+        public static class Startup
+        {
+            public const string ConfigErrorTitle = "O jogo não pôde começar: o balanceamento tem problemas";
+            public const string ConfigErrorHint = "Corrija os itens abaixo nos arquivos da pasta /config (ou pelo Painel de Desenvolvimento) e aperte Play de novo.";
+            public const string UnexpectedErrorTitle = "O jogo encontrou um erro inesperado";
+            public const string UnexpectedErrorHint = "Os detalhes técnicos estão no Console do Unity.";
+            public const string SaveTooNew = "Este save foi criado por uma versão mais nova do jogo. Você está jogando com um save temporário, que não será gravado, para não estragar o original.";
+            public const string SaveRecovered = "O save principal estava danificado e foi restaurado a partir do backup.";
+            public const string SaveUnrecoverable = "O save estava danificado e não pôde ser recuperado. Um jogo novo começou; os arquivos danificados foram guardados na pasta do save.";
+        }
+
+        // ------------------------------------------------------------------ service errors
+
+        /// <summary>Translates a ServiceError key into a sentence the player understands.</summary>
+        public static string ServiceErrorMessage(string errorKey)
+        {
+            switch (errorKey)
+            {
+                case "AlreadyFishing": return "Você já está pescando.";
+                case "NotFishing": return "A pesca já está parada.";
+                case "EmptySelection": return "Selecione pelo menos um peixe.";
+                case "CatchNotFound": return "Um dos peixes selecionados não está mais na Caixa de Pesca.";
+                case "DuplicateCatchInRequest": return "O mesmo peixe foi selecionado duas vezes.";
+                case "SpeciesMissingFromConfig": return "Um dos peixes é de uma espécie que não existe mais no balanceamento, então não pode ser vendido agora.";
+                default: return "Não foi possível fazer isso agora.";
+            }
+        }
+
+        // ------------------------------------------------------------------ save
+
+        public static class Save
+        {
+            public static string Status(string statusKey)
+            {
+                switch (statusKey)
+                {
+                    case "NotFound": return "Nenhum save encontrado — um jogo novo foi criado.";
+                    case "Loaded": return "Save carregado normalmente.";
+                    case "RecoveredFromBackup": return "Save principal danificado; restaurado a partir do backup.";
+                    case "Unrecoverable": return "Save danificado e sem backup válido; um jogo novo foi criado.";
+                    case "TooNew": return "Save de uma versão mais nova do jogo; não será sobrescrito.";
+                    default: return statusKey;
+                }
+            }
+        }
+
+        // ------------------------------------------------------------------ config validation
+
+        /// <summary>Messages for invalid balance files. Each one names the file and the entry to fix.</summary>
+        public static class Validation
+        {
+            public static string ConfigFolderMissing(string path) => "A pasta de balanceamento não foi encontrada: " + path;
+            public static string ConfigFileMissing(string file) => "O arquivo " + file + " não foi encontrado.";
+            public static string ConfigFileUnreadable(string file, string detail) => "O arquivo " + file + " não pôde ser lido: " + detail;
+            public static string ConfigFileEmpty(string file) => "O arquivo " + file + " está vazio.";
+            public static string ConfigFileInvalidJson(string file, string detail) => "O arquivo " + file + " não é um JSON válido (" + detail + ").";
+            public static string Missing(string file, string path) => file + ": o item \"" + path + "\" está faltando.";
+            public static string DuplicateOrEmptyId(string file, string section, string id) => file + ": em \"" + section + "\" existe um id vazio ou repetido (\"" + (id ?? "") + "\").";
+            public static string NegativeValue(string file, string what) => file + ": \"" + what + "\" não pode ter valor negativo.";
+            public static string AtLeast(string file, string what, int min) => file + ": \"" + what + "\" precisa ser pelo menos " + min + ".";
+            public static string BadPercentileBand(string category) => "progression.json: a categoria de tamanho \"" + category + "\" precisa de percentis entre 0 e 1, com o mínimo menor que o máximo.";
+            public static string WeightsSumToZero(string file, string what) => file + ": os pesos de \"" + what + "\" somam zero — nada poderia ser sorteado.";
+            public static string XpTableGap(int level) => "progression.json: a tabela de XP do Pescador não tem o nível " + level + ".";
+            public static string UnknownRarity(string species, string rarity) => "fish_catalog.json: a espécie \"" + species + "\" usa a raridade \"" + (rarity ?? "") + "\", que não existe em progression.json.";
+            public static string BadSizeRange(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de size_cm com mínimo maior que zero e máximo maior que o mínimo.";
+            public static string PoolUnknownSpecies(string map, string species) => "maps.json: o mapa \"" + map + "\" lista a espécie \"" + (species ?? "") + "\", que não existe em fish_catalog.json.";
+            public static string PoolRarityNotAvailable(string map, string species, string rarity) => "maps.json: o mapa \"" + map + "\" tem \"" + species + "\" (raridade \"" + rarity + "\"), mas essa raridade não está em available_rarities do mapa.";
+            public static string ChanceOutOfRange(string file, string what) => file + ": \"" + what + "\" é uma chance e precisa estar entre 0 e 1.";
+            public static string BadIntRange(string file, string what) => file + ": \"" + what + "\" precisa ter mínimo ≥ 0 e máximo ≥ mínimo.";
+        }
+
+        // ------------------------------------------------------------------ Dev Panel (Unity Editor window)
+
+        public static class DevPanel
+        {
+            public const string MenuPath = "Fishing Idle/Painel de Desenvolvimento";
+            public const string WindowTitle = "Painel Dev";
+
+            public const string TabOverview = "Visão geral";
+            public const string TabRoadmap = "Roadmap";
+            public const string TabBalance = "Balanceamento";
+            public const string TabSave = "Save";
+
+            public const string Reload = "Recarregar";
+            public const string CurrentMilestone = "Milestone atual";
+            public const string GameVersion = "Versão do jogo";
+            public const string ConfigVersion = "Versão do balanceamento";
+            public const string RoadmapUpdatedAt = "Última atualização do roadmap";
+            public const string Completion = "Tarefas concluídas";
+            public const string Pending = "Tarefas pendentes";
+            public const string NextStep = "Próximo passo";
+            public const string Blockers = "Bloqueios e decisões suas";
+            public const string NoBlockers = "Nada bloqueado e nenhuma decisão pendente.";
+            public const string InProgress = "Em andamento agora";
+            public const string NothingInProgress = "Nenhuma tarefa em andamento.";
+            public const string RecentlyDone = "Concluídas recentemente";
+            public const string RoadmapUnreadable = "Não foi possível ler docs/roadmap.json";
+            public const string CompletionCriteria = "Critérios de conclusão";
+            public const string Dependencies = "Depende de";
+            public const string Notes = "Notas";
+            public const string FilterAll = "Todos os status";
+
+            public const string BalanceIntro = "Os valores abaixo vêm dos arquivos da pasta /config. Nada é gravado até você apertar \"Salvar\", e nada inválido é gravado: o painel valida tudo antes.";
+            public const string Save = "Salvar";
+            public const string SaveAndApply = "Salvar e aplicar no jogo";
+            public const string Discard = "Descartar alterações";
+            public const string Unsaved = "Há alterações não salvas.";
+            public const string Saved = "Balanceamento salvo.";
+            public const string SavedAndApplied = "Balanceamento salvo e aplicado no jogo em execução.";
+            public const string InvalidNotSaved = "Nada foi salvo. Corrija estes problemas:";
+            public const string SectionFishing = "Pesca";
+            public const string SectionSpecies = "Espécies";
+            public const string SectionMaps = "Mapas e chances";
+            public const string SectionSizes = "Distribuição de tamanho";
+            public const string SectionXp = "XP do Pescador";
+            public const string SectionEconomy = "Economia";
+            public const string SectionOthers = "Outros arquivos";
+            public const string OthersNote = "Arena, Expedições, Mercado e Leilão ainda não existem no jogo. Os valores deles ficam editáveis aqui quando o milestone correspondente for implementado; até lá, estão em /config para consulta.";
+
+            public const string OnlineCycle = "Tempo de pesca online (segundos por captura)";
+            public const string OfflineCycle = "Tempo de pesca offline (segundos por captura)";
+            public const string OfflineCap = "Limite de acúmulo offline (horas)";
+            public const string OfflineNote = "A pesca offline chega no Milestone 5; os dois valores offline já ficam aqui para quando ela existir.";
+            public const string SpeciesName = "Nome";
+            public const string SpeciesRarity = "Raridade";
+            public const string SpeciesSizeMin = "Tam. mín. (cm)";
+            public const string SpeciesSizeMax = "Tam. máx. (cm)";
+            public const string SpeciesSale = "Venda (moedas)";
+            public const string SpeciesFisherXp = "XP Pescador";
+            public const string SpeciesFeedXp = "XP alimento";
+            public const string CatchWeight = "Peso";
+            public const string CatchChance = "Chance";
+            public const string SizeCategory = "Categoria";
+            public const string SizeWeight = "Peso do sorteio";
+            public const string SizePercentileMin = "Percentil mín.";
+            public const string SizePercentileMax = "Percentil máx.";
+            public const string SizeXpMultiplier = "Mult. XP";
+            public const string SaleInfluence = "Influência do tamanho no preço";
+            public const string XpLevel = "Nível";
+            public const string XpToNext = "XP para o próximo";
+            public const string ShellChance = "Chance de Concha por captura (0 a 1)";
+            public const string MinimumPrice = "Preço mínimo de venda (moedas)";
+
+            public const string SaveLocation = "Pasta do save";
+            public const string OpenFolder = "Abrir pasta";
+            public const string SaveMissing = "Ainda não existe save. Ele é criado na primeira vez que você aperta Play.";
+            public const string ResetSave = "Apagar save (começar do zero)";
+            public const string ResetDone = "Save apagado. Uma cópia foi guardada em:";
+            public const string ResetNothing = "Não havia save para apagar.";
+            public const string SaveSummary = "Resumo do save";
+            public const string PlayingNote = "O jogo está rodando: o reset é aplicado na hora.";
+            public const string SaveUnreadable = "O arquivo de save não pôde ser lido.";
+
+            public const string ConfigInvalid = "inválido — veja os erros abaixo";
+            public const string SaveVersionLabel = "Versão do save";
+            public const string SaveUpdatedAt = "Gravado em";
+            public const string SectionRods = "Varas";
+            public const string StatHp = "Vida";
+            public const string StatAttack = "Ataque";
+            public const string StatDefense = "Defesa";
+            public const string StatSpeed = "Velocidade";
+            public const string StatsNote = "Atributos-base valem para nível 1 e tamanho mediano. Eles só entram em jogo com o Aquário e a Arena (Milestones 2 e 7), mas já podem ser ajustados aqui.";
+            public const string TravelSeconds = "Duração da viagem entre mapas (segundos)";
+            public const string UnlockLevel = "Nível do Pescador para liberar";
+            public const string StatInfluence = "Influência do tamanho nos atributos";
+            public const string FeedInfluence = "Influência do tamanho no XP de alimento";
+            public const string XpTotalTo10 = "XP total do nível 1 ao 10";
+            public const string FishLevelBonus = "Bônus de atributo por nível do peixe (%)";
+            public const string FeedRecovery = "Recuperação do XP investido ao alimentar (0 a 1)";
+            public const string RodPrice = "Preço de compra (moedas)";
+            public const string RodRarityBonus = "Raridade";
+            public const string RodSizeBonus = "Tamanho";
+            public const string RodShellBonus = "Conchas";
+            public const string RodUpgradeCost = "Custo p/ este nível";
+            public const string RodsNote = "Bônus são o total naquele nível (0,10 = +10%). A compra e a melhoria de varas chegam no Milestone 4; a Vara Inicial já está em uso.";
+            public const string ShellMin = "Conchas por drop (mínimo)";
+            public const string ShellMax = "Conchas por drop (máximo)";
+            public const string ExpeditionsTable = "Expedições";
+            public const string ExpDuration = "Minutos";
+            public const string ExpStrength = "Força rec.";
+            public const string ExpCoins = "Moedas";
+            public const string ExpFishChance = "Chance peixe";
+
+            /// <summary>Balance values of systems that arrive in later milestones, with PT-BR labels.</summary>
+            public static readonly BalanceFieldGroup[] OtherFields =
+            {
+                new BalanceFieldGroup("Arena — Energia", new[]
+                {
+                    new BalanceField("arena.json", "energy.max", "Energia máxima"),
+                    new BalanceField("arena.json", "energy.regeneration_seconds_per_point", "Segundos para regenerar 1 Energia"),
+                    new BalanceField("arena.json", "energy.cost_per_initiated_attack", "Energia gasta por ataque"),
+                }),
+                new BalanceFieldGroup("Arena — Adversários", new[]
+                {
+                    new BalanceField("arena.json", "opponent_selection.opponents_per_set", "Adversários oferecidos"),
+                    new BalanceField("arena.json", "opponent_selection.rank_window_percent_above", "Janela acima do seu rank (%)"),
+                    new BalanceField("arena.json", "opponent_selection.rerolls_per_set", "Trocas de adversários por ciclo"),
+                }),
+                new BalanceFieldGroup("Arena — Honra", new[]
+                {
+                    new BalanceField("arena.json", "honor.attacker_victory_gain", "Honra por vitória atacando"),
+                    new BalanceField("arena.json", "honor.successful_defense_gain", "Honra por defesa bem-sucedida"),
+                    new BalanceField("arena.json", "honor.defeat_loss", "Honra perdida na derrota"),
+                }),
+                new BalanceFieldGroup("Arena — Combate", new[]
+                {
+                    new BalanceField("arena.json", "combat.damage_roll.min", "Variação de dano (mínimo)"),
+                    new BalanceField("arena.json", "combat.damage_roll.max", "Variação de dano (máximo)"),
+                    new BalanceField("arena.json", "combat.defense_mitigation.constant", "Constante da defesa"),
+                    new BalanceField("arena.json", "combat.defense_mitigation.minimum_damage_ratio_of_attack", "Dano mínimo (fração do ataque)"),
+                    new BalanceField("arena.json", "combat.speed.base_interval_seconds", "Intervalo base entre ataques (s)"),
+                    new BalanceField("arena.json", "combat.speed.reference_speed", "Velocidade de referência"),
+                    new BalanceField("arena.json", "combat.target_battle_duration_seconds", "Duração-alvo da batalha (s)"),
+                }),
+                new BalanceFieldGroup("Cardume", new[]
+                {
+                    new BalanceField("arena.json", "cardume.complete_bonus.hp_percent", "Bônus 6/6 em Vida (%)"),
+                    new BalanceField("arena.json", "cardume.complete_bonus.attack_percent", "Bônus 6/6 em Ataque (%)"),
+                    new BalanceField("arena.json", "cardume.complete_bonus.defense_percent", "Bônus 6/6 em Defesa (%)"),
+                    new BalanceField("arena.json", "cardume.complete_bonus.speed_percent", "Bônus 6/6 em Velocidade (%)"),
+                }),
+                new BalanceFieldGroup("Expedições — Eficiência", new[]
+                {
+                    new BalanceField("expeditions.json", "efficiency.below_recommended.exponent", "Abaixo da recomendada: expoente"),
+                    new BalanceField("expeditions.json", "efficiency.below_recommended.floor", "Abaixo da recomendada: eficiência mínima"),
+                    new BalanceField("expeditions.json", "efficiency.above_recommended.slope", "Acima da recomendada: inclinação do bônus"),
+                    new BalanceField("expeditions.json", "efficiency.above_recommended.cap", "Acima da recomendada: bônus máximo"),
+                }),
+            };
+
+            /// <summary>Market and Auction values (economy.json).</summary>
+            public static readonly BalanceFieldGroup[] EconomyFields =
+            {
+                new BalanceFieldGroup("Mercado", new[]
+                {
+                    new BalanceField("economy.json", "market_fixed_price.max_active_listings_per_player", "Anúncios ativos por jogador"),
+                    new BalanceField("economy.json", "market_fixed_price.max_listing_duration_days", "Duração máxima do anúncio (dias)"),
+                    new BalanceField("economy.json", "market_fixed_price.completed_sale_fee_ratio", "Taxa sobre a venda (0,03 = 3%)"),
+                }),
+                new BalanceFieldGroup("Leilão", new[]
+                {
+                    new BalanceField("economy.json", "auction.duration_hours", "Duração do leilão (horas)"),
+                    new BalanceField("economy.json", "auction.min_bid_increment_ratio", "Aumento mínimo do lance (0,03 = 3%)"),
+                    new BalanceField("economy.json", "auction.bid_fee_ratio", "Taxa por lance (0,01 = 1%)"),
+                    new BalanceField("economy.json", "auction.anti_snipe_window_seconds", "Janela anti-lance-de-última-hora (s)"),
+                    new BalanceField("economy.json", "auction.anti_snipe_reset_to_seconds", "Cronômetro volta para (s)"),
+                    new BalanceField("economy.json", "auction.seller_early_close_fee_ratio", "Taxa de encerramento antecipado (0,03 = 3%)"),
+                }),
+            };
+
+            public static string CompletionValue(int done, int total, string percent) => done + " de " + total + " (" + percent + ")";
+            public static string MilestoneProgress(int done, int total) => done + "/" + total;
+        }
+
+        /// <summary>One labelled balance value: which file, which JSON path, what the owner reads.</summary>
+        public sealed class BalanceField
+        {
+            public BalanceField(string file, string path, string label)
+            {
+                File = file;
+                Path = path;
+                Label = label;
+            }
+
+            public string File { get; }
+            public string Path { get; }
+            public string Label { get; }
+        }
+
+        public sealed class BalanceFieldGroup
+        {
+            public BalanceFieldGroup(string title, BalanceField[] fields)
+            {
+                Title = title;
+                Fields = fields;
+            }
+
+            public string Title { get; }
+            public BalanceField[] Fields { get; }
+        }
+
+        // ------------------------------------------------------------------ editor setup and build
+
+        public static class ProjectSetup
+        {
+            public const string OpenSceneMenu = "Fishing Idle/Abrir cena principal";
+            public const string OpenSaveFolderMenu = "Fishing Idle/Abrir pasta do save";
+            public const string CompanyName = "FishingIdle";
+            public const string SceneCreated = "Cena principal criada em";
+            public const string PlayerSettingsApplied = "Configurações iniciais do projeto aplicadas (nome do produto, janela, rodar em segundo plano).";
+            public const string BuildConfigInvalid = "O build foi cancelado: os arquivos de balanceamento em /config têm problemas.";
+        }
+
+        /// <summary>Roadmap status keys (stored in English) as the owner reads them.</summary>
+        public static string RoadmapStatus(string statusKey)
+        {
+            switch (statusKey)
+            {
+                case "TODO": return "A FAZER";
+                case "IN_PROGRESS": return "EM ANDAMENTO";
+                case "DONE": return "CONCLUÍDO";
+                case "BLOCKED": return "BLOQUEADO";
+                case "NEEDS_OWNER_DECISION": return "PRECISA DE DECISÃO DO PROPRIETÁRIO";
+                default: return statusKey;
+            }
+        }
+
+        /// <summary>Roadmap subsystem keys as the owner reads them.</summary>
+        public static string RoadmapSubsystem(string subsystemKey)
+        {
+            switch (subsystemKey)
+            {
+                case "repo": return "repositório";
+                case "docs": return "documentação";
+                case "config": return "balanceamento";
+                case "ops": return "operação";
+                case "server": return "regras do jogo";
+                case "client": return "jogo (Unity)";
+                case "web": return "web";
+                default: return subsystemKey;
+            }
+        }
+    }
+}

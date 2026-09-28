@@ -1,22 +1,22 @@
 {
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "current_milestone": "M0",
+  "current_milestone": "M1",
   "convention": "0.<menor>.<correção>-m<milestone>.<build>  —  veja docs/VERSIONAMENTO.md",
   "components": {
-    "client": "0.1.0-m0.4",
+    "client": "0.1.0-m1.1",
     "server": "0.1.0-m0.4",
     "web": "0.1.0-m0.4"
   },
   "build": {
-    "number": 4,
+    "number": 1,
     "channel": "internal-dev",
-    "date": "2026-09-25",
+    "date": "2026-09-28",
     "commit": null
   },
   "downloads": {
     "windows": null,
     "steam": null
   },
-  "notes": "Fonte única da versão de cada componente. O servidor lê este arquivo e o serve em GET /api/dev/version; a página Build / Versão do painel o exibe. Aumente build.number a cada build interno, e as versões dos componentes quando um milestone fecha."
+  "notes": "Fonte única da versão de cada componente. O Painel de Desenvolvimento do Unity e a página Build / Versão do painel web o exibem. O cliente (o jogo) segue o roadmap do MVP local; servidor e web ficam na última versão em que foram mexidos, porque estão adiados (M12). Aumente build.number a cada build interno, e as versões dos componentes quando um milestone fecha."
 }

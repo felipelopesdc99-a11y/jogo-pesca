@@ -1,5 +1,10 @@
 # Painel online — acompanhar o desenvolvimento sem instalar nada
 
+> **Adiado.** O `docs/CLAUDE_START_HERE_V0_1_1.md` pede para não usar Vercel, domínio nem hospedagem
+> enquanto o MVP local não for validado (tarefa `M12-T12`). O acompanhamento agora é pelo **Painel de
+> Desenvolvimento dentro do Unity** (menu Fishing Idle → Painel de Desenvolvimento). Este guia fica
+> guardado para quando o proprietário decidir publicar.
+
 Este guia publica o Painel de Desenvolvimento em um endereço fixo na internet. Depois disso, você
 abre um link no navegador — do computador ou do celular — e vê o andamento do projeto se atualizando
 sozinho, poucos segundos depois de cada mudança enviada.

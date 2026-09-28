@@ -1,0 +1,337 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using FishingIdle.GameService.Config;
+using FishingIdle.Texts;
+using Newtonsoft.Json;
+
+namespace FishingIdle.GameService.Persistence
+{
+    /// <summary>How the save was obtained when the game started.</summary>
+    public enum SaveLoadStatus
+    {
+        /// <summary>No save existed; the caller should create a new player.</summary>
+        NotFound,
+
+        /// <summary>The main save file was read and is valid.</summary>
+        Loaded,
+
+        /// <summary>The main file was damaged; the backup was valid and was used instead.</summary>
+        RecoveredFromBackup,
+
+        /// <summary>Both files were damaged. They were set aside and a new player starts.</summary>
+        Unrecoverable,
+
+        /// <summary>The save was written by a newer version of the game. Nothing may overwrite it.</summary>
+        TooNew,
+    }
+
+    public sealed class SaveLoadResult
+    {
+        public SaveLoadResult(SaveLoadStatus status, PlayerSave save, string detail)
+        {
+            Status = status;
+            Save = save;
+            Detail = detail;
+        }
+
+        public SaveLoadStatus Status { get; }
+        public PlayerSave Save { get; }
+
+        /// <summary>Technical detail for logs (English).</summary>
+        public string Detail { get; }
+    }
+
+    /// <summary>
+    /// Where player state lives. Today a JSON file on the PC; later a remote server. The game
+    /// service only talks to this interface.
+    /// </summary>
+    public interface IPlayerRepository
+    {
+        /// <summary>Human-readable location of the save, for the Dev Panel.</summary>
+        string Location { get; }
+
+        bool Exists { get; }
+
+        SaveLoadResult Load();
+
+        void Save(PlayerSave save);
+
+        /// <summary>Removes the current save so the next start creates a new player. Returns where a copy was kept.</summary>
+        string Reset();
+    }
+
+    /// <summary>
+    /// Local JSON save with a version number, a rolling backup and basic validation.
+    /// </summary>
+    /// <remarks>
+    /// Every write goes to a temporary file first; only a completely written file replaces the
+    /// real save, and the previous save becomes the backup. A damaged file is never deleted: it is
+    /// renamed aside with a timestamp so it can be inspected.
+    /// </remarks>
+    public sealed class JsonFilePlayerRepository : IPlayerRepository
+    {
+        public const string SaveFileName = "player_save.json";
+        public const string BackupFileName = "player_save.backup.json";
+        private const string TempFileName = "player_save.tmp";
+
+        private readonly string _directory;
+        private readonly IClockTimestamp _stamp;
+
+        public JsonFilePlayerRepository(string directory)
+            : this(directory, new UtcTimestamp())
+        {
+        }
+
+        internal JsonFilePlayerRepository(string directory, IClockTimestamp stamp)
+        {
+            _directory = directory ?? throw new ArgumentNullException(nameof(directory));
+            _stamp = stamp;
+        }
+
+        public string Location => SavePath;
+
+        public string SavePath => Path.Combine(_directory, SaveFileName);
+
+        public string BackupPath => Path.Combine(_directory, BackupFileName);
+
+        public bool Exists => File.Exists(SavePath);
+
+        public SaveLoadResult Load()
+        {
+            if (!File.Exists(SavePath) && !File.Exists(BackupPath))
+            {
+                return new SaveLoadResult(SaveLoadStatus.NotFound, null, "no save files");
+            }
+
+            var main = TryRead(SavePath);
+            if (main.Save != null)
+            {
+                return new SaveLoadResult(SaveLoadStatus.Loaded, main.Save, SavePath);
+            }
+
+            if (main.TooNew)
+            {
+                return new SaveLoadResult(SaveLoadStatus.TooNew, null, main.Problem);
+            }
+
+            var backup = TryRead(BackupPath);
+            if (backup.TooNew)
+            {
+                return new SaveLoadResult(SaveLoadStatus.TooNew, null, backup.Problem);
+            }
+
+            if (File.Exists(SavePath))
+            {
+                SetAside(SavePath, "corrupt");
+            }
+
+            if (backup.Save != null)
+            {
+                return new SaveLoadResult(
+                    SaveLoadStatus.RecoveredFromBackup,
+                    backup.Save,
+                    "main save unusable (" + main.Problem + "); loaded backup");
+            }
+
+            if (File.Exists(BackupPath))
+            {
+                SetAside(BackupPath, "corrupt");
+            }
+
+            return new SaveLoadResult(
+                SaveLoadStatus.Unrecoverable,
+                null,
+                "main: " + main.Problem + "; backup: " + backup.Problem);
+        }
+
+        public void Save(PlayerSave save)
+        {
+            var problems = SaveValidator.Validate(save);
+            if (problems.Count > 0)
+            {
+                // Refusing to write keeps the last good save intact. This indicates a bug in the rules.
+                throw new InvalidOperationException("Refusing to write an invalid save: " + string.Join("; ", problems));
+            }
+
+            Directory.CreateDirectory(_directory);
+            var json = JsonConvert.SerializeObject(save, JsonSettings.Default);
+            var temp = Path.Combine(_directory, TempFileName);
+
+            File.WriteAllText(temp, json, new UTF8Encoding(false));
+
+            if (File.Exists(SavePath))
+            {
+                File.Copy(SavePath, BackupPath, true);
+            }
+
+            File.Copy(temp, SavePath, true);
+            File.Delete(temp);
+        }
+
+        public string Reset()
+        {
+            string keptCopy = null;
+            if (File.Exists(SavePath))
+            {
+                keptCopy = SetAside(SavePath, "reset");
+            }
+
+            if (File.Exists(BackupPath))
+            {
+                File.Delete(BackupPath);
+            }
+
+            return keptCopy;
+        }
+
+        private ReadAttempt TryRead(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return ReadAttempt.Failed("missing");
+            }
+
+            string json;
+            try
+            {
+                json = File.ReadAllText(path, Encoding.UTF8);
+            }
+            catch (IOException exception)
+            {
+                return ReadAttempt.Failed("unreadable: " + exception.Message);
+            }
+
+            PlayerSave save;
+            try
+            {
+                save = JsonConvert.DeserializeObject<PlayerSave>(json, JsonSettings.Default);
+            }
+            catch (JsonException exception)
+            {
+                return ReadAttempt.Failed("invalid JSON: " + exception.Message);
+            }
+
+            if (save == null)
+            {
+                return ReadAttempt.Failed("empty");
+            }
+
+            if (save.SaveVersion > PlayerSave.CurrentVersion)
+            {
+                return new ReadAttempt(null, "save_version " + save.SaveVersion + " is newer than " + PlayerSave.CurrentVersion, true);
+            }
+
+            SaveMigrations.Upgrade(save);
+
+            var problems = SaveValidator.Validate(save);
+            return problems.Count == 0
+                ? new ReadAttempt(save, null, false)
+                : ReadAttempt.Failed("invalid: " + string.Join("; ", problems));
+        }
+
+        private string SetAside(string path, string reason)
+        {
+            var name = Path.GetFileNameWithoutExtension(path) + "." + reason + "-" + _stamp.Now() + ".json";
+            var target = Path.Combine(_directory, name);
+            File.Copy(path, target, true);
+            File.Delete(path);
+            return target;
+        }
+
+        private sealed class ReadAttempt
+        {
+            public ReadAttempt(PlayerSave save, string problem, bool tooNew)
+            {
+                Save = save;
+                Problem = problem;
+                TooNew = tooNew;
+            }
+
+            public PlayerSave Save { get; }
+            public string Problem { get; }
+            public bool TooNew { get; }
+
+            public static ReadAttempt Failed(string problem) => new ReadAttempt(null, problem, false);
+        }
+    }
+
+    /// <summary>File-name timestamps for set-aside copies.</summary>
+    internal interface IClockTimestamp
+    {
+        string Now();
+    }
+
+    internal sealed class UtcTimestamp : IClockTimestamp
+    {
+        public string Now() => DateTime.UtcNow.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>Upgrades older save formats in place. Each future format change adds one step here.</summary>
+    internal static class SaveMigrations
+    {
+        public static void Upgrade(PlayerSave save)
+        {
+            // Version 1 is the first format; nothing to upgrade yet. A future step looks like:
+            // if (save.SaveVersion == 1) { ...reshape...; save.SaveVersion = 2; }
+            save.FishingBox = save.FishingBox ?? new List<BoxCatch>();
+            save.SpeciesRecords = save.SpeciesRecords ?? new Dictionary<string, SpeciesRecord>();
+            save.Stats = save.Stats ?? new PlayerStats();
+            save.Fishing = save.Fishing ?? new FishingSessionState();
+        }
+    }
+
+    /// <summary>Structural checks on a save. Rule-level checks belong to the service.</summary>
+    public static class SaveValidator
+    {
+        public static List<string> Validate(PlayerSave save)
+        {
+            var problems = new List<string>();
+            if (save == null)
+            {
+                problems.Add("save is null");
+                return problems;
+            }
+
+            if (save.SaveVersion < 1 || save.SaveVersion > PlayerSave.CurrentVersion)
+            {
+                problems.Add("unsupported save_version " + save.SaveVersion);
+            }
+
+            if (string.IsNullOrWhiteSpace(save.PlayerId)) problems.Add("player_id missing");
+            if (save.Coins < 0) problems.Add("coins negative");
+            if (save.Shells < 0) problems.Add("shells negative");
+            if (save.FisherLevel < 1) problems.Add("fisher_level below 1");
+            if (save.FisherXp < 0 || save.FisherXpTotal < 0) problems.Add("fisher xp negative");
+            if (string.IsNullOrWhiteSpace(save.CurrentMapId)) problems.Add("current_map_id missing");
+            if (save.EquippedRod == null || string.IsNullOrWhiteSpace(save.EquippedRod.RodId)) problems.Add("equipped_rod missing");
+            if (save.Fishing == null) problems.Add("fishing missing");
+            else if (save.Fishing.CyclesProcessed < 0) problems.Add("fishing cycles negative");
+            if (save.FishingBox == null) problems.Add("fishing_box missing");
+            else
+            {
+                if (save.FishingBox.Any(c => c == null || string.IsNullOrWhiteSpace(c.SpeciesId) || c.SizeMm <= 0))
+                {
+                    problems.Add("fishing_box has malformed entries");
+                }
+
+                var ids = save.FishingBox.Where(c => c != null).Select(c => c.Id).ToList();
+                if (ids.Count != ids.Distinct().Count()) problems.Add("fishing_box has duplicate ids");
+                if (ids.Any(id => id <= 0 || id >= save.NextCatchId)) problems.Add("fishing_box id outside issued range");
+            }
+
+            if (save.SpeciesRecords == null) problems.Add("species_records missing");
+            if (save.Stats == null) problems.Add("stats missing");
+
+            return problems;
+        }
+    }
+
+    /// <summary>PT-BR description of a load outcome, for the game and the Dev Panel.</summary>
+    public static class SaveLoadStatusText
+    {
+        public static string Describe(SaveLoadStatus status) => GameTexts.Save.Status(status.ToString());
+    }
+}
