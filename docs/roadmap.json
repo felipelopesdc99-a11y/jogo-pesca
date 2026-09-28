@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-28T22:56:49Z",
+  "updated_at": "2026-09-28T23:27:16Z",
   "current_milestone": "M2",
   "statuses": [
     "TODO",
@@ -19,7 +19,8 @@
       "title": "Abrir o projeto no Unity e apertar Play",
       "detail": "O ambiente onde o código foi escrito não tem o Editor do Unity. As regras passaram em 52 testes e o código do Unity compilou contra as bibliotecas de referência, mas só você pode confirmar que o projeto abre e roda. Passo a passo no README.md: instale o Unity 6.3 LTS pelo Unity Hub, adicione a pasta client-unity, aceite atualizar para a sua versão e aperte Play. Se aparecer qualquer erro no Console, copie a mensagem e mande no chat. Depois, versione os arquivos que o Unity gerou (ProjectSettings, arquivos .meta e a cena Principal).",
       "raised_at": "2026-09-28T22:23:54Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "O proprietário abriu o projeto no Unity e viu o jogo rodando (28/09/2026)."
     },
     {
       "id": "OD-002",
@@ -207,12 +208,13 @@
           "title": "Primeira abertura no Unity pelo proprietário",
           "subsystem": "client",
           "description": "Abrir client-unity no Unity Hub, apertar Play e confirmar que o jogo aparece.",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M0-T05",
             "M0-T08"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "updated_at": "2026-09-28T23:27:16Z",
+          "completion_notes": "Confirmado pelo proprietário em 28/09/2026: o projeto abre no Unity e o jogo aparece ao apertar Play."
         }
       ]
     },
