@@ -242,13 +242,19 @@ public sealed class AquariumTests
         var path = Path.Combine(dir, JsonFilePlayerRepository.SaveFileName);
         var json = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(path));
         json["save_version"] = 1;
-        json.Remove("aquarium");
-        json.Remove("next_fish_id");
+        foreach (var key in new[] { "aquarium", "next_fish_id", "inventory", "next_item_id", "equipped_rod_item_id", "cardume_slots" })
+        {
+            json.Remove(key);
+        }
+
+        json["equipped_rod"] = new Newtonsoft.Json.Linq.JObject { ["rod_id"] = "rod_00_starter", ["level"] = 1 };
         File.WriteAllText(path, json.ToString());
         var (upgraded, _, _) = TestSupport.NewGame(saveDir: dir, clock: clock);
 
         Assert.Equal(SaveLoadStatus.Loaded, upgraded.Session.LoadStatus);
         Assert.Equal(0, upgraded.Aquarium.GetAquarium(AquariumSort.Size).Count);
-        Assert.Contains("\"save_version\": 2", File.ReadAllText(path));
+        Assert.Contains("\"save_version\": 3", File.ReadAllText(path));
+        Assert.Equal("Vara Inicial", upgraded.Player.GetPlayer().RodName);
+        Assert.DoesNotContain("\"equipped_rod\"", File.ReadAllText(path));
     }
 }

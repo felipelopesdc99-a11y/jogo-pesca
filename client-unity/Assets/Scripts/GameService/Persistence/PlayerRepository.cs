@@ -282,7 +282,33 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 2;
             }
 
+            if (save.SaveVersion == 2)
+            {
+                // v3 moves the rod into the Inventory and adds the Cardume (Milestone 3).
+                save.Inventory = new List<InventoryItem>();
+                save.NextItemId = 1;
+                if (save.EquippedRod != null && !string.IsNullOrWhiteSpace(save.EquippedRod.RodId))
+                {
+                    var item = new InventoryItem
+                    {
+                        Id = save.NextItemId++,
+                        Kind = InventoryItem.KindRod,
+                        RodId = save.EquippedRod.RodId,
+                        Level = Math.Max(1, save.EquippedRod.Level),
+                        AcquiredAtMs = save.CreatedAtMs,
+                    };
+                    save.Inventory.Add(item);
+                    save.EquippedRodItemId = item.Id;
+                }
+
+                save.EquippedRod = null;
+                save.CardumeSlots = new List<long>();
+                save.SaveVersion = 3;
+            }
+
             save.Aquarium = save.Aquarium ?? new List<FishInstance>();
+            save.Inventory = save.Inventory ?? new List<InventoryItem>();
+            save.CardumeSlots = save.CardumeSlots ?? new List<long>();
             save.FishingBox = save.FishingBox ?? new List<BoxCatch>();
             save.SpeciesRecords = save.SpeciesRecords ?? new Dictionary<string, SpeciesRecord>();
             save.Stats = save.Stats ?? new PlayerStats();
@@ -313,7 +339,23 @@ namespace FishingIdle.GameService.Persistence
             if (save.FisherLevel < 1) problems.Add("fisher_level below 1");
             if (save.FisherXp < 0 || save.FisherXpTotal < 0) problems.Add("fisher xp negative");
             if (string.IsNullOrWhiteSpace(save.CurrentMapId)) problems.Add("current_map_id missing");
-            if (save.EquippedRod == null || string.IsNullOrWhiteSpace(save.EquippedRod.RodId)) problems.Add("equipped_rod missing");
+            if (save.Inventory == null) problems.Add("inventory missing");
+            else
+            {
+                var itemIds = save.Inventory.Where(i => i != null).Select(i => i.Id).ToList();
+                if (save.Inventory.Any(i => i == null || string.IsNullOrWhiteSpace(i.Kind))) problems.Add("inventory has malformed entries");
+                if (itemIds.Count != itemIds.Distinct().Count()) problems.Add("inventory has duplicate ids");
+                if (itemIds.Any(id => id <= 0 || id >= save.NextItemId)) problems.Add("inventory id outside issued range");
+                if (save.EquippedRodItem() == null) problems.Add("equipped rod is not a rod in the inventory");
+            }
+
+            if (save.CardumeSlots == null) problems.Add("cardume missing");
+            else if (save.Aquarium != null)
+            {
+                var placed = save.CardumeSlots.Where(id => id != 0).ToList();
+                if (placed.Count != placed.Distinct().Count()) problems.Add("cardume repeats a fish");
+                if (placed.Any(id => save.Aquarium.All(f => f == null || f.Id != id))) problems.Add("cardume points to a fish not in the aquarium");
+            }
             if (save.Fishing == null) problems.Add("fishing missing");
             else if (save.Fishing.CyclesProcessed < 0) problems.Add("fishing cycles negative");
             if (save.FishingBox == null) problems.Add("fishing_box missing");

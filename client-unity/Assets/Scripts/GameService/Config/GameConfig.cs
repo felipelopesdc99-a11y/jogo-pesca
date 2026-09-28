@@ -29,6 +29,7 @@ namespace FishingIdle.GameService.Config
             ProgressionConfig progression,
             RodsConfig rods,
             EconomyConfig economy,
+            ArenaConfig arena,
             string version)
         {
             FishCatalog = fishCatalog;
@@ -36,6 +37,7 @@ namespace FishingIdle.GameService.Config
             Progression = progression;
             Rods = rods;
             Economy = economy;
+            Arena = arena;
             Version = version;
 
             _species = fishCatalog.Species.ToDictionary(s => s.Id, StringComparer.Ordinal);
@@ -53,6 +55,10 @@ namespace FishingIdle.GameService.Config
         public ProgressionConfig Progression { get; }
         public RodsConfig Rods { get; }
         public EconomyConfig Economy { get; }
+        public ArenaConfig Arena { get; }
+
+        /// <summary>Number of Cardume positions (6).</summary>
+        public int CardumeSize => Arena.Cardume.MaxFish;
 
         /// <summary>
         /// Short fingerprint of the balance files' contents. Two identical sets of files always have

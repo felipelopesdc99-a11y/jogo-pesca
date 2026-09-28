@@ -293,7 +293,7 @@ namespace FishingIdle.GameService.Fishing
                 var cycle = fishing.CyclesProcessed + 1;
                 var completedAt = fishing.StartedAtMs + cycle * fishing.CycleMs;
                 var rng = Rng.For(Save.RngSeed, fishing.SessionIndex, cycle);
-                var rolled = CatchRules.Roll(Config, map, rod, Save.EquippedRod.Level, rng);
+                var rolled = CatchRules.Roll(Config, map, rod, Save.EquippedRodItem()?.Level ?? 1, rng);
                 ApplyCatch(rolled, completedAt, update);
                 fishing.CyclesProcessed = cycle;
             }
@@ -329,6 +329,8 @@ namespace FishingIdle.GameService.Fishing
             };
             Save.FishingBox.Add(entry);
             Save.Stats.TotalCatches++;
+            if (rolled.SizeCategory.Id == "exceptional") Save.Stats.ExceptionalCatches++;
+            if (!CatchRules.IsCommon(rolled.Species)) Save.Stats.RareCatches++;
             Save.Shells += rolled.Shells;
             update.ShellsGained += rolled.Shells;
 
@@ -375,7 +377,7 @@ namespace FishingIdle.GameService.Fishing
 
         private RodConfig CurrentRod()
         {
-            return Config.TryGetRod(Save.EquippedRod.RodId, out var rod) ? rod : Config.StarterRod;
+            return Config.TryGetRod(Save.EquippedRodItem()?.RodId, out var rod) ? rod : Config.StarterRod;
         }
 
         /// <summary>

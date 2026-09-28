@@ -23,6 +23,7 @@ namespace FishingIdle.Game.UI
         private FishingScene _scene;
         private FishingBoxWindow _box;
         private AquariumWindow _aquarium;
+        private ProfileWindow _profile;
         private bool _cardExpanded = true;
         private float _boxPulseUntil;
         private float _width;
@@ -34,6 +35,7 @@ namespace FishingIdle.Game.UI
             _scene = GetComponent<FishingScene>();
             _box = new FishingBoxWindow(_root);
             _aquarium = new AquariumWindow(_root);
+            _profile = new ProfileWindow(_root);
             _root.CatchesArrived += OnCatchesArrived;
         }
 
@@ -104,7 +106,12 @@ namespace FishingIdle.Game.UI
 
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
             {
-                if (_aquarium.IsOpen)
+                if (_profile.IsOpen)
+                {
+                    _profile.Close();
+                    Event.current.Use();
+                }
+                else if (_aquarium.IsOpen)
                 {
                     _aquarium.Close();
                     Event.current.Use();
@@ -119,7 +126,7 @@ namespace FishingIdle.Game.UI
             _root.Toasts.Prune();
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen;
             GUI.enabled = !windowOpen;
             DrawTopBar(skin);
             DrawPlayerCard(skin);
@@ -129,6 +136,7 @@ namespace FishingIdle.Game.UI
 
             _box.Draw(skin, _width, _height);
             _aquarium.Draw(skin, _width, _height);
+            _profile.Draw(skin, _width, _height);
             GUI.enabled = true;
             if (windowOpen)
             {
@@ -186,36 +194,34 @@ namespace FishingIdle.Game.UI
         private void DrawNavigation(UiSkin skin)
         {
             const float navWidth = 150f;
-            var x = _width / 2f - navWidth - 5f;
-            var fishingActive = !_aquarium.IsOpen;
-            if (GUI.Button(new Rect(x, 12, navWidth, 40), GameTexts.Navigation.Fishing, fishingActive ? skin.ChipActive : skin.Chip))
-            {
-                while (_aquarium.IsOpen)
-                {
-                    _aquarium.Close();
-                }
+            var labels = new[] { GameTexts.Navigation.Fishing, AquariumLabel(), GameTexts.Navigation.Profile };
+            var active = _aquarium.IsOpen ? 1 : _profile.IsOpen ? 2 : 0;
+            var x = _width / 2f - (labels.Length * (navWidth + 10f) - 10f) / 2f;
 
-                while (_box.IsOpen)
+            for (var i = 0; i < labels.Length; i++)
+            {
+                if (GUI.Button(new Rect(x + i * (navWidth + 10f), 12, navWidth, 40), labels[i], i == active ? skin.ChipActive : skin.Chip) && i != active)
                 {
-                    _box.Close();
+                    CloseAllWindows();
+                    if (i == 1) _aquarium.Open();
+                    if (i == 2) _profile.Open();
                 }
             }
+        }
 
-            var aquariumLabel = GameTexts.Navigation.Aquarium;
-            if (_root.Player != null)
-            {
-                aquariumLabel += "  " + _root.Player.AquariumCount + "/" + _root.Player.AquariumCapacity;
-            }
+        private string AquariumLabel()
+        {
+            var player = _root.Player;
+            return player == null
+                ? GameTexts.Navigation.Aquarium
+                : GameTexts.Navigation.Aquarium + "  " + player.AquariumCount + "/" + player.AquariumCapacity;
+        }
 
-            if (GUI.Button(new Rect(x + navWidth + 10f, 12, navWidth, 40), aquariumLabel, _aquarium.IsOpen ? skin.ChipActive : skin.Chip) && !_aquarium.IsOpen)
-            {
-                while (_box.IsOpen)
-                {
-                    _box.Close();
-                }
-
-                _aquarium.Open();
-            }
+        private void CloseAllWindows()
+        {
+            while (_aquarium.IsOpen) _aquarium.Close();
+            while (_box.IsOpen) _box.Close();
+            _profile.Close();
         }
 
         private void DrawPlayerCard(UiSkin skin)

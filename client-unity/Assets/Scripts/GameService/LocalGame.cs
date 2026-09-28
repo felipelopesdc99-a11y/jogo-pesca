@@ -5,6 +5,7 @@ using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Persistence;
+using FishingIdle.GameService.Profile;
 
 namespace FishingIdle.GameService
 {
@@ -22,13 +23,18 @@ namespace FishingIdle.GameService
             Session = session;
             Fishing = new LocalFishingService(session);
             Player = new LocalPlayerService(session);
-            Aquarium = new LocalAquariumService(session);
+            var aquarium = new LocalAquariumService(session);
+            Aquarium = aquarium;
+            Cardume = new LocalCardumeService(session, aquarium);
+            Profile = new LocalProfileService(session, Fishing, Cardume);
         }
 
         public GameSession Session { get; }
         public IFishingService Fishing { get; }
         public IPlayerService Player { get; }
         public IAquariumService Aquarium { get; }
+        public ICardumeService Cardume { get; }
+        public IProfileService Profile { get; }
 
         /// <summary>Starts the game service, or explains in PT-BR why it cannot.</summary>
         public static LocalGameStartResult Start(string configDirectory, string saveDirectory, IClock clock, Action<string> log)

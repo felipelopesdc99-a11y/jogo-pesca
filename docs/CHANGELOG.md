@@ -3,6 +3,35 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m3.1] — 28/09/2026
+
+Milestone 3 — Perfil, Cardume, Inventário e Vara.
+
+### Adicionado
+
+- **Perfil** (menu na barra superior) com as abas Equipamentos, Inventário, Cardume, Enciclopédia e
+  Destaques, e a **Força do Cardume** no topo, visível só para você.
+- **Cardume**: seis posições (1–3 na frente, 4–6 atrás), montado com peixes do Aquário; bônus de
+  +3% em todos os atributos com as 6 posições preenchidas.
+- **Inventário e slot de Vara**: a vara equipada agora é um item do Inventário; a tela já permite
+  equipar outra vara (as novas chegam no Milestone 4).
+- **Enciclopédia**: as 20 espécies, com silhueta escura até a primeira captura; maior exemplar e
+  quantidade pescada de cada uma.
+- **Destaques**: capturas, espécies descobertas, maior peixe, peixe de nível mais alto,
+  Excepcionais, Raros e vendas.
+- No Aquário, peixes do Cardume têm a marca C1–C6; alimentar ou vender um deles pede confirmação e
+  o tira do Cardume.
+- 8 testes novos (73 no total).
+
+### Mudado
+
+- **Formato do save: versão 3** (vara no Inventário, Cardume). Saves antigos são convertidos sozinhos.
+- O balanceamento do Cardume e da Força passa a ser lido de `arena.json`.
+
+### Não verificado
+
+- As telas novas ainda não foram abertas no Editor do Unity (`M3-T09`).
+
 ## [0.1.0-m2.1] — 28/09/2026
 
 Milestone 2 — Aquário e peixe persistente.

@@ -48,6 +48,9 @@ namespace FishingIdle.GameService.Aquarium
 
         public long CaughtAtMs { get; internal set; }
         public long KeptAtMs { get; internal set; }
+
+        /// <summary>Cardume position (1–6), or 0 when not in the Cardume.</summary>
+        public int CardumePosition { get; internal set; }
     }
 
     public sealed class AquariumView
@@ -85,6 +88,9 @@ namespace FishingIdle.GameService.Aquarium
         /// <summary>Names of valuable fish in the food, for the confirmation.</summary>
         public List<string> ValuableFood { get; } = new List<string>();
 
-        public bool NeedsConfirmation => ValuableFood.Count > 0 || WastedXp > 0;
+        /// <summary>Food that is in the Cardume; feeding removes it from there (GDD section 22).</summary>
+        public List<string> CardumeFood { get; } = new List<string>();
+
+        public bool NeedsConfirmation => ValuableFood.Count > 0 || CardumeFood.Count > 0 || WastedXp > 0;
     }
 }

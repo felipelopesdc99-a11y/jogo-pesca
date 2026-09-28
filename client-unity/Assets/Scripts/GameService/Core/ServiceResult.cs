@@ -16,6 +16,9 @@ namespace FishingIdle.GameService.Core
         FishNotFound,
         CannotFeedItself,
         FishAtMaxLevel,
+        InvalidCardumePosition,
+        ItemNotFound,
+        RodNotAllowedOnMap,
     }
 
     /// <summary>

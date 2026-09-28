@@ -40,6 +40,7 @@ namespace FishingIdle.Texts
             // Only menus that already exist in the game are listed; the rest arrive with their milestones.
             public const string Fishing = "Pesca";
             public const string Aquarium = "Aquário";
+            public const string Profile = "Perfil";
         }
 
         // ------------------------------------------------------------------ fishing HUD
@@ -121,6 +122,7 @@ namespace FishingIdle.Texts
             public const string Back = "Voltar";
             public const string FeedValuableTitle = "Confirmar alimentação";
             public const string FeedValuableBody = "Estes peixes valiosos serão consumidos:";
+            public const string FeedCardumeBody = "Estes peixes estão no Cardume e sairão dele:";
 
             public static string Count(int count, int capacity) => count + " / " + capacity + " peixes";
             public static string Slots(int count, int capacity) => "Aquário: " + count + " / " + capacity;
@@ -134,6 +136,69 @@ namespace FishingIdle.Texts
             public static string Wasted(string xp) => xp + " XP passam do nível máximo e serão perdidos.";
             public static string SellTitle(string species) => "Vender " + species + "?";
             public static string SellBody(string coins) => "Você recebe " + coins + " moedas. O XP investido neste peixe não volta. Esta ação não pode ser desfeita.";
+        }
+
+        // ------------------------------------------------------------------ Cardume (GDD sections 23, 26, 31)
+
+        public static class Cardume
+        {
+            public const string Title = "Cardume";
+            public const string Front = "Frente";
+            public const string Back = "Trás";
+            public const string Empty = "Vazio";
+            public const string Strength = "Força do Cardume";
+            public const string StrengthPrivate = "Só você vê a Força do Cardume. Ela não decide batalhas; serve para Expedições e para você comparar formações.";
+            public const string PickSlot = "Clique numa posição e depois num peixe do Aquário para colocá-lo ali.";
+            public const string Remove = "Tirar da posição";
+            public const string AquariumList = "Peixes do Aquário";
+            public const string NoFish = "Guarde peixes no Aquário para montar o Cardume.";
+            public const string OrderNote = "Ordem de ataque dos adversários: 1 → 2 → 3 → 4 → 5 → 6. Peixes resistentes na frente protegem os de trás.";
+
+            public static string Position(int position) => "Posição " + position;
+            public static string InPosition(string species, int position) => species + " (Cardume, posição " + position + ")";
+            public static string Filled(int filled, int size) => filled + " / " + size + " peixes";
+            public static string BonusActive(string percent) => "Cardume completo: +" + percent + " em todos os atributos.";
+            public static string BonusMissing(int missing, string percent) => "Faltam " + missing + " para o Cardume completo (+" + percent + " em todos os atributos).";
+            public static string Badge(int position) => "C" + position;
+        }
+
+        // ------------------------------------------------------------------ Profile (GDD sections 20, 37, 38)
+
+        public static class Profile
+        {
+            public const string Title = "Perfil";
+            public const string TabEquipment = "Equipamentos";
+            public const string TabInventory = "Inventário";
+            public const string TabCardume = "Cardume";
+            public const string TabEncyclopedia = "Enciclopédia";
+            public const string TabRecords = "Destaques";
+            public const string RodSlot = "Vara de pesca";
+            public const string Equip = "Equipar";
+            public const string Equipped = "Equipada";
+            public const string NotAllowedHere = "Não serve neste mapa";
+            public const string RarityBonus = "Chance de raridade";
+            public const string SizeBonus = "Qualidade de tamanho";
+            public const string ShellBonus = "Conchas";
+            public const string CatchesRare = "Pesca peixes Raros";
+            public const string NoRare = "Não pesca peixes Raros";
+            public const string NoShells = "Não gera Conchas";
+            public const string InventoryNote = "Suas varas ficam aqui. Novas varas chegam com a Loja (Milestone 4).";
+            public const string Undiscovered = "???";
+            public const string Largest = "Maior";
+            public const string TimesCaught = "Pescados";
+            public const string FirstCaught = "Descoberto em";
+            public const string TotalCatches = "Capturas";
+            public const string Discovered = "Espécies descobertas";
+            public const string Biggest = "Maior peixe já pescado";
+            public const string HighestLevel = "Peixe de nível mais alto";
+            public const string Exceptional = "Capturas Excepcionais";
+            public const string Rare = "Capturas Raras";
+            public const string Sold = "Peixes vendidos";
+            public const string CoinsFromSales = "Moedas com vendas";
+            public const string None = "—";
+
+            public static string Tier(int tier) => tier == 0 ? "Vara inicial" : "Tier " + tier;
+            public static string Discovery(int found, int total) => found + " de " + total + " espécies";
         }
 
         // ------------------------------------------------------------------ confirmation (GDD section 11)
@@ -199,6 +264,9 @@ namespace FishingIdle.Texts
                 case "FishNotFound": return "Um dos peixes selecionados não está mais no Aquário.";
                 case "CannotFeedItself": return "Um peixe não pode ser alimento dele mesmo.";
                 case "FishAtMaxLevel": return "Este peixe já está no nível máximo.";
+                case "InvalidCardumePosition": return "Essa posição do Cardume não existe.";
+                case "ItemNotFound": return "Esse item não está mais no seu Inventário.";
+                case "RodNotAllowedOnMap": return "Essa vara não pode ser usada neste mapa.";
                 case "SpeciesMissingFromConfig": return "Um dos peixes é de uma espécie que não existe mais no balanceamento, então não pode ser vendido agora.";
                 default: return "Não foi possível fazer isso agora.";
             }

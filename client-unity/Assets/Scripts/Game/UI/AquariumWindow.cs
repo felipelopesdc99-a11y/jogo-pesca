@@ -167,8 +167,8 @@ namespace FishingIdle.Game.UI
             {
                 var clicked = FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
                     Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName, (float)fish.SizePercentile,
-                    GameTexts.Player.LevelShort + " " + fish.Level, fish.RarityId, fish.RarityName,
-                    fish.FishId == _selectedId, fish.IsImportant, fish.SizeCategoryId == "exceptional");
+                    GameTexts.Player.LevelShort + " " + fish.Level + (fish.CardumePosition > 0 ? "  ·  " + GameTexts.Cardume.Badge(fish.CardumePosition) : string.Empty),
+                    fish.RarityId, fish.RarityName, fish.FishId == _selectedId, fish.IsImportant, fish.SizeCategoryId == "exceptional");
                 if (clicked)
                 {
                     _selectedId = fish.FishId;
@@ -450,14 +450,14 @@ namespace FishingIdle.Game.UI
         private void DrawFeedDialog(UiSkin skin, float screenWidth, float screenHeight)
         {
             var p = _feedPreview.Value;
-            var lines = p.ValuableFood.Take(5).ToList();
+            var lines = p.ValuableFood.Concat(p.CardumeFood).Take(6).ToList();
             var rect = Dialog(skin, screenWidth, screenHeight, 210f + lines.Count * 26f + (p.WastedXp > 0 ? 40f : 0f));
             GUI.Label(new Rect(rect.x + 28, rect.y + 24, rect.width - 56, 30), GameTexts.Aquarium.FeedValuableTitle, skin.Heading);
 
             var y = rect.y + 64;
             if (lines.Count > 0)
             {
-                GUI.Label(new Rect(rect.x + 28, y, rect.width - 56, 24), GameTexts.Aquarium.FeedValuableBody, skin.Body);
+                GUI.Label(new Rect(rect.x + 28, y, rect.width - 56, 24), p.CardumeFood.Count > 0 && p.ValuableFood.Count == 0 ? GameTexts.Aquarium.FeedCardumeBody : GameTexts.Aquarium.FeedValuableBody, skin.Body);
                 y += 30;
                 foreach (var line in lines)
                 {

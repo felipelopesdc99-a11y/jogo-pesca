@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 3;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -36,7 +36,24 @@ namespace FishingIdle.GameService.Persistence
         public long FisherXpTotal { get; set; }
 
         public string CurrentMapId { get; set; }
+
+        /// <summary>Pre-version-3 rod slot, read only to migrate old saves. Never written.</summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public EquippedRodState EquippedRod { get; set; }
+
+        /// <summary>Everything the player owns that is not a fish (GDD section 20). V0.1: rods.</summary>
+        public List<InventoryItem> Inventory { get; set; } = new List<InventoryItem>();
+
+        public long NextItemId { get; set; } = 1;
+
+        /// <summary>The Inventory item in the only equipment slot, the Fishing Rod.</summary>
+        public long EquippedRodItemId { get; set; }
+
+        /// <summary>
+        /// The one Cardume: six positions (index 0 = position 1), each an Aquarium fish id or 0 when
+        /// empty. Positions 1–3 are the front row, 4–6 the back row (GDD section 26).
+        /// </summary>
+        public List<long> CardumeSlots { get; set; } = new List<long>();
 
         public FishingSessionState Fishing { get; set; } = new FishingSessionState();
 
@@ -58,6 +75,29 @@ namespace FishingIdle.GameService.Persistence
         public List<FishInstance> Aquarium { get; set; } = new List<FishInstance>();
 
         public PlayerStats Stats { get; set; } = new PlayerStats();
+
+        /// <summary>The equipped rod item, or null if the reference is broken.</summary>
+        public InventoryItem EquippedRodItem()
+        {
+            return Inventory?.Find(i => i.Id == EquippedRodItemId && i.Kind == InventoryItem.KindRod);
+        }
+    }
+
+    public sealed class InventoryItem
+    {
+        public const string KindRod = "rod";
+
+        public long Id { get; set; }
+        public string Kind { get; set; }
+        public string RodId { get; set; }
+
+        /// <summary>Internal rod level (1–10); rods without levels stay at 1.</summary>
+        public int Level { get; set; } = 1;
+
+        public long AcquiredAtMs { get; set; }
+
+        /// <summary>Coins spent buying and upgrading it; part of it comes back on NPC resale (Milestone 4).</summary>
+        public long CoinsInvested { get; set; }
     }
 
     public sealed class EquippedRodState
@@ -158,5 +198,11 @@ namespace FishingIdle.GameService.Persistence
         public long TotalCatches { get; set; }
         public long FishSold { get; set; }
         public long CoinsFromSales { get; set; }
+
+        /// <summary>Catches of Exceptional size (counted from save version 3 on).</summary>
+        public long ExceptionalCatches { get; set; }
+
+        /// <summary>Catches above common rarity (counted from save version 3 on).</summary>
+        public long RareCatches { get; set; }
     }
 }

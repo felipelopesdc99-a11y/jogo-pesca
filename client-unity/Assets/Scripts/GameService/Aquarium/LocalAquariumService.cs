@@ -135,6 +135,7 @@ namespace FishingIdle.GameService.Aquarium
             var fishIds = new HashSet<long>(fishFood.Select(f => f.Id));
             Save.FishingBox.RemoveAll(c => boxIds.Contains(c.Id));
             Save.Aquarium.RemoveAll(f => fishIds.Contains(f.Id));
+            RemoveFromCardume(fishIds);
             _session.Persist();
             _session.Log("Fed fish " + target.Id + " with " + preview.FoodCount + " fish (+" + preview.XpGained + " XP).");
             return check;
@@ -149,7 +150,7 @@ namespace FishingIdle.GameService.Aquarium
                 var view = ToView(fish);
                 preview.Count++;
                 preview.TotalCoins += view.SalePriceCoins;
-                if (view.IsValuableFood)
+                if (view.IsValuableFood || view.CardumePosition > 0)
                 {
                     preview.ProtectedFishNames.Add(view.SpeciesName + " · " + FishingIdle.Texts.GameTexts.Player.LevelShort + " " + view.Level);
                 }
@@ -189,6 +190,7 @@ namespace FishingIdle.GameService.Aquarium
             }
 
             Save.Aquarium.RemoveAll(f => wanted.Contains(f.Id));
+            RemoveFromCardume(wanted);
             Save.Coins += total;
             Save.Stats.FishSold += fish.Count;
             Save.Stats.CoinsFromSales += total;
@@ -286,6 +288,12 @@ namespace FishingIdle.GameService.Aquarium
                 {
                     preview.ValuableFood.Add(species.DisplayName + " · " + FishingIdle.Texts.GameTexts.Player.LevelShort + " " + f.Level);
                 }
+
+                var position = Save.CardumeSlots.IndexOf(f.Id) + 1;
+                if (position > 0)
+                {
+                    preview.CardumeFood.Add(FishingIdle.Texts.GameTexts.Cardume.InPosition(species.DisplayName, position));
+                }
             }
 
             var level = target.Level;
@@ -297,7 +305,19 @@ namespace FishingIdle.GameService.Aquarium
             return ServiceResult<FeedPreview>.Ok(preview);
         }
 
-        private FishView ToView(FishInstance fish)
+        /// <summary>Consumed or sold fish leave their Cardume position empty.</summary>
+        private void RemoveFromCardume(HashSet<long> fishIds)
+        {
+            for (var i = 0; i < Save.CardumeSlots.Count; i++)
+            {
+                if (fishIds.Contains(Save.CardumeSlots[i]))
+                {
+                    Save.CardumeSlots[i] = 0;
+                }
+            }
+        }
+
+        internal FishView ToView(FishInstance fish)
         {
             var view = new FishView
             {
@@ -315,6 +335,7 @@ namespace FishingIdle.GameService.Aquarium
                 CaughtAtMs = fish.CaughtAtMs,
                 KeptAtMs = fish.KeptAtMs,
                 Stats = new FishStats(),
+                CardumePosition = Save.CardumeSlots.IndexOf(fish.Id) + 1,
             };
 
             if (Config.TryGetSizeCategory(fish.SizeCategoryId, out var category))

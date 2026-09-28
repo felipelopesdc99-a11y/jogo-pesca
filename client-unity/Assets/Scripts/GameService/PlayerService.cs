@@ -23,7 +23,8 @@ namespace FishingIdle.GameService
             var save = _session.Save;
             var config = _session.Config;
             config.TryGetMap(save.CurrentMapId, out var map);
-            config.TryGetRod(save.EquippedRod.RodId, out var rod);
+            var rodItem = save.EquippedRodItem();
+            config.TryGetRod(rodItem?.RodId, out var rod);
 
             return new PlayerView
             {
@@ -36,8 +37,8 @@ namespace FishingIdle.GameService
                 Shells = save.Shells,
                 MapId = save.CurrentMapId,
                 MapName = map?.DisplayName ?? save.CurrentMapId,
-                RodName = rod?.DisplayName ?? save.EquippedRod.RodId,
-                RodLevel = save.EquippedRod.Level,
+                RodName = rod?.DisplayName ?? rodItem?.RodId,
+                RodLevel = rodItem?.Level ?? 1,
                 RodHasLevels = rod != null && rod.HasInternalLevels,
                 TotalCatches = save.Stats.TotalCatches,
                 FishingBoxCount = save.FishingBox.Count,

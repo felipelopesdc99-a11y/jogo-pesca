@@ -90,6 +90,19 @@ namespace FishingIdle.GameService
             return keptCopy;
         }
 
+        /// <summary>Equips the Starter Rod, adding it to the Inventory if the player does not own one.</summary>
+        private void EquipStarterRod(PlayerSave save, long now)
+        {
+            var starter = save.Inventory.Find(i => i.Kind == InventoryItem.KindRod && i.RodId == Config.StarterRod.Id);
+            if (starter == null)
+            {
+                starter = new InventoryItem { Id = save.NextItemId++, Kind = InventoryItem.KindRod, RodId = Config.StarterRod.Id, Level = 1, AcquiredAtMs = now };
+                save.Inventory.Add(starter);
+            }
+
+            save.EquippedRodItemId = starter.Id;
+        }
+
         private void LoadOrCreate()
         {
             var result = _repository.Load();
@@ -118,7 +131,7 @@ namespace FishingIdle.GameService
         private PlayerSave NewPlayer()
         {
             var now = Clock.UtcNowMs;
-            return new PlayerSave
+            var save = new PlayerSave
             {
                 PlayerId = Guid.NewGuid().ToString("N"),
                 PlayerName = FishingIdle.Texts.GameTexts.Player.DefaultName,
@@ -126,10 +139,16 @@ namespace FishingIdle.GameService
                 UpdatedAtMs = now,
                 RngSeed = Rng.NewSeed(),
                 CurrentMapId = Config.StartingMap.Id,
-                // The tutorial's "claim the Starter Rod" step arrives in Milestone 10; until then
-                // every new player simply starts with it equipped.
-                EquippedRod = new EquippedRodState { RodId = Config.StarterRod.Id, Level = 1 },
             };
+            // The tutorial's "claim the Starter Rod" step arrives in Milestone 10; until then
+            // every new player simply starts with it equipped.
+            EquipStarterRod(save, now);
+            for (var i = 0; i < Config.CardumeSize; i++)
+            {
+                save.CardumeSlots.Add(0);
+            }
+
+            return save;
         }
 
         /// <summary>
@@ -145,11 +164,16 @@ namespace FishingIdle.GameService
                 Save.CurrentMapId = Config.StartingMap.Id;
             }
 
-            if (Save.EquippedRod == null || !Config.TryGetRod(Save.EquippedRod.RodId, out _))
+            var equipped = Save.EquippedRodItem();
+            if (equipped == null || !Config.TryGetRod(equipped.RodId, out _))
             {
-                _log("Equipped rod no longer exists; equipping " + Config.StarterRod.Id);
-                Save.EquippedRod = new EquippedRodState { RodId = Config.StarterRod.Id, Level = 1 };
+                _log("Equipped rod is missing from the config; equipping " + Config.StarterRod.Id);
+                EquipStarterRod(Save, Clock.UtcNowMs);
             }
+
+            // The Cardume always has exactly one entry per position.
+            while (Save.CardumeSlots.Count < Config.CardumeSize) Save.CardumeSlots.Add(0);
+            while (Save.CardumeSlots.Count > Config.CardumeSize) Save.CardumeSlots.RemoveAt(Save.CardumeSlots.Count - 1);
 
             var maxLevel = Config.Progression.Fisher.MaxLevel;
             if (Save.FisherLevel > maxLevel)

@@ -17,7 +17,8 @@ namespace FishingIdle.GameService.Config
             MapsConfig maps,
             ProgressionConfig progression,
             RodsConfig rods,
-            EconomyConfig economy)
+            EconomyConfig economy,
+            ArenaConfig arena)
         {
             var errors = new List<string>();
 
@@ -366,6 +367,36 @@ namespace FishingIdle.GameService.Config
             if (economy.FishingBox?.BulkSaleProtection == null)
             {
                 errors.Add(V.Missing(GameConfigLoader.EconomyFile, "fishing_box.bulk_sale_protection"));
+            }
+
+            // ---- arena.json (Cardume parts used since Milestone 3)
+            var cardume = arena.Cardume;
+            if (cardume == null || cardume.CompleteBonus == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ArenaFile, "cardume"));
+            }
+            else
+            {
+                if (cardume.MaxFish < 1 || cardume.MinFish < 0 || cardume.MinFish > cardume.MaxFish)
+                {
+                    errors.Add(V.BadIntRange(GameConfigLoader.ArenaFile, "cardume.min_fish / max_fish"));
+                }
+
+                var bonus = cardume.CompleteBonus;
+                if (bonus.HpPercent < 0 || bonus.AttackPercent < 0 || bonus.DefensePercent < 0 || bonus.SpeedPercent < 0)
+                {
+                    errors.Add(V.NegativeValue(GameConfigLoader.ArenaFile, "cardume.complete_bonus"));
+                }
+            }
+
+            var weights = arena.CardumeStrength?.Weights;
+            if (weights == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ArenaFile, "cardume_strength.weights"));
+            }
+            else if (weights.HpDivisor <= 0 || weights.Attack < 0 || weights.Defense < 0 || weights.Speed < 0 || arena.CardumeStrength.DisplayScale <= 0)
+            {
+                errors.Add(V.AtLeast(GameConfigLoader.ArenaFile, "cardume_strength (pesos e escala)", 0));
             }
 
             return errors;

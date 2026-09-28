@@ -40,11 +40,12 @@ namespace FishingIdle.GameService.Config
         public const string ProgressionFile = "progression.json";
         public const string RodsFile = "rods.json";
         public const string EconomyFile = "economy.json";
+        public const string ArenaFile = "arena.json";
 
         /// <summary>The files the implemented milestones need, in a stable order.</summary>
         public static readonly IReadOnlyList<string> RequiredFiles = new[]
         {
-            FishCatalogFile, MapsFile, ProgressionFile, RodsFile, EconomyFile,
+            FishCatalogFile, MapsFile, ProgressionFile, RodsFile, EconomyFile, ArenaFile,
         };
 
         public static ConfigLoadResult LoadFromDirectory(string directory)
@@ -98,19 +99,20 @@ namespace FishingIdle.GameService.Config
             var progression = Parse<ProgressionConfig>(texts, ProgressionFile, errors);
             var rods = Parse<RodsConfig>(texts, RodsFile, errors);
             var economy = Parse<EconomyConfig>(texts, EconomyFile, errors);
+            var arena = Parse<ArenaConfig>(texts, ArenaFile, errors);
 
             if (errors.Count > 0)
             {
                 return new ConfigLoadResult(null, errors);
             }
 
-            errors.AddRange(GameConfigValidator.Validate(fishCatalog, maps, progression, rods, economy));
+            errors.AddRange(GameConfigValidator.Validate(fishCatalog, maps, progression, rods, economy, arena));
             if (errors.Count > 0)
             {
                 return new ConfigLoadResult(null, errors);
             }
 
-            var config = new GameConfig(fishCatalog, maps, progression, rods, economy, Fingerprint(texts));
+            var config = new GameConfig(fishCatalog, maps, progression, rods, economy, arena, Fingerprint(texts));
             return new ConfigLoadResult(config, errors);
         }
 

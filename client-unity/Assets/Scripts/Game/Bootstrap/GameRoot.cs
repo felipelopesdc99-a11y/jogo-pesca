@@ -8,6 +8,7 @@ using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Persistence;
+using FishingIdle.GameService.Profile;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -272,6 +273,56 @@ namespace FishingIdle.Game.Bootstrap
                 AquariumChanged?.Invoke();
             });
             return sold;
+        }
+
+        // ------------------------------------------------------------------ Profile and Cardume intents
+
+        public ProfileView GetProfile() => IsRunning ? Game.Profile.GetProfile() : null;
+
+        public CardumeView GetCardume() => IsRunning ? Game.Cardume.GetCardume() : null;
+
+        public void SetCardumeSlot(int position, long fishId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Cardume.SetSlot(position, fishId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                }
+
+                AquariumChanged?.Invoke();
+            });
+        }
+
+        public void ClearCardumeSlot(int position)
+        {
+            Guard(() =>
+            {
+                var result = Game.Cardume.ClearSlot(position);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                }
+
+                AquariumChanged?.Invoke();
+            });
+        }
+
+        public void EquipRod(long itemId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Profile.EquipRod(itemId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Refresh();
+                AquariumChanged?.Invoke();
+            });
         }
 
         // ------------------------------------------------------------------ Dev Panel hooks

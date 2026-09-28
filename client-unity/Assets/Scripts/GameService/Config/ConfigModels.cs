@@ -246,4 +246,52 @@ namespace FishingIdle.GameService.Config
         public List<string> Rarities { get; set; }
         public List<string> SizeCategories { get; set; }
     }
+
+    // ---------------------------------------------------------------- arena.json (Cardume parts)
+
+    public sealed class ArenaConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+        public FormationConfig Formation { get; set; }
+        public CardumeConfig Cardume { get; set; }
+        public CardumeStrengthConfig CardumeStrength { get; set; }
+    }
+
+    public sealed class FormationConfig
+    {
+        public List<int> FrontPositions { get; set; }
+        public List<int> BackPositions { get; set; }
+    }
+
+    public sealed class CardumeConfig
+    {
+        public int MinFish { get; set; }
+        public int MaxFish { get; set; }
+        public CompleteBonusConfig CompleteBonus { get; set; }
+    }
+
+    /// <summary>The 6/6 bonus: +3% to every stat while all slots are filled (GDD section 23).</summary>
+    public sealed class CompleteBonusConfig
+    {
+        public int RequiresFilledSlots { get; set; }
+        public double HpPercent { get; set; }
+        public double AttackPercent { get; set; }
+        public double DefensePercent { get; set; }
+        public double SpeedPercent { get; set; }
+    }
+
+    /// <summary>Private Cardume Strength (GDD section 31).</summary>
+    public sealed class CardumeStrengthConfig
+    {
+        public StrengthWeightsConfig Weights { get; set; }
+        public double DisplayScale { get; set; }
+    }
+
+    public sealed class StrengthWeightsConfig
+    {
+        public double Attack { get; set; }
+        public double Defense { get; set; }
+        public double HpDivisor { get; set; }
+        public double Speed { get; set; }
+    }
 }

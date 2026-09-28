@@ -184,3 +184,53 @@ recentes.
 **Seção do GDD:** 36 · **Situação:** Em vigor
 
 Mesmo preço que teria na Caixa (espécie, raridade e tamanho). O XP investido não é reembolsado.
+
+---
+
+## Milestone 3 — Perfil, Cardume, Inventário e Vara
+
+### A-022 · Posições do Cardume podem ficar vazias
+**Seção do GDD:** 23, 26 · **Situação:** Confirmar
+
+O Cardume tem 1 a 6 peixes em posições fixas, e qualquer posição pode ficar vazia (por exemplo,
+só a fileira de trás). Na Arena, o alvo segue a ordem 1 → 6 pulando as posições vazias, como o GDD
+já define para peixes derrotados.
+
+### A-023 · Montar o Cardume
+**Seção do GDD:** 23 · **Situação:** Em vigor
+
+Clique numa posição e depois num peixe do Aquário. Se o peixe já estava em outra posição, ele muda
+de lugar (cada peixe aparece uma vez só). "Tirar da posição" esvazia a posição escolhida.
+
+### A-024 · Onde a Força do Cardume aparece
+**Seção do GDD:** 31, 37 · **Situação:** Em vigor
+
+Só no Perfil do próprio jogador: no topo e na aba Cardume, com a Força de cada peixe. Nunca em telas
+de outros jogadores (quando existirem).
+
+### A-025 · Peixe do Cardume consumido ou vendido
+**Seção do GDD:** 22 · **Situação:** Em vigor
+
+Alimentar outro peixe com um peixe do Cardume, ou vendê-lo, pede confirmação e deixa a posição vazia.
+A trava durante Expedições chega no Milestone 6.
+
+### A-026 · Enciclopédia
+**Seção do GDD:** 38 · **Situação:** Em vigor
+
+As 20 espécies, na ordem do catálogo. Não descobertas: silhueta escura, nome "???". Descobertas:
+nome, mapa, raridade, maior exemplar já pescado e quantas foram pescadas. Espécies com raridade
+acima de Comum têm borda dourada.
+
+### A-027 · Destaques do Perfil
+**Seção do GDD:** 37 · **Situação:** Confirmar
+
+Capturas totais, espécies descobertas, maior peixe já pescado (em cm), peixe de nível mais alto no
+Aquário, capturas Excepcionais, capturas Raras, peixes vendidos e moedas com vendas. As contagens de
+Excepcionais e Raras começaram a ser registradas nesta versão; capturas anteriores não entram nelas.
+
+### A-028 · Equipar vara
+**Seção do GDD:** 19, 20 · **Situação:** Em vigor
+
+O Perfil mostra a vara equipada (tier, nível, bônus, se pesca Raros e se gera Conchas) e o Inventário
+com todas as varas. Uma vara que não serve no mapa atual não pode ser equipada. Trocar de vara no
+meio da pesca vale a partir do próximo ciclo.
