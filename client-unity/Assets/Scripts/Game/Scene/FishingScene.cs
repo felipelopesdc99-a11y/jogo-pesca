@@ -8,6 +8,47 @@ namespace FishingIdle.Game.Scene
     {
         public Color SkyTop, SkyHorizon, Sun, FarHillTop, FarHillBottom, MidHillTop, MidHillBottom;
         public Color TreeCrown, TreeShade, WaterHorizon, WaterMid, WaterDeep, Glint;
+        public int HillSeed = 3, TreeSeed = 21;
+        public float HillHeight = 1.9f, TreeHeight = 1.1f;
+
+        /// <summary>Speed of the light streaks across the water: 0 for a lake, positive for a river current.</summary>
+        public float Current;
+        public bool Rocks;
+        public bool Waterfall;
+
+        /// <summary>The scenery for a map id. Unknown maps fall back to the lake.</summary>
+        public static SceneTheme For(string mapId)
+        {
+            return mapId == "map_02" ? RioSelvagem() : LagoSereno();
+        }
+
+        /// <summary>Rio Selvagem: bigger river, current, rocks, dense forest, waterfall and mist, cooler light.</summary>
+        public static SceneTheme RioSelvagem()
+        {
+            return new SceneTheme
+            {
+                SkyTop = new Color(0.30f, 0.50f, 0.68f),
+                SkyHorizon = new Color(0.82f, 0.86f, 0.82f),
+                Sun = new Color(1f, 0.96f, 0.86f),
+                FarHillTop = new Color(0.36f, 0.48f, 0.52f),
+                FarHillBottom = new Color(0.48f, 0.58f, 0.62f),
+                MidHillTop = new Color(0.18f, 0.36f, 0.26f),
+                MidHillBottom = new Color(0.28f, 0.44f, 0.34f),
+                TreeCrown = new Color(0.12f, 0.30f, 0.18f),
+                TreeShade = new Color(0.06f, 0.18f, 0.12f),
+                WaterHorizon = new Color(0.52f, 0.68f, 0.66f),
+                WaterMid = new Color(0.16f, 0.40f, 0.42f),
+                WaterDeep = new Color(0.04f, 0.17f, 0.22f),
+                Glint = new Color(0.92f, 0.97f, 1f),
+                HillSeed = 8,
+                TreeSeed = 44,
+                HillHeight = 2.6f,
+                TreeHeight = 1.5f,
+                Current = 0.6f,
+                Rocks = true,
+                Waterfall = true,
+            };
+        }
 
         /// <summary>Lago Sereno: calm lake, warm late-afternoon light (GDD section 18).</summary>
         public static SceneTheme LagoSereno()
@@ -50,6 +91,25 @@ namespace FishingIdle.Game.Scene
             OrderCatch = 21, OrderForeground = 30;
 
         private Transform _world;
+        private Transform _boatLayer;
+        private GameRoot _root;
+        private SceneTheme _theme;
+        private float _arrivedAt = -100f;
+
+        /// <summary>0–1 darkness the HUD draws over the scene while the trip ends and the new map appears.</summary>
+        public float TravelFade
+        {
+            get
+            {
+                var travel = _root != null ? _root.Travel : null;
+                if (travel != null && travel.Active)
+                {
+                    return Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.8f, 1f, (float)travel.Progress));
+                }
+
+                return 1f - Mathf.Clamp01((Time.time - _arrivedAt) / 1.2f);
+            }
+        }
 
         public Camera Camera { get; private set; }
 
@@ -57,20 +117,73 @@ namespace FishingIdle.Game.Scene
 
         public void Build(GameRoot root)
         {
-            var theme = SceneTheme.LagoSereno();
+            _root = root;
+            _theme = SceneTheme.For(root.Player?.MapId);
+            BuildCamera(_theme);
+            BuildWorld(_theme);
+            root.MapChanged += OnMapChanged;
+        }
 
+        private void OnDestroy()
+        {
+            if (_root != null)
+            {
+                _root.MapChanged -= OnMapChanged;
+            }
+        }
+
+        /// <summary>Arriving on another map swaps the whole scenery; the boat glides in from the left.</summary>
+        private void OnMapChanged(string mapId)
+        {
+            _theme = SceneTheme.For(mapId);
+            if (_world != null)
+            {
+                Destroy(_world.gameObject);
+            }
+
+            Camera.backgroundColor = _theme.SkyTop;
+            BuildWorld(_theme);
+            _arrivedAt = Time.time;
+        }
+
+        private void BuildWorld(SceneTheme theme)
+        {
             _world = new GameObject("Cenário").transform;
             _world.SetParent(transform, false);
 
-            BuildCamera(theme);
             BuildSky(theme);
             BuildLand(theme);
             BuildWater(theme);
-            BuildForeground();
+            BuildForeground(theme);
 
             var boat = BuildBoat();
             Fisherman = boat.gameObject.AddComponent<FishermanRig>();
-            Fisherman.Build(root, boat, _world);
+            Fisherman.Build(_root, boat, _world);
+        }
+
+        private void Update()
+        {
+            if (_boatLayer == null || _root == null)
+            {
+                return;
+            }
+
+            // Travel is presentation of the service's timer: the boat sails out to the right…
+            var travel = _root.Travel;
+            var x = 0f;
+            if (travel != null && travel.Active)
+            {
+                var p = (float)travel.Progress;
+                x = p * p * 14f;
+            }
+            else
+            {
+                // …and glides in from the left on the new map.
+                var t = Mathf.Clamp01((Time.time - _arrivedAt) / 2.5f);
+                x = -9f * (1f - t) * (1f - t);
+            }
+
+            _boatLayer.localPosition = new Vector3(x, 0f, 0f);
         }
 
         private void BuildCamera(SceneTheme theme)
@@ -122,16 +235,25 @@ namespace FishingIdle.Game.Scene
         private void BuildLand(SceneTheme theme)
         {
             var far = Layer("Morros distantes", 0.75f);
-            Sprite(far, "Morros", Art.Hills("far", 3, 0.6f, theme.FarHillTop, theme.FarHillBottom),
-                new Vector3(0f, Horizon - 0.05f, 0f), new Vector3(9f, 1.9f, 1f), OrderFarHills);
+            Sprite(far, "Morros", Art.Hills("far" + theme.HillSeed, theme.HillSeed, 0.6f, theme.FarHillTop, theme.FarHillBottom),
+                new Vector3(0f, Horizon - 0.05f, 0f), new Vector3(9f, theme.HillHeight, 1f), OrderFarHills);
 
             var mid = Layer("Morros próximos", 0.55f);
-            Sprite(mid, "Morros", Art.Hills("mid", 11, 1f, theme.MidHillTop, theme.MidHillBottom),
+            Sprite(mid, "Morros", Art.Hills("mid" + theme.HillSeed, theme.HillSeed + 8, 1f, theme.MidHillTop, theme.MidHillBottom),
                 new Vector3(2f, Horizon - 0.05f, 0f), new Vector3(8f, 1.05f, 1f), OrderMidHills);
 
             var trees = Layer("Mata da margem", 0.35f);
-            Sprite(trees, "Árvores", Art.TreeLine("shore", 21, theme.TreeCrown, theme.TreeShade),
-                new Vector3(0f, Horizon - 0.08f, 0f), new Vector3(8f, 1.1f, 1f), OrderTrees);
+            Sprite(trees, "Árvores", Art.TreeLine("shore" + theme.TreeSeed, theme.TreeSeed, theme.TreeCrown, theme.TreeShade),
+                new Vector3(0f, Horizon - 0.08f, 0f), new Vector3(8f, theme.TreeHeight, 1f), OrderTrees);
+
+            if (theme.Waterfall)
+            {
+                // A distant waterfall between the hills, with mist at its foot.
+                var falls = Sprite(trees, "Cachoeira", Art.VerticalGradient("falls", new Color(0.86f, 0.93f, 0.96f), new Color(0.72f, 0.84f, 0.9f)),
+                    new Vector3(-5.6f, Horizon + 0.75f, 0f), new Vector3(0.45f, 1.5f, 1f), OrderTrees + 1, new Color(1f, 1f, 1f, 0.9f));
+                falls.gameObject.AddComponent<Bobbing>().Amplitude = 0.01f;
+                Sprite(trees, "Névoa", Art.Glow, new Vector3(-5.6f, Horizon + 0.05f, 0f), new Vector3(2.6f, 0.9f, 1f), OrderWaterDetail, new Color(1f, 1f, 1f, 0.45f));
+            }
         }
 
         private void BuildWater(SceneTheme theme)
@@ -166,6 +288,13 @@ namespace FishingIdle.Game.Scene
                 var twinkle = streak.gameObject.AddComponent<Twinkle>();
                 twinkle.MaxAlpha = Random.Range(0.12f, 0.3f);
                 twinkle.Period = Random.Range(2.5f, 5f);
+                if (theme.Current > 0f)
+                {
+                    // River current: the light moves downstream, faster closer to the viewer.
+                    var drift = streak.gameObject.AddComponent<Drift>();
+                    drift.Speed = theme.Current * Mathf.Lerp(0.5f, 1.4f, depth);
+                    drift.WrapHalfWidth = 12f;
+                }
             }
 
             var jumps = new GameObject("Peixes saltando ao longe");
@@ -175,9 +304,20 @@ namespace FishingIdle.Game.Scene
             jumper.Area = new Rect(-9f, -1.5f, 18f, 1.4f);
         }
 
-        private void BuildForeground()
+        private void BuildForeground(SceneTheme theme)
         {
             var fg = Layer("Primeiro plano", -0.25f);
+
+            if (theme.Rocks)
+            {
+                var rockColor = new Color(0.30f, 0.33f, 0.34f);
+                var rocks = new[] { new Vector3(-8.4f, -3.9f, 1.6f), new Vector3(-6.9f, -4.6f, 1.1f), new Vector3(7.6f, -4.2f, 1.8f), new Vector3(5.2f, -1.1f, 0.7f), new Vector3(-3.4f, -0.6f, 0.5f) };
+                foreach (var r in rocks)
+                {
+                    Sprite(fg, "Pedra", Art.RoundedBox, new Vector3(r.x, r.y, 0f), new Vector3(r.z, r.z * 0.55f, 1f), OrderWaterDetail + 1, rockColor);
+                    Sprite(fg, "Espuma", Art.Streak, new Vector3(r.x, r.y - r.z * 0.25f, 0f), new Vector3(r.z * 1.4f, 1.4f, 1f), OrderWaterDetail + 1, new Color(1f, 1f, 1f, 0.45f));
+                }
+            }
 
             // Lily pads near the edges.
             for (var i = 0; i < 7; i++)
@@ -213,6 +353,7 @@ namespace FishingIdle.Game.Scene
         private Transform BuildBoat()
         {
             var layer = Layer("Barco", 0f);
+            _boatLayer = layer;
             var boat = new GameObject("Barco").transform;
             boat.SetParent(layer, false);
             boat.localPosition = new Vector3(-1.2f, -2.1f, 0f);

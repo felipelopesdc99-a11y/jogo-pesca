@@ -6,6 +6,7 @@ using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Persistence;
+using FishingIdle.GameService.Shop;
 
 namespace FishingIdle.GameService.Profile
 {
@@ -27,6 +28,15 @@ namespace FishingIdle.GameService.Profile
 
         /// <summary>Equips a rod from the Inventory in the only equipment slot.</summary>
         ServiceResult<RodItemView> EquipRod(long itemId);
+
+        /// <summary>Buys the next internal level of a rod with Coins (no failure chance, no materials).</summary>
+        ServiceResult<RodItemView> UpgradeRod(long itemId);
+
+        /// <summary>Sells a rod back to the game for part of what was spent on it.</summary>
+        ServiceResult<SaleResult> SellRod(long itemId);
+
+        /// <summary>Removes a rod from the Inventory for nothing.</summary>
+        ServiceResult<RodItemView> DestroyRod(long itemId);
     }
 
     public sealed class LocalCardumeService : ICardumeService
@@ -194,6 +204,89 @@ namespace FishingIdle.GameService.Profile
             return ServiceResult<RodItemView>.Ok(ToRodView(item, map));
         }
 
+        public ServiceResult<RodItemView> UpgradeRod(long itemId)
+        {
+            var item = FindRod(itemId, out var rod);
+            if (item == null)
+            {
+                return ServiceResult<RodItemView>.Fail(ServiceError.ItemNotFound);
+            }
+
+            if (!rod.HasInternalLevels)
+            {
+                return ServiceResult<RodItemView>.Fail(ServiceError.RodHasNoLevels);
+            }
+
+            var cost = Config.RodUpgradeCost(rod, item.Level);
+            if (cost <= 0)
+            {
+                return ServiceResult<RodItemView>.Fail(ServiceError.RodAtMaxLevel);
+            }
+
+            if (Save.Coins < cost)
+            {
+                return ServiceResult<RodItemView>.Fail(ServiceError.NotEnoughCoins);
+            }
+
+            // Cycles already completed are settled at the old level.
+            _fishing.Sync();
+            Save.Coins -= cost;
+            item.Level++;
+            item.UpgradeCoinsInvested += cost;
+            _session.Persist();
+            _session.Log("Upgraded rod item " + item.Id + " to level " + item.Level + " for " + cost + " coins.");
+            Config.TryGetMap(Save.CurrentMapId, out var map);
+            return ServiceResult<RodItemView>.Ok(ToRodView(item, map));
+        }
+
+        public ServiceResult<SaleResult> SellRod(long itemId)
+        {
+            var check = CheckDisposable(itemId, out var item, out var rod);
+            if (check != ServiceError.None)
+            {
+                return ServiceResult<SaleResult>.Fail(check);
+            }
+
+            var value = RodRules.ResaleValue(rod, item);
+            Save.Inventory.Remove(item);
+            Save.Coins += value;
+            _session.Persist();
+            _session.Log("Sold rod item " + item.Id + " for " + value + " coins.");
+            return ServiceResult<SaleResult>.Ok(new SaleResult { Count = 1, CoinsGained = value, NewBalance = Save.Coins });
+        }
+
+        public ServiceResult<RodItemView> DestroyRod(long itemId)
+        {
+            var check = CheckDisposable(itemId, out var item, out _);
+            if (check != ServiceError.None)
+            {
+                return ServiceResult<RodItemView>.Fail(check);
+            }
+
+            Config.TryGetMap(Save.CurrentMapId, out var map);
+            var view = ToRodView(item, map);
+            Save.Inventory.Remove(item);
+            _session.Persist();
+            _session.Log("Destroyed rod item " + item.Id + ".");
+            return ServiceResult<RodItemView>.Ok(view);
+        }
+
+        private InventoryItem FindRod(long itemId, out RodConfig rod)
+        {
+            rod = null;
+            var item = Save.Inventory.FirstOrDefault(i => i.Id == itemId && i.Kind == InventoryItem.KindRod);
+            return item != null && Config.TryGetRod(item.RodId, out rod) ? item : null;
+        }
+
+        private ServiceError CheckDisposable(long itemId, out InventoryItem item, out RodConfig rod)
+        {
+            item = FindRod(itemId, out rod);
+            if (item == null) return ServiceError.ItemNotFound;
+            if (item.Id == Save.EquippedRodItemId) return ServiceError.RodEquipped;
+            if (!RodRules.CanDispose(Config, rod)) return ServiceError.RodNotSellable;
+            return ServiceError.None;
+        }
+
         private RodItemView ToRodView(InventoryItem item, MapConfig map)
         {
             if (!Config.TryGetRod(item.RodId, out var rod))
@@ -210,7 +303,7 @@ namespace FishingIdle.GameService.Profile
                 Tier = rod.Tier,
                 HasLevels = rod.HasInternalLevels,
                 Level = item.Level,
-                MaxLevel = rod.HasInternalLevels ? rod.BonusesPerLevel?.RarityEfficiency?.Count ?? 1 : 1,
+                MaxLevel = Config.RodMaxLevel(rod),
                 RarityBonus = bonuses.RarityEfficiency,
                 SizeBonus = bonuses.SizeQuality,
                 ShellBonus = bonuses.ShellYield,
@@ -218,6 +311,9 @@ namespace FishingIdle.GameService.Profile
                 GeneratesShells = rod.GeneratesShells,
                 IsEquipped = item.Id == Save.EquippedRodItemId,
                 AllowedOnCurrentMap = map == null || rod.Tier >= map.MinimumRodTier,
+                NextUpgradeCost = rod.HasInternalLevels ? Config.RodUpgradeCost(rod, item.Level) : 0,
+                ResaleValue = RodRules.ResaleValue(rod, item),
+                CanDispose = item.Id != Save.EquippedRodItemId && RodRules.CanDispose(Config, rod),
             };
         }
 

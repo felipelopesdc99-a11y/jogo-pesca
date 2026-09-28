@@ -3,6 +3,32 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m4.1] — 28/09/2026
+
+Milestone 4 — Mapas e Varas.
+
+### Adicionado
+
+- **Menu Mapa**: Lago Sereno e Rio Selvagem, com os requisitos de cada um. O Rio Selvagem abre no
+  Nível 10 e exige a Vara 1.
+- **Viagem de 30 segundos**: a pesca pausa e volta sozinha na chegada; o barco sai de cena, a tela
+  escurece e o barco chega ao novo mapa.
+- **Cena do Rio Selvagem**: correnteza, pedras, mata densa, cachoeira com névoa, água mais escura.
+- **Menu Loja**: compra da Vara 1 (Nível 10, 2.500 moedas), que já vem equipada.
+- **Melhoria de vara** de 1 a 10 com moedas, sem falha; **revenda** ao jogo (40% do preço + 25% das
+  melhorias) e **destruir**, no Perfil → Inventário.
+- Com a Vara 1 saem peixes Raros no Rio Selvagem e Conchas.
+- 11 testes novos (84 no total).
+
+### Mudado
+
+- **Formato do save: versão 4** (viagem e gastos com a vara). Saves antigos são convertidos sozinhos.
+- A barra superior agora tem Pesca, Mapa, Aquário, Loja e Perfil.
+
+### Não verificado
+
+- As telas e a cena nova ainda não foram abertas no Editor do Unity (`M4-T09`).
+
 ## [0.1.0-m3.1] — 28/09/2026
 
 Milestone 3 — Perfil, Cardume, Inventário e Vara.

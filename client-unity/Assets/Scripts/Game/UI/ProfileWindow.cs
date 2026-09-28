@@ -35,6 +35,10 @@ namespace FishingIdle.Game.UI
         private Vector2 _listScroll;
         private bool _dirty = true;
 
+        // Rod sell/destroy confirmation.
+        private RodItemView _pendingRod;
+        private bool _pendingDestroy;
+
         public ProfileWindow(GameRoot root)
         {
             _root = root;
@@ -71,6 +75,8 @@ namespace FishingIdle.Game.UI
             {
                 return;
             }
+
+            GUI.enabled = _pendingRod == null;
 
             GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), skin.Overlay);
             var width = Mathf.Min(1320f, screenWidth - 80f);
@@ -117,6 +123,39 @@ namespace FishingIdle.Game.UI
                 case Tab.Records: DrawRecords(skin, content); break;
                 default: DrawCardume(skin, content); break;
             }
+
+            GUI.enabled = true;
+            if (_pendingRod != null)
+            {
+                DrawRodDialog(skin, screenWidth, screenHeight);
+            }
+        }
+
+        private void DrawRodDialog(UiSkin skin, float screenWidth, float screenHeight)
+        {
+            var rod = _pendingRod;
+            var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, 220f);
+            GUI.Label(new Rect(rect.x + 28, rect.y + 24, rect.width - 56, 30), _pendingDestroy ? GameTexts.Shop.DestroyTitle(rod.Name) : GameTexts.Shop.SellTitle(rod.Name), skin.Heading);
+            GUI.Label(new Rect(rect.x + 28, rect.y + 64, rect.width - 56, 70), _pendingDestroy ? GameTexts.Shop.DestroyBody : GameTexts.Shop.SellBody(Format.Number(rod.ResaleValue)), skin.Body);
+
+            if (GUI.Button(new Rect(rect.x + 28, rect.yMax - 64, 150, 42), GameTexts.Dialogs.Cancel, skin.Button))
+            {
+                _pendingRod = null;
+            }
+
+            if (GUI.Button(new Rect(rect.xMax - 218, rect.yMax - 64, 190, 42), _pendingDestroy ? GameTexts.Shop.DestroyRod : GameTexts.Shop.SellRod, _pendingDestroy ? skin.ButtonDanger : skin.ButtonPrimary))
+            {
+                if (_pendingDestroy)
+                {
+                    _root.DestroyRod(rod.ItemId);
+                }
+                else
+                {
+                    _root.SellRod(rod.ItemId);
+                }
+
+                _pendingRod = null;
+            }
         }
 
         // ------------------------------------------------------------------ Equipment and Inventory
@@ -141,10 +180,10 @@ namespace FishingIdle.Game.UI
                 if (x + 400 > area.xMax)
                 {
                     x = area.x;
-                    y += 270;
+                    y += 316;
                 }
 
-                RodCard(skin, new Rect(x, y, 400, 250), rod, true);
+                RodCard(skin, new Rect(x, y, 400, 300), rod, true);
                 x += 416;
             }
         }
@@ -172,10 +211,11 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var button = new Rect(x, rect.yMax - 54, w, 38);
+            // Row 1: equip state. Row 2: upgrade / sell / destroy.
+            var button = new Rect(x, rect.yMax - 100, w, 38);
             if (rod.IsEquipped)
             {
-                skin.Tag(new Rect(x, rect.yMax - 46, 110, 22), GameTexts.Profile.Equipped.ToUpperInvariant(), UiSkin.Accent);
+                skin.Tag(new Rect(x, button.y + 8, 110, 22), GameTexts.Profile.Equipped.ToUpperInvariant(), UiSkin.Accent);
             }
             else if (!rod.AllowedOnCurrentMap)
             {
@@ -184,6 +224,42 @@ namespace FishingIdle.Game.UI
             else if (GUI.Button(button, GameTexts.Profile.Equip, skin.ButtonPrimary))
             {
                 _root.EquipRod(rod.ItemId);
+            }
+
+            var actions = new Rect(x, rect.yMax - 54, w, 38);
+            if (rod.HasLevels)
+            {
+                var upgradeWidth = rod.CanDispose ? w * 0.5f : w;
+                if (rod.NextUpgradeCost > 0)
+                {
+                    if (GUI.Button(new Rect(actions.x, actions.y, upgradeWidth - 6, 38), GameTexts.Shop.UpgradeFor(rod.Level + 1, Format.Number(rod.NextUpgradeCost)), skin.Button))
+                    {
+                        _root.UpgradeRod(rod.ItemId);
+                    }
+                }
+                else
+                {
+                    GUI.Label(new Rect(actions.x, actions.y + 8, upgradeWidth, 22), GameTexts.Shop.MaxLevel, skin.SmallGold);
+                }
+
+                actions.x += upgradeWidth;
+                actions.width -= upgradeWidth;
+            }
+
+            if (rod.CanDispose)
+            {
+                var half = actions.width / 2f;
+                if (GUI.Button(new Rect(actions.x, actions.y, half - 6, 38), GameTexts.Shop.SellFor(Format.Number(rod.ResaleValue)), skin.Button))
+                {
+                    _pendingRod = rod;
+                    _pendingDestroy = false;
+                }
+
+                if (GUI.Button(new Rect(actions.x + half, actions.y, half, 38), GameTexts.Shop.DestroyRod, skin.Button))
+                {
+                    _pendingRod = rod;
+                    _pendingDestroy = true;
+                }
             }
         }
 

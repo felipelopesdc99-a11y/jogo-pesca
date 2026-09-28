@@ -37,7 +37,7 @@ public sealed class SaveTests
 
         var json = File.ReadAllText(Path.Combine(saveDir, JsonFilePlayerRepository.SaveFileName));
 
-        Assert.Contains("\"save_version\": 3", json);
+        Assert.Contains("\"save_version\": 4", json);
         Assert.True(File.Exists(Path.Combine(saveDir, JsonFilePlayerRepository.BackupFileName)));
     }
 
@@ -80,7 +80,7 @@ public sealed class SaveTests
     {
         var (game, _, saveDir) = TestSupport.NewGame();
         var path = Path.Combine(saveDir, JsonFilePlayerRepository.SaveFileName);
-        var future = File.ReadAllText(path).Replace("\"save_version\": 3", "\"save_version\": 99");
+        var future = File.ReadAllText(path).Replace("\"save_version\": 4", "\"save_version\": 99");
         File.WriteAllText(path, future);
 
         var (reopened, clock, _) = TestSupport.NewGame(saveDir: saveDir);

@@ -48,7 +48,9 @@ client-unity/Assets/
 │   │   ├── Persistence/   Save (PlayerSave), repositório JSON com backup, validação e migrações
 │   │   ├── Fishing/       Serviço de pesca, fórmulas de captura (CatchRules) e de peixe (FishRules), visões
 │   │   ├── Aquarium/      Serviço do Aquário: guardar, alimentar, vender, ordenar
-│   │   ├── Profile/       Cardume (posições, bônus, Força), Perfil, Inventário, Enciclopédia
+│   │   ├── Profile/       Cardume (posições, bônus, Força), Perfil, Inventário, Enciclopédia, varas
+│   │   ├── Maps/          Mapas e viagem
+│   │   ├── Shop/          Loja e regras de preço/revenda de vara (RodRules)
 │   │   ├── GameSession.cs Estado vivo de um jogador (config + save + relógio + armazenamento)
 │   │   ├── PlayerService.cs
 │   │   └── LocalGame.cs   Ponto de entrada: monta os serviços locais
@@ -91,6 +93,8 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IPlayerService` | `LocalPlayerService` | Resumo do jogador (nível, XP, Moedas, mapa, vara, Aquário) |
 | `IAquariumService` | `LocalAquariumService` | Guardar capturas, ficha do peixe, alimentar, vender do Aquário |
 | `ICardumeService` | `LocalCardumeService` | Posições 1–6, bônus 6/6, Força privada |
+| `IMapService` | `LocalMapService` | Mapas, requisitos, viagem de 30s (pausa e retoma a pesca) |
+| `IShopService` | `LocalShopService` | Loja: varas à venda e compra |
 | `IProfileService` | `LocalProfileService` | Perfil próprio: vara equipada, Inventário, Enciclopédia, Destaques |
 | `IPlayerRepository` | `JsonFilePlayerRepository` | Ler/gravar/resetar o save |
 | `IClock` | `SystemClock` | A única fonte de "agora" das regras |
@@ -137,6 +141,7 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 | XP como alimento | XP base × raridade × fator de tamanho + 50% do XP investido | `progression.json → feeding` |
 | Bônus do Cardume | +3% nos quatro atributos com 6/6, só enquanto completo | `arena.json → cardume.complete_bonus` |
 | Força do Cardume | Σ (Ataque×2 + Defesa×1,5 + Vida÷10 + Velocidade×0,5) × escala | `arena.json → cardume_strength` |
+| Revenda de vara | Preço × 40% + melhorias × 25% | `rods.json → npc_resale` |
 
 ## 4. Balanceamento (/config)
 
@@ -182,12 +187,15 @@ Regras:
   desse item (`EquippedRodItemId`). O Cardume é uma lista de 6 ids de peixes do Aquário (0 = vazio);
   o bônus 6/6 e a Força são calculados na hora (`CardumeRules`) e nunca gravados.
 - Histórico de formatos: v1 (Milestone 1), v2 adiciona o Aquário, v3 move a vara para o Inventário
-  e adiciona o Cardume. Cada passo está em `SaveMigrations.Upgrade`.
+  e adiciona o Cardume, v4 adiciona a viagem (`TravelState`) e separa o preço pago pela vara do que
+  foi gasto em melhorias. Cada passo está em `SaveMigrations.Upgrade`.
 
 ## 6. Apresentação (Game)
 
 - **Sem cena montada à mão.** Ao apertar Play, `GameBootstrap` cria o `GameRoot`, que inicia o
   serviço e monta a cena por código (`FishingScene`). Funciona em qualquer cena.
+- **Um tema por mapa** (`SceneTheme.For`): cores, relevo, correnteza, pedras e cachoeira. Ao chegar a
+  outro mapa (`GameRoot.MapChanged`), a cena é destruída e montada de novo com o tema dele.
 - **Arte provisória por código** (`Art.cs`, `FishLooks.cs`): gradientes, silhuetas, barco, peixes com
   cores por espécie. Trocar pela arte final = trocar o que esses métodos devolvem.
 - **Camadas e paralaxe:** câmera ortográfica que oscila devagar; cada camada acompanha a câmera numa

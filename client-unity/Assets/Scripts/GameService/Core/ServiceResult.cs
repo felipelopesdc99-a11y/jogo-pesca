@@ -19,6 +19,19 @@ namespace FishingIdle.GameService.Core
         InvalidCardumePosition,
         ItemNotFound,
         RodNotAllowedOnMap,
+        Traveling,
+        AlreadyOnMap,
+        MapNotFound,
+        MapLocked,
+        RodTooWeakForMap,
+        NotEnoughCoins,
+        RodNotForSale,
+        RodLocked,
+        RodAlreadyOwned,
+        RodAtMaxLevel,
+        RodHasNoLevels,
+        RodEquipped,
+        RodNotSellable,
     }
 
     /// <summary>

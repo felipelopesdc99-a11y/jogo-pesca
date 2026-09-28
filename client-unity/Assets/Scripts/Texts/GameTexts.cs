@@ -39,7 +39,9 @@ namespace FishingIdle.Texts
         {
             // Only menus that already exist in the game are listed; the rest arrive with their milestones.
             public const string Fishing = "Pesca";
+            public const string Map = "Mapa";
             public const string Aquarium = "Aquário";
+            public const string Shop = "Loja";
             public const string Profile = "Perfil";
         }
 
@@ -136,6 +138,59 @@ namespace FishingIdle.Texts
             public static string Wasted(string xp) => xp + " XP passam do nível máximo e serão perdidos.";
             public static string SellTitle(string species) => "Vender " + species + "?";
             public static string SellBody(string coins) => "Você recebe " + coins + " moedas. O XP investido neste peixe não volta. Esta ação não pode ser desfeita.";
+        }
+
+        // ------------------------------------------------------------------ Map and travel (GDD section 18)
+
+        public static class Map
+        {
+            public const string Title = "Mapa";
+            public const string Travel = "Viajar";
+            public const string YouAreHere = "Você está aqui";
+            public const string TravelNote = "A viagem é sempre manual. Durante a viagem a pesca fica pausada e volta sozinha na chegada, se estava ligada.";
+            public const string Species = "Espécies";
+            public const string NeedsLevel = "Nível necessário";
+            public const string NeedsRod = "Vara necessária";
+            public const string AnyRod = "Qualquer vara";
+
+            public static string Departing(string map) => "Partindo para " + map + ".";
+            public static string Arrived(string map) => "Você chegou a " + map + ".";
+            public static string Traveling(string map) => "Viajando para " + map + "…";
+            public static string ArrivesIn(string countdown) => "Chegada em " + countdown;
+            public static string TravelTime(string duration) => "Viagem: " + duration;
+            public static string Discovered(int found, int total) => found + " de " + total + " descobertas";
+            public static string LevelRequirement(int level) => "Nível " + level;
+        }
+
+        // ------------------------------------------------------------------ Shop (GDD sections 7, 19)
+
+        public static class Shop
+        {
+            public const string Title = "Loja";
+            public const string Rods = "Varas";
+            public const string Buy = "Comprar";
+            public const string Owned = "Já é sua";
+            public const string AtLevel1 = "No nível 1";
+            public const string AtMax = "No nível máximo";
+            public const string Note = "Varas compradas ficam no Inventário (Perfil) e são equipadas na hora. Lá você também melhora, vende ou destrói varas.";
+            public const string Upgrade = "Melhorar";
+            public const string SellRod = "Vender";
+            public const string DestroyRod = "Destruir";
+            public const string MaxLevel = "Nível máximo";
+
+            public static string Price(string coins) => coins + " moedas";
+            public static string Requires(int level) => "Disponível no Nível " + level;
+            public static string Bought(string rod) => rod + " comprada e equipada!";
+            public static string Upgraded(string rod, int level) => rod + " agora está no Nível " + level + ".";
+            public static string RodSold(string coins) => "Vara vendida por " + coins + " moedas.";
+            public static string RodDestroyed(string rod) => rod + " foi destruída.";
+            public static string UpgradeFor(int level, string coins) => "Melhorar p/ Nv. " + level + " (" + coins + ")";
+            public static string SellFor(string coins) => "Vender (" + coins + ")";
+            public static string MaxLevelOf(int max) => "Até o Nível " + max;
+            public static string SellTitle(string rod) => "Vender " + rod + "?";
+            public static string SellBody(string coins) => "O jogo paga " + coins + " moedas por ela. A vara sai do seu Inventário.";
+            public static string DestroyTitle(string rod) => "Destruir " + rod + "?";
+            public const string DestroyBody = "A vara some do Inventário e você não recebe nada. Esta ação não pode ser desfeita.";
         }
 
         // ------------------------------------------------------------------ Cardume (GDD sections 23, 26, 31)
@@ -267,6 +322,19 @@ namespace FishingIdle.Texts
                 case "InvalidCardumePosition": return "Essa posição do Cardume não existe.";
                 case "ItemNotFound": return "Esse item não está mais no seu Inventário.";
                 case "RodNotAllowedOnMap": return "Essa vara não pode ser usada neste mapa.";
+                case "Traveling": return "Você está viajando. Espere chegar ao destino.";
+                case "AlreadyOnMap": return "Você já está neste mapa.";
+                case "MapNotFound": return "Esse mapa não existe.";
+                case "MapLocked": return "Você ainda não tem nível para este mapa.";
+                case "RodTooWeakForMap": return "Sua vara não serve para este mapa. Compre uma vara melhor na Loja.";
+                case "NotEnoughCoins": return "Moedas insuficientes.";
+                case "RodNotForSale": return "Essa vara não está à venda.";
+                case "RodLocked": return "Você ainda não tem nível para comprar esta vara.";
+                case "RodAlreadyOwned": return "Você já tem esta vara no Inventário.";
+                case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
+                case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
+                case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";
+                case "RodNotSellable": return "A Vara Inicial não pode ser vendida nem destruída.";
                 case "SpeciesMissingFromConfig": return "Um dos peixes é de uma espécie que não existe mais no balanceamento, então não pode ser vendido agora.";
                 default: return "Não foi possível fazer isso agora.";
             }
@@ -306,6 +374,7 @@ namespace FishingIdle.Texts
             public static string AtLeast(string file, string what, int min) => file + ": \"" + what + "\" precisa ser pelo menos " + min + ".";
             public static string BadPercentileBand(string category) => "progression.json: a categoria de tamanho \"" + category + "\" precisa de percentis entre 0 e 1, com o mínimo menor que o máximo.";
             public static string WeightsSumToZero(string file, string what) => file + ": os pesos de \"" + what + "\" somam zero — nada poderia ser sorteado.";
+            public static string RodUpgradeCostMissing(string rod, int level) => "rods.json: a vara \"" + rod + "\" não tem custo de melhoria para o nível " + level + " em upgrade_costs.";
             public static string FishXpTableGap(int level) => "progression.json: a tabela de XP do peixe (fish_level.xp_table) não tem o nível " + level + ".";
             public static string BadBaseStats(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de base_stats com Vida e Velocidade maiores que zero e Ataque e Defesa não negativos.";
             public static string XpTableGap(int level) => "progression.json: a tabela de XP do Pescador não tem o nível " + level + ".";

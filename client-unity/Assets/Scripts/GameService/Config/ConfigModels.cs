@@ -64,6 +64,12 @@ namespace FishingIdle.GameService.Config
         public int MinimumRodTier { get; set; }
         public List<string> AvailableRarities { get; set; }
         public List<FishPoolEntryConfig> FishPool { get; set; }
+        public MapThemeConfig VisualTheme { get; set; }
+    }
+
+    public sealed class MapThemeConfig
+    {
+        public string Summary { get; set; }
     }
 
     public sealed class FishPoolEntryConfig
@@ -181,11 +187,38 @@ namespace FishingIdle.GameService.Config
         public List<string> CanCatchRarities { get; set; }
         public bool GeneratesShells { get; set; }
 
+        public RodAcquisitionConfig Acquisition { get; set; }
+        public List<RodUpgradeCostConfig> UpgradeCosts { get; set; }
+        public RodResaleConfig NpcResale { get; set; }
+        public long NpcResaleValueCoins { get; set; }
+        public bool TradableOnMarket { get; set; }
+
         /// <summary>Flat bonuses, for rods without internal levels (the Starter Rod).</summary>
         public RodBonusesConfig Bonuses { get; set; }
 
         /// <summary>Total bonus at each internal level (index 0 = Lv.1), for upgradable rods.</summary>
         public RodBonusesPerLevelConfig BonusesPerLevel { get; set; }
+    }
+
+    public sealed class RodAcquisitionConfig
+    {
+        /// <summary>"coin_purchase" rods are sold in the Shop; "free_claim_in_shop" is the Starter Rod.</summary>
+        public string Method { get; set; }
+        public long PurchaseCostCoins { get; set; }
+        public int UnlockFisherLevel { get; set; }
+    }
+
+    public sealed class RodUpgradeCostConfig
+    {
+        public int ToLevel { get; set; }
+        public long CostCoins { get; set; }
+    }
+
+    /// <summary>NPC resale: part of the purchase price plus part of what was spent on upgrades.</summary>
+    public sealed class RodResaleConfig
+    {
+        public double BaseValueRatio { get; set; }
+        public double UpgradeInvestmentRatio { get; set; }
     }
 
     public sealed class RodBonusesConfig

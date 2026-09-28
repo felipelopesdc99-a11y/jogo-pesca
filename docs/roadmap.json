@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-28T23:37:38Z",
-  "current_milestone": "M3",
+  "updated_at": "2026-09-28T23:53:13Z",
+  "current_milestone": "M4",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -52,6 +52,14 @@
       "title": "Testar o Perfil e o Cardume",
       "detail": "Quando puder: abra o menu Perfil, monte o Cardume com peixes do Aquário (clique numa posição e depois num peixe), veja a Força e o bônus com 6 peixes, e olhe a Enciclopédia. Diga se a tela é clara. Não bloqueia: eu sigo com o Milestone 4.",
       "raised_at": "2026-09-28T23:37:38Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-006",
+      "task_id": "M4-T09",
+      "title": "Testar mapas e varas",
+      "detail": "Quando chegar ao Nível 10: compre a Vara 1 na Loja, viaje ao Rio Selvagem pelo menu Mapa e veja a cena nova. No Perfil → Inventário, melhore a vara. Para chegar mais rápido, o Painel de Desenvolvimento → Balanceamento → Pesca permite pôr 5 segundos por captura. Não bloqueia: eu sigo com o Milestone 5.",
+      "raised_at": "2026-09-28T23:53:13Z",
       "status": "OPEN"
     }
   ],
@@ -641,89 +649,109 @@
           "id": "M4-T01",
           "title": "Menu Mapa",
           "subsystem": "client",
-          "description": "Lista de mapas liberados e botão Viajar.",
-          "status": "TODO",
+          "description": "Lista de mapas com requisitos e botão Viajar.",
+          "status": "DONE",
           "dependencies": [
             "M3-T07"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Menu Mapa na barra superior: cada mapa com descrição, nível e vara necessários, espécies descobertas e o motivo quando não dá para viajar. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-28T23:53:13Z"
         },
         {
           "id": "M4-T02",
           "title": "Cena do Rio Selvagem",
           "subsystem": "client",
           "description": "Tema visual próprio: correnteza, pedras, mata densa, água mais escura.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M4-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Morros mais altos, mata mais densa e escura, água mais funda, brilhos da água correndo com a correnteza, pedras com espuma, cachoeira ao longe com névoa. A cena é trocada inteira ao chegar. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-28T23:53:13Z"
         },
         {
           "id": "M4-T03",
           "title": "Desbloqueio do Mapa 2 no Nível 10",
           "subsystem": "server",
           "description": "Exige também a Vara 1.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M4-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Nível e tier mínimo de vara vêm de maps.json. Com a Vara Inicial, mesmo no Nível 10, o Rio Selvagem é recusado. Testado.",
+          "updated_at": "2026-09-28T23:53:13Z"
         },
         {
           "id": "M4-T04",
           "title": "Viagem visual de 30s com pesca pausada",
           "subsystem": "server",
           "description": "Sem combustível, taxa ou tempo de recarga.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M4-T01"
+            "M4-T03"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "A viagem é um cronômetro do serviço (duração em maps.json). A pesca é pausada ao partir (o que já estava pronto é entregue) e volta sozinha na chegada, se estava ligada. Viagem terminada com o jogo fechado é concluída ao abrir. Na tela, o barco sai pela direita, a cena escurece e o barco entra no novo mapa pela esquerda. Testado.",
+          "updated_at": "2026-09-28T23:53:13Z"
         },
         {
           "id": "M4-T05",
           "title": "Compra da Vara 1",
           "subsystem": "server",
           "description": "Liberada no Nível 10, paga em Moedas.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M4-T01"
+            "M3-T03"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Menu Loja com as varas à venda (preço, requisitos, bônus do nível 1 ao máximo). Comprar exige nível e moedas, coloca a vara no Inventário e já equipa. Testado.",
+          "updated_at": "2026-09-28T23:53:13Z"
         },
         {
           "id": "M4-T06",
           "title": "Melhoria da vara de 1 a 10",
           "subsystem": "server",
           "description": "Compra direta do próximo nível, sem falha e sem material.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M4-T01"
+            "M4-T05"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Custo de cada nível em rods.json → upgrade_costs; sem chance de falha, sem Conchas. O Painel de Desenvolvimento já edita esses custos. Testado até o Nível 10.",
+          "updated_at": "2026-09-28T23:53:13Z"
         },
         {
           "id": "M4-T07",
           "title": "Bônus de raridade, tamanho e Conchas",
           "subsystem": "server",
           "description": "Já implementados no sorteio; passam a valer com a Vara 1.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M4-T01"
+            "M4-T06"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Os bônus do nível atual da vara entram no sorteio. Com a Vara 1 no Rio Selvagem saem Aruanãs (Raro) e Conchas. Testado.",
+          "updated_at": "2026-09-28T23:53:13Z"
         },
         {
           "id": "M4-T08",
           "title": "Varas antigas no Inventário",
           "subsystem": "server",
           "description": "Manter, reequipar, revender ao jogo ou destruir.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M4-T01"
+            "M4-T05"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "No Perfil → Inventário: equipar, melhorar, vender ao jogo (40% do preço + 25% das melhorias, de rods.json) ou destruir, com confirmação. A vara equipada e a Vara Inicial não podem ser vendidas nem destruídas. Save versão 4. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-28T23:53:13Z"
+        },
+        {
+          "id": "M4-T09",
+          "title": "Teste de mapas e varas pelo proprietário",
+          "subsystem": "client",
+          "description": "Comprar a Vara 1, viajar ao Rio Selvagem e melhorar a vara dentro do Unity.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M4-T02",
+            "M4-T08"
+          ],
+          "updated_at": "2026-09-28T23:53:13Z"
         }
       ]
     },

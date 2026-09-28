@@ -306,6 +306,19 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 3;
             }
 
+            if (save.SaveVersion == 3)
+            {
+                // v4 adds map travel and splits rod spending into purchase and upgrades (Milestone 4).
+                save.Travel = new TravelState();
+                foreach (var item in save.Inventory ?? new List<InventoryItem>())
+                {
+                    item.CoinsInvested = null;
+                }
+
+                save.SaveVersion = 4;
+            }
+
+            save.Travel = save.Travel ?? new TravelState();
             save.Aquarium = save.Aquarium ?? new List<FishInstance>();
             save.Inventory = save.Inventory ?? new List<InventoryItem>();
             save.CardumeSlots = save.CardumeSlots ?? new List<long>();
@@ -349,6 +362,9 @@ namespace FishingIdle.GameService.Persistence
                 if (save.EquippedRodItem() == null) problems.Add("equipped rod is not a rod in the inventory");
             }
 
+            if (save.Travel == null) problems.Add("travel missing");
+            else if (save.Travel.Active && (string.IsNullOrWhiteSpace(save.Travel.ToMapId) || save.Travel.ArrivesAtMs < save.Travel.StartedAtMs)) problems.Add("travel malformed");
+            if (save.Inventory != null && save.Inventory.Any(i => i != null && (i.PurchasePriceCoins < 0 || i.UpgradeCoinsInvested < 0 || i.Level < 1))) problems.Add("inventory has negative values");
             if (save.CardumeSlots == null) problems.Add("cardume missing");
             else if (save.Aquarium != null)
             {

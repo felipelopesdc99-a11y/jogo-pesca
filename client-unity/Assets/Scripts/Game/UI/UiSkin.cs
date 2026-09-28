@@ -26,7 +26,7 @@ namespace FishingIdle.Game.UI
 
         public GUIStyle Panel, Card, CardHovered, CardSelected, CardImportant;
         public GUIStyle Button, ButtonPrimary, ButtonDanger, Chip, ChipActive;
-        public GUIStyle Title, Heading, Body, BodyBold, Small, SmallMuted, SmallRight, SmallMutedRight, SmallGold, Number, NumberRight, Center, Badge;
+        public GUIStyle Title, Heading, Body, BodyBold, Small, SmallMuted, SmallRight, SmallMutedRight, SmallGold, SmallGoldRight, Number, NumberRight, Center, Badge;
 
         public Texture2D White, Overlay, Coin;
 
@@ -65,6 +65,7 @@ namespace FishingIdle.Game.UI
             SmallRight = new GUIStyle(Small) { alignment = TextAnchor.UpperRight };
             SmallMutedRight = new GUIStyle(SmallMuted) { alignment = TextAnchor.UpperRight };
             SmallGold = Label(13, FontStyle.Bold, Gold);
+            SmallGoldRight = new GUIStyle(SmallGold) { alignment = TextAnchor.UpperRight };
             Number = Label(20, FontStyle.Bold, Gold);
             NumberRight = new GUIStyle(Number) { alignment = TextAnchor.UpperRight };
             Center = Label(16, FontStyle.Normal, Text);

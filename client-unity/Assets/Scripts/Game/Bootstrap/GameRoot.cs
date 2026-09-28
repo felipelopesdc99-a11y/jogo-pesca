@@ -7,8 +7,10 @@ using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
+using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
+using FishingIdle.GameService.Shop;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -43,6 +45,12 @@ namespace FishingIdle.Game.Bootstrap
         public FishingStatus Status { get; private set; }
 
         public PlayerView Player { get; private set; }
+
+        /// <summary>The trip between maps in progress, refreshed every frame.</summary>
+        public TravelView Travel { get; private set; }
+
+        /// <summary>Raised when the player arrives on a new map (the scene rebuilds its scenery).</summary>
+        public event Action<string> MapChanged;
 
         public ToastFeed Toasts { get; } = new ToastFeed();
 
@@ -98,6 +106,15 @@ namespace FishingIdle.Game.Bootstrap
                 _nextSyncAt = Time.unscaledTime + SyncIntervalSeconds;
                 Guard(() =>
                 {
+                    var arrival = Game.Maps.Update();
+                    if (arrival.Arrived)
+                    {
+                        Refresh();
+                        Toasts.Push(GameTexts.Map.Arrived(Player.MapName), ToastKind.Info);
+                        MapChanged?.Invoke(arrival.MapId);
+                        AquariumChanged?.Invoke();
+                    }
+
                     var update = Game.Fishing.Sync();
                     if (update.HasChanges)
                     {
@@ -107,6 +124,7 @@ namespace FishingIdle.Game.Bootstrap
             }
 
             Status = Game.Fishing.GetStatus();
+            Travel = Game.Maps.GetTravel();
         }
 
         private void OnApplicationQuit()
@@ -325,6 +343,97 @@ namespace FishingIdle.Game.Bootstrap
             });
         }
 
+        // ------------------------------------------------------------------ Map, Shop and rod intents
+
+        public MapsView GetMaps() => IsRunning ? Game.Maps.GetMaps() : null;
+
+        public ShopView GetShop() => IsRunning ? Game.Shop.GetShop() : null;
+
+        public void TravelTo(string mapId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Maps.TravelTo(mapId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Map.Departing(result.Value.ToName), ToastKind.Info);
+                Refresh();
+                Travel = result.Value;
+            });
+        }
+
+        public void BuyRod(string rodId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Shop.BuyRod(rodId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Shop.Bought(result.Value.Name), ToastKind.Important);
+                Refresh();
+                AquariumChanged?.Invoke();
+            });
+        }
+
+        public void UpgradeRod(long itemId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Profile.UpgradeRod(itemId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Shop.Upgraded(result.Value.Name, result.Value.Level), ToastKind.LevelUp);
+                Refresh();
+                AquariumChanged?.Invoke();
+            });
+        }
+
+        public void SellRod(long itemId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Profile.SellRod(itemId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Shop.RodSold(Format.Number(result.Value.CoinsGained)), ToastKind.Coins);
+                Refresh();
+                AquariumChanged?.Invoke();
+            });
+        }
+
+        public void DestroyRod(long itemId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Profile.DestroyRod(itemId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Shop.RodDestroyed(result.Value.Name), ToastKind.Info);
+                Refresh();
+                AquariumChanged?.Invoke();
+            });
+        }
+
         // ------------------------------------------------------------------ Dev Panel hooks
 
         /// <summary>Reloads /config into the running game (Dev Panel "Salvar e aplicar").</summary>
@@ -358,6 +467,7 @@ namespace FishingIdle.Game.Bootstrap
                 Refresh();
                 BoxChanged?.Invoke();
                 AquariumChanged?.Invoke();
+                MapChanged?.Invoke(Player.MapId);
             });
             return kept;
         }
@@ -430,6 +540,7 @@ namespace FishingIdle.Game.Bootstrap
 
             Player = Game.Player.GetPlayer();
             Status = Game.Fishing.GetStatus();
+            Travel = Game.Maps.GetTravel();
         }
 
         /// <summary>

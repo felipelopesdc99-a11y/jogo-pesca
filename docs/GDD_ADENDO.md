@@ -234,3 +234,41 @@ Excepcionais e Raras começaram a ser registradas nesta versão; capturas anteri
 O Perfil mostra a vara equipada (tier, nível, bônus, se pesca Raros e se gera Conchas) e o Inventário
 com todas as varas. Uma vara que não serve no mapa atual não pode ser equipada. Trocar de vara no
 meio da pesca vale a partir do próximo ciclo.
+
+---
+
+## Milestone 4 — Mapas e Varas
+
+### A-029 · Viagem
+**Seção do GDD:** 18 · **Situação:** Em vigor
+
+Menu Mapa → Viajar. A viagem leva 30 segundos (`maps.json → travel`). Ao partir, o que já estava
+pescado é entregue e a pesca pausa; na chegada, ela volta sozinha se estava ligada. Durante a
+viagem não dá para pescar nem viajar para outro lugar. Se o jogo for fechado no meio, a viagem é
+concluída ao abrir. Nunca há viagem automática ao subir de nível.
+
+### A-030 · Requisitos do Rio Selvagem
+**Seção do GDD:** 17, 19 · **Situação:** Em vigor
+
+Nível 10 **e** a Vara 1 equipada. No Rio Selvagem, a Vara Inicial não pode ser equipada.
+
+### A-031 · Comprar vara
+**Seção do GDD:** 19 · **Situação:** Confirmar
+
+Na Loja. A vara comprada vai para o Inventário e **já fica equipada**. Por enquanto só dá para ter
+**uma de cada vara** (não dá para comprar a Vara 1 duas vezes); isso pode mudar quando o Mercado
+existir.
+
+### A-032 · Melhorar, vender e destruir vara
+**Seção do GDD:** 19 · **Situação:** Confirmar
+
+No Perfil → Inventário. Melhorar custa as moedas de `rods.json → upgrade_costs`, sem falha. Vender ao
+jogo paga 40% do preço de compra + 25% do que foi gasto em melhorias. Vender e destruir pedem
+confirmação. **A vara equipada e a Vara Inicial não podem ser vendidas nem destruídas**, para o
+jogador nunca ficar sem vara.
+
+### A-033 · Aparência do Rio Selvagem
+**Seção do GDD:** 18 · **Situação:** Em vigor (arte provisória)
+
+Morros mais altos, mata densa e escura, água mais funda, brilhos que correm com a correnteza,
+pedras com espuma e uma cachoeira ao longe com névoa. A luz é mais fria que a do Lago Sereno.

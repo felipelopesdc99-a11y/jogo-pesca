@@ -93,6 +93,31 @@ namespace FishingIdle.GameService.Config
             return _fisherXpTable.TryGetValue(level, out var xp) ? xp : 0;
         }
 
+        /// <summary>Highest internal level of a rod (1 for rods without levels).</summary>
+        public int RodMaxLevel(RodConfig rod)
+        {
+            if (!rod.HasInternalLevels || rod.BonusesPerLevel?.RarityEfficiency == null)
+            {
+                return 1;
+            }
+
+            return Math.Max(1, rod.BonusesPerLevel.RarityEfficiency.Count);
+        }
+
+        /// <summary>Coins to go from <paramref name="level"/> to the next; 0 at the max level.</summary>
+        public long RodUpgradeCost(RodConfig rod, int level)
+        {
+            if (level >= RodMaxLevel(rod) || rod.UpgradeCosts == null)
+            {
+                return 0;
+            }
+
+            var step = rod.UpgradeCosts.FirstOrDefault(c => c.ToLevel == level + 1);
+            return step?.CostCoins ?? 0;
+        }
+
+        public bool IsPurchasable(RodConfig rod) => rod.Acquisition != null && rod.Acquisition.Method == "coin_purchase";
+
         /// <summary>XP a fish needs to go from <paramref name="level"/> to the next; 0 at the max level.</summary>
         public long FishXpToNextLevel(int level)
         {

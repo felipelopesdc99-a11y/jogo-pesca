@@ -86,6 +86,11 @@ namespace FishingIdle.GameService.Fishing
                 return ServiceResult<FishingUpdate>.Fail(ServiceError.AlreadyFishing);
             }
 
+            if (Save.Travel.Active)
+            {
+                return ServiceResult<FishingUpdate>.Fail(ServiceError.Traveling);
+            }
+
             StartNewRun(Now);
             _session.Persist();
             _session.Log("Fishing started on " + Save.CurrentMapId);
@@ -230,6 +235,31 @@ namespace FishingIdle.GameService.Fishing
                 CoinsGained = total,
                 NewBalance = Save.Coins,
             });
+        }
+
+        // ------------------------------------------------------------------ map travel hooks
+
+        /// <summary>Settles what is owed and pauses fishing for a trip. Returns whether it was on.</summary>
+        internal bool PauseForTravel(FishingUpdate update)
+        {
+            if (!Save.Fishing.Active)
+            {
+                return false;
+            }
+
+            var settled = Sync();
+            update.NewCatches.AddRange(settled.NewCatches);
+            update.LevelsReached.AddRange(settled.LevelsReached);
+            update.XpGained += settled.XpGained;
+            update.ShellsGained += settled.ShellsGained;
+            Save.Fishing.Active = false;
+            return true;
+        }
+
+        /// <summary>Starts a fresh cycle on the new map after arriving.</summary>
+        internal void ResumeAfterTravel(long now)
+        {
+            StartNewRun(now);
         }
 
         // ------------------------------------------------------------------ internals

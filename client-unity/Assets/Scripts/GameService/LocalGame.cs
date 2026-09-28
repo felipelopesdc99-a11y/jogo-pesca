@@ -4,8 +4,10 @@ using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
+using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
+using FishingIdle.GameService.Shop;
 
 namespace FishingIdle.GameService
 {
@@ -21,7 +23,10 @@ namespace FishingIdle.GameService
         private LocalGame(GameSession session)
         {
             Session = session;
-            Fishing = new LocalFishingService(session);
+            var fishing = new LocalFishingService(session);
+            Fishing = fishing;
+            Maps = new LocalMapService(session, fishing);
+            Shop = new LocalShopService(session, fishing);
             Player = new LocalPlayerService(session);
             var aquarium = new LocalAquariumService(session);
             Aquarium = aquarium;
@@ -31,6 +36,8 @@ namespace FishingIdle.GameService
 
         public GameSession Session { get; }
         public IFishingService Fishing { get; }
+        public IMapService Maps { get; }
+        public IShopService Shop { get; }
         public IPlayerService Player { get; }
         public IAquariumService Aquarium { get; }
         public ICardumeService Cardume { get; }

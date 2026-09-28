@@ -313,6 +313,29 @@ namespace FishingIdle.GameService.Config
                         errors.Add(V.Missing(GameConfigLoader.RodsFile, rod.Id + ".can_catch_rarities"));
                     }
 
+                    if (rod.Acquisition == null)
+                    {
+                        errors.Add(V.Missing(GameConfigLoader.RodsFile, rod.Id + ".acquisition"));
+                    }
+                    else if (rod.Acquisition.PurchaseCostCoins < 0 || rod.Acquisition.UnlockFisherLevel < 1)
+                    {
+                        errors.Add(V.NegativeValue(GameConfigLoader.RodsFile, rod.Id + ".acquisition"));
+                    }
+
+                    if (rod.HasInternalLevels)
+                    {
+                        var levelCount = rod.BonusesPerLevel?.RarityEfficiency?.Count ?? 0;
+                        for (var level = 2; level <= levelCount; level++)
+                        {
+                            var step = rod.UpgradeCosts?.FirstOrDefault(c => c.ToLevel == level);
+                            if (step == null || step.CostCoins <= 0)
+                            {
+                                errors.Add(V.RodUpgradeCostMissing(rod.Id, level));
+                                break;
+                            }
+                        }
+                    }
+
                     if (rod.HasInternalLevels)
                     {
                         var perLevel = rod.BonusesPerLevel;

@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 3;
+        public const int CurrentVersion = 4;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -57,6 +57,9 @@ namespace FishingIdle.GameService.Persistence
 
         public FishingSessionState Fishing { get; set; } = new FishingSessionState();
 
+        /// <summary>A trip between maps in progress (Milestone 4). Added in save version 4.</summary>
+        public TravelState Travel { get; set; } = new TravelState();
+
         /// <summary>Next id handed to a Fishing Box catch. Ids are never reused.</summary>
         public long NextCatchId { get; set; } = 1;
 
@@ -96,8 +99,28 @@ namespace FishingIdle.GameService.Persistence
 
         public long AcquiredAtMs { get; set; }
 
-        /// <summary>Coins spent buying and upgrading it; part of it comes back on NPC resale (Milestone 4).</summary>
-        public long CoinsInvested { get; set; }
+        /// <summary>Pre-version-4 total spent. Unused; kept so old files still read.</summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public long? CoinsInvested { get; set; }
+
+        /// <summary>Coins paid for it in the Shop (0 for the Starter Rod). Part comes back on NPC resale.</summary>
+        public long PurchasePriceCoins { get; set; }
+
+        /// <summary>Coins spent on internal-level upgrades. Part comes back on NPC resale.</summary>
+        public long UpgradeCoinsInvested { get; set; }
+    }
+
+    /// <summary>Map travel: 30 s, fishing paused, manual only (GDD section 18).</summary>
+    public sealed class TravelState
+    {
+        public bool Active { get; set; }
+        public string FromMapId { get; set; }
+        public string ToMapId { get; set; }
+        public long StartedAtMs { get; set; }
+        public long ArrivesAtMs { get; set; }
+
+        /// <summary>Whether fishing was on when the trip started; it resumes on arrival.</summary>
+        public bool ResumeFishing { get; set; }
     }
 
     public sealed class EquippedRodState
