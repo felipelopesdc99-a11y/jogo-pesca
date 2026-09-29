@@ -3,6 +3,19 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.5] — 29/09/2026
+
+### Adicionado
+
+- **Água viva:** ondinhas em perspectiva deslizando na superfície (no Rio, com a correnteza) e
+  reflexos que balançam em faixas, como água de verdade.
+- Documento "Pedidos de arte: paisagem viva" com os pedidos de plantas soltas e animais para o
+  ChatGPT.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M14-T15`).
+
 ## [0.2.0-m14.4] — 29/09/2026
 
 ### Corrigido

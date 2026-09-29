@@ -301,6 +301,14 @@ namespace FishingIdle.Game.Scene
             Painted(water, theme.ArtPath("water"), width, new Vector2(0.5f, 1f), new Vector3(0f, Horizon, 0f), OrderWater);
             Sprite(water, "Linha do horizonte", Art.Pixel, new Vector3(0f, Horizon, 0f), new Vector3(44f, 0.03f, 1f), OrderWaterDetail, new Color(1f, 0.95f, 0.85f, 0.35f));
 
+            // The surface itself moves: rows of wave glints in perspective.
+            var waves = new GameObject("Ondas").AddComponent<WaterWaves>();
+            waves.transform.SetParent(water, false);
+            waves.Horizon = Horizon;
+            waves.Current = theme.Current;
+            waves.Tint = theme.SunColumn ? new Color(1f, 0.93f, 0.82f) : new Color(0.88f, 0.97f, 1f);
+            waves.SortingOrder = OrderWaterDetail;
+
             if (theme.SunColumn)
             {
                 // Glints that shimmer over the painted reflection of the sun.
@@ -411,7 +419,11 @@ namespace FishingIdle.Game.Scene
             return sprite != null ? Sprite(parent, path.Substring(path.LastIndexOf('/') + 1), sprite, position, Vector3.one, order) : null;
         }
 
-        /// <summary>A darker, squashed mirror image of a land layer below the horizon, gently shimmering.</summary>
+        /// <summary>
+        /// A darker, squashed mirror image of a land layer below the horizon, cut into horizontal
+        /// slices that sway out of step, like a reflection on moving water. Slices further from the
+        /// horizon sway more and fade a little.
+        /// </summary>
         private static void Reflect(SpriteRenderer land, float squash, float alpha)
         {
             if (land == null)
@@ -419,10 +431,29 @@ namespace FishingIdle.Game.Scene
                 return;
             }
 
+            const int slices = 12;
+            var source = land.sprite;
+            var tex = source.texture;
+            var rect = source.rect;
+            var ppu = source.pixelsPerUnit;
+            var pivotX = source.pivot.x / rect.width;
             var p = land.transform.localPosition;
-            var reflection = Sprite(land.transform.parent, land.name + " (reflexo)", land.sprite, new Vector3(p.x, Horizon, 0f), new Vector3(1f, -squash, 1f),
-                OrderReflection, new Color(0.5f, 0.58f, 0.72f, alpha));
-            reflection.gameObject.AddComponent<Shimmer>();
+            var root = new GameObject(land.name + " (reflexo)").transform;
+            root.SetParent(land.transform.parent, false);
+            for (var i = 0; i < slices; i++)
+            {
+                var y0 = rect.y + rect.height * i / slices;
+                var h = rect.height / slices;
+                var slice = UnityEngine.Sprite.Create(tex, new Rect(rect.x, y0, rect.width, h), new Vector2(pivotX, 0f), ppu, 0, SpriteMeshType.FullRect);
+                slice.hideFlags = HideFlags.DontSave;
+                var depth = (y0 - rect.y) / ppu * squash;
+                var k = i / (float)slices;
+                var r = Sprite(root, "Faixa", slice, new Vector3(p.x, Horizon - depth, 0f), new Vector3(1f, -squash, 1f),
+                    OrderReflection, new Color(0.5f, 0.58f, 0.72f, alpha * (1f - 0.45f * k)));
+                var sway = r.gameObject.AddComponent<ReflectionSlice>();
+                sway.Amplitude = Mathf.Lerp(0.012f, 0.07f, k);
+                sway.Phase = i * 0.8f;
+            }
         }
 
         private void BuildSky(SceneTheme theme)

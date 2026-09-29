@@ -268,7 +268,9 @@ Regras:
     impede os geradores provisórios de sobrescrevê-los.
   - **Margens e reflexos:** as margens (`near_left` / `near_right`) ficam presas às bordas da tela, com
     altura fixa por mapa (`SceneTheme.NearLeftHeight` etc., `ArtAssets.SpriteByHeight`); cada camada de
-    terra ganha um reflexo na água, espelhado, achatado, escurecido e ondulando (`Reflect`, `Shimmer`).
+    terra ganha um reflexo na água, espelhado, achatado, escurecido e cortado em 12 faixas que balançam
+    fora de compasso (`Reflect`, `ReflectionSlice`). A superfície se mexe com 10 fileiras de brilhos de
+    onda em perspectiva, deslizando (`WaterWaves`, textura `Arte/Agua/ondas.png`).
     O pescador pintado senta no banco entre as duas camadas do casco (`barco_fundo` atrás,
     `barco_frente` na frente, separadas por `processar_pedidos.split_boat`) e segura a vara apoiada no
     joelho (`FishermanRig`: pivô onde ele senta, mãos medidas na imagem).

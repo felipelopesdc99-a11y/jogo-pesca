@@ -663,3 +663,21 @@ margens, juncos e nuvens dos dois mapas; os 20 peixes; barco, pescador, retrato 
 pescador fica sentado no banco, dentro do barco (o casco é desenhado em duas camadas, atrás e na
 frente dele), com as mãos no joelho e a vara apoiada nelas; as margens e montanhas se
 refletem na água, ondulando devagar. O retrato aparece no cartão do pescador e no Perfil.
+
+### A-077 · Água viva
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+A superfície da água se mexe: dez fileiras de ondinhas (um brilho claro com uma sombra fina embaixo)
+deslizam devagar, pequenas perto do horizonte e maiores perto de quem olha. No Lago Sereno as
+fileiras vão para lados alternados; no Rio Selvagem todas descem com a correnteza, mais rápido na
+frente. Os reflexos das margens e montanhas são cortados em faixas que balançam fora de compasso,
+mais longe do horizonte, mais balançam e mais apagados ficam. A textura das ondas é o arquivo
+`Arte/Agua/ondas.png` (pode ser trocada).
+
+### A-078 · Paisagem viva (pendente)
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+Plantas e árvores soltas balançando na frente das margens, e animais que aparecem de vez em quando
+(aves voando; garça, capivara, tartaruga, sapo e patos nas margens e na água; jacaré e macacos só no
+Rio Selvagem) entram quando o proprietário mandar as imagens do documento "Pedidos de arte: paisagem
+viva". São só cenário: nenhuma regra, recompensa ou mecânica nova.

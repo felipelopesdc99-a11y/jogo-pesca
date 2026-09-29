@@ -394,25 +394,102 @@ namespace FishingIdle.Game.Scene
         }
     }
 
-    /// <summary>The slow wobble of a reflection on the water.</summary>
-    public sealed class Shimmer : MonoBehaviour
+    /// <summary>
+    /// Rows of small wave glints sliding over the water (Resources/Arte/Agua/ondas.png): tiny and slow
+    /// near the horizon, bigger and faster close to the viewer, so the surface reads as deep and alive.
+    /// Rows alternate direction on a lake; on a river they all run with the current.
+    /// </summary>
+    public sealed class WaterWaves : MonoBehaviour
     {
-        private Vector3 _origin;
-        private Vector3 _scale;
-        private float _phase;
+        public float Horizon = 0.2f;
+        public float Current;
+        public Color Tint = Color.white;
+        public int SortingOrder = 9;
+
+        private const int Rows = 10;
+        private const float TileAtScaleOne = 10f;
+
+        private readonly List<Transform> _rows = new List<Transform>();
+        private readonly List<float> _speed = new List<float>();
+        private readonly List<float> _tile = new List<float>();
+        private readonly List<float> _baseY = new List<float>();
 
         private void Start()
         {
-            _origin = transform.localPosition;
-            _scale = transform.localScale;
-            _phase = Random.value * 10f;
+            var sprite = ArtAssets.Sprite("Agua/ondas", TileAtScaleOne, new Vector2(0f, 0.5f));
+            if (sprite == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < Rows; i++)
+            {
+                // Perspective: rows get further apart, bigger and faster towards the viewer.
+                var k = i / (Rows - 1f);
+                var depth = k * k;
+                var y = Mathf.Lerp(Horizon - 0.55f, -5.1f, Mathf.Pow(k, 1.2f));
+                var scale = Mathf.Lerp(0.45f, 1.5f, depth);
+                var tile = TileAtScaleOne * scale;
+                var row = new GameObject("Ondas " + (i + 1)).transform;
+                row.SetParent(transform, false);
+                row.localPosition = new Vector3(-15f, y, 0f);
+                var copies = Mathf.CeilToInt(32f / tile) + 1;
+                var alpha = Mathf.Lerp(0.22f, 0.5f, k);
+                for (var c = 0; c < copies; c++)
+                {
+                    FishingScene.Sprite(row, "Faixa", sprite, new Vector3(c * tile, 0f, 0f), new Vector3(scale, scale * 0.8f, 1f), SortingOrder,
+                        new Color(Tint.r, Tint.g, Tint.b, alpha));
+                }
+
+                var direction = Current > 0f ? 1f : (i % 2 == 0 ? 1f : -1f);
+                var speed = Current > 0f ? Current * Mathf.Lerp(0.4f, 1.5f, k) : Mathf.Lerp(0.04f, 0.22f, k);
+                _rows.Add(row);
+                _speed.Add(direction * speed);
+                _tile.Add(tile);
+                _baseY.Add(y);
+            }
         }
 
         private void Update()
         {
-            var t = Time.time + _phase;
-            transform.localPosition = _origin + new Vector3(Mathf.Sin(t * 0.5f) * 0.03f, 0f, 0f);
-            transform.localScale = new Vector3(_scale.x, _scale.y * (1f + Mathf.Sin(t * 0.8f) * 0.02f), 1f);
+            for (var i = 0; i < _rows.Count; i++)
+            {
+                var p = _rows[i].localPosition;
+                p.x += _speed[i] * Time.deltaTime;
+                // Wrap by one tile so the strip never shows an edge.
+                if (p.x > -15f + _tile[i])
+                {
+                    p.x -= _tile[i];
+                }
+                else if (p.x < -15f - _tile[i])
+                {
+                    p.x += _tile[i];
+                }
+
+                p.y = _baseY[i] + Mathf.Sin(Time.time * 0.7f + i * 1.3f) * 0.015f * (1f + i * 0.4f);
+                _rows[i].localPosition = p;
+            }
+        }
+    }
+
+    /// <summary>One horizontal slice of a reflection, swaying a little more the further it is from the horizon.</summary>
+    public sealed class ReflectionSlice : MonoBehaviour
+    {
+        public float Amplitude = 0.03f;
+        public float Phase;
+
+        private Vector3 _origin;
+
+        private void Start()
+        {
+            _origin = transform.localPosition;
+        }
+
+        private void Update()
+        {
+            var t = Time.time;
+            var dx = Mathf.Sin(t * 0.9f + Phase) * Amplitude + Mathf.Sin(t * 2.3f + Phase * 1.7f) * Amplitude * 0.35f;
+            transform.localPosition = _origin + new Vector3(dx, 0f, 0f);
         }
     }
 

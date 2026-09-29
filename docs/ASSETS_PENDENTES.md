@@ -13,6 +13,11 @@ Bíblia de Arte, seção 39). Tarefa `M14-T14` no roadmap.
 > <pasta com os Pedido_XX_*.png>`. Tudo que ele grava entra em `tools/Arte/finais.txt`, e os geradores de
 > arte provisória nunca sobrescrevem esses arquivos.
 
+Plantas soltas que balançam e animais de cenário (aves, garça, capivara, tartaruga, sapo, patos,
+jacaré, macacos) estão pedidos no documento
+[Fishing Idle — Pedidos de arte: paisagem viva](https://claude.ai/code/artifact/d385fa64-2459-4fb0-aae8-c22ab6454965)
+(`ASSET_PENDENTE`, tarefa `M14-T21`).
+
 Os pedidos prontos para colar no ChatGPT, na ordem certa, estão no documento
 [Fishing Idle — Pedidos de arte para o ChatGPT](https://claude.ai/code/artifact/320602da-0a64-4e9b-b729-4108aef7656e).
 Mande as imagens geradas no chat; o recorte e a padronização ficam por minha conta.

@@ -550,6 +550,36 @@ def boat_and_fisherman(out):
     save(tb, 'caixa_de_pesca.png', (160, 110))
 
 
+def waves(out):
+    """Tileable strip of small wave crests (Resources/Arte/Agua/ondas.png), white on transparent.
+
+    The game lays several rows of it over the water, smaller near the horizon and bigger close to the
+    viewer, and slides them sideways so the surface moves. Wraps left to right without a seam.
+    """
+    W, H, S = 2048, 128, 2
+    img = Image.new('RGBA', (W * S, H * S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    rng = np.random.default_rng(9)
+    for _ in range(230):
+        x = rng.uniform(0, W)
+        y = rng.uniform(0.12, 0.88) * H
+        length = rng.uniform(40, 150)
+        bend = length * rng.uniform(0.01, 0.035)
+        width = rng.uniform(2.0, 4.2)
+        alpha = rng.uniform(120, 240)
+        for dx in (0, -W, W):
+            # A ripple: a bright crest with a soft dark trough just under it, thickest in the middle.
+            us = np.linspace(0, 1, 18)
+            crest = [((x + dx + length * u) * S, (y - math.sin(math.pi * u) * bend) * S) for u in us]
+            trough = [(px, py + width * S * 1.6) for px, py in crest]
+            for pts, colour, strength in ((trough, (18, 34, 58), 0.55), (crest, (255, 255, 255), 1.0)):
+                for i in range(len(pts) - 1):
+                    taper = math.sin(math.pi * (i + 0.5) / (len(pts) - 1))
+                    d.line([pts[i], pts[i + 1]], fill=colour + (int(alpha * strength * (0.3 + 0.7 * taper)),), width=max(1, int(width * S * taper)))
+    img = img.filter(ImageFilter.GaussianBlur(1.0 * S)).resize((W, H), Image.LANCZOS)
+    img.save(os.path.join(out, 'ondas.png'), optimize=True)
+
+
 def rods(out):
     """One picture per rod (Resources/Arte/Varas/rod_<id>.png), 2:1 like the fish, for cards and the Shop."""
     S = 2
@@ -629,6 +659,9 @@ def expeditions(maps_dir, out):
 
 def main():
     finais.proteger_finais()
+    agua = os.path.join(ROOT, 'Agua')
+    os.makedirs(agua, exist_ok=True)
+    waves(agua)
     varas = os.path.join(ROOT, 'Varas')
     os.makedirs(varas, exist_ok=True)
     rods(varas)
