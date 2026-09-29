@@ -394,6 +394,28 @@ namespace FishingIdle.Game.Scene
         }
     }
 
+    /// <summary>The slow wobble of a reflection on the water.</summary>
+    public sealed class Shimmer : MonoBehaviour
+    {
+        private Vector3 _origin;
+        private Vector3 _scale;
+        private float _phase;
+
+        private void Start()
+        {
+            _origin = transform.localPosition;
+            _scale = transform.localScale;
+            _phase = Random.value * 10f;
+        }
+
+        private void Update()
+        {
+            var t = Time.time + _phase;
+            transform.localPosition = _origin + new Vector3(Mathf.Sin(t * 0.5f) * 0.03f, 0f, 0f);
+            transform.localScale = new Vector3(_scale.x, _scale.y * (1f + Mathf.Sin(t * 0.8f) * 0.02f), 1f);
+        }
+    }
+
     /// <summary>Drops of water thrown up by a catch, falling back with gravity.</summary>
     public sealed class Droplet : MonoBehaviour
     {

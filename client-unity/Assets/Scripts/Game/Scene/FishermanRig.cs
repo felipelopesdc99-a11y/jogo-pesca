@@ -88,14 +88,18 @@ namespace FishingIdle.Game.Scene
             var skin = new Color(0.87f, 0.66f, 0.50f);
             var o = FishingScene.OrderFisherman;
 
-            // The painted fisherman (Resources/Arte/Cena/pescador.png) sits behind the rim of the hull;
-            // without it, the figure is built from simple shapes.
-            var painted = Visual.ArtAssets.Sprite("Cena/pescador", 0.8f, new Vector2(0.46f, 0f));
+            // The painted fisherman (Resources/Arte/Cena/pescador.png) sits behind the rim of the hull
+            // with his hands on his knee, and the rod rests in them; without the file, the figure is
+            // built from simple shapes with an arm holding the rod.
+            // Pivot = where he sits (27% across, 12% up the picture); hands at 97% across, 23% up.
+            const float paintedHeight = 1.7f;
+            var painted = Visual.ArtAssets.SpriteByHeight("Cena/pescador", paintedHeight, new Vector2(0.27f, 0.12f));
+            Vector3 hands;
             if (painted != null)
             {
-                FishingScene.Sprite(_body, "Pescador", painted, new Vector3(0f, -0.02f, 0f), Vector3.one, FishingScene.OrderBoat - 1);
-                shirt = new Color(0.23f, 0.41f, 0.6f);
-                skin = new Color(0.84f, 0.59f, 0.43f);
+                FishingScene.Sprite(_body, "Pescador", painted, Vector3.zero, Vector3.one, FishingScene.OrderBoat - 1);
+                var width = paintedHeight * painted.rect.width / painted.rect.height;
+                hands = new Vector3((0.97f - 0.27f) * width, (0.23f - 0.12f) * paintedHeight, 0f);
             }
             else
             {
@@ -103,17 +107,20 @@ namespace FishingIdle.Game.Scene
                 FishingScene.Sprite(_body, "Tronco", Art.RoundedBox, new Vector3(0f, 0.46f, 0f), new Vector3(0.44f, 0.66f, 1f), o, shirt);
                 FishingScene.Sprite(_body, "Cabeça", Art.Circle, new Vector3(0.04f, 0.93f, 0f), Vector3.one * 0.36f, o, skin);
                 FishingScene.Sprite(_body, "Chapéu", Art.Hat, new Vector3(0.04f, 0.99f, 0f), Vector3.one * 0.72f, o + 1);
+                var arm = FishingScene.Sprite(_body, "Braço", Art.PixelLeft, new Vector3(0.08f, 0.66f, 0f), new Vector3(0.4f, 0.11f, 1f), o + 1, shirt * 0.9f);
+                arm.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
+                hands = new Vector3(0.44f, 0.54f, 0f);
             }
-
-            var arm = FishingScene.Sprite(_body, "Braço", Art.PixelLeft, new Vector3(0.08f, 0.66f, 0f), new Vector3(0.4f, 0.11f, 1f), o + 1, shirt * 0.9f);
-            arm.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
 
             _rodPivot = new GameObject("Vara").transform;
             _rodPivot.SetParent(_body, false);
-            _rodPivot.localPosition = new Vector3(0.44f, 0.54f, 0f);
+            _rodPivot.localPosition = hands;
             FishingScene.Sprite(_rodPivot, "Cabo", Art.PixelLeft, new Vector3(-0.15f, 0f, 0f), new Vector3(0.55f, 0.08f, 1f), FishingScene.OrderRod, new Color(0.72f, 0.56f, 0.36f));
             FishingScene.Sprite(_rodPivot, "Haste", Art.PixelLeft, Vector3.zero, new Vector3(RodLength, 0.04f, 1f), FishingScene.OrderRod, new Color(0.26f, 0.18f, 0.12f));
-            FishingScene.Sprite(_body, "Mão", Art.Circle, new Vector3(0.44f, 0.54f, 0f), Vector3.one * 0.12f, FishingScene.OrderRod + 1, skin);
+            if (painted == null)
+            {
+                FishingScene.Sprite(_body, "Mão", Art.Circle, hands, Vector3.one * 0.12f, FishingScene.OrderRod + 1, skin);
+            }
 
             _rodTip = new GameObject("Ponta").transform;
             _rodTip.SetParent(_rodPivot, false);

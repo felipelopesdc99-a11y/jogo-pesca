@@ -26,6 +26,9 @@ namespace FishingIdle.Game.Scene
         /// <summary>True when the sun is low enough to draw a column of light on the water.</summary>
         public bool SunColumn = true;
 
+        /// <summary>Heights in world units of the shore groups and the foreground corners (painted art, Resources/Arte/Mapas).</summary>
+        public float NearLeftHeight = 3f, NearRightHeight = 2.6f, CornerHeight = 4.4f;
+
         public string ArtPath(string layer) => "Mapas/" + ArtFolder + "/" + ArtPrefix + "_" + layer;
 
         /// <summary>The scenery for a map id. Unknown maps fall back to the lake.</summary>
@@ -63,6 +66,8 @@ namespace FishingIdle.Game.Scene
                 ArtPrefix = "map_rio_selvagem",
                 SunPosition = new Vector2(-4.5f, 3.9f),
                 SunColumn = false,
+                NearLeftHeight = 3f,
+                NearRightHeight = 2.8f,
             };
         }
 
@@ -86,7 +91,9 @@ namespace FishingIdle.Game.Scene
                 Glint = new Color(1f, 0.90f, 0.66f),
                 ArtFolder = "LagoSereno",
                 ArtPrefix = "map_lago_sereno",
-                SunPosition = new Vector2(5.3f, 1.55f),
+                SunPosition = new Vector2(5.3f, 1.95f),
+                NearLeftHeight = 3f,
+                NearRightHeight = 2.5f,
             };
         }
     }
@@ -105,8 +112,8 @@ namespace FishingIdle.Game.Scene
 
         // Sorting orders, back to front.
         public const int OrderSky = 0, OrderSun = 1, OrderClouds = 2, OrderBirds = 3, OrderFarHills = 4,
-            OrderMidHills = 5, OrderTrees = 6, OrderWater = 7, OrderWaterDetail = 8, OrderDistantFish = 9,
-            OrderBobber = 10, OrderBoat = 12, OrderFisherman = 13, OrderRod = 14, OrderCatchGlow = 20,
+            OrderMidHills = 5, OrderTrees = 6, OrderWater = 7, OrderReflection = 8, OrderWaterDetail = 9, OrderDistantFish = 10,
+            OrderBobber = 11, OrderBoat = 12, OrderFisherman = 13, OrderRod = 14, OrderCatchGlow = 20,
             OrderCatch = 21, OrderForeground = 30;
 
         private Transform _world;
@@ -270,9 +277,25 @@ namespace FishingIdle.Game.Scene
             birds.transform.SetParent(clouds, false);
             birds.AddComponent<BirdFlock>().SortingOrder = OrderBirds;
 
-            Painted(Layer("Montanhas distantes", 0.75f), theme.ArtPath("bg_far"), width, bottom, new Vector3(0f, Horizon - 0.1f, 0f), OrderFarHills);
-            Painted(Layer("Morros próximos", 0.55f), theme.ArtPath("bg_mid"), width, bottom, new Vector3(0f, Horizon - 0.1f, 0f), OrderMidHills);
-            Painted(Layer("Mata da margem", 0.35f), theme.ArtPath("bg_near"), width, bottom, new Vector3(0f, Horizon - 0.15f, 0f), OrderTrees);
+            var halfWidth = Camera != null ? Camera.orthographicSize * Camera.aspect : 9.6f;
+
+            // Land layers, each with its reflection on the water (drawn from the art itself, so it
+            // always matches whatever painting is in the file).
+            Reflect(Painted(Layer("Montanhas distantes", 0.75f), theme.ArtPath("bg_far"), width, bottom, new Vector3(0f, Horizon - 0.1f, 0f), OrderFarHills), 0.6f, 0.35f);
+            Reflect(Painted(Layer("Morros próximos", 0.55f), theme.ArtPath("bg_mid"), width, bottom, new Vector3(0f, Horizon - 0.1f, 0f), OrderMidHills), 0.6f, 0.4f);
+            var shore = Layer("Mata da margem", 0.35f);
+            var left = ArtAssets.SpriteByHeight(theme.ArtPath("near_left"), theme.NearLeftHeight, new Vector2(0f, 0f));
+            var right = ArtAssets.SpriteByHeight(theme.ArtPath("near_right"), theme.NearRightHeight, new Vector2(1f, 0f));
+            if (left != null && right != null)
+            {
+                // The two shore groups are pinned to the edges of the view, leaving the lake open in the middle.
+                Reflect(Sprite(shore, "Margem esquerda", left, new Vector3(-halfWidth - 0.3f, Horizon - 0.08f, 0f), Vector3.one, OrderTrees), 0.7f, 0.5f);
+                Reflect(Sprite(shore, "Margem direita", right, new Vector3(halfWidth + 0.3f, Horizon - 0.08f, 0f), Vector3.one, OrderTrees), 0.7f, 0.5f);
+            }
+            else
+            {
+                Painted(shore, theme.ArtPath("bg_near"), width, bottom, new Vector3(0f, Horizon - 0.15f, 0f), OrderTrees);
+            }
 
             var water = Layer("Água", 0f);
             Painted(water, theme.ArtPath("water"), width, new Vector2(0.5f, 1f), new Vector3(0f, Horizon, 0f), OrderWater);
@@ -320,9 +343,8 @@ namespace FishingIdle.Game.Scene
 
             // Foreground corners, anchored to the edges of the view whatever the screen shape.
             var fg = Layer("Primeiro plano", -0.25f);
-            var halfWidth = Camera != null ? Camera.orthographicSize * Camera.aspect : 9.6f;
-            Corner(fg, theme.ArtPath("fg_left"), new Vector2(0f, 0f), new Vector3(-halfWidth - 0.4f, -5.7f, 0f));
-            Corner(fg, theme.ArtPath("fg_right"), new Vector2(1f, 0f), new Vector3(halfWidth + 0.4f, -5.7f, 0f));
+            Corner(fg, theme.ArtPath("fg_left"), new Vector2(0f, 0f), new Vector3(-halfWidth - 0.4f, -5.7f, 0f), theme.CornerHeight);
+            Corner(fg, theme.ArtPath("fg_right"), new Vector2(1f, 0f), new Vector3(halfWidth + 0.4f, -5.7f, 0f), theme.CornerHeight);
         }
 
         /// <summary>The small, quiet signs of life (Life.cs), tuned per map; all of them fade with "ambient_life".</summary>
@@ -369,9 +391,9 @@ namespace FishingIdle.Game.Scene
             }
         }
 
-        private void Corner(Transform parent, string path, Vector2 pivot, Vector3 position)
+        private void Corner(Transform parent, string path, Vector2 pivot, Vector3 position, float height)
         {
-            var sprite = ArtAssets.Sprite(path, 5f, pivot);
+            var sprite = ArtAssets.SpriteByHeight(path, height, pivot);
             if (sprite == null)
             {
                 return;
@@ -383,13 +405,24 @@ namespace FishingIdle.Game.Scene
             sway.Period = 6f;
         }
 
-        private static void Painted(Transform parent, string path, float width, Vector2 pivot, Vector3 position, int order)
+        private static SpriteRenderer Painted(Transform parent, string path, float width, Vector2 pivot, Vector3 position, int order)
         {
             var sprite = ArtAssets.Sprite(path, width, pivot);
-            if (sprite != null)
+            return sprite != null ? Sprite(parent, path.Substring(path.LastIndexOf('/') + 1), sprite, position, Vector3.one, order) : null;
+        }
+
+        /// <summary>A darker, squashed mirror image of a land layer below the horizon, gently shimmering.</summary>
+        private static void Reflect(SpriteRenderer land, float squash, float alpha)
+        {
+            if (land == null)
             {
-                Sprite(parent, path.Substring(path.LastIndexOf('/') + 1), sprite, position, Vector3.one, order);
+                return;
             }
+
+            var p = land.transform.localPosition;
+            var reflection = Sprite(land.transform.parent, land.name + " (reflexo)", land.sprite, new Vector3(p.x, Horizon, 0f), new Vector3(1f, -squash, 1f),
+                OrderReflection, new Color(0.5f, 0.58f, 0.72f, alpha));
+            reflection.gameObject.AddComponent<Shimmer>();
         }
 
         private void BuildSky(SceneTheme theme)
@@ -549,10 +582,10 @@ namespace FishingIdle.Game.Scene
             ripples.SortingOrder = OrderWaterDetail;
 
             Sprite(boat, "Casco", ArtAssets.Sprite("Cena/barco", 3.6f, new Vector2(0.5f, 0.3f)) ?? Art.Boat, Vector3.zero, Vector3.one, OrderBoat);
-            var tackle = ArtAssets.Sprite("Cena/caixa_de_pesca", 0.46f, new Vector2(0.5f, 0f));
+            var tackle = ArtAssets.Sprite("Cena/caixa_de_pesca", 0.5f, new Vector2(0.5f, 0f));
             if (tackle != null)
             {
-                Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.35f, 0.2f, 0f), Vector3.one, OrderBoat - 1);
+                Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.55f, 0.32f, 0f), Vector3.one, OrderBoat - 1);
             }
 
             // Soft shadow on the water under the hull.

@@ -12,6 +12,7 @@ import math
 import os
 import sys
 
+import finais
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
@@ -409,6 +410,7 @@ def paint(sp):
 
 
 def main():
+    finais.proteger_finais()
     os.makedirs(OUT, exist_ok=True)
     names = sys.argv[1:] or list(SPECIES)
     for name in names:

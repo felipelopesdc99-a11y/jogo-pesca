@@ -10,6 +10,7 @@ Always produces the same files. To use a drawn icon instead, replace the PNG kee
 import math
 import os
 
+import finais
 from PIL import Image, ImageDraw, ImageFilter
 
 SIZE = 96
@@ -334,6 +335,7 @@ NAMES = {
 
 
 def main():
+    finais.proteger_finais()
     os.makedirs(OUT, exist_ok=True)
     for key, draw in icons().items():
         pen = Pen()

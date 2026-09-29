@@ -11,6 +11,7 @@ final art. Usage:  python3 tools/Arte/gerar_cenarios.py   (always the same files
 import math
 import os
 
+import finais
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
@@ -266,7 +267,7 @@ def lago_sereno(out):
     refl = np.clip((np.interp(water.col_x(), near.col_x(), prof) - HORIZON) * 0.55, 0, None)
     band = (HORIZON - water.Y) < refl[None, :]
     wav = noise2(rng, water.h, water.w, 10, 3)
-    colw = mix(colw, hexc('#1A3432'), band * 0.55 * (0.85 + 0.15 * wav))
+    # Reflections of the shore are drawn by the game from the layers themselves (they match any art).
     # Sun column: broken horizontal streaks, wider near the viewer.
     spread = 0.35 + depth * 1.6
     col_k = np.exp(-((water.X - sun[0]) / spread) ** 2)
@@ -449,7 +450,6 @@ def rio_selvagem(out):
     refl = np.clip((np.interp(water.col_x(), near.col_x(), prof) - HORIZON) * 0.5, 0, None)
     band = (HORIZON - water.Y) < refl[None, :]
     wav = noise2(rng, water.h, water.w, 9, 3)
-    colw = mix(colw, hexc('#153A2C'), band * 0.5)
     # Current: stretched horizontal foam lines.
     stretched = np.asarray(Image.fromarray(((noise2(rng, water.h, max(8, water.w // 8), 6, 3) + 1) * 127.5).astype(np.uint8)).resize((water.w, water.h), Image.BICUBIC), dtype=np.float32) / 255.0
     foam = smooth(0.62, 0.85, stretched + np.sin(water.Y * 22) * 0.05)
@@ -628,6 +628,7 @@ def expeditions(maps_dir, out):
 
 
 def main():
+    finais.proteger_finais()
     varas = os.path.join(ROOT, 'Varas')
     os.makedirs(varas, exist_ok=True)
     rods(varas)

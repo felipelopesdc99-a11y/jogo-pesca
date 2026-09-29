@@ -42,3 +42,4 @@ client-unity/.vsconfig
 # Copy of /config made by the build step; /config is the source of truth.
 client-unity/Assets/StreamingAssets/config/
 client-unity/Assets/StreamingAssets/config.meta
+__pycache__/

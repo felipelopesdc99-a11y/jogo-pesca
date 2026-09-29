@@ -91,10 +91,10 @@ namespace FishingIdle.Game.UI
             // Header: portrait and identity on the left, private Strength on the right.
             var portrait = new Rect(panel.x + 28, panel.y + 18, 60, 60);
             GUI.Box(portrait, GUIContent.none, skin.IconTile);
-            var face = ArtAssets.Texture("Cena/pescador");
+            var face = ArtAssets.Texture("Cena/retrato");
             if (face != null)
             {
-                GUI.DrawTextureWithTexCoords(new Rect(portrait.x + 4, portrait.y + 4, 52, 52), face, new Rect(0.08f, 0.56f, 0.8f, 0.46f));
+                GUI.DrawTexture(new Rect(portrait.x + 3, portrait.y + 3, 54, 54), face, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 10);
             }
             else
             {

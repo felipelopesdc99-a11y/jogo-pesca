@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-29T03:16:00Z",
+  "updated_at": "2026-09-29T20:43:51Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -1940,6 +1940,18 @@
           ],
           "completion_notes": "32 pedidos em ordem (estilo mestre, cenário do Lago Sereno em camadas, peixes em grade, pescador, barco, Rio Selvagem, ícones, varas e Expedições), com correções prontas e um checklist, no documento \"Fishing Idle — Pedidos de arte para o ChatGPT\" (link em docs/ASSETS_PENDENTES.md).",
           "updated_at": "2026-09-29T03:16:00Z"
+        },
+        {
+          "id": "M14-T18",
+          "title": "Arte final do proprietário no jogo",
+          "subsystem": "client",
+          "description": "Os 32 pedidos feitos no ChatGPT recortados, padronizados e colocados no jogo.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T17"
+          ],
+          "completion_notes": "tools/Arte/processar_pedidos.py gravou 71 arquivos finais: céu, montanhas, morros, margens, cantos e nuvens dos dois mapas; 20 peixes; barco, pescador, retrato e caixa de pesca; 16 ícones, moeda e concha; duas varas; quatro Expedições; fotos dos mapas. A cena reflete as margens e montanhas na água; o pescador pintado segura a vara apoiada no joelho; o retrato aparece no cartão e no Perfil. Os geradores de arte provisória não sobrescrevem mais esses arquivos (tools/Arte/finais.txt). Ainda provisórios: 26 ícones e a água. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T20:43:51Z"
         }
       ]
     }

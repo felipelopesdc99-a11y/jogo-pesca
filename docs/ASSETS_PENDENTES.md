@@ -4,6 +4,15 @@ Lista de toda arte do jogo que hoje é **provisória**: foi pintada por script p
 bonito e coerente, mas deve ser trocada pela arte final produzida pelo proprietário (processo da
 Bíblia de Arte, seção 39). Tarefa `M14-T14` no roadmap.
 
+> **Situação em 29/09/2026:** os 32 pedidos chegaram e já estão no jogo (arte final). Ainda
+> provisórios: 26 dos 44 ícones (os que não estavam no pedido 26), a água dos dois mapas (feita por
+> script, com os reflexos desenhados pelo jogo a partir das camadas) e as camadas `bg_near` antigas,
+> que só aparecem se as margens novas faltarem.
+>
+> Para colocar no jogo uma leva nova de imagens do ChatGPT: `python3 tools/Arte/processar_pedidos.py
+> <pasta com os Pedido_XX_*.png>`. Tudo que ele grava entra em `tools/Arte/finais.txt`, e os geradores de
+> arte provisória nunca sobrescrevem esses arquivos.
+
 Os pedidos prontos para colar no ChatGPT, na ordem certa, estão no documento
 [Fishing Idle — Pedidos de arte para o ChatGPT](https://claude.ai/code/artifact/320602da-0a64-4e9b-b729-4108aef7656e).
 Mande as imagens geradas no chat; o recorte e a padronização ficam por minha conta.
@@ -56,7 +65,7 @@ x = 5,3, y = 1,55 (unidades), e o jogo põe os brilhos da água embaixo dele.
 | `Arte/Mapas/LagoSereno/map_lago_sereno_bg_sky.png` | Céu com o sol baixo e nuvens altas | 1248×278 | base em y = 0,0, até y = 5,8 |
 | `Arte/Mapas/LagoSereno/map_lago_sereno_bg_far.png` | Montanhas distantes (transparente acima do recorte) | 1820×175 | base em y = 0,1 |
 | `Arte/Mapas/LagoSereno/map_lago_sereno_bg_mid.png` | Morros com mata | 2340×144 | base em y = 0,1 |
-| `Arte/Mapas/LagoSereno/map_lago_sereno_bg_near.png` | Pinheiros e pedras das margens (meio aberto) | 2600×335 | base em y = 0,05 |
+| `Arte/Mapas/LagoSereno/map_lago_sereno_near_left.png` e `_near_right.png` | Margens esquerda e direita (pedidos 5 e 6) | livre | presas às bordas da tela; altura 3 e 2,5 unidades |
 | `Arte/Mapas/LagoSereno/map_lago_sereno_water.png` | Água com reflexos e a coluna de luz do sol | 1664×384 | topo no horizonte (y = 0,2), até y = −5,8 |
 | `Arte/Mapas/LagoSereno/map_lago_sereno_fg_left.png` | Juncos, pedras e vitórias-régias do canto esquerdo | 500×420 (5 × 4,2 unidades) | preso ao canto inferior esquerdo da tela |
 | `Arte/Mapas/LagoSereno/map_lago_sereno_fg_right.png` | O mesmo, canto direito | 500×420 | preso ao canto inferior direito |

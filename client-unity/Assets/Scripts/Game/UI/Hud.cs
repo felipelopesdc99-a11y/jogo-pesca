@@ -498,10 +498,10 @@ namespace FishingIdle.Game.UI
             // Avatar: the painted fisherman's head in a tile (or the profile icon).
             var avatar = new Rect(card.x + 16, card.y + 16, 64, 64);
             GUI.Box(avatar, GUIContent.none, skin.IconTile);
-            var portrait = Visual.ArtAssets.Texture("Cena/pescador");
+            var portrait = Visual.ArtAssets.Texture("Cena/retrato");
             if (portrait != null)
             {
-                GUI.DrawTextureWithTexCoords(new Rect(avatar.x + 4, avatar.y + 4, avatar.width - 8, avatar.height - 8), portrait, new Rect(0.08f, 0.56f, 0.8f, 0.46f));
+                GUI.DrawTexture(new Rect(avatar.x + 3, avatar.y + 3, avatar.width - 6, avatar.height - 6), portrait, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 10);
             }
             else
             {

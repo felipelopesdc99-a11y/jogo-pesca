@@ -653,3 +653,12 @@ Pequenos sinais de vida, sempre discretos (nível Calmo da Bíblia de Arte):
 
 Tudo pode ser reduzido ou desligado em `ambient_life` no `tema_visual.json` (0 desliga, 1 é o normal,
 até 2).
+
+### A-076 · A arte final do proprietário
+**Seção do GDD:** 8, 44 · **Situação:** Em vigor
+
+Os 32 pedidos feitos no ChatGPT (29/09/2026) substituíram a arte provisória: céu, montanhas, morros,
+margens, juncos e nuvens dos dois mapas; os 20 peixes; barco, pescador, retrato e caixa de pesca; 16
+ícones, a moeda e a concha; as duas varas; as quatro Expedições; e as fotos dos mapas. Na cena, o
+pescador fica sentado com as mãos no joelho e a vara apoiada nelas; as margens e montanhas se
+refletem na água, ondulando devagar. O retrato aparece no cartão do pescador e no Perfil.

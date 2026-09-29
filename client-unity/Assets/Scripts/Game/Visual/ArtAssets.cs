@@ -57,6 +57,13 @@ namespace FishingIdle.Game.Visual
             return sprite;
         }
 
+        /// <summary>A sprite made from a texture under Resources/Arte, <paramref name="unitsTall"/> world units high (the width follows the picture).</summary>
+        public static Sprite SpriteByHeight(string path, float unitsTall, Vector2 pivot)
+        {
+            var tex = Texture(path);
+            return tex == null ? null : Sprite(path, unitsTall * tex.width / tex.height, pivot);
+        }
+
         /// <summary>An interface icon (Resources/Arte/Icones/ico_&lt;name&gt;.png). Use the names in <see cref="Icons"/>.</summary>
         public static Texture2D Icon(string name) => Texture("Icones/ico_" + name);
     }

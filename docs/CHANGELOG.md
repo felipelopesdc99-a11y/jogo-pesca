@@ -3,6 +3,26 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.3] — 29/09/2026
+
+### Adicionado
+
+- **Arte final feita pelo proprietário no ChatGPT** (32 pedidos): cenários do Lago Sereno e do Rio
+  Selvagem, os 20 peixes, barco, pescador, retrato, caixa de pesca, ícones principais, moeda, concha,
+  varas, Expedições e fotos dos mapas.
+- Reflexos das margens e montanhas na água, ondulando devagar.
+- `tools/Arte/processar_pedidos.py` recorta e padroniza as imagens do ChatGPT; os geradores de arte
+  provisória não sobrescrevem mais a arte final (`tools/Arte/finais.txt`).
+
+### Mudado
+
+- O pescador segura a vara apoiada no joelho; o retrato dele aparece no cartão e no Perfil.
+- Margens presas às bordas da tela em qualquer formato de monitor.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M14-T15`).
+
 ## [0.2.0-m14.2] — 29/09/2026
 
 ### Adicionado
