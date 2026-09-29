@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-29T23:42:16Z",
+  "updated_at": "2026-09-29T23:47:32Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -1997,8 +1997,8 @@
           "dependencies": [
             "M14-T02"
           ],
-          "completion_notes": "Dois grupos de filtro (Raridade: Todas/Comum/Raro; Tamanho: Todos/Pequeno/Adulto/Grande/Excepcional), lado a lado quando cabem, que se combinam (ex.: Raro + Grande). Cores no tema_visual.json: Comum branco, Raro azul; Pequeno verde, Adulto lilás, Grande laranja, Excepcional dourado. Os filtros mostram a cor num ponto e, escolhidos, ficam com fundo e borda nessa cor; o card escreve o nome do tamanho na cor dele. Registrado no GDD_ADENDO (A-079). Compila; não aberto no Unity ainda.",
-          "updated_at": "2026-09-29T23:42:16Z"
+          "completion_notes": "Dois grupos de filtro (Raridade: Todas/Comum/Raro; Tamanho: Todos/Pequeno/Adulto/Grande/Excepcional), lado a lado quando cabem, que se combinam (ex.: Raro + Grande). Cores no tema_visual.json: Comum branco, Raro azul; Pequeno verde, Adulto lilás, Grande laranja, Excepcional dourado. Os filtros mostram a cor num ponto e, escolhidos, ficam com fundo e borda nessa cor; o card escreve o nome do tamanho na cor dele. O selo Excepcional saiu de cima do peixe e foi para o canto direito da linha do tamanho. Registrado no GDD_ADENDO (A-079). Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-29T23:47:32Z"
         }
       ]
     }

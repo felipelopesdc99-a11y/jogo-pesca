@@ -90,15 +90,24 @@ namespace FishingIdle.Game.UI
             var tint = m.Silhouette ? new Color(0.02f, 0.05f, 0.09f, 0.85f) : Color.white;
             GUI.DrawTexture(new Rect(art.x, art.y + bob, art.width, art.height), tex, ScaleMode.ScaleToFit, true, 0, tint, 0, 0);
 
-            if (exceptional && !string.IsNullOrEmpty(m.SizeCategoryName))
-            {
-                ExceptionalSeal(skin, new Rect(art.xMax - 104, art.yMax - 16, 104, 20), m.SizeCategoryName.ToUpperInvariant());
-            }
-
             y = art.yMax + 6f;
             GUI.Label(new Rect(x, y, w, 22), m.Name, skin.BodyBold);
             y += 21f;
-            if (!string.IsNullOrEmpty(m.Line))
+            if (exceptional && !string.IsNullOrEmpty(m.SizeCategoryName))
+            {
+                // The gold seal sits at the right end of the size line, never over the fish.
+                var seal = m.SizeCategoryName.ToUpperInvariant();
+                var sw = skin.Badge.CalcSize(new GUIContent(seal)).x + 10f;
+                ExceptionalSeal(skin, new Rect(x + w - sw, y + 1, sw, 18), seal);
+                var rest = WithoutSize(m.Line, m.SizeCategoryName);
+                if (!string.IsNullOrEmpty(rest))
+                {
+                    GUI.Label(new Rect(x, y, w - sw - 6f, 20), rest, skin.SmallMuted);
+                }
+
+                y += 20f;
+            }
+            else if (!string.IsNullOrEmpty(m.Line))
             {
                 DrawLine(skin, new Rect(x, y, w, 20), m);
                 y += 20f;
@@ -148,6 +157,19 @@ namespace FishingIdle.Game.UI
             GUI.contentColor = Color.Lerp(UiSkin.SizeColor(m.SizeCategoryId), Color.white, 0.15f);
             GUI.Label(new Rect(rect.x + hw - skin.SmallBold.padding.left, rect.y, rect.width - hw, rect.height), size, skin.SmallBold);
             GUI.contentColor = previous;
+        }
+
+        /// <summary>The line without the size name, which the Excepcional seal already shows ("98,4 cm · Excepcional · Nv. 3" → "98,4 cm · Nv. 3").</summary>
+        private static string WithoutSize(string line, string size)
+        {
+            if (string.IsNullOrEmpty(line))
+            {
+                return line;
+            }
+
+            var sep = " · ";
+            var parts = line.Split(new[] { sep }, System.StringSplitOptions.None);
+            return string.Join(sep, System.Array.FindAll(parts, p => p != size));
         }
 
         /// <summary>The gold "EXCEPCIONAL" size seal, with a light sweeping across it.</summary>

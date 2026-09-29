@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.7] — 29/09/2026
+
+### Mudado
+
+- O selo **EXCEPCIONAL** do card não cobre mais o peixe: fica no canto direito da linha do tamanho,
+  onde os outros tamanhos mostram o nome colorido.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M14-T15`).
+
 ## [0.2.0-m14.6] — 29/09/2026
 
 ### Mudado

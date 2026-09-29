@@ -711,6 +711,7 @@ Cores (primeira definição, ajustáveis em `Resources/Visual/tema_visual.json`)
 
 A cor continua sendo só acento, como manda a Bíblia de Arte: um ponto colorido no filtro (fundo e
 borda na cor quando escolhido), a borda, o selo e a barra do card para a raridade, e o nome do
-tamanho escrito na cor dele no card. As raridades reservadas para depois (Incomum, Épico, Lendário,
+tamanho escrito na cor dele no card. No tamanho Excepcional, o selo dourado ocupa esse mesmo lugar (o canto
+direito da linha do tamanho, abaixo do nome), em vez de ficar por cima do desenho do peixe. As raridades reservadas para depois (Incomum, Épico, Lendário,
 Mítico) têm cores guardadas no tema; se alguma entrar no jogo, as cores de tamanho são revistas para
 não se confundirem.
