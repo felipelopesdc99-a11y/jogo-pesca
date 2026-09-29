@@ -681,3 +681,10 @@ Plantas e árvores soltas balançando na frente das margens, e animais que apare
 (aves voando; garça, capivara, tartaruga, sapo e patos nas margens e na água; jacaré e macacos só no
 Rio Selvagem) entram quando o proprietário mandar as imagens do documento "Pedidos de arte: paisagem
 viva". São só cenário: nenhuma regra, recompensa ou mecânica nova.
+
+Ritmo, a pedido do proprietário (sem "spam" de animação): um diretor de cenário deixa aparecer no
+máximo um animal por vez, com descanso mínimo entre eles; os intervalos são sorteados (nunca fixos),
+cada animal tem a sua raridade e não repete logo em seguida; as plantas balançam em rajadas de vento
+que atravessam a tela, quase paradas entre elas; nada novo aparece durante uma celebração ou com
+uma janela aberta. O ritmo do que já existe (peixes saltando, pássaros, libélulas, sombras) passa
+pela mesma regra quando isso for feito.

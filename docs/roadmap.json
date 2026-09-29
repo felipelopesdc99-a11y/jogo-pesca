@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-29T21:00:35Z",
+  "updated_at": "2026-09-29T21:01:45Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -1981,12 +1981,12 @@
           "id": "M14-T21",
           "title": "Colocar plantas e animais vivos na cena",
           "subsystem": "client",
-          "description": "Quando as imagens do documento \"Pedidos de arte: paisagem viva\" chegarem: plantas soltas balançando e animais aparecendo de vez em quando. ASSET_PENDENTE: todas as imagens desse documento.",
+          "description": "Quando as imagens do documento \"Pedidos de arte: paisagem viva\" chegarem: plantas soltas balançando e animais aparecendo de vez em quando. ASSET_PENDENTE: todas as imagens desse documento. Ritmo: um diretor de cenário (um animal por vez, descanso mínimo, intervalos sorteados, raridade por animal, vento em rajadas, pausa durante celebrações e janelas), revisando também o ritmo dos efeitos que já existem.",
           "status": "TODO",
           "dependencies": [
             "M14-T20"
           ],
-          "updated_at": "2026-09-29T21:00:35Z"
+          "updated_at": "2026-09-29T21:01:45Z"
         }
       ]
     }
