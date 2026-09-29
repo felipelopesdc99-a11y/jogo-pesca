@@ -310,7 +310,7 @@ def foreground_corner(rng, side, dark, light, tip, lily, cattails=True):
         d.polygon([(x, ry + rh * 0.35) for x, _ in pts[::-1]] + pts, fill=(22, 36, 52, 120))
         d.polygon(pts, fill=(52, 54, 62, 255))
         d.line(pts[3:-4], fill=(170, 140, 118, 255) if lily else (150, 162, 160, 255), width=8)
-        d.line([(rx - rw * 1.05, ry + 3), (rx + rw * 1.05, ry + 3)], fill=(230, 238, 240, 150), width=5)
+        d.line([(rx - rw * 0.85, ry + 4), (rx + rw * 0.85, ry + 4)], fill=(230, 238, 240, 80), width=3)
     if lily:
         for _ in range(7):
             cx = rng.uniform(0.6, 4.6) * ppu
