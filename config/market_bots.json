@@ -1,0 +1,32 @@
+{
+  "config_file": "market_bots",
+  "config_schema_version": 1,
+  "balance_status": "PROVISÓRIO",
+  "description": "Mercado simulado do MVP local: anúncios de outros jogadores (bots) e compradores para os seus anúncios. Os nomes vêm de arena_bots.json. Sai de cena quando o Mercado for online.",
+  "valuation": {
+    "note": "Valor de referência de um peixe = preço de venda ao NPC × fish_reference_ratio × (1 + fish_level_premium_per_level × (nível − 1)). De uma vara = (preço na Loja + melhorias do nível) × rod_reference_ratio. Os bots nunca vendem abaixo do que o NPC pagaria.",
+    "fish_reference_ratio": 1.5,
+    "fish_level_premium_per_level": 0.15,
+    "rod_reference_ratio": 0.8
+  },
+  "supply": {
+    "note": "Anúncios dos bots: a cada refresh_interval_minutes saem os vencidos e entram até new_listings_per_refresh novos, sem passar de target_listing_count. price_ratio multiplica o valor de referência.",
+    "target_listing_count": 30,
+    "refresh_interval_minutes": 60,
+    "new_listings_per_refresh": 6,
+    "listing_duration_hours": 48,
+    "rod_listing_chance": 0.12,
+    "max_fish_level": 6,
+    "price_ratio": {
+      "min": 0.85,
+      "max": 1.6
+    }
+  },
+  "demand": {
+    "note": "Compradores para os seus anúncios: a cada check_interval_minutes cada anúncio tem uma chance de venda. No preço de referência a chance é chance_at_reference_price; mais barato vende mais rápido; a partir de max_price_ratio × referência ninguém compra.",
+    "check_interval_minutes": 20,
+    "chance_at_reference_price": 0.25,
+    "max_price_ratio": 4.0,
+    "max_checks_per_catch_up": 504
+  }
+}

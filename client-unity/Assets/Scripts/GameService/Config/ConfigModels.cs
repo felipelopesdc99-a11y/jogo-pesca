@@ -244,6 +244,17 @@ namespace FishingIdle.GameService.Config
         public ShellsConfig Shells { get; set; }
         public FishingBoxConfig FishingBox { get; set; }
         public AquariumConfig Aquarium { get; set; }
+        public MarketFixedPriceConfig MarketFixedPrice { get; set; }
+    }
+
+    /// <summary>The fixed-price Market rules (GDD section 33).</summary>
+    public sealed class MarketFixedPriceConfig
+    {
+        public int MaxActiveListingsPerPlayer { get; set; }
+        public double MaxListingDurationDays { get; set; }
+        public long ListingFeeCoins { get; set; }
+        public double CompletedSaleFeeRatio { get; set; }
+        public long MinimumListingPriceCoins { get; set; }
     }
 
     public sealed class AquariumConfig
@@ -386,6 +397,42 @@ namespace FishingIdle.GameService.Config
         public double CheckIntervalMinutes { get; set; }
         public double ChancePerCheck { get; set; }
         public double AttackerWindowPercentBelow { get; set; }
+        public int MaxChecksPerCatchUp { get; set; }
+    }
+
+    // ---------------------------------------------------------------- market_bots.json (local MVP)
+
+    public sealed class MarketBotsConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+        public MarketValuationConfig Valuation { get; set; }
+        public MarketSupplyConfig Supply { get; set; }
+        public MarketDemandConfig Demand { get; set; }
+    }
+
+    public sealed class MarketValuationConfig
+    {
+        public double FishReferenceRatio { get; set; }
+        public double FishLevelPremiumPerLevel { get; set; }
+        public double RodReferenceRatio { get; set; }
+    }
+
+    public sealed class MarketSupplyConfig
+    {
+        public int TargetListingCount { get; set; }
+        public double RefreshIntervalMinutes { get; set; }
+        public int NewListingsPerRefresh { get; set; }
+        public double ListingDurationHours { get; set; }
+        public double RodListingChance { get; set; }
+        public int MaxFishLevel { get; set; }
+        public RangeConfig PriceRatio { get; set; }
+    }
+
+    public sealed class MarketDemandConfig
+    {
+        public double CheckIntervalMinutes { get; set; }
+        public double ChanceAtReferencePrice { get; set; }
+        public double MaxPriceRatio { get; set; }
         public int MaxChecksPerCatchUp { get; set; }
     }
 

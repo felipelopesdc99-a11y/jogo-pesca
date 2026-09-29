@@ -7,6 +7,7 @@ using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
+using FishingIdle.GameService.Market;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
 using FishingIdle.GameService.Shop;
@@ -36,6 +37,7 @@ namespace FishingIdle.GameService
             Profile = new LocalProfileService(session, Fishing, Cardume);
             Expeditions = new LocalExpeditionService(session, fishing, Cardume);
             Arena = new LocalArenaService(session, Cardume);
+            Market = new LocalMarketService(session, aquarium);
         }
 
         public GameSession Session { get; }
@@ -48,6 +50,7 @@ namespace FishingIdle.GameService
         public IProfileService Profile { get; }
         public IExpeditionService Expeditions { get; }
         public IArenaService Arena { get; }
+        public IMarketService Market { get; }
 
         /// <summary>Starts the game service, or explains in PT-BR why it cannot.</summary>
         public static LocalGameStartResult Start(string configDirectory, string saveDirectory, IClock clock, Action<string> log)

@@ -39,6 +39,13 @@ namespace FishingIdle.GameService.Core
         NotEnoughEnergy,
         OpponentNotFound,
         NoRerollsLeft,
+        ListingNotFound,
+        ListingLimitReached,
+        InvalidPrice,
+        FishInCardume,
+        RodNotTradable,
+        OwnListing,
+        WithdrawalNotFound,
     }
 
     /// <summary>

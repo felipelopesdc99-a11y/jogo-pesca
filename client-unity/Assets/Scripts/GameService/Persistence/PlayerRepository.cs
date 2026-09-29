@@ -332,6 +332,19 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 6;
             }
 
+            if (save.SaveVersion == 6)
+            {
+                // v7 adds the Market (Milestone 8). The simulated traders start on first use.
+                save.Market = new MarketState();
+                save.SaveVersion = 7;
+            }
+
+            save.Market = save.Market ?? new MarketState();
+            save.Market.MyListings = save.Market.MyListings ?? new List<MarketListing>();
+            save.Market.BotListings = save.Market.BotListings ?? new List<MarketListing>();
+            save.Market.Withdrawals = save.Market.Withdrawals ?? new List<WithdrawalItem>();
+            save.Market.Events = save.Market.Events ?? new List<MarketEvent>();
+
             save.Arena = save.Arena ?? new ArenaState();
             save.Arena.Ranking = save.Arena.Ranking ?? new List<string>();
             save.Arena.Opponents = save.Arena.Opponents ?? new List<string>();
@@ -386,6 +399,21 @@ namespace FishingIdle.GameService.Persistence
             {
                 if (save.Arena.Energy < 0 || save.Arena.Honor < 0) problems.Add("arena negative values");
                 if (save.Arena.Ranking != null && save.Arena.Ranking.Count != save.Arena.Ranking.Distinct().Count()) problems.Add("arena ranking repeats a participant");
+            }
+
+            if (save.Market == null) problems.Add("market missing");
+            else
+            {
+                var goods = save.Market.MyListings.Select(l => l?.Goods)
+                    .Concat(save.Market.BotListings.Select(l => l?.Goods))
+                    .Concat(save.Market.Withdrawals.Select(w => w?.Goods))
+                    .ToList();
+                if (goods.Any(g => g == null || (g.Kind == MarketGoods.KindFish ? g.Fish == null : g.Kind == MarketGoods.KindRod ? g.Rod == null : true)))
+                {
+                    problems.Add("market has malformed goods");
+                }
+
+                if (save.Market.MyListings.Concat(save.Market.BotListings).Any(l => l != null && l.PriceCoins < 0)) problems.Add("market negative price");
             }
 
             if (save.Expedition == null) problems.Add("expedition missing");

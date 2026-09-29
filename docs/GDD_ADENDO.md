@@ -363,3 +363,45 @@ espécie nesta versão.
 **Seção do GDD:** 30 · **Situação:** Precisa de decisão (`OD-009`)
 
 A aba existe e lê os itens de `arena.json → shop.items`, que está vazio. Nenhum item foi inventado.
+
+---
+
+## Milestone 8 — Mercado local
+
+### A-046 · O que pode ir para o Mercado
+**Seção do GDD:** 33 · **Situação:** Confirmar
+
+Peixes do Aquário e varas do Inventário. Capturas da Caixa de Pesca não: elas ainda não são peixes
+completos (seção 11), então precisam ser guardadas no Aquário antes. Peixe que está no Cardume
+precisa sair dele antes de ser anunciado. A Vara Inicial e a vara equipada não podem ser anunciadas.
+
+### A-047 · Duração do anúncio
+**Seção do GDD:** 33 · **Situação:** Confirmar
+
+Todo anúncio dura o máximo, 7 dias. O jogador pode cancelar a qualquer momento (o item vai para
+Itens a Retirar). Não há escolha de duração menor.
+
+### A-048 · Vara comprada no Mercado e revenda ao NPC
+**Seção do GDD:** 19, 33 · **Situação:** Confirmar
+
+A vara mantém tier, nível e bônus. A revenda ao NPC passa a considerar o que **você** pagou por ela
+no Mercado (e o que você gastar em melhorias depois), não o que o dono anterior gastou. Assim não
+dá para comprar barato no Mercado e revender ao NPC com lucro.
+
+### A-049 · Mercado simulado
+**Seção do GDD:** 33–34, START HERE M8 · **Situação:** Em vigor (só no MVP local)
+
+Os outros jogadores são simulados (`config/market_bots.json`). Vendedores: cerca de 30 anúncios de
+peixes dos dois mapas (alguns já com nível) e, às vezes, varas; novos anúncios de hora em hora,
+cada um válido por 48 h. Eles nunca vendem abaixo do que o NPC paga. Compradores: a cada 20 minutos
+cada anúncio seu tem uma chance de ser comprado — 25% no preço de referência, até o dobro se estiver
+barato, e zero a partir de 4× a referência. Referência de um peixe = venda ao NPC × 1,5 × (1 + 15% por
+nível acima do 1). A tela Vender mostra essa referência para ajudar a escolher o preço.
+
+### A-050 · Filtros e ordenação
+**Seção do GDD:** 34 · **Situação:** Em vigor
+
+Filtros combinados: tipo (peixes/varas), espécie, raridade, categoria de tamanho, tamanho mín./máx.,
+nível mín./máx. e preço mín./máx. Ordenação: menor preço, maior preço, maior tamanho, menor tamanho,
+mais recentes. "Maior tamanho" ordena pelo tamanho relativo à espécie (percentil), para comparar
+espécies diferentes de forma justa.

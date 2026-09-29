@@ -28,6 +28,7 @@ namespace FishingIdle.Game.UI
         private ShopWindow _shop;
         private ExpeditionWindow _expedition;
         private ArenaWindow _arena;
+        private MarketWindow _market;
         private bool _cardExpanded = true;
         private float _boxPulseUntil;
         private float _width;
@@ -44,6 +45,7 @@ namespace FishingIdle.Game.UI
             _shop = new ShopWindow(_root);
             _expedition = new ExpeditionWindow(_root);
             _arena = new ArenaWindow(_root);
+            _market = new MarketWindow(_root);
             _root.CatchesArrived += OnCatchesArrived;
         }
 
@@ -119,6 +121,11 @@ namespace FishingIdle.Game.UI
                     _arena.Close();
                     Event.current.Use();
                 }
+                else if (_market.IsOpen)
+                {
+                    _market.Close();
+                    Event.current.Use();
+                }
                 else if (_map.IsOpen || _shop.IsOpen || _expedition.IsOpen)
                 {
                     _map.Close();
@@ -153,7 +160,7 @@ namespace FishingIdle.Game.UI
             }
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _root.WelcomeBack != null || _root.ExpeditionResult != null;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _root.WelcomeBack != null || _root.ExpeditionResult != null;
             GUI.enabled = !windowOpen;
             DrawTopBar(skin);
             DrawPlayerCard(skin);
@@ -168,6 +175,7 @@ namespace FishingIdle.Game.UI
             _shop.Draw(skin, _width, _height);
             _expedition.Draw(skin, _width, _height);
             _arena.Draw(skin, _width, _height);
+            _market.Draw(skin, _width, _height);
             GUI.enabled = true;
             if (windowOpen)
             {
@@ -233,9 +241,9 @@ namespace FishingIdle.Game.UI
         /// <summary>Main menus (GDD section 7). Pesca closes any window; the others open theirs.</summary>
         private void DrawNavigation(UiSkin skin)
         {
-            const float navWidth = 124f;
-            var labels = new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Arena, GameTexts.Navigation.Expedition, GameTexts.Navigation.Shop, GameTexts.Navigation.Profile };
-            var active = _map.IsOpen ? 1 : _aquarium.IsOpen ? 2 : _arena.IsOpen ? 3 : _expedition.IsOpen ? 4 : _shop.IsOpen ? 5 : _profile.IsOpen ? 6 : 0;
+            const float navWidth = 112f;
+            var labels = new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Arena, GameTexts.Navigation.Expedition, GameTexts.Navigation.Market, GameTexts.Navigation.Shop, GameTexts.Navigation.Profile };
+            var active = _map.IsOpen ? 1 : _aquarium.IsOpen ? 2 : _arena.IsOpen ? 3 : _expedition.IsOpen ? 4 : _market.IsOpen ? 5 : _shop.IsOpen ? 6 : _profile.IsOpen ? 7 : 0;
             var x = _width / 2f - (labels.Length * (navWidth + 10f) - 10f) / 2f;
 
             for (var i = 0; i < labels.Length; i++)
@@ -247,8 +255,9 @@ namespace FishingIdle.Game.UI
                     if (i == 2) _aquarium.Open();
                     if (i == 3) _arena.Open();
                     if (i == 4) _expedition.Open();
-                    if (i == 5) _shop.Open();
-                    if (i == 6) _profile.Open();
+                    if (i == 5) _market.Open();
+                    if (i == 6) _shop.Open();
+                    if (i == 7) _profile.Open();
                 }
             }
         }
@@ -270,6 +279,7 @@ namespace FishingIdle.Game.UI
             _shop.Close();
             _expedition.Close();
             while (_arena.IsOpen) _arena.Close();
+            while (_market.IsOpen) _market.Close();
         }
 
         private void DrawPlayerCard(UiSkin skin)

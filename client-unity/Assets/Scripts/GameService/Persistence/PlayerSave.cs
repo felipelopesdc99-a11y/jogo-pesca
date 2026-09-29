@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 6;
+        public const int CurrentVersion = 7;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -68,6 +68,9 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Arena state: ranking, Energy, Honor, opponents, history (Milestone 7). Added in save version 6.</summary>
         public ArenaState Arena { get; set; } = new ArenaState();
+
+        /// <summary>Market listings, custody and simulated traders (Milestone 8). Added in save version 7.</summary>
+        public MarketState Market { get; set; } = new MarketState();
 
         /// <summary>Counts every Expedition ever started; part of its RNG stream.</summary>
         public long ExpeditionsStarted { get; set; }
@@ -173,6 +176,90 @@ namespace FishingIdle.GameService.Persistence
         public int RankBefore { get; set; }
         public int RankAfter { get; set; }
         public long HonorChange { get; set; }
+    }
+
+    public sealed class MarketState
+    {
+        /// <summary>The player's active fixed-price listings. The goods live here while listed.</summary>
+        public List<MarketListing> MyListings { get; set; } = new List<MarketListing>();
+
+        /// <summary>Listings by simulated players (local MVP).</summary>
+        public List<MarketListing> BotListings { get; set; } = new List<MarketListing>();
+
+        /// <summary>Items to Withdraw: everything leaving the Market waits here (GDD section 33).</summary>
+        public List<WithdrawalItem> Withdrawals { get; set; } = new List<WithdrawalItem>();
+
+        /// <summary>Most recent sales and expiries of the player's listings first, bounded.</summary>
+        public List<MarketEvent> Events { get; set; } = new List<MarketEvent>();
+
+        public long NextListingId { get; set; } = 1;
+        public long NextWithdrawalId { get; set; } = 1;
+
+        /// <summary>Counts simulated listings ever created; part of their RNG stream.</summary>
+        public long BotListingsCreated { get; set; }
+
+        /// <summary>Last processed supply / demand tick (clock ms ÷ interval). 0 = not started.</summary>
+        public long SupplyTick { get; set; }
+        public long DemandTick { get; set; }
+    }
+
+    public sealed class MarketListing
+    {
+        public long Id { get; set; }
+
+        /// <summary>Seller's display name for simulated listings; null for the player's own.</summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string SellerName { get; set; }
+
+        public long PriceCoins { get; set; }
+        public long ListedAtMs { get; set; }
+        public long ExpiresAtMs { get; set; }
+        public MarketGoods Goods { get; set; }
+    }
+
+    /// <summary>A fish or an item on the Market, with all its data (GDD section 33).</summary>
+    public sealed class MarketGoods
+    {
+        public const string KindFish = "fish";
+        public const string KindRod = "rod";
+
+        public string Kind { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public FishInstance Fish { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public InventoryItem Rod { get; set; }
+    }
+
+    public sealed class WithdrawalItem
+    {
+        public const string ReasonBought = "bought";
+        public const string ReasonCancelled = "cancelled";
+        public const string ReasonExpired = "expired";
+
+        public long Id { get; set; }
+        public string Reason { get; set; }
+        public long AtMs { get; set; }
+        public MarketGoods Goods { get; set; }
+    }
+
+    public sealed class MarketEvent
+    {
+        public const string KindSold = "sold";
+        public const string KindExpired = "expired";
+
+        public long AtMs { get; set; }
+        public string Kind { get; set; }
+        public MarketGoods Goods { get; set; }
+        public long PriceCoins { get; set; }
+        public long FeeCoins { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string CounterpartName { get; set; }
+
+        /// <summary>Whether the player was already told (toast).</summary>
+        public bool Notified { get; set; }
     }
 
     public sealed class ExpeditionState

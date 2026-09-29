@@ -346,7 +346,8 @@ namespace FishingIdle.GameService.Aquarium
                 CaughtAtMs = fish.CaughtAtMs,
                 KeptAtMs = fish.KeptAtMs,
                 Stats = new FishStats(),
-                CardumePosition = Save.CardumeSlots.IndexOf(fish.Id) + 1,
+                // Fish on the Market may have no id yet (0 is also an empty Cardume position).
+                CardumePosition = fish.Id > 0 ? Save.CardumeSlots.IndexOf(fish.Id) + 1 : 0,
             };
 
             if (Config.TryGetSizeCategory(fish.SizeCategoryId, out var category))

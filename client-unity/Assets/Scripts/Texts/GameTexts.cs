@@ -44,6 +44,7 @@ namespace FishingIdle.Texts
             public const string Arena = "Arena";
             public const string Expedition = "Expedição";
             public const string Shop = "Loja";
+            public const string Market = "Mercado";
             public const string Profile = "Perfil";
         }
 
@@ -203,6 +204,98 @@ namespace FishingIdle.Texts
             public static string DefenseLost(string attacker, int rank) => attacker + " venceu você na Arena. Sua posição agora é #" + rank + ".";
             public static string Versus(string opponent) => "Você × " + opponent;
             public static string Clock(string time) => "Tempo: " + time;
+        }
+
+        // ------------------------------------------------------------------ Market (GDD sections 33–34)
+
+        public static class Market
+        {
+            public const string Title = "Mercado";
+            public const string Note = "Compre e venda peixes e varas. Tudo o que sai do Mercado — compras, anúncios cancelados ou vencidos — espera em Itens a Retirar. No jogo local, os outros jogadores são simulados.";
+            public const string TabBuy = "Comprar";
+            public const string TabSell = "Vender";
+            public const string TabMine = "Meus Anúncios";
+            public const string TabWithdraw = "Itens a Retirar";
+            public const string Coins = "Suas Moedas";
+
+            public const string FilterKind = "Tipo";
+            public const string KindAll = "Tudo";
+            public const string KindFish = "Peixes";
+            public const string KindRods = "Varas";
+            public const string FilterSpecies = "Espécie";
+            public const string FilterRarity = "Raridade";
+            public const string FilterSize = "Categoria de tamanho";
+            public const string AnyFemale = "Todas";
+            public const string AnyMale = "Todos";
+            public const string SizeRange = "Tamanho (cm): mín. / máx.";
+            public const string LevelRange = "Nível: mín. / máx.";
+            public const string PriceRange = "Preço: mín. / máx.";
+            public const string SortLabel = "Ordenar por";
+            public const string SortPriceAsc = "Menor preço";
+            public const string SortPriceDesc = "Maior preço";
+            public const string SortSizeDesc = "Maior tamanho";
+            public const string SortSizeAsc = "Menor tamanho";
+            public const string SortNewest = "Mais recentes";
+            public const string ClearFilters = "Limpar filtros";
+            public const string NoResults = "Nenhum anúncio com esses filtros.";
+            public const string SelectHint = "Clique num card para ver os detalhes.";
+
+            public const string Seller = "Vendedor";
+            public const string EndsLabel = "Termina em";
+            public const string Price = "Preço";
+            public const string Buy = "Comprar";
+            public const string BuyNote = "A compra vai para Itens a Retirar. Mesmo com o Aquário cheio você pode comprar; só a retirada espera uma vaga.";
+
+            public const string SellHint = "Escolha um peixe do Aquário ou uma vara do Inventário para anunciar.";
+            public const string NothingToSell = "Você não tem peixes no Aquário nem varas para anunciar.";
+            public const string NpcValue = "O jogo (NPC) paga";
+            public const string Reference = "Referência do mercado simulado";
+            public const string YourPrice = "Seu preço (Moedas)";
+            public const string YouReceive = "Você recebe se vender";
+            public const string ListingNote = "Sem taxa para anunciar. O preço é livre. Enquanto estiver anunciado, o item não pode ser usado.";
+
+            public const string NoListings = "Você não tem anúncios ativos.";
+            public const string Cancel = "Cancelar anúncio";
+            public const string RecentSales = "Últimas vendas";
+            public const string NoSales = "Nenhuma venda ainda.";
+
+            public const string WithdrawNote = "Estes itens são seus: não ocupam vaga, não vencem e não podem ser usados até você retirar.";
+            public const string Withdraw = "Retirar";
+            public const string WithdrawAll = "Retirar tudo";
+            public const string NothingToWithdraw = "Nada para retirar.";
+            public const string Rod = "Vara";
+
+            public static string TabMineCount(int count, int max) => TabMine + " (" + count + "/" + max + ")";
+            public static string TabWithdrawCount(int count) => count > 0 ? TabWithdraw + " (" + count + ")" : TabWithdraw;
+            public static string EndsIn(string time) => "Termina em " + time;
+            public static string BuyFor(string price) => "Comprar por " + price;
+            public static string ListFor(double days) => "Anunciar por " + Format.Decimal(days, 0) + " dias";
+            public static string Fee(double ratio) => "Taxa na venda (" + Format.Percent(ratio, 0) + ")";
+            public static string AquariumSlots(int count, int capacity) => "Aquário: " + count + "/" + capacity;
+            public static string FishLine(string size, string category) => size + " · " + category;
+            public static string RodLine(string tier, int level, bool hasLevels) => hasLevels ? tier + " · Nível " + level : tier;
+
+            public static string Bought(string name) => name + " comprado. Está em Itens a Retirar.";
+            public static string Listed(string name, string price) => name + " anunciado por " + price + " Moedas.";
+            public static string Cancelled(string name) => "Anúncio cancelado. " + name + " está em Itens a Retirar.";
+            public static string Sold(string buyer, string name, string net) => buyer + " comprou " + name + ". +" + net + " Moedas (já sem a taxa).";
+            public static string Expired(string name) => "O anúncio de " + name + " venceu. Ele está em Itens a Retirar.";
+            public static string Withdrawn(string name) => name + " retirado.";
+            public static string WithdrewAll(int count, int left) => left > 0
+                ? count + " retirado(s). " + left + " peixe(s) ficaram porque o Aquário está cheio."
+                : count + " item(ns) retirado(s).";
+            public static string SaleLine(string name, string buyer, string price, string fee) => name + " → " + buyer + " · " + price + " Moedas (taxa " + fee + ")";
+
+            public static string Reason(string reasonKey)
+            {
+                switch (reasonKey)
+                {
+                    case "bought": return "Comprado";
+                    case "cancelled": return "Anúncio cancelado";
+                    case "expired": return "Anúncio vencido";
+                    default: return reasonKey;
+                }
+            }
         }
 
         // ------------------------------------------------------------------ Expeditions (GDD section 32)
@@ -435,6 +528,13 @@ namespace FishingIdle.Texts
                 case "NotEnoughEnergy": return "Sem Energia. Ela volta 1 ponto por hora.";
                 case "OpponentNotFound": return "Esse adversário não está mais na sua lista.";
                 case "NoRerollsLeft": return "Você já trocou os adversários. Ataque para receber uma lista nova.";
+                case "ListingNotFound": return "Esse anúncio não está mais no Mercado.";
+                case "ListingLimitReached": return "Você já tem o máximo de anúncios ativos. Espere vender ou cancele um.";
+                case "InvalidPrice": return "Digite um preço válido, em Moedas.";
+                case "FishInCardume": return "Tire o peixe do Cardume antes de anunciar.";
+                case "RodNotTradable": return "Esta vara não pode ser vendida no Mercado.";
+                case "OwnListing": return "Esse anúncio é seu.";
+                case "WithdrawalNotFound": return "Esse item não está mais em Itens a Retirar.";
                 case "SpeciesMissingFromConfig": return "Um dos peixes é de uma espécie que não existe mais no balanceamento, então não pode ser vendido agora.";
                 default: return "Não foi possível fazer isso agora.";
             }
@@ -664,6 +764,15 @@ namespace FishingIdle.Texts
                     new BalanceField("economy.json", "market_fixed_price.max_active_listings_per_player", "Anúncios ativos por jogador"),
                     new BalanceField("economy.json", "market_fixed_price.max_listing_duration_days", "Duração máxima do anúncio (dias)"),
                     new BalanceField("economy.json", "market_fixed_price.completed_sale_fee_ratio", "Taxa sobre a venda (0,03 = 3%)"),
+                }),
+                new BalanceFieldGroup("Mercado — Jogadores simulados (MVP local)", new[]
+                {
+                    new BalanceField("market_bots.json", "supply.target_listing_count", "Anúncios de outros jogadores à venda"),
+                    new BalanceField("market_bots.json", "supply.refresh_interval_minutes", "Minutos entre novos anúncios"),
+                    new BalanceField("market_bots.json", "supply.listing_duration_hours", "Duração dos anúncios deles (horas)"),
+                    new BalanceField("market_bots.json", "demand.check_interval_minutes", "Minutos entre compradores (verificação)"),
+                    new BalanceField("market_bots.json", "demand.chance_at_reference_price", "Chance de vender no preço de referência (0 a 1)"),
+                    new BalanceField("market_bots.json", "valuation.fish_reference_ratio", "Referência do peixe (× venda ao NPC)"),
                 }),
                 new BalanceFieldGroup("Leilão", new[]
                 {

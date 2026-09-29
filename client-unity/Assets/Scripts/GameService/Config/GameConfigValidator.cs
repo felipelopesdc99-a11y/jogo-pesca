@@ -20,7 +20,8 @@ namespace FishingIdle.GameService.Config
             EconomyConfig economy,
             ArenaConfig arena,
             ExpeditionsConfig expeditions,
-            ArenaBotsConfig bots)
+            ArenaBotsConfig bots,
+            MarketBotsConfig marketBots)
         {
             var errors = new List<string>();
 
@@ -474,6 +475,67 @@ namespace FishingIdle.GameService.Config
                 if (bots.IncomingAttacks.CheckIntervalMinutes <= 0)
                 {
                     errors.Add(V.AtLeast(GameConfigLoader.ArenaBotsFile, "incoming_attacks.check_interval_minutes", 1));
+                }
+            }
+
+            // ---- economy.json → market_fixed_price (Milestone 8)
+            var market = economy.MarketFixedPrice;
+            if (market == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.EconomyFile, "market_fixed_price"));
+            }
+            else
+            {
+                if (market.MaxActiveListingsPerPlayer < 1 || market.MaxListingDurationDays <= 0 || market.MinimumListingPriceCoins < 1)
+                {
+                    errors.Add(V.AtLeast(GameConfigLoader.EconomyFile, "market_fixed_price (anúncios, dias, preço mínimo)", 1));
+                }
+
+                if (market.ListingFeeCoins < 0)
+                {
+                    errors.Add(V.NegativeValue(GameConfigLoader.EconomyFile, "market_fixed_price.listing_fee_coins"));
+                }
+
+                if (market.CompletedSaleFeeRatio < 0 || market.CompletedSaleFeeRatio >= 1)
+                {
+                    errors.Add(V.ChanceOutOfRange(GameConfigLoader.EconomyFile, "market_fixed_price.completed_sale_fee_ratio"));
+                }
+            }
+
+            // ---- market_bots.json (local simulated Market)
+            if (marketBots.Valuation == null || marketBots.Supply?.PriceRatio == null || marketBots.Demand == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.MarketBotsFile, "valuation / supply / demand"));
+            }
+            else
+            {
+                var val = marketBots.Valuation;
+                if (val.FishReferenceRatio <= 0 || val.RodReferenceRatio <= 0 || val.FishLevelPremiumPerLevel < 0)
+                {
+                    errors.Add(V.NegativeValue(GameConfigLoader.MarketBotsFile, "valuation"));
+                }
+
+                var sup = marketBots.Supply;
+                if (sup.TargetListingCount < 0 || sup.NewListingsPerRefresh < 0 || sup.RefreshIntervalMinutes <= 0 || sup.ListingDurationHours <= 0
+                    || sup.MaxFishLevel < 1 || sup.PriceRatio.Min <= 0 || sup.PriceRatio.Max < sup.PriceRatio.Min)
+                {
+                    errors.Add(V.BadIntRange(GameConfigLoader.MarketBotsFile, "supply"));
+                }
+
+                if (sup.RodListingChance < 0 || sup.RodListingChance > 1)
+                {
+                    errors.Add(V.ChanceOutOfRange(GameConfigLoader.MarketBotsFile, "supply.rod_listing_chance"));
+                }
+
+                var dem = marketBots.Demand;
+                if (dem.CheckIntervalMinutes <= 0 || dem.MaxPriceRatio <= 1 || dem.MaxChecksPerCatchUp < 1)
+                {
+                    errors.Add(V.BadIntRange(GameConfigLoader.MarketBotsFile, "demand"));
+                }
+
+                if (dem.ChanceAtReferencePrice < 0 || dem.ChanceAtReferencePrice > 1)
+                {
+                    errors.Add(V.ChanceOutOfRange(GameConfigLoader.MarketBotsFile, "demand.chance_at_reference_price"));
                 }
             }
 

@@ -75,6 +75,23 @@ namespace FishingIdle.Texts
                 : string.Format(CultureInfo.InvariantCulture, "{0}:{1:00}", minutes, secs);
         }
 
+        /// <summary>Time left on long timers: "6 d 23 h", "5 h 07 min", or a countdown under an hour.</summary>
+        public static string TimeLeft(double seconds)
+        {
+            var total = (long)Math.Ceiling(Math.Max(0, seconds));
+            if (total >= 86400)
+            {
+                return string.Format(CultureInfo.InvariantCulture, "{0} d {1} h", total / 86400, (total % 86400) / 3600);
+            }
+
+            if (total >= 3600)
+            {
+                return string.Format(CultureInfo.InvariantCulture, "{0} h {1:00} min", total / 3600, (total % 3600) / 60);
+            }
+
+            return Countdown(total);
+        }
+
         /// <summary>A human duration: "30 segundos", "2 minutos", "1 h 05 min".</summary>
         public static string Duration(double seconds)
         {

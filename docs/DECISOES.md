@@ -371,3 +371,24 @@ do proprietário; o arquivo `.ignore` faz as buscas pularem essas pastas; e `ver
 compila com `--completo`.
 
 **Rever se.** O jogo for para a internet (Milestone 12): aí essas regras saem.
+
+## TD-023 — Mercado local com jogadores simulados e custódia dentro do save
+
+**Origem.** Milestone 8 (START HERE V0.1.1: "o Mercado pode ser simulado com anúncios gerados
+localmente/bots, mas o fluxo deve ser o real").
+
+**Decisão.** O fluxo é o do GDD (anunciar, comprar, cancelar, vencer, Itens a Retirar) e mora em
+`LocalMarketService`. Os outros jogadores são simulados: vendedores repõem anúncios de hora em hora e
+compradores olham os seus anúncios a cada 20 minutos, sempre calculado a partir do relógio e do `Rng`
+do jogador — nada roda "em segundo plano". Os valores da simulação ficam num arquivo separado,
+`config/market_bots.json`, para que as regras reais (`economy.json → market_fixed_price`) não se
+misturem com o que é só do MVP. Um item no Mercado sai do Aquário/Inventário e fica guardado dentro
+do anúncio ou de Itens a Retirar.
+
+**Por quê.** Com o item fisicamente em um só lugar, vender duas vezes, comprar duas vezes ou usar um
+peixe anunciado deixam de ser possíveis por construção, e o limite do Aquário é checado num ponto só
+(a retirada). Quando o Mercado for online, `IMarketService` ganha uma versão remota e
+`market_bots.json` deixa de ser usado.
+
+**Rever se.** O Mercado for para o servidor (Milestone 12).
+

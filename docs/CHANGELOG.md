@@ -3,6 +3,32 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m8.1] — 29/09/2026
+
+Milestone 8 — Mercado local.
+
+### Adicionado
+
+- **Menu Mercado** com as abas Comprar, Vender, Meus Anúncios e Itens a Retirar.
+- **Comprar:** cards com filtros combinados (tipo, espécie, raridade, categoria de tamanho,
+  tamanho, nível e preço), ordenação e painel de detalhes.
+- **Vender:** peixes do Aquário e varas do Inventário, preço livre, sem taxa para anunciar,
+  7 dias, até 5 anúncios. Taxa de 3% só quando vende.
+- **Itens a Retirar:** tudo o que sai do Mercado passa por aqui. Comprar com o Aquário cheio é
+  permitido; só a retirada de peixe espera uma vaga.
+- **Outros jogadores simulados:** vendedores e compradores gerados no seu PC, também com o jogo
+  fechado. `config/market_bots.json`, editável no Painel.
+- Testes novos do Mercado (120 testes no total).
+
+### Mudado
+
+- **Formato do save: versão 7.** Saves antigos são convertidos sozinhos.
+- Menu superior ganhou o item Mercado.
+
+### Não verificado
+
+- As telas novas ainda não foram abertas no Editor do Unity (`M8-T06`).
+
 ## [0.1.0-m7.1] — 29/09/2026
 
 Milestone 7 — Arena local.

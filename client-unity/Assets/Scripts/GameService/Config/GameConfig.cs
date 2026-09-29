@@ -32,6 +32,7 @@ namespace FishingIdle.GameService.Config
             ArenaConfig arena,
             ExpeditionsConfig expeditions,
             ArenaBotsConfig arenaBots,
+            MarketBotsConfig marketBots,
             string version)
         {
             FishCatalog = fishCatalog;
@@ -42,6 +43,7 @@ namespace FishingIdle.GameService.Config
             Arena = arena;
             Expeditions = expeditions;
             ArenaBots = arenaBots;
+            MarketBots = marketBots;
             Version = version;
 
             _species = fishCatalog.Species.ToDictionary(s => s.Id, StringComparer.Ordinal);
@@ -62,6 +64,8 @@ namespace FishingIdle.GameService.Config
         public ArenaConfig Arena { get; }
         public ExpeditionsConfig Expeditions { get; }
         public ArenaBotsConfig ArenaBots { get; }
+        public MarketBotsConfig MarketBots { get; }
+        public MarketFixedPriceConfig Market => Economy.MarketFixedPrice;
 
         /// <summary>Number of Cardume positions (6).</summary>
         public int CardumeSize => Arena.Cardume.MaxFish;

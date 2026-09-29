@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-29T00:11:52Z",
-  "current_milestone": "M7",
+  "updated_at": "2026-09-29T00:27:36Z",
+  "current_milestone": "M8",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -92,6 +92,14 @@
       "title": "Testar a Arena",
       "detail": "Monte o Cardume, abra o menu Arena e ataque um adversário. Veja o replay (1x, 2x, Pular), a troca de posição e a Honra. Não bloqueia: eu sigo com o Milestone 8.",
       "raised_at": "2026-09-29T00:11:52Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-011",
+      "task_id": "M8-T06",
+      "title": "Testar o Mercado",
+      "detail": "Abra o menu Mercado: compre um peixe em Comprar e retire em Itens a Retirar; anuncie um peixe em Vender, veja em Meus Anúncios e cancele. Deixe um anúncio perto do preço de referência e espere uns 20 minutos para ver a venda. Não bloqueia: eu sigo com o Milestone 9.",
+      "raised_at": "2026-09-29T00:27:36Z",
       "status": "OPEN"
     }
   ],
@@ -1057,56 +1065,72 @@
           "id": "M8-T01",
           "title": "Anúncios de preço fixo",
           "subsystem": "server",
-          "description": "5 ativos, 7 dias, preço livre, sem taxa para anunciar.",
-          "status": "TODO",
+          "description": "5 anúncios, 7 dias, sem taxa para anunciar, preço livre.",
+          "status": "DONE",
           "dependencies": [
-            "M7-T07"
+            "M7-T08"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Peixes do Aquário e varas do Inventário podem ser anunciados por qualquer preço (mínimo 1 Moeda), sem taxa, por 7 dias, até 5 ao mesmo tempo (economy.json → market_fixed_price). O item sai do Aquário/Inventário enquanto está anunciado, então não pode ser usado, alimentado, vendido ao NPC nem anunciado de novo. Peixe no Cardume precisa sair dele antes; a Vara Inicial e a vara equipada não podem ser anunciadas. Testado.",
+          "updated_at": "2026-09-29T00:27:36Z"
         },
         {
           "id": "M8-T02",
           "title": "Compra com taxa de 3% na venda",
           "subsystem": "server",
-          "description": "Taxa descontada do vendedor.",
-          "status": "TODO",
+          "description": "Compra imediata; o vendedor recebe o preço menos 3%.",
+          "status": "DONE",
           "dependencies": [
             "M8-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Comprar paga o preço na hora e o item vai para Itens a Retirar. O mesmo anúncio não pode ser comprado duas vezes. Quando alguém compra o seu anúncio, você recebe o preço menos 3% automaticamente e um aviso. Testado.",
+          "updated_at": "2026-09-29T00:27:36Z"
         },
         {
           "id": "M8-T03",
           "title": "Itens a Retirar",
           "subsystem": "server",
-          "description": "Toda saída do Mercado passa por aqui; não retira peixe com Aquário 100/100.",
-          "status": "TODO",
+          "description": "Toda saída do Mercado passa por aqui; Aquário cheio bloqueia só a retirada de peixe.",
+          "status": "DONE",
           "dependencies": [
-            "M8-T01"
+            "M8-T02"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Compras, anúncios cancelados e anúncios vencidos vão para Itens a Retirar, com todos os dados (tamanho, nível, XP investido; vara com nível). Não vencem e não ocupam vaga. Comprar com o Aquário 100/100 é permitido; retirar peixe espera uma vaga. Retirar um a um ou tudo de uma vez. Testado.",
+          "updated_at": "2026-09-29T00:27:36Z"
         },
         {
           "id": "M8-T04",
           "title": "Anúncios simulados por bots",
           "subsystem": "server",
-          "description": "Fluxo real com vendedores locais.",
-          "status": "TODO",
+          "description": "Vendedores e compradores simulados no PC, inclusive com o jogo fechado.",
+          "status": "DONE",
           "dependencies": [
             "M8-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "config/market_bots.json: ~30 anúncios de outros jogadores (peixes dos dois mapas, alguns com nível, e às vezes varas), repostos de hora em hora e válidos por 48 h; nunca abaixo do que o NPC paga. Compradores olham seus anúncios a cada 20 min: quanto mais perto (ou abaixo) do preço de referência, mais rápido vende; a 4× a referência ninguém compra. Tudo calculado pelo relógio, também com o jogo fechado. Testado.",
+          "updated_at": "2026-09-29T00:27:36Z"
         },
         {
           "id": "M8-T05",
           "title": "Telas do Mercado em cards",
           "subsystem": "client",
-          "description": "Filtros e ordenação, painel de detalhes, comprar.",
-          "status": "TODO",
+          "description": "Comprar com filtros, Vender, Meus Anúncios e Itens a Retirar.",
+          "status": "DONE",
           "dependencies": [
-            "M8-T01"
+            "M8-T03"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Menu Mercado com quatro abas. Comprar: filtros combinados (tipo, espécie, raridade, categoria de tamanho, tamanho, nível, preço), ordenação (menor/maior preço, maior/menor tamanho, mais recentes), cards e painel de detalhes com Comprar. Vender: escolher peixe ou vara, digitar o preço e ver taxa e quanto recebe. Meus Anúncios: tempo restante, cancelar e últimas vendas. Itens a Retirar: retirar um a um ou tudo. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:27:36Z"
+        },
+        {
+          "id": "M8-T06",
+          "title": "Teste do Mercado pelo proprietário",
+          "subsystem": "client",
+          "description": "Comprar, anunciar, cancelar e retirar dentro do Unity.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M8-T05"
+          ],
+          "updated_at": "2026-09-29T00:27:36Z"
         }
       ]
     },

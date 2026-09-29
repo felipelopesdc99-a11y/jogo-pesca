@@ -10,6 +10,7 @@ using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
+using FishingIdle.GameService.Market;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
 using FishingIdle.GameService.Shop;
@@ -145,6 +146,19 @@ namespace FishingIdle.Game.Bootstrap
                         Toasts.Push(defense.PlayerWon
                             ? GameTexts.Arena.DefenseWon(defense.OpponentName, Format.Number(defense.HonorChange))
                             : GameTexts.Arena.DefenseLost(defense.OpponentName, defense.RankAfter), defense.PlayerWon ? ToastKind.Info : ToastKind.Warning);
+                    }
+
+                    var marketNews = Game.Market.Update();
+                    foreach (var news in marketNews)
+                    {
+                        Toasts.Push(news.Sold
+                            ? GameTexts.Market.Sold(news.BuyerName, news.GoodsName, Format.Number(news.NetCoins))
+                            : GameTexts.Market.Expired(news.GoodsName), news.Sold ? ToastKind.Coins : ToastKind.Info);
+                    }
+
+                    if (marketNews.Count > 0)
+                    {
+                        Refresh();
                     }
                 });
             }
@@ -401,6 +415,106 @@ namespace FishingIdle.Game.Bootstrap
                 report = result.Value;
             });
             return report;
+        }
+
+        // ------------------------------------------------------------------ Market intents
+
+        public MarketView GetMarket() => IsRunning ? Game.Market.GetMarket() : null;
+
+        public List<ListingView> SearchMarket(MarketQuery query) => IsRunning ? Game.Market.Search(query) : new List<ListingView>();
+
+        public MarketFilterOptions GetMarketFilters() => IsRunning ? Game.Market.GetFilterOptions() : new MarketFilterOptions();
+
+        public List<SellCandidateView> GetSellCandidates() => IsRunning ? Game.Market.GetSellCandidates() : new List<SellCandidateView>();
+
+        /// <summary>Buys a listing. Returns true when it happened.</summary>
+        public bool BuyListing(long listingId)
+        {
+            var bought = false;
+            Guard(() =>
+            {
+                var result = Game.Market.Buy(listingId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                bought = true;
+                Toasts.Push(GameTexts.Market.Bought(result.Value.Item.Goods.Name), ToastKind.Info);
+                Refresh();
+            });
+            return bought;
+        }
+
+        /// <summary>Lists an Aquarium fish (isFish) or an Inventory rod. Returns true when it happened.</summary>
+        public bool CreateListing(bool isFish, long sourceId, long price)
+        {
+            var listed = false;
+            Guard(() =>
+            {
+                var result = isFish ? Game.Market.ListFish(sourceId, price) : Game.Market.ListRod(sourceId, price);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                listed = true;
+                Toasts.Push(GameTexts.Market.Listed(result.Value.Goods.Name, Format.Number(result.Value.PriceCoins)), ToastKind.Info);
+                Refresh();
+                AquariumChanged?.Invoke();
+            });
+            return listed;
+        }
+
+        public void CancelListing(long listingId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Market.CancelListing(listingId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Market.Cancelled(result.Value.Goods.Name), ToastKind.Info);
+            });
+        }
+
+        public void Withdraw(long withdrawalId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Market.Withdraw(withdrawalId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Market.Withdrawn(result.Value.Goods.Name), ToastKind.Info);
+                Refresh();
+                AquariumChanged?.Invoke();
+            });
+        }
+
+        public void WithdrawAll()
+        {
+            Guard(() =>
+            {
+                var result = Game.Market.WithdrawAll();
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Market.WithdrewAll(result.Value.Withdrawn, result.Value.LeftBehind), result.Value.LeftBehind > 0 ? ToastKind.Warning : ToastKind.Info);
+                Refresh();
+                AquariumChanged?.Invoke();
+            });
         }
 
         // ------------------------------------------------------------------ Expedition intents

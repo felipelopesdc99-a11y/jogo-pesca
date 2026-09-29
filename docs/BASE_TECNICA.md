@@ -52,6 +52,7 @@ client-unity/Assets/
 │   │   ├── Maps/          Mapas e viagem
 │   │   ├── Expeditions/   Expedições e a fórmula de aproveitamento (ExpeditionRules)
 │   │   ├── Arena/         Motor de combate (BattleEngine), adversários simulados (ArenaBots), Arena
+│   │   ├── Market/        Mercado: anúncios, compra, custódia (Itens a Retirar), vendedores e compradores simulados
 │   │   ├── Shop/          Loja e regras de preço/revenda de vara (RodRules)
 │   │   ├── GameSession.cs Estado vivo de um jogador (config + save + relógio + armazenamento)
 │   │   ├── PlayerService.cs
@@ -99,6 +100,7 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IShopService` | `LocalShopService` | Loja: varas à venda e compra |
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
 | `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
+| `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
 | `IProfileService` | `LocalProfileService` | Perfil próprio: vara equipada, Inventário, Enciclopédia, Destaques |
 | `IPlayerRepository` | `JsonFilePlayerRepository` | Ler/gravar/resetar o save |
 | `IClock` | `SystemClock` | A única fonte de "agora" das regras |
@@ -149,14 +151,17 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 | Revenda de vara | Preço × 40% + melhorias × 25% | `rods.json → npc_resale` |
 | Intervalo de ataque | 2 s × (100 ÷ Velocidade) | `arena.json → combat.speed` |
 | Dano | Ataque × sorteio(0,97–1,03) × (1 − Defesa ÷ (Defesa + 100)), mínimo 10% do Ataque | `arena.json → combat` |
+| Taxa do Mercado | 3% do preço, arredondado, descontada na venda concluída | `economy.json → market_fixed_price` |
+| Referência do mercado simulado | Peixe: venda ao NPC × 1,5 × (1 + 15% × (nível − 1)); vara: (preço + melhorias) × 0,8 | `market_bots.json → valuation` |
+| Chance de um comprador simulado | Referência: 25% por verificação; mais barato até o dobro; zero a partir de 4× a referência | `market_bots.json → demand` |
 
 ## 4. Balanceamento (/config)
 
 - No Editor, o jogo lê direto da pasta `/config` do repositório. Num build, lê a cópia que o
   `ConfigBuildStep` coloca em `StreamingAssets/config` (essa cópia não é versionada).
 - O jogo carrega todos os arquivos de `GameConfigLoader.RequiredFiles`: `fish_catalog`, `maps`,
-  `progression`, `rods`, `economy`, `arena`, `expeditions` e `arena_bots` (adversários simulados do
-  MVP local). O Painel de Desenvolvimento usa a mesma lista.
+  `progression`, `rods`, `economy`, `arena`, `expeditions`, `arena_bots` (adversários simulados do
+  MVP local) e `market_bots` (vendedores e compradores simulados do Mercado). O Painel de Desenvolvimento usa a mesma lista.
 - `GameConfigLoader.LoadFromTexts` é usado tanto pelo jogo quanto pelo Painel de Desenvolvimento:
   o painel só grava se a mesma validação que o jogo usa passar.
 - `GameConfig.Version` é uma impressão digital curta do conteúdo. Mesmos arquivos, mesma versão.
@@ -197,7 +202,17 @@ Regras:
 - Histórico de formatos: v1 (Milestone 1), v2 adiciona o Aquário, v3 move a vara para o Inventário
   e adiciona o Cardume, v4 adiciona a viagem (`TravelState`) e separa o preço pago pela vara do que
   foi gasto em melhorias, v5 adiciona a Expedição (`ExpeditionState`, `LastExpedition`), v6 adiciona a Arena
-  (`ArenaState`: ranking como lista de ids, Energia, Honra, adversários, histórico). Cada passo está em `SaveMigrations.Upgrade`.
+  (`ArenaState`: ranking como lista de ids, Energia, Honra, adversários, histórico), v7 adiciona o
+  Mercado (`MarketState`). Cada passo está em `SaveMigrations.Upgrade`.
+- Mercado (desde a versão 7): um item anunciado **sai** do Aquário/Inventário e passa a morar dentro
+  do anúncio (`MarketListing.Goods`, com todos os dados do peixe ou da vara). Comprado, cancelado ou
+  vencido, ele vai para `Withdrawals` (Itens a Retirar) e só volta ao Aquário/Inventário quando o
+  jogador retira. Assim o mesmo peixe nunca está em dois lugares, e o limite de 100 do Aquário vale
+  na retirada. Peixes e varas que vêm dos vendedores simulados ganham id novo só ao serem retirados.
+- Mercado simulado: `LocalMarketService` avança em "ticks" do relógio (`SupplyTick`, `DemandTick` =
+  hora ÷ intervalo), inclusive pelo tempo em que o jogo ficou fechado (com teto). Cada tick usa o
+  `Rng` do jogador com uma semente própria, então o resultado não depende de quantas vezes a tela foi
+  aberta. As vendas e vencimentos viram `MarketEvent` e aparecem como aviso uma única vez.
 
 ## 6. Apresentação (Game)
 
