@@ -585,6 +585,24 @@ namespace FishingIdle.Texts
             public const string SaveReset = "Save apagado. Um jogo novo começou.";
         }
 
+        // ------------------------------------------------------------------ celebrations (Art Bible, sections 15–16)
+
+        public static class Celebration
+        {
+            public static string RareCatch(string rarity) => "Captura " + rarity + "!";
+            public const string Exceptional = "Tamanho Excepcional!";
+            public const string Record = "Novo recorde!";
+            public const string NewSpecies = "Nova espécie!";
+            public static string LevelUp(int level) => "Nível " + level + "!";
+            public const string AuctionWon = "Você venceu o leilão!";
+            public static string CatchLine(string species, string size) => species + " · " + size;
+            public static string RecordLine(string species, string before, string after) => species + " · " + before + " → " + after;
+            public static string NewSpeciesLine(string species) => species + " entrou na sua Enciclopédia";
+            public const string LevelUpLine = "Pescador subiu de nível";
+            public static string AuctionLine(string item) => item + " espera em Itens a Retirar";
+            public static string Coins(string amount) => "+" + amount;
+        }
+
         // ------------------------------------------------------------------ startup / fatal screens
 
         public static class Startup

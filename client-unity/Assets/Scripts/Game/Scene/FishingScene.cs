@@ -1,4 +1,5 @@
 using FishingIdle.Game.Bootstrap;
+using FishingIdle.Game.Visual;
 using UnityEngine;
 
 namespace FishingIdle.Game.Scene
@@ -15,6 +16,17 @@ namespace FishingIdle.Game.Scene
         public float Current;
         public bool Rocks;
         public bool Waterfall;
+
+        /// <summary>Folder and file prefix of the painted layers (Resources/Arte/Mapas), e.g. "LagoSereno" and "map_lago_sereno".</summary>
+        public string ArtFolder, ArtPrefix;
+
+        /// <summary>Where the sun is painted in the sky, so its reflection lines up on the water.</summary>
+        public Vector2 SunPosition = new Vector2(4.6f, 3.1f);
+
+        /// <summary>True when the sun is low enough to draw a column of light on the water.</summary>
+        public bool SunColumn = true;
+
+        public string ArtPath(string layer) => "Mapas/" + ArtFolder + "/" + ArtPrefix + "_" + layer;
 
         /// <summary>The scenery for a map id. Unknown maps fall back to the lake.</summary>
         public static SceneTheme For(string mapId)
@@ -47,6 +59,10 @@ namespace FishingIdle.Game.Scene
                 Current = 0.6f,
                 Rocks = true,
                 Waterfall = true,
+                ArtFolder = "RioSelvagem",
+                ArtPrefix = "map_rio_selvagem",
+                SunPosition = new Vector2(-4.5f, 3.9f),
+                SunColumn = false,
             };
         }
 
@@ -67,7 +83,10 @@ namespace FishingIdle.Game.Scene
                 WaterHorizon = new Color(0.72f, 0.84f, 0.84f),
                 WaterMid = new Color(0.24f, 0.55f, 0.62f),
                 WaterDeep = new Color(0.07f, 0.26f, 0.36f),
-                Glint = new Color(1f, 0.96f, 0.85f),
+                Glint = new Color(1f, 0.90f, 0.66f),
+                ArtFolder = "LagoSereno",
+                ArtPrefix = "map_lago_sereno",
+                SunPosition = new Vector2(5.3f, 1.55f),
             };
         }
     }
@@ -151,10 +170,18 @@ namespace FishingIdle.Game.Scene
             _world = new GameObject("Cenário").transform;
             _world.SetParent(transform, false);
 
-            BuildSky(theme);
-            BuildLand(theme);
-            BuildWater(theme);
-            BuildForeground(theme);
+            // Painted layers (Resources/Arte/Mapas) when present; the scenery drawn from code otherwise.
+            if (ArtAssets.Texture(theme.ArtPath("bg_sky")) != null)
+            {
+                BuildPainted(theme);
+            }
+            else
+            {
+                BuildSky(theme);
+                BuildLand(theme);
+                BuildWater(theme);
+                BuildForeground(theme);
+            }
 
             var boat = BuildBoat();
             Fisherman = boat.gameObject.AddComponent<FishermanRig>();
@@ -204,6 +231,119 @@ namespace FishingIdle.Game.Scene
             Camera.clearFlags = CameraClearFlags.SolidColor;
             Camera.backgroundColor = theme.SkyTop;
             Camera.gameObject.AddComponent<CameraSway>();
+        }
+
+        /// <summary>
+        /// The painted scenery (Art Bible, sections 9–10): layers back to front with parallax, plus the
+        /// motion that keeps the scene alive — drifting clouds, a breathing sun, glints on the water,
+        /// birds, distant fish and reeds swaying in the corners.
+        /// </summary>
+        private void BuildPainted(SceneTheme theme)
+        {
+            const float width = 26f;
+            var bottom = new Vector2(0.5f, 0f);
+
+            var sky = Layer("Céu", 0.95f);
+            Painted(sky, theme.ArtPath("bg_sky"), width, bottom, new Vector3(0f, Horizon - 0.2f, 0f), OrderSky);
+            var sunGlow = Sprite(sky, "Brilho do sol", Art.Glow, new Vector3(theme.SunPosition.x, theme.SunPosition.y, 0f), Vector3.one * 3.2f, OrderSun,
+                new Color(1f, 0.93f, 0.75f, 0.35f));
+            var breathe = sunGlow.gameObject.AddComponent<Breathe>();
+            breathe.MinAlpha = 0.18f;
+            breathe.MaxAlpha = 0.38f;
+
+            var clouds = Layer("Nuvens", 0.85f);
+            for (var i = 0; i < 5; i++)
+            {
+                var cloudSprite = ArtAssets.Sprite(theme.ArtPath("cloud_" + (i % 3 + 1).ToString("00")), 5.2f, new Vector2(0.5f, 0.5f));
+                if (cloudSprite == null)
+                {
+                    continue;
+                }
+
+                var scale = Random.Range(0.55f, 1.05f);
+                var cloud = Sprite(clouds, "Nuvem", cloudSprite, new Vector3(-12f + i * 5.2f + Random.Range(-1f, 1f), Random.Range(2.6f, 4.7f), 0f),
+                    Vector3.one * scale, OrderClouds, new Color(1f, 1f, 1f, Random.Range(0.8f, 0.95f)));
+                cloud.gameObject.AddComponent<Drift>().Speed = Random.Range(0.04f, 0.1f);
+            }
+
+            var birds = new GameObject("Pássaros");
+            birds.transform.SetParent(clouds, false);
+            birds.AddComponent<BirdFlock>().SortingOrder = OrderBirds;
+
+            Painted(Layer("Montanhas distantes", 0.75f), theme.ArtPath("bg_far"), width, bottom, new Vector3(0f, Horizon - 0.1f, 0f), OrderFarHills);
+            Painted(Layer("Morros próximos", 0.55f), theme.ArtPath("bg_mid"), width, bottom, new Vector3(0f, Horizon - 0.1f, 0f), OrderMidHills);
+            Painted(Layer("Mata da margem", 0.35f), theme.ArtPath("bg_near"), width, bottom, new Vector3(0f, Horizon - 0.15f, 0f), OrderTrees);
+
+            var water = Layer("Água", 0f);
+            Painted(water, theme.ArtPath("water"), width, new Vector2(0.5f, 1f), new Vector3(0f, Horizon, 0f), OrderWater);
+            Sprite(water, "Linha do horizonte", Art.Pixel, new Vector3(0f, Horizon, 0f), new Vector3(44f, 0.03f, 1f), OrderWaterDetail, new Color(1f, 0.95f, 0.85f, 0.35f));
+
+            if (theme.SunColumn)
+            {
+                // Glints that shimmer over the painted reflection of the sun.
+                for (var i = 0; i < 12; i++)
+                {
+                    var y = Horizon - 0.2f - i * 0.36f;
+                    var glint = Sprite(water, "Reflexo do sol", Art.Streak,
+                        new Vector3(theme.SunPosition.x + Random.Range(-0.35f, 0.35f) * (1f + i * 0.15f), y, 0f),
+                        new Vector3(Random.Range(0.6f, 1.4f) * (1f + i * 0.14f), 1.1f, 1f), OrderWaterDetail, theme.Glint);
+                    var twinkle = glint.gameObject.AddComponent<Twinkle>();
+                    twinkle.MaxAlpha = Mathf.Lerp(0.85f, 0.3f, i / 12f);
+                    twinkle.Period = Random.Range(1.6f, 3.2f);
+                }
+            }
+
+            for (var i = 0; i < 26; i++)
+            {
+                var y = Random.Range(-5.2f, Horizon - 0.3f);
+                var depth = Mathf.InverseLerp(Horizon, -5.4f, y);
+                var streak = Sprite(water, "Brilho na água", Art.Streak, new Vector3(Random.Range(-11f, 11f), y, 0f),
+                    new Vector3(Mathf.Lerp(0.5f, 2.4f, depth), Mathf.Lerp(0.6f, 1.4f, depth), 1f), OrderWaterDetail, Color.white);
+                var twinkle = streak.gameObject.AddComponent<Twinkle>();
+                twinkle.MaxAlpha = Random.Range(0.08f, 0.22f);
+                twinkle.Period = Random.Range(2.5f, 5f);
+                if (theme.Current > 0f)
+                {
+                    var drift = streak.gameObject.AddComponent<Drift>();
+                    drift.Speed = theme.Current * Mathf.Lerp(0.5f, 1.4f, depth);
+                    drift.WrapHalfWidth = 12f;
+                }
+            }
+
+            var jumps = new GameObject("Peixes saltando ao longe");
+            jumps.transform.SetParent(water, false);
+            var jumper = jumps.AddComponent<DistantFishJumps>();
+            jumper.SortingOrder = OrderDistantFish;
+            jumper.Area = new Rect(-9f, -1.5f, 18f, 1.4f);
+
+            // Foreground corners, anchored to the edges of the view whatever the screen shape.
+            var fg = Layer("Primeiro plano", -0.25f);
+            var halfWidth = Camera != null ? Camera.orthographicSize * Camera.aspect : 9.6f;
+            Corner(fg, theme.ArtPath("fg_left"), new Vector2(0f, 0f), new Vector3(-halfWidth - 0.4f, -5.7f, 0f));
+            Corner(fg, theme.ArtPath("fg_right"), new Vector2(1f, 0f), new Vector3(halfWidth + 0.4f, -5.7f, 0f));
+        }
+
+        private void Corner(Transform parent, string path, Vector2 pivot, Vector3 position)
+        {
+            var sprite = ArtAssets.Sprite(path, 5f, pivot);
+            if (sprite == null)
+            {
+                return;
+            }
+
+            var corner = Sprite(parent, "Juncos", sprite, position, Vector3.one, OrderForeground);
+            var sway = corner.gameObject.AddComponent<Sway>();
+            sway.Degrees = 0.7f;
+            sway.Period = 6f;
+        }
+
+        private static void Painted(Transform parent, string path, float width, Vector2 pivot, Vector3 position, int order)
+        {
+            var sprite = ArtAssets.Sprite(path, width, pivot);
+            if (sprite != null)
+            {
+                Sprite(parent, path.Substring(path.LastIndexOf('/') + 1), sprite, position, Vector3.one, order);
+            }
         }
 
         private void BuildSky(SceneTheme theme)
@@ -359,7 +499,13 @@ namespace FishingIdle.Game.Scene
             boat.localPosition = new Vector3(-1.2f, -2.1f, 0f);
             boat.gameObject.AddComponent<Bobbing>();
 
-            Sprite(boat, "Casco", Art.Boat, Vector3.zero, Vector3.one, OrderBoat);
+            Sprite(boat, "Casco", ArtAssets.Sprite("Cena/barco", 3.6f, new Vector2(0.5f, 0.3f)) ?? Art.Boat, Vector3.zero, Vector3.one, OrderBoat);
+            var tackle = ArtAssets.Sprite("Cena/caixa_de_pesca", 0.46f, new Vector2(0.5f, 0f));
+            if (tackle != null)
+            {
+                Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.35f, 0.2f, 0f), Vector3.one, OrderBoat - 1);
+            }
+
             // Soft shadow on the water under the hull.
             Sprite(layer, "Sombra do barco", Art.Circle, new Vector3(-1.2f, -2.35f, 0f), new Vector3(4.4f, 0.45f, 1f),
                 OrderWaterDetail, new Color(0.02f, 0.12f, 0.18f, 0.35f));

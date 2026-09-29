@@ -248,6 +248,25 @@ public sealed class FishingServiceTests
     }
 
     [Fact]
+    public void A_personal_record_reports_the_previous_best_size_of_the_species()
+    {
+        var (game, clock, _) = TestSupport.NewGame();
+        game.Fishing.StartFishing();
+        var catches = TestSupport.PlayFor(game, clock, 6000);
+        var records = catches.Where(c => c.IsPersonalRecord).ToList();
+
+        Assert.NotEmpty(records);
+        foreach (var record in records)
+        {
+            var earlierBest = catches.Where(c => c.SpeciesId == record.SpeciesId && c.CatchId < record.CatchId).Max(c => c.SizeCm);
+            Assert.Equal(earlierBest, record.PreviousRecordCm, 3);
+            Assert.True(record.SizeCm > record.PreviousRecordCm);
+        }
+
+        Assert.All(catches.Where(c => !c.IsPersonalRecord), c => Assert.Equal(0, c.PreviousRecordCm));
+    }
+
+    [Fact]
     public void Level_10_takes_roughly_two_hours_of_online_fishing()
     {
         // GDD section 17: Lv.1→10 around 2 hours online (~240 catches), on average.

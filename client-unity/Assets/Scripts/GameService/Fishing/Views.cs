@@ -90,6 +90,12 @@ namespace FishingIdle.GameService.Fishing
         public bool IsNewSpecies { get; internal set; }
         public bool IsPersonalRecord { get; internal set; }
 
+        /// <summary>
+        /// For a personal record reported at catch time: the species' previous best size, so the
+        /// celebration can show "antigo → novo". 0 otherwise (and in later views of the Fishing Box).
+        /// </summary>
+        public double PreviousRecordCm { get; internal set; }
+
         /// <summary>Catches the Fishing Box asks to confirm before a bulk sale (rare, Exceptional…).</summary>
         public bool IsProtected { get; internal set; }
 

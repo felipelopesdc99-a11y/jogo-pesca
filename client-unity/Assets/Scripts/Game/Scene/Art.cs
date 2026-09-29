@@ -340,12 +340,33 @@ namespace FishingIdle.Game.Scene
 
         // ------------------------------------------------------------------ fish
 
-        /// <summary>The placeholder fish for a species, facing right, about 2 units long.</summary>
-        public static Sprite Fish(string speciesId) => Cached("fish-" + speciesId, () => ToSprite(FishTexture(speciesId), 128, new Vector2(0.5f, 0.5f)));
+        /// <summary>The fish of a species, facing right, about 2 units long.</summary>
+        public static Sprite Fish(string speciesId) => Cached("fish-" + speciesId, () =>
+        {
+            var master = FishMaster(speciesId);
+            return master != null
+                ? Sprite.Create(master, new Rect(0, 0, master.width, master.height), new Vector2(0.5f, 0.5f), master.width / 2f, 0, SpriteMeshType.FullRect)
+                : ToSprite(FishTexture(speciesId), 128, new Vector2(0.5f, 0.5f));
+        });
 
-        /// <summary>The same fish as a texture, for the interface.</summary>
+        /// <summary>
+        /// The master art file of a species (Resources/Arte/Peixes/fish_&lt;id&gt;_master.png, Art Bible
+        /// section 8), or null when it does not exist yet.
+        /// </summary>
+        public static Texture2D FishMaster(string speciesId)
+        {
+            return string.IsNullOrEmpty(speciesId) ? null : Visual.ArtAssets.Texture("Peixes/fish_" + speciesId + "_master");
+        }
+
+        /// <summary>The same fish as a texture, for the interface: the master file, or the art generated from code.</summary>
         public static Texture2D FishTexture(string speciesId)
         {
+            var master = FishMaster(speciesId);
+            if (master != null)
+            {
+                return master;
+            }
+
             if (FishTextures.TryGetValue(speciesId ?? string.Empty, out var cached) && cached != null)
             {
                 return cached;
@@ -485,6 +506,90 @@ namespace FishingIdle.Game.Scene
                 var col = borderWidth > 0f && d > -borderWidth ? border : fill;
                 col.a *= a;
                 return col;
+            });
+            return tex;
+        }
+
+        /// <summary>
+        /// A rounded panel texture with a vertical gradient, a border and a faint highlight along the
+        /// top edge (the "Clean Premium" panel). <paramref name="height"/> gives the gradient room.
+        /// </summary>
+        public static Texture2D PanelTexture(Color top, Color bottom, Color border, int radius, float borderWidth, int height, float highlight = 0.06f)
+        {
+            var w = radius * 2 + 4;
+            var h = Mathf.Max(height, radius * 2 + 4);
+            var tex = NewTexture(w, h);
+            var centre = new Vector2(w / 2f, h / 2f);
+            var half = new Vector2(w / 2f, h / 2f);
+            Paint(tex, (x, y) =>
+            {
+                var d = RoundedRectDistance(new Vector2(x + 0.5f, y + 0.5f), centre, half, radius);
+                var a = Edge(-d);
+                var v = (y + 0.5f) / h; // 0 bottom, 1 top
+                var col = Color.Lerp(bottom, top, v);
+                if (borderWidth > 0f && d > -borderWidth)
+                {
+                    col = Color.Lerp(col, border, border.a);
+                    col.a = Mathf.Max(top.a, bottom.a);
+                }
+                else if (highlight > 0f && y > h - radius * 0.6f - borderWidth - 2f)
+                {
+                    col = Color.Lerp(col, Color.white, highlight);
+                }
+
+                col.a *= a;
+                return col;
+            });
+            return tex;
+        }
+
+        /// <summary>A white rounded outline only (tint it for rarity accents and selection).</summary>
+        public static Texture2D OutlineTexture(int radius, float borderWidth, float fillAlpha = 0f)
+        {
+            var size = radius * 2 + 4;
+            var tex = NewTexture(size, size);
+            var half = new Vector2(size / 2f, size / 2f);
+            Paint(tex, (x, y) =>
+            {
+                var d = RoundedRectDistance(new Vector2(x + 0.5f, y + 0.5f), half, half, radius);
+                var inside = Edge(-d);
+                var ring = Mathf.Clamp01(borderWidth + 0.5f + d);
+                var a = Mathf.Max(fillAlpha, ring) * inside;
+                return new Color(1f, 1f, 1f, a);
+            });
+            return tex;
+        }
+
+        /// <summary>A soft blurred rounded shape for shadows and outer glows (9-slice with border = radius + blur).</summary>
+        public static Texture2D SoftTexture(int radius, int blur, float strength = 1f)
+        {
+            var size = (radius + blur) * 2 + 4;
+            var tex = NewTexture(size, size);
+            var half = new Vector2(size / 2f, size / 2f);
+            var inner = half - new Vector2(blur, blur);
+            Paint(tex, (x, y) =>
+            {
+                var d = RoundedRectDistance(new Vector2(x + 0.5f, y + 0.5f), half, inner, radius);
+                var t = Mathf.Clamp01(1f - d / blur);
+                return new Color(1f, 1f, 1f, t * t * strength);
+            });
+            return tex;
+        }
+
+        /// <summary>Soft light rays around a centre, for celebrations (tint and rotate it).</summary>
+        public static Texture2D RaysTexture(int rays)
+        {
+            const int size = 256;
+            var tex = NewTexture(size, size);
+            var r = size / 2f;
+            Paint(tex, (x, y) =>
+            {
+                var p = new Vector2(x + 0.5f - r, y + 0.5f - r);
+                var d = p.magnitude / r;
+                var angle = Mathf.Atan2(p.y, p.x);
+                var beam = Mathf.Pow(Mathf.Abs(Mathf.Cos(angle * rays / 2f)), 10f);
+                var fade = Mathf.Clamp01(1f - d) * Mathf.Clamp01(d * 3f);
+                return new Color(1f, 1f, 1f, beam * fade * fade);
             });
             return tex;
         }

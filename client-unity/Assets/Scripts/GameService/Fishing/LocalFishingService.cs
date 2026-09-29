@@ -411,6 +411,7 @@ namespace FishingIdle.GameService.Fishing
         {
             var speciesId = rolled.Species.Id;
             var flags = 0;
+            var previousRecordMm = 0;
 
             if (!Save.SpeciesRecords.TryGetValue(speciesId, out var record))
             {
@@ -420,6 +421,7 @@ namespace FishingIdle.GameService.Fishing
             }
             else if (rolled.SizeMm > record.LargestMm)
             {
+                previousRecordMm = record.LargestMm;
                 record.LargestMm = rolled.SizeMm;
                 flags |= BoxCatchFlags.PersonalRecord;
             }
@@ -446,7 +448,9 @@ namespace FishingIdle.GameService.Fishing
             {
                 AddFisherXp(rolled.FisherXp, update);
             }
-            update.NewCatches.Add(CatchViews.Create(Config, entry));
+            var view = CatchViews.Create(Config, entry);
+            view.PreviousRecordCm = previousRecordMm / 10.0;
+            update.NewCatches.Add(view);
         }
 
         private void AddFisherXp(long xp, FishingUpdate update)

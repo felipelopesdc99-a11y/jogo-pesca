@@ -41,6 +41,8 @@ namespace FishingIdle.Game.UI
     public sealed class ToastFeed
     {
         private const int MaxVisible = 5;
+
+        private static Visual.VisualTheme Theme => Visual.VisualTheme.Current;
         private const int HistoryLimit = 50;
         private readonly List<Toast> _items = new List<Toast>();
         private readonly List<NotificationEntry> _history = new List<NotificationEntry>();
@@ -71,7 +73,8 @@ namespace FishingIdle.Game.UI
                 Text = text,
                 Kind = kind,
                 CreatedAt = Time.unscaledTime,
-                Duration = kind == ToastKind.Warning ? 8f : kind == ToastKind.Important || kind == ToastKind.LevelUp ? 6f : 4f,
+                Duration = kind == ToastKind.Warning ? Theme.ToastWarningSeconds
+                    : kind == ToastKind.Important || kind == ToastKind.LevelUp ? Theme.ToastImportantSeconds : Theme.ToastSeconds,
                 Icon = icon,
             });
 

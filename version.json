@@ -1,7 +1,7 @@
 {
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "current_milestone": "M13",
+  "current_milestone": "M14",
   "convention": "0.<menor>.<correção>-m<milestone>.<build>  —  veja docs/VERSIONAMENTO.md",
   "components": {
     "client": "0.2.0-m13.1",

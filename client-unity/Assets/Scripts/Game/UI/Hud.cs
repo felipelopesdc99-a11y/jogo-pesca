@@ -1,6 +1,7 @@
 using FishingIdle.Game.Audio;
 using FishingIdle.Game.Bootstrap;
 using FishingIdle.Game.Scene;
+using FishingIdle.Game.Visual;
 using System;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Tutorial;
@@ -45,6 +46,12 @@ namespace FishingIdle.Game.UI
         private float _lastCatchAt;
         private GUIStyle _outline;
         private float _boxPulseUntil;
+        private long _coinsTarget = -1;
+        private long _coinsFrom;
+        private long _coinsShown;
+        private float _coinsChangedAt = -10f;
+        private long _coinsGain;
+        private float _coinsGainAt = -10f;
         private float _width;
         private float _height;
 
@@ -97,6 +104,8 @@ namespace FishingIdle.Game.UI
                 }
             }
 
+            Celebrate(update);
+
             foreach (var level in update.LevelsReached)
             {
                 _root.Toasts.Push(GameTexts.Toasts.LevelUp(level), ToastKind.LevelUp, notify: true);
@@ -108,6 +117,51 @@ namespace FishingIdle.Game.UI
             }
 
             _boxPulseUntil = Time.unscaledTime + 1.2f;
+        }
+
+        /// <summary>
+        /// Level 3 moments (Art Bible, section 16): only the most remarkable catch of a batch gets a
+        /// banner, then any level reached. The colour tells what happened before any text is read.
+        /// </summary>
+        private void Celebrate(FishingUpdate update)
+        {
+            var theme = VisualTheme.Current;
+            CatchView best = null;
+            foreach (var c in update.NewCatches)
+            {
+                if ((c.IsNewSpecies || c.IsPersonalRecord || c.SizeCategoryId == "exceptional" || (c.RarityId != null && c.RarityId != "common"))
+                    && (best == null || c.SalePriceCoins > best.SalePriceCoins))
+                {
+                    best = c;
+                }
+            }
+
+            if (best != null)
+            {
+                var art = Art.FishTexture(best.SpeciesId);
+                var size = Format.SizeCm(best.SizeCm);
+                if (best.IsNewSpecies)
+                {
+                    _root.Celebrations.Show(GameTexts.Celebration.NewSpecies, GameTexts.Celebration.NewSpeciesLine(best.SpeciesName), theme.Action, art, reveal: true);
+                }
+                else if (best.SizeCategoryId == "exceptional")
+                {
+                    _root.Celebrations.Show(GameTexts.Celebration.Exceptional, GameTexts.Celebration.CatchLine(best.SpeciesName, size), theme.Exceptional, art);
+                }
+                else if (best.IsPersonalRecord && best.PreviousRecordCm > 0)
+                {
+                    _root.Celebrations.Show(GameTexts.Celebration.Record, GameTexts.Celebration.RecordLine(best.SpeciesName, Format.SizeCm(best.PreviousRecordCm), size), theme.Reward, art);
+                }
+                else if (best.RarityId != null && best.RarityId != "common")
+                {
+                    _root.Celebrations.Show(GameTexts.Celebration.RareCatch(best.RarityName), GameTexts.Celebration.CatchLine(best.SpeciesName, size), theme.Rarity(best.RarityId), art);
+                }
+            }
+
+            foreach (var level in update.LevelsReached)
+            {
+                _root.Celebrations.Show(GameTexts.Celebration.LevelUp(level), GameTexts.Celebration.LevelUpLine, theme.Reward);
+            }
         }
 
         private void OnGUI()
@@ -205,7 +259,7 @@ namespace FishingIdle.Game.UI
 
             _windowWasOpen = windowOpen;
             var previousColor = GUI.color;
-            GUI.color = new Color(1f, 1f, 1f, Mathf.Clamp01((Time.unscaledTime - _windowOpenedAt) / 0.18f));
+            GUI.color = new Color(1f, 1f, 1f, Mathf.Clamp01((Time.unscaledTime - _windowOpenedAt) / VisualTheme.Current.WindowFadeSeconds));
             _box.Draw(skin, _width, _height);
             _aquarium.Draw(skin, _width, _height);
             _profile.Draw(skin, _width, _height);
@@ -225,6 +279,7 @@ namespace FishingIdle.Game.UI
             }
 
             DrawToasts(skin);
+            _root.Celebrations.Draw(skin, _width);
             DrawTutorial(skin, windowOpen);
             DrawPanels(skin);
 
@@ -241,17 +296,19 @@ namespace FishingIdle.Game.UI
         private void DrawTopBar(UiSkin skin)
         {
             var bar = new Rect(0, 0, _width, 64);
-            GUI.DrawTexture(bar, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.04f, 0.07f, 0.11f, 0.78f), 0, 0);
+            GUI.DrawTexture(bar, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.82f), 0, 0);
+            GUI.DrawTexture(new Rect(0, 64, _width, 1), skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.8f), 0, 0);
 
             var player = _root.Player;
-            GUI.Label(new Rect(24, 16, 240, 32), GameTexts.GameTitle, skin.Title);
+            skin.DrawIcon(new Rect(22, 17, 34, 30), Icons.Fish, UiSkin.Accent);
+            GUI.Label(new Rect(64, 14, 240, 36), GameTexts.GameTitle, skin.Title);
             if (player != null)
             {
-                GUI.Label(new Rect(200, 22, 300, 24), "·  " + player.MapName, skin.Body);
+                var titleWidth = skin.Title.CalcSize(new GUIContent(GameTexts.GameTitle)).x;
+                GUI.Label(new Rect(64 + titleWidth + 14, 23, 220, 24), "·  " + player.MapName, skin.SmallMuted);
             }
 
-            // Primary navigation (GDD section 7). Only menus that exist are shown; the others
-            // appear as their milestones arrive, never as dead buttons.
+            // Primary navigation (GDD section 7).
             DrawNavigation(skin);
 
             if (player == null)
@@ -260,46 +317,126 @@ namespace FishingIdle.Game.UI
             }
 
             // Secondary menu (GDD section 7): notifications bell and settings.
-            var x = _width - 24;
-            const float settingsWidth = 96f;
-            x -= settingsWidth;
-            if (GUI.Button(new Rect(x, 12, settingsWidth, 40), GameTexts.Hud.SettingsShort, _showSettings ? skin.ChipActive : skin.Chip))
+            var x = _width - 20;
+            var settings = new Rect(x - 116, 12, 116, 40);
+            if (skin.IconButton(settings, Icons.Settings, GameTexts.Hud.SettingsShort, _showSettings ? skin.NavActive : skin.Nav))
             {
                 _showSettings = !_showSettings;
                 _showNotifications = false;
             }
 
-            var bellLabel = _root.Toasts.Unread > 0 ? GameTexts.Hud.Bell + " · " + _root.Toasts.Unread : GameTexts.Hud.Bell;
-            var bellWidth = skin.Chip.CalcSize(new GUIContent(bellLabel)).x + 16;
-            x -= bellWidth + 8;
-            if (GUI.Button(new Rect(x, 12, bellWidth, 40), bellLabel, _showNotifications ? skin.ChipActive : _root.Toasts.Unread > 0 ? skin.ButtonPrimary : skin.Chip))
+            x = settings.x - 8;
+            var bell = new Rect(x - 112, 12, 112, 40);
+            if (skin.IconButton(bell, Icons.Bell, GameTexts.Hud.Bell, _showNotifications ? skin.NavActive : skin.Nav))
             {
                 _showNotifications = !_showNotifications;
                 _showSettings = false;
                 _root.Toasts.MarkAllRead();
             }
 
-            x -= 18;
+            if (_root.Toasts.Unread > 0)
+            {
+                // Red dot with the count, like a phone badge.
+                var count = _root.Toasts.Unread > 9 ? "9+" : _root.Toasts.Unread.ToString();
+                var dot = new Rect(bell.x + 22, bell.y + 2, 18, 18);
+                GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Danger, 0, 9);
+                GUI.Label(dot, count, skin.PillText);
+            }
 
-            var coins = Format.Number(player.Coins);
-            var coinsWidth = skin.Number.CalcSize(new GUIContent(coins)).x;
-            x -= coinsWidth;
-            GUI.Label(new Rect(x, 18, coinsWidth, 30), coins, skin.Number);
-            x -= 34;
-            skin.CoinIcon(new Rect(x, 20, 26, 26));
+            x = bell.x - 18;
+            DrawCoins(skin, x, player.Coins);
         }
+
+        /// <summary>The coin counter: it counts up to the new total, with a "+N" that floats away.</summary>
+        private void DrawCoins(UiSkin skin, float right, long coins)
+        {
+            if (_coinsTarget != coins)
+            {
+                if (coins > _coinsTarget && _coinsTarget >= 0)
+                {
+                    _coinsGain = coins - _coinsTarget;
+                    _coinsGainAt = Time.unscaledTime;
+                }
+
+                _coinsFrom = _coinsTarget < 0 ? coins : _coinsShown;
+                _coinsTarget = coins;
+                _coinsChangedAt = Time.unscaledTime;
+            }
+
+            var k = Mathf.Clamp01((Time.unscaledTime - _coinsChangedAt) / Visual.VisualTheme.Current.CoinCountSeconds);
+            _coinsShown = (long)Mathf.Lerp(_coinsFrom, _coinsTarget, 1f - (1f - k) * (1f - k));
+            var text = Format.Number(_coinsShown);
+            var textWidth = skin.Number.CalcSize(new GUIContent(text)).x;
+            var box = new Rect(right - textWidth - 58, 12, textWidth + 58, 40);
+            GUI.Box(box, GUIContent.none, skin.Chip);
+            var pulse = k < 1f ? 1f + 0.12f * Mathf.Sin(k * Mathf.PI) : 1f;
+            var iconSize = 24f * pulse;
+            skin.CoinIcon(new Rect(box.x + 14 + (24f - iconSize) / 2f, box.y + 8 + (24f - iconSize) / 2f, iconSize, iconSize));
+            GUI.Label(new Rect(box.x + 46, box.y + 7, textWidth + 4, 30), text, skin.Number);
+
+            var since = Time.unscaledTime - _coinsGainAt;
+            if (_coinsGain > 0 && since < 1.4f)
+            {
+                var previous = GUI.color;
+                GUI.color = new Color(1f, 1f, 1f, Mathf.Clamp01(1.4f - since));
+                GUI.Label(new Rect(box.x + 46, box.yMax + 2 + since * 14f, 200, 26), GameTexts.Celebration.Coins(Format.Number(_coinsGain)), skin.SmallGold);
+                GUI.color = previous;
+            }
+        }
+
+        /// <summary>Where each main menu button goes: icon + label, centred; icons only when the screen is narrow.</summary>
+        private Rect[] NavLayout(UiSkin skin, out bool iconsOnly)
+        {
+            var labels = NavLabels();
+            var widths = new float[labels.Length];
+            var total = 0f;
+            for (var i = 0; i < labels.Length; i++)
+            {
+                widths[i] = skin.Nav.CalcSize(new GUIContent(labels[i])).x + 44f;
+                total += widths[i] + 8f;
+            }
+
+            total -= 8f;
+            var available = _width - 2f * 440f;
+            iconsOnly = total > available;
+            if (iconsOnly)
+            {
+                for (var i = 0; i < widths.Length; i++)
+                {
+                    widths[i] = 52f;
+                }
+
+                total = labels.Length * 60f - 8f;
+            }
+
+            var rects = new Rect[labels.Length];
+            var x = _width / 2f - total / 2f;
+            for (var i = 0; i < labels.Length; i++)
+            {
+                rects[i] = new Rect(x, 12, widths[i], 40);
+                x += widths[i] + 8f;
+            }
+
+            return rects;
+        }
+
+        private string[] NavLabels()
+        {
+            return new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Arena, GameTexts.Navigation.Expedition, GameTexts.Navigation.Market, GameTexts.Navigation.Shop, GameTexts.Navigation.Profile };
+        }
+
+        private static readonly string[] NavIcons = { Icons.Fishing, Icons.Map, Icons.Aquarium, Icons.Arena, Icons.Expedition, Icons.Market, Icons.Shop, Icons.Profile };
 
         /// <summary>Main menus (GDD section 7). Pesca closes any window; the others open theirs.</summary>
         private void DrawNavigation(UiSkin skin)
         {
-            const float navWidth = 112f;
-            var labels = new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Arena, GameTexts.Navigation.Expedition, GameTexts.Navigation.Market, GameTexts.Navigation.Shop, GameTexts.Navigation.Profile };
+            var labels = NavLabels();
+            var rects = NavLayout(skin, out var iconsOnly);
             var active = _map.IsOpen ? 1 : _aquarium.IsOpen ? 2 : _arena.IsOpen ? 3 : _expedition.IsOpen ? 4 : _market.IsOpen ? 5 : _shop.IsOpen ? 6 : _profile.IsOpen ? 7 : 0;
-            var x = _width / 2f - (labels.Length * (navWidth + 10f) - 10f) / 2f;
 
             for (var i = 0; i < labels.Length; i++)
             {
-                if (GUI.Button(new Rect(x + i * (navWidth + 10f), 12, navWidth, 40), labels[i], i == active ? skin.ChipActive : skin.Chip) && i != active)
+                if (skin.IconButton(rects[i], NavIcons[i], iconsOnly ? null : labels[i], i == active ? skin.NavActive : skin.Nav) && i != active)
                 {
                     CloseAllWindows();
                     if (i == 1) _map.Open();
@@ -347,7 +484,7 @@ namespace FishingIdle.Game.UI
 
             if (!_cardExpanded)
             {
-                if (GUI.Button(new Rect(20, 84, 170, 44), GameTexts.Player.ExpandCard + "  »", skin.Button))
+                if (skin.IconButton(new Rect(20, 84, 170, 44), Icons.Profile, GameTexts.Player.ExpandCard, skin.Button))
                 {
                     _cardExpanded = true;
                 }
@@ -355,47 +492,60 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var card = new Rect(20, 84, 330, player.Shells > 0 ? 308 : 276);
-            GUI.Box(card, GUIContent.none, skin.Panel);
+            var card = new Rect(20, 84, 340, player.Shells > 0 ? 318 : 286);
+            skin.FloatingPanel(card);
 
-            GUI.Label(new Rect(card.x + 18, card.y + 14, 200, 28), player.PlayerName, skin.Heading);
-            if (GUI.Button(new Rect(card.xMax - 104, card.y + 12, 90, 30), "« " + GameTexts.Player.CollapseCard, skin.Chip))
+            // Avatar: the painted fisherman's head in a tile (or the profile icon).
+            var avatar = new Rect(card.x + 16, card.y + 16, 64, 64);
+            GUI.Box(avatar, GUIContent.none, skin.IconTile);
+            var portrait = Visual.ArtAssets.Texture("Cena/pescador");
+            if (portrait != null)
+            {
+                GUI.DrawTextureWithTexCoords(new Rect(avatar.x + 4, avatar.y + 4, avatar.width - 8, avatar.height - 8), portrait, new Rect(0.08f, 0.56f, 0.8f, 0.46f));
+            }
+            else
+            {
+                skin.DrawIcon(new Rect(avatar.x + 14, avatar.y + 14, 36, 36), Icons.Profile, UiSkin.Accent);
+            }
+
+            GUI.Label(new Rect(avatar.xMax + 14, card.y + 16, 180, 28), player.PlayerName, skin.Heading);
+            if (skin.IconButton(new Rect(card.xMax - 50, card.y + 14, 36, 32), Icons.Chevron, null, skin.Chip))
             {
                 _cardExpanded = false;
             }
 
-            var levelText = GameTexts.Player.Level + " " + player.FisherLevel;
-            GUI.Label(new Rect(card.x + 18, card.y + 50, 200, 24), levelText, skin.BodyBold);
-
-            var xpRect = new Rect(card.x + 18, card.y + 80, card.width - 36, 12);
+            GUI.Label(new Rect(avatar.xMax + 14, card.y + 44, 200, 22), GameTexts.Player.Level + " " + player.FisherLevel, skin.SmallMuted);
+            var xpRect = new Rect(avatar.xMax + 14, card.y + 66, card.xMax - avatar.xMax - 30, 10);
             if (player.FisherXpToNext > 0)
             {
                 skin.Bar(xpRect, player.FisherXp / (float)player.FisherXpToNext);
-                GUI.Label(new Rect(card.x + 18, card.y + 96, card.width - 36, 20),
+                GUI.Label(new Rect(xpRect.x, card.y + 80, xpRect.width, 20),
                     GameTexts.Player.Xp(Format.Number(player.FisherXp), Format.Number(player.FisherXpToNext)), skin.SmallMuted);
             }
             else
             {
                 skin.Bar(xpRect, 1f, true);
-                GUI.Label(new Rect(card.x + 18, card.y + 96, card.width - 36, 20), GameTexts.Player.MaxLevel, skin.SmallMuted);
+                GUI.Label(new Rect(xpRect.x, card.y + 80, xpRect.width, 20), GameTexts.Player.MaxLevel, skin.SmallMuted);
             }
 
+            skin.Divider(new Rect(card.x + 16, card.y + 112, card.width - 32, 1));
             var rod = player.RodName == null ? GameTexts.Player.NoRod
                 : player.RodHasLevels ? player.RodName + " (" + GameTexts.Player.LevelShort + " " + player.RodLevel + ")" : player.RodName;
-            var y = card.y + 130;
-            Row(skin, card, ref y, GameTexts.Player.Rod, rod);
-            Row(skin, card, ref y, GameTexts.Player.Map, player.MapName);
-            Row(skin, card, ref y, GameTexts.Player.TotalCatches, Format.Number(player.TotalCatches));
-            Row(skin, card, ref y, GameTexts.Player.SpeciesDiscovered, player.SpeciesDiscovered.ToString());
+            var y = card.y + 126;
+            Row(skin, card, ref y, Icons.Rod, GameTexts.Player.Rod, rod);
+            Row(skin, card, ref y, Icons.Pin, GameTexts.Player.Map, player.MapName);
+            Row(skin, card, ref y, Icons.Fish, GameTexts.Player.TotalCatches, Format.Number(player.TotalCatches));
+            Row(skin, card, ref y, Icons.Book, GameTexts.Player.SpeciesDiscovered, player.SpeciesDiscovered.ToString());
             if (player.Shells > 0)
             {
-                Row(skin, card, ref y, GameTexts.Player.Shells, Format.Number(player.Shells));
+                Row(skin, card, ref y, Icons.Shell, GameTexts.Player.Shells, Format.Number(player.Shells));
             }
         }
 
-        private static void Row(UiSkin skin, Rect card, ref float y, string label, string value)
+        private static void Row(UiSkin skin, Rect card, ref float y, string icon, string label, string value)
         {
-            GUI.Label(new Rect(card.x + 18, y, 170, 22), label, skin.SmallMuted);
+            skin.DrawIcon(new Rect(card.x + 18, y + 1, 18, 18), icon, icon == Icons.Shell ? Color.white : UiSkin.Muted);
+            GUI.Label(new Rect(card.x + 46, y, 160, 22), label, skin.SmallMuted);
             GUI.Label(new Rect(card.x + 150, y, card.width - 168, 22), value, skin.SmallRight);
             y += 32;
         }
@@ -408,45 +558,51 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var panel = new Rect(_width / 2f - 290, _height - 168, 580, 144);
-            GUI.Box(panel, GUIContent.none, skin.Panel);
+            var panel = new Rect(_width / 2f - 310, _height - 160, 620, 136);
+            skin.FloatingPanel(panel);
+            var tile = new Rect(panel.x + 18, panel.y + 18, 56, 56);
 
             var travel = _root.Travel;
             if (travel != null && travel.Active)
             {
                 // Travelling: fishing is paused; the panel shows the trip instead (GDD section 18).
-                GUI.Label(new Rect(panel.x + 22, panel.y + 16, panel.width - 44, 26), GameTexts.Map.Traveling(travel.ToName), skin.BodyBold);
-                skin.Bar(new Rect(panel.x + 22, panel.y + 52, panel.width - 44, 14), (float)travel.Progress);
-                GUI.Label(new Rect(panel.x + 22, panel.y + 72, panel.width - 44, 22), GameTexts.Map.ArrivesIn(Format.Countdown(travel.SecondsLeft)), skin.SmallMuted);
+                skin.IconBadge(tile, Icons.Map, UiSkin.Accent);
+                GUI.Label(new Rect(tile.xMax + 16, panel.y + 18, panel.width - 120, 28), GameTexts.Map.Traveling(travel.ToName), skin.Heading);
+                GUI.Label(new Rect(tile.xMax + 16, panel.y + 48, panel.width - 120, 22), GameTexts.Map.ArrivesIn(Format.Countdown(travel.SecondsLeft)), skin.SmallMuted);
+                skin.Bar(new Rect(panel.x + 22, panel.y + 96, panel.width - 44, 12), (float)travel.Progress);
                 return;
             }
 
+            skin.IconBadge(tile, Icons.Fishing, status.IsFishing ? UiSkin.Accent : UiSkin.Muted);
             var phase = _scene != null && _scene.Fisherman != null ? _scene.Fisherman.PhaseText : string.Empty;
-            GUI.Label(new Rect(panel.x + 22, panel.y + 16, panel.width - 44, 26), status.IsFishing ? phase : GameTexts.Fishing.Idle, skin.BodyBold);
+            GUI.Label(new Rect(tile.xMax + 16, panel.y + 16, 300, 30), status.IsFishing ? phase : GameTexts.Fishing.Idle, skin.Heading);
+
+            var info = new Rect(panel.xMax - 250, panel.y + 20, 230, 40);
+            GUI.Label(new Rect(info.x, info.y, info.width, 20), GameTexts.Fishing.CycleInfo(Format.Duration(status.CycleSeconds)), skin.SmallMutedRight);
+            GUI.Label(new Rect(info.x, info.y + 20, info.width, 20), status.MapName, skin.SmallMutedRight);
 
             if (status.IsFishing)
             {
                 var remaining = (status.NextCatchAtMs - status.NowMs) / 1000.0;
-                skin.Bar(new Rect(panel.x + 22, panel.y + 52, panel.width - 44, 14), (float)status.CycleProgress);
-                GUI.Label(new Rect(panel.x + 22, panel.y + 72, 300, 22), GameTexts.Fishing.NextCatchIn(Format.Countdown(remaining)), skin.SmallMuted);
+                GUI.Label(new Rect(tile.xMax + 16, panel.y + 48, 300, 22), GameTexts.Fishing.NextCatchIn(Format.Countdown(remaining)), skin.SmallMuted);
+                skin.Bar(new Rect(panel.x + 22, panel.y + 84, panel.width - 44, 8), (float)status.CycleProgress);
             }
 
-            var cycleInfo = GameTexts.Fishing.CycleInfo(Format.Duration(status.CycleSeconds)) + " · " + status.MapName;
-            GUI.Label(new Rect(panel.x + 22, panel.y + 72, panel.width - 44, 22), cycleInfo, skin.SmallMutedRight);
-
-            var button = new Rect(panel.x + panel.width / 2f - 120, panel.y + 98, 240, 38);
+            var button = new Rect(panel.x + panel.width / 2f - 130, panel.yMax - 46, 260, 38);
             if (status.IsFishing)
             {
-                if (GUI.Button(button, GameTexts.Fishing.Stop, skin.Button))
+                if (skin.IconButton(button, Icons.Stop, GameTexts.Fishing.Stop, skin.Button))
                 {
                     _root.StopFishing();
                 }
             }
-            else if (GUI.Button(button, GameTexts.Fishing.Start, skin.ButtonPrimary))
+            else if (skin.IconButton(button, Icons.Play, GameTexts.Fishing.Start, skin.ButtonPrimary))
             {
                 _root.StartFishing();
             }
         }
+
+        private Rect BoxButtonRect => new Rect(_width - 24 - 270, _height - 24 - 92, 270, 92);
 
         private void DrawBoxButton(UiSkin skin)
         {
@@ -457,24 +613,26 @@ namespace FishingIdle.Game.UI
             }
 
             var pulse = Time.unscaledTime < _boxPulseUntil ? 1f + Mathf.Sin((_boxPulseUntil - Time.unscaledTime) * 12f) * 0.04f : 1f;
-            var w = 250f * pulse;
-            var h = 96f * pulse;
-            var rect = new Rect(_width - 24 - w, _height - 24 - h, w, h);
+            var baseRect = BoxButtonRect;
+            var rect = new Rect(baseRect.xMax - baseRect.width * pulse, baseRect.yMax - baseRect.height * pulse, baseRect.width * pulse, baseRect.height * pulse);
 
+            skin.DrawShadow(rect);
             if (GUI.Button(rect, GUIContent.none, skin.Button))
             {
                 _box.Open();
             }
 
-            GUI.DrawTexture(new Rect(rect.x + 12, rect.y + 18, 96, 56), Art.FishTexture("tilapia"), ScaleMode.ScaleToFit, true);
-            GUI.Label(new Rect(rect.x + 114, rect.y + 20, rect.width - 120, 26), GameTexts.Box.Open, skin.BodyBold);
-            GUI.Label(new Rect(rect.x + 114, rect.y + 50, rect.width - 120, 24), GameTexts.Box.Count(player.FishingBoxCount), skin.SmallMuted);
+            skin.DrawIcon(new Rect(rect.x + 16, rect.y + 20, 52, 52), Icons.Box, UiSkin.Gold);
+            GUI.Label(new Rect(rect.x + 82, rect.y + 20, rect.width - 120, 26), GameTexts.Box.Open, skin.BodyBold);
+            GUI.Label(new Rect(rect.x + 82, rect.y + 48, rect.width - 120, 24), GameTexts.Box.Count(player.FishingBoxCount), skin.SmallMuted);
+            skin.DrawIcon(new Rect(rect.xMax - 34, rect.center.y - 9, 18, 18), Icons.Chevron, UiSkin.Muted);
         }
 
+        /// <summary>Level 2 of the visual intensity system: quick, non-blocking toasts with a coloured accent.</summary>
         private void DrawToasts(UiSkin skin)
         {
             var items = _root.Toasts.Items;
-            var y = 80f;
+            var y = 84f;
             for (var i = items.Count - 1; i >= 0; i--)
             {
                 var toast = items[i];
@@ -482,23 +640,54 @@ namespace FishingIdle.Game.UI
                 var fadeIn = Mathf.Clamp01(age / 0.25f);
                 var fadeOut = Mathf.Clamp01((toast.Duration - age) / 0.6f);
                 var alpha = Mathf.Min(fadeIn, fadeOut);
+                var accent = ToastAccent(toast.Kind);
 
-                var rect = new Rect(_width - 460 + (1f - fadeIn) * 40f, y, 436, 58);
+                var rect = new Rect(_width - 464 + (1f - fadeIn) * 40f, y, 440, 62);
                 var previous = GUI.color;
                 GUI.color = new Color(1f, 1f, 1f, alpha);
-                GUI.Box(rect, GUIContent.none, toast.Kind == ToastKind.Important || toast.Kind == ToastKind.LevelUp ? skin.CardImportant : skin.Panel);
+                skin.FloatingPanel(rect);
+                GUI.DrawTexture(new Rect(rect.x + 6, rect.y + 10, 4, rect.height - 20), skin.White, ScaleMode.StretchToFill, true, 0, accent, 0, 2);
 
-                var textX = rect.x + 16;
+                var textX = rect.x + 22;
                 if (toast.Icon != null)
                 {
-                    GUI.DrawTexture(new Rect(rect.x + 10, rect.y + 8, 78, 42), toast.Icon, ScaleMode.ScaleToFit, true);
-                    textX = rect.x + 96;
+                    GUI.DrawTexture(new Rect(rect.x + 16, rect.y + 9, 80, 44), toast.Icon, ScaleMode.ScaleToFit, true);
+                    textX = rect.x + 104;
+                }
+                else
+                {
+                    skin.DrawIcon(new Rect(rect.x + 20, rect.y + 19, 24, 24), ToastIcon(toast.Kind), accent);
+                    textX = rect.x + 56;
                 }
 
-                var style = toast.Kind == ToastKind.Warning ? skin.SmallGold : skin.Small;
-                GUI.Label(new Rect(textX, rect.y + 10, rect.xMax - textX - 12, 40), toast.Text, style);
+                GUI.Label(new Rect(textX, rect.y + 11, rect.xMax - textX - 14, 44), toast.Text, toast.Kind == ToastKind.Warning ? skin.SmallBold : skin.Small);
                 GUI.color = previous;
-                y += 66;
+                y += 70;
+            }
+        }
+
+        private static Color ToastAccent(ToastKind kind)
+        {
+            switch (kind)
+            {
+                case ToastKind.Important:
+                case ToastKind.Coins:
+                case ToastKind.LevelUp: return UiSkin.Gold;
+                case ToastKind.Warning: return UiSkin.Danger;
+                default: return UiSkin.Accent;
+            }
+        }
+
+        private static string ToastIcon(ToastKind kind)
+        {
+            switch (kind)
+            {
+                case ToastKind.Coins: return Icons.Coin;
+                case ToastKind.LevelUp: return Icons.Level;
+                case ToastKind.Important: return Icons.Star;
+                case ToastKind.Warning: return Icons.Warning;
+                case ToastKind.Catch: return Icons.Fish;
+                default: return Icons.Info;
             }
         }
 
@@ -546,8 +735,10 @@ namespace FishingIdle.Game.UI
             // With a window open the hint moves to a strip under it; otherwise it sits under the player card.
             var rect = windowOpen
                 ? new Rect(_width / 2f - 440, _height - 88, 880, 76)
-                : new Rect(20, _cardExpanded ? 412 : 144, 330, 200);
-            GUI.Box(rect, GUIContent.none, skin.CardImportant);
+                : new Rect(20, _cardExpanded ? 424 : 144, 340, 200);
+            skin.DrawShadow(rect);
+            GUI.Box(rect, GUIContent.none, skin.PanelSolid);
+            skin.DrawOutline(rect, UiSkin.Accent);
             if (windowOpen)
             {
                 GUI.Label(new Rect(rect.x + 18, rect.y + 10, rect.width - 220, 22), GameTexts.Tutorial.Title(tutorial.Step), skin.BodyBold);
@@ -555,7 +746,9 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                GUI.Label(new Rect(rect.x + 16, rect.y + 12, rect.width - 32, 18), GameTexts.Tutorial.StepOf(tutorial.StepNumber, tutorial.StepCount), skin.SmallGold);
+                GUI.contentColor = UiSkin.Accent;
+                GUI.Label(new Rect(rect.x + 16, rect.y + 12, rect.width - 32, 18), GameTexts.Tutorial.StepOf(tutorial.StepNumber, tutorial.StepCount), skin.SmallBold);
+                GUI.contentColor = Color.white;
                 GUI.Label(new Rect(rect.x + 16, rect.y + 32, rect.width - 32, 26), GameTexts.Tutorial.Title(tutorial.Step), skin.BodyBold);
                 GUI.Label(new Rect(rect.x + 16, rect.y + 60, rect.width - 32, 90), GameTexts.Tutorial.Body(tutorial.Step), skin.Small);
             }
@@ -588,17 +781,17 @@ namespace FishingIdle.Game.UI
                 case TutorialSteps.ClaimRod: target = NavRect(6); break;
                 case TutorialSteps.Cardume: target = NavRect(7); break;
                 case TutorialSteps.Expedition: target = NavRect(4); break;
-                case TutorialSteps.StartFishing: target = new Rect(_width / 2f - 120, _height - 70, 240, 38); break;
+                case TutorialSteps.StartFishing: target = new Rect(_width / 2f - 130, _height - 70, 260, 38); break;
                 case TutorialSteps.OpenBox:
                 case TutorialSteps.SellFish:
-                case TutorialSteps.KeepFish: target = new Rect(_width - 274, _height - 120, 250, 96); break;
+                case TutorialSteps.KeepFish: target = BoxButtonRect; break;
                 default: return;
             }
 
             if (_outline == null)
             {
                 _outline = new GUIStyle { border = new RectOffset(12, 12, 12, 12) };
-                _outline.normal.background = Art.RoundedRectTexture(new Color(0f, 0f, 0f, 0f), UiSkin.Gold, 12, 3f);
+                _outline.normal.background = Art.RoundedRectTexture(new Color(0f, 0f, 0f, 0f), UiSkin.Accent, 12, 3f);
             }
 
             var pulse = 0.55f + 0.45f * Mathf.Sin(Time.unscaledTime * 5f);
@@ -611,9 +804,7 @@ namespace FishingIdle.Game.UI
 
         private Rect NavRect(int index)
         {
-            const float navWidth = 112f;
-            var x = _width / 2f - (8 * (navWidth + 10f) - 10f) / 2f;
-            return new Rect(x + index * (navWidth + 10f), 12, navWidth, 40);
+            return NavLayout(UiSkin.Get(), out _)[index];
         }
 
         // ------------------------------------------------------------------ notifications and settings
@@ -623,7 +814,7 @@ namespace FishingIdle.Game.UI
             if (_showNotifications)
             {
                 var panel = new Rect(_width - 24 - 470, 70, 470, 560);
-                GUI.Box(panel, GUIContent.none, skin.Panel);
+                skin.FloatingPanel(panel);
                 GUI.Label(new Rect(panel.x + 20, panel.y + 16, 300, 26), GameTexts.Hud.Notifications, skin.Heading);
                 if (_root.Toasts.History.Count > 0 && GUI.Button(new Rect(panel.xMax - 110, panel.y + 14, 90, 30), GameTexts.Hud.ClearNotifications, skin.Chip))
                 {
@@ -659,7 +850,7 @@ namespace FishingIdle.Game.UI
             if (_showSettings)
             {
                 var panel = new Rect(_width - 24 - 380, 70, 380, 340);
-                GUI.Box(panel, GUIContent.none, skin.Panel);
+                skin.FloatingPanel(panel);
                 var x = panel.x + 20;
                 var w = panel.width - 40;
                 var y = panel.y + 16;

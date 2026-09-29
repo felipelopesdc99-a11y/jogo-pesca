@@ -105,6 +105,29 @@ namespace FishingIdle.Game.Scene
         }
     }
 
+    /// <summary>Alpha that swells and settles without ever going out, e.g. the glow around the sun.</summary>
+    public sealed class Breathe : MonoBehaviour
+    {
+        public float Period = 7f;
+        public float MinAlpha = 0.2f;
+        public float MaxAlpha = 0.4f;
+
+        private SpriteRenderer _renderer;
+
+        private void Start()
+        {
+            _renderer = GetComponent<SpriteRenderer>();
+        }
+
+        private void Update()
+        {
+            var k = 0.5f + 0.5f * Mathf.Sin(Time.time * Mathf.PI * 2f / Period);
+            var c = _renderer.color;
+            c.a = Mathf.Lerp(MinAlpha, MaxAlpha, k);
+            _renderer.color = c;
+        }
+    }
+
     /// <summary>An expanding, fading ring; destroys itself when done.</summary>
     public sealed class RippleEffect : MonoBehaviour
     {

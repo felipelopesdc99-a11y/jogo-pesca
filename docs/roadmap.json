@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-29T01:59:38Z",
-  "current_milestone": "M13",
+  "updated_at": "2026-09-29T02:39:31Z",
+  "current_milestone": "M14",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -140,7 +140,8 @@
       "title": "Aprovar o plano do visual Lago Dourado",
       "detail": "A Bíblia de Arte que você mandou foi guardada em docs/ART_BIBLE_V0_1.md e virou o milestone M14, com 15 tarefas nesta ordem: tema central, fontes, painéis e botões, ícones, card de peixe, peixes, Lago Sereno, níveis de intensidade, momentos especiais, telas (em dois blocos), Rio Selvagem e a lista de artes pendentes. Diga se pode começar assim ou se quer mudar a ordem — por exemplo, começar pela cena de pesca.",
       "raised_at": "2026-09-29T01:59:38Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "O proprietário aprovou o plano e mandou seguir com o desenvolvimento visual, enviando também o documento com 185 referências (29/09/2026)."
     }
   ],
   "milestones": [
@@ -1727,124 +1728,131 @@
           "title": "Aprovar o plano do visual Lago Dourado",
           "subsystem": "repo",
           "description": "O proprietário confere este plano e a ordem das tarefas antes de começar o código visual.",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z",
+          "completion_notes": "Plano aprovado pelo proprietário em 29/09/2026, junto com o documento de 185 referências visuais (usado como vocabulário visual, sem criar mecânicas)."
         },
         {
           "id": "M14-T02",
           "title": "Tema visual central em dados",
           "subsystem": "client",
           "description": "Paleta, cores de raridade, botões, painéis, intensidade de brilho e durações de aviso e celebração num arquivo de configuração só (VisualThemeConfig), sem cores espalhadas no código. Bíblia de Arte, seções 3, 4 e 36.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M14-T01"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z",
+          "completion_notes": "client-unity/Assets/Resources/Visual/tema_visual.json guarda a paleta, as cores de raridade, a cor do Excepcional, a opacidade dos painéis, a intensidade do brilho e os tempos dos avisos e das celebrações. O jogo lê tudo por VisualTheme; se o arquivo tiver erro, usa os valores da Bíblia de Arte e avisa no Console. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T03",
           "title": "Fontes Fredoka e Nunito",
           "subsystem": "client",
           "description": "Fredoka nos títulos e números importantes, Nunito no corpo. As duas são gratuitas (licença SIL OFL) e ficam dentro do projeto. Seção 11.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M14-T02"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z",
+          "completion_notes": "Fredoka (SemiBold e Bold) nos títulos e números e Nunito (Regular e Bold) no texto, em client-unity/Assets/Resources/Fontes, com as licenças OFL junto. Importação automática configurada; para símbolos que a fonte não tem, o Unity usa uma fonte do sistema. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T04",
           "title": "Painéis, janelas e botões",
           "subsystem": "client",
           "description": "Painel escuro com borda suave, botão primário turquesa, secundário, destrutivo e o botão dourado só para recompensas. Seções 13 e 14.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M14-T02",
             "M14-T03"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z",
+          "completion_notes": "Painéis escuros com degradê suave, borda e sombra; botão primário turquesa, secundário, destrutivo e o botão dourado de recompensa; botões com ícone; selos de raridade; barras na cor do acento. Janelas com ícone, título, subtítulo e ✕ Fechar. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T05",
           "title": "Família de ícones",
           "subsystem": "client",
           "description": "Um conjunto único de ícones para menus, moedas, raridade, tamanho e ações, no mesmo traço. Onde a arte final ainda não existir, fica um placeholder limpo marcado ASSET_PENDENTE. Seção 12.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M14-T02"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z",
+          "completion_notes": "44 ícones num traço só (menus, moeda, conchas, ações, avisos), gerados por tools/Arte/gerar_icones.py em client-unity/Assets/Resources/Arte/Icones. Cada um pode ser trocado por um desenho final com o mesmo nome. ASSET_PENDENTE: versão final desenhada dos ícones. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T06",
           "title": "Card oficial de peixe",
           "subsystem": "client",
           "description": "Template único de card: raridade só como acento (borda e faixa), selo de tamanho separado e brilho dourado exclusivo do Excepcional. Usado na Caixa de Pesca, Aquário, Mercado e Enciclopédia. Seções 4, 5 e 6.",
-          "status": "TODO",
+          "status": "IN_PROGRESS",
           "dependencies": [
             "M14-T04",
             "M14-T05"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z"
         },
         {
           "id": "M14-T07",
           "title": "Estilo e pipeline dos peixes",
           "subsystem": "client",
           "description": "Arte dos peixes como arquivos trocáveis (fish_<espécie>_master.png, 2048×1024, fundo transparente), com os tamanhos derivados e a silhueta da Enciclopédia gerados a partir dele. A arte final vem do proprietário (processo da seção 39). Onde a arte final ainda não existir, fica um placeholder limpo marcado ASSET_PENDENTE. Seções 7, 8, 37 e 41.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M14-T06"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z",
+          "completion_notes": "Os 20 peixes pintados de lado, com a mesma luz, contorno, olho e nadadeiras, fundo transparente, sem texto e sem brilho embutido (tools/Arte/gerar_peixes.py → Resources/Arte/Peixes/fish_<espécie>_master.png, 1024×512). O jogo usa o arquivo em todo lugar (cena, cards, avisos) e volta ao desenho antigo se ele faltar. A silhueta da Enciclopédia é o mesmo arquivo pintado de escuro. ASSET_PENDENTE: arte final de cada peixe em 2048×1024. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T08",
           "title": "Cena do Lago Sereno em luz dourada",
           "subsystem": "client",
           "description": "Cena lateral 2.5D com camadas de profundidade (parallax), luz de fim de tarde e movimento constante e calmo: água, nuvens, pescador e barco. Onde a arte final ainda não existir, fica um placeholder limpo marcado ASSET_PENDENTE. Seções 9, 10, 31 e 32.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M14-T02"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z",
+          "completion_notes": "Lago Sereno em luz de fim de tarde, em camadas com parallax: céu com sol baixo, montanhas distantes, morros com mata, pinheiros nas margens com reflexo na água, coluna de luz dourada do sol, pedras e juncos nos cantos (tools/Arte/gerar_cenarios.py → Resources/Arte/Mapas/LagoSereno). Movimento constante: nuvens, brilho do sol, reflexos, pássaros, peixes saltando e juncos balançando. Barco, pescador e caixa de pesca novos. ASSET_PENDENTE: pintura final das camadas. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T09",
           "title": "Níveis de intensidade: Calmo, Recompensa, Celebração",
           "subsystem": "client",
           "description": "Três níveis de efeito visual, casados com os sons do M13: o dia a dia calmo, a recompensa com dourado e a celebração curta. Seções 15, 29 e 34.",
-          "status": "TODO",
+          "status": "IN_PROGRESS",
           "dependencies": [
             "M14-T02",
             "M14-T08"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z"
         },
         {
           "id": "M14-T10",
           "title": "Momentos especiais",
           "subsystem": "client",
           "description": "Cada momento com o seu efeito: peixe pescado, captura rara, tamanho Excepcional, recorde pessoal, espécie nova, subir de nível, venda, volta do offline, Expedição concluída, Mercado, Leilão e Arena. Seção 16.",
-          "status": "TODO",
+          "status": "IN_PROGRESS",
           "dependencies": [
             "M14-T09",
             "M14-T06"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z"
         },
         {
           "id": "M14-T11",
           "title": "Telas no estilo novo: Pesca, Mapa, Aquário, Perfil e Loja",
           "subsystem": "client",
           "description": "Redesenho dessas telas com os componentes padronizados, sem mudar nenhuma regra. Seções 17 a 20, 26 a 28 e o checklist da seção 42.",
-          "status": "TODO",
+          "status": "IN_PROGRESS",
           "dependencies": [
             "M14-T04",
             "M14-T06"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z"
         },
         {
           "id": "M14-T12",
@@ -1862,11 +1870,12 @@
           "title": "Cena do Rio Selvagem",
           "subsystem": "client",
           "description": "Segundo mapa no mesmo estilo, com identidade própria. Onde a arte final ainda não existir, fica um placeholder limpo marcado ASSET_PENDENTE. Seção 33.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M14-T08"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:39:31Z",
+          "completion_notes": "Rio Selvagem com paredões rochosos, cachoeira com névoa, mata densa, pedras no rio e água com correnteza visível (Resources/Arte/Mapas/RioSelvagem). ASSET_PENDENTE: pintura final das camadas. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T14",

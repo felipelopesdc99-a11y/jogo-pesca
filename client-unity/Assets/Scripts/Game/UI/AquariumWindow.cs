@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FishingIdle.Game.Bootstrap;
 using FishingIdle.Game.Scene;
+using FishingIdle.Game.Visual;
 using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
@@ -19,7 +20,7 @@ namespace FishingIdle.Game.UI
     public sealed class AquariumWindow
     {
         private const float CardWidth = 196f;
-        private const float CardHeight = 172f;
+        private const float CardHeight = 196f;
         private const float Gap = 12f;
 
         private static readonly AquariumSort[] Sorts = { AquariumSort.Size, AquariumSort.Level, AquariumSort.Species, AquariumSort.Newest };
@@ -93,17 +94,17 @@ namespace FishingIdle.Game.UI
                 Reload();
             }
 
-            GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), skin.Overlay);
-            var width = Mathf.Min(1320f, screenWidth - 80f);
-            var height = Mathf.Min(840f, screenHeight - 120f);
-            var panel = new Rect((screenWidth - width) / 2f, (screenHeight - height) / 2f + 20f, width, height);
-
             GUI.enabled = !DialogOpen;
-            GUI.Box(panel, GUIContent.none, skin.Panel);
+            var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f);
+            if (WindowFrame.Header(skin, panel, _feeding ? GameTexts.Aquarium.Title : GameTexts.Aquarium.Title,
+                    GameTexts.Aquarium.Count(_aquarium.Count, _aquarium.Capacity), Icons.Aquarium))
+            {
+                Close();
+            }
 
             var detailWidth = 420f;
-            var left = new Rect(panel.x + 24, panel.y + 20, panel.width - detailWidth - 60, panel.height - 40);
-            var right = new Rect(panel.xMax - detailWidth - 20, panel.y + 20, detailWidth, panel.height - 40);
+            var left = new Rect(panel.x + 28, panel.y + 96, panel.width - detailWidth - 72, panel.height - 116);
+            var right = new Rect(panel.xMax - detailWidth - 24, panel.y + 96, detailWidth, panel.height - 116);
 
             if (_feeding)
             {
@@ -131,18 +132,16 @@ namespace FishingIdle.Game.UI
 
         private void DrawBrowser(UiSkin skin, Rect area, Rect panel)
         {
-            GUI.Label(new Rect(area.x, area.y, 300, 32), GameTexts.Aquarium.Title, skin.Title);
-            GUI.Label(new Rect(area.x + 2, area.y + 36, 300, 22), GameTexts.Aquarium.Count(_aquarium.Count, _aquarium.Capacity), skin.SmallMuted);
-
             // Sort chips
             var x = area.x;
-            GUI.Label(new Rect(x, area.y + 76, 80, 24), GameTexts.Aquarium.SortLabel, skin.SmallMuted);
-            x += 78;
+            skin.DrawIcon(new Rect(x, area.y + 7, 18, 18), Icons.Sort, UiSkin.Muted);
+            GUI.Label(new Rect(x + 24, area.y + 7, 80, 24), GameTexts.Aquarium.SortLabel, skin.SmallMuted);
+            x += 100;
             foreach (var sort in Sorts)
             {
                 var label = new GUIContent(SortName(sort));
                 var w = skin.Chip.CalcSize(label).x + 8;
-                if (GUI.Button(new Rect(x, area.y + 70, w, 32), label, sort == _sort ? skin.ChipActive : skin.Chip))
+                if (GUI.Button(new Rect(x, area.y, w, 32), label, sort == _sort ? skin.ChipActive : skin.Chip))
                 {
                     _sort = sort;
                     _dirty = true;
@@ -151,12 +150,7 @@ namespace FishingIdle.Game.UI
                 x += w + 8;
             }
 
-            if (GUI.Button(new Rect(panel.xMax - 148, panel.y + 20, 120, 38), GameTexts.Box.Close, skin.Button))
-            {
-                Close();
-            }
-
-            var grid = new Rect(area.x - 4, area.y + 118, area.width + 8, area.height - 118);
+            var grid = new Rect(area.x - 4, area.y + 46, area.width + 8, area.height - 46);
             if (_aquarium.Count == 0)
             {
                 GUI.Label(new Rect(grid.x, grid.y + grid.height / 2f - 30, grid.width, 60), GameTexts.Aquarium.Empty, skin.Center);
@@ -168,7 +162,7 @@ namespace FishingIdle.Game.UI
                 var clicked = FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
                     Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName, (float)fish.SizePercentile,
                     GameTexts.Player.LevelShort + " " + fish.Level + (fish.CardumePosition > 0 ? "  ·  " + GameTexts.Cardume.Badge(fish.CardumePosition) : string.Empty),
-                    fish.RarityId, fish.RarityName, fish.FishId == _selectedId, fish.IsImportant, fish.SizeCategoryId == "exceptional");
+                    fish.RarityId, fish.RarityName, fish.FishId == _selectedId, fish.IsImportant, fish.SizeCategoryId == "exceptional", fish.SizeCategoryName);
                 if (clicked)
                 {
                     _selectedId = fish.FishId;
@@ -191,34 +185,46 @@ namespace FishingIdle.Game.UI
             var w = area.width - 44;
             var y = area.y + 18;
 
-            var art = new Rect(x, y, w, 130);
+            var accent = UiSkin.RarityColor(fish.RarityId);
+            skin.DrawOutline(area, new Color(accent.r, accent.g, accent.b, 0.8f));
+            var art = new Rect(x, y + 6, w, 124);
+            var exceptional = fish.SizeCategoryId == "exceptional";
             if (fish.IsImportant)
             {
-                var previous = GUI.color;
-                GUI.color = new Color(1f, 0.85f, 0.4f, 0.35f);
-                GUI.DrawTexture(new Rect(art.x + 30, art.y - 6, art.width - 60, art.height + 12), Art.Glow.texture, ScaleMode.StretchToFill, true);
-                GUI.color = previous;
+                skin.DrawGlow(new Rect(art.x + art.width * 0.25f, art.y + art.height * 0.3f, art.width * 0.5f, art.height * 0.4f),
+                    exceptional ? VisualTheme.Current.Exceptional : accent, 0.4f);
             }
 
             GUI.DrawTexture(art, Art.FishTexture(fish.SpeciesId), ScaleMode.ScaleToFit, true);
             y += 140;
 
             GUI.Label(new Rect(x, y, w, 30), fish.SpeciesName, skin.Heading);
-            y += 30;
-            GUI.Label(new Rect(x, y, w, 22), fish.RarityName + " · " + fish.SizeCategoryName, skin.SmallMuted);
-            y += 30;
+            y += 32;
+            var rarityLabel = fish.RarityName.ToUpperInvariant();
+            var pillWidth = skin.PillWidth(rarityLabel, true);
+            skin.AccentPill(new Rect(x, y, pillWidth, 22), rarityLabel, accent, Icons.Star);
+            if (exceptional)
+            {
+                UI.FishCard.ExceptionalSeal(skin, new Rect(x + pillWidth + 8, y + 1, 110, 20), fish.SizeCategoryName.ToUpperInvariant());
+            }
+            else
+            {
+                GUI.Label(new Rect(x + pillWidth + 10, y + 2, w - pillWidth - 10, 20), fish.SizeCategoryName, skin.SmallMuted);
+            }
+
+            y += 32;
 
             // Size: number and a bar inside the species range (GDD section 14).
             GUI.Label(new Rect(x, y, w, 22), GameTexts.Aquarium.Size + ": " + Format.SizeCm(fish.SizeCm) + "  (" + Format.SizeCm(fish.SpeciesMinCm) + " – " + Format.SizeCm(fish.SpeciesMaxCm) + ")", skin.Small);
             y += 22;
-            skin.Bar(new Rect(x, y, w, 8), (float)fish.SizePercentile, fish.SizeCategoryId == "exceptional");
+            skin.Bar(new Rect(x, y, w, 8), (float)fish.SizePercentile, exceptional ? VisualTheme.Current.Exceptional : accent);
             y += 20;
 
             GUI.Label(new Rect(x, y, w, 22), GameTexts.Aquarium.LevelOf(fish.Level, fish.MaxLevel), skin.BodyBold);
             y += 24;
             if (fish.XpToNext > 0)
             {
-                skin.Bar(new Rect(x, y, w, 8), fish.Xp / (float)fish.XpToNext);
+                skin.Bar(new Rect(x, y, w, 8), fish.Xp / (float)fish.XpToNext, accent);
                 GUI.Label(new Rect(x, y + 10, w, 20), GameTexts.Aquarium.Xp(Format.Number(fish.Xp), Format.Number(fish.XpToNext)), skin.SmallMuted);
             }
             else
@@ -243,13 +249,13 @@ namespace FishingIdle.Game.UI
             var buttons = area.yMax - 60;
             var enabled = GUI.enabled;
             GUI.enabled = enabled && fish.XpToNext > 0;
-            if (GUI.Button(new Rect(x, buttons, w / 2f - 6, 42), GameTexts.Aquarium.Feed, skin.ButtonPrimary))
+            if (skin.IconButton(new Rect(x, buttons, w / 2f - 6, 42), Icons.Feed, GameTexts.Aquarium.Feed, skin.ButtonPrimary))
             {
                 StartFeeding();
             }
 
             GUI.enabled = enabled;
-            if (GUI.Button(new Rect(x + w / 2f + 6, buttons, w / 2f - 6, 42), GameTexts.Aquarium.Sell, skin.Button))
+            if (skin.IconButton(new Rect(x + w / 2f + 6, buttons, w / 2f - 6, 42), Icons.Sell, GameTexts.Aquarium.Sell, skin.Button))
             {
                 _confirmSell = true;
             }
@@ -317,7 +323,7 @@ namespace FishingIdle.Game.UI
                     if (FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
                         GameTexts.Player.LevelShort + " " + fish.Level + " · " + Format.SizeCm(fish.SizeCm), (float)fish.SizePercentile,
                         GameTexts.Aquarium.FeedXp(Format.Number(fish.FeedXp)), fish.RarityId, fish.RarityName,
-                        _foodFish.Contains(fish.FishId), fish.IsValuableFood, fish.SizeCategoryId == "exceptional"))
+                        _foodFish.Contains(fish.FishId), fish.IsValuableFood, fish.SizeCategoryId == "exceptional", fish.SizeCategoryName))
                     {
                         Toggle(_foodFish, fish.FishId);
                     }
@@ -330,7 +336,7 @@ namespace FishingIdle.Game.UI
                     if (FishCard(skin, rect, c.SpeciesId, c.SpeciesName,
                         Format.SizeCm(c.SizeCm) + " · " + c.SizeCategoryName, (float)c.SizePercentile,
                         GameTexts.Aquarium.FeedXp(Format.Number(c.FeedXp)), c.RarityId, c.RarityName,
-                        _foodBox.Contains(c.CatchId), c.IsValuableFood, c.SizeCategoryId == "exceptional"))
+                        _foodBox.Contains(c.CatchId), c.IsValuableFood, c.SizeCategoryId == "exceptional", c.SizeCategoryName))
                     {
                         Toggle(_foodBox, c.CatchId);
                     }
@@ -505,7 +511,8 @@ namespace FishingIdle.Game.UI
         {
             var rect = new Rect(screenWidth / 2f - 320, screenHeight / 2f - height / 2f, 640, height);
             GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), skin.Overlay);
-            GUI.Box(rect, GUIContent.none, skin.CardImportant);
+            skin.DrawShadow(rect);
+            GUI.Box(rect, GUIContent.none, skin.PanelSolid);
             return rect;
         }
 
@@ -584,26 +591,23 @@ namespace FishingIdle.Game.UI
             GUI.EndScrollView();
         }
 
-        /// <summary>One fish card. Returns true when clicked.</summary>
+        /// <summary>One fish card (the official template). Returns true when clicked.</summary>
         private static bool FishCard(UiSkin skin, Rect rect, string speciesId, string name, string line, float sizeFraction,
-            string corner, string rarityId, string rarityName, bool selected, bool important, bool exceptional)
+            string corner, string rarityId, string rarityName, bool selected, bool important, bool exceptional, string sizeCategoryName = null)
         {
-            var hovered = rect.Contains(Event.current.mousePosition);
-            var style = selected ? skin.CardSelected : important ? skin.CardImportant : hovered ? skin.CardHovered : skin.Card;
-            var clicked = GUI.Button(rect, GUIContent.none, style);
-
-            GUI.DrawTexture(new Rect(rect.x + 14, rect.y + 12, rect.width - 28, 72), Art.FishTexture(speciesId), ScaleMode.ScaleToFit, true);
-            GUI.Label(new Rect(rect.x + 12, rect.y + 90, rect.width - 24, 22), name, skin.BodyBold);
-            GUI.Label(new Rect(rect.x + 12, rect.y + 112, rect.width - 24, 20), line, skin.Small);
-            skin.Bar(new Rect(rect.x + 12, rect.y + 136, rect.width - 24, 7), sizeFraction, exceptional);
-            GUI.Label(new Rect(rect.x + 12, rect.y + 148, rect.width - 24, 20), corner, skin.SmallGold);
-
-            if (rarityId != null && rarityId != "common")
+            return UI.FishCard.Draw(skin, rect, new FishCardModel
             {
-                skin.Tag(new Rect(rect.xMax - 66, rect.y + 148, 56, 18), rarityName.ToUpperInvariant(), UiSkin.Rare);
-            }
-
-            return clicked;
+                SpeciesId = speciesId,
+                Name = name,
+                Line = line,
+                RarityId = rarityId,
+                RarityName = rarityName,
+                SizeCategoryId = exceptional ? "exceptional" : null,
+                SizeCategoryName = sizeCategoryName,
+                Bar = sizeFraction,
+                Footer = corner,
+                Selected = selected,
+            });
         }
     }
 }

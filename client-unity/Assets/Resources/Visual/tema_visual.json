@@ -1,0 +1,38 @@
+{
+  "_leia_me": "Tema visual do jogo (Bíblia de Arte, seções 3, 4, 15 e 36). Mude as cores (#RRGGBB ou #RRGGBBAA) e os tempos aqui para ajustar o jogo inteiro sem editar código. Se este arquivo tiver erro, o jogo usa os valores padrão e avisa no Console. Os nomes dos campos são chaves técnicas e não devem ser traduzidos.",
+  "palette": {
+    "night": "#0A1422",
+    "panel": "#11223A",
+    "panel_elevated": "#183050",
+    "border": "#274A70",
+    "text": "#EEF4FB",
+    "text_muted": "#9DB2C9",
+    "action": "#25C4C1",
+    "action_hover": "#3AD6D2",
+    "reward": "#F6B93B",
+    "reward_light": "#FFE08A",
+    "danger": "#EF6B5B",
+    "success": "#2CCB7F"
+  },
+  "_raridades": "Cor de cada raridade: aparece só como acento (borda, selo, barra). Só as raridades que existem nos dados são usadas; as outras ficam reservadas.",
+  "rarities": [
+    { "id": "common", "color": "#8193A8" },
+    { "id": "uncommon", "color": "#2CCB7F" },
+    { "id": "rare", "color": "#4D8DFF" },
+    { "id": "epic", "color": "#A855F7" },
+    { "id": "legendary", "color": "#F6B93B" },
+    { "id": "mythic", "color": "#EF6B5B" }
+  ],
+  "_excepcional": "Tamanho Excepcional é tamanho, não raridade: tem o seu próprio selo dourado com brilho.",
+  "exceptional_color": "#F6B93B",
+  "panel_opacity": 0.94,
+  "overlay_opacity": 0.5,
+  "glow_intensity": 0.7,
+  "_tempos": "Tempos em segundos. Nível 2 (Recompensa) = avisos; nível 3 (Celebração) = faixa grande no alto da tela.",
+  "toast_seconds": 4.0,
+  "toast_important_seconds": 6.0,
+  "toast_warning_seconds": 8.0,
+  "celebration_seconds": 3.2,
+  "window_fade_seconds": 0.18,
+  "coin_count_seconds": 0.8
+}

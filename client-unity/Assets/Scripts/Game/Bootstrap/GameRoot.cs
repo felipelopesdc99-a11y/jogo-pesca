@@ -67,6 +67,9 @@ namespace FishingIdle.Game.Bootstrap
 
         public ToastFeed Toasts { get; } = new ToastFeed();
 
+        /// <summary>The big moments (level 3 of the visual intensity system).</summary>
+        public Celebrations Celebrations { get; } = new Celebrations();
+
         /// <summary>Raised whenever the service produced catches (sync, stop).</summary>
         public event Action<FishingUpdate> CatchesArrived;
 
@@ -576,6 +579,7 @@ namespace FishingIdle.Game.Bootstrap
                     break;
                 case MarketEvent.KindAuctionWon:
                     Toasts.Push(GameTexts.Market.AuctionWon(news.GoodsName), ToastKind.Important, notify: true);
+                    Celebrations.Show(GameTexts.Celebration.AuctionWon, GameTexts.Celebration.AuctionLine(news.GoodsName), Visual.VisualTheme.Current.Reward);
                     break;
                 case MarketEvent.KindAuctionLost:
                     Toasts.Push(GameTexts.Market.AuctionLost(news.GoodsName), ToastKind.Info, notify: true);

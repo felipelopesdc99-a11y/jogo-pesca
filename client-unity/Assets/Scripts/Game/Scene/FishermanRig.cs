@@ -86,10 +86,22 @@ namespace FishingIdle.Game.Scene
             var skin = new Color(0.87f, 0.66f, 0.50f);
             var o = FishingScene.OrderFisherman;
 
-            FishingScene.Sprite(_body, "Pernas", Art.RoundedBox, new Vector3(0.22f, 0.12f, 0f), new Vector3(0.62f, 0.2f, 1f), o, pants);
-            FishingScene.Sprite(_body, "Tronco", Art.RoundedBox, new Vector3(0f, 0.46f, 0f), new Vector3(0.44f, 0.66f, 1f), o, shirt);
-            FishingScene.Sprite(_body, "Cabeça", Art.Circle, new Vector3(0.04f, 0.93f, 0f), Vector3.one * 0.36f, o, skin);
-            FishingScene.Sprite(_body, "Chapéu", Art.Hat, new Vector3(0.04f, 0.99f, 0f), Vector3.one * 0.72f, o + 1);
+            // The painted fisherman (Resources/Arte/Cena/pescador.png) sits behind the rim of the hull;
+            // without it, the figure is built from simple shapes.
+            var painted = Visual.ArtAssets.Sprite("Cena/pescador", 0.8f, new Vector2(0.46f, 0f));
+            if (painted != null)
+            {
+                FishingScene.Sprite(_body, "Pescador", painted, new Vector3(0f, -0.02f, 0f), Vector3.one, FishingScene.OrderBoat - 1);
+                shirt = new Color(0.23f, 0.41f, 0.6f);
+                skin = new Color(0.84f, 0.59f, 0.43f);
+            }
+            else
+            {
+                FishingScene.Sprite(_body, "Pernas", Art.RoundedBox, new Vector3(0.22f, 0.12f, 0f), new Vector3(0.62f, 0.2f, 1f), o, pants);
+                FishingScene.Sprite(_body, "Tronco", Art.RoundedBox, new Vector3(0f, 0.46f, 0f), new Vector3(0.44f, 0.66f, 1f), o, shirt);
+                FishingScene.Sprite(_body, "Cabeça", Art.Circle, new Vector3(0.04f, 0.93f, 0f), Vector3.one * 0.36f, o, skin);
+                FishingScene.Sprite(_body, "Chapéu", Art.Hat, new Vector3(0.04f, 0.99f, 0f), Vector3.one * 0.72f, o + 1);
+            }
 
             var arm = FishingScene.Sprite(_body, "Braço", Art.PixelLeft, new Vector3(0.08f, 0.66f, 0f), new Vector3(0.4f, 0.11f, 1f), o + 1, shirt * 0.9f);
             arm.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
@@ -414,19 +426,26 @@ namespace FishingIdle.Game.Scene
             return Mathf.Clamp(0.35f + (float)c.SizeCm / 90f, 0.4f, 1.6f);
         }
 
+        /// <summary>The aura of an important catch: rarity colour, gold for Excepcional, turquoise for a new species.</summary>
         private static Color GlowColor(CatchView c)
         {
+            var theme = Visual.VisualTheme.Current;
+            Color color;
             if (c.RarityId != null && c.RarityId != "common")
             {
-                return new Color(0.75f, 0.5f, 1f, 0.9f);
+                color = theme.Rarity(c.RarityId);
             }
-
-            if (c.SizeCategoryId == "exceptional")
+            else if (c.SizeCategoryId == "exceptional")
             {
-                return new Color(1f, 0.82f, 0.3f, 0.9f);
+                color = theme.Exceptional;
+            }
+            else
+            {
+                color = theme.Action; // new species or personal record
             }
 
-            return new Color(0.55f, 0.95f, 1f, 0.75f); // new species
+            color.a = 0.9f * theme.GlowIntensity + 0.1f;
+            return color;
         }
 
         private static float Ease(float t)
