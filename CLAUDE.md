@@ -111,6 +111,14 @@ Desde 29/09/2026, tudo que o proprietário pedir entra na **V0.2** (milestones a
 `docs/roadmap.json`). Os testes da V0.1 pelo proprietário (OD-010 a OD-014) estão em espera. Continua
 valendo: não inventar sistemas; fazer o que foi pedido e registrar o resto como decisão pendente.
 
+### Visual: a Bíblia de Arte
+
+`docs/ART_BIBLE_V0_1.md` ("Lago Dourado — Clean Premium") é a **fonte de verdade visual**, travada
+como o GDD: não se edita; um detalhe visual decidido na implementação vai para o `docs/GDD_ADENDO.md`.
+Uma referência visual nunca cria sistema, moeda ou raridade nova. Arte que ainda não existe vira um
+placeholder limpo, marcado `ASSET_PENDENTE` na descrição da tarefa. Em dúvida entre mais efeito e
+mais limpo, usar mais limpo.
+
 ## 5. O painel reflete o repositório
 
 `docs/roadmap.json` é a fonte de verdade do progresso. Uma tarefa vira `DONE` **na mesma mudança que
@@ -168,6 +176,7 @@ entender o contexto": tudo que o MVP precisa está em `client-unity/`, `config/`
 |---|---|
 | Prioridade atual (MVP local) | `docs/CLAUDE_START_HERE_V0_1_1.md` |
 | Design do jogo (fonte de verdade) | `docs/GDD_V0_1.md` |
+| Visual do jogo (fonte de verdade) | `docs/ART_BIBLE_V0_1.md` |
 | Detalhes de design decididos na implementação | `docs/GDD_ADENDO.md` |
 | Como o código funciona | `docs/BASE_TECNICA.md` |
 | Decisões técnicas e princípios travados | `docs/DECISOES.md` |

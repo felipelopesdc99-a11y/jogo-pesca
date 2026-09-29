@@ -62,6 +62,8 @@ infraestrutura online que já existia foi preservada no M12, adiada.
 | **M10** | Tutorial, UX e polimento | Tutorial, menus completos, modo compacto, áudio provisório, animações melhores |
 | **M11** | Balanceamento do MVP | Simulador e relatório dos números, testes de save e de abuso, correções. As revisões de números (progressão, economia, raridades, combate, Expedições) esperam o proprietário decidir as metas |
 | **M12** | Infraestrutura online (adiada) | Servidor ASP.NET, PostgreSQL, Docker, painel web (já construídos), serviços remotos, contas, site público |
+| **M13** | V0.2 · Áudio e ambiente | Sons de captura, recorde e subir de nível; mar e brisa calmos; sons como arquivos trocáveis |
+| **M14** | V0.2 · Visual Lago Dourado | A Bíblia de Arte (`docs/ART_BIBLE_V0_1.md`) aplicada: tema central, fontes, card de peixe, cena em luz dourada, níveis de intensidade e momentos especiais |
 
 ## Regras que o roadmap impõe a si mesmo
 

@@ -552,3 +552,22 @@ rara, momento importante, moedas, peixe pescado, aviso, clique.
 Mar calmo (ondas a cada 6–9 s) na frente e uma brisa bem baixa atrás, os dois em loop. O mesmo
 ambiente nos dois mapas por enquanto. Entra e sai com fade de 3 s. "Som ambiente" em Opções liga e
 desliga os dois.
+
+---
+
+## V0.2 — Milestone 14: Visual Lago Dourado
+
+### A-068 · A Bíblia de Arte decide o visual
+**Seção do GDD:** 8 · **Situação:** Em vigor
+
+O visual do jogo segue `docs/ART_BIBLE_V0_1.md`, enviada pelo proprietário em 29/09/2026. Ela
+responde três dúvidas que estavam em aberto:
+
+| Dúvida | Decisão | Seção da Bíblia |
+|---|---|---|
+| Câmera da cena de pesca | Continua lateral 2.5D, com camadas de profundidade | 9 |
+| Quais raridades aparecem | Só as que existem nos dados (hoje Comum e Raro); as outras cores ficam reservadas | 4 |
+| Fontes | Fredoka nos títulos e números, Nunito no corpo (as duas gratuitas) | 11 |
+
+O tamanho Excepcional continua sendo tamanho, não raridade: tem um selo próprio com brilho dourado,
+separado da cor de raridade do card.

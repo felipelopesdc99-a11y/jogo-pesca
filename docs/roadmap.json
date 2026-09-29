@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-29T01:20:56Z",
+  "updated_at": "2026-09-29T01:59:38Z",
   "current_milestone": "M13",
   "statuses": [
     "TODO",
@@ -132,6 +132,14 @@
       "title": "Ouvir e aprovar os sons novos",
       "detail": "Aperte Play e pesque um pouco: ouça o mar e a brisa, o som de peixe pescado, de recorde e de subir de nível (também mandei os arquivos no chat para ouvir fora do Unity). Diga o que ficou bom e o que trocar — por exemplo, mais ou menos ondas, brisa mais alta ou mais baixa, notas diferentes. Se preferir sons gravados, dá para trocar os arquivos em client-unity/Assets/Resources/Sons pelo mesmo nome.",
       "raised_at": "2026-09-29T01:20:56Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-016",
+      "task_id": "M14-T01",
+      "title": "Aprovar o plano do visual Lago Dourado",
+      "detail": "A Bíblia de Arte que você mandou foi guardada em docs/ART_BIBLE_V0_1.md e virou o milestone M14, com 15 tarefas nesta ordem: tema central, fontes, painéis e botões, ícones, card de peixe, peixes, Lago Sereno, níveis de intensidade, momentos especiais, telas (em dois blocos), Rio Selvagem e a lista de artes pendentes. Diga se pode começar assim ou se quer mudar a ordem — por exemplo, começar pela cena de pesca.",
+      "raised_at": "2026-09-29T01:59:38Z",
       "status": "OPEN"
     }
   ],
@@ -1700,6 +1708,191 @@
             "M13-T03"
           ],
           "updated_at": "2026-09-29T01:20:56Z"
+        }
+      ]
+    },
+    {
+      "id": "M14",
+      "title": "V0.2 · Visual Lago Dourado",
+      "goal": "Aplicar a Bíblia de Arte (docs/ART_BIBLE_V0_1.md): um idle de pesca 2.5D limpo e premium — cenário relaxante, interface escura e legível, turquesa para ações, raridade nos acentos dos cards e dourado reservado para recompensas e celebrações curtas. Só apresentação: nenhuma regra muda.",
+      "completion_criteria": [
+        "Todas as telas usam o mesmo tema, fontes, ícones e card de peixe, sem cores fixas no código.",
+        "Cada momento especial tem o seu efeito, no nível de intensidade certo.",
+        "Toda arte que ainda falta está marcada como ASSET_PENDENTE e listada para o proprietário.",
+        "O proprietário viu o jogo no Unity e aprovou o visual."
+      ],
+      "tasks": [
+        {
+          "id": "M14-T01",
+          "title": "Aprovar o plano do visual Lago Dourado",
+          "subsystem": "repo",
+          "description": "O proprietário confere este plano e a ordem das tarefas antes de começar o código visual.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T02",
+          "title": "Tema visual central em dados",
+          "subsystem": "client",
+          "description": "Paleta, cores de raridade, botões, painéis, intensidade de brilho e durações de aviso e celebração num arquivo de configuração só (VisualThemeConfig), sem cores espalhadas no código. Bíblia de Arte, seções 3, 4 e 36.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T01"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T03",
+          "title": "Fontes Fredoka e Nunito",
+          "subsystem": "client",
+          "description": "Fredoka nos títulos e números importantes, Nunito no corpo. As duas são gratuitas (licença SIL OFL) e ficam dentro do projeto. Seção 11.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T02"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T04",
+          "title": "Painéis, janelas e botões",
+          "subsystem": "client",
+          "description": "Painel escuro com borda suave, botão primário turquesa, secundário, destrutivo e o botão dourado só para recompensas. Seções 13 e 14.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T02",
+            "M14-T03"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T05",
+          "title": "Família de ícones",
+          "subsystem": "client",
+          "description": "Um conjunto único de ícones para menus, moedas, raridade, tamanho e ações, no mesmo traço. Onde a arte final ainda não existir, fica um placeholder limpo marcado ASSET_PENDENTE. Seção 12.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T02"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T06",
+          "title": "Card oficial de peixe",
+          "subsystem": "client",
+          "description": "Template único de card: raridade só como acento (borda e faixa), selo de tamanho separado e brilho dourado exclusivo do Excepcional. Usado na Caixa de Pesca, Aquário, Mercado e Enciclopédia. Seções 4, 5 e 6.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T04",
+            "M14-T05"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T07",
+          "title": "Estilo e pipeline dos peixes",
+          "subsystem": "client",
+          "description": "Arte dos peixes como arquivos trocáveis (fish_<espécie>_master.png, 2048×1024, fundo transparente), com os tamanhos derivados e a silhueta da Enciclopédia gerados a partir dele. A arte final vem do proprietário (processo da seção 39). Onde a arte final ainda não existir, fica um placeholder limpo marcado ASSET_PENDENTE. Seções 7, 8, 37 e 41.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T06"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T08",
+          "title": "Cena do Lago Sereno em luz dourada",
+          "subsystem": "client",
+          "description": "Cena lateral 2.5D com camadas de profundidade (parallax), luz de fim de tarde e movimento constante e calmo: água, nuvens, pescador e barco. Onde a arte final ainda não existir, fica um placeholder limpo marcado ASSET_PENDENTE. Seções 9, 10, 31 e 32.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T02"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T09",
+          "title": "Níveis de intensidade: Calmo, Recompensa, Celebração",
+          "subsystem": "client",
+          "description": "Três níveis de efeito visual, casados com os sons do M13: o dia a dia calmo, a recompensa com dourado e a celebração curta. Seções 15, 29 e 34.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T02",
+            "M14-T08"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T10",
+          "title": "Momentos especiais",
+          "subsystem": "client",
+          "description": "Cada momento com o seu efeito: peixe pescado, captura rara, tamanho Excepcional, recorde pessoal, espécie nova, subir de nível, venda, volta do offline, Expedição concluída, Mercado, Leilão e Arena. Seção 16.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T09",
+            "M14-T06"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T11",
+          "title": "Telas no estilo novo: Pesca, Mapa, Aquário, Perfil e Loja",
+          "subsystem": "client",
+          "description": "Redesenho dessas telas com os componentes padronizados, sem mudar nenhuma regra. Seções 17 a 20, 26 a 28 e o checklist da seção 42.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T04",
+            "M14-T06"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T12",
+          "title": "Telas no estilo novo: Arena, Expedição, Mercado e Leilão",
+          "subsystem": "client",
+          "description": "Redesenho dessas telas, incluindo a batalha da Arena, com os mesmos componentes. Seções 21 a 25 e o checklist da seção 42.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T11"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T13",
+          "title": "Cena do Rio Selvagem",
+          "subsystem": "client",
+          "description": "Segundo mapa no mesmo estilo, com identidade própria. Onde a arte final ainda não existir, fica um placeholder limpo marcado ASSET_PENDENTE. Seção 33.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T08"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T14",
+          "title": "Lista de artes pendentes",
+          "subsystem": "docs",
+          "description": "Documento com cada arte que falta (ASSET_PENDENTE), o nome do arquivo, o tamanho e a tela onde aparece, na ordem de prioridade A, B e C da seção 38 — para o proprietário produzir e mandar.",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T07",
+            "M14-T08",
+            "M14-T13"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
+        },
+        {
+          "id": "M14-T15",
+          "title": "Ver e aprovar o visual novo",
+          "subsystem": "client",
+          "description": "O proprietário aperta Play, tira prints e diz o que ajustar (seção 39, etapa 4).",
+          "status": "TODO",
+          "dependencies": [
+            "M14-T10",
+            "M14-T12",
+            "M14-T14"
+          ],
+          "updated_at": "2026-09-29T01:59:38Z"
         }
       ]
     }

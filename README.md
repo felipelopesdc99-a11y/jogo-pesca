@@ -55,6 +55,7 @@ depois (ou clique em *Descartar alterações* antes de salvar).
 |---|---|
 | Ver o que está pronto e o que vem a seguir | Painel de Desenvolvimento, ou `docs/ROADMAP.md` |
 | Entender o design do jogo | `docs/GDD_V0_1.md` (fonte de verdade, original em inglês) e `docs/GDD_ADENDO.md` (detalhes definidos durante a implementação) |
+| Ver como o jogo deve parecer (cores, fontes, cards, cenário, celebrações) | `docs/ART_BIBLE_V0_1.md` |
 | Entender como o código funciona (para desenvolvedores) | **`docs/BASE_TECNICA.md`** |
 | Saber por que algo foi feito de determinado jeito | `docs/DECISOES.md` |
 | O que mudou em cada versão | `docs/CHANGELOG.md` |

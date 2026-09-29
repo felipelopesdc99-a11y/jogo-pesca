@@ -3,7 +3,7 @@
 Este documento é para quem vai trabalhar no código: um desenvolvedor contratado, o Claude em outra
 sessão, ou o próprio proprietário quando quiser entender como o jogo é montado por dentro.
 
-- **O que o jogo deve ser** está no GDD (`docs/GDD_V0_1.md`) e no adendo (`docs/GDD_ADENDO.md`).
+- **O que o jogo deve ser** está no GDD (`docs/GDD_V0_1.md`) e no adendo (`docs/GDD_ADENDO.md`). **Como ele deve parecer** está na Bíblia de Arte (`docs/ART_BIBLE_V0_1.md`).
 - **Como o jogo é construído** está aqui.
 - **Por que cada escolha foi feita** está em `docs/DECISOES.md`.
 
