@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 7;
+        public const int CurrentVersion = 8;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -201,6 +201,41 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>Last processed supply / demand tick (clock ms ÷ interval). 0 = not started.</summary>
         public long SupplyTick { get; set; }
         public long DemandTick { get; set; }
+
+        /// <summary>Active auctions: the player's own and simulated sellers' (Milestone 9). Added in save version 8.</summary>
+        public List<Auction> Auctions { get; set; } = new List<Auction>();
+
+        public long NextAuctionId { get; set; } = 1;
+        public long BotAuctionsCreated { get; set; }
+        public long AuctionSupplyTick { get; set; }
+        public long AuctionBidTick { get; set; }
+    }
+
+    /// <summary>A 6-hour auction (GDD section 35). The goods live here until it ends.</summary>
+    public sealed class Auction
+    {
+        public long Id { get; set; }
+
+        /// <summary>Seller's display name for simulated auctions; null for the player's own.</summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string SellerName { get; set; }
+
+        public MarketGoods Goods { get; set; }
+        public long StartingBidCoins { get; set; }
+        public long StartedAtMs { get; set; }
+        public long EndsAtMs { get; set; }
+
+        /// <summary>Current highest bid; 0 while there is none.</summary>
+        public long HighestBidCoins { get; set; }
+
+        /// <summary>"player", a simulated bidder's name, or null while there is no bid.</summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string HighestBidder { get; set; }
+
+        public int BidCount { get; set; }
+
+        /// <summary>Whether the player has bid here at least once (for "Meus lances").</summary>
+        public bool PlayerBid { get; set; }
     }
 
     public sealed class MarketListing
@@ -237,6 +272,8 @@ namespace FishingIdle.GameService.Persistence
         public const string ReasonBought = "bought";
         public const string ReasonCancelled = "cancelled";
         public const string ReasonExpired = "expired";
+        public const string ReasonAuctionWon = "auction_won";
+        public const string ReasonAuctionUnsold = "auction_unsold";
 
         public long Id { get; set; }
         public string Reason { get; set; }
@@ -248,6 +285,11 @@ namespace FishingIdle.GameService.Persistence
     {
         public const string KindSold = "sold";
         public const string KindExpired = "expired";
+        public const string KindAuctionSold = "auction_sold";
+        public const string KindAuctionUnsold = "auction_unsold";
+        public const string KindAuctionWon = "auction_won";
+        public const string KindAuctionLost = "auction_lost";
+        public const string KindOutbid = "outbid";
 
         public long AtMs { get; set; }
         public string Kind { get; set; }

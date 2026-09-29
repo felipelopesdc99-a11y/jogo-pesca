@@ -502,6 +502,26 @@ namespace FishingIdle.GameService.Config
                 }
             }
 
+            // ---- economy.json → auction (Milestone 9)
+            var auction = economy.Auction;
+            if (auction == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.EconomyFile, "auction"));
+            }
+            else
+            {
+                if (auction.MaxActiveAuctionsPerSeller < 1 || auction.DurationHours <= 0 || auction.AntiSnipeWindowSeconds < 0 || auction.AntiSnipeResetToSeconds < 0)
+                {
+                    errors.Add(V.AtLeast(GameConfigLoader.EconomyFile, "auction (leilões por vendedor, duração)", 1));
+                }
+
+                if (auction.MinBidIncrementRatio <= 0 || auction.MinBidIncrementRatio >= 1 || auction.BidFeeRatio < 0 || auction.BidFeeRatio >= 1
+                    || auction.SellerEarlyCloseFeeRatio < 0 || auction.SellerEarlyCloseFeeRatio >= 1 || auction.TimedCompletionFeeRatio < 0 || auction.TimedCompletionFeeRatio >= 1)
+                {
+                    errors.Add(V.ChanceOutOfRange(GameConfigLoader.EconomyFile, "auction (taxas e aumento mínimo)"));
+                }
+            }
+
             // ---- market_bots.json (local simulated Market)
             if (marketBots.Valuation == null || marketBots.Supply?.PriceRatio == null || marketBots.Demand == null)
             {
@@ -536,6 +556,26 @@ namespace FishingIdle.GameService.Config
                 if (dem.ChanceAtReferencePrice < 0 || dem.ChanceAtReferencePrice > 1)
                 {
                     errors.Add(V.ChanceOutOfRange(GameConfigLoader.MarketBotsFile, "demand.chance_at_reference_price"));
+                }
+            }
+
+            var au = marketBots.Auctions;
+            if (au?.StartingBidRatio == null || au.ExtraRaiseRatio == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.MarketBotsFile, "auctions"));
+            }
+            else
+            {
+                if (au.TargetAuctionCount < 0 || au.NewAuctionsPerRefresh < 0 || au.RefreshIntervalMinutes <= 0 || au.BidCheckIntervalMinutes <= 0
+                    || au.MaxChecksPerCatchUp < 1 || au.StartingBidRatio.Min <= 0 || au.StartingBidRatio.Max < au.StartingBidRatio.Min
+                    || au.ExtraRaiseRatio.Min < 0 || au.ExtraRaiseRatio.Max < au.ExtraRaiseRatio.Min || au.MaxBidRatio <= 0)
+                {
+                    errors.Add(V.BadIntRange(GameConfigLoader.MarketBotsFile, "auctions"));
+                }
+
+                if (au.RodAuctionChance < 0 || au.RodAuctionChance > 1 || au.BidChancePerCheck < 0 || au.BidChancePerCheck > 1)
+                {
+                    errors.Add(V.ChanceOutOfRange(GameConfigLoader.MarketBotsFile, "auctions (chances)"));
                 }
             }
 

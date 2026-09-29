@@ -42,7 +42,7 @@ namespace FishingIdle.GameService.Market
         List<MarketEventView> Update();
     }
 
-    public sealed class LocalMarketService : IMarketService
+    public sealed partial class LocalMarketService : IMarketService, IAuctionService
     {
         private const int EventLimit = 30;
         private const ulong SupplySalt = 0x5A1E_5EEDUL;
@@ -318,6 +318,7 @@ namespace FishingIdle.GameService.Market
             var changed = RunSupply();
             changed |= RunDemand();
             changed |= ExpireMyListings();
+            changed |= RunAuctions();
             return changed;
         }
 
@@ -383,50 +384,8 @@ namespace FishingIdle.GameService.Market
         private MarketListing NewBotListing(Rng rng, long listedAt, long durationMs)
         {
             var supply = Config.MarketBots.Supply;
-            var names = Config.ArenaBots.Names;
-            var seller = names[rng.NextIntInclusive(0, names.Count - 1)];
-            var rods = Config.Rods.Rods.Where(r => r.TradableOnMarket).ToList();
-            var rodRoll = rng.NextDouble();
-
-            MarketGoods goods;
-            if (rods.Count > 0 && rodRoll < supply.RodListingChance)
-            {
-                var rod = rods[rng.NextIntInclusive(0, rods.Count - 1)];
-                var level = rod.HasInternalLevels ? LowBiasedLevel(rng, Config.RodMaxLevel(rod)) : 1;
-                goods = new MarketGoods
-                {
-                    Kind = MarketGoods.KindRod,
-                    Rod = new InventoryItem
-                    {
-                        Kind = InventoryItem.KindRod,
-                        RodId = rod.Id,
-                        Level = level,
-                        AcquiredAtMs = listedAt,
-                        PurchasePriceCoins = rod.Acquisition?.PurchaseCostCoins ?? 0,
-                        UpgradeCoinsInvested = MarketRules.RodUpgradeSpend(Config, rod, level),
-                    },
-                };
-            }
-            else
-            {
-                var map = Config.Maps.Maps[rng.NextIntInclusive(0, Config.Maps.Maps.Count - 1)];
-                var rolled = CatchRules.RollFound(Config, map, rng);
-                var level = LowBiasedLevel(rng, Math.Min(supply.MaxFishLevel, Config.Progression.FishLevel.MaxLevel));
-                goods = new MarketGoods
-                {
-                    Kind = MarketGoods.KindFish,
-                    Fish = new FishInstance
-                    {
-                        SpeciesId = rolled.Species.Id,
-                        SizeMm = rolled.SizeMm,
-                        SizeCategoryId = rolled.SizeCategory.Id,
-                        Level = level,
-                        InvestedXp = MarketRules.FishXpToReach(Config, level),
-                        CaughtAtMs = listedAt,
-                        KeptAtMs = listedAt,
-                    },
-                };
-            }
+            var seller = RandomTraderName(rng);
+            var goods = NewBotGoods(rng, supply.RodListingChance, listedAt);
 
             // Never below what the game pays, so buying a simulated listing to resell it to the game never profits.
             var floor = MarketRules.NpcValue(Config, goods) + 1;
@@ -442,6 +401,55 @@ namespace FishingIdle.GameService.Market
                 ListedAtMs = listedAt,
                 ExpiresAtMs = listedAt + durationMs,
                 Goods = goods,
+            };
+        }
+
+        private string RandomTraderName(Rng rng)
+        {
+            var names = Config.ArenaBots.Names;
+            return names[rng.NextIntInclusive(0, names.Count - 1)];
+        }
+
+        /// <summary>A fish from any map (sometimes levelled) or, with <paramref name="rodChance"/>, a tradable rod.</summary>
+        private MarketGoods NewBotGoods(Rng rng, double rodChance, long at)
+        {
+            var rods = Config.Rods.Rods.Where(r => r.TradableOnMarket).ToList();
+            var rodRoll = rng.NextDouble();
+            if (rods.Count > 0 && rodRoll < rodChance)
+            {
+                var rod = rods[rng.NextIntInclusive(0, rods.Count - 1)];
+                var level = rod.HasInternalLevels ? LowBiasedLevel(rng, Config.RodMaxLevel(rod)) : 1;
+                return new MarketGoods
+                {
+                    Kind = MarketGoods.KindRod,
+                    Rod = new InventoryItem
+                    {
+                        Kind = InventoryItem.KindRod,
+                        RodId = rod.Id,
+                        Level = level,
+                        AcquiredAtMs = at,
+                        PurchasePriceCoins = rod.Acquisition?.PurchaseCostCoins ?? 0,
+                        UpgradeCoinsInvested = MarketRules.RodUpgradeSpend(Config, rod, level),
+                    },
+                };
+            }
+
+            var map = Config.Maps.Maps[rng.NextIntInclusive(0, Config.Maps.Maps.Count - 1)];
+            var rolled = CatchRules.RollFound(Config, map, rng);
+            var fishLevel = LowBiasedLevel(rng, Math.Min(Config.MarketBots.Supply.MaxFishLevel, Config.Progression.FishLevel.MaxLevel));
+            return new MarketGoods
+            {
+                Kind = MarketGoods.KindFish,
+                Fish = new FishInstance
+                {
+                    SpeciesId = rolled.Species.Id,
+                    SizeMm = rolled.SizeMm,
+                    SizeCategoryId = rolled.SizeCategory.Id,
+                    Level = fishLevel,
+                    InvestedXp = MarketRules.FishXpToReach(Config, fishLevel),
+                    CaughtAtMs = at,
+                    KeptAtMs = at,
+                },
             };
         }
 
@@ -486,8 +494,7 @@ namespace FishingIdle.GameService.Market
                         continue;
                     }
 
-                    var names = Config.ArenaBots.Names;
-                    CompleteSale(listing, tickTime, names[rng.NextIntInclusive(0, names.Count - 1)]);
+                    CompleteSale(listing, tickTime, RandomTraderName(rng));
                 }
             }
 
@@ -680,7 +687,8 @@ namespace FishingIdle.GameService.Market
             return new MarketEventView
             {
                 AtMs = e.AtMs,
-                Sold = e.Kind == MarketEvent.KindSold,
+                Sold = e.Kind == MarketEvent.KindSold || e.Kind == MarketEvent.KindAuctionSold,
+                Kind = e.Kind,
                 GoodsName = ToView(e.Goods).Name,
                 PriceCoins = e.PriceCoins,
                 FeeCoins = e.FeeCoins,

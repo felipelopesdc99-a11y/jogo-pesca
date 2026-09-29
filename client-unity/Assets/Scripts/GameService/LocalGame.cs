@@ -37,7 +37,9 @@ namespace FishingIdle.GameService
             Profile = new LocalProfileService(session, Fishing, Cardume);
             Expeditions = new LocalExpeditionService(session, fishing, Cardume);
             Arena = new LocalArenaService(session, Cardume);
-            Market = new LocalMarketService(session, aquarium);
+            var market = new LocalMarketService(session, aquarium);
+            Market = market;
+            Auctions = market;
         }
 
         public GameSession Session { get; }
@@ -51,6 +53,7 @@ namespace FishingIdle.GameService
         public IExpeditionService Expeditions { get; }
         public IArenaService Arena { get; }
         public IMarketService Market { get; }
+        public IAuctionService Auctions { get; }
 
         /// <summary>Starts the game service, or explains in PT-BR why it cannot.</summary>
         public static LocalGameStartResult Start(string configDirectory, string saveDirectory, IClock clock, Action<string> log)

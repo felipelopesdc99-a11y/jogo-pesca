@@ -339,11 +339,20 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 7;
             }
 
+            if (save.SaveVersion == 7)
+            {
+                // v8 adds Auctions (Milestone 9) inside the Market state.
+                save.Market = save.Market ?? new MarketState();
+                save.Market.Auctions = new List<Auction>();
+                save.SaveVersion = 8;
+            }
+
             save.Market = save.Market ?? new MarketState();
             save.Market.MyListings = save.Market.MyListings ?? new List<MarketListing>();
             save.Market.BotListings = save.Market.BotListings ?? new List<MarketListing>();
             save.Market.Withdrawals = save.Market.Withdrawals ?? new List<WithdrawalItem>();
             save.Market.Events = save.Market.Events ?? new List<MarketEvent>();
+            save.Market.Auctions = save.Market.Auctions ?? new List<Auction>();
 
             save.Arena = save.Arena ?? new ArenaState();
             save.Arena.Ranking = save.Arena.Ranking ?? new List<string>();
@@ -407,6 +416,7 @@ namespace FishingIdle.GameService.Persistence
                 var goods = save.Market.MyListings.Select(l => l?.Goods)
                     .Concat(save.Market.BotListings.Select(l => l?.Goods))
                     .Concat(save.Market.Withdrawals.Select(w => w?.Goods))
+                    .Concat(save.Market.Auctions.Select(a => a?.Goods))
                     .ToList();
                 if (goods.Any(g => g == null || (g.Kind == MarketGoods.KindFish ? g.Fish == null : g.Kind == MarketGoods.KindRod ? g.Rod == null : true)))
                 {
@@ -414,6 +424,7 @@ namespace FishingIdle.GameService.Persistence
                 }
 
                 if (save.Market.MyListings.Concat(save.Market.BotListings).Any(l => l != null && l.PriceCoins < 0)) problems.Add("market negative price");
+                if (save.Market.Auctions.Any(a => a != null && (a.HighestBidCoins < 0 || a.StartingBidCoins < 0))) problems.Add("auction negative bid");
             }
 
             if (save.Expedition == null) problems.Add("expedition missing");

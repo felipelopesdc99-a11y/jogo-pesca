@@ -28,6 +28,7 @@ namespace FishingIdle.Game.UI
             Buy,
             Sell,
             Mine,
+            Auction,
             Withdraw,
         }
 
@@ -40,6 +41,10 @@ namespace FishingIdle.Game.UI
         private Vector2 _sideScroll;
 
         private MarketView _market;
+        private AuctionsView _auctions;
+        private long _selectedAuction;
+        private bool _creatingAuction;
+        private string _bidText = string.Empty;
         private MarketFilterOptions _options;
         private List<ListingView> _results = new List<ListingView>();
         private List<SellCandidateView> _candidates = new List<SellCandidateView>();
@@ -75,10 +80,12 @@ namespace FishingIdle.Game.UI
 
         public void Close()
         {
-            if (_selectedListing != 0 || _selectedCandidate != 0)
+            if (_selectedListing != 0 || _selectedCandidate != 0 || _selectedAuction != 0 || _creatingAuction)
             {
                 _selectedListing = 0;
                 _selectedCandidate = 0;
+                _selectedAuction = 0;
+                _creatingAuction = false;
                 return;
             }
 
@@ -107,6 +114,8 @@ namespace FishingIdle.Game.UI
             {
                 _selectedListing = 0;
                 _selectedCandidate = 0;
+                _selectedAuction = 0;
+                _creatingAuction = false;
                 IsOpen = false;
                 return;
             }
@@ -117,6 +126,7 @@ namespace FishingIdle.Game.UI
             {
                 case Tab.Sell: DrawSell(skin, content); break;
                 case Tab.Mine: DrawMine(skin, content); break;
+                case Tab.Auction: DrawAuction(skin, content); break;
                 case Tab.Withdraw: DrawWithdraw(skin, content); break;
                 default: DrawBuy(skin, content); break;
             }
@@ -131,9 +141,14 @@ namespace FishingIdle.Game.UI
             {
                 _results = _root.SearchMarket(BuildQuery());
             }
-            else if (_tab == Tab.Sell)
+            else if (_tab == Tab.Sell || (_tab == Tab.Auction && _creatingAuction))
             {
                 _candidates = _root.GetSellCandidates();
+            }
+
+            if (_tab == Tab.Auction)
+            {
+                _auctions = _root.GetAuctions();
             }
         }
 
@@ -144,6 +159,7 @@ namespace FishingIdle.Game.UI
                 (Tab.Buy, GameTexts.Market.TabBuy),
                 (Tab.Sell, GameTexts.Market.TabSell),
                 (Tab.Mine, GameTexts.Market.TabMineCount(_market.MyListings.Count, _market.MaxListings)),
+                (Tab.Auction, GameTexts.Market.TabAuction),
                 (Tab.Withdraw, GameTexts.Market.TabWithdrawCount(_market.Withdrawals.Count)),
             };
 
@@ -157,6 +173,8 @@ namespace FishingIdle.Game.UI
                     _scroll = Vector2.zero;
                     _selectedListing = 0;
                     _selectedCandidate = 0;
+                    _selectedAuction = 0;
+                    _creatingAuction = false;
                     _nextRefresh = 0f;
                 }
 
@@ -475,6 +493,197 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.EndScrollView();
+        }
+
+        // ------------------------------------------------------------------ Auction
+
+        private void DrawAuction(UiSkin skin, Rect area)
+        {
+            if (_auctions == null)
+            {
+                return;
+            }
+
+            // Strip: the player's own auction (or the button to create one) and the coins locked in bids.
+            var strip = new Rect(area.x, area.y, area.width, 78);
+            GUI.Box(strip, GUIContent.none, skin.Card);
+            GUI.Label(new Rect(strip.x + 18, strip.y + 10, 200, 20), GameTexts.Market.MyAuction, skin.SmallMuted);
+            var mine = _auctions.Mine;
+            if (mine == null)
+            {
+                GUI.Label(new Rect(strip.x + 18, strip.y + 34, 400, 24), GameTexts.Market.NoMyAuction, skin.Body);
+                if (!_creatingAuction && GUI.Button(new Rect(strip.x + 440, strip.y + 20, 200, 40), GameTexts.Market.CreateAuction, skin.ButtonPrimary))
+                {
+                    _creatingAuction = true;
+                    _selectedCandidate = 0;
+                    _selectedAuction = 0;
+                    _scroll = Vector2.zero;
+                    _nextRefresh = 0f;
+                }
+            }
+            else
+            {
+                GoodsIcon(skin, new Rect(strip.x + 18, strip.y + 30, 70, 40), mine.Goods);
+                GUI.Label(new Rect(strip.x + 100, strip.y + 32, 260, 22), mine.Goods.Name, skin.BodyBold);
+                var bid = mine.BidCount == 0 ? GameTexts.Market.NoBids : GameTexts.Market.BidAt(Format.Number(mine.HighestBidCoins)) + " · " + GameTexts.Market.BidCount(mine.BidCount);
+                GUI.Label(new Rect(strip.x + 370, strip.y + 14, 300, 22), bid, skin.SmallGold);
+                GUI.Label(new Rect(strip.x + 370, strip.y + 40, 300, 22), GameTexts.Market.EndsIn(Format.TimeLeft(mine.RemainingSeconds)), skin.SmallMuted);
+                if (mine.CanEndNow)
+                {
+                    if (GUI.Button(new Rect(strip.x + 690, strip.y + 18, 300, 42), GameTexts.Market.EndNow(Format.Number(mine.EndNowNetCoins)), skin.Button))
+                    {
+                        _root.EndAuctionNow(mine.AuctionId);
+                        _nextRefresh = 0f;
+                    }
+                }
+                else
+                {
+                    GUI.Label(new Rect(strip.x + 690, strip.y + 18, 320, 44), GameTexts.ServiceErrorMessage(ServiceError.AuctionHasNoBids.ToString()), skin.SmallMuted);
+                }
+            }
+
+            if (_auctions.ReservedCoins > 0)
+            {
+                GUI.Label(new Rect(strip.xMax - 300, strip.y + 30, 280, 22), GameTexts.Market.Reserved(Format.Number(_auctions.ReservedCoins)), skin.SmallGoldRight);
+            }
+
+            var body = new Rect(area.x, area.y + 92, area.width, area.height - 92);
+            if (_creatingAuction)
+            {
+                DrawCreateAuction(skin, body);
+                return;
+            }
+
+            GUI.Label(new Rect(body.x, body.y, body.width - SidePanelWidth - 16, 40), GameTexts.Market.AuctionNote, skin.SmallMuted);
+            var grid = new Rect(body.x, body.y + 46, body.width - SidePanelWidth - 16, body.height - 46);
+            if (_auctions.Open.Count == 0)
+            {
+                GUI.Label(new Rect(grid.x, grid.y + 8, grid.width, 40), GameTexts.Market.NoAuctions, skin.Body);
+            }
+            else
+            {
+                DrawGrid(grid, _auctions.Open, ref _scroll, (rect, a) =>
+                {
+                    var corner = (a.BidCount == 0 ? GameTexts.Market.StartingAt(Format.Number(a.StartingBidCoins)) : GameTexts.Market.BidAt(Format.Number(a.HighestBidCoins)))
+                                 + " · " + Format.TimeLeft(a.RemainingSeconds);
+                    if (GoodsCard(skin, rect, a.Goods, corner, a.AuctionId == _selectedAuction))
+                    {
+                        _selectedAuction = a.AuctionId;
+                        _bidText = a.MinNextBidCoins.ToString(CultureInfo.InvariantCulture);
+                    }
+
+                    if (a.PlayerIsHighest)
+                    {
+                        skin.Tag(new Rect(rect.x + 10, rect.y + 10, 84, 18), GameTexts.Market.Winning, UiSkin.Accent);
+                    }
+                });
+            }
+
+            var side = new Rect(body.xMax - SidePanelWidth, body.y, SidePanelWidth, body.height);
+            GUI.Box(side, GUIContent.none, skin.Card);
+            var selected = _auctions.Open.FirstOrDefault(a => a.AuctionId == _selectedAuction);
+            if (selected == null)
+            {
+                GUI.Label(new Rect(side.x + 20, side.y + 20, side.width - 40, 60), GameTexts.Market.SelectHint, skin.SmallMuted);
+                return;
+            }
+
+            var x = side.x + 20;
+            var w = side.width - 40;
+            var y = DrawGoodsDetail(skin, side, selected.Goods);
+            InfoRow(skin, x, ref y, w, GameTexts.Market.Seller, selected.SellerName);
+            InfoRow(skin, x, ref y, w, GameTexts.Market.CurrentBid, selected.BidCount == 0 ? GameTexts.Market.NoBids : Format.Number(selected.HighestBidCoins) + " · " + selected.HighestBidderName);
+            InfoRow(skin, x, ref y, w, GameTexts.Market.EndsLabel, Format.TimeLeft(selected.RemainingSeconds));
+
+            var bottom = side.yMax - 20;
+            if (selected.PlayerIsHighest)
+            {
+                GUI.Label(new Rect(x, bottom - 40, w, 40), GameTexts.Market.YouAreWinning, skin.SmallGold);
+                return;
+            }
+
+            GUI.Label(new Rect(x, bottom - 170, w, 20), GameTexts.Market.MinBid(Format.Number(selected.MinNextBidCoins)), skin.SmallMuted);
+            GUI.Label(new Rect(x, bottom - 146, w, 20), GameTexts.Market.YourBid, skin.SmallMuted);
+            _bidText = Digits(GUI.TextField(new Rect(x, bottom - 124, w, 32), _bidText, 12), false);
+            var amount = ParseLong(_bidText) ?? 0;
+            var fee = (long)Math.Round(amount * _auctions.BidFeeRatio, MidpointRounding.AwayFromZero);
+            GUI.Label(new Rect(x, bottom - 84, w, 20), GameTexts.Market.BidFee(_auctions.BidFeeRatio, Format.Number(fee)), skin.SmallMuted);
+            GUI.enabled = amount >= selected.MinNextBidCoins && _auctions.Coins >= amount + fee;
+            if (GUI.Button(new Rect(x, bottom - 44, w, 44), GameTexts.Market.PlaceBid, skin.ButtonPrimary))
+            {
+                _root.PlaceBid(selected.AuctionId, amount);
+                _nextRefresh = 0f;
+            }
+
+            GUI.enabled = true;
+        }
+
+        private void DrawCreateAuction(UiSkin skin, Rect area)
+        {
+            if (GUI.Button(new Rect(area.x, area.y, 220, 34), "« " + GameTexts.Market.BackToAuctions, skin.Button))
+            {
+                _creatingAuction = false;
+                _selectedCandidate = 0;
+                return;
+            }
+
+            GUI.Label(new Rect(area.x + 240, area.y + 6, area.width - SidePanelWidth - 260, 40), GameTexts.Market.StartAuctionNote, skin.SmallMuted);
+            var grid = new Rect(area.x, area.y + 48, area.width - SidePanelWidth - 16, area.height - 48);
+            DrawGrid(grid, _candidates, ref _scroll, (rect, c) =>
+            {
+                var previous = GUI.color;
+                if (c.Blocker != ServiceError.None)
+                {
+                    GUI.color = new Color(1f, 1f, 1f, 0.55f);
+                }
+
+                if (GoodsCard(skin, rect, c.Goods, GameTexts.Market.NpcValue + " " + Format.Number(c.Goods.NpcValueCoins), c.SourceId == _selectedCandidate && c.IsFish == _selectedCandidateIsFish))
+                {
+                    _selectedCandidate = c.SourceId;
+                    _selectedCandidateIsFish = c.IsFish;
+                    _priceText = c.Goods.NpcValueCoins.ToString(CultureInfo.InvariantCulture);
+                }
+
+                GUI.color = previous;
+            });
+
+            var side = new Rect(area.xMax - SidePanelWidth, area.y, SidePanelWidth, area.height);
+            GUI.Box(side, GUIContent.none, skin.Card);
+            var candidate = _candidates.FirstOrDefault(c => c.SourceId == _selectedCandidate && c.IsFish == _selectedCandidateIsFish);
+            if (candidate == null)
+            {
+                GUI.Label(new Rect(side.x + 20, side.y + 20, side.width - 40, 60), GameTexts.Market.SellHint, skin.SmallMuted);
+                return;
+            }
+
+            var x = side.x + 20;
+            var w = side.width - 40;
+            var y = DrawGoodsDetail(skin, side, candidate.Goods);
+            InfoRow(skin, x, ref y, w, GameTexts.Market.NpcValue, Format.Number(candidate.Goods.NpcValueCoins));
+            InfoRow(skin, x, ref y, w, GameTexts.Market.Reference, Format.Number(candidate.Goods.ReferenceCoins));
+
+            var bottom = side.yMax - 20;
+            if (candidate.Blocker != ServiceError.None)
+            {
+                GUI.Label(new Rect(x, bottom - 60, w, 60), GameTexts.ServiceErrorMessage(candidate.Blocker.ToString()), skin.SmallGold);
+                return;
+            }
+
+            GUI.Label(new Rect(x, bottom - 110, w, 20), GameTexts.Market.StartingBid, skin.SmallMuted);
+            _priceText = Digits(GUI.TextField(new Rect(x, bottom - 88, w, 32), _priceText, 12), false);
+            var start = ParseLong(_priceText) ?? 0;
+            GUI.enabled = start >= _market.MinimumPriceCoins;
+            if (GUI.Button(new Rect(x, bottom - 44, w, 44), GameTexts.Market.StartAuctionFor(_auctions.DurationHours), skin.ButtonPrimary))
+            {
+                if (_root.StartAuction(candidate.IsFish, candidate.SourceId, start))
+                {
+                    _creatingAuction = false;
+                    _selectedCandidate = 0;
+                    _nextRefresh = 0f;
+                }
+            }
+
+            GUI.enabled = true;
         }
 
         // ------------------------------------------------------------------ Items to Withdraw

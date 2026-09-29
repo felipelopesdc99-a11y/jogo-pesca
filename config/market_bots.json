@@ -28,5 +28,24 @@
     "chance_at_reference_price": 0.25,
     "max_price_ratio": 4.0,
     "max_checks_per_catch_up": 504
+  },
+  "auctions": {
+    "note": "Leilões de outros jogadores (bots) e os lances que eles dão, inclusive nos seus leilões. O lance inicial deles fica entre starting_bid_ratio × referência e nunca abaixo do que o NPC paga. A cada bid_check_interval_minutes cada leilão tem bid_chance_per_check de receber um lance de bot, de até max_bid_ratio × referência.",
+    "target_auction_count": 8,
+    "refresh_interval_minutes": 60,
+    "new_auctions_per_refresh": 2,
+    "rod_auction_chance": 0.15,
+    "starting_bid_ratio": {
+      "min": 0.5,
+      "max": 0.9
+    },
+    "bid_check_interval_minutes": 10,
+    "bid_chance_per_check": 0.3,
+    "max_bid_ratio": 1.4,
+    "extra_raise_ratio": {
+      "min": 0.0,
+      "max": 0.05
+    },
+    "max_checks_per_catch_up": 144
   }
 }

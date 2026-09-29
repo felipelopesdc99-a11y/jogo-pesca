@@ -245,6 +245,20 @@ namespace FishingIdle.GameService.Config
         public FishingBoxConfig FishingBox { get; set; }
         public AquariumConfig Aquarium { get; set; }
         public MarketFixedPriceConfig MarketFixedPrice { get; set; }
+        public AuctionConfig Auction { get; set; }
+    }
+
+    /// <summary>The Auction rules (GDD section 35).</summary>
+    public sealed class AuctionConfig
+    {
+        public int MaxActiveAuctionsPerSeller { get; set; }
+        public double DurationHours { get; set; }
+        public double MinBidIncrementRatio { get; set; }
+        public double BidFeeRatio { get; set; }
+        public double AntiSnipeWindowSeconds { get; set; }
+        public double AntiSnipeResetToSeconds { get; set; }
+        public double SellerEarlyCloseFeeRatio { get; set; }
+        public double TimedCompletionFeeRatio { get; set; }
     }
 
     /// <summary>The fixed-price Market rules (GDD section 33).</summary>
@@ -408,6 +422,21 @@ namespace FishingIdle.GameService.Config
         public MarketValuationConfig Valuation { get; set; }
         public MarketSupplyConfig Supply { get; set; }
         public MarketDemandConfig Demand { get; set; }
+        public AuctionBotsConfig Auctions { get; set; }
+    }
+
+    public sealed class AuctionBotsConfig
+    {
+        public int TargetAuctionCount { get; set; }
+        public double RefreshIntervalMinutes { get; set; }
+        public int NewAuctionsPerRefresh { get; set; }
+        public double RodAuctionChance { get; set; }
+        public RangeConfig StartingBidRatio { get; set; }
+        public double BidCheckIntervalMinutes { get; set; }
+        public double BidChancePerCheck { get; set; }
+        public double MaxBidRatio { get; set; }
+        public RangeConfig ExtraRaiseRatio { get; set; }
+        public int MaxChecksPerCatchUp { get; set; }
     }
 
     public sealed class MarketValuationConfig

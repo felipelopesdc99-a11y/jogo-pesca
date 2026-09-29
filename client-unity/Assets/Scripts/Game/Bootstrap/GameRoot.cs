@@ -151,9 +151,7 @@ namespace FishingIdle.Game.Bootstrap
                     var marketNews = Game.Market.Update();
                     foreach (var news in marketNews)
                     {
-                        Toasts.Push(news.Sold
-                            ? GameTexts.Market.Sold(news.BuyerName, news.GoodsName, Format.Number(news.NetCoins))
-                            : GameTexts.Market.Expired(news.GoodsName), news.Sold ? ToastKind.Coins : ToastKind.Info);
+                        PushMarketNews(news);
                     }
 
                     if (marketNews.Count > 0)
@@ -514,6 +512,88 @@ namespace FishingIdle.Game.Bootstrap
                 Toasts.Push(GameTexts.Market.WithdrewAll(result.Value.Withdrawn, result.Value.LeftBehind), result.Value.LeftBehind > 0 ? ToastKind.Warning : ToastKind.Info);
                 Refresh();
                 AquariumChanged?.Invoke();
+            });
+        }
+
+        private void PushMarketNews(MarketEventView news)
+        {
+            switch (news.Kind)
+            {
+                case MarketEvent.KindSold:
+                    Toasts.Push(GameTexts.Market.Sold(news.BuyerName, news.GoodsName, Format.Number(news.NetCoins)), ToastKind.Coins);
+                    break;
+                case MarketEvent.KindAuctionSold:
+                    Toasts.Push(GameTexts.Market.AuctionSold(news.GoodsName, Format.Number(news.NetCoins)), ToastKind.Coins);
+                    break;
+                case MarketEvent.KindAuctionUnsold:
+                    Toasts.Push(GameTexts.Market.AuctionUnsold(news.GoodsName), ToastKind.Info);
+                    break;
+                case MarketEvent.KindAuctionWon:
+                    Toasts.Push(GameTexts.Market.AuctionWon(news.GoodsName), ToastKind.Important);
+                    break;
+                case MarketEvent.KindAuctionLost:
+                    Toasts.Push(GameTexts.Market.AuctionLost(news.GoodsName), ToastKind.Info);
+                    break;
+                case MarketEvent.KindOutbid:
+                    Toasts.Push(GameTexts.Market.Outbid(news.GoodsName, news.BuyerName), ToastKind.Warning);
+                    break;
+                default:
+                    Toasts.Push(GameTexts.Market.Expired(news.GoodsName), ToastKind.Info);
+                    break;
+            }
+        }
+
+        public AuctionsView GetAuctions() => IsRunning ? Game.Auctions.GetAuctions() : null;
+
+        public bool StartAuction(bool isFish, long sourceId, long startingBid)
+        {
+            var started = false;
+            Guard(() =>
+            {
+                var result = Game.Auctions.StartAuction(isFish, sourceId, startingBid);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                started = true;
+                Toasts.Push(GameTexts.Market.AuctionStarted(result.Value.Goods.Name), ToastKind.Info);
+                Refresh();
+                AquariumChanged?.Invoke();
+            });
+            return started;
+        }
+
+        public void PlaceBid(long auctionId, long amount)
+        {
+            Guard(() =>
+            {
+                var result = Game.Auctions.PlaceBid(auctionId, amount);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Market.BidPlaced(result.Value.Auction.Goods.Name, Format.Number(amount), Format.Number(result.Value.FeeCoins)), ToastKind.Info);
+                Refresh();
+            });
+        }
+
+        public void EndAuctionNow(long auctionId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Auctions.EndAuctionNow(auctionId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Market.AuctionSold(result.Value.Goods.Name, Format.Number(result.Value.EndNowNetCoins)), ToastKind.Coins);
+                Refresh();
             });
         }
 

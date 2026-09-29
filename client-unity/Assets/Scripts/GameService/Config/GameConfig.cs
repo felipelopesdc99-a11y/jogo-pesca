@@ -66,6 +66,7 @@ namespace FishingIdle.GameService.Config
         public ArenaBotsConfig ArenaBots { get; }
         public MarketBotsConfig MarketBots { get; }
         public MarketFixedPriceConfig Market => Economy.MarketFixedPrice;
+        public AuctionConfig Auction => Economy.Auction;
 
         /// <summary>Number of Cardume positions (6).</summary>
         public int CardumeSize => Arena.Cardume.MaxFish;

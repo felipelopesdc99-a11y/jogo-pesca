@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-29T00:27:36Z",
-  "current_milestone": "M8",
+  "updated_at": "2026-09-29T00:34:32Z",
+  "current_milestone": "M9",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -100,6 +100,14 @@
       "title": "Testar o Mercado",
       "detail": "Abra o menu Mercado: compre um peixe em Comprar e retire em Itens a Retirar; anuncie um peixe em Vender, veja em Meus Anúncios e cancele. Deixe um anúncio perto do preço de referência e espere uns 20 minutos para ver a venda. Não bloqueia: eu sigo com o Milestone 9.",
       "raised_at": "2026-09-29T00:27:36Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-012",
+      "task_id": "M9-T07",
+      "title": "Testar o Leilão",
+      "detail": "No Mercado, aba Leilão: dê um lance num leilão aberto e veja o valor reservado; crie um leilão seu e espere lances (a cada ~10 minutos pode chegar um). Experimente Encerrar agora. Não bloqueia: eu sigo com o Milestone 10.",
+      "raised_at": "2026-09-29T00:34:32Z",
       "status": "OPEN"
     }
   ],
@@ -1146,56 +1154,84 @@
           "id": "M9-T01",
           "title": "Leilão de 6h, um por vendedor",
           "subsystem": "server",
-          "description": "Lance inicial definido pelo vendedor; sem cancelamento sem oferta.",
-          "status": "TODO",
+          "description": "Lance inicial definido pelo vendedor; sem cancelamento.",
+          "status": "DONE",
           "dependencies": [
-            "M8-T05"
+            "M8-T03"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Um leilão ativo por vez, de peixe do Aquário ou vara do Inventário, sempre 6 horas, com lance inicial escolhido pelo vendedor. Não existe cancelar: sem lances, espera as 6 horas e o item volta por Itens a Retirar. Com lance, o maior vence sozinho no fim (sem taxa). Conta separado dos 5 anúncios. Testado.",
+          "updated_at": "2026-09-29T00:34:32Z"
         },
         {
           "id": "M9-T02",
           "title": "Lances com +3% mínimo e taxa de 1%",
           "subsystem": "server",
-          "description": "Principal bloqueado e devolvido ao ser superado; taxa nunca devolvida.",
-          "status": "TODO",
+          "description": "Valor reservado enquanto lidera; devolvido na hora ao ser superado.",
+          "status": "DONE",
           "dependencies": [
             "M9-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Primeiro lance ≥ lance inicial; os seguintes ≥ lance atual + 3% (arredondado para cima). Cada lance cobra 1% na hora, que nunca volta. O valor do lance sai das Moedas e fica reservado enquanto você lidera; se alguém passar, volta na hora. Quem já lidera não pode dar outro lance, então um pedido repetido (clique duplo, reconexão, reinício do jogo) nunca cobra de novo. Ganhou: o item vai para Itens a Retirar. Testado.",
+          "updated_at": "2026-09-29T00:34:32Z"
         },
         {
           "id": "M9-T03",
           "title": "Proteção de último minuto",
           "subsystem": "server",
-          "description": "Lance com menos de 60s volta o cronômetro para 60s.",
-          "status": "TODO",
+          "description": "Lance com menos de 60s restantes volta o cronômetro para 60s.",
+          "status": "DONE",
           "dependencies": [
-            "M9-T01"
+            "M9-T02"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Um lance válido com menos de 1 minuto restante faz o tempo voltar para 1:00, quantas vezes acontecer (economy.json → auction.anti_snipe_*). Vale para os lances simulados também. Testado.",
+          "updated_at": "2026-09-29T00:34:32Z"
         },
         {
           "id": "M9-T04",
           "title": "Encerramento antecipado com taxa de 3%",
           "subsystem": "server",
-          "description": "Só quando já existe oferta.",
-          "status": "TODO",
+          "description": "Só com lance; maior lance vence e o vendedor paga 3%.",
+          "status": "DONE",
           "dependencies": [
-            "M9-T01"
+            "M9-T02"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Com pelo menos um lance, o vendedor pode encerrar na hora: o maior lance vence e o vendedor recebe 97%. Sem lance, encerrar é recusado. Testado.",
+          "updated_at": "2026-09-29T00:34:32Z"
         },
         {
           "id": "M9-T05",
-          "title": "Tela do Leilão",
-          "subsystem": "client",
-          "description": "Aba dentro do Mercado.",
-          "status": "TODO",
+          "title": "Leilões e lances simulados",
+          "subsystem": "server",
+          "description": "Outros jogadores leiloam e dão lances, também nos seus leilões.",
+          "status": "DONE",
           "dependencies": [
             "M9-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "config/market_bots.json → auctions: ~8 leilões de outros jogadores abertos, 2 novos por hora, lance inicial entre 50% e 90% da referência (nunca abaixo do NPC). A cada 10 minutos cada leilão (inclusive o seu) tem 30% de chance de receber um lance simulado, de até 1,4× a referência. Calculado pelo relógio, também com o jogo fechado. Testado.",
+          "updated_at": "2026-09-29T00:34:32Z"
+        },
+        {
+          "id": "M9-T06",
+          "title": "Tela do Leilão",
+          "subsystem": "client",
+          "description": "Aba Leilão dentro do Mercado.",
+          "status": "DONE",
+          "dependencies": [
+            "M9-T04"
+          ],
+          "completion_notes": "Aba Leilão no Mercado: faixa com o seu leilão (lance atual, tempo, Encerrar agora quando houver lance) ou o botão Criar leilão; valor reservado em lances; cards dos leilões abertos com lance atual e tempo (marca GANHANDO quando você lidera); painel com lance mínimo, campo do lance e a taxa de 1% antes de confirmar. Avisos de lance superado, leilão ganho, perdido, vendido ou sem lances. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:34:32Z"
+        },
+        {
+          "id": "M9-T07",
+          "title": "Teste do Leilão pelo proprietário",
+          "subsystem": "client",
+          "description": "Criar leilão, dar lances e ver o resultado dentro do Unity.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M9-T06"
+          ],
+          "updated_at": "2026-09-29T00:34:32Z"
         }
       ]
     },

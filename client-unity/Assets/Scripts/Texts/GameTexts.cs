@@ -265,6 +265,39 @@ namespace FishingIdle.Texts
             public const string NothingToWithdraw = "Nada para retirar.";
             public const string Rod = "Vara";
 
+            public const string TabAuction = "Leilão";
+            public const string AuctionNote = "Leilões duram 6 horas. Cada lance precisa ser pelo menos 3% maior que o atual e custa 1% dele em taxa, que não volta. O valor do lance fica reservado enquanto você estiver ganhando; se alguém passar, ele volta na hora. Lance no último minuto faz o tempo voltar para 1 minuto.";
+            public const string MyAuction = "Meu leilão";
+            public const string NoMyAuction = "Você não tem leilão ativo.";
+            public const string CreateAuction = "Criar leilão";
+            public const string BackToAuctions = "Voltar aos leilões";
+            public const string StartingBid = "Lance inicial (Moedas)";
+            public const string StartAuctionNote = "Depois de criado, o leilão não pode ser cancelado. Sem lances, ele dura as 6 horas e o item volta por Itens a Retirar.";
+            public const string CurrentBid = "Lance atual";
+            public const string NoBids = "Sem lances";
+            public const string YourBid = "Seu lance (Moedas)";
+            public const string PlaceBid = "Dar lance";
+            public const string YouAreWinning = "Você está ganhando este leilão.";
+            public const string Winning = "GANHANDO";
+            public const string NoAuctions = "Nenhum leilão aberto agora.";
+            public const string EarlyEndNote = "Encerrar antes aceita o lance atual e custa 3% dele.";
+
+            public static string StartAuctionFor(double hours) => "Leiloar por " + Format.Decimal(hours, 0) + " horas";
+            public static string BidCount(int count) => count == 1 ? "1 lance" : count + " lances";
+            public static string MinBid(string coins) => "Lance mínimo: " + coins;
+            public static string BidFee(double ratio, string fee) => "Taxa do lance (" + Format.Percent(ratio, 0) + "): " + fee;
+            public static string Reserved(string coins) => "Reservado em lances: " + coins;
+            public static string StartingAt(string coins) => "Inicial " + coins;
+            public static string BidAt(string coins) => "Lance " + coins;
+            public static string EndNow(string net) => "Encerrar agora (receber " + net + ")";
+            public static string AuctionStarted(string name) => "Leilão de " + name + " criado. Ele termina em 6 horas.";
+            public static string BidPlaced(string name, string bid, string fee) => "Lance de " + bid + " em " + name + ". Taxa paga: " + fee + ".";
+            public static string Outbid(string name, string bidder) => bidder + " passou o seu lance em " + name + ". O valor do seu lance voltou.";
+            public static string AuctionWon(string name) => "Você ganhou o leilão de " + name + ". Ele está em Itens a Retirar.";
+            public static string AuctionLost(string name) => "O leilão de " + name + " terminou com outro vencedor.";
+            public static string AuctionSold(string name, string net) => "Seu leilão de " + name + " terminou. +" + net + " Moedas.";
+            public static string AuctionUnsold(string name) => "Seu leilão de " + name + " terminou sem lances. O item está em Itens a Retirar.";
+
             public static string TabMineCount(int count, int max) => TabMine + " (" + count + "/" + max + ")";
             public static string TabWithdrawCount(int count) => count > 0 ? TabWithdraw + " (" + count + ")" : TabWithdraw;
             public static string EndsIn(string time) => "Termina em " + time;
@@ -293,6 +326,8 @@ namespace FishingIdle.Texts
                     case "bought": return "Comprado";
                     case "cancelled": return "Anúncio cancelado";
                     case "expired": return "Anúncio vencido";
+                    case "auction_won": return "Ganho no leilão";
+                    case "auction_unsold": return "Leilão sem lances";
                     default: return reasonKey;
                 }
             }
@@ -535,6 +570,12 @@ namespace FishingIdle.Texts
                 case "RodNotTradable": return "Esta vara não pode ser vendida no Mercado.";
                 case "OwnListing": return "Esse anúncio é seu.";
                 case "WithdrawalNotFound": return "Esse item não está mais em Itens a Retirar.";
+                case "AuctionNotFound": return "Esse leilão não existe mais.";
+                case "AuctionLimitReached": return "Você já tem um leilão ativo. Espere ele terminar.";
+                case "BidTooLow": return "O lance precisa ser pelo menos o mínimo mostrado.";
+                case "AlreadyHighestBidder": return "Você já tem o maior lance neste leilão.";
+                case "AuctionHasNoBids": return "Sem lances, o leilão não pode ser encerrado antes: espere as 6 horas.";
+                case "AuctionEnded": return "Esse leilão já terminou.";
                 case "SpeciesMissingFromConfig": return "Um dos peixes é de uma espécie que não existe mais no balanceamento, então não pode ser vendido agora.";
                 default: return "Não foi possível fazer isso agora.";
             }
@@ -782,6 +823,13 @@ namespace FishingIdle.Texts
                     new BalanceField("economy.json", "auction.anti_snipe_window_seconds", "Janela anti-lance-de-última-hora (s)"),
                     new BalanceField("economy.json", "auction.anti_snipe_reset_to_seconds", "Cronômetro volta para (s)"),
                     new BalanceField("economy.json", "auction.seller_early_close_fee_ratio", "Taxa de encerramento antecipado (0,03 = 3%)"),
+                }),
+                new BalanceFieldGroup("Leilão — Jogadores simulados (MVP local)", new[]
+                {
+                    new BalanceField("market_bots.json", "auctions.target_auction_count", "Leilões de outros jogadores abertos"),
+                    new BalanceField("market_bots.json", "auctions.bid_check_interval_minutes", "Minutos entre lances simulados (verificação)"),
+                    new BalanceField("market_bots.json", "auctions.bid_chance_per_check", "Chance de um lance por verificação (0 a 1)"),
+                    new BalanceField("market_bots.json", "auctions.max_bid_ratio", "Lance máximo deles (× referência)"),
                 }),
             };
 

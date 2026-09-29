@@ -3,6 +3,29 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m9.1] — 29/09/2026
+
+Milestone 9 — Leilão local.
+
+### Adicionado
+
+- **Aba Leilão no Mercado**: um leilão seu por vez, de 6 horas, com lance inicial livre e sem
+  cancelamento; encerrar antes só com lance, pagando 3%.
+- **Lances**: mínimo de +3% sobre o atual, taxa de 1% por lance (não volta), valor reservado
+  enquanto você lidera e devolvido na hora quando alguém passa. Lance no último minuto volta o
+  tempo para 1 minuto.
+- **Leilões e lances simulados** no seu PC, inclusive nos seus leilões e com o jogo fechado.
+- Avisos de lance superado, leilão ganho, perdido, vendido e sem lances.
+- 11 testes novos do Leilão (131 no total).
+
+### Mudado
+
+- **Formato do save: versão 8.** Saves antigos são convertidos sozinhos.
+
+### Não verificado
+
+- A aba Leilão ainda não foi aberta no Editor do Unity (`M9-T07`).
+
 ## [0.1.0-m8.1] — 29/09/2026
 
 Milestone 8 — Mercado local.

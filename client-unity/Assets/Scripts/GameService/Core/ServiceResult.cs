@@ -46,6 +46,12 @@ namespace FishingIdle.GameService.Core
         RodNotTradable,
         OwnListing,
         WithdrawalNotFound,
+        AuctionNotFound,
+        AuctionLimitReached,
+        BidTooLow,
+        AlreadyHighestBidder,
+        AuctionHasNoBids,
+        AuctionEnded,
     }
 
     /// <summary>

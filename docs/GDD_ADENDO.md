@@ -405,3 +405,35 @@ Filtros combinados: tipo (peixes/varas), espécie, raridade, categoria de tamanh
 nível mín./máx. e preço mín./máx. Ordenação: menor preço, maior preço, maior tamanho, menor tamanho,
 mais recentes. "Maior tamanho" ordena pelo tamanho relativo à espécie (percentil), para comparar
 espécies diferentes de forma justa.
+
+---
+
+## Milestone 9 — Leilão local
+
+### A-051 · Quem já lidera não dá outro lance
+**Seção do GDD:** 35 · **Situação:** Confirmar
+
+Enquanto você tem o maior lance, não pode aumentar o próprio lance. Isso evita pagar a taxa de 1%
+duas vezes por engano (clique duplo, reconexão) e é o que torna um pedido repetido seguro.
+
+### A-052 · Arredondamentos
+**Seção do GDD:** 35 · **Situação:** Em vigor
+
+Lance mínimo seguinte = lance atual × 1,03 arredondado para cima (no exemplo do GDD, 10.000 →
+10.300). Taxa de 1% arredondada para o inteiro mais próximo (10.300 → 103). O primeiro lance
+precisa ser pelo menos o lance inicial.
+
+### A-053 · Leilão e anúncios
+**Seção do GDD:** 33, 35 · **Situação:** Confirmar
+
+O leilão conta separado dos 5 anúncios de preço fixo. As regras do que pode ir são as mesmas do
+Mercado (peixe fora do Cardume; nem a Vara Inicial nem a vara equipada). Vara ganha em leilão: a
+revenda ao NPC considera o lance vencedor, como em A-048.
+
+### A-054 · Leilões simulados
+**Seção do GDD:** 35, START HERE M9 · **Situação:** Em vigor (só no MVP local)
+
+Cerca de 8 leilões de outros jogadores ficam abertos, com 2 novos por hora; o lance inicial fica
+entre 50% e 90% da referência e nunca abaixo do que o NPC paga. A cada 10 minutos cada leilão —
+inclusive o seu — tem 30% de chance de receber um lance simulado, de até 1,4× a referência. Tudo em
+`config/market_bots.json → auctions`.

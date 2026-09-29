@@ -69,6 +69,10 @@ namespace FishingIdle.GameService.Market
     public sealed class MarketEventView
     {
         public long AtMs { get; internal set; }
+
+        /// <summary>MarketEvent kind: sold, expired, auction_sold, auction_unsold, auction_won, auction_lost, outbid.</summary>
+        public string Kind { get; internal set; }
+
         public bool Sold { get; internal set; }
         public string GoodsName { get; internal set; }
         public long PriceCoins { get; internal set; }
@@ -162,5 +166,63 @@ namespace FishingIdle.GameService.Market
 
         /// <summary>Fish that stayed because the Aquarium filled up.</summary>
         public int LeftBehind { get; internal set; }
+    }
+
+    /// <summary>An auction card (GDD section 35).</summary>
+    public sealed class AuctionView
+    {
+        public long AuctionId { get; internal set; }
+        public bool IsMine { get; internal set; }
+        public string SellerName { get; internal set; }
+        public GoodsView Goods { get; internal set; }
+        public long StartingBidCoins { get; internal set; }
+
+        /// <summary>0 while nobody has bid.</summary>
+        public long HighestBidCoins { get; internal set; }
+
+        public string HighestBidderName { get; internal set; }
+        public bool PlayerIsHighest { get; internal set; }
+        public bool PlayerHasBid { get; internal set; }
+        public int BidCount { get; internal set; }
+
+        /// <summary>The smallest valid next bid and the 1% fee it would cost.</summary>
+        public long MinNextBidCoins { get; internal set; }
+        public long MinNextBidFeeCoins { get; internal set; }
+
+        public long EndsAtMs { get; internal set; }
+        public double RemainingSeconds { get; internal set; }
+
+        /// <summary>The seller can end it now only when there is a bid.</summary>
+        public bool CanEndNow { get; internal set; }
+
+        /// <summary>What the seller would receive ending now (bid − 3%).</summary>
+        public long EndNowNetCoins { get; internal set; }
+    }
+
+    public sealed class AuctionsView
+    {
+        public long Coins { get; internal set; }
+
+        /// <summary>Coins locked in the player's winning bids.</summary>
+        public long ReservedCoins { get; internal set; }
+
+        public int MaxActive { get; internal set; }
+        public double DurationHours { get; internal set; }
+        public double MinIncrementRatio { get; internal set; }
+        public double BidFeeRatio { get; internal set; }
+        public double EarlyCloseFeeRatio { get; internal set; }
+
+        /// <summary>The player's own active auction, or null.</summary>
+        public AuctionView Mine { get; internal set; }
+
+        /// <summary>Other sellers' auctions, ending soonest first.</summary>
+        public List<AuctionView> Open { get; } = new List<AuctionView>();
+    }
+
+    public sealed class BidResult
+    {
+        public AuctionView Auction { get; internal set; }
+        public long FeeCoins { get; internal set; }
+        public long NewBalance { get; internal set; }
     }
 }

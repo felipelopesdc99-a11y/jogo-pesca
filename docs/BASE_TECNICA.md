@@ -101,6 +101,7 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
 | `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
 | `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
+| `IAuctionService` | `LocalMarketService` | Leilão: criar (1 por vez, 6 h), lances com reserva e taxa, último minuto, encerrar antes |
 | `IProfileService` | `LocalProfileService` | Perfil próprio: vara equipada, Inventário, Enciclopédia, Destaques |
 | `IPlayerRepository` | `JsonFilePlayerRepository` | Ler/gravar/resetar o save |
 | `IClock` | `SystemClock` | A única fonte de "agora" das regras |
@@ -153,6 +154,9 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 | Dano | Ataque × sorteio(0,97–1,03) × (1 − Defesa ÷ (Defesa + 100)), mínimo 10% do Ataque | `arena.json → combat` |
 | Taxa do Mercado | 3% do preço, arredondado, descontada na venda concluída | `economy.json → market_fixed_price` |
 | Referência do mercado simulado | Peixe: venda ao NPC × 1,5 × (1 + 15% × (nível − 1)); vara: (preço + melhorias) × 0,8 | `market_bots.json → valuation` |
+| Lance mínimo do Leilão | 1º lance ≥ lance inicial; depois ≥ arredondar para cima(lance atual × 1,03) | `economy.json → auction` |
+| Taxa por lance | 1% do lance, arredondado, cobrada a cada lance e nunca devolvida | `economy.json → auction` |
+| Encerramento antecipado | Vendedor recebe o maior lance − 3%; no fim normal, sem taxa | `economy.json → auction` |
 | Chance de um comprador simulado | Referência: 25% por verificação; mais barato até o dobro; zero a partir de 4× a referência | `market_bots.json → demand` |
 
 ## 4. Balanceamento (/config)
@@ -203,7 +207,8 @@ Regras:
   e adiciona o Cardume, v4 adiciona a viagem (`TravelState`) e separa o preço pago pela vara do que
   foi gasto em melhorias, v5 adiciona a Expedição (`ExpeditionState`, `LastExpedition`), v6 adiciona a Arena
   (`ArenaState`: ranking como lista de ids, Energia, Honra, adversários, histórico), v7 adiciona o
-  Mercado (`MarketState`). Cada passo está em `SaveMigrations.Upgrade`.
+  Mercado (`MarketState`), v8 adiciona os leilões (`MarketState.Auctions`). Cada passo está em
+  `SaveMigrations.Upgrade`.
 - Mercado (desde a versão 7): um item anunciado **sai** do Aquário/Inventário e passa a morar dentro
   do anúncio (`MarketListing.Goods`, com todos os dados do peixe ou da vara). Comprado, cancelado ou
   vencido, ele vai para `Withdrawals` (Itens a Retirar) e só volta ao Aquário/Inventário quando o
@@ -213,6 +218,12 @@ Regras:
   hora ÷ intervalo), inclusive pelo tempo em que o jogo ficou fechado (com teto). Cada tick usa o
   `Rng` do jogador com uma semente própria, então o resultado não depende de quantas vezes a tela foi
   aberta. As vendas e vencimentos viram `MarketEvent` e aparecem como aviso uma única vez.
+- Leilão (desde a versão 8): `Auction` guarda o item, o lance inicial, o maior lance e quem o deu
+  (`"player"` ou o nome de um jogador simulado). Ao dar um lance, o valor sai das Moedas (fica
+  "reservado") junto com a taxa de 1%; se alguém passar, o valor volta na hora e a taxa não. Quem já
+  tem o maior lance não pode dar outro, então repetir o pedido nunca cobra duas vezes. O mesmo
+  `LocalMarketService` (classe parcial, arquivo `LocalMarketService.Auctions.cs`) implementa
+  `IAuctionService`; os lances simulados rodam em ticks de 10 minutos, também nos leilões do jogador.
 
 ## 6. Apresentação (Game)
 
