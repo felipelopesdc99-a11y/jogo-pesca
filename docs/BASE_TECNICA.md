@@ -313,7 +313,7 @@ Regras:
   carregados pelo nome (`SoundBank`). Trocar um som = trocar o arquivo mantendo o nome (um arquivo
   que falta fica em silêncio). Os arquivos atuais saem de `tools/Audio/gerar_sons.py` (Python com
   numpy e scipy; sempre iguais). Cada aviso diz qual som faz (`ToastFeed.Push(…, sound:)`, tipo
-  `SoundCue`; sem isso, segue o tipo do aviso); `GameAudio` toca um por quadro, o mais importante, e
+  `SoundCue`; sem isso, só o aviso de subir de nível tem som — A-080); `GameAudio` toca um por quadro, o mais importante, e
   mantém dois loops de ambiente (mar e brisa) com fade. `Editor/AudioImportSettings` ajusta a
   importação: ambiente comprimido (Vorbis), efeitos sem compressão.
 - **Preferências de apresentação** (`GameSettings`): som, som ambiente e volume, no `PlayerPrefs` do

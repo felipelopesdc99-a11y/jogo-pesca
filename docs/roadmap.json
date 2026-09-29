@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-29T23:47:32Z",
+  "updated_at": "2026-09-29T23:51:44Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -1717,6 +1717,18 @@
             "M13-T03"
           ],
           "updated_at": "2026-09-29T01:20:56Z"
+        },
+        {
+          "id": "M13-T05",
+          "title": "Som só em subir de nível, Excepcional e espécie nova",
+          "subsystem": "client",
+          "description": "A pedido do proprietário: muitos avisos com som ficavam chatos. Deixar som só ao subir de nível, pegar um Excepcional ou uma espécie nova.",
+          "status": "DONE",
+          "dependencies": [
+            "M13-T03"
+          ],
+          "completion_notes": "Os avisos só tocam som ao subir de nível (Pescador ou peixe), numa captura Excepcional e numa espécie nova. Peixe pescado, raro, recorde, moedas, Expedição, Mercado, avisos e cliques ficaram em silêncio (continuam na tela). O som ambiente não mudou. Registrado no GDD_ADENDO (A-080). Compila; não ouvido no Unity ainda.",
+          "updated_at": "2026-09-29T23:51:44Z"
         }
       ]
     },

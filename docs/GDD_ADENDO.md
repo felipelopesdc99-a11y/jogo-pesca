@@ -715,3 +715,20 @@ tamanho escrito na cor dele no card. No tamanho Excepcional, o selo dourado ocup
 direito da linha do tamanho, abaixo do nome), em vez de ficar por cima do desenho do peixe. As raridades reservadas para depois (Incomum, Épico, Lendário,
 Mítico) têm cores guardadas no tema; se alguma entrar no jogo, as cores de tamanho são revistas para
 não se confundirem.
+
+### A-080 · Som só nos momentos que importam
+**Seção do GDD:** 8, 39 · **Situação:** Decidido pelo proprietário (29/09/2026)
+
+Muda a A-066: o proprietário achou cansativo ter som em todo aviso. Agora os avisos só fazem som em
+três momentos:
+
+| Momento | Som |
+|---|---|
+| Subir de nível (Pescador ou peixe) | Arpejo subindo com um acorde suave |
+| Captura Excepcional | Respingo e um arpejo de sininhos |
+| Espécie nova | Respingo e um arpejo de sininhos |
+
+Os outros avisos (peixe pescado, peixe raro, recorde, moedas, Expedição, Mercado, avisos e erros,
+iniciar pesca…) continuam aparecendo na tela, mas em silêncio. O som ambiente (mar e brisa) não muda
+e continua com a sua própria chave em Opções. Os arquivos dos sons silenciados ficam guardados em
+`Resources/Sons`, sem uso.

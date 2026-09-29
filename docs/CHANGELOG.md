@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.8] — 29/09/2026
+
+### Mudado
+
+- **Menos som:** os avisos só fazem som ao subir de nível, numa captura Excepcional e numa espécie
+  nova. Os outros avisos continuam na tela, em silêncio. O som ambiente não mudou.
+
+### Não verificado
+
+- Não ouvido no Editor do Unity ainda (`M13-T04`).
+
 ## [0.2.0-m14.7] — 29/09/2026
 
 ### Mudado

@@ -59,7 +59,8 @@ namespace FishingIdle.Game.UI
 
         /// <summary>
         /// Shows a toast. <paramref name="notify"/> also keeps it in the Notification Center.
-        /// <paramref name="sound"/> picks a specific sound; by default it follows the kind.
+        /// <paramref name="sound"/> picks a specific sound; by default only a level up makes one
+        /// (addendum A-080: sound is kept for level up, Excepcional and new species).
         /// </summary>
         public void Push(string text, ToastKind kind, Texture2D icon = null, bool notify = false, SoundCue? sound = null)
         {
@@ -99,15 +100,8 @@ namespace FishingIdle.Game.UI
 
         private static SoundCue DefaultSound(ToastKind kind)
         {
-            switch (kind)
-            {
-                case ToastKind.Catch: return SoundCue.Catch;
-                case ToastKind.Important: return SoundCue.Important;
-                case ToastKind.Coins: return SoundCue.Coins;
-                case ToastKind.LevelUp: return SoundCue.LevelUp;
-                case ToastKind.Warning: return SoundCue.Warning;
-                default: return SoundCue.Click;
-            }
+            // The owner found a sound on every notice tiring: the other kinds are silent.
+            return kind == ToastKind.LevelUp ? SoundCue.LevelUp : SoundCue.None;
         }
 
         public void MarkAllRead() => Unread = 0;

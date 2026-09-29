@@ -96,11 +96,11 @@ namespace FishingIdle.Game.UI
                 }
                 else if (c.IsPersonalRecord)
                 {
-                    _root.Toasts.Push(GameTexts.Toasts.PersonalRecord(c.SpeciesName, size), ToastKind.Important, icon, notify: true, sound: SoundCue.Record);
+                    _root.Toasts.Push(GameTexts.Toasts.PersonalRecord(c.SpeciesName, size), ToastKind.Important, icon, notify: true);
                 }
                 else
                 {
-                    _root.Toasts.Push(GameTexts.Toasts.Catch(c.SpeciesName, size, c.SizeCategoryName), ToastKind.Catch, icon, sound: c.IsImportant ? SoundCue.RareCatch : SoundCue.Catch);
+                    _root.Toasts.Push(GameTexts.Toasts.Catch(c.SpeciesName, size, c.SizeCategoryName), ToastKind.Catch, icon);
                 }
             }
 
