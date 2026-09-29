@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 5;
+        public const int CurrentVersion = 6;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -65,6 +65,9 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>The last finished Expedition, kept until the player has seen it.</summary>
         public ExpeditionResult LastExpedition { get; set; }
+
+        /// <summary>Arena state: ranking, Energy, Honor, opponents, history (Milestone 7). Added in save version 6.</summary>
+        public ArenaState Arena { get; set; } = new ArenaState();
 
         /// <summary>Counts every Expedition ever started; part of its RNG stream.</summary>
         public long ExpeditionsStarted { get; set; }
@@ -130,6 +133,46 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Whether fishing was on when the trip started; it resumes on arrival.</summary>
         public bool ResumeFishing { get; set; }
+    }
+
+    public sealed class ArenaState
+    {
+        /// <summary>Participant ids in rank order (index 0 = rank 1): "player" or "bot:N".</summary>
+        public List<string> Ranking { get; set; } = new List<string>();
+
+        public int Energy { get; set; }
+        public long EnergyUpdatedAtMs { get; set; }
+        public long Honor { get; set; }
+
+        /// <summary>The current opponent set (participant ids). Empty until one is drawn.</summary>
+        public List<string> Opponents { get; set; } = new List<string>();
+
+        public int RerollsUsed { get; set; }
+
+        /// <summary>Counts opponent sets ever drawn; part of the draw's RNG stream.</summary>
+        public long SetIndex { get; set; }
+
+        /// <summary>Counts battles ever fought (attacks and defenses); part of the combat RNG stream.</summary>
+        public long BattleIndex { get; set; }
+
+        public long IncomingCheckedAtMs { get; set; }
+
+        /// <summary>Most recent battles first, bounded.</summary>
+        public List<BattleRecord> History { get; set; } = new List<BattleRecord>();
+    }
+
+    public sealed class BattleRecord
+    {
+        public long AtMs { get; set; }
+
+        /// <summary>"attack" (the player attacked) or "defense" (someone attacked the player).</summary>
+        public string Kind { get; set; }
+
+        public string OpponentId { get; set; }
+        public bool PlayerWon { get; set; }
+        public int RankBefore { get; set; }
+        public int RankAfter { get; set; }
+        public long HonorChange { get; set; }
     }
 
     public sealed class ExpeditionState

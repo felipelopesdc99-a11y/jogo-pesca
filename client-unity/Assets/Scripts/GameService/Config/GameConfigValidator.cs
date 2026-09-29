@@ -19,7 +19,8 @@ namespace FishingIdle.GameService.Config
             RodsConfig rods,
             EconomyConfig economy,
             ArenaConfig arena,
-            ExpeditionsConfig expeditions)
+            ExpeditionsConfig expeditions,
+            ArenaBotsConfig bots)
         {
             var errors = new List<string>();
 
@@ -421,6 +422,59 @@ namespace FishingIdle.GameService.Config
             else if (weights.HpDivisor <= 0 || weights.Attack < 0 || weights.Defense < 0 || weights.Speed < 0 || arena.CardumeStrength.DisplayScale <= 0)
             {
                 errors.Add(V.AtLeast(GameConfigLoader.ArenaFile, "cardume_strength (pesos e escala)", 0));
+            }
+
+            // ---- arena.json (Arena rules, Milestone 7)
+            if (arena.Energy == null || arena.Energy.Max < 1 || arena.Energy.RegenerationSecondsPerPoint <= 0 || arena.Energy.CostPerInitiatedAttack < 0)
+            {
+                errors.Add(V.AtLeast(GameConfigLoader.ArenaFile, "energy", 1));
+            }
+
+            if (arena.OpponentSelection == null || arena.OpponentSelection.OpponentsPerSet < 1 || arena.OpponentSelection.RankWindowPercentAbove <= 0 || arena.OpponentSelection.RerollsPerSet < 0)
+            {
+                errors.Add(V.AtLeast(GameConfigLoader.ArenaFile, "opponent_selection", 1));
+            }
+
+            if (arena.Honor == null || arena.Honor.AttackerVictoryGain < 0 || arena.Honor.SuccessfulDefenseGain < 0 || arena.Honor.DefeatLoss < 0)
+            {
+                errors.Add(V.NegativeValue(GameConfigLoader.ArenaFile, "honor"));
+            }
+
+            var combat = arena.Combat;
+            if (combat?.DamageRoll == null || combat.DefenseMitigation == null || combat.Speed == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ArenaFile, "combat"));
+            }
+            else if (combat.DamageRoll.Min <= 0 || combat.DamageRoll.Max < combat.DamageRoll.Min || combat.DefenseMitigation.Constant <= 0
+                     || combat.DefenseMitigation.MinimumDamageRatioOfAttack <= 0 || combat.Speed.BaseIntervalSeconds <= 0 || combat.Speed.ReferenceSpeed <= 0)
+            {
+                errors.Add(V.BadIntRange(GameConfigLoader.ArenaFile, "combat"));
+            }
+
+            // ---- arena_bots.json (local Arena opponents)
+            if (bots.BotCount < 3 || bots.Names == null || bots.Names.Count == 0 || bots.StrengthByRank == null || bots.IncomingAttacks == null)
+            {
+                errors.Add(V.AtLeast(GameConfigLoader.ArenaBotsFile, "bot_count / names / strength_by_rank / incoming_attacks", 3));
+            }
+            else
+            {
+                var st = bots.StrengthByRank;
+                if (st.TopFishLevel < 1 || st.BottomFishLevel < 1 || st.TopCardumeSize < 1 || st.BottomCardumeSize < 1
+                    || st.TopCardumeSize > 6 || st.BottomCardumeSize > 6 || st.TopSizePercentile < 0 || st.TopSizePercentile > 1
+                    || st.BottomSizePercentile < 0 || st.BottomSizePercentile > 1)
+                {
+                    errors.Add(V.BadIntRange(GameConfigLoader.ArenaBotsFile, "strength_by_rank"));
+                }
+
+                if (bots.IncomingAttacks.ChancePerCheck < 0 || bots.IncomingAttacks.ChancePerCheck > 1)
+                {
+                    errors.Add(V.ChanceOutOfRange(GameConfigLoader.ArenaBotsFile, "incoming_attacks.chance_per_check"));
+                }
+
+                if (bots.IncomingAttacks.CheckIntervalMinutes <= 0)
+                {
+                    errors.Add(V.AtLeast(GameConfigLoader.ArenaBotsFile, "incoming_attacks.check_interval_minutes", 1));
+                }
             }
 
             // ---- expeditions.json (Milestone 6)

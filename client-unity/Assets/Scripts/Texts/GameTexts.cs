@@ -41,6 +41,7 @@ namespace FishingIdle.Texts
             public const string Fishing = "Pesca";
             public const string Map = "Mapa";
             public const string Aquarium = "Aquário";
+            public const string Arena = "Arena";
             public const string Expedition = "Expedição";
             public const string Shop = "Loja";
             public const string Profile = "Perfil";
@@ -158,6 +159,50 @@ namespace FishingIdle.Texts
             public static string Xp(string xp) => "+" + xp + " XP de Pescador";
             public static string Levels(int level) => "Subiu para o Nível " + level + "!";
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
+        }
+
+        // ------------------------------------------------------------------ Arena (GDD sections 27–30)
+
+        public static class Arena
+        {
+            public const string Title = "Arena";
+            public const string TabOpponents = "Adversários";
+            public const string TabRanking = "Ranking";
+            public const string TabHistory = "Histórico";
+            public const string TabShop = "Loja da Arena";
+            public const string Rank = "Posição";
+            public const string Energy = "Energia";
+            public const string Honor = "Honra";
+            public const string Attack = "Atacar";
+            public const string Reroll = "Trocar adversários";
+            public const string RerollUsed = "Troca já usada: ataque para receber novos adversários.";
+            public const string Note = "Ataque um dos três adversários. Vencer troca a sua posição com a dele e dá Honra; perder custa um pouco de Honra. Cada ataque gasta 1 de Energia, vencendo ou perdendo. Outros jogadores também podem atacar você, inclusive com o jogo fechado.";
+            public const string NoForceNote = "A Força dos adversários não é mostrada. Olhe o Cardume, os níveis e as raridades para decidir.";
+            public const string EmptyHistory = "Nenhuma batalha ainda.";
+            public const string ShopEmpty = "A Loja da Arena ainda não tem itens. Eles são cadastrados em arena.json → shop.items quando o proprietário decidir o que vender por Honra.";
+            public const string Attacked = "Ataque";
+            public const string Defended = "Defesa";
+            public const string Win = "Vitória";
+            public const string Loss = "Derrota";
+            public const string You = "Você";
+            public const string Speed1 = "1x";
+            public const string Speed2 = "2x";
+            public const string Skip = "Pular";
+            public const string BackToArena = "Voltar à Arena";
+            public const string Victory = "Vitória!";
+            public const string Defeat = "Derrota";
+
+            public static string RankOf(int rank) => "#" + rank;
+            public static string RankOfTotal(int rank, int total) => "#" + rank + " de " + total;
+            public static string EnergyOf(int energy, int max) => energy + " / " + max;
+            public static string NextEnergy(string countdown) => "+1 em " + countdown;
+            public static string RerollsLeft(int left) => Reroll + " (" + left + ")";
+            public static string RankChange(int before, int after) => before == after ? "Posição mantida: #" + after : "Posição: #" + before + " → #" + after;
+            public static string HonorChange(long change) => (change >= 0 ? "+" : "") + change + " de Honra";
+            public static string DefenseWon(string attacker, string honor) => attacker + " atacou você e perdeu. +" + honor + " de Honra.";
+            public static string DefenseLost(string attacker, int rank) => attacker + " venceu você na Arena. Sua posição agora é #" + rank + ".";
+            public static string Versus(string opponent) => "Você × " + opponent;
+            public static string Clock(string time) => "Tempo: " + time;
         }
 
         // ------------------------------------------------------------------ Expeditions (GDD section 32)
@@ -387,6 +432,9 @@ namespace FishingIdle.Texts
                 case "ExpeditionActive": return "Seu Cardume já está numa Expedição.";
                 case "CardumeEmpty": return "Coloque pelo menos um peixe no Cardume (Perfil → Cardume).";
                 case "CardumeLocked": return "Seu Cardume está numa Expedição. Espere ele voltar.";
+                case "NotEnoughEnergy": return "Sem Energia. Ela volta 1 ponto por hora.";
+                case "OpponentNotFound": return "Esse adversário não está mais na sua lista.";
+                case "NoRerollsLeft": return "Você já trocou os adversários. Ataque para receber uma lista nova.";
                 case "SpeciesMissingFromConfig": return "Um dos peixes é de uma espécie que não existe mais no balanceamento, então não pode ser vendido agora.";
                 default: return "Não foi possível fazer isso agora.";
             }
@@ -484,7 +532,7 @@ namespace FishingIdle.Texts
             public const string SectionXp = "XP do Pescador";
             public const string SectionEconomy = "Economia";
             public const string SectionOthers = "Outros arquivos";
-            public const string OthersNote = "Arena, Expedições, Mercado e Leilão ainda não existem no jogo. Os valores deles ficam editáveis aqui quando o milestone correspondente for implementado; até lá, estão em /config para consulta.";
+            public const string OthersNote = "Valores da Arena, dos adversários simulados, do Cardume e das Expedições. O jogo usa todos eles; salvar com o jogo rodando aplica na hora.";
 
             public const string OnlineCycle = "Tempo de pesca online (segundos por captura)";
             public const string OfflineCycle = "Tempo de pesca offline (segundos por captura)";
@@ -583,6 +631,14 @@ namespace FishingIdle.Texts
                     new BalanceField("arena.json", "combat.speed.base_interval_seconds", "Intervalo base entre ataques (s)"),
                     new BalanceField("arena.json", "combat.speed.reference_speed", "Velocidade de referência"),
                     new BalanceField("arena.json", "combat.target_battle_duration_seconds", "Duração-alvo da batalha (s)"),
+                }),
+                new BalanceFieldGroup("Arena — Adversários simulados (MVP local)", new[]
+                {
+                    new BalanceField("arena_bots.json", "bot_count", "Quantidade de adversários"),
+                    new BalanceField("arena_bots.json", "strength_by_rank.top_fish_level", "Nível dos peixes do 1º colocado"),
+                    new BalanceField("arena_bots.json", "strength_by_rank.bottom_fish_level", "Nível dos peixes do último colocado"),
+                    new BalanceField("arena_bots.json", "incoming_attacks.check_interval_minutes", "Minutos entre ataques recebidos (verificação)"),
+                    new BalanceField("arena_bots.json", "incoming_attacks.chance_per_check", "Chance de ser atacado por verificação (0 a 1)"),
                 }),
                 new BalanceFieldGroup("Cardume", new[]
                 {

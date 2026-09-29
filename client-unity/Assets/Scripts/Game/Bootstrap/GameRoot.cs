@@ -4,6 +4,7 @@ using FishingIdle.Game.Scene;
 using FishingIdle.Game.UI;
 using FishingIdle.GameService;
 using FishingIdle.GameService.Aquarium;
+using FishingIdle.GameService.Arena;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Expeditions;
@@ -138,6 +139,13 @@ namespace FishingIdle.Game.Bootstrap
                     }
 
                     ExpeditionResult = Game.Expeditions.PendingResult();
+
+                    foreach (var defense in Game.Arena.Update())
+                    {
+                        Toasts.Push(defense.PlayerWon
+                            ? GameTexts.Arena.DefenseWon(defense.OpponentName, Format.Number(defense.HonorChange))
+                            : GameTexts.Arena.DefenseLost(defense.OpponentName, defense.RankAfter), defense.PlayerWon ? ToastKind.Info : ToastKind.Warning);
+                    }
                 });
             }
 
@@ -359,6 +367,40 @@ namespace FishingIdle.Game.Bootstrap
                 Refresh();
                 AquariumChanged?.Invoke();
             });
+        }
+
+        // ------------------------------------------------------------------ Arena intents
+
+        public ArenaView GetArena() => IsRunning ? Game.Arena.GetArena() : null;
+
+        public void RerollOpponents()
+        {
+            Guard(() =>
+            {
+                var result = Game.Arena.Reroll();
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                }
+            });
+        }
+
+        /// <summary>Asks for a battle. Returns the resolved report for the replay, or null when refused.</summary>
+        public BattleReport Attack(int opponentIndex)
+        {
+            BattleReport report = null;
+            Guard(() =>
+            {
+                var result = Game.Arena.Attack(opponentIndex);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                report = result.Value;
+            });
+            return report;
         }
 
         // ------------------------------------------------------------------ Expedition intents

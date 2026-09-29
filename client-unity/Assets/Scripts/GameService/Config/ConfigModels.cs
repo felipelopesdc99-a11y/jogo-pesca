@@ -285,6 +285,11 @@ namespace FishingIdle.GameService.Config
     public sealed class ArenaConfig
     {
         public int ConfigSchemaVersion { get; set; }
+        public EnergyConfig Energy { get; set; }
+        public OpponentSelectionConfig OpponentSelection { get; set; }
+        public HonorConfig Honor { get; set; }
+        public CombatConfig Combat { get; set; }
+        public ArenaShopConfig Shop { get; set; }
         public FormationConfig Formation { get; set; }
         public CardumeConfig Cardume { get; set; }
         public CardumeStrengthConfig CardumeStrength { get; set; }
@@ -294,6 +299,94 @@ namespace FishingIdle.GameService.Config
     {
         public List<int> FrontPositions { get; set; }
         public List<int> BackPositions { get; set; }
+        public List<int> TargetPriority { get; set; }
+    }
+
+    public sealed class EnergyConfig
+    {
+        public int Max { get; set; }
+        public double RegenerationSecondsPerPoint { get; set; }
+        public int CostPerInitiatedAttack { get; set; }
+    }
+
+    public sealed class OpponentSelectionConfig
+    {
+        public int OpponentsPerSet { get; set; }
+        public double RankWindowPercentAbove { get; set; }
+        public int RerollsPerSet { get; set; }
+    }
+
+    public sealed class HonorConfig
+    {
+        public long AttackerVictoryGain { get; set; }
+        public long SuccessfulDefenseGain { get; set; }
+        public long DefeatLoss { get; set; }
+        public long MinimumBalance { get; set; }
+    }
+
+    public sealed class CombatConfig
+    {
+        public RangeConfig DamageRoll { get; set; }
+        public DefenseMitigationConfig DefenseMitigation { get; set; }
+        public SpeedConfig Speed { get; set; }
+        public double TargetBattleDurationSeconds { get; set; }
+    }
+
+    public sealed class DefenseMitigationConfig
+    {
+        public double Constant { get; set; }
+        public double MinimumDamageRatioOfAttack { get; set; }
+    }
+
+    public sealed class SpeedConfig
+    {
+        public double BaseIntervalSeconds { get; set; }
+        public double ReferenceSpeed { get; set; }
+    }
+
+    public sealed class ArenaShopConfig
+    {
+        public string Currency { get; set; }
+        public List<ArenaShopItemConfig> Items { get; set; }
+    }
+
+    public sealed class ArenaShopItemConfig
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
+        public long PriceHonor { get; set; }
+    }
+
+    // ---------------------------------------------------------------- arena_bots.json (local MVP)
+
+    public sealed class ArenaBotsConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+        public int BotCount { get; set; }
+        public List<string> Names { get; set; }
+        public BotStrengthConfig StrengthByRank { get; set; }
+        public IncomingAttacksConfig IncomingAttacks { get; set; }
+    }
+
+    public sealed class BotStrengthConfig
+    {
+        public int TopFishLevel { get; set; }
+        public int BottomFishLevel { get; set; }
+        public int TopCardumeSize { get; set; }
+        public int BottomCardumeSize { get; set; }
+        public double TopSizePercentile { get; set; }
+        public double BottomSizePercentile { get; set; }
+        public double SecondMapRankFraction { get; set; }
+        public string SecondMapId { get; set; }
+        public string FirstMapId { get; set; }
+    }
+
+    public sealed class IncomingAttacksConfig
+    {
+        public double CheckIntervalMinutes { get; set; }
+        public double ChancePerCheck { get; set; }
+        public double AttackerWindowPercentBelow { get; set; }
+        public int MaxChecksPerCatchUp { get; set; }
     }
 
     public sealed class CardumeConfig

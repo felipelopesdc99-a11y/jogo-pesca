@@ -325,6 +325,17 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 5;
             }
 
+            if (save.SaveVersion == 5)
+            {
+                // v6 adds the Arena (Milestone 7). The session fills in the ranking and Energy.
+                save.Arena = new ArenaState();
+                save.SaveVersion = 6;
+            }
+
+            save.Arena = save.Arena ?? new ArenaState();
+            save.Arena.Ranking = save.Arena.Ranking ?? new List<string>();
+            save.Arena.Opponents = save.Arena.Opponents ?? new List<string>();
+            save.Arena.History = save.Arena.History ?? new List<BattleRecord>();
             save.Expedition = save.Expedition ?? new ExpeditionState();
             save.Travel = save.Travel ?? new TravelState();
             save.Aquarium = save.Aquarium ?? new List<FishInstance>();
@@ -368,6 +379,13 @@ namespace FishingIdle.GameService.Persistence
                 if (itemIds.Count != itemIds.Distinct().Count()) problems.Add("inventory has duplicate ids");
                 if (itemIds.Any(id => id <= 0 || id >= save.NextItemId)) problems.Add("inventory id outside issued range");
                 if (save.EquippedRodItem() == null) problems.Add("equipped rod is not a rod in the inventory");
+            }
+
+            if (save.Arena == null) problems.Add("arena missing");
+            else
+            {
+                if (save.Arena.Energy < 0 || save.Arena.Honor < 0) problems.Add("arena negative values");
+                if (save.Arena.Ranking != null && save.Arena.Ranking.Count != save.Arena.Ranking.Distinct().Count()) problems.Add("arena ranking repeats a participant");
             }
 
             if (save.Expedition == null) problems.Add("expedition missing");

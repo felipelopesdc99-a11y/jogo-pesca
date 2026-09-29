@@ -3,6 +3,35 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m7.1] — 29/09/2026
+
+Milestone 7 — Arena local.
+
+### Adicionado
+
+- **Menu Arena** com 200 adversários simulados no seu PC: posição, Energia (24, +1 por hora),
+  Honra, três adversários por vez (com uma troca), ranking e histórico.
+- **Combate automático** resolvido pelas regras: ordem de alvo 1 → 6, vaga derrotada fica vazia,
+  só uma pequena variação de dano (±3%), dano mínimo garantido, bônus do Cardume completo.
+- **Replay** da batalha com 1x, 2x e Pular, e o resultado com a mudança de posição e de Honra.
+- **Ataques recebidos**: adversários atacam você de hora em hora, inclusive com o jogo fechado.
+  Defender dá Honra; perder troca a posição.
+- `config/arena_bots.json`: como os adversários simulados são montados. Editável no Painel.
+- 11 testes novos (105 no total).
+
+### Mudado
+
+- **Formato do save: versão 6.** Saves antigos são convertidos sozinhos.
+- A aba Balanceamento do Painel passa a usar sempre a mesma lista de arquivos que o jogo carrega.
+
+### Pendente com o proprietário
+
+- `OD-009`: o que a Loja da Arena vende por Honra (a loja existe, mas está vazia).
+
+### Não verificado
+
+- As telas novas ainda não foram abertas no Editor do Unity (`M7-T10`).
+
 ## [0.1.0-m6.1] — 29/09/2026
 
 Milestone 6 — Expedições.

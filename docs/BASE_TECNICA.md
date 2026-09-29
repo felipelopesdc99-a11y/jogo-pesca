@@ -51,6 +51,7 @@ client-unity/Assets/
 │   │   ├── Profile/       Cardume (posições, bônus, Força), Perfil, Inventário, Enciclopédia, varas
 │   │   ├── Maps/          Mapas e viagem
 │   │   ├── Expeditions/   Expedições e a fórmula de aproveitamento (ExpeditionRules)
+│   │   ├── Arena/         Motor de combate (BattleEngine), adversários simulados (ArenaBots), Arena
 │   │   ├── Shop/          Loja e regras de preço/revenda de vara (RodRules)
 │   │   ├── GameSession.cs Estado vivo de um jogador (config + save + relógio + armazenamento)
 │   │   ├── PlayerService.cs
@@ -97,6 +98,7 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IMapService` | `LocalMapService` | Mapas, requisitos, viagem de 30s (pausa e retoma a pesca) |
 | `IShopService` | `LocalShopService` | Loja: varas à venda e compra |
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
+| `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
 | `IProfileService` | `LocalProfileService` | Perfil próprio: vara equipada, Inventário, Enciclopédia, Destaques |
 | `IPlayerRepository` | `JsonFilePlayerRepository` | Ler/gravar/resetar o save |
 | `IClock` | `SystemClock` | A única fonte de "agora" das regras |
@@ -145,13 +147,16 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 | Bônus do Cardume | +3% nos quatro atributos com 6/6, só enquanto completo | `arena.json → cardume.complete_bonus` |
 | Força do Cardume | Σ (Ataque×2 + Defesa×1,5 + Vida÷10 + Velocidade×0,5) × escala | `arena.json → cardume_strength` |
 | Revenda de vara | Preço × 40% + melhorias × 25% | `rods.json → npc_resale` |
+| Intervalo de ataque | 2 s × (100 ÷ Velocidade) | `arena.json → combat.speed` |
+| Dano | Ataque × sorteio(0,97–1,03) × (1 − Defesa ÷ (Defesa + 100)), mínimo 10% do Ataque | `arena.json → combat` |
 
 ## 4. Balanceamento (/config)
 
 - No Editor, o jogo lê direto da pasta `/config` do repositório. Num build, lê a cópia que o
   `ConfigBuildStep` coloca em `StreamingAssets/config` (essa cópia não é versionada).
-- O jogo carrega `fish_catalog`, `maps`, `progression`, `rods`, `economy`, `arena` e
-  `expeditions`.
+- O jogo carrega todos os arquivos de `GameConfigLoader.RequiredFiles`: `fish_catalog`, `maps`,
+  `progression`, `rods`, `economy`, `arena`, `expeditions` e `arena_bots` (adversários simulados do
+  MVP local). O Painel de Desenvolvimento usa a mesma lista.
 - `GameConfigLoader.LoadFromTexts` é usado tanto pelo jogo quanto pelo Painel de Desenvolvimento:
   o painel só grava se a mesma validação que o jogo usa passar.
 - `GameConfig.Version` é uma impressão digital curta do conteúdo. Mesmos arquivos, mesma versão.
@@ -191,7 +196,8 @@ Regras:
   o bônus 6/6 e a Força são calculados na hora (`CardumeRules`) e nunca gravados.
 - Histórico de formatos: v1 (Milestone 1), v2 adiciona o Aquário, v3 move a vara para o Inventário
   e adiciona o Cardume, v4 adiciona a viagem (`TravelState`) e separa o preço pago pela vara do que
-  foi gasto em melhorias, v5 adiciona a Expedição (`ExpeditionState`, `LastExpedition`). Cada passo está em `SaveMigrations.Upgrade`.
+  foi gasto em melhorias, v5 adiciona a Expedição (`ExpeditionState`, `LastExpedition`), v6 adiciona a Arena
+  (`ArenaState`: ranking como lista de ids, Energia, Honra, adversários, histórico). Cada passo está em `SaveMigrations.Upgrade`.
 
 ## 6. Apresentação (Game)
 

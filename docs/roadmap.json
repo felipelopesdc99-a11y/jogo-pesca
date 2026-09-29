@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-29T00:03:17Z",
-  "current_milestone": "M6",
+  "updated_at": "2026-09-29T00:11:52Z",
+  "current_milestone": "M7",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -76,6 +76,22 @@
       "title": "Testar as Expedições",
       "detail": "Monte o Cardume no Perfil, abra o menu Expedição e envie a Saída Rápida (30 minutos). Para não esperar, o Painel de Desenvolvimento → Balanceamento → Outros arquivos permite mudar a duração (em minutos) da Expedição. Não bloqueia: eu sigo com o Milestone 7.",
       "raised_at": "2026-09-29T00:03:17Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-009",
+      "task_id": "M7-T09",
+      "title": "O que a Loja da Arena vende por Honra?",
+      "detail": "O GDD diz que a Honra é gasta na Loja da Arena e pode dar progresso de verdade, mas não define os itens, e pede para não inventar sistemas só para encher a loja. A loja já existe (aba Loja da Arena) e lê os itens de arena.json → shop.items, que está vazio. Quando quiser, diga o que ela deve vender (por exemplo: moedas, uma vara, melhoria de vara…) e por quanta Honra.",
+      "raised_at": "2026-09-29T00:11:52Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-010",
+      "task_id": "M7-T10",
+      "title": "Testar a Arena",
+      "detail": "Monte o Cardume, abra o menu Arena e ataque um adversário. Veja o replay (1x, 2x, Pular), a troca de posição e a Honra. Não bloqueia: eu sigo com o Milestone 8.",
+      "raised_at": "2026-09-29T00:11:52Z",
       "status": "OPEN"
     }
   ],
@@ -913,77 +929,118 @@
           "title": "Energia (24, +1 por hora, 1 por ataque)",
           "subsystem": "server",
           "description": "Regeneração por carimbo de tempo.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M6-T04"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Energia máxima 24, +1 por hora calculado pelo relógio do serviço (também com o jogo fechado), 1 por ataque vencendo ou perdendo. Valores em arena.json. Testado.",
+          "updated_at": "2026-09-29T00:11:52Z"
         },
         {
           "id": "M7-T02",
-          "title": "Ranking e bots locais",
+          "title": "Ranking e adversários locais",
           "subsystem": "server",
           "description": "Ranking posicional com troca direta de posições.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M7-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "200 adversários simulados (config/arena_bots.json): nomes, tamanho do Cardume, nível e tamanho dos peixes crescem com a posição; os de cima usam peixes do Rio Selvagem. Cada adversário é sempre o mesmo. O jogador começa em último. Vitória contra alguém acima troca as duas posições, sem mexer em quem está entre elas. Testado.",
+          "updated_at": "2026-09-29T00:11:52Z"
         },
         {
           "id": "M7-T03",
           "title": "Seleção de 3 adversários",
           "subsystem": "server",
           "description": "Janela de ~10% acima do rank, uma troca por ciclo, travada até atacar.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M7-T01"
+            "M7-T02"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Três adversários únicos dentro de ~10% acima da sua posição; perto do 1º lugar, os mais próximos válidos. Uma troca por lista, depois travada até atacar; a lista é gravada na hora, então fechar e abrir o jogo não troca nada. Testado.",
+          "updated_at": "2026-09-29T00:11:52Z"
         },
         {
           "id": "M7-T04",
           "title": "Motor de combate",
           "subsystem": "server",
           "description": "Micro variação de dano, prioridade 1→6, vaga derrotada continua vazia.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M7-T01"
+            "M7-T02"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Batalha resolvida inteira pelo serviço, por tempo: cada peixe ataca a cada 2 s × (100 ÷ Velocidade). Alvo sempre o primeiro vivo na ordem 1→6; derrotado deixa a vaga vazia. Dano = Ataque × sorteio (0,97 a 1,03) × (1 − Defesa ÷ (Defesa + 100)), nunca menos de 10% do Ataque. Só quatro atributos, sem crítico nem esquiva, sem tempo limite. Bônus 6/6 aplicado. Testado.",
+          "updated_at": "2026-09-29T00:11:52Z"
         },
         {
           "id": "M7-T05",
           "title": "Honra",
           "subsystem": "server",
           "description": "Ganha em vitória e defesa, perde pouco na derrota, nunca abaixo de 0.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M7-T01"
+            "M7-T04"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "+12 por vitória atacando, +8 por defesa bem-sucedida, −4 por derrota atacando, nunca abaixo de 0 (arena.json). Testado.",
+          "updated_at": "2026-09-29T00:11:52Z"
         },
         {
           "id": "M7-T06",
           "title": "Tela da Arena e cards de adversário",
           "subsystem": "client",
           "description": "Cardume, nível e raridade; nunca a Força do adversário.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M7-T01"
+            "M7-T03"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Menu Arena: posição, Energia (com a contagem para o próximo ponto) e Honra; três cards com nome, posição e o Cardume em ordem (espécie, nível, raridade), sem Força nem previsão de resultado; troca de adversários; abas Ranking (top 10 e sua vizinhança), Histórico e Loja da Arena. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:11:52Z"
         },
         {
           "id": "M7-T07",
           "title": "Replay 1x, 2x e Pular",
           "subsystem": "client",
           "description": "Mira em lutas de até ~60s, sem limite rígido.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M7-T01"
+            "M7-T04"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Formações espelhadas 3 na frente + 3 atrás; cada ataque dá um pequeno avanço do peixe, número de dano subindo e a barra de vida caindo; derrotados ficam apagados na vaga. Botões 1x, 2x e Pular; no fim, Vitória/Derrota com a mudança de posição e de Honra. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:11:52Z"
+        },
+        {
+          "id": "M7-T08",
+          "title": "Ataques recebidos e histórico",
+          "subsystem": "server",
+          "description": "Outros jogadores atacam você, inclusive offline.",
+          "status": "DONE",
+          "dependencies": [
+            "M7-T05"
+          ],
+          "completion_notes": "A cada hora (também com o jogo fechado, até 24 verificações) um adversário até ~10% abaixo pode atacar: se ele vence, troca de posição com você; se você defende, +8 de Honra. Aviso na tela. Histórico das últimas 30 batalhas. Com o Cardume em Expedição você não ataca, mas continua podendo ser atacado. Testado.",
+          "updated_at": "2026-09-29T00:11:52Z"
+        },
+        {
+          "id": "M7-T09",
+          "title": "Itens da Loja da Arena",
+          "subsystem": "config",
+          "description": "Decidir o que a Honra compra. A loja existe e lê arena.json → shop.items, que está vazio.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M7-T06"
+          ],
+          "updated_at": "2026-09-29T00:11:52Z"
+        },
+        {
+          "id": "M7-T10",
+          "title": "Teste da Arena pelo proprietário",
+          "subsystem": "client",
+          "description": "Atacar, ver o replay e acompanhar o ranking dentro do Unity.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M7-T07"
+          ],
+          "updated_at": "2026-09-29T00:11:52Z"
         }
       ]
     },

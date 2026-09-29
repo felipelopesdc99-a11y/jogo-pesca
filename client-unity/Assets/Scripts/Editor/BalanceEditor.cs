@@ -25,11 +25,8 @@ namespace FishingIdle.Editor
     /// </remarks>
     public sealed class BalanceEditor
     {
-        private static readonly string[] Files =
-        {
-            GameConfigLoader.FishCatalogFile, GameConfigLoader.MapsFile, GameConfigLoader.ProgressionFile,
-            GameConfigLoader.RodsFile, GameConfigLoader.EconomyFile, "arena.json", "expeditions.json",
-        };
+        // Always the same list the game loads, so the panel can never validate against a partial set.
+        private static readonly IReadOnlyList<string> Files = GameConfigLoader.RequiredFiles;
 
         private readonly Dictionary<string, JObject> _documents = new Dictionary<string, JObject>();
         private readonly Dictionary<string, string> _originals = new Dictionary<string, string>();
@@ -183,7 +180,7 @@ namespace FishingIdle.Editor
         /// <summary>Checks for the files the game does not load yet (Arena, Expedições).</summary>
         private IEnumerable<string> ValidateOthers()
         {
-            foreach (var file in new[] { "arena.json", "expeditions.json", GameConfigLoader.EconomyFile })
+            foreach (var file in new[] { GameConfigLoader.ArenaFile, GameConfigLoader.ExpeditionsFile, GameConfigLoader.EconomyFile, GameConfigLoader.ArenaBotsFile })
             {
                 foreach (var token in _documents[file].Descendants().OfType<JValue>())
                 {

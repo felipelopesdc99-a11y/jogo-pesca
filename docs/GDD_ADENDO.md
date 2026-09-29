@@ -321,3 +321,45 @@ a Arena (Milestone 7).
 
 Com o jogo aberto: aviso na tela e a janela do resultado. Com o jogo fechado: a janela aparece na
 próxima vez que o jogo abrir (depois do Bem-vindo de volta, se houver).
+
+---
+
+## Milestone 7 — Arena local
+
+### A-040 · Adversários simulados
+**Seção do GDD:** 28, START HERE M7 · **Situação:** Em vigor (só no MVP local)
+
+200 adversários gerados no seu PC (`config/arena_bots.json`), sempre iguais: quanto melhor a posição
+inicial, maior o Cardume (2 a 6 peixes), maior o nível (1 a 10) e maior o tamanho; os de cima usam
+peixes do Rio Selvagem. Eles colocam os peixes mais resistentes na frente. Você começa em último.
+
+### A-041 · Seleção de adversários perto do topo
+**Seção do GDD:** 28 · **Situação:** Confirmar
+
+A janela é de ~10% acima da sua posição (arredondada para cima, no mínimo 1). Se ela tiver menos de
+três adversários (perto do 1º lugar), completa com os mais próximos logo abaixo de você. No 1º
+lugar, os três adversários são o 2º, o 3º e o 4º.
+
+### A-042 · Vencer contra alguém abaixo de você
+**Seção do GDD:** 29 · **Situação:** Confirmar
+
+Só acontece perto do topo. Você ganha a Honra da vitória, mas ninguém troca de posição.
+
+### A-043 · Ataques recebidos
+**Seção do GDD:** 28–30 · **Situação:** Confirmar
+
+A cada hora (também com o jogo fechado, até 24 verificações seguidas) há 35% de chance de um
+adversário até ~10% abaixo de você atacar. Se ele vence, as posições trocam; se você defende, +8 de
+Honra. Perder uma defesa não tira Honra. Quem está em último não é atacado (não há ninguém abaixo).
+
+### A-044 · Formação dos adversários na tela
+**Seção do GDD:** 26–27 · **Situação:** Em vigor
+
+Os dois Cardumes aparecem espelhados, frente perto do centro. Cada ataque é um pequeno avanço do
+peixe, um número de dano que sobe e some, e a barra de vida caindo. Não há efeito especial por
+espécie nesta versão.
+
+### A-045 · Loja da Arena vazia
+**Seção do GDD:** 30 · **Situação:** Precisa de decisão (`OD-009`)
+
+A aba existe e lê os itens de `arena.json → shop.items`, que está vazio. Nenhum item foi inventado.

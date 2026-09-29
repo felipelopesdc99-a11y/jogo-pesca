@@ -36,6 +36,9 @@ namespace FishingIdle.GameService.Core
         ExpeditionActive,
         CardumeEmpty,
         CardumeLocked,
+        NotEnoughEnergy,
+        OpponentNotFound,
+        NoRerollsLeft,
     }
 
     /// <summary>
