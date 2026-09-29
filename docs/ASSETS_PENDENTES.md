@@ -4,6 +4,10 @@ Lista de toda arte do jogo que hoje é **provisória**: foi pintada por script p
 bonito e coerente, mas deve ser trocada pela arte final produzida pelo proprietário (processo da
 Bíblia de Arte, seção 39). Tarefa `M14-T14` no roadmap.
 
+Os pedidos prontos para colar no ChatGPT, na ordem certa, estão no documento
+[Fishing Idle — Pedidos de arte para o ChatGPT](https://claude.ai/code/artifact/320602da-0a64-4e9b-b729-4108aef7656e).
+Mande as imagens geradas no chat; o recorte e a padronização ficam por minha conta.
+
 ## Como trocar uma arte
 
 1. Produza a imagem seguindo a Bíblia de Arte (`docs/ART_BIBLE_V0_1.md`) e o checklist da seção 41

@@ -316,11 +316,57 @@ namespace FishingIdle.Game.Scene
             jumper.SortingOrder = OrderDistantFish;
             jumper.Area = new Rect(-9f, -1.5f, 18f, 1.4f);
 
+            BuildLife(theme, water);
+
             // Foreground corners, anchored to the edges of the view whatever the screen shape.
             var fg = Layer("Primeiro plano", -0.25f);
             var halfWidth = Camera != null ? Camera.orthographicSize * Camera.aspect : 9.6f;
             Corner(fg, theme.ArtPath("fg_left"), new Vector2(0f, 0f), new Vector3(-halfWidth - 0.4f, -5.7f, 0f));
             Corner(fg, theme.ArtPath("fg_right"), new Vector2(1f, 0f), new Vector3(halfWidth + 0.4f, -5.7f, 0f));
+        }
+
+        /// <summary>The small, quiet signs of life (Life.cs), tuned per map; all of them fade with "ambient_life".</summary>
+        private void BuildLife(SceneTheme theme, Transform water)
+        {
+            var lake = theme.SunColumn;
+            var life = new GameObject("Vida").transform;
+            life.SetParent(_world, false);
+
+            var shadows = life.gameObject.AddComponent<FishShadows>();
+            shadows.SortingOrder = OrderWaterDetail;
+            shadows.Tint = lake ? new Color(0.03f, 0.08f, 0.16f) : new Color(0.02f, 0.1f, 0.1f);
+
+            var rays = new GameObject("Raios de sol").AddComponent<SunRays>();
+            rays.transform.SetParent(life, false);
+            rays.Sun = theme.SunPosition;
+            rays.Color = lake ? new Color(1f, 0.84f, 0.58f) : new Color(0.95f, 1f, 0.9f);
+            rays.SortingOrder = OrderWaterDetail;
+
+            var mist = new GameObject("Névoa do horizonte").AddComponent<HorizonMist>();
+            mist.transform.SetParent(life, false);
+            mist.Y = Horizon + 0.12f;
+            mist.Color = lake ? new Color(1f, 0.86f, 0.74f) : new Color(0.95f, 0.98f, 1f);
+            mist.MaxAlpha = lake ? 0.14f : 0.26f;
+            mist.SortingOrder = OrderWaterDetail;
+
+            var motes = new GameObject("Poeira no ar").AddComponent<GoldenMotes>();
+            motes.transform.SetParent(life, false);
+            motes.Color = lake ? new Color(1f, 0.88f, 0.6f) : new Color(0.92f, 1f, 0.9f);
+            motes.Count = lake ? 14 : 9;
+            motes.SortingOrder = OrderRod + 1;
+
+            var flies = new GameObject("Libélulas").AddComponent<Dragonflies>();
+            flies.transform.SetParent(life, false);
+            flies.SortingOrder = OrderForeground + 2;
+            flies.HalfWidth = Camera != null ? Camera.orthographicSize * Camera.aspect : 9.6f;
+
+            if (lake)
+            {
+                var glints = new GameObject("Brilhos do sol").AddComponent<SunGlints>();
+                glints.transform.SetParent(water, false);
+                glints.X = theme.SunPosition.x;
+                glints.SortingOrder = OrderWaterDetail;
+            }
         }
 
         private void Corner(Transform parent, string path, Vector2 pivot, Vector3 position)
@@ -498,6 +544,9 @@ namespace FishingIdle.Game.Scene
             boat.SetParent(layer, false);
             boat.localPosition = new Vector3(-1.2f, -2.1f, 0f);
             boat.gameObject.AddComponent<Bobbing>();
+            var ripples = layer.gameObject.AddComponent<BoatRipples>();
+            ripples.Boat = boat;
+            ripples.SortingOrder = OrderWaterDetail;
 
             Sprite(boat, "Casco", ArtAssets.Sprite("Cena/barco", 3.6f, new Vector2(0.5f, 0.3f)) ?? Art.Boat, Vector3.zero, Vector3.one, OrderBoat);
             var tackle = ArtAssets.Sprite("Cena/caixa_de_pesca", 0.46f, new Vector2(0.5f, 0f));

@@ -95,6 +95,65 @@ namespace FishingIdle.Game.Scene
             return ToSprite(tex, w, new Vector2(0.5f, 0.5f));
         });
 
+        /// <summary>A four-pointed sparkle, 1 unit across, for glints of sun on the water.</summary>
+        public static Sprite Sparkle => Cached("sparkle", () =>
+        {
+            const int size = 64;
+            var tex = NewTexture(size, size);
+            var r = size / 2f;
+            Paint(tex, (x, y) =>
+            {
+                var dx = Mathf.Abs(x + 0.5f - r) / r;
+                var dy = Mathf.Abs(y + 0.5f - r) / r;
+                var cross = Mathf.Max(Mathf.Clamp01(1f - dx * 9f) * (1f - dy), Mathf.Clamp01(1f - dy * 9f) * (1f - dx));
+                var core = Mathf.Clamp01(1f - Mathf.Sqrt(dx * dx + dy * dy) * 3f);
+                var a = Mathf.Clamp01(cross * cross + core * core);
+                return new Color(1, 1, 1, a);
+            });
+            return ToSprite(tex, size, new Vector2(0.5f, 0.5f));
+        });
+
+        /// <summary>A soft beam of light, 1 unit wide and 4 tall, pivot at its top (for sun rays).</summary>
+        public static Sprite Beam => Cached("beam", () =>
+        {
+            const int w = 32, h = 128;
+            var tex = NewTexture(w, h);
+            Paint(tex, (x, y) =>
+            {
+                var u = Mathf.Abs((x + 0.5f) / w * 2f - 1f);
+                var v = (y + 0.5f) / h; // 1 at the top
+                var a = Mathf.Clamp01(1f - u * u) * Mathf.SmoothStep(0f, 1f, v) * Mathf.Clamp01((1f - v) * 12f + 0.2f);
+                return new Color(1, 1, 1, a);
+            });
+            return ToSprite(tex, 32, new Vector2(0.5f, 1f));
+        });
+
+        /// <summary>A small dragonfly seen from above-side: thin body and four clear wings (wings tinted by the renderer alpha).</summary>
+        public static Sprite Dragonfly => Cached("dragonfly", () =>
+        {
+            const int w = 96, h = 48;
+            var tex = NewTexture(w, h);
+            Paint(tex, (x, y) =>
+            {
+                var p = new Vector2(x + 0.5f, y + 0.5f);
+                var body = Mathf.Abs(p.y - h * 0.5f) < 2.2f && p.x > w * 0.12f && p.x < w * 0.86f ? 1f : 0f;
+                var head = Vector2.Distance(p, new Vector2(w * 0.86f, h * 0.5f)) < 4.2f ? 1f : 0f;
+                var wing = 0f;
+                foreach (var c in new[] { new Vector2(w * 0.60f, h * 0.78f), new Vector2(w * 0.60f, h * 0.22f), new Vector2(w * 0.44f, h * 0.74f), new Vector2(w * 0.44f, h * 0.26f) })
+                {
+                    wing = Mathf.Max(wing, Edge((1f - EllipseDistance(p, c, new Vector2(w * 0.13f, h * 0.2f))) * 6f));
+                }
+
+                if (body > 0f || head > 0f)
+                {
+                    return new Color(0.16f, 0.36f, 0.42f, 1f);
+                }
+
+                return new Color(0.86f, 0.95f, 1f, wing * 0.45f);
+            });
+            return ToSprite(tex, 96, new Vector2(0.5f, 0.5f));
+        });
+
         /// <summary>A vertical gradient, 1×1 unit, top colour first.</summary>
         public static Sprite VerticalGradient(string key, params Color[] topToBottom)
         {

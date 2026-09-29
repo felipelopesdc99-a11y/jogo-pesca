@@ -42,6 +42,9 @@ namespace FishingIdle.Game.Visual
         public float WindowFadeSeconds = 0.18f;
         public float CoinCountSeconds = 0.8f;
 
+        /// <summary>How much small ambient life the scene shows (dust, dragonflies, fish shadows…): 0 = none, 1 = as designed, up to 2.</summary>
+        public float AmbientLife = 1f;
+
         private RarityColor[] _rarities =
         {
             new RarityColor { id = "common", color = "#8193A8" },
@@ -132,6 +135,10 @@ namespace FishingIdle.Game.Visual
             CelebrationSeconds = Positive(f.celebration_seconds, CelebrationSeconds, 10f);
             WindowFadeSeconds = Positive(f.window_fade_seconds, WindowFadeSeconds, 2f);
             CoinCountSeconds = Positive(f.coin_count_seconds, CoinCountSeconds, 5f);
+            if (f.ambient_life >= 0f)
+            {
+                AmbientLife = Mathf.Clamp(f.ambient_life, 0f, 2f);
+            }
         }
 
         private static float Positive(float value, float fallback, float max)
@@ -167,6 +174,9 @@ namespace FishingIdle.Game.Visual
             public float celebration_seconds;
             public float window_fade_seconds;
             public float coin_count_seconds;
+
+            // -1 = not in the file (0 is a valid value: no ambient life).
+            public float ambient_life = -1f;
         }
 
         [Serializable]

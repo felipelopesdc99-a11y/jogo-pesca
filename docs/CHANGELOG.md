@@ -3,6 +3,21 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.2] — 29/09/2026
+
+### Adicionado
+
+- **Cena mais viva, sem poluir:** poeira dourada no ar, libélulas perto dos juncos, sombras de peixe
+  passando embaixo d'água, raios de sol bem fracos, névoa no horizonte, brilhos no reflexo do sol,
+  anéis na água em volta do barco e da boia, respingos e gotas na captura.
+- Brilho suave pulsando atrás de "Iniciar pesca" quando a pesca está parada.
+- `ambient_life` no `tema_visual.json` para reduzir ou desligar tudo isso.
+- Documento com os 32 pedidos de arte para o ChatGPT (link em `docs/ASSETS_PENDENTES.md`).
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M14-T15`).
+
 ## [0.2.0-m14.1] — 29/09/2026
 
 Visual **"Lago Dourado — Clean Premium"**, pela Bíblia de Arte (`docs/ART_BIBLE_V0_1.md`) e pelo

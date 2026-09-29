@@ -633,3 +633,23 @@ canto com a caixa dourada. O tutorial passa a destacar em turquesa (dourado fica
 
 Os cards do Mapa mostram uma foto do lugar (escurecida com cadeado se ainda bloqueado), as quatro
 Expedições têm cada uma a sua paisagem, e a Loja e o Mercado mostram a vara desenhada.
+
+### A-075 · Vida na cena
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+Pequenos sinais de vida, sempre discretos (nível Calmo da Bíblia de Arte):
+
+| O quê | Onde | Com que frequência |
+|---|---|---|
+| Poeira dourada flutuando na luz | Ar sobre o lago (no Rio, clara) | Sempre, 14 partículas no Lago e 9 no Rio |
+| Libélula que entra, paira perto dos juncos e vai embora | Cantos de baixo | A cada 25–55 s |
+| Sombra de peixe passando embaixo d'água | Água | A cada 12–26 s |
+| Raios de sol bem fracos saindo do sol | Céu e água | Sempre, "respirando" devagar |
+| Névoa fina correndo no horizonte | Horizonte | Sempre |
+| Brilhos em estrela no reflexo do sol | Coluna de luz (só no Lago) | A cada 0,5–1,3 s |
+| Anéis na água em volta do barco e da boia | Água | A cada 2–4 s |
+| Respingos quando o peixe sai da água, e gotas pingando dele | Captura | Em toda captura; mais respingo na captura importante |
+| Brilho suave pulsando atrás de "Iniciar pesca" | Painel de pesca | Só com a pesca parada |
+
+Tudo pode ser reduzido ou desligado em `ambient_life` no `tema_visual.json` (0 desliga, 1 é o normal,
+até 2).

@@ -52,6 +52,8 @@ namespace FishingIdle.Game.Scene
         private Vector3 _bobberFrom;
         private float _rodAngle = 55f;
         private float _nextBiteRippleAt;
+        private float _nextIdleRippleAt;
+        private float _nextDripAt;
         private CatchView _shown;
         private Vector3 _fishFrom;
 
@@ -247,6 +249,7 @@ namespace FishingIdle.Game.Scene
                     _fishGlow.enabled = _shown.IsImportant;
                     _fishGlow.color = GlowColor(_shown);
                     RippleEffect.Spawn(_world, _fishFrom, FishingScene.OrderWaterDetail, 1.4f, 0.8f);
+                    Droplet.Splash(_world, _fishFrom, FishingScene.OrderCatch + 1, _shown.IsImportant ? 16 : 9, _shown.IsImportant ? 1.2f : 0.9f);
                     if (_shown.IsImportant)
                     {
                         // Stands out before any text is read: glow, pulse and a few rising sparks.
@@ -301,6 +304,13 @@ namespace FishingIdle.Game.Scene
             _rodAngle = Mathf.Lerp(_rodAngle, 27f + Mathf.Sin(Time.time * 0.7f) * 1.2f, Time.deltaTime * 4f);
             ApplyRod();
             _bobber.localPosition = _castTarget + new Vector3(0f, Mathf.Sin(Time.time * 2.1f) * 0.035f, 0f);
+
+            // The bobber sits in the water: a faint ring now and then.
+            if (Time.time >= _nextIdleRippleAt)
+            {
+                _nextIdleRippleAt = Time.time + Random.Range(2.4f, 3.6f);
+                RippleEffect.Spawn(_world, _castTarget, FishingScene.OrderWaterDetail, 0.5f, 0.25f);
+            }
         }
 
         private void UpdateBite()
@@ -344,8 +354,14 @@ namespace FishingIdle.Game.Scene
             }
             else if (t < ShowSeconds)
             {
-                // Held up for a moment, wriggling.
+                // Held up for a moment, wriggling and dripping.
                 var wiggle = Mathf.Sin(Time.time * 11f) * 6f * Mathf.Clamp01(1.4f - t);
+                if (Time.time >= _nextDripAt)
+                {
+                    _nextDripAt = Time.time + Random.Range(0.18f, 0.35f);
+                    Droplet.Splash(_world, hold + new Vector3(Random.Range(-0.4f, 0.4f) * size, -0.15f * size, 0f), FishingScene.OrderCatch + 1, 1, 0.15f);
+                }
+
                 _fish.transform.localPosition = hold + new Vector3(0f, Mathf.Sin(Time.time * 3f) * 0.05f, 0f);
                 _fish.transform.localRotation = Quaternion.Euler(0f, 0f, wiggle);
                 _fish.transform.localScale = Vector3.one * size;

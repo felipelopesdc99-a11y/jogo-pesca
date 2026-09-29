@@ -34,5 +34,7 @@
   "toast_warning_seconds": 8.0,
   "celebration_seconds": 3.2,
   "window_fade_seconds": 0.18,
-  "coin_count_seconds": 0.8
+  "coin_count_seconds": 0.8,
+  "_vida": "Quanta vida pequena a cena mostra (poeira no ar, libélulas, sombras de peixe, raios de sol, névoa, brilhos na água): 0 desliga, 1 é o normal, até 2.",
+  "ambient_life": 1.0
 }

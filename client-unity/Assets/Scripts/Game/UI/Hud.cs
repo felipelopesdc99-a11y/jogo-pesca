@@ -596,7 +596,13 @@ namespace FishingIdle.Game.UI
                     _root.StopFishing();
                 }
             }
-            else if (skin.IconButton(button, Icons.Play, GameTexts.Fishing.Start, skin.ButtonPrimary))
+            else
+            {
+                // A soft breathing glow invites the first click without shouting.
+                skin.DrawGlow(button, UiSkin.Accent, 0.22f + 0.14f * Mathf.Sin(Time.unscaledTime * 2.2f));
+            }
+
+            if (!status.IsFishing && skin.IconButton(button, Icons.Play, GameTexts.Fishing.Start, skin.ButtonPrimary))
             {
                 _root.StartFishing();
             }

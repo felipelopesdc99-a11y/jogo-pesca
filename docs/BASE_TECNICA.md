@@ -266,6 +266,11 @@ Regras:
     horizonte; cantos presos às bordas da tela pela proporção da câmera. Por cima, o movimento: nuvens
     (sprites separados), brilho do sol que respira (`Breathe`), reflexos (`Twinkle`), pássaros, peixes
     saltando, juncos balançando.
+  - **Vida na cena** (`Scene/Life.cs`, montada em `FishingScene.BuildLife`): poeira no ar
+    (`GoldenMotes`), libélulas (`Dragonflies`), sombras de peixe (`FishShadows`), raios de sol
+    (`SunRays`), névoa (`HorizonMist`), brilhos no reflexo (`SunGlints`), anéis do barco (`BoatRipples`)
+    e respingos (`Droplet.Splash`, usado pelo `FishermanRig`). Tudo de baixa opacidade e escalado por
+    `ambient_life` do tema (0 desliga).
   - **Card oficial de peixe** (`UI/FishCard`, dados em `FishCardModel`): mesmo layout para toda
     raridade; a raridade é borda, selo e barra; o Excepcional tem selo dourado com brilho que passa
     (`FishCard.ExceptionalSeal`); usado na Caixa, Aquário, Mercado (varas também, com `Art`).

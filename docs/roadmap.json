@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-29T02:49:14Z",
+  "updated_at": "2026-09-29T03:16:00Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -1916,6 +1916,30 @@
             "M14-T14"
           ],
           "updated_at": "2026-09-29T02:49:14Z"
+        },
+        {
+          "id": "M14-T16",
+          "title": "Cena mais viva",
+          "subsystem": "client",
+          "description": "Pequenos sinais de vida na cena, discretos, a pedido do proprietário: poeira no ar, libélulas, sombras de peixe, raios de sol, névoa, brilhos, anéis na água e respingos.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T08"
+          ],
+          "completion_notes": "Scene/Life.cs: poeira dourada, libélulas perto dos juncos, sombras de peixe embaixo d'água, raios de sol bem fracos, névoa no horizonte, brilhos em estrela no reflexo do sol, anéis em volta do barco e da boia, respingos e gotas na captura, e um brilho pulsando atrás de \"Iniciar pesca\" com a pesca parada. Tudo em baixa opacidade e ajustável em ambient_life no tema visual (0 desliga). A tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T03:16:00Z"
+        },
+        {
+          "id": "M14-T17",
+          "title": "Pedidos de arte para o ChatGPT",
+          "subsystem": "docs",
+          "description": "Documento com todos os pedidos, em forma de ordem, para o proprietário gerar a arte final no ChatGPT.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T14"
+          ],
+          "completion_notes": "32 pedidos em ordem (estilo mestre, cenário do Lago Sereno em camadas, peixes em grade, pescador, barco, Rio Selvagem, ícones, varas e Expedições), com correções prontas e um checklist, no documento \"Fishing Idle — Pedidos de arte para o ChatGPT\" (link em docs/ASSETS_PENDENTES.md).",
+          "updated_at": "2026-09-29T03:16:00Z"
         }
       ]
     }
