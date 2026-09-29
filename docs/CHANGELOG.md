@@ -3,6 +3,39 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.1] — 29/09/2026
+
+Visual **"Lago Dourado — Clean Premium"**, pela Bíblia de Arte (`docs/ART_BIBLE_V0_1.md`) e pelo
+documento de 185 referências.
+
+### Adicionado
+
+- **Tema visual em dados** (`client-unity/Assets/Resources/Visual/tema_visual.json`): cores, cores de
+  raridade, brilho e tempos de avisos e celebrações num arquivo só.
+- **Fontes** Fredoka (títulos e números) e Nunito (texto), gratuitas (OFL).
+- **44 ícones** num traço só, nos menus, botões, cartões e avisos.
+- **Card oficial de peixe** na Caixa de Pesca, no Aquário e no Mercado, com selo dourado do
+  Excepcional.
+- **20 peixes pintados** de lado, todos no mesmo estilo.
+- **Cenários novos em camadas:** Lago Sereno ao entardecer (sol baixo, reflexo dourado, pinheiros,
+  juncos) e Rio Selvagem (paredões, cachoeira, correnteza). Barco e pescador novos.
+- **Celebrações:** faixa grande para captura rara, Excepcional, recorde (antigo → novo), espécie nova
+  (a silhueta se colore), subir de nível e leilão vencido; vitória na Arena com raios de luz.
+- **Contador de moedas** que sobe com "+N".
+- Fotos nos cards do Mapa e das Expedições; varas desenhadas na Loja e no Mercado.
+- Lista de artes a produzir: `docs/ASSETS_PENDENTES.md`. Geradores em `tools/Arte`.
+
+### Mudado
+
+- Todas as janelas com o mesmo cabeçalho (ícone, título, subtítulo, ✕ Fechar), painéis com sombra e
+  botões com ícone.
+- O menu "Aquário 2/10" não é mais cortado (os botões do topo têm a largura do texto).
+- No Aquário, a ficha do peixe não fica mais embaixo do botão Fechar.
+
+### Não verificado
+
+- Nada disso foi aberto no Editor do Unity ainda (`M14-T15`).
+
 ## [0.2.0-m13.1] — 29/09/2026
 
 Primeira entrega da **V0.2** — Áudio e ambiente. Os testes da V0.1 pelo proprietário ficaram em

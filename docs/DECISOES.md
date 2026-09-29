@@ -423,3 +423,26 @@ pode ser ouvido fora do Unity antes de testar, e a síntese fora do jogo pode se
 
 **Rever se.** Chegar áudio final (gravado ou comprado): basta substituir os arquivos.
 
+## TD-026 — Arte como arquivos trocáveis, pintados por script, e tema visual em dados
+
+**Origem.** V0.2, Milestone 14 (29/09/2026): a Bíblia de Arte "Lago Dourado" e o documento de 185
+referências visuais enviados pelo proprietário.
+
+**Decisão.** Toda imagem do jogo passa a ser um arquivo PNG em `Assets/Resources/Arte`, carregado pelo
+nome (`ArtAssets`), no lugar dos desenhos feitos por código na hora de jogar — que continuam como
+reserva quando um arquivo falta. A arte provisória é pintada fora do jogo por scripts Python em
+`tools/Arte` (sementes fixas). As cores, o brilho e os tempos de efeito ficam num arquivo único,
+`Assets/Resources/Visual/tema_visual.json`, lido por `VisualTheme`. A interface continua em IMGUI
+(TD-017), com as fontes Fredoka e Nunito (SIL OFL, gratuitas) dentro do projeto. Ícones em PNG, não
+em SVG.
+
+**Por quê.** Arquivos seguem o processo da Bíblia (seção 39): o proprietário gera a arte final e ela
+entra trocando o arquivo, sem mexer em código nem em layout. Pintar fora do jogo permite uma arte bem
+mais rica (sombreado, reflexos, camadas) sem custo ao abrir o jogo, e dá para ver o resultado antes de
+abrir o Unity. O tema fica em `Resources`, e não em `/config`, porque é apresentação: não muda captura,
+preço nem batalha, e não precisa da validação nem das migrações do balanceamento. PNG porque o Unity
+não importa SVG sem um pacote extra.
+
+**Rever se.** A arte final chegar (basta trocar os arquivos), ou a interface migrar para UI Toolkit
+(o tema e os arquivos continuam valendo).
+

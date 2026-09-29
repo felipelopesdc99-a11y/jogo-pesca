@@ -4,6 +4,7 @@ using FishingIdle.Game.Bootstrap;
 using FishingIdle.Game.Scene;
 using FishingIdle.GameService.Arena;
 using FishingIdle.GameService.Core;
+using FishingIdle.Game.Visual;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -89,7 +90,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Arena.Title, GameTexts.Arena.Note, out var closed);
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Arena.Title, GameTexts.Arena.Note, out var closed, icon: Icons.Arena);
             if (closed)
             {
                 Close();
@@ -97,15 +98,15 @@ namespace FishingIdle.Game.UI
             }
 
             // Summary: rank, Energy, Honor.
-            Stat(skin, area.x, area.y, GameTexts.Arena.Rank, GameTexts.Arena.RankOfTotal(_arena.Rank, _arena.Participants));
+            Stat(skin, area.x, area.y, Icons.Arena, GameTexts.Arena.Rank, GameTexts.Arena.RankOfTotal(_arena.Rank, _arena.Participants));
             var energy = GameTexts.Arena.EnergyOf(_arena.Energy, _arena.EnergyMax);
-            Stat(skin, area.x + 260, area.y, GameTexts.Arena.Energy, energy);
+            Stat(skin, area.x + 260, area.y, Icons.Energy, GameTexts.Arena.Energy, energy);
             if (_arena.NextEnergySeconds > 0)
             {
                 GUI.Label(new Rect(area.x + 400, area.y + 30, 160, 20), GameTexts.Arena.NextEnergy(Format.Countdown(_arena.NextEnergySeconds)), skin.SmallMuted);
             }
 
-            Stat(skin, area.x + 580, area.y, GameTexts.Arena.Honor, Format.Number(_arena.Honor));
+            Stat(skin, area.x + 580, area.y, Icons.Honor, GameTexts.Arena.Honor, Format.Number(_arena.Honor));
 
             var tabs = new[] { (Tab.Opponents, GameTexts.Arena.TabOpponents), (Tab.Ranking, GameTexts.Arena.TabRanking), (Tab.History, GameTexts.Arena.TabHistory), (Tab.Shop, GameTexts.Arena.TabShop) };
             var x = area.x;
@@ -131,10 +132,11 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        private static void Stat(UiSkin skin, float x, float y, string label, string value)
+        private static void Stat(UiSkin skin, float x, float y, string icon, string label, string value)
         {
-            GUI.Label(new Rect(x, y, 240, 20), label, skin.SmallMuted);
-            GUI.Label(new Rect(x, y + 20, 240, 30), value, skin.Number);
+            skin.DrawIcon(new Rect(x, y + 10, 30, 30), icon, UiSkin.Gold);
+            GUI.Label(new Rect(x + 40, y, 200, 20), label, skin.SmallMuted);
+            GUI.Label(new Rect(x + 40, y + 20, 200, 30), value, skin.Number);
         }
 
         // ------------------------------------------------------------------ opponents
@@ -156,8 +158,9 @@ namespace FishingIdle.Game.UI
                 var o = _arena.Opponents[i];
                 var rect = new Rect(area.x + i * (cardW + 16f), top, cardW, bottom - top - 10);
                 GUI.Box(rect, GUIContent.none, skin.Card);
-                GUI.Label(new Rect(rect.x + 18, rect.y + 14, rect.width - 36, 26), o.Name, skin.Heading);
-                GUI.Label(new Rect(rect.x + 18, rect.y + 42, rect.width - 36, 22), GameTexts.Arena.RankOf(o.Rank), skin.SmallGold);
+                skin.IconBadge(new Rect(rect.x + 16, rect.y + 14, 50, 50), Icons.Profile, UiSkin.Accent);
+                GUI.Label(new Rect(rect.x + 78, rect.y + 14, rect.width - 96, 26), o.Name, skin.Heading);
+                GUI.Label(new Rect(rect.x + 78, rect.y + 42, rect.width - 96, 22), GameTexts.Arena.RankOf(o.Rank), skin.SmallGold);
 
                 // The Cardume in formation order, with level and rarity — never its Strength.
                 var fy = rect.y + 76;
@@ -166,16 +169,18 @@ namespace FishingIdle.Game.UI
                     GUI.DrawTexture(new Rect(rect.x + 18, fy, 70, 34), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
                     GUI.Label(new Rect(rect.x + 96, fy + 2, rect.width - 170, 20), f.Position + ". " + f.SpeciesName, skin.Small);
                     GUI.Label(new Rect(rect.x + 96, fy + 18, rect.width - 170, 18), GameTexts.Player.LevelShort + " " + f.Level, skin.SmallMuted);
-                    if (f.RarityId != null && f.RarityId != "common")
+                    if (!string.IsNullOrEmpty(f.RarityName))
                     {
-                        skin.Tag(new Rect(rect.xMax - 76, fy + 8, 58, 18), f.RarityName.ToUpperInvariant(), UiSkin.Rare);
+                        var rarity = f.RarityName.ToUpperInvariant();
+                        var pw = skin.PillWidth(rarity, false);
+                        skin.AccentPill(new Rect(rect.xMax - 18 - pw, fy + 8, pw, 18), rarity, UiSkin.RarityColor(f.RarityId));
                     }
 
                     fy += 40;
                 }
 
                 GUI.enabled = _arena.AttackBlocker == ServiceError.None;
-                if (GUI.Button(new Rect(rect.x + 18, rect.yMax - 58, rect.width - 36, 42), GameTexts.Arena.Attack, skin.ButtonPrimary))
+                if (skin.IconButton(new Rect(rect.x + 18, rect.yMax - 58, rect.width - 36, 42), Icons.Attack, GameTexts.Arena.Attack, skin.ButtonPrimary))
                 {
                     StartReplay(_root.Attack(i));
                 }
@@ -185,7 +190,7 @@ namespace FishingIdle.Game.UI
 
             if (_arena.RerollsLeft > 0)
             {
-                if (GUI.Button(new Rect(area.x, bottom, 280, 42), GameTexts.Arena.RerollsLeft(_arena.RerollsLeft), skin.Button))
+                if (skin.IconButton(new Rect(area.x, bottom, 300, 42), Icons.Swap, GameTexts.Arena.RerollsLeft(_arena.RerollsLeft), skin.Button))
                 {
                     _root.RerollOpponents();
                     _nextRefresh = 0f;
@@ -292,7 +297,7 @@ namespace FishingIdle.Game.UI
 
             _hits.RemoveAll(h => Time.unscaledTime - h.at > 0.9f);
 
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Arena.Versus(_battle.OpponentName), GameTexts.Arena.Clock(Format.Countdown(Mathf.Min(_time, duration))), out var closed);
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Arena.Versus(_battle.OpponentName), GameTexts.Arena.Clock(Format.Countdown(Mathf.Min(_time, duration))), out var closed, icon: Icons.Attack);
             if (closed)
             {
                 Close();
@@ -316,11 +321,28 @@ namespace FishingIdle.Game.UI
 
             // Result panel.
             var panel = new Rect(cx - 260, by - 150, 520, 190);
-            GUI.Box(panel, GUIContent.none, skin.CardImportant);
-            GUI.Label(new Rect(panel.x + 24, panel.y + 18, panel.width - 48, 34), _battle.PlayerWon ? GameTexts.Arena.Victory : GameTexts.Arena.Defeat, skin.Title);
+            var won = _battle.PlayerWon;
+            if (won)
+            {
+                // Arena victory: a moderate celebration (Art Bible, section 16.12).
+                var rays = panel.height * 2.6f;
+                var before = GUI.matrix;
+                GUIUtility.RotateAroundPivot(Time.unscaledTime * 12f, panel.center);
+                GUI.DrawTexture(new Rect(panel.center.x - rays / 2f, panel.center.y - rays / 2f, rays, rays), skin.Rays, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Gold.r, UiSkin.Gold.g, UiSkin.Gold.b, 0.35f), 0, 0);
+                GUI.matrix = before;
+                skin.DrawGlow(panel, UiSkin.Gold, 0.45f);
+            }
+
+            skin.DrawShadow(panel);
+            GUI.Box(panel, GUIContent.none, skin.PanelSolid);
+            skin.DrawOutline(panel, won ? UiSkin.Gold : UiSkin.Border);
+            skin.DrawIcon(new Rect(panel.xMax - 70, panel.y + 18, 44, 44), won ? Icons.Arena : Icons.Swap, won ? UiSkin.Gold : UiSkin.Muted);
+            GUI.contentColor = won ? UiSkin.GoldLight : Color.white;
+            GUI.Label(new Rect(panel.x + 24, panel.y + 18, panel.width - 48, 34), won ? GameTexts.Arena.Victory : GameTexts.Arena.Defeat, skin.Title);
+            GUI.contentColor = Color.white;
             GUI.Label(new Rect(panel.x + 24, panel.y + 60, panel.width - 48, 22), GameTexts.Arena.RankChange(_battle.RankBefore, _battle.RankAfter), skin.Body);
             GUI.Label(new Rect(panel.x + 24, panel.y + 86, panel.width - 48, 22), GameTexts.Arena.HonorChange(_battle.HonorChange), skin.Body);
-            if (GUI.Button(new Rect(panel.xMax - 244, panel.yMax - 58, 220, 42), GameTexts.Arena.BackToArena, skin.ButtonPrimary))
+            if (skin.IconButton(new Rect(panel.xMax - 244, panel.yMax - 58, 220, 42), Icons.Arena, GameTexts.Arena.BackToArena, skin.ButtonPrimary))
             {
                 _battle = null;
                 _nextRefresh = 0f;

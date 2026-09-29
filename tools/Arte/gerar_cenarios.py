@@ -353,11 +353,10 @@ def foreground_corner(rng, side, dark, light, tip, lily, cattails=True):
     return Image.fromarray(a.astype(np.uint8), 'RGBA')
 
 
-def thumbnail(out, prefix):
-    """A card picture of the map (Mapa screen), composed from its layers."""
+def thumbnail(out, prefix, window=(-6.0, 9.0, -2.4, 3.6), size=(720, 288), target=None):
+    """A card picture composed from a map's layers (Mapa and Expedição screens)."""
     base = Image.open(os.path.join(out, prefix + '_bg_sky.png')).convert('RGBA')
-    wx0, wx1, wy0, wy1 = -6.0, 9.0, -2.4, 3.6
-    size = (720, 288)
+    wx0, wx1, wy0, wy1 = window
 
     def place(img, lx0, lx1, ly0, ly1):
         # Crop the part of a layer inside the thumbnail window and scale it.
@@ -372,7 +371,8 @@ def thumbnail(out, prefix):
     canvas.alpha_composite(place(Image.open(os.path.join(out, prefix + '_bg_far.png')).convert('RGBA'), -HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 2.4))
     canvas.alpha_composite(place(Image.open(os.path.join(out, prefix + '_bg_mid.png')).convert('RGBA'), -HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 1.5))
     canvas.alpha_composite(place(Image.open(os.path.join(out, prefix + '_bg_near.png')).convert('RGBA'), -HALF_W, HALF_W, HORIZON - 0.15, HORIZON + 3.2))
-    canvas.save(os.path.join(out, prefix + '_thumb.png'), optimize=True)
+    canvas.save(target or os.path.join(out, prefix + '_thumb.png'), optimize=True)
+    return canvas
 
 
 # ----------------------------------------------------------------------------- Rio Selvagem
@@ -550,7 +550,87 @@ def boat_and_fisherman(out):
     save(tb, 'caixa_de_pesca.png', (160, 110))
 
 
+def rods(out):
+    """One picture per rod (Resources/Arte/Varas/rod_<id>.png), 2:1 like the fish, for cards and the Shop."""
+    S = 2
+    specs = {
+        'rod_00_starter': dict(blank=(168, 120, 64), tip=(120, 84, 44), grip=(120, 78, 44), reel=(150, 156, 160), bands=(92, 60, 34), thick=11),
+        'rod_01': dict(blank=(88, 96, 112), tip=(220, 70, 60), grip=(196, 150, 96), reel=(54, 120, 196), bands=(214, 176, 90), thick=12),
+    }
+    for rod_id, sp in specs.items():
+        w, h = 1024 * S, 512 * S
+        img = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        x0, y0, x1, y1 = w * 0.08, h * 0.86, w * 0.94, h * 0.10
+        def at(u):
+            # A gentle bend near the tip.
+            return x0 + (x1 - x0) * u, y0 + (y1 - y0) * u + h * 0.06 * u ** 3
+        # Line from the tip, hanging.
+        tx, ty = at(1.0)
+        d.line([(tx, ty), (tx + w * 0.01, ty + h * 0.45)], fill=(236, 236, 228, 190), width=2 * S)
+        pts = [at(u) for u in np.linspace(0, 1, 60)]
+        for i in range(len(pts) - 1):
+            u = i / len(pts)
+            width = int((sp['thick'] * (1 - u * 0.8)) * S)
+            col = sp['blank'] if u < 0.9 else sp['tip']
+            d.line([pts[i], pts[i + 1]], fill=col + (255,), width=max(2, width))
+        # Guides (rings) along the blank.
+        for u in (0.42, 0.56, 0.68, 0.79, 0.88, 0.95):
+            gx, gy = at(u)
+            d.ellipse([gx - 6 * S, gy + 3 * S, gx + 6 * S, gy + 15 * S], outline=(200, 204, 210, 255), width=2 * S)
+        # Grip and butt.
+        g0, g1 = at(0.0), at(0.24)
+        d.line([g0, g1], fill=sp['grip'] + (255,), width=int(sp['thick'] * 2.4 * S))
+        for u in (0.02, 0.24):
+            bx, by = at(u)
+            d.ellipse([bx - 13 * S, by - 13 * S, bx + 13 * S, by + 13 * S], fill=sp['bands'] + (255,))
+        # Reel.
+        rx, ry = at(0.3)
+        d.rectangle([rx - 6 * S, ry, rx + 6 * S, ry + 26 * S], fill=(70, 74, 80, 255))
+        d.ellipse([rx - 40 * S, ry + 18 * S, rx + 40 * S, ry + 98 * S], fill=sp['reel'] + (255,))
+        d.ellipse([rx - 26 * S, ry + 32 * S, rx + 26 * S, ry + 84 * S], fill=tuple(int(c * 0.6) for c in sp['reel']) + (255,))
+        d.ellipse([rx - 9 * S, ry + 49 * S, rx + 9 * S, ry + 67 * S], fill=(220, 224, 228, 255))
+        d.line([(rx + 30 * S, ry + 58 * S), (rx + 62 * S, ry + 70 * S)], fill=(60, 64, 70, 255), width=6 * S)
+        d.ellipse([rx + 56 * S, ry + 62 * S, rx + 72 * S, ry + 78 * S], fill=(230, 230, 230, 255))
+        img.resize((1024, 512), Image.LANCZOS).save(os.path.join(out, rod_id + '.png'), optimize=True)
+
+
+def expeditions(maps_dir, out):
+    """One picture per expedition (Resources/Arte/Expedicoes/exp_<id>.png), from the Lago Sereno art."""
+    lago = os.path.join(maps_dir, 'LagoSereno')
+    prefix = 'map_lago_sereno'
+    thumbnail(lago, prefix, (-10.0, -2.0, -2.2, 3.0), (600, 390), os.path.join(out, 'exp_30m.png'))
+    thumbnail(lago, prefix, (3.0, 11.0, -1.8, 3.4), (600, 390), os.path.join(out, 'exp_1h.png'))
+    long_trip = thumbnail(lago, prefix, (-6.5, 6.5, -3.4, 5.0), (600, 390), os.path.join(out, 'exp_6h.png'))
+    # Deep water: an underwater view with light rays and distant fish silhouettes.
+    w, h = 600, 390
+    rng = np.random.default_rng(5)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    col = mix(hexc('#2F7FA6'), hexc('#0B2542'), smooth(0, h, yy))
+    rays = np.zeros((h, w), dtype=np.float32)
+    for _ in range(7):
+        cx = rng.uniform(0, w)
+        slope = rng.uniform(-0.35, 0.1)
+        width = rng.uniform(14, 40)
+        rays += np.exp(-((xx - (cx + yy * slope)) / width) ** 2) * (1 - yy / h) * rng.uniform(0.2, 0.45)
+    col = mix(col, hexc('#BFEFFF'), np.clip(rays, 0, 1) * 0.5)
+    img = Image.fromarray((np.clip(col, 0, 1) * 255).astype(np.uint8), 'RGB').convert('RGBA')
+    d = ImageDraw.Draw(img)
+    for _ in range(6):
+        fx, fy, fl = rng.uniform(60, 540), rng.uniform(150, 340), rng.uniform(40, 90)
+        c = (12, 40, 62, 200)
+        d.ellipse([fx - fl / 2, fy - fl * 0.18, fx + fl / 2, fy + fl * 0.18], fill=c)
+        d.polygon([(fx - fl / 2 + 4, fy), (fx - fl * 0.78, fy - fl * 0.2), (fx - fl * 0.78, fy + fl * 0.2)], fill=c)
+    for _ in range(26):
+        bx, by, br = rng.uniform(0, w), rng.uniform(0, h), rng.uniform(1.5, 4)
+        d.ellipse([bx - br, by - br, bx + br, by + br], outline=(210, 240, 255, 150), width=1)
+    img.save(os.path.join(out, 'exp_3h.png'), optimize=True)
+
+
 def main():
+    varas = os.path.join(ROOT, 'Varas')
+    os.makedirs(varas, exist_ok=True)
+    rods(varas)
     cena = os.path.join(ROOT, 'Cena')
     os.makedirs(cena, exist_ok=True)
     boat_and_fisherman(cena)
@@ -559,6 +639,9 @@ def main():
         os.makedirs(out, exist_ok=True)
         fn(out)
         print('  ', folder)
+    exp = os.path.join(ROOT, 'Expedicoes')
+    os.makedirs(exp, exist_ok=True)
+    expeditions(os.path.join(ROOT, 'Mapas'), exp)
     print('Cenários gerados em', os.path.normpath(os.path.join(ROOT, 'Mapas')))
 
 

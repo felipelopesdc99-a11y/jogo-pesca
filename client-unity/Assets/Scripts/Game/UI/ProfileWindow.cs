@@ -5,6 +5,7 @@ using FishingIdle.Game.Bootstrap;
 using FishingIdle.Game.Scene;
 using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Profile;
+using FishingIdle.Game.Visual;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -85,18 +86,26 @@ namespace FishingIdle.Game.UI
 
             GUI.enabled = _pendingRod == null;
 
-            GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), skin.Overlay);
-            var width = Mathf.Min(1320f, screenWidth - 80f);
-            var height = Mathf.Min(840f, screenHeight - 120f);
-            var panel = new Rect((screenWidth - width) / 2f, (screenHeight - height) / 2f + 20f, width, height);
-            GUI.Box(panel, GUIContent.none, skin.Panel);
+            var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f);
 
-            // Header: identity on the left, private Strength on the right.
-            GUI.Label(new Rect(panel.x + 28, panel.y + 20, 500, 32), _profile.PlayerName, skin.Title);
-            GUI.Label(new Rect(panel.x + 30, panel.y + 56, 500, 22), GameTexts.Player.Level + " " + _profile.FisherLevel + " · " + _profile.MapName, skin.SmallMuted);
+            // Header: portrait and identity on the left, private Strength on the right.
+            var portrait = new Rect(panel.x + 28, panel.y + 18, 60, 60);
+            GUI.Box(portrait, GUIContent.none, skin.IconTile);
+            var face = ArtAssets.Texture("Cena/pescador");
+            if (face != null)
+            {
+                GUI.DrawTextureWithTexCoords(new Rect(portrait.x + 4, portrait.y + 4, 52, 52), face, new Rect(0.08f, 0.56f, 0.8f, 0.46f));
+            }
+            else
+            {
+                skin.DrawIcon(new Rect(portrait.x + 14, portrait.y + 14, 32, 32), Icons.Profile, UiSkin.Accent);
+            }
+
+            GUI.Label(new Rect(portrait.xMax + 16, panel.y + 18, 500, 36), _profile.PlayerName, skin.Title);
+            GUI.Label(new Rect(portrait.xMax + 17, panel.y + 56, 500, 22), GameTexts.Player.Level + " " + _profile.FisherLevel + " · " + _profile.MapName, skin.SmallMuted);
             GUI.Label(new Rect(panel.xMax - 560, panel.y + 22, 240, 22), GameTexts.Cardume.Strength, skin.SmallMutedRight);
             GUI.Label(new Rect(panel.xMax - 560, panel.y + 44, 240, 30), Format.Number(_profile.CardumeStrength), skin.NumberRight);
-            if (GUI.Button(new Rect(panel.xMax - 148, panel.y + 20, 120, 38), GameTexts.Box.Close, skin.Button))
+            if (skin.IconButton(new Rect(panel.xMax - 156, panel.y + 22, 128, 42), Icons.Close, GameTexts.Box.Close, skin.Button))
             {
                 Close();
             }
@@ -222,7 +231,8 @@ namespace FishingIdle.Game.UI
             var button = new Rect(x, rect.yMax - 100, w, 38);
             if (rod.IsEquipped)
             {
-                skin.Tag(new Rect(x, button.y + 8, 110, 22), GameTexts.Profile.Equipped.ToUpperInvariant(), UiSkin.Accent);
+                var equipped = GameTexts.Profile.Equipped.ToUpperInvariant();
+                skin.AccentPill(new Rect(x, button.y + 7, skin.PillWidth(equipped, true) + 6, 24), equipped, UiSkin.Accent, Icons.Check);
             }
             else if (!rod.AllowedOnCurrentMap)
             {
@@ -297,7 +307,7 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(formation.x, y, formation.width, 40), GameTexts.Cardume.StrengthPrivate, skin.SmallMuted);
 
             var selected = _cardume.Slots.FirstOrDefault(s => s.Position == _selectedPosition);
-            if (selected?.Fish != null && GUI.Button(new Rect(formation.xMax - 220, formation.y + 2 * (slotH + 44) + 4, 220, 36), GameTexts.Cardume.Remove, skin.Button))
+            if (selected?.Fish != null && skin.IconButton(new Rect(formation.xMax - 220, formation.y + 2 * (slotH + 44) + 4, 220, 36), Icons.Close, GameTexts.Cardume.Remove, skin.Button))
             {
                 _root.ClearCardumeSlot(_selectedPosition);
             }
@@ -321,10 +331,20 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(rect.x + 12, rect.y + 8, 120, 20), GameTexts.Cardume.Position(slot.Position), skin.SmallGold);
                 if (slot.Fish == null)
                 {
-                    GUI.Label(new Rect(rect.x, rect.y + rect.height / 2f - 10, rect.width, 22), GameTexts.Cardume.Empty, skin.Center);
+                    // An inviting empty slot: a "+" and the word, never a blank box.
+                    var plus = new Rect(rect.center.x - 18, rect.y + rect.height / 2f - 30, 36, 36);
+                    GUI.DrawTexture(plus, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.18f), 0, 18);
+                    skin.DrawIcon(new Rect(plus.x + 9, plus.y + 9, 18, 18), Icons.Add, UiSkin.Accent);
+                    GUI.Label(new Rect(rect.x, plus.yMax + 6, rect.width, 22), GameTexts.Cardume.Empty, skin.Center);
                 }
                 else
                 {
+                    if (!selected)
+                    {
+                        var accent = UiSkin.RarityColor(slot.Fish.RarityId);
+                        skin.DrawOutline(rect, new Color(accent.r, accent.g, accent.b, 0.7f));
+                    }
+
                     GUI.DrawTexture(new Rect(rect.x + 12, rect.y + 30, rect.width - 24, 58), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
                     GUI.Label(new Rect(rect.x + 12, rect.y + 92, rect.width - 24, 20), slot.Fish.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + slot.Fish.Level, skin.BodyBold);
                     GUI.Label(new Rect(rect.x + 12, rect.y + 114, rect.width - 24, 20), GameTexts.Cardume.Strength + ": " + Format.Number(slot.Strength), skin.Small);
@@ -364,7 +384,7 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(row.x + 96, row.y + 30, row.width - 150, 20), Format.SizeCm(f.SizeCm) + " · " + f.SizeCategoryName, skin.Small);
                 if (f.CardumePosition > 0)
                 {
-                    skin.Tag(new Rect(row.xMax - 46, row.y + 18, 36, 20), GameTexts.Cardume.Badge(f.CardumePosition), UiSkin.Accent);
+                    skin.AccentPill(new Rect(row.xMax - 50, row.y + 17, 40, 22), GameTexts.Cardume.Badge(f.CardumePosition), UiSkin.Accent);
                 }
             }
 
@@ -387,13 +407,16 @@ namespace FishingIdle.Game.UI
             {
                 var e = entries[i];
                 var rect = new Rect((i % columns) * (cardW + gap), (i / columns) * (cardH + gap), cardW, cardH);
-                GUI.Box(rect, GUIContent.none, e.Discovered && e.RarityId != null && e.RarityId != "common" ? skin.CardImportant : skin.Card);
+                GUI.Box(rect, GUIContent.none, skin.Card);
+                if (e.Discovered)
+                {
+                    var accent = UiSkin.RarityColor(e.RarityId);
+                    skin.DrawOutline(rect, new Color(accent.r, accent.g, accent.b, e.RarityId == "common" ? 0.35f : 0.85f));
+                }
 
                 // Undiscovered species are a dark silhouette with no name (GDD section 38).
-                var previous = GUI.color;
-                GUI.color = e.Discovered ? Color.white : new Color(0f, 0f, 0f, 0.85f);
-                GUI.DrawTexture(new Rect(rect.x + 16, rect.y + 12, rect.width - 32, 70), Art.FishTexture(e.SpeciesId), ScaleMode.ScaleToFit, true);
-                GUI.color = previous;
+                GUI.DrawTexture(new Rect(rect.x + 16, rect.y + 12, rect.width - 32, 70), Art.FishTexture(e.SpeciesId), ScaleMode.ScaleToFit, true, 0,
+                    e.Discovered ? Color.white : new Color(0.02f, 0.05f, 0.09f, 0.85f), 0, 0);
 
                 if (!e.Discovered)
                 {
@@ -402,7 +425,10 @@ namespace FishingIdle.Game.UI
                 }
 
                 GUI.Label(new Rect(rect.x + 14, rect.y + 88, rect.width - 28, 22), e.Name, skin.BodyBold);
-                GUI.Label(new Rect(rect.x + 14, rect.y + 110, rect.width - 28, 20), e.MapName + " · " + e.RarityName, skin.SmallMuted);
+                var rarity = (e.RarityName ?? string.Empty).ToUpperInvariant();
+                var pw = skin.PillWidth(rarity, false);
+                skin.AccentPill(new Rect(rect.xMax - 14 - pw, rect.y + 90, pw, 20), rarity, UiSkin.RarityColor(e.RarityId));
+                GUI.Label(new Rect(rect.x + 14, rect.y + 110, rect.width - 28, 20), e.MapName, skin.SmallMuted);
                 GUI.Label(new Rect(rect.x + 14, rect.y + 130, rect.width - 28, 20), GameTexts.Profile.Largest + ": " + Format.SizeCm(e.LargestCm), skin.Small);
                 GUI.Label(new Rect(rect.x + 14, rect.y + 150, rect.width - 28, 20), GameTexts.Profile.TimesCaught + ": " + Format.Number(e.TimesCaught), skin.Small);
             }

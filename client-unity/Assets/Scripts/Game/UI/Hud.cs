@@ -154,7 +154,7 @@ namespace FishingIdle.Game.UI
                 }
                 else if (best.RarityId != null && best.RarityId != "common")
                 {
-                    _root.Celebrations.Show(GameTexts.Celebration.RareCatch(best.RarityName), GameTexts.Celebration.CatchLine(best.SpeciesName, size), theme.Rarity(best.RarityId), art);
+                    _root.Celebrations.Show(GameTexts.Celebration.RareCatch, GameTexts.Celebration.RareLine(best.SpeciesName, best.RarityName, size), theme.Rarity(best.RarityId), art);
                 }
             }
 

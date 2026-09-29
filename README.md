@@ -1,8 +1,8 @@
-# Fishing Idle — V0.1
+# Fishing Idle
 
 Um jogo idle 2.5D relaxante de pesca e coleção, feito em **Unity 6.3 LTS + C#**.
 
-**Situação atual: MVP local completo — Milestones 0 a 11.** O jogo roda inteiro no seu PC, sem
+**Situação atual: MVP local completo (Milestones 0 a 11) e V0.2 em andamento — sons novos (M13) e o visual "Lago Dourado" (M14).** O jogo roda inteiro no seu PC, sem
 servidor, sem internet e sem nenhum serviço pago. Estão no jogo: pesca online e offline, Caixa de
 Pesca, Aquário, alimentação e níveis dos peixes, Cardume, Perfil e Enciclopédia, dois mapas e viagem,
 varas com melhorias, Expedições, Arena, Mercado, Leilão e um tutorial curto. Os números do
@@ -60,6 +60,8 @@ depois (ou clique em *Descartar alterações* antes de salvar).
 | Saber por que algo foi feito de determinado jeito | `docs/DECISOES.md` |
 | O que mudou em cada versão | `docs/CHANGELOG.md` |
 | Mudar um número de balanceamento à mão | `config/README.md` |
+| Trocar uma imagem do jogo (peixe, cenário, ícone, vara) | `docs/ASSETS_PENDENTES.md` — coloque o novo arquivo por cima, com o mesmo nome |
+| Mudar cores, brilho e tempos dos efeitos | `client-unity/Assets/Resources/Visual/tema_visual.json` |
 | Trocar um som do jogo | Coloque o novo arquivo em `client-unity/Assets/Resources/Sons` com o mesmo nome |
 | A prioridade atual do projeto | `docs/CLAUDE_START_HERE_V0_1_1.md` |
 

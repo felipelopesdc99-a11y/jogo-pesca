@@ -4,7 +4,7 @@
   "current_milestone": "M14",
   "convention": "0.<menor>.<correção>-m<milestone>.<build>  —  veja docs/VERSIONAMENTO.md",
   "components": {
-    "client": "0.2.0-m13.1",
+    "client": "0.2.0-m14.1",
     "server": "0.1.0-m0.4",
     "web": "0.1.0-m0.4"
   },

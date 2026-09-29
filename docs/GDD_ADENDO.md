@@ -571,3 +571,65 @@ responde três dúvidas que estavam em aberto:
 
 O tamanho Excepcional continua sendo tamanho, não raridade: tem um selo próprio com brilho dourado,
 separado da cor de raridade do card.
+
+### A-069 · O documento de 185 referências
+**Seção do GDD:** 8 · **Situação:** Em vigor
+
+O documento "Visual Bible 0.1 — 185 referências", enviado pelo proprietário em 29/09/2026, é
+vocabulário visual: composição das telas, cards, cenário e momentos especiais. Ele **não** cria
+mecânicas. Onde uma referência mostra algo que o jogo não tem (filtros extras no Mercado, cards
+Incomum/Épico/Lendário, "Excepcional" como raridade, cachorro no barco, Força do Cardume na tela de
+pesca), vale o que existe nos dados e o GDD. Em especial, **Excepcional continua sendo tamanho**, com
+o seu selo dourado, separado da cor de raridade.
+
+### A-070 · Três níveis de intensidade
+**Seção do GDD:** 8, 39 · **Situação:** Confirmar
+
+| Nível | Quando | O que aparece |
+|---|---|---|
+| Calmo | Cena e menus | Água, nuvens, sol, barco, boia e juncos sempre se movendo, sem brilho chamativo |
+| Recompensa | Peixe pescado, venda, moedas | Aviso com acento colorido à esquerda (turquesa, dourado ou vermelho), contador de moedas que sobe com "+N" |
+| Celebração | Captura rara, tamanho Excepcional, recorde, espécie nova, subir de nível, leilão vencido | Faixa grande no alto da tela com raios de luz, 3,2 s (ajustável), sem travar o jogo |
+
+Quando vários peixes chegam juntos, só o mais valioso ganha faixa. As faixas nunca se empilham: uma
+espera a outra (no máximo três na fila). A volta do offline continua sendo **um resumo só**.
+
+### A-071 · Cor de cada momento
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+| Momento | Cor da faixa | Texto |
+|---|---|---|
+| Captura rara | A cor da raridade (Raro = azul) | "Captura rara!" · espécie · raridade · tamanho |
+| Tamanho Excepcional | Dourado | "Tamanho Excepcional!" · espécie · tamanho |
+| Novo recorde pessoal | Dourado | "Novo recorde!" · espécie · tamanho antigo → novo |
+| Nova espécie | Turquesa | "Nova espécie!" · a silhueta do peixe se colore |
+| Subir de nível | Dourado | "Nível N!" |
+| Leilão vencido | Dourado | "Você venceu o leilão!" · onde o item está |
+| Vitória na Arena | Dourado, com raios, no resultado da batalha | — |
+
+A aura do peixe na cena segue a mesma regra: cor da raridade, dourado para Excepcional, turquesa para
+espécie nova ou recorde.
+
+### A-072 · Card de peixe
+**Seção do GDD:** 11, 12, 44 · **Situação:** Em vigor
+
+Todo peixe aparece no mesmo card: selo da raridade no alto à esquerda (com estrela), selo de status
+no alto à direita ("NOVA ESPÉCIE", "RECORDE") ou o ✓ quando selecionado, o peixe grande no meio,
+nome, tamanho, barra na cor da raridade e, embaixo, nível à esquerda e preço à direita. A borda do
+card é a cor da raridade (Comum bem discreta). O tamanho Excepcional ganha um selo dourado sobre o
+peixe, com um brilho que passa de tempos em tempos, e um halo dourado suave atrás do peixe.
+
+### A-073 · Tela principal
+**Seção do GDD:** 7, 8 · **Situação:** Em vigor
+
+Barra do topo com o nome do jogo e o mapa, os menus com ícone e nome (só ícones quando a tela é
+estreita), o contador de moedas, o sino com a bolinha vermelha de não lidos e Opções. Cartão do
+pescador com retrato, nível, barra de XP e linhas com ícone. Painel de pesca com ícone do anzol,
+estado, próxima captura, barra do ciclo e o botão Iniciar/Parar pesca. Botão da Caixa de Pesca no
+canto com a caixa dourada. O tutorial passa a destacar em turquesa (dourado fica para recompensa).
+
+### A-074 · Fotos nos menus
+**Seção do GDD:** 18, 30, 31 · **Situação:** Em vigor
+
+Os cards do Mapa mostram uma foto do lugar (escurecida com cadeado se ainda bloqueado), as quatro
+Expedições têm cada uma a sua paisagem, e a Loja e o Mercado mostram a vara desenhada.

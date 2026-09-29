@@ -1,6 +1,7 @@
 using FishingIdle.Game.Bootstrap;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Shop;
+using FishingIdle.Game.Visual;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -48,14 +49,15 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Shop.Title, GameTexts.Shop.Note, out var closed, 1100f, 640f);
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Shop.Title, GameTexts.Shop.Note, out var closed, 1100f, 700f, Icons.Shop);
             if (closed)
             {
                 Close();
                 return;
             }
 
-            GUI.Label(new Rect(area.x, area.y, 300, 26), GameTexts.Shop.Rods, skin.Heading);
+            skin.DrawIcon(new Rect(area.x, area.y + 3, 22, 22), Icons.Rod, UiSkin.Accent);
+            GUI.Label(new Rect(area.x + 30, area.y, 300, 26), GameTexts.Shop.Rods, skin.Heading);
             var x = area.x;
             foreach (var rod in _shop.Rods)
             {
@@ -69,7 +71,15 @@ namespace FishingIdle.Game.UI
             GUI.Box(rect, GUIContent.none, rod.Owned ? skin.CardSelected : skin.Card);
             var x = rect.x + 22;
             var w = rect.width - 44;
-            var y = rect.y + 18;
+            var y = rect.y + 14;
+
+            // The rod itself first (Art Bible, section 27): an important item, without fantasy excess.
+            var picture = ArtAssets.Texture("Varas/" + rod.RodId);
+            if (picture != null)
+            {
+                GUI.DrawTexture(new Rect(x, y, w, 116), picture, ScaleMode.ScaleToFit, true);
+                y += 124;
+            }
 
             GUI.Label(new Rect(x, y, w, 30), rod.Name, skin.Heading);
             y += 32;
@@ -92,13 +102,15 @@ namespace FishingIdle.Game.UI
             var button = new Rect(x, rect.yMax - 58, w, 42);
             if (rod.Owned)
             {
-                skin.Tag(new Rect(x, button.y + 10, 120, 24), GameTexts.Shop.Owned.ToUpperInvariant(), UiSkin.Accent);
+                var label = GameTexts.Shop.Owned.ToUpperInvariant();
+                skin.AccentPill(new Rect(x, button.y + 9, skin.PillWidth(label, true) + 6, 26), label, UiSkin.Accent, Icons.Check);
             }
             else if (rod.BuyBlocker != ServiceError.None)
             {
-                GUI.Label(button, GameTexts.ServiceErrorMessage(rod.BuyBlocker.ToString()), skin.SmallGold);
+                skin.DrawIcon(new Rect(x, button.y + 11, 20, 20), Icons.Lock, UiSkin.Gold);
+                GUI.Label(new Rect(x + 28, button.y + 2, w - 28, 42), GameTexts.ServiceErrorMessage(rod.BuyBlocker.ToString()), skin.SmallGold);
             }
-            else if (GUI.Button(button, rod.IsFree ? GameTexts.Shop.ClaimFree : GameTexts.Shop.Buy, skin.ButtonPrimary))
+            else if (skin.IconButton(button, Icons.Buy, rod.IsFree ? GameTexts.Shop.ClaimFree : GameTexts.Shop.Buy, skin.ButtonPrimary))
             {
                 _root.BuyRod(rod.RodId);
                 _dirty = true;

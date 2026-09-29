@@ -589,13 +589,14 @@ namespace FishingIdle.Texts
 
         public static class Celebration
         {
-            public static string RareCatch(string rarity) => "Captura " + rarity + "!";
+            public const string RareCatch = "Captura rara!";
             public const string Exceptional = "Tamanho Excepcional!";
             public const string Record = "Novo recorde!";
             public const string NewSpecies = "Nova espécie!";
             public static string LevelUp(int level) => "Nível " + level + "!";
             public const string AuctionWon = "Você venceu o leilão!";
             public static string CatchLine(string species, string size) => species + " · " + size;
+            public static string RareLine(string species, string rarity, string size) => species + " · " + rarity + " · " + size;
             public static string RecordLine(string species, string before, string after) => species + " · " + before + " → " + after;
             public static string NewSpeciesLine(string species) => species + " entrou na sua Enciclopédia";
             public const string LevelUpLine = "Pescador subiu de nível";

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-29T02:39:31Z",
+  "updated_at": "2026-09-29T02:49:14Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -142,6 +142,14 @@
       "raised_at": "2026-09-29T01:59:38Z",
       "status": "RESOLVED",
       "resolution": "O proprietário aprovou o plano e mandou seguir com o desenvolvimento visual, enviando também o documento com 185 referências (29/09/2026)."
+    },
+    {
+      "id": "OD-017",
+      "task_id": "M14-T15",
+      "title": "Ver o visual novo no Unity e dizer o que ajustar",
+      "detail": "Aperte Play e passeie pelo jogo: a cena do Lago Sereno, a Caixa de Pesca, o Aquário, o Mapa (viaje ao Rio Selvagem), a Loja, as Expedições, a Arena e o Mercado. Pesque até ver uma celebração (espécie nova é a primeira). Tire prints e diga o que ajustar — cores e tempos mudam direto em client-unity/Assets/Resources/Visual/tema_visual.json. Toda arte é provisória e pode ser trocada pela arte final seguindo docs/ASSETS_PENDENTES.md. Se aparecer erro vermelho no Console, mande a mensagem.",
+      "raised_at": "2026-09-29T02:49:14Z",
+      "status": "OPEN"
     }
   ],
   "milestones": [
@@ -1787,12 +1795,13 @@
           "title": "Card oficial de peixe",
           "subsystem": "client",
           "description": "Template único de card: raridade só como acento (borda e faixa), selo de tamanho separado e brilho dourado exclusivo do Excepcional. Usado na Caixa de Pesca, Aquário, Mercado e Enciclopédia. Seções 4, 5 e 6.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M14-T04",
             "M14-T05"
           ],
-          "updated_at": "2026-09-29T02:39:31Z"
+          "updated_at": "2026-09-29T02:49:14Z",
+          "completion_notes": "Card único (FishCard) na Caixa de Pesca, no Aquário (inclusive na escolha de comida) e no Mercado (varas também): selo da raridade com estrela, selo de status ou ✓, peixe grande, nome, tamanho, barra na cor da raridade, nível e preço. Borda na cor da raridade. Excepcional com selo dourado e brilho que passa, e halo dourado atrás do peixe. A ficha do Aquário, o Cardume e a Enciclopédia usam as mesmas cores e selos. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T07",
@@ -1823,47 +1832,51 @@
           "title": "Níveis de intensidade: Calmo, Recompensa, Celebração",
           "subsystem": "client",
           "description": "Três níveis de efeito visual, casados com os sons do M13: o dia a dia calmo, a recompensa com dourado e a celebração curta. Seções 15, 29 e 34.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M14-T02",
             "M14-T08"
           ],
-          "updated_at": "2026-09-29T02:39:31Z"
+          "updated_at": "2026-09-29T02:49:14Z",
+          "completion_notes": "Calmo: a cena sempre se move sem brilho chamativo. Recompensa: avisos com acento colorido e ícone, contador de moedas que sobe com \"+N\". Celebração: faixa no alto com raios de luz, 3,2 s, sem travar o jogo e sem empilhar (fila de até três). Os tempos e o brilho vêm do tema visual. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T10",
           "title": "Momentos especiais",
           "subsystem": "client",
           "description": "Cada momento com o seu efeito: peixe pescado, captura rara, tamanho Excepcional, recorde pessoal, espécie nova, subir de nível, venda, volta do offline, Expedição concluída, Mercado, Leilão e Arena. Seção 16.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M14-T09",
             "M14-T06"
           ],
-          "updated_at": "2026-09-29T02:39:31Z"
+          "updated_at": "2026-09-29T02:49:14Z",
+          "completion_notes": "Faixas de captura rara (cor da raridade), tamanho Excepcional, recorde pessoal com tamanho antigo → novo (o serviço agora informa o recorde anterior, com teste), espécie nova com a silhueta se colorindo, subir de nível e leilão vencido. Aura do peixe na cena na cor do momento. Vitória na Arena com raios dourados. Volta do offline continua um resumo único, agora com os melhores peixes em destaque. Expedição concluída e venda seguem no nível de recompensa (aviso). A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T11",
           "title": "Telas no estilo novo: Pesca, Mapa, Aquário, Perfil e Loja",
           "subsystem": "client",
           "description": "Redesenho dessas telas com os componentes padronizados, sem mudar nenhuma regra. Seções 17 a 20, 26 a 28 e o checklist da seção 42.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M14-T04",
             "M14-T06"
           ],
-          "updated_at": "2026-09-29T02:39:31Z"
+          "updated_at": "2026-09-29T02:49:14Z",
+          "completion_notes": "Tela de pesca (barra do topo com ícones, contador de moedas, sino com bolinha, cartão do pescador com retrato, painel de pesca, botão da Caixa), Mapa com foto de cada lugar, Aquário (a ficha não fica mais sob o botão Fechar), Perfil (retrato, Cardume com posições vazias convidativas, Enciclopédia com silhuetas e selos) e Loja com a vara desenhada. O menu \"Aquário 2/10\" não é mais cortado. A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T12",
           "title": "Telas no estilo novo: Arena, Expedição, Mercado e Leilão",
           "subsystem": "client",
           "description": "Redesenho dessas telas, incluindo a batalha da Arena, com os mesmos componentes. Seções 21 a 25 e o checklist da seção 42.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M14-T11"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:49:14Z",
+          "completion_notes": "Arena (posição, Energia e Honra com ícones, adversários com retrato e selos de raridade, resultado da batalha com vitória dourada), Expedição (cada uma com a sua paisagem, duração com relógio, resultado com moeda e peixe em destaque) e Mercado/Leilão (cards novos, botões com ícone). A tela foi checada por compilação, mas ainda não aberta no Editor do Unity."
         },
         {
           "id": "M14-T13",
@@ -1882,26 +1895,27 @@
           "title": "Lista de artes pendentes",
           "subsystem": "docs",
           "description": "Documento com cada arte que falta (ASSET_PENDENTE), o nome do arquivo, o tamanho e a tela onde aparece, na ordem de prioridade A, B e C da seção 38 — para o proprietário produzir e mandar.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M14-T07",
             "M14-T08",
             "M14-T13"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:49:14Z",
+          "completion_notes": "docs/ASSETS_PENDENTES.md lista cada arte provisória (ASSET_PENDENTE): nome do arquivo, tamanho, posição no mundo e tela, nas prioridades A, B e C da Bíblia, com o passo a passo para trocar."
         },
         {
           "id": "M14-T15",
           "title": "Ver e aprovar o visual novo",
           "subsystem": "client",
           "description": "O proprietário aperta Play, tira prints e diz o que ajustar (seção 39, etapa 4).",
-          "status": "TODO",
+          "status": "NEEDS_OWNER_DECISION",
           "dependencies": [
             "M14-T10",
             "M14-T12",
             "M14-T14"
           ],
-          "updated_at": "2026-09-29T01:59:38Z"
+          "updated_at": "2026-09-29T02:49:14Z"
         }
       ]
     }

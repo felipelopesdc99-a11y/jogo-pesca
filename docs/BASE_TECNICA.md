@@ -60,11 +60,17 @@ client-unity/Assets/
 │   │   └── LocalGame.cs   Ponto de entrada: monta os serviços locais
 │   ├── Game/           FishingIdle.Game         Apresentação no Unity
 │   │   ├── Bootstrap/     GameBootstrap (Play em qualquer cena), GameRoot (ponte com o serviço), GamePaths
-│   │   ├── Scene/         Arte provisória por código (Art), cena (FishingScene), pescador (FishermanRig), ambiente
+│   │   ├── Scene/         Cena em camadas (FishingScene), pescador (FishermanRig), ambiente, arte de reserva por código (Art)
+│   │   ├── Visual/        Tema visual em dados (VisualTheme) e carregamento da arte trocável (ArtAssets, Icons)
 │   │   ├── Audio/         Sons: quais arquivos (SoundBank), quando tocam (SoundCue) e quem toca (GameAudio)
 │   │   └── UI/            HUD, janelas, avisos e central de notificações, estilos (IMGUI)
 │   ├── Editor/         FishingIdle.Editor       Só no Editor: Painel de Desenvolvimento, setup do projeto, passo de build
 │   └── Core/ Diagnostics/  FishingIdle.Client   Dormente: cliente HTTP e diagnóstico do servidor online (M12)
+├── Resources/
+│   ├── Arte/            Arte trocável: Peixes/, Mapas/<Mapa>/, Cena/, Varas/, Expedicoes/, Icones/ (ver docs/ASSETS_PENDENTES.md)
+│   ├── Fontes/          Fredoka e Nunito (OFL)
+│   ├── Visual/          tema_visual.json (cores, brilho, tempos)
+│   └── Sons/            Sons (.wav)
 ├── Scenes/Principal.unity   Criada automaticamente na primeira abertura
 └── link.xml                 Protege o GameService da remoção de código no IL2CPP
 
@@ -237,17 +243,47 @@ Regras:
 
 - **Sem cena montada à mão.** Ao apertar Play, `GameBootstrap` cria o `GameRoot`, que inicia o
   serviço e monta a cena por código (`FishingScene`). Funciona em qualquer cena.
-- **Um tema por mapa** (`SceneTheme.For`): cores, relevo, correnteza, pedras e cachoeira. Ao chegar a
-  outro mapa (`GameRoot.MapChanged`), a cena é destruída e montada de novo com o tema dele.
-- **Arte provisória por código** (`Art.cs`, `FishLooks.cs`): gradientes, silhuetas, barco, peixes com
-  cores por espécie. Trocar pela arte final = trocar o que esses métodos devolvem.
+- **Um tema por mapa** (`SceneTheme.For`): pasta e prefixo das camadas pintadas, posição do sol,
+  correnteza. Ao chegar a outro mapa (`GameRoot.MapChanged`), a cena é destruída e montada de novo.
+- **Visual "Lago Dourado — Clean Premium"** (V0.2, M14; fonte de verdade: `docs/ART_BIBLE_V0_1.md`):
+  - **Tema em dados** (`Visual/VisualTheme`, lê `Resources/Visual/tema_visual.json`): paleta, cores de
+    raridade, cor do Excepcional, opacidades, intensidade do brilho, tempos de aviso, de celebração,
+    do fade das janelas e do contador de moedas. Nenhuma cor fica espalhada nas telas: elas usam
+    `UiSkin` (que lê o tema) e `UiSkin.RarityColor(id)`.
+  - **Arte trocável** (`Visual/ArtAssets`): toda imagem é um arquivo em `Resources/Arte`, carregado
+    pelo nome (`ArtAssets.Texture("Peixes/fish_lambari_master")`, `ArtAssets.Sprite(caminho, largura em
+    unidades, pivô)`, `ArtAssets.Icon(Icons.X)`). Um arquivo que falta devolve `null` e quem chamou
+    volta para a arte de reserva feita por código (`Art.cs`, `FishLooks.cs`), então o jogo nunca
+    quebra por falta de arte. `Editor/ArtImportSettings` configura a importação (tamanho real, sem
+    reescalar para potência de 2, mipmaps, até 4096 px; fontes com fallback do sistema).
+  - **Arte provisória gerada por script** (`tools/Arte/`, Python com numpy e Pillow, sempre igual):
+    `gerar_icones.py` (44 ícones brancos, pintados na cor certa pelo jogo), `gerar_peixes.py` (20
+    peixes de lado, mesmo "artista") e `gerar_cenarios.py` (camadas dos mapas, nuvens, barco,
+    pescador, varas, fotos dos mapas e das Expedições). A lista do que falta como arte final e as
+    regras de tamanho estão em `docs/ASSETS_PENDENTES.md`.
+  - **Cena em camadas** (`FishingScene.BuildPainted`): céu, montanhas, morros, mata da margem, água e
+    os dois cantos, cada camada com 26 unidades de largura e base numa altura fixa em relação ao
+    horizonte; cantos presos às bordas da tela pela proporção da câmera. Por cima, o movimento: nuvens
+    (sprites separados), brilho do sol que respira (`Breathe`), reflexos (`Twinkle`), pássaros, peixes
+    saltando, juncos balançando.
+  - **Card oficial de peixe** (`UI/FishCard`, dados em `FishCardModel`): mesmo layout para toda
+    raridade; a raridade é borda, selo e barra; o Excepcional tem selo dourado com brilho que passa
+    (`FishCard.ExceptionalSeal`); usado na Caixa, Aquário, Mercado (varas também, com `Art`).
+  - **Três níveis de intensidade:** calmo (cena e menus), recompensa (avisos com acento colorido,
+    contador de moedas que sobe com "+N") e celebração (`UI/Celebrations`: faixa no alto com raios,
+    2–4 s, sem bloquear, uma de cada vez). O `Hud` escolhe o momento; `GameRoot.Celebrations.Show`
+    também é usado pelo leilão vencido.
+  - **Peças da interface** (`UiSkin`): `FloatingPanel` (painel com sombra), `IconButton`,
+    `AccentPill`, `Tag`, `Bar(rect, fração, cor)`, `DrawOutline`, `DrawGlow`, `IconBadge`, `CoinAmount`,
+    e as janelas via `WindowFrame.Panel` + `WindowFrame.Header(…, ícone)`.
 - **Camadas e paralaxe:** câmera ortográfica que oscila devagar; cada camada acompanha a câmera numa
   fração diferente, criando profundidade (2.5D). Ordem de desenho nas constantes de `FishingScene`.
 - **Animação sincronizada ao serviço:** `FishermanRig` lê `FishingStatus` (início e fim do ciclo)
   para arremessar, esperar, mostrar a mordida e puxar; o peixe só aparece quando o serviço entrega a
   captura (`GameRoot.CatchesArrived`).
-- **Interface em IMGUI** (`Hud`, `FishingBoxWindow`, `UiSkin`): tela virtual de 1080 px de altura,
-  escalada. Todos os estilos ficam em `UiSkin`, o que isola uma futura troca para UI Toolkit.
+- **Interface em IMGUI** (`Hud`, janelas, `UiSkin`): tela virtual de 1080 px de altura, escalada.
+  Todos os estilos ficam em `UiSkin`, o que isola uma futura troca para UI Toolkit. Fontes: Fredoka
+  nos títulos e números, Nunito no texto (`Resources/Fontes`).
 - **Textos:** sempre de `GameTexts`. Nunca escreva uma frase em PT-BR direto num `.cs` fora de `Texts/`.
 - **Avisos e central de notificações** (`ToastFeed`): `Push(texto, tipo, ícone, notify)` mostra o
   aviso; com `notify: true` ele também entra na lista do sino (até 50, só enquanto o jogo está
@@ -264,7 +300,7 @@ Regras:
   PC. Não entram no save porque não mudam nenhuma regra.
 - **Modo compacto** (Opções → Modo compacto): janela de 480×270 só com a cena, uma linha de status e a
   última captura. É só apresentação; o serviço pesca igual. No Editor o tamanho da janela não muda.
-- **Transição de menus:** a janela que abre faz um fade de 0,18 s (`Hud`).
+- **Transição de menus:** a janela que abre faz um fade (0,18 s por padrão, `window_fade_seconds` no tema).
 
 ## 7. Painel de Desenvolvimento (Editor)
 

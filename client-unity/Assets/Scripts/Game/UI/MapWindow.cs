@@ -1,6 +1,8 @@
 using FishingIdle.Game.Bootstrap;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Maps;
+using FishingIdle.Game.Scene;
+using FishingIdle.Game.Visual;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -47,7 +49,7 @@ namespace FishingIdle.Game.UI
             }
 
             var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Map.Title,
-                GameTexts.Map.TravelTime(Format.Duration(_maps.TravelSeconds)) + " · " + GameTexts.Map.TravelNote, out var closed, 1240f, 720f);
+                GameTexts.Map.TravelTime(Format.Duration(_maps.TravelSeconds)) + " · " + GameTexts.Map.TravelNote, out var closed, 1240f, 780f, Icons.Map);
             if (closed)
             {
                 Close();
@@ -57,7 +59,7 @@ namespace FishingIdle.Game.UI
             var cardWidth = (area.width - 20f) / 2f;
             for (var i = 0; i < _maps.Maps.Count; i++)
             {
-                var rect = new Rect(area.x + i % 2 * (cardWidth + 20f), area.y + 10 + i / 2 * 300f, cardWidth, 280f);
+                var rect = new Rect(area.x + i % 2 * (cardWidth + 20f), area.y + 6 + i / 2 * 560f, cardWidth, Mathf.Min(540f, area.height - 10f));
                 DrawMap(skin, rect, _maps.Maps[i]);
             }
         }
@@ -67,7 +69,21 @@ namespace FishingIdle.Game.UI
             GUI.Box(rect, GUIContent.none, map.IsCurrent ? skin.CardSelected : skin.Card);
             var x = rect.x + 22;
             var w = rect.width - 44;
-            var y = rect.y + 18;
+            var y = rect.y + 16;
+
+            // The map sells the place first (Art Bible, section 18): its picture on top.
+            var thumb = ArtAssets.Texture(SceneTheme.For(map.MapId).ArtPath("thumb"));
+            if (thumb != null)
+            {
+                var picture = new Rect(rect.x + 12, rect.y + 12, rect.width - 24, (rect.width - 24) / 2.5f);
+                GUI.DrawTexture(picture, thumb, ScaleMode.ScaleAndCrop, true, 0, map.LevelUnlocked ? Color.white : new Color(0.55f, 0.6f, 0.7f, 1f), 0, 10);
+                if (!map.LevelUnlocked)
+                {
+                    skin.DrawIcon(new Rect(picture.center.x - 22, picture.center.y - 22, 44, 44), Icons.Lock, Color.white);
+                }
+
+                y = picture.yMax + 14;
+            }
 
             GUI.Label(new Rect(x, y, w, 30), map.Name, skin.Heading);
             y += 34;
@@ -87,13 +103,15 @@ namespace FishingIdle.Game.UI
             }
             else if (map.IsCurrent)
             {
-                skin.Tag(new Rect(x, button.y + 10, 150, 24), GameTexts.Map.YouAreHere.ToUpperInvariant(), UiSkin.Accent);
+                var label = GameTexts.Map.YouAreHere.ToUpperInvariant();
+                skin.AccentPill(new Rect(x, button.y + 9, skin.PillWidth(label, true) + 6, 26), label, UiSkin.Accent, Icons.Pin);
             }
             else if (map.TravelBlocker != ServiceError.None)
             {
-                GUI.Label(new Rect(x, button.y, w, 42), GameTexts.ServiceErrorMessage(map.TravelBlocker.ToString()), skin.SmallGold);
+                skin.DrawIcon(new Rect(x, button.y + 11, 20, 20), Icons.Lock, UiSkin.Gold);
+                GUI.Label(new Rect(x + 28, button.y + 2, w - 28, 42), GameTexts.ServiceErrorMessage(map.TravelBlocker.ToString()), skin.SmallGold);
             }
-            else if (GUI.Button(button, GameTexts.Map.Travel, skin.ButtonPrimary))
+            else if (skin.IconButton(button, Icons.Arrow, GameTexts.Map.Travel, skin.ButtonPrimary))
             {
                 _root.TravelTo(map.MapId);
                 Close();

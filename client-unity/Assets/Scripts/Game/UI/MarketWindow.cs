@@ -6,6 +6,7 @@ using FishingIdle.Game.Bootstrap;
 using FishingIdle.Game.Scene;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Market;
+using FishingIdle.Game.Visual;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace FishingIdle.Game.UI
     public sealed class MarketWindow
     {
         private const float CardWidth = 190f;
-        private const float CardHeight = 170f;
+        private const float CardHeight = 190f;
         private const float Gap = 12f;
         private const float SidePanelWidth = 330f;
 
@@ -109,7 +110,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Market.Title, GameTexts.Market.Note, out var closed, 1500f, 880f);
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Market.Title, GameTexts.Market.Note, out var closed, 1500f, 880f, Icons.Market);
             if (closed)
             {
                 _selectedListing = 0;
@@ -204,7 +205,7 @@ namespace FishingIdle.Game.UI
             {
                 DrawGrid(grid, _results, ref _scroll, (rect, listing) =>
                 {
-                    if (GoodsCard(skin, rect, listing.Goods, Format.Number(listing.PriceCoins), listing.ListingId == _selectedListing))
+                    if (GoodsCard(skin, rect, listing.Goods, null, listing.ListingId == _selectedListing, Format.Number(listing.PriceCoins)))
                     {
                         _selectedListing = listing.ListingId;
                         _sideScroll = Vector2.zero;
@@ -231,7 +232,7 @@ namespace FishingIdle.Game.UI
 
             GUI.Label(new Rect(x, side.yMax - 150, w, 60), GameTexts.Market.BuyNote, skin.SmallMuted);
             GUI.enabled = _market.Coins >= selected.PriceCoins;
-            if (GUI.Button(new Rect(x, side.yMax - 62, w, 44), GameTexts.Market.BuyFor(Format.Number(selected.PriceCoins)), skin.ButtonPrimary))
+            if (skin.IconButton(new Rect(x, side.yMax - 62, w, 44), Icons.Buy, GameTexts.Market.BuyFor(Format.Number(selected.PriceCoins)), skin.ButtonPrimary))
             {
                 if (_root.BuyListing(selected.ListingId))
                 {
@@ -285,7 +286,7 @@ namespace FishingIdle.Game.UI
             }
 
             y += 48;
-            if (GUI.Button(new Rect(x, y, w, 34), GameTexts.Market.ClearFilters, skin.Button))
+            if (skin.IconButton(new Rect(x, y, w, 34), Icons.Swap, GameTexts.Market.ClearFilters, skin.Button))
             {
                 _kind = MarketKindFilter.All;
                 _species = _rarity = _sizeCategory = _sort = 0;
@@ -427,7 +428,7 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, bottom - 110, w, 50), GameTexts.Market.ListingNote, skin.SmallMuted);
 
             GUI.enabled = price >= _market.MinimumPriceCoins;
-            if (GUI.Button(new Rect(x, bottom - 44, w, 44), GameTexts.Market.ListFor(_market.ListingDurationDays), skin.ButtonPrimary))
+            if (skin.IconButton(new Rect(x, bottom - 44, w, 44), Icons.Sell, GameTexts.Market.ListFor(_market.ListingDurationDays), skin.ButtonPrimary))
             {
                 if (_root.CreateListing(candidate.IsFish, candidate.SourceId, price))
                 {
@@ -463,7 +464,7 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(row.x + 480, row.y + 34, 200, 28), Format.Number(l.PriceCoins), skin.Number);
                 GUI.Label(new Rect(row.x + 480, row.y + 64, 280, 20), GameTexts.Market.YouReceive + ": " + Format.Number(l.NetCoins), skin.SmallMuted);
 
-                if (GUI.Button(new Rect(row.xMax - 200, row.y + 24, 184, 42), GameTexts.Market.Cancel, skin.Button))
+                if (skin.IconButton(new Rect(row.xMax - 200, row.y + 24, 184, 42), Icons.Close, GameTexts.Market.Cancel, skin.Button))
                 {
                     _root.CancelListing(l.ListingId);
                     _nextRefresh = 0f;
@@ -512,7 +513,7 @@ namespace FishingIdle.Game.UI
             if (mine == null)
             {
                 GUI.Label(new Rect(strip.x + 18, strip.y + 34, 400, 24), GameTexts.Market.NoMyAuction, skin.Body);
-                if (!_creatingAuction && GUI.Button(new Rect(strip.x + 440, strip.y + 20, 200, 40), GameTexts.Market.CreateAuction, skin.ButtonPrimary))
+                if (!_creatingAuction && skin.IconButton(new Rect(strip.x + 440, strip.y + 20, 200, 40), Icons.Add, GameTexts.Market.CreateAuction, skin.ButtonPrimary))
                 {
                     _creatingAuction = true;
                     _selectedCandidate = 0;
@@ -574,7 +575,7 @@ namespace FishingIdle.Game.UI
 
                     if (a.PlayerIsHighest)
                     {
-                        skin.Tag(new Rect(rect.x + 10, rect.y + 10, 84, 18), GameTexts.Market.Winning, UiSkin.Accent);
+                        skin.AccentPill(new Rect(rect.xMax - 14 - skin.PillWidth(GameTexts.Market.Winning, false), rect.y + 11, skin.PillWidth(GameTexts.Market.Winning, false), 18), GameTexts.Market.Winning, UiSkin.Accent);
                     }
                 });
             }
@@ -609,7 +610,7 @@ namespace FishingIdle.Game.UI
             var fee = (long)Math.Round(amount * _auctions.BidFeeRatio, MidpointRounding.AwayFromZero);
             GUI.Label(new Rect(x, bottom - 84, w, 20), GameTexts.Market.BidFee(_auctions.BidFeeRatio, Format.Number(fee)), skin.SmallMuted);
             GUI.enabled = amount >= selected.MinNextBidCoins && _auctions.Coins >= amount + fee;
-            if (GUI.Button(new Rect(x, bottom - 44, w, 44), GameTexts.Market.PlaceBid, skin.ButtonPrimary))
+            if (skin.IconButton(new Rect(x, bottom - 44, w, 44), Icons.Honor, GameTexts.Market.PlaceBid, skin.ButtonPrimary))
             {
                 _root.PlaceBid(selected.AuctionId, amount);
                 _nextRefresh = 0f;
@@ -673,7 +674,7 @@ namespace FishingIdle.Game.UI
             _priceText = Digits(GUI.TextField(new Rect(x, bottom - 88, w, 32), _priceText, 12), false);
             var start = ParseLong(_priceText) ?? 0;
             GUI.enabled = start >= _market.MinimumPriceCoins;
-            if (GUI.Button(new Rect(x, bottom - 44, w, 44), GameTexts.Market.StartAuctionFor(_auctions.DurationHours), skin.ButtonPrimary))
+            if (skin.IconButton(new Rect(x, bottom - 44, w, 44), Icons.Hourglass, GameTexts.Market.StartAuctionFor(_auctions.DurationHours), skin.ButtonPrimary))
             {
                 if (_root.StartAuction(candidate.IsFish, candidate.SourceId, start))
                 {
@@ -692,7 +693,7 @@ namespace FishingIdle.Game.UI
         {
             GUI.Label(new Rect(area.x, area.y, area.width - 240, 40), GameTexts.Market.WithdrawNote, skin.SmallMuted);
             GUI.enabled = _market.Withdrawals.Count > 0;
-            if (GUI.Button(new Rect(area.xMax - 220, area.y - 4, 220, 38), GameTexts.Market.WithdrawAll, skin.ButtonPrimary))
+            if (skin.IconButton(new Rect(area.xMax - 220, area.y - 4, 220, 38), Icons.Box, GameTexts.Market.WithdrawAll, skin.ButtonPrimary))
             {
                 _root.WithdrawAll();
                 _nextRefresh = 0f;
@@ -723,7 +724,7 @@ namespace FishingIdle.Game.UI
                 {
                     GUI.Label(new Rect(row.xMax - 330, row.y + 22, 314, 44), GameTexts.ServiceErrorMessage(w.Blocker.ToString()), skin.SmallGold);
                 }
-                else if (GUI.Button(new Rect(row.xMax - 180, row.y + 22, 164, 42), GameTexts.Market.Withdraw, skin.Button))
+                else if (skin.IconButton(new Rect(row.xMax - 180, row.y + 22, 164, 42), Icons.Box, GameTexts.Market.Withdraw, skin.Button))
                 {
                     _root.Withdraw(w.WithdrawalId);
                     _nextRefresh = 0f;
@@ -783,41 +784,42 @@ namespace FishingIdle.Game.UI
 
         private static void GoodsIcon(UiSkin skin, Rect rect, GoodsView goods)
         {
-            if (goods.IsFish)
+            var art = GoodsArt(goods);
+            if (art != null)
             {
-                GUI.DrawTexture(rect, Art.FishTexture(goods.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
-                return;
+                GUI.DrawTexture(rect, art, ScaleMode.ScaleToFit, true);
             }
-
-            // A simple rod: a long shaft with a reel.
-            var cy = rect.center.y;
-            GUI.DrawTexture(new Rect(rect.x + rect.width * 0.1f, cy - 3, rect.width * 0.8f, 6), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.62f, 0.45f, 0.28f), 0, 3);
-            var reel = Mathf.Min(rect.height * 0.45f, 30f);
-            var previous = GUI.color;
-            GUI.color = new Color(0.78f, 0.82f, 0.88f);
-            GUI.DrawTexture(new Rect(rect.x + rect.width * 0.22f, cy - reel / 2f, reel, reel), skin.Coin, ScaleMode.ScaleToFit, true);
-            GUI.color = previous;
         }
 
-        /// <summary>One Market card. Returns true when clicked.</summary>
-        private static bool GoodsCard(UiSkin skin, Rect rect, GoodsView goods, string corner, bool selected)
+        /// <summary>The picture of a fish or a rod (Resources/Arte/Varas/&lt;rod id&gt;.png).</summary>
+        private static Texture2D GoodsArt(GoodsView goods)
         {
-            var hovered = rect.Contains(Event.current.mousePosition);
-            var important = goods.IsFish && goods.Fish.IsImportant;
-            var style = selected ? skin.CardSelected : important ? skin.CardImportant : hovered ? skin.CardHovered : skin.Card;
-            var clicked = GUI.Button(rect, GUIContent.none, style);
-
-            GoodsIcon(skin, new Rect(rect.x + 14, rect.y + 12, rect.width - 28, 70), goods);
-            GUI.Label(new Rect(rect.x + 12, rect.y + 88, rect.width - 24, 22), goods.Name, skin.BodyBold);
-            GUI.Label(new Rect(rect.x + 12, rect.y + 110, rect.width - 24, 34), GoodsLine(goods), skin.Small);
-            GUI.Label(new Rect(rect.x + 12, rect.y + 146, rect.width - 24, 20), corner, skin.SmallGold);
-
-            if (goods.IsFish && goods.Fish.RarityId != null && goods.Fish.RarityId != "common")
+            if (goods.IsFish)
             {
-                skin.Tag(new Rect(rect.xMax - 66, rect.y + 10, 56, 18), goods.Fish.RarityName.ToUpperInvariant(), UiSkin.Rare);
+                return Art.FishTexture(goods.Fish.SpeciesId);
             }
 
-            return clicked;
+            return goods.Rod != null ? Visual.ArtAssets.Texture("Varas/" + goods.Rod.RodId) : null;
+        }
+
+        /// <summary>One Market card (the official card: picture first, essentials after). Returns true when clicked.</summary>
+        private static bool GoodsCard(UiSkin skin, Rect rect, GoodsView goods, string corner, bool selected, string coins = null)
+        {
+            var fish = goods.IsFish ? goods.Fish : null;
+            return FishCard.Draw(skin, rect, new FishCardModel
+            {
+                SpeciesId = fish?.SpeciesId,
+                Name = goods.Name,
+                Line = GoodsLine(goods),
+                RarityId = fish?.RarityId,
+                RarityName = fish?.RarityName,
+                SizeCategoryId = fish?.SizeCategoryId,
+                SizeCategoryName = fish?.SizeCategoryName,
+                Footer = corner,
+                Coins = coins,
+                Selected = selected,
+                Art = fish == null ? GoodsArt(goods) ?? skin.White : null,
+            });
         }
 
         private static void InfoRow(UiSkin skin, float x, ref float y, float w, string label, string value)
