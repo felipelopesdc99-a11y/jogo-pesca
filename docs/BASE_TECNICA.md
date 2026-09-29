@@ -296,7 +296,25 @@ painel, mensagens de validação). `Format.cs` formata números (`1.234`, `35,2 
 | `tools/GameService.Tests` | Testes das regras: ciclo, idempotência, sorteio e distribuições, vara, XP, venda, save, backup, reset, formatação, integridade do roadmap, ida e volta do balanceamento |
 | `tools/UnityCheck.Game` | O código de apresentação compila contra as bibliotecas de referência do Unity |
 | `tools/UnityCheck.Editor` | O Painel de Desenvolvimento compila contra a biblioteca de referência do Editor |
+| `tools/Simulador` | Só compila no `verify.sh`; roda com `./ops/scripts/simular.sh` (abaixo) |
 
+Os testes cobrem também abuso local (Milestone 11, `AbuseTests`): relógio voltando ou pulando anos,
+pedidos repetidos, o mesmo peixe em dois lugares, Cardume em Expedição no Mercado, preços e lances
+negativos, save editado à mão, e um save com todos os sistemas em uso que reabre igual.
+
+### Simulador de balanceamento
+
+```bash
+./ops/scripts/simular.sh   # gera docs/relatorios/SIMULACAO_BALANCEAMENTO.md
+```
+
+Joga as **regras reais** (`LocalGame`) com um relógio manual e um save em memória, com sementes fixas
+(o relatório sai igual para o mesmo `/config`). Mede: progressão por nível e Moedas (jogador que pesca
+sem parar, vende tudo, compra a vara e troca de mapa assim que pode), frequência de raridade/tamanho
+e Conchas por mapa e vara (200 mil sorteios), preços de venda por espécie, retorno das varas, duração
+e resultado das batalhas entre adversários simulados, Moedas das Expedições, tempo de venda no
+Mercado e preço final dos leilões. No topo, "Pontos de atenção" lista o que chama atenção nos números
+— sem mudar nada. Para medir algo novo, acrescente uma seção em `tools/Simulador/Program.cs`.
 As checagens do Unity pegam erros de digitação, tipos e membros inexistentes. Elas **não**
 substituem abrir o projeto no Editor: comportamento visual só se confirma apertando Play.
 

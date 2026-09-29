@@ -484,3 +484,21 @@ ambiente, volume e modo compacto). As Conchas foram para o cartão do jogador, s
 
 Além da aura pulsante (roxa para rara, dourada para Excepcional, azul-clara para espécie nova), a
 captura importante solta um punhado de faíscas da mesma cor que sobem e somem.
+
+---
+
+## Milestone 11 — Preparação do balanceamento
+
+### A-061 · Nenhum número foi balanceado
+**Seção do GDD:** 46, START HERE M11 · **Situação:** Em vigor
+
+A pedido do proprietário, o Milestone 11 não mudou valores de `/config`. Ele entregou o simulador
+(`./ops/scripts/simular.sh`) e o relatório com os números atuais; as revisões de progressão,
+economia, raridade, combate, Expedições, varas, Mercado e Leilão ficam como tarefas abertas até o
+proprietário decidir as metas.
+
+### A-062 · Comprador simulado e vendedor
+**Seção do GDD:** 35 · **Situação:** Em vigor (só no MVP local)
+
+No leilão, o jogador simulado que dá o lance nunca é o próprio vendedor nem quem já tem o maior
+lance.

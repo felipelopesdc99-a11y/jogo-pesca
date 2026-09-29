@@ -3,6 +3,28 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m11.1] — 29/09/2026
+
+Milestone 11 — Preparação do balanceamento, testes de abuso e correções. Com ele, todos os
+sistemas do MVP local estão no jogo.
+
+### Adicionado
+
+- **Simulador de balanceamento** (`./ops/scripts/simular.sh`): joga as regras reais e gera
+  `docs/relatorios/SIMULACAO_BALANCEAMENTO.md` com os números atuais e pontos de atenção.
+- **Testes de abuso local e de save/load** (9 novos, 144 no total): relógio, pedidos repetidos,
+  item em dois lugares, save editado, save completo reabrindo igual.
+
+### Corrigido
+
+- Relógio do PC voltando no tempo não faz mais o Mercado e o Leilão refazerem verificações.
+- O comprador simulado de um leilão nunca é o próprio vendedor.
+
+### Não mudou
+
+- Nenhum número do balanceamento (a pedido do proprietário). As revisões ficaram como tarefas em
+  aberto no Milestone 11.
+
 ## [0.1.0-m10.1] — 29/09/2026
 
 Milestone 10 — Tutorial, UX e polimento.

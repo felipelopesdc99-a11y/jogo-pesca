@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-29T00:43:26Z",
-  "current_milestone": "M10",
+  "updated_at": "2026-09-29T01:00:16Z",
+  "current_milestone": "M11",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -116,6 +116,14 @@
       "title": "Testar o tutorial, os avisos, o som e o modo compacto",
       "detail": "No Painel de Desenvolvimento → Save, resete o save e aperte Play: siga o tutorial do começo (a Vara Inicial agora é pega na Loja). Depois abra Avisos e Opções (som, volume, modo compacto — este só muda o tamanho da janela num build, não no Editor). Diga se os sons provisórios incomodam. Não bloqueia: eu sigo com o Milestone 11.",
       "raised_at": "2026-09-29T00:43:26Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-014",
+      "task_id": "M11-T09",
+      "title": "Jogar o MVP completo e decidir quando balancear",
+      "detail": "Todos os sistemas do MVP local estão no jogo. Jogue do começo (Painel → Save → resetar) e me diga o que achou. Você pediu para não balancear agora, então nenhum número foi mudado; o relatório docs/relatorios/SIMULACAO_BALANCEAMENTO.md mostra os números atuais e alguns pontos de atenção (por exemplo: batalhas de 8 a 22 s contra a meta de ~60 s; Moedas por hora sobem ~8× no segundo mapa; Expedições rendem ~10% da pesca por hora). Quando quiser balancear, diga as metas (quanto tempo até o Nível 10/20, quanto uma Expedição deve render, etc.).",
+      "raised_at": "2026-09-29T01:00:16Z",
       "status": "OPEN"
     }
   ],
@@ -1360,78 +1368,103 @@
           "id": "M11-T01",
           "title": "Revisar progressão do Nível 1 ao 20",
           "subsystem": "config",
-          "description": "Com dados de jogo real.",
+          "description": "Aguardando o proprietário querer balancear. Números atuais medidos em docs/relatorios/SIMULACAO_BALANCEAMENTO.md.",
           "status": "TODO",
           "dependencies": [
-            "M10-T05"
+            "M11-T08"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "updated_at": "2026-09-29T01:00:16Z"
         },
         {
           "id": "M11-T02",
           "title": "Revisar economia e preços",
           "subsystem": "config",
-          "description": "Entradas e saídas de Moedas.",
+          "description": "Aguardando o proprietário. O relatório mostra Moedas por hora por mapa e o salto ao chegar ao segundo mapa.",
           "status": "TODO",
           "dependencies": [
-            "M11-T01"
+            "M11-T08"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "updated_at": "2026-09-29T01:00:16Z"
         },
         {
           "id": "M11-T03",
           "title": "Revisar raridades, tamanhos e atributos",
           "subsystem": "config",
-          "description": "Frequências e hierarquia.",
+          "description": "Aguardando o proprietário. O relatório mostra a frequência de cada raridade e categoria por mapa e vara.",
           "status": "TODO",
           "dependencies": [
-            "M11-T01"
+            "M11-T08"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "updated_at": "2026-09-29T01:00:16Z"
         },
         {
           "id": "M11-T04",
           "title": "Revisar duração do combate e força das Expedições",
           "subsystem": "config",
-          "description": "Simulações.",
+          "description": "Aguardando o proprietário. O relatório mostra a duração média das batalhas e as Moedas das Expedições.",
           "status": "TODO",
           "dependencies": [
-            "M11-T01"
+            "M11-T08"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "updated_at": "2026-09-29T01:00:16Z"
         },
         {
           "id": "M11-T05",
           "title": "Revisar varas, Mercado e Leilão",
           "subsystem": "config",
-          "description": "Custos e taxas.",
+          "description": "Aguardando o proprietário. O relatório mostra o retorno das varas, o tempo de venda e o preço final dos leilões.",
           "status": "TODO",
           "dependencies": [
-            "M11-T01"
+            "M11-T08"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "updated_at": "2026-09-29T01:00:16Z"
         },
         {
           "id": "M11-T06",
           "title": "Testes de save/load e de abuso local",
-          "subsystem": "ops",
-          "description": "Relógio adiantado, pedidos repetidos, arquivos editados.",
-          "status": "TODO",
+          "subsystem": "server",
+          "description": "Relógio, pedidos repetidos, item em dois lugares, save editado.",
+          "status": "DONE",
           "dependencies": [
-            "M11-T01"
+            "M10-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "9 testes novos (AbuseTests): relógio voltando e avançando de novo não dá capturas extras; relógio pulando 3 anos respeita os limites (24 h de pesca offline, Energia, histórico); verificações do Mercado nunca rodam duas vezes; um peixe anunciado ou em leilão não pode ser alimento, vendido, ir ao Cardume nem ser anunciado de novo; Cardume em Expedição não vai ao Mercado; pedidos repetidos nunca pagam nem cobram duas vezes; preços e lances negativos recusados; save editado à mão com Moedas negativas não é aceito; um save com todos os sistemas em uso reabre igual. 144 testes no total.",
+          "updated_at": "2026-09-29T01:00:16Z"
         },
         {
           "id": "M11-T07",
           "title": "Rodada de correção de bugs",
-          "subsystem": "client",
-          "description": "Tudo que aparecer nos testes.",
-          "status": "TODO",
+          "subsystem": "server",
+          "description": "Problemas achados na revisão e pelos testes novos.",
+          "status": "DONE",
           "dependencies": [
-            "M11-T01"
+            "M11-T06"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Corrigido: (1) com o relógio do PC voltando no tempo, o Mercado e o Leilão refaziam verificações já feitas quando o relógio voltava ao normal — agora cada verificação roda uma única vez; (2) o comprador simulado sorteado podia ser o próprio vendedor do leilão e o lance daquela rodada se perdia — agora é sorteado outro nome. O segundo foi achado por um teste que falhava de vez em quando; ele passou 40 vezes seguidas depois da correção.",
+          "updated_at": "2026-09-29T01:00:16Z"
+        },
+        {
+          "id": "M11-T08",
+          "title": "Simulador de balanceamento",
+          "subsystem": "ops",
+          "description": "Ferramenta que joga as regras reais e gera um relatório dos números atuais.",
+          "status": "DONE",
+          "dependencies": [
+            "M11-T06"
+          ],
+          "completion_notes": "tools/Simulador + ./ops/scripts/simular.sh geram docs/relatorios/SIMULACAO_BALANCEAMENTO.md em ~3 s: progressão por nível (horas e Moedas), raridades, tamanhos e Conchas por mapa e vara, preço de venda por espécie, retorno das varas, duração das batalhas, Moedas das Expedições, tempo de venda no Mercado e preço final dos leilões, com 'Pontos de atenção' no topo. Não muda nenhum valor. O verify.sh passa a compilar o simulador.",
+          "updated_at": "2026-09-29T01:00:16Z"
+        },
+        {
+          "id": "M11-T09",
+          "title": "Jogar o MVP completo e decidir quando balancear",
+          "subsystem": "config",
+          "description": "Teste geral do proprietário no Unity e decisão sobre a rodada de balanceamento.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M11-T08"
+          ],
+          "updated_at": "2026-09-29T01:00:16Z"
         }
       ]
     },

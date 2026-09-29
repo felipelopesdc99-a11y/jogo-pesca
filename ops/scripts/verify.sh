@@ -3,6 +3,7 @@
 #
 #   1. Regras do jogo (serviço de jogo local): compila como o Unity compila e roda os testes.
 #   2. Código do Unity (jogo e Painel de Desenvolvimento): checagem de compilação sem o Editor.
+#   3. Simulador de balanceamento: só compila (o relatório é gerado por ./ops/scripts/simular.sh).
 #
 # O servidor e o painel web estão arquivados (M12) e ficam de fora por padrão. Para incluí-los:
 #   ./ops/scripts/verify.sh --completo
@@ -31,6 +32,11 @@ echo "==> Código do Unity: checagem de compilação do jogo e do Painel de Dese
 cd "$REPO_ROOT/tools/UnityCheck.Game"
 dotnet build --nologo
 cd "$REPO_ROOT/tools/UnityCheck.Editor"
+dotnet build --nologo
+
+echo
+echo "==> Simulador de balanceamento: compilação (para gerar o relatório, use ./ops/scripts/simular.sh)"
+cd "$REPO_ROOT/tools/Simulador"
 dotnet build --nologo
 
 echo

@@ -254,13 +254,14 @@ namespace FishingIdle.GameService.Market
             var bots = Config.MarketBots.Auctions;
             var intervalMs = Math.Max(1L, (long)Math.Round(bots.BidCheckIntervalMinutes * 60000.0));
             var nowTick = Now / intervalMs;
-            if (State.AuctionBidTick == 0 || nowTick < State.AuctionBidTick)
+            if (State.AuctionBidTick == 0)
             {
                 State.AuctionBidTick = nowTick;
                 return true;
             }
 
-            if (nowTick == State.AuctionBidTick)
+            // Nothing new, or the PC clock went backwards: never run a check twice.
+            if (nowTick <= State.AuctionBidTick)
             {
                 return false;
             }
@@ -290,8 +291,8 @@ namespace FishingIdle.GameService.Market
 
                     var extra = bots.ExtraRaiseRatio.Min + rng.NextDouble() * (bots.ExtraRaiseRatio.Max - bots.ExtraRaiseRatio.Min);
                     var amount = Math.Min(ceiling, Math.Max(minimum, (long)Math.Ceiling(minimum * (1.0 + extra))));
-                    var bidder = RandomTraderName(rng);
-                    if (bidder == auction.SellerName || bidder == auction.HighestBidder)
+                    var bidder = RandomTraderNameExcept(rng, auction.SellerName, auction.HighestBidder);
+                    if (bidder == null)
                     {
                         continue;
                     }

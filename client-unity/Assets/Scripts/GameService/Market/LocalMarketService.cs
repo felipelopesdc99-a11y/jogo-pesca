@@ -410,6 +410,23 @@ namespace FishingIdle.GameService.Market
             return names[rng.NextIntInclusive(0, names.Count - 1)];
         }
 
+        /// <summary>A simulated trader other than the given ones (the next name in the list when the draw hits one); null if none.</summary>
+        private string RandomTraderNameExcept(Rng rng, string a, string b)
+        {
+            var names = Config.ArenaBots.Names;
+            var start = rng.NextIntInclusive(0, names.Count - 1);
+            for (var i = 0; i < names.Count; i++)
+            {
+                var name = names[(start + i) % names.Count];
+                if (name != a && name != b)
+                {
+                    return name;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>A fish from any map (sometimes levelled) or, with <paramref name="rodChance"/>, a tradable rod.</summary>
         private MarketGoods NewBotGoods(Rng rng, double rodChance, long at)
         {
@@ -465,13 +482,14 @@ namespace FishingIdle.GameService.Market
             var demand = Config.MarketBots.Demand;
             var intervalMs = Math.Max(1L, (long)Math.Round(demand.CheckIntervalMinutes * 60000.0));
             var nowTick = Now / intervalMs;
-            if (State.DemandTick == 0 || nowTick < State.DemandTick)
+            if (State.DemandTick == 0)
             {
                 State.DemandTick = nowTick;
                 return true;
             }
 
-            if (nowTick == State.DemandTick)
+            // Nothing new, or the PC clock went backwards: never run a check twice.
+            if (nowTick <= State.DemandTick)
             {
                 return false;
             }

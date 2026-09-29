@@ -27,7 +27,9 @@ ao apertar Play e, se algo estiver errado, mostra a lista de problemas na tela.
   um mapa. O `fish_catalog.json` guarda somente o que é verdade sobre uma espécie independentemente
   de onde ela seja pescada, então uma espécie que apareça em dois mapas nunca é duplicada.
 - **`balance_status: "PROVISÓRIO"`** em todo arquivo significa que os números são um balanceamento
-  inicial com hierarquia clara, a ser ajustado por simulação e pelo painel (seção 46 do GDD). A
+  inicial com hierarquia clara, a ser ajustado por simulação e pelo painel (seção 46 do GDD). Para ver
+  os números atuais medidos, rode `./ops/scripts/simular.sh` (relatório em
+  `docs/relatorios/SIMULACAO_BALANCEAMENTO.md`). A
   *estrutura* não é provisória.
 - **Os atributos base valem para nível 1, tamanho no percentil 0,50, antes dos modificadores de
   raridade, tamanho e nível.** O servidor aplica esses modificadores usando o `progression.json`;

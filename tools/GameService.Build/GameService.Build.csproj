@@ -19,6 +19,8 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="FishingIdle.GameService.Tests" />
+    <!-- The balance simulator fixes each simulated player's RNG seed so reports are reproducible. -->
+    <InternalsVisibleTo Include="FishingIdle.Simulador" />
   </ItemGroup>
   <ItemGroup>
     <!-- Same Newtonsoft.Json as Unity's com.unity.nuget.newtonsoft-json 3.2.1. -->

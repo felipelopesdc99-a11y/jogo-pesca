@@ -1,0 +1,547 @@
+using System.Diagnostics;
+using System.Text;
+using FishingIdle.GameService;
+using FishingIdle.GameService.Aquarium;
+using FishingIdle.GameService.Arena;
+using FishingIdle.GameService.Config;
+using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Expeditions;
+using FishingIdle.GameService.Fishing;
+using FishingIdle.GameService.Market;
+using FishingIdle.GameService.Persistence;
+using FishingIdle.GameService.Profile;
+using FishingIdle.Texts;
+
+namespace FishingIdle.Simulador;
+
+/// <summary>
+/// Plays the real rules (the same LocalGame the Unity client runs) with a manual clock and writes
+/// docs/relatorios/SIMULACAO_BALANCEAMENTO.md. It changes no balance value: it only measures.
+/// </summary>
+public static class Program
+{
+    private const long StartMs = 1_790_000_000_000;
+    private const int Players = 5;
+
+    /// <summary>Observations worth the owner's attention, collected while measuring; listed at the top.</summary>
+    private static readonly List<string> Attention = new();
+
+    public static int Main(string[] args)
+    {
+        var root = FindRepositoryRoot();
+        var output = args.Length > 0 && !string.IsNullOrWhiteSpace(args[0]) ? Path.GetFullPath(args[0]) : Path.Combine(root, "docs", "relatorios", "SIMULACAO_BALANCEAMENTO.md");
+        var load = GameConfigLoader.LoadFromDirectory(Path.Combine(root, "config"));
+        if (!load.Succeeded)
+        {
+            Console.WriteLine("O balanceamento em /config tem problemas; corrija antes de simular:");
+            foreach (var e in load.Errors)
+            {
+                Console.WriteLine("  • " + e);
+            }
+
+            return 1;
+        }
+
+        var config = load.Config;
+        var watch = Stopwatch.StartNew();
+        var report = new StringBuilder();
+        report.AppendLine("# Relatório de simulação do balanceamento");
+        report.AppendLine();
+        report.AppendLine("Gerado por `./ops/scripts/simular.sh` (ferramenta em `tools/Simulador`). Ele joga as **regras reais**");
+        report.AppendLine("do jogo com um relógio simulado e mede os números atuais de `/config`. Não muda nenhum valor: serve");
+        report.AppendLine("para decidir o balanceamento com dados. Rode de novo depois de editar o balanceamento.");
+        report.AppendLine();
+        report.AppendLine("- Versão do balanceamento: `" + config.Version + "`");
+        report.AppendLine("- Jogadores simulados por medição: " + Players + " (a tabela mostra a média)");
+        report.AppendLine();
+
+        var body = new StringBuilder();
+        Console.WriteLine("Simulando progressão do Pescador...");
+        var progression = Progression(config);
+        WriteProgression(body, config, progression);
+
+        Console.WriteLine("Sorteando capturas...");
+        WriteCatchTables(body, config);
+
+        Console.WriteLine("Calculando economia...");
+        WriteEconomy(body, config, progression);
+
+        Console.WriteLine("Simulando batalhas...");
+        WriteCombat(body, config);
+
+        Console.WriteLine("Calculando Expedições...");
+        WriteExpeditions(body, config, progression);
+
+        Console.WriteLine("Simulando Mercado e Leilão...");
+        WriteMarket(body, config);
+
+        report.AppendLine("## Pontos de atenção");
+        report.AppendLine();
+        report.AppendLine("Observações automáticas sobre os números atuais. São só fatos medidos: decidir se algo muda é do");
+        report.AppendLine("proprietário (o balanceamento ainda não foi feito de propósito).");
+        report.AppendLine();
+        foreach (var line in Attention)
+        {
+            report.AppendLine("- " + line);
+        }
+
+        report.AppendLine();
+        report.Append(body);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(output)!);
+        File.WriteAllText(output, report.ToString(), new UTF8Encoding(false));
+        Console.WriteLine("Relatório gravado em " + Path.GetRelativePath(root, output) + " (" + Format.Decimal(watch.Elapsed.TotalSeconds, 1) + " s).");
+        return 0;
+    }
+
+    // ------------------------------------------------------------------ progression
+
+    private sealed class LevelMark
+    {
+        public double Hours;
+        public long CoinsEarned;
+    }
+
+    private sealed class ProgressionResult
+    {
+        /// <summary>Per level (2..max): average online hours and coins earned (all sold) to reach it.</summary>
+        public SortedDictionary<int, LevelMark> Levels = new();
+        public double RodBoughtAtHours;
+        public double Map2At;
+        public double CoinsPerHourMap1;
+        public double CoinsPerHourMap2;
+        public double CatchesPerHour;
+        public double ShellsPerHourMap2;
+    }
+
+    /// <summary>
+    /// A simple, sensible player fishing online non-stop: sells everything every 10 minutes, buys Vara 1
+    /// as soon as allowed and affordable, travels to the next map as soon as it can.
+    /// </summary>
+    private static ProgressionResult Progression(GameConfig config)
+    {
+        var result = new ProgressionResult();
+        var sums = new Dictionary<int, (double hours, long coins, int n)>();
+        double rodAt = 0, map2At = 0, map1Coins = 0, map1Hours = 0, map2Coins = 0, map2Hours = 0, shells2 = 0, catches = 0, totalHours = 0;
+        var buyable = config.Rods.Rods.Where(config.IsPurchasable).OrderBy(r => r.Tier).ToList();
+        const double capHours = 150;
+
+        for (var p = 0; p < Players; p++)
+        {
+            var (game, clock) = NewPlayer(config, 1000 + (ulong)p);
+            game.Fishing.StartFishing();
+            long earned = 0;
+            var lastLevel = 1;
+            var bought = new HashSet<string>();
+            var steps = 0;
+            double hours = 0;
+            long shellsAtMap2 = 0;
+            double map2Start = -1;
+            long coinsAtMap2 = 0;
+
+            while (hours < capHours && game.Player.GetPlayer().FisherLevel < config.Progression.Fisher.MaxLevel)
+            {
+                clock.AdvanceSeconds(30);
+                steps++;
+                hours = steps * 30 / 3600.0;
+                game.Maps.Update();
+                game.Fishing.Sync();
+
+                if (steps % 20 == 0)
+                {
+                    var box = game.Fishing.GetFishingBox().Select(c => c.CatchId).ToList();
+                    if (box.Count > 0)
+                    {
+                        var sale = game.Fishing.SellCatches(box);
+                        if (sale.Succeeded)
+                        {
+                            earned += sale.Value.CoinsGained;
+                            if (map2Start < 0)
+                            {
+                                map1Coins += sale.Value.CoinsGained;
+                            }
+                            else
+                            {
+                                map2Coins += sale.Value.CoinsGained;
+                            }
+                        }
+                    }
+
+                    foreach (var rod in buyable.Where(r => !bought.Contains(r.Id)))
+                    {
+                        if (game.Shop.BuyRod(rod.Id).Succeeded)
+                        {
+                            bought.Add(rod.Id);
+                            rodAt += hours;
+                        }
+                    }
+
+                    var player = game.Player.GetPlayer();
+                    if (map2Start < 0)
+                    {
+                        var next = game.Maps.GetMaps().Maps.FirstOrDefault(m => m.MapId != player.MapId && m.TravelBlocker == ServiceError.None);
+                        if (next != null && game.Maps.TravelTo(next.MapId).Succeeded)
+                        {
+                            map2Start = hours;
+                            map2At += hours;
+                            coinsAtMap2 = earned;
+                            shellsAtMap2 = player.Shells;
+                        }
+                    }
+                }
+
+                var level = game.Player.GetPlayer().FisherLevel;
+                while (lastLevel < level)
+                {
+                    lastLevel++;
+                    var s = sums.TryGetValue(lastLevel, out var v) ? v : (0, 0, 0);
+                    sums[lastLevel] = (s.hours + hours, s.coins + earned, s.n + 1);
+                }
+            }
+
+            var end = game.Player.GetPlayer();
+            catches += end.TotalCatches;
+            totalHours += hours;
+            if (map2Start >= 0)
+            {
+                map1Hours += map2Start;
+                map2Hours += hours - map2Start;
+                shells2 += end.Shells - shellsAtMap2;
+            }
+            else
+            {
+                map1Hours += hours;
+            }
+        }
+
+        foreach (var (level, v) in sums)
+        {
+            result.Levels[level] = new LevelMark { Hours = v.hours / v.n, CoinsEarned = v.coins / v.n };
+        }
+
+        result.RodBoughtAtHours = rodAt / Players;
+        result.Map2At = map2At / Players;
+        result.CoinsPerHourMap1 = map1Hours > 0 ? map1Coins / map1Hours : 0;
+        result.CoinsPerHourMap2 = map2Hours > 0 ? map2Coins / map2Hours : 0;
+        result.ShellsPerHourMap2 = map2Hours > 0 ? shells2 / map2Hours : 0;
+        result.CatchesPerHour = totalHours > 0 ? catches / totalHours : 0;
+        return result;
+    }
+
+    private static void WriteProgression(StringBuilder r, GameConfig config, ProgressionResult p)
+    {
+        r.AppendLine("## 1. Progressão do Pescador (pesca online, sem parar)");
+        r.AppendLine();
+        r.AppendLine("Estratégia simulada: pesca o tempo todo, vende tudo a cada 10 minutos, compra a próxima vara assim");
+        r.AppendLine("que pode e viaja para o próximo mapa assim que ele libera. Offline, cada captura leva " +
+                     Format.Duration(config.Progression.Fishing.OfflineCycleSeconds) + " em vez de " + Format.Duration(config.Progression.Fishing.OnlineCycleSeconds) + ".");
+        r.AppendLine();
+        r.AppendLine("| Nível | Horas de pesca online | Moedas ganhas até ali |");
+        r.AppendLine("|---:|---:|---:|");
+        foreach (var (level, mark) in p.Levels.Where(x => x.Key <= 20 || x.Key % 10 == 0))
+        {
+            r.AppendLine("| " + level + " | " + Format.Decimal(mark.Hours, 1) + " h | " + Format.Number(mark.CoinsEarned) + " |");
+        }
+
+        r.AppendLine();
+        r.AppendLine("Até o Nível 20 aparecem todos os níveis; depois, de 10 em 10. A simulação para no nível máximo ou com 150 h.");
+        r.AppendLine();
+        r.AppendLine("- Capturas por hora online: " + Format.Decimal(p.CatchesPerHour, 0));
+        if (p.Levels.TryGetValue(10, out var l10)) Attention.Add("Nível 10 (libera o segundo mapa) chega com " + Format.Decimal(l10.Hours, 1) + " h de pesca online (" + Format.Decimal(l10.Hours * config.Progression.Fishing.OfflineCycleSeconds / config.Progression.Fishing.OnlineCycleSeconds, 1) + " h se fosse só offline).");
+        if (p.Levels.TryGetValue(20, out var l20)) Attention.Add("Nível 20 chega com " + Format.Decimal(l20.Hours, 1) + " h de pesca online.");
+        if (p.RodBoughtAtHours > 0) r.AppendLine("- Vara comprada (em média) com " + Format.Decimal(p.RodBoughtAtHours, 1) + " h de pesca");
+        if (p.Map2At > 0) r.AppendLine("- Viagem ao segundo mapa com " + Format.Decimal(p.Map2At, 1) + " h de pesca");
+        r.AppendLine();
+    }
+
+    // ------------------------------------------------------------------ catches
+
+    private static void WriteCatchTables(StringBuilder r, GameConfig config)
+    {
+        r.AppendLine("## 2. Frequência de raridade e de tamanho");
+        r.AppendLine();
+        r.AppendLine("200.000 sorteios reais (`CatchRules.Roll`) por combinação de mapa e vara.");
+        r.AppendLine();
+        var combos = new List<(string label, MapConfig map, RodConfig rod, int level)>();
+        foreach (var map in config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel))
+        {
+            foreach (var rod in config.Rods.Rods.Where(x => x.Tier >= map.MinimumRodTier).OrderBy(x => x.Tier))
+            {
+                combos.Add((map.DisplayName + " · " + rod.DisplayName + (rod.HasInternalLevels ? " Nv.1" : ""), map, rod, 1));
+                if (rod.HasInternalLevels)
+                {
+                    combos.Add((map.DisplayName + " · " + rod.DisplayName + " Nv." + config.RodMaxLevel(rod), map, rod, config.RodMaxLevel(rod)));
+                }
+            }
+        }
+
+        var rarities = config.Progression.Rarity.Tiers;
+        var sizes = config.SizeCategories;
+        r.AppendLine("| Mapa · vara | " + string.Join(" | ", rarities.Select(x => x.DisplayName)) + " | " + string.Join(" | ", sizes.Select(x => x.DisplayName)) + " | Conchas por 100 capturas |");
+        r.AppendLine("|---|" + string.Concat(Enumerable.Repeat("---:|", rarities.Count + sizes.Count + 1)));
+        foreach (var (label, map, rod, level) in combos)
+        {
+            const int n = 200_000;
+            var rng = new Rng(42);
+            var byRarity = rarities.ToDictionary(x => x.Id, _ => 0);
+            var bySize = sizes.ToDictionary(x => x.Id, _ => 0);
+            long shells = 0;
+            for (var i = 0; i < n; i++)
+            {
+                var c = CatchRules.Roll(config, map, rod, level, rng);
+                byRarity[c.Species.Rarity]++;
+                bySize[c.SizeCategory.Id]++;
+                shells += c.Shells;
+            }
+
+            var rare = rarities.Skip(1).Sum(x => byRarity[x.Id]) / (double)n;
+            if (rare > 0 && level == 1 && rod.HasInternalLevels)
+            {
+                Attention.Add("Peixes acima de comum: " + Format.Percent(rare, 2) + " das capturas em " + label + " (um a cada ~" + Format.Number((long)Math.Round(1 / rare)) + " capturas, ~" + Format.Decimal(1 / rare / 120.0, 1) + " h online).");
+            }
+
+            r.AppendLine("| " + label + " | " + string.Join(" | ", rarities.Select(x => Format.Percent(byRarity[x.Id] / (double)n, 2)))
+                         + " | " + string.Join(" | ", sizes.Select(x => Format.Percent(bySize[x.Id] / (double)n, 2)))
+                         + " | " + Format.Decimal(shells * 100.0 / n, 1) + " |");
+        }
+
+        r.AppendLine();
+    }
+
+    // ------------------------------------------------------------------ economy
+
+    private static void WriteEconomy(StringBuilder r, GameConfig config, ProgressionResult p)
+    {
+        r.AppendLine("## 3. Economia");
+        r.AppendLine();
+        r.AppendLine("- Moedas por hora vendendo tudo, primeiro mapa: " + Format.Number((long)p.CoinsPerHourMap1));
+        if (p.CoinsPerHourMap1 > 0 && p.CoinsPerHourMap2 > p.CoinsPerHourMap1 * 3)
+        {
+            Attention.Add("Ao chegar ao segundo mapa, as Moedas por hora sobem " + Format.Decimal(p.CoinsPerHourMap2 / p.CoinsPerHourMap1, 1) + "× (" + Format.Number((long)p.CoinsPerHourMap1) + " → " + Format.Number((long)p.CoinsPerHourMap2) + ").");
+        }
+        if (p.CoinsPerHourMap2 > 0)
+        {
+            r.AppendLine("- Moedas por hora vendendo tudo, segundo mapa (com a vara comprada, Nv.1): " + Format.Number((long)p.CoinsPerHourMap2));
+            r.AppendLine("- Conchas por hora no segundo mapa: " + Format.Decimal(p.ShellsPerHourMap2, 1));
+        }
+
+        r.AppendLine();
+        r.AppendLine("| Vara | Preço | Todas as melhorias | Horas de pesca para pagar a vara | Horas para pagar as melhorias |");
+        r.AppendLine("|---|---:|---:|---:|---:|");
+        foreach (var rod in config.Rods.Rods.Where(config.IsPurchasable).OrderBy(x => x.Tier))
+        {
+            var price = rod.Acquisition.PurchaseCostCoins;
+            var upgrades = MarketRules.RodUpgradeSpend(config, rod, config.RodMaxLevel(rod));
+            var before = p.CoinsPerHourMap1 > 0 ? price / p.CoinsPerHourMap1 : 0;
+            var after = p.CoinsPerHourMap2 > 0 ? upgrades / p.CoinsPerHourMap2 : 0;
+            r.AppendLine("| " + rod.DisplayName + " | " + Format.Number(price) + " | " + Format.Number(upgrades) + " | " + Format.Decimal(before, 1) + " h | " + Format.Decimal(after, 1) + " h |");
+        }
+
+        r.AppendLine();
+        r.AppendLine("Preço de venda ao NPC por espécie (tamanho mínimo, médio e máximo da espécie):");
+        r.AppendLine();
+        r.AppendLine("| Espécie | Raridade | Mínimo | Médio | Máximo |");
+        r.AppendLine("|---|---|---:|---:|---:|");
+        foreach (var s in config.FishCatalog.Species.OrderBy(x => config.RarityRank(x.Rarity)).ThenBy(x => x.BaseSaleValueCoins))
+        {
+            config.TryGetRarity(s.Rarity, out var rarity);
+            long At(double cm) => CatchRules.SalePrice(config, s, (int)Math.Round(cm * 10));
+            r.AppendLine("| " + s.DisplayName + " | " + (rarity?.DisplayName ?? s.Rarity) + " | " + Format.Number(At(s.SizeCm.Min)) + " | "
+                         + Format.Number(At((s.SizeCm.Min + s.SizeCm.Max) / 2)) + " | " + Format.Number(At(s.SizeCm.Max)) + " |");
+        }
+
+        r.AppendLine();
+    }
+
+    // ------------------------------------------------------------------ combat
+
+    private static void WriteCombat(StringBuilder r, GameConfig config)
+    {
+        r.AppendLine("## 4. Combate (adversários simulados da Arena)");
+        r.AppendLine();
+        r.AppendLine("Cada linha: 500 batalhas do adversário de uma posição contra um ~10% acima dele (como um ataque");
+        r.AppendLine("normal). Meta do GDD: a maioria das lutas em até ~" + Format.Decimal(config.Arena.Combat.TargetBattleDurationSeconds, 0) + " s.");
+        r.AppendLine();
+        var allDurations = new List<double>();
+        r.AppendLine("| Posição do atacante | Alvo | Força do atacante | Força do alvo | Duração média | 90% das lutas até | Acima da meta | Atacante vence |");
+        r.AppendLine("|---:|---:|---:|---:|---:|---:|---:|---:|");
+        var count = config.ArenaBots.BotCount;
+        foreach (var rank in new[] { 2, 5, 10, 25, 50, 100, 150, count }.Where(x => x <= count).Distinct())
+        {
+            var attacker = ArenaBots.Build(config, rank - 1);
+            var targetRank = Math.Max(1, rank - (int)Math.Ceiling(rank * config.Arena.OpponentSelection.RankWindowPercentAbove / 100.0));
+            var target = ArenaBots.Build(config, targetRank - 1);
+            var durations = new List<double>();
+            var wins = 0;
+            for (var i = 0; i < 500; i++)
+            {
+                var outcome = BattleEngine.Resolve(config, attacker.Cardume, target.Cardume, new Rng((ulong)(rank * 10_000 + i)));
+                durations.Add(outcome.DurationSeconds);
+                if (outcome.Winner == 0) wins++;
+            }
+
+            durations.Sort();
+            allDurations.Add(durations.Average());
+            var target60 = config.Arena.Combat.TargetBattleDurationSeconds;
+            r.AppendLine("| #" + rank + " | #" + targetRank + " | " + Format.Number(Strength(config, attacker.Cardume)) + " | " + Format.Number(Strength(config, target.Cardume)) + " | "
+                         + Format.Decimal(durations.Average(), 1) + " s | " + Format.Decimal(durations[(int)(durations.Count * 0.9)], 1) + " s | "
+                         + Format.Percent(durations.Count(d => d > target60) / (double)durations.Count, 0) + " | " + Format.Percent(wins / 500.0, 0) + " |");
+        }
+
+        r.AppendLine();
+        if (allDurations.Count > 0 && allDurations.Max() < config.Arena.Combat.TargetBattleDurationSeconds * 0.5)
+        {
+            Attention.Add("As batalhas duram em média " + Format.Decimal(allDurations.Min(), 0) + " a " + Format.Decimal(allDurations.Max(), 0) + " s, bem abaixo da meta de ~" + Format.Decimal(config.Arena.Combat.TargetBattleDurationSeconds, 0) + " s.");
+        }
+    }
+
+    private static long Strength(GameConfig config, IEnumerable<Fighter> team)
+    {
+        return CardumeRules.Display(config, team.Where(f => f != null).Sum(f => CardumeRules.RawStrength(config, f.Stats)));
+    }
+
+    // ------------------------------------------------------------------ expeditions
+
+    private static void WriteExpeditions(StringBuilder r, GameConfig config, ProgressionResult p)
+    {
+        r.AppendLine("## 5. Expedições");
+        r.AppendLine();
+        r.AppendLine("Força de referência: Cardumes dos adversários simulados em algumas posições da Arena.");
+        r.AppendLine();
+        var count = config.ArenaBots.BotCount;
+        var marks = new[] { count, count * 3 / 4, count / 2, count / 4, 1 }.Where(x => x >= 1).Distinct().ToList();
+        double bestExpeditionPerHour = 0;
+        r.AppendLine("| Expedição | Duração | Força recomendada | Moedas na recomendada | Moedas por hora | " + string.Join(" | ", marks.Select(m => "Moedas c/ Cardume do #" + m)) + " |");
+        r.AppendLine("|---|---:|---:|---:|---:|" + string.Concat(Enumerable.Repeat("---:|", marks.Count)));
+        foreach (var e in config.Expeditions.Expeditions)
+        {
+            var atRecommended = ExpeditionRules.Coins(e, ExpeditionRules.Efficiency(config, e.RecommendedStrength, e.RecommendedStrength));
+            var perHour = atRecommended / (e.DurationMinutes / 60.0);
+            bestExpeditionPerHour = Math.Max(bestExpeditionPerHour, perHour);
+            var cells = marks.Select(m =>
+            {
+                var s = Strength(config, ArenaBots.Build(config, m - 1).Cardume);
+                return Format.Number(ExpeditionRules.Coins(e, ExpeditionRules.Efficiency(config, s, e.RecommendedStrength)));
+            });
+            r.AppendLine("| " + e.DisplayName + " | " + Format.Duration(e.DurationMinutes * 60) + " | " + Format.Number((long)e.RecommendedStrength) + " | " + Format.Number(atRecommended) + " | "
+                         + Format.Number((long)perHour) + " | " + string.Join(" | ", cells) + " |");
+        }
+
+        r.AppendLine();
+        if (p.CoinsPerHourMap1 > 0)
+        {
+            Attention.Add("A Expedição que mais rende por hora, na Força recomendada, dá " + Format.Number((long)bestExpeditionPerHour) + " Moedas/h — " + Format.Percent(bestExpeditionPerHour / p.CoinsPerHourMap1, 0) + " do que a pesca rende no primeiro mapa (ela roda junto com a pesca).");
+        }
+
+        r.AppendLine("Para comparar: pescar rende " + Format.Number((long)p.CoinsPerHourMap1) + " Moedas por hora no primeiro mapa (e a Expedição roda junto com a pesca).");
+        r.AppendLine();
+    }
+
+    // ------------------------------------------------------------------ market and auction
+
+    private static void WriteMarket(StringBuilder r, GameConfig config)
+    {
+        var demand = config.MarketBots.Demand;
+        r.AppendLine("## 6. Mercado e Leilão (jogadores simulados)");
+        r.AppendLine();
+        r.AppendLine("Tempo médio até um comprador simulado levar um anúncio, pelo preço em relação à referência (taxa de " + Format.Percent(config.Market.CompletedSaleFeeRatio, 0) + " na venda):");
+        r.AppendLine();
+        r.AppendLine("| Preço | Chance por verificação | Tempo médio até vender |");
+        r.AppendLine("|---:|---:|---:|");
+        foreach (var ratio in new[] { 0.5, 1.0, 1.5, 2.0, 3.0, 3.9 })
+        {
+            var chance = MarketRules.PurchaseChance(config, (long)(1000 * ratio), 1000);
+            var minutes = chance > 0 ? demand.CheckIntervalMinutes / chance : double.PositiveInfinity;
+            r.AppendLine("| " + Format.Decimal(ratio, 1) + "× | " + Format.Percent(chance, 0) + " | " + (double.IsInfinity(minutes) ? "nunca" : Format.Duration(minutes * 60)) + " |");
+        }
+
+        r.AppendLine();
+        r.AppendLine("Leilões do jogador (30 leilões reais de 6 h, lance inicial = preço de venda ao NPC):");
+        r.AppendLine();
+        var ratios = new List<double>();
+        var unsold = 0;
+        for (var i = 0; i < 30; i++)
+        {
+            var (game, clock) = NewPlayer(config, 5000 + (ulong)i);
+            game.Fishing.StartFishing();
+            for (var s = 0; s < 40; s++)
+            {
+                clock.AdvanceSeconds(30);
+                game.Fishing.Sync();
+            }
+
+            game.Fishing.StopFishing();
+            var box = game.Fishing.GetFishingBox();
+            if (box.Count == 0 || !game.Aquarium.KeepCatches(new[] { box[0].CatchId }).Succeeded)
+            {
+                continue;
+            }
+
+            var fish = game.Aquarium.GetAquarium(AquariumSort.Newest).Fish[0];
+            var candidate = game.Market.GetSellCandidates().First(c => c.IsFish && c.SourceId == fish.FishId);
+            game.Auctions.StartAuction(true, fish.FishId, Math.Max(1, fish.SalePriceCoins));
+            clock.AdvanceSeconds(config.Auction.DurationHours * 3600 + 120);
+            var news = game.Market.Update();
+            var sold = news.FirstOrDefault(n => n.Kind == MarketEvent.KindAuctionSold);
+            if (sold == null)
+            {
+                unsold++;
+            }
+            else
+            {
+                ratios.Add(sold.PriceCoins / (double)Math.Max(1, candidate.Goods.ReferenceCoins));
+            }
+        }
+
+        r.AppendLine("- Terminaram sem lance: " + unsold + " de 30");
+        if (ratios.Count > 0)
+        {
+            r.AppendLine("- Preço final médio: " + Format.Decimal(ratios.Average(), 2) + "× a referência (mín. " + Format.Decimal(ratios.Min(), 2) + "×, máx. " + Format.Decimal(ratios.Max(), 2) + "×)");
+        }
+
+        r.AppendLine();
+    }
+
+    // ------------------------------------------------------------------ helpers
+
+    private static (LocalGame Game, ManualClock Clock) NewPlayer(GameConfig config, ulong seed)
+    {
+        var clock = new ManualClock(StartMs);
+        var game = LocalGame.Start(config, new MemoryRepository(), clock, _ => { }).Game;
+        game.Session.Save.RngSeed = seed;
+        game.Tutorial.Skip();
+        return (game, clock);
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null && !File.Exists(Path.Combine(dir.FullName, "version.json")))
+        {
+            dir = dir.Parent;
+        }
+
+        return dir?.FullName ?? Directory.GetCurrentDirectory();
+    }
+}
+
+/// <summary>A save that lives only in memory: the simulation writes thousands of times and needs no file.</summary>
+internal sealed class MemoryRepository : IPlayerRepository
+{
+    private PlayerSave _save;
+
+    public string Location => "(memória)";
+
+    public bool Exists => _save != null;
+
+    public SaveLoadResult Load() => new SaveLoadResult(_save == null ? SaveLoadStatus.NotFound : SaveLoadStatus.Loaded, _save, "memory");
+
+    public void Save(PlayerSave save) => _save = save;
+
+    public string Reset()
+    {
+        _save = null;
+        return null;
+    }
+}
+

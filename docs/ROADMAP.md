@@ -60,7 +60,7 @@ infraestrutura online que já existia foi preservada no M12, adiada.
 | **M8** | Mercado local | Comprar, Vender, Meus Anúncios, Itens a Retirar, taxa de 3%, anúncios simulados |
 | **M9** | Leilão local | Leilão de 6h, lances +3%, taxa de 1%, proteção de último minuto, encerramento antecipado |
 | **M10** | Tutorial, UX e polimento | Tutorial, menus completos, modo compacto, áudio provisório, animações melhores |
-| **M11** | Balanceamento do MVP | Progressão, economia, raridades, combate, expedições, testes de save e de abuso |
+| **M11** | Balanceamento do MVP | Simulador e relatório dos números, testes de save e de abuso, correções. As revisões de números (progressão, economia, raridades, combate, Expedições) esperam o proprietário decidir as metas |
 | **M12** | Infraestrutura online (adiada) | Servidor ASP.NET, PostgreSQL, Docker, painel web (já construídos), serviços remotos, contas, site público |
 
 ## Regras que o roadmap impõe a si mesmo

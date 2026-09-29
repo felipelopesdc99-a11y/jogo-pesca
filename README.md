@@ -74,7 +74,7 @@ jogo-pesca/
 ├── config/              Todo o balanceamento, em JSON. Nunca dentro do código.
 ├── docs/                GDD, adendo, base técnica, decisões, roadmap, histórico.
 ├── tools/               Testes das regras e checagens do código do Unity, sem precisar do Unity.
-├── ops/scripts/         verify.sh e os scripts da infraestrutura online (adiada).
+├── ops/scripts/         verify.sh, simular.sh (relatório de balanceamento) e os scripts da infraestrutura online (adiada).
 ├── server/  web/  shared-contracts/
 │                        Infraestrutura online já construída e guardada para depois (Milestone 12).
 └── version.json         Versão de cada parte do projeto.
