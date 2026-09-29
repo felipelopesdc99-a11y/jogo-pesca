@@ -41,6 +41,7 @@ namespace FishingIdle.Texts
             public const string Fishing = "Pesca";
             public const string Map = "Mapa";
             public const string Aquarium = "Aquário";
+            public const string Expedition = "Expedição";
             public const string Shop = "Loja";
             public const string Profile = "Perfil";
         }
@@ -157,6 +158,34 @@ namespace FishingIdle.Texts
             public static string Xp(string xp) => "+" + xp + " XP de Pescador";
             public static string Levels(int level) => "Subiu para o Nível " + level + "!";
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
+        }
+
+        // ------------------------------------------------------------------ Expeditions (GDD section 32)
+
+        public static class Expedition
+        {
+            public const string Title = "Expedição";
+            public const string Send = "Enviar o Cardume";
+            public const string Recommended = "Força recomendada";
+            public const string YourStrength = "Força do seu Cardume";
+            public const string Efficiency = "Aproveitamento";
+            public const string Reward = "Moedas previstas";
+            public const string FishChance = "Chance de achar um peixe";
+            public const string Away = "Seu Cardume está em Expedição";
+            public const string LockNote = "Enquanto ele estiver fora, você não pode mudar a formação, alimentar nem vender os peixes do Cardume. A pesca continua normalmente.";
+            public const string Note = "Expedições dão Moedas e, às vezes, um peixe (que vai para a Caixa de Pesca). Não dão XP nem Conchas, e nenhum peixe se perde. Funcionam com o jogo fechado.";
+            public const string CompletedToast = "Expedição concluída! Veja o resultado.";
+            public const string ResultTitle = "Expedição concluída";
+            public const string FoundFish = "Seu Cardume encontrou um peixe!";
+            public const string NoFish = "Nenhum peixe desta vez.";
+            public const string Collect = "Ótimo!";
+            public const string NoCardume = "Monte seu Cardume no Perfil para poder enviar Expedições.";
+
+            public static string Departed(string name) => "Cardume enviado: " + name + ".";
+            public static string Duration(string duration) => "Duração: " + duration;
+            public static string ReturnsIn(string countdown) => "Volta em " + countdown;
+            public static string Coins(string coins) => "+" + coins + " moedas";
+            public static string InBox(string species, string size) => species + " · " + size + " — já está na Caixa de Pesca.";
         }
 
         // ------------------------------------------------------------------ Map and travel (GDD section 18)
@@ -354,6 +383,10 @@ namespace FishingIdle.Texts
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
                 case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";
                 case "RodNotSellable": return "A Vara Inicial não pode ser vendida nem destruída.";
+                case "ExpeditionNotFound": return "Essa Expedição não existe.";
+                case "ExpeditionActive": return "Seu Cardume já está numa Expedição.";
+                case "CardumeEmpty": return "Coloque pelo menos um peixe no Cardume (Perfil → Cardume).";
+                case "CardumeLocked": return "Seu Cardume está numa Expedição. Espere ele voltar.";
                 case "SpeciesMissingFromConfig": return "Um dos peixes é de uma espécie que não existe mais no balanceamento, então não pode ser vendido agora.";
                 default: return "Não foi possível fazer isso agora.";
             }

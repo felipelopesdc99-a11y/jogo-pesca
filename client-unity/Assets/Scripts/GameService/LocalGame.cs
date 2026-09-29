@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Persistence;
@@ -32,6 +33,7 @@ namespace FishingIdle.GameService
             Aquarium = aquarium;
             Cardume = new LocalCardumeService(session, aquarium);
             Profile = new LocalProfileService(session, Fishing, Cardume);
+            Expeditions = new LocalExpeditionService(session, fishing, Cardume);
         }
 
         public GameSession Session { get; }
@@ -42,6 +44,7 @@ namespace FishingIdle.GameService
         public IAquariumService Aquarium { get; }
         public ICardumeService Cardume { get; }
         public IProfileService Profile { get; }
+        public IExpeditionService Expeditions { get; }
 
         /// <summary>Starts the game service, or explains in PT-BR why it cannot.</summary>
         public static LocalGameStartResult Start(string configDirectory, string saveDirectory, IClock clock, Action<string> log)

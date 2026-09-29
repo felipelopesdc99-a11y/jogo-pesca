@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 4;
+        public const int CurrentVersion = 5;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -59,6 +59,15 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>A trip between maps in progress (Milestone 4). Added in save version 4.</summary>
         public TravelState Travel { get; set; } = new TravelState();
+
+        /// <summary>The Cardume's Expedition in progress (Milestone 6). Added in save version 5.</summary>
+        public ExpeditionState Expedition { get; set; } = new ExpeditionState();
+
+        /// <summary>The last finished Expedition, kept until the player has seen it.</summary>
+        public ExpeditionResult LastExpedition { get; set; }
+
+        /// <summary>Counts every Expedition ever started; part of its RNG stream.</summary>
+        public long ExpeditionsStarted { get; set; }
 
         /// <summary>Next id handed to a Fishing Box catch. Ids are never reused.</summary>
         public long NextCatchId { get; set; } = 1;
@@ -121,6 +130,35 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Whether fishing was on when the trip started; it resumes on arrival.</summary>
         public bool ResumeFishing { get; set; }
+    }
+
+    public sealed class ExpeditionState
+    {
+        public bool Active { get; set; }
+        public string ExpeditionId { get; set; }
+        public long StartedAtMs { get; set; }
+        public long EndsAtMs { get; set; }
+
+        /// <summary>Cardume Strength when it left; the reward uses this, not later changes.</summary>
+        public long Strength { get; set; }
+
+        /// <summary>Map the Cardume set out from; a found fish comes from its waters.</summary>
+        public string MapId { get; set; }
+
+        public long RunIndex { get; set; }
+    }
+
+    public sealed class ExpeditionResult
+    {
+        public string ExpeditionId { get; set; }
+        public long CompletedAtMs { get; set; }
+        public long Coins { get; set; }
+        public double Efficiency { get; set; }
+
+        /// <summary>Fishing Box id of the fish found, or 0.</summary>
+        public long FoundCatchId { get; set; }
+
+        public bool Seen { get; set; }
     }
 
     public sealed class EquippedRodState

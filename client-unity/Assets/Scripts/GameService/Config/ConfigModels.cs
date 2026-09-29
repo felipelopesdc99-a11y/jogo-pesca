@@ -327,4 +327,43 @@ namespace FishingIdle.GameService.Config
         public double HpDivisor { get; set; }
         public double Speed { get; set; }
     }
+
+    // ---------------------------------------------------------------- expeditions.json
+
+    public sealed class ExpeditionsConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+        public ExpeditionEfficiencyConfig Efficiency { get; set; }
+        public List<ExpeditionConfig> Expeditions { get; set; }
+    }
+
+    /// <summary>Reward multiplier from Cardume Strength vs Recommended Strength (GDD section 32).</summary>
+    public sealed class ExpeditionEfficiencyConfig
+    {
+        public BelowRecommendedConfig BelowRecommended { get; set; }
+        public double AtRecommendedMultiplier { get; set; }
+        public AboveRecommendedConfig AboveRecommended { get; set; }
+    }
+
+    public sealed class BelowRecommendedConfig
+    {
+        public double Exponent { get; set; }
+        public double Floor { get; set; }
+    }
+
+    public sealed class AboveRecommendedConfig
+    {
+        public double Slope { get; set; }
+        public double Cap { get; set; }
+    }
+
+    public sealed class ExpeditionConfig
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
+        public double DurationMinutes { get; set; }
+        public double RecommendedStrength { get; set; }
+        public long RewardCoins { get; set; }
+        public double FishFindChance { get; set; }
+    }
 }

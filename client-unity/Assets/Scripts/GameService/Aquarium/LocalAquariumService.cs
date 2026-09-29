@@ -178,6 +178,11 @@ namespace FishingIdle.GameService.Aquarium
                 return ServiceResult<SaleResult>.Fail(ServiceError.FishNotFound);
             }
 
+            if (Save.Expedition.Active && wanted.Any(Save.CardumeSlots.Contains))
+            {
+                return ServiceResult<SaleResult>.Fail(ServiceError.CardumeLocked);
+            }
+
             long total = 0;
             foreach (var f in fish)
             {
@@ -233,6 +238,12 @@ namespace FishingIdle.GameService.Aquarium
             if (fishIds.Contains(targetFishId))
             {
                 return ServiceResult<FeedPreview>.Fail(ServiceError.CannotFeedItself);
+            }
+
+            // While the Cardume is on an Expedition its fish can neither eat nor be eaten (GDD section 32).
+            if (Save.Expedition.Active && (Save.CardumeSlots.Contains(targetFishId) || fishIds.Any(Save.CardumeSlots.Contains)))
+            {
+                return ServiceResult<FeedPreview>.Fail(ServiceError.CardumeLocked);
             }
 
             if (target.Level >= Config.Progression.FishLevel.MaxLevel)

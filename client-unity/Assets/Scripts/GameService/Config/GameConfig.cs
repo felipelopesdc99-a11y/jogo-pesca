@@ -30,6 +30,7 @@ namespace FishingIdle.GameService.Config
             RodsConfig rods,
             EconomyConfig economy,
             ArenaConfig arena,
+            ExpeditionsConfig expeditions,
             string version)
         {
             FishCatalog = fishCatalog;
@@ -38,6 +39,7 @@ namespace FishingIdle.GameService.Config
             Rods = rods;
             Economy = economy;
             Arena = arena;
+            Expeditions = expeditions;
             Version = version;
 
             _species = fishCatalog.Species.ToDictionary(s => s.Id, StringComparer.Ordinal);
@@ -56,6 +58,7 @@ namespace FishingIdle.GameService.Config
         public RodsConfig Rods { get; }
         public EconomyConfig Economy { get; }
         public ArenaConfig Arena { get; }
+        public ExpeditionsConfig Expeditions { get; }
 
         /// <summary>Number of Cardume positions (6).</summary>
         public int CardumeSize => Arena.Cardume.MaxFish;

@@ -6,6 +6,7 @@ using FishingIdle.GameService;
 using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Persistence;
@@ -48,6 +49,9 @@ namespace FishingIdle.Game.Bootstrap
 
         /// <summary>The "while you were away" summary waiting to be shown, or null.</summary>
         public OfflineReport WelcomeBack { get; set; }
+
+        /// <summary>A finished Expedition waiting to be shown, or null.</summary>
+        public ExpeditionResultView ExpeditionResult { get; private set; }
 
         /// <summary>The trip between maps in progress, refreshed every frame.</summary>
         public TravelView Travel { get; private set; }
@@ -125,6 +129,15 @@ namespace FishingIdle.Game.Bootstrap
                     }
 
                     TakeOfflineReport();
+                    if (Game.Expeditions.Update() != null)
+                    {
+                        Toasts.Push(GameTexts.Expedition.CompletedToast, ToastKind.Important);
+                        Refresh();
+                        BoxChanged?.Invoke();
+                        AquariumChanged?.Invoke();
+                    }
+
+                    ExpeditionResult = Game.Expeditions.PendingResult();
                 });
             }
 
@@ -345,6 +358,35 @@ namespace FishingIdle.Game.Bootstrap
 
                 Refresh();
                 AquariumChanged?.Invoke();
+            });
+        }
+
+        // ------------------------------------------------------------------ Expedition intents
+
+        public ExpeditionsView GetExpeditions() => IsRunning ? Game.Expeditions.GetExpeditions() : null;
+
+        public void StartExpedition(string expeditionId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Expeditions.Start(expeditionId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Expedition.Departed(result.Value.Name), ToastKind.Info);
+                AquariumChanged?.Invoke();
+            });
+        }
+
+        public void AcknowledgeExpedition()
+        {
+            Guard(() =>
+            {
+                Game.Expeditions.AcknowledgeResult();
+                ExpeditionResult = null;
             });
         }
 

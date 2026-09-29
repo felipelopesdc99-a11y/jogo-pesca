@@ -318,6 +318,14 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 4;
             }
 
+            if (save.SaveVersion == 4)
+            {
+                // v5 adds Expeditions (Milestone 6).
+                save.Expedition = new ExpeditionState();
+                save.SaveVersion = 5;
+            }
+
+            save.Expedition = save.Expedition ?? new ExpeditionState();
             save.Travel = save.Travel ?? new TravelState();
             save.Aquarium = save.Aquarium ?? new List<FishInstance>();
             save.Inventory = save.Inventory ?? new List<InventoryItem>();
@@ -362,6 +370,8 @@ namespace FishingIdle.GameService.Persistence
                 if (save.EquippedRodItem() == null) problems.Add("equipped rod is not a rod in the inventory");
             }
 
+            if (save.Expedition == null) problems.Add("expedition missing");
+            else if (save.Expedition.Active && (string.IsNullOrWhiteSpace(save.Expedition.ExpeditionId) || save.Expedition.EndsAtMs < save.Expedition.StartedAtMs)) problems.Add("expedition malformed");
             if (save.Travel == null) problems.Add("travel missing");
             else if (save.Travel.Active && (string.IsNullOrWhiteSpace(save.Travel.ToMapId) || save.Travel.ArrivesAtMs < save.Travel.StartedAtMs)) problems.Add("travel malformed");
             if (save.Inventory != null && save.Inventory.Any(i => i != null && (i.PurchasePriceCoins < 0 || i.UpgradeCoinsInvested < 0 || i.Level < 1))) problems.Add("inventory has negative values");

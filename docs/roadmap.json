@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-28T23:58:36Z",
-  "current_milestone": "M5",
+  "updated_at": "2026-09-29T00:03:17Z",
+  "current_milestone": "M6",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -68,6 +68,14 @@
       "title": "Testar a pesca offline",
       "detail": "Com a pesca ligada, feche o jogo (pare o Play) e volte alguns minutos depois: deve aparecer o Bem-vindo de volta com os peixes pescados (1 a cada 60 segundos). Não bloqueia: eu sigo com o Milestone 6.",
       "raised_at": "2026-09-28T23:58:36Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-008",
+      "task_id": "M6-T05",
+      "title": "Testar as Expedições",
+      "detail": "Monte o Cardume no Perfil, abra o menu Expedição e envie a Saída Rápida (30 minutos). Para não esperar, o Painel de Desenvolvimento → Balanceamento → Outros arquivos permite mudar a duração (em minutos) da Expedição. Não bloqueia: eu sigo com o Milestone 7.",
+      "raised_at": "2026-09-29T00:03:17Z",
       "status": "OPEN"
     }
   ],
@@ -835,44 +843,59 @@
           "title": "Envio do Cardume e travas de atividade",
           "subsystem": "server",
           "description": "Uma expedição por vez; o dono não mexe no Cardume enquanto ele está fora.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M5-T03"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Precisa de pelo menos 1 peixe no Cardume; uma Expedição por vez. Enquanto o Cardume está fora: não dá para mudar a formação, nem alimentar, ser alimento ou vender peixes do Cardume. A pesca continua normalmente. Testado.",
+          "updated_at": "2026-09-29T00:03:17Z"
         },
         {
           "id": "M6-T02",
           "title": "Força Recomendada e eficiência",
           "subsystem": "server",
           "description": "Redução abaixo da recomendada e bônus limitado acima.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M6-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "A Força do Cardume é fotografada na partida. Abaixo da recomendada: (força ÷ recomendada)^0,8, nunca menos de 25%. Acima: 1 + 0,35 × (razão − 1), no máximo 150%. Tudo em expeditions.json. Testado.",
+          "updated_at": "2026-09-29T00:03:17Z"
         },
         {
           "id": "M6-T03",
           "title": "Recompensas",
           "subsystem": "server",
           "description": "Moedas moderadas e pequena chance de peixe, que vai para a Caixa.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M6-T01"
+            "M6-T02"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Moedas = recompensa × eficiência. O peixe achado vem das águas do mapa de onde o Cardume saiu, vai para a Caixa de Pesca e não dá XP nem Conchas. A chance cai quando a força está abaixo da recomendada, mas nunca sobe acima da configurada. Expedição terminada com o jogo fechado é paga ao abrir. Testado.",
+          "updated_at": "2026-09-29T00:03:17Z"
         },
         {
           "id": "M6-T04",
           "title": "Tela de Expedição e aviso de conclusão",
           "subsystem": "client",
           "description": "Popup ao concluir, com o peixe encontrado em destaque.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
-            "M6-T01"
+            "M6-T03"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Menu Expedição: as quatro durações com força recomendada, aproveitamento previsto, moedas previstas e chance de peixe; Expedição em andamento com barra e contagem. Ao concluir: aviso e janela com as moedas e o peixe achado em destaque; se terminou com o jogo fechado, a janela aparece ao abrir. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:03:17Z"
+        },
+        {
+          "id": "M6-T05",
+          "title": "Teste das Expedições pelo proprietário",
+          "subsystem": "client",
+          "description": "Enviar o Cardume e receber o resultado dentro do Unity.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M6-T04"
+          ],
+          "updated_at": "2026-09-29T00:03:17Z"
         }
       ]
     },

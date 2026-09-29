@@ -32,6 +32,10 @@ namespace FishingIdle.GameService.Core
         RodHasNoLevels,
         RodEquipped,
         RodNotSellable,
+        ExpeditionNotFound,
+        ExpeditionActive,
+        CardumeEmpty,
+        CardumeLocked,
     }
 
     /// <summary>

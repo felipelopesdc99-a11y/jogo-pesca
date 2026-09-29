@@ -96,6 +96,11 @@ namespace FishingIdle.GameService.Profile
 
         public ServiceResult<CardumeView> SetSlot(int position, long fishId)
         {
+            if (Save.Expedition.Active)
+            {
+                return ServiceResult<CardumeView>.Fail(ServiceError.CardumeLocked);
+            }
+
             if (position < 1 || position > Save.CardumeSlots.Count)
             {
                 return ServiceResult<CardumeView>.Fail(ServiceError.InvalidCardumePosition);
@@ -120,6 +125,11 @@ namespace FishingIdle.GameService.Profile
 
         public ServiceResult<CardumeView> ClearSlot(int position)
         {
+            if (Save.Expedition.Active)
+            {
+                return ServiceResult<CardumeView>.Fail(ServiceError.CardumeLocked);
+            }
+
             if (position < 1 || position > Save.CardumeSlots.Count)
             {
                 return ServiceResult<CardumeView>.Fail(ServiceError.InvalidCardumePosition);

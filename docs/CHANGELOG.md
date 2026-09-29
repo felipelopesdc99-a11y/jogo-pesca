@@ -3,6 +3,30 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m6.1] — 29/09/2026
+
+Milestone 6 — Expedições.
+
+### Adicionado
+
+- **Menu Expedição**: envie o Cardume por 30 min, 1 h, 3 h ou 6 h. Mostra a força recomendada, o
+  aproveitamento previsto com o seu Cardume, as moedas previstas e a chance de achar um peixe.
+- **Recompensas**: moedas conforme a força do Cardume e, às vezes, um peixe, que vai para a Caixa de
+  Pesca. Sem XP, sem Conchas, sem perder peixes.
+- **Funciona com o jogo fechado**: a Expedição que terminou fora é paga ao abrir.
+- **Travas**: com o Cardume fora, a formação e os peixes dele ficam travados; a pesca continua.
+- Janela de conclusão com o peixe encontrado em destaque.
+- 6 testes novos (93 no total).
+
+### Mudado
+
+- **Formato do save: versão 5.** Saves antigos são convertidos sozinhos.
+- `expeditions.json` passa a ser carregado e validado pelo jogo.
+
+### Não verificado
+
+- As telas novas ainda não foram abertas no Editor do Unity (`M6-T05`).
+
 ## [0.1.0-m5.1] — 28/09/2026
 
 Milestone 5 — Pesca offline.

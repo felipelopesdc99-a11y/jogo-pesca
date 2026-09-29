@@ -290,3 +290,34 @@ pesca estava parada, ou se o jogo fechou no meio de uma viagem, não há pesca o
 Aparece ao voltar, se houve pelo menos um ciclo offline: tempo fora (e o aviso de limite de 24 h,
 quando passou), peixes pescados, XP, espécies novas, Conchas, subida de nível e até 4 capturas em
 destaque. Botões: "Abrir a Caixa de Pesca" e "Continuar".
+
+---
+
+## Milestone 6 — Expedições
+
+### A-036 · Força fotografada na partida
+**Seção do GDD:** 32 · **Situação:** Em vigor
+
+A recompensa usa a Força do Cardume do momento em que ele saiu. O Cardume fica travado durante a
+Expedição, então ela não muda até a volta.
+
+### A-037 · Moedas e peixe
+**Seção do GDD:** 32 · **Situação:** Confirmar
+
+Moedas = recompensa da Expedição × aproveitamento. A chance de achar um peixe é a configurada
+quando o Cardume está na força recomendada ou acima, e cai proporcionalmente quando está abaixo (o
+bônus acima da recomendada vale só para as moedas). O peixe vem das espécies do mapa de onde o
+Cardume saiu, com as raridades daquele mapa, e vai para a Caixa de Pesca.
+
+### A-038 · Travas durante a Expedição
+**Seção do GDD:** 32 · **Situação:** Em vigor
+
+Não dá para mudar a formação, alimentar, usar como alimento ou vender peixes do Cardume. Peixes
+fora do Cardume, a pesca, a viagem e a Loja continuam normais. A trava de ataque na Arena entra com
+a Arena (Milestone 7).
+
+### A-039 · Resultado
+**Seção do GDD:** 32 · **Situação:** Em vigor
+
+Com o jogo aberto: aviso na tela e a janela do resultado. Com o jogo fechado: a janela aparece na
+próxima vez que o jogo abrir (depois do Bem-vindo de volta, se houver).

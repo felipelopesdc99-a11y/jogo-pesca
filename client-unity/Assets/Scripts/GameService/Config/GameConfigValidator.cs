@@ -18,7 +18,8 @@ namespace FishingIdle.GameService.Config
             ProgressionConfig progression,
             RodsConfig rods,
             EconomyConfig economy,
-            ArenaConfig arena)
+            ArenaConfig arena,
+            ExpeditionsConfig expeditions)
         {
             var errors = new List<string>();
 
@@ -420,6 +421,43 @@ namespace FishingIdle.GameService.Config
             else if (weights.HpDivisor <= 0 || weights.Attack < 0 || weights.Defense < 0 || weights.Speed < 0 || arena.CardumeStrength.DisplayScale <= 0)
             {
                 errors.Add(V.AtLeast(GameConfigLoader.ArenaFile, "cardume_strength (pesos e escala)", 0));
+            }
+
+            // ---- expeditions.json (Milestone 6)
+            var eff = expeditions.Efficiency;
+            if (eff?.BelowRecommended == null || eff.AboveRecommended == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ExpeditionsFile, "efficiency"));
+            }
+            else if (eff.BelowRecommended.Floor < 0 || eff.BelowRecommended.Exponent < 0 || eff.AboveRecommended.Slope < 0 || eff.AboveRecommended.Cap < eff.AtRecommendedMultiplier)
+            {
+                errors.Add(V.BadIntRange(GameConfigLoader.ExpeditionsFile, "efficiency"));
+            }
+
+            if (expeditions.Expeditions == null || expeditions.Expeditions.Count == 0)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ExpeditionsFile, "expeditions"));
+            }
+            else
+            {
+                var expIds = new HashSet<string>(StringComparer.Ordinal);
+                foreach (var e in expeditions.Expeditions)
+                {
+                    if (string.IsNullOrWhiteSpace(e.Id) || !expIds.Add(e.Id))
+                    {
+                        errors.Add(V.DuplicateOrEmptyId(GameConfigLoader.ExpeditionsFile, "expeditions", e.Id));
+                    }
+
+                    if (e.DurationMinutes <= 0 || e.RecommendedStrength <= 0 || e.RewardCoins < 0)
+                    {
+                        errors.Add(V.AtLeast(GameConfigLoader.ExpeditionsFile, e.Id + " (duração, força recomendada)", 1));
+                    }
+
+                    if (e.FishFindChance < 0 || e.FishFindChance > 1)
+                    {
+                        errors.Add(V.ChanceOutOfRange(GameConfigLoader.ExpeditionsFile, e.Id + ".fish_find_chance"));
+                    }
+                }
             }
 
             return errors;

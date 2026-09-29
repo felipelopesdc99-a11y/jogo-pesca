@@ -26,6 +26,7 @@ namespace FishingIdle.Game.UI
         private ProfileWindow _profile;
         private MapWindow _map;
         private ShopWindow _shop;
+        private ExpeditionWindow _expedition;
         private bool _cardExpanded = true;
         private float _boxPulseUntil;
         private float _width;
@@ -40,6 +41,7 @@ namespace FishingIdle.Game.UI
             _profile = new ProfileWindow(_root);
             _map = new MapWindow(_root);
             _shop = new ShopWindow(_root);
+            _expedition = new ExpeditionWindow(_root);
             _root.CatchesArrived += OnCatchesArrived;
         }
 
@@ -110,10 +112,11 @@ namespace FishingIdle.Game.UI
 
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
             {
-                if (_map.IsOpen || _shop.IsOpen)
+                if (_map.IsOpen || _shop.IsOpen || _expedition.IsOpen)
                 {
                     _map.Close();
                     _shop.Close();
+                    _expedition.Close();
                     Event.current.Use();
                 }
                 else if (_profile.IsOpen)
@@ -143,7 +146,7 @@ namespace FishingIdle.Game.UI
             }
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _root.WelcomeBack != null;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _root.WelcomeBack != null || _root.ExpeditionResult != null;
             GUI.enabled = !windowOpen;
             DrawTopBar(skin);
             DrawPlayerCard(skin);
@@ -156,17 +159,19 @@ namespace FishingIdle.Game.UI
             _profile.Draw(skin, _width, _height);
             _map.Draw(skin, _width, _height);
             _shop.Draw(skin, _width, _height);
+            _expedition.Draw(skin, _width, _height);
             GUI.enabled = true;
             if (windowOpen)
             {
                 // The navigation stays usable above the windows (not above the welcome-back summary).
-                GUI.enabled = _root.WelcomeBack == null;
+                GUI.enabled = _root.WelcomeBack == null && _root.ExpeditionResult == null;
                 DrawNavigation(skin);
                 GUI.enabled = true;
             }
 
             DrawToasts(skin);
 
+            ExpeditionWindow.DrawResult(skin, _root, _width, _height);
             if (WelcomeBackDialog.Draw(skin, _root, _width, _height))
             {
                 CloseAllWindows();
@@ -221,8 +226,8 @@ namespace FishingIdle.Game.UI
         private void DrawNavigation(UiSkin skin)
         {
             const float navWidth = 130f;
-            var labels = new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Shop, GameTexts.Navigation.Profile };
-            var active = _map.IsOpen ? 1 : _aquarium.IsOpen ? 2 : _shop.IsOpen ? 3 : _profile.IsOpen ? 4 : 0;
+            var labels = new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Expedition, GameTexts.Navigation.Shop, GameTexts.Navigation.Profile };
+            var active = _map.IsOpen ? 1 : _aquarium.IsOpen ? 2 : _expedition.IsOpen ? 3 : _shop.IsOpen ? 4 : _profile.IsOpen ? 5 : 0;
             var x = _width / 2f - (labels.Length * (navWidth + 10f) - 10f) / 2f;
 
             for (var i = 0; i < labels.Length; i++)
@@ -232,8 +237,9 @@ namespace FishingIdle.Game.UI
                     CloseAllWindows();
                     if (i == 1) _map.Open();
                     if (i == 2) _aquarium.Open();
-                    if (i == 3) _shop.Open();
-                    if (i == 4) _profile.Open();
+                    if (i == 3) _expedition.Open();
+                    if (i == 4) _shop.Open();
+                    if (i == 5) _profile.Open();
                 }
             }
         }
@@ -253,6 +259,7 @@ namespace FishingIdle.Game.UI
             _profile.Close();
             _map.Close();
             _shop.Close();
+            _expedition.Close();
         }
 
         private void DrawPlayerCard(UiSkin skin)

@@ -48,6 +48,20 @@ namespace FishingIdle.GameService.Fishing
         }
 
         /// <summary>
+        /// A fish found away from the rod (an Expedition): any rarity the map has, no rod bonuses.
+        /// </summary>
+        public static RolledCatch RollFound(GameConfig config, MapConfig map, Rng rng)
+        {
+            var anyRod = new RodConfig
+            {
+                Id = "expedition",
+                CanCatchRarities = map.AvailableRarities,
+                Bonuses = new RodBonusesConfig(),
+            };
+            return Roll(config, map, anyRod, 1, rng);
+        }
+
+        /// <summary>
         /// Species by catch weight, restricted to rarities both the map and the rod allow. The rod's
         /// rarity efficiency scales the weight of non-common species only; it never adds a rarity.
         /// </summary>

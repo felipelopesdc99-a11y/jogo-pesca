@@ -268,6 +268,19 @@ namespace FishingIdle.GameService.Fishing
             return true;
         }
 
+        /// <summary>
+        /// Puts a fish found on an Expedition in the Fishing Box. Same records and flags as a catch,
+        /// but no Fisher XP and no Shells (GDD section 32).
+        /// </summary>
+        internal CatchView AddFoundCatch(RolledCatch rolled, long atMs)
+        {
+            rolled.FisherXp = 0;
+            rolled.Shells = 0;
+            var update = new FishingUpdate();
+            ApplyCatch(rolled, atMs, update, false);
+            return update.NewCatches[0];
+        }
+
         /// <summary>Starts a fresh cycle on the new map after arriving.</summary>
         internal void ResumeAfterTravel(long now)
         {
@@ -389,7 +402,7 @@ namespace FishingIdle.GameService.Fishing
             }
         }
 
-        private void ApplyCatch(RolledCatch rolled, long caughtAtMs, FishingUpdate update)
+        private void ApplyCatch(RolledCatch rolled, long caughtAtMs, FishingUpdate update, bool grantXp = true)
         {
             var speciesId = rolled.Species.Id;
             var flags = 0;
@@ -424,7 +437,10 @@ namespace FishingIdle.GameService.Fishing
             Save.Shells += rolled.Shells;
             update.ShellsGained += rolled.Shells;
 
-            AddFisherXp(rolled.FisherXp, update);
+            if (grantXp)
+            {
+                AddFisherXp(rolled.FisherXp, update);
+            }
             update.NewCatches.Add(CatchViews.Create(Config, entry));
         }
 
