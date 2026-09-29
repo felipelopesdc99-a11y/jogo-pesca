@@ -97,7 +97,11 @@ namespace FishingIdle.Game.Scene
             Vector3 hands;
             if (painted != null)
             {
-                FishingScene.Sprite(_body, "Pescador", painted, Vector3.zero, Vector3.one, FishingScene.OrderBoat - 1);
+                // Inside a two-layer hull he sits on the bench, between its back and front; with a
+                // single hull picture he stays behind it.
+                var insideHull = Visual.ArtAssets.Texture("Cena/barco_frente") != null;
+                _body.localPosition = insideHull ? new Vector3(-0.35f, 0.2f, 0f) : _body.localPosition;
+                FishingScene.Sprite(_body, "Pescador", painted, Vector3.zero, Vector3.one, insideHull ? FishingScene.OrderFisherman : FishingScene.OrderBoat - 1);
                 var width = paintedHeight * painted.rect.width / painted.rect.height;
                 hands = new Vector3((0.97f - 0.27f) * width, (0.23f - 0.12f) * paintedHeight, 0f);
             }

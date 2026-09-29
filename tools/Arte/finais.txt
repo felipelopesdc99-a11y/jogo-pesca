@@ -1,5 +1,7 @@
 # Arquivos de arte finais (feitos pelo proprietário). Os geradores de arte provisória não os sobrescrevem.
 Cena/barco.png
+Cena/barco_frente.png
+Cena/barco_fundo.png
 Cena/caixa_de_pesca.png
 Cena/pescador.png
 Cena/retrato.png

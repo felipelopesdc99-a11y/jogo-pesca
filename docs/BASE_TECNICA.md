@@ -269,8 +269,9 @@ Regras:
   - **Margens e reflexos:** as margens (`near_left` / `near_right`) ficam presas às bordas da tela, com
     altura fixa por mapa (`SceneTheme.NearLeftHeight` etc., `ArtAssets.SpriteByHeight`); cada camada de
     terra ganha um reflexo na água, espelhado, achatado, escurecido e ondulando (`Reflect`, `Shimmer`).
-    O pescador pintado segura a vara apoiada no joelho (`FishermanRig`: pivô onde ele senta, mãos
-    medidas na imagem).
+    O pescador pintado senta no banco entre as duas camadas do casco (`barco_fundo` atrás,
+    `barco_frente` na frente, separadas por `processar_pedidos.split_boat`) e segura a vara apoiada no
+    joelho (`FishermanRig`: pivô onde ele senta, mãos medidas na imagem).
   - **Cena em camadas** (`FishingScene.BuildPainted`): céu, montanhas, morros, mata da margem, água e
     os dois cantos, cada camada com 26 unidades de largura e base numa altura fixa em relação ao
     horizonte; cantos presos às bordas da tela pela proporção da câmera. Por cima, o movimento: nuvens

@@ -288,8 +288,55 @@ def fish(folder):
     grid('24', 2, 2, RIO_GRID_2)
 
 
+def split_boat(boat):
+    """Cuts the boat in two layers so the fisherman sits inside it: the far gunwale and the inside
+    of the hull go behind him (barco_fundo), the near side goes in front (barco_frente).
+
+    The top of the near gunwale is found per column (the first bright rim after the dark inside),
+    then smoothed with a curve; the two ends of the boat are all "front".
+    """
+    a = np.asarray(boat).astype(np.float32)
+    lum = 0.3 * a[..., 0] + 0.59 * a[..., 1] + 0.11 * a[..., 2]
+    alpha = a[..., 3]
+    h, w = alpha.shape
+    xs, ys = [], []
+    for x in range(0, w, 4):
+        opaque = np.where(alpha[:, x] > 100)[0]
+        if len(opaque) == 0:
+            continue
+        dark = False
+        for y in range(opaque[0], min(h, opaque[0] + int(0.5 * h))):
+            if lum[y, x] < 80:
+                dark = True
+            elif dark and lum[y, x] > 185:
+                xs.append(x)
+                ys.append(y)
+                break
+    xs, ys = np.array(xs), np.array(ys)
+    keep = np.ones(len(xs), dtype=bool)
+    for _ in range(4):
+        fit_ = np.polyfit(xs[keep], ys[keep], 4)
+        err = ys - np.polyval(fit_, xs)
+        keep = np.abs(err) < max(6.0, 2.5 * float(np.std(err[keep])))
+    rim = np.polyval(fit_, np.arange(w)) - 3  # include the rim's highlight in the front
+    rim[: xs.min()] = 0
+    rim[xs.max() + 1:] = 0
+    rows = np.arange(h)[:, None]
+    front = (rows >= rim[None, :]).astype(np.float32)
+    front = np.asarray(Image.fromarray((front * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2)), dtype=np.float32) / 255.0
+    back_img = a.copy()
+    front_img = a.copy()
+    front_img[..., 3] = alpha * front
+    back_img[..., 3] = alpha * (1 - front)
+    return Image.fromarray(back_img.astype(np.uint8), 'RGBA'), Image.fromarray(front_img.astype(np.uint8), 'RGBA')
+
+
 def props(folder):
-    save(trim(key_out(src(folder, '13'), GREEN)), 'Cena/barco.png')
+    boat = trim(key_out(src(folder, '13'), GREEN))
+    save(boat, 'Cena/barco.png')
+    back, front = split_boat(boat)
+    save(back, 'Cena/barco_fundo.png')
+    save(front, 'Cena/barco_frente.png')
     fisher = trim(key_out(src(folder, '14'), GREEN))
     save(fisher, 'Cena/pescador.png')
     save(fit(key_out(src(folder, '15'), GREEN), (512, 512), 0.0), 'Cena/retrato.png')

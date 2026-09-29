@@ -113,7 +113,7 @@ namespace FishingIdle.Game.Scene
         // Sorting orders, back to front.
         public const int OrderSky = 0, OrderSun = 1, OrderClouds = 2, OrderBirds = 3, OrderFarHills = 4,
             OrderMidHills = 5, OrderTrees = 6, OrderWater = 7, OrderReflection = 8, OrderWaterDetail = 9, OrderDistantFish = 10,
-            OrderBobber = 11, OrderBoat = 12, OrderFisherman = 13, OrderRod = 14, OrderCatchGlow = 20,
+            OrderBobber = 11, OrderBoat = 12, OrderFisherman = 13, OrderBoatFront = 14, OrderRod = 15, OrderCatchGlow = 20,
             OrderCatch = 21, OrderForeground = 30;
 
         private Transform _world;
@@ -581,11 +581,28 @@ namespace FishingIdle.Game.Scene
             ripples.Boat = boat;
             ripples.SortingOrder = OrderWaterDetail;
 
-            Sprite(boat, "Casco", ArtAssets.Sprite("Cena/barco", 3.6f, new Vector2(0.5f, 0.3f)) ?? Art.Boat, Vector3.zero, Vector3.one, OrderBoat);
+            // The hull in two layers (Cena/barco_fundo + barco_frente, cut by processar_pedidos.py): the far
+            // gunwale and the inside behind the fisherman, the near side in front of him, so he sits
+            // inside the boat. Without them, the single picture (or the one drawn from code).
+            var hullBack = ArtAssets.Sprite("Cena/barco_fundo", 3.6f, new Vector2(0.5f, 0.3f));
+            var hullFront = ArtAssets.Sprite("Cena/barco_frente", 3.6f, new Vector2(0.5f, 0.3f));
             var tackle = ArtAssets.Sprite("Cena/caixa_de_pesca", 0.5f, new Vector2(0.5f, 0f));
-            if (tackle != null)
+            if (hullBack != null && hullFront != null)
             {
-                Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.55f, 0.32f, 0f), Vector3.one, OrderBoat - 1);
+                Sprite(boat, "Casco (fundo)", hullBack, Vector3.zero, Vector3.one, OrderBoat);
+                Sprite(boat, "Casco (frente)", hullFront, Vector3.zero, Vector3.one, OrderBoatFront);
+                if (tackle != null)
+                {
+                    Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.95f, 0.22f, 0f), Vector3.one, OrderFisherman);
+                }
+            }
+            else
+            {
+                Sprite(boat, "Casco", ArtAssets.Sprite("Cena/barco", 3.6f, new Vector2(0.5f, 0.3f)) ?? Art.Boat, Vector3.zero, Vector3.one, OrderBoat);
+                if (tackle != null)
+                {
+                    Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.55f, 0.32f, 0f), Vector3.one, OrderBoat - 1);
+                }
             }
 
             // Soft shadow on the water under the hull.

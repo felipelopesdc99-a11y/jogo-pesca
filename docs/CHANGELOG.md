@@ -3,6 +3,14 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.4] — 29/09/2026
+
+### Corrigido
+
+- O pescador aparecia sentado atrás do barco. O barco agora é desenhado em duas camadas (a borda de
+  trás e o interior atrás dele, a lateral da frente na frente), e ele fica sentado no banco, dentro do
+  barco, balançando junto.
+
 ## [0.2.0-m14.3] — 29/09/2026
 
 ### Adicionado

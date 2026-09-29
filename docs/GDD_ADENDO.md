@@ -660,5 +660,6 @@ até 2).
 Os 32 pedidos feitos no ChatGPT (29/09/2026) substituíram a arte provisória: céu, montanhas, morros,
 margens, juncos e nuvens dos dois mapas; os 20 peixes; barco, pescador, retrato e caixa de pesca; 16
 ícones, a moeda e a concha; as duas varas; as quatro Expedições; e as fotos dos mapas. Na cena, o
-pescador fica sentado com as mãos no joelho e a vara apoiada nelas; as margens e montanhas se
+pescador fica sentado no banco, dentro do barco (o casco é desenhado em duas camadas, atrás e na
+frente dele), com as mãos no joelho e a vara apoiada nelas; as margens e montanhas se
 refletem na água, ondulando devagar. O retrato aparece no cartão do pescador e no Perfil.
