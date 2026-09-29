@@ -168,6 +168,12 @@ namespace FishingIdle.Game.Bootstrap
                 });
             }
 
+            // A failure inside the sync stops the game service; nothing more to read this frame.
+            if (!IsRunning)
+            {
+                return;
+            }
+
             Status = Game.Fishing.GetStatus();
             Travel = Game.Maps.GetTravel();
         }

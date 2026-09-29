@@ -346,7 +346,7 @@ namespace FishingIdle.Game.Scene
         /// <summary>The same fish as a texture, for the interface.</summary>
         public static Texture2D FishTexture(string speciesId)
         {
-            if (FishTextures.TryGetValue(speciesId ?? string.Empty, out var cached))
+            if (FishTextures.TryGetValue(speciesId ?? string.Empty, out var cached) && cached != null)
             {
                 return cached;
             }

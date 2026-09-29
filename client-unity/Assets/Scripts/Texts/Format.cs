@@ -52,6 +52,12 @@ namespace FishingIdle.Texts
             return local.ToString("dd'/'MM'/'yyyy HH':'mm", CultureInfo.InvariantCulture);
         }
 
+        /// <summary>"21:55" (24 h).</summary>
+        public static string Time(DateTime local)
+        {
+            return local.ToString("HH':'mm", CultureInfo.InvariantCulture);
+        }
+
         /// <summary>Unix milliseconds (UTC) rendered in the machine's local time zone.</summary>
         public static string DateTimeFromUnixMs(long unixMs)
         {

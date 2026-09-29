@@ -177,7 +177,7 @@ namespace FishingIdle.Editor
             }
         }
 
-        /// <summary>Checks for the files the game does not load yet (Arena, Expedições).</summary>
+        /// <summary>Extra safety checks on top of the game's validation: no negative numbers anywhere in these files.</summary>
         private IEnumerable<string> ValidateOthers()
         {
             foreach (var file in new[] { GameConfigLoader.ArenaFile, GameConfigLoader.ExpeditionsFile, GameConfigLoader.EconomyFile, GameConfigLoader.ArenaBotsFile })

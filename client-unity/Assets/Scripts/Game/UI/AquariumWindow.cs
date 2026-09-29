@@ -425,9 +425,19 @@ namespace FishingIdle.Game.UI
         private void DrawSellDialog(UiSkin skin, float screenWidth, float screenHeight)
         {
             var fish = _selected;
-            var rect = Dialog(skin, screenWidth, screenHeight, 230f);
+            if (fish == null)
+            {
+                _confirmSell = false;
+                return;
+            }
+
+            var rect = Dialog(skin, screenWidth, screenHeight, fish.CardumePosition > 0 ? 262f : 230f);
             GUI.Label(new Rect(rect.x + 28, rect.y + 24, rect.width - 56, 30), GameTexts.Aquarium.SellTitle(fish.SpeciesName), skin.Heading);
             GUI.Label(new Rect(rect.x + 28, rect.y + 64, rect.width - 56, 70), GameTexts.Aquarium.SellBody(Format.Number(fish.SalePriceCoins)), skin.Body);
+            if (fish.CardumePosition > 0)
+            {
+                GUI.Label(new Rect(rect.x + 28, rect.y + 136, rect.width - 56, 24), GameTexts.Aquarium.LeavesCardume(fish.CardumePosition), skin.SmallGold);
+            }
 
             if (GUI.Button(new Rect(rect.x + 28, rect.yMax - 64, 150, 42), GameTexts.Dialogs.Cancel, skin.Button))
             {
@@ -449,6 +459,14 @@ namespace FishingIdle.Game.UI
 
         private void DrawFeedDialog(UiSkin skin, float screenWidth, float screenHeight)
         {
+            // The preview is dropped whenever the box or the Aquarium changes (e.g. a new catch); ask again.
+            _feedPreview = _feedPreview ?? _root.PreviewFeed(_selectedId, _foodBox.ToList(), _foodFish.ToList());
+            if (!_feedPreview.Succeeded)
+            {
+                _confirmFeed = false;
+                return;
+            }
+
             var p = _feedPreview.Value;
             var lines = p.ValuableFood.Concat(p.CardumeFood).Take(6).ToList();
             var rect = Dialog(skin, screenWidth, screenHeight, 210f + lines.Count * 26f + (p.WastedXp > 0 ? 40f : 0f));

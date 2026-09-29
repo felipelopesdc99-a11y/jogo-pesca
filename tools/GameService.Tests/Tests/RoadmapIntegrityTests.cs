@@ -48,7 +48,7 @@ public sealed class RoadmapIntegrityTests
     public void Every_done_task_says_what_was_delivered()
     {
         var undocumented = Tasks(Roadmap)
-            .Where(t => (string)t["status"]! == "DONE" && string.IsNullOrWhiteSpace((string?)t["completion_notes"]))
+            .Where(t => (string)t["status"]! == "DONE" && string.IsNullOrWhiteSpace((string)t["completion_notes"]))
             .Select(t => (string)t["id"]!);
 
         Assert.Empty(undocumented);
@@ -60,7 +60,7 @@ public sealed class RoadmapIntegrityTests
         var roadmap = Roadmap;
         var asked = roadmap["owner_decisions"]!
             .Where(d => (string)d["status"]! == "OPEN")
-            .Select(d => (string?)d["task_id"])
+            .Select(d => (string)d["task_id"])
             .ToHashSet();
 
         var unasked = Tasks(roadmap)

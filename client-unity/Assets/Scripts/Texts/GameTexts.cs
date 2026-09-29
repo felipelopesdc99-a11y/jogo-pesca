@@ -142,6 +142,7 @@ namespace FishingIdle.Texts
             public static string Wasted(string xp) => xp + " XP passam do nível máximo e serão perdidos.";
             public static string SellTitle(string species) => "Vender " + species + "?";
             public static string SellBody(string coins) => "Você recebe " + coins + " moedas. O XP investido neste peixe não volta. Esta ação não pode ser desfeita.";
+            public static string LeavesCardume(int position) => "Este peixe está no Cardume (posição " + position + ") e sairá dele.";
         }
 
         // ------------------------------------------------------------------ offline return (GDD section 10)
@@ -699,6 +700,9 @@ namespace FishingIdle.Texts
             public static string PoolUnknownSpecies(string map, string species) => "maps.json: o mapa \"" + map + "\" lista a espécie \"" + (species ?? "") + "\", que não existe em fish_catalog.json.";
             public static string PoolRarityNotAvailable(string map, string species, string rarity) => "maps.json: o mapa \"" + map + "\" tem \"" + species + "\" (raridade \"" + rarity + "\"), mas essa raridade não está em available_rarities do mapa.";
             public static string ChanceOutOfRange(string file, string what) => file + ": \"" + what + "\" é uma chance e precisa estar entre 0 e 1.";
+            public static string TargetPriority(int size) => "arena.json: \"formation.target_priority\" precisa ter cada posição do Cardume (1 a " + size + ") exatamente uma vez.";
+            public static string MapRodCatchesNothing(string map, string rod) => "maps.json / rods.json: com a vara \"" + rod + "\" o mapa \"" + map + "\" não teria nenhum peixe para pescar (nenhuma raridade em comum). Ajuste o pool do mapa ou as raridades da vara.";
+            public static string UnknownRodRarity(string rod, string rarity) => "rods.json: a vara \"" + rod + "\" cita a raridade \"" + rarity + "\", que não existe em progression.json.";
             public static string BadIntRange(string file, string what) => file + ": \"" + what + "\" precisa ter mínimo ≥ 0 e máximo ≥ mínimo.";
         }
 

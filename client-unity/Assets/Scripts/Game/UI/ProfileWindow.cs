@@ -54,8 +54,15 @@ namespace FishingIdle.Game.UI
             _dirty = true;
         }
 
+        /// <summary>Closes the rod confirmation first, then the window.</summary>
         public void Close()
         {
+            if (_pendingRod != null)
+            {
+                _pendingRod = null;
+                return;
+            }
+
             IsOpen = false;
         }
 

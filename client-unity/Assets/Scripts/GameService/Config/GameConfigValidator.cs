@@ -315,6 +315,13 @@ namespace FishingIdle.GameService.Config
                     {
                         errors.Add(V.Missing(GameConfigLoader.RodsFile, rod.Id + ".can_catch_rarities"));
                     }
+                    else
+                    {
+                        foreach (var rarity in rod.CanCatchRarities.Where(r => !rarityIds.Contains(r ?? string.Empty)))
+                        {
+                            errors.Add(V.UnknownRodRarity(rod.Id, rarity));
+                        }
+                    }
 
                     if (rod.Acquisition == null)
                     {
@@ -354,6 +361,26 @@ namespace FishingIdle.GameService.Config
                     else if (rod.Bonuses != null && (rod.Bonuses.RarityEfficiency < 0 || rod.Bonuses.SizeQuality < 0 || rod.Bonuses.ShellYield < 0))
                     {
                         errors.Add(V.NegativeValue(GameConfigLoader.RodsFile, rod.Id + ".bonuses"));
+                    }
+                }
+            }
+
+            // ---- maps × rods: every rod allowed on a map must have something to catch there, or fishing
+            // would have no species to draw from (the game would stop with an error).
+            if (maps.Maps != null && rods.Rods != null)
+            {
+                foreach (var map in maps.Maps.Where(m => m.FishPool != null))
+                {
+                    foreach (var rod in rods.Rods.Where(r => r.Tier >= map.MinimumRodTier && r.CanCatchRarities != null))
+                    {
+                        var catchable = map.FishPool.Any(e => e.CatchWeight > 0
+                            && speciesById.TryGetValue(e.SpeciesId ?? string.Empty, out var s)
+                            && map.AvailableRarities != null && map.AvailableRarities.Contains(s.Rarity)
+                            && rod.CanCatchRarities.Contains(s.Rarity));
+                        if (!catchable)
+                        {
+                            errors.Add(V.MapRodCatchesNothing(map.Id, rod.Id));
+                        }
                     }
                 }
             }
@@ -423,6 +450,24 @@ namespace FishingIdle.GameService.Config
             else if (weights.HpDivisor <= 0 || weights.Attack < 0 || weights.Defense < 0 || weights.Speed < 0 || arena.CardumeStrength.DisplayScale <= 0)
             {
                 errors.Add(V.AtLeast(GameConfigLoader.ArenaFile, "cardume_strength (pesos e escala)", 0));
+            }
+
+            var formation = arena.Formation;
+            if (formation?.TargetPriority == null || cardume == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ArenaFile, "formation.target_priority"));
+            }
+            else if (formation.TargetPriority.Count != cardume.MaxFish
+                     || formation.TargetPriority.Distinct().Count() != cardume.MaxFish
+                     || formation.TargetPriority.Any(p => p < 1 || p > cardume.MaxFish))
+            {
+                // Every Cardume position exactly once, or a battle could target an empty slot.
+                errors.Add(V.TargetPriority(cardume.MaxFish));
+            }
+
+            if (cardume != null && cardume.MaxFish > 6)
+            {
+                errors.Add(V.BadIntRange(GameConfigLoader.ArenaFile, "cardume.max_fish (no máximo 6)"));
             }
 
             // ---- arena.json (Arena rules, Milestone 7)

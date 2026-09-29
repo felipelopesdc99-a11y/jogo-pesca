@@ -151,5 +151,5 @@ Tempo médio até um comprador simulado levar um anúncio, pelo preço em relaç
 Leilões do jogador (30 leilões reais de 6 h, lance inicial = preço de venda ao NPC):
 
 - Terminaram sem lance: 0 de 30
-- Preço final médio: 1,33× a referência (mín. 1,00×, máx. 1,40×)
+- Preço final médio: 1,34× a referência (mín. 1,00×, máx. 1,40×)
 

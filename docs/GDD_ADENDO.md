@@ -502,3 +502,25 @@ proprietário decidir as metas.
 
 No leilão, o jogador simulado que dá o lance nunca é o próprio vendedor nem quem já tem o maior
 lance.
+
+---
+
+## Revisão geral (após o Milestone 11)
+
+### A-063 · Pesca depois de uma viagem com o jogo fechado
+**Seção do GDD:** 10, 18 · **Situação:** Em vigor
+
+Se a pesca estava ligada ao partir, ela volta a contar a partir do momento em que o barco **chega**,
+mesmo com o jogo fechado: o tempo entre a chegada e a volta do jogador vira pesca offline (1 captura
+por minuto, até 24 h), como qualquer outro tempo fora do jogo.
+
+### A-064 · Trocar de vara durante a viagem
+**Seção do GDD:** 18, 19 · **Situação:** Em vigor
+
+Durante a viagem, só dá para equipar uma vara que sirva tanto no mapa de onde o barco saiu quanto no
+de destino. Assim ninguém chega a um mapa com uma vara que ele não aceita.
+
+### A-065 · Vender um peixe do Cardume pelo Aquário
+**Seção do GDD:** 12, 23 · **Situação:** Em vigor
+
+A confirmação de venda avisa, em destaque, quando o peixe está no Cardume e vai sair dele.

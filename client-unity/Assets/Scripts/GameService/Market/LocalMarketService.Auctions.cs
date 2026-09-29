@@ -32,7 +32,7 @@ namespace FishingIdle.GameService.Market
 
         public AuctionsView GetAuctions()
         {
-            Settle();
+            SettleAndPersist();
             var rules = Config.Auction;
             var view = new AuctionsView
             {

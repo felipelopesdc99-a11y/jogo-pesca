@@ -103,6 +103,7 @@ namespace FishingIdle.Game.UI
                 {
                     _filter = filter.Key;
                     ApplyFilter();
+                    _scroll = Vector2.zero;
                 }
 
                 fx += w + 8;
@@ -300,6 +301,7 @@ namespace FishingIdle.Game.UI
                 _pendingConfirmation = null;
                 _filter = FilterReview;
                 ApplyFilter();
+                _scroll = Vector2.zero;
             }
 
             if (GUI.Button(new Rect(rect.x + 228, buttonsY, 150, 42), GameTexts.Dialogs.Cancel, skin.Button))
@@ -366,19 +368,19 @@ namespace FishingIdle.Game.UI
             {
                 query = query.Where(c => c.IsProtected && _selected.Contains(c.CatchId));
             }
-            else if (_filter.StartsWith("rarity:"))
+            else if (_filter.StartsWith("rarity:", System.StringComparison.Ordinal))
             {
                 var id = _filter.Substring("rarity:".Length);
                 query = query.Where(c => c.RarityId == id);
             }
-            else if (_filter.StartsWith("size:"))
+            else if (_filter.StartsWith("size:", System.StringComparison.Ordinal))
             {
                 var id = _filter.Substring("size:".Length);
                 query = query.Where(c => c.SizeCategoryId == id);
             }
 
+            // The scroll position is kept: new catches arriving must not throw the player back to the top.
             _visible = query.ToList();
-            _scroll = Vector2.zero;
         }
     }
 }

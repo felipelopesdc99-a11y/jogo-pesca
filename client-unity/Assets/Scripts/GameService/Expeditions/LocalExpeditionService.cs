@@ -56,6 +56,7 @@ namespace FishingIdle.GameService.Expeditions
     {
         public long CardumeStrength { get; internal set; }
         public int CardumeFilled { get; internal set; }
+        public int CardumeSize { get; internal set; }
         public ActiveExpeditionView Active { get; internal set; }
         public List<ExpeditionOfferView> Expeditions { get; } = new List<ExpeditionOfferView>();
     }
@@ -102,7 +103,7 @@ namespace FishingIdle.GameService.Expeditions
         public ExpeditionsView GetExpeditions()
         {
             var cardume = _cardume.GetCardume();
-            var view = new ExpeditionsView { CardumeStrength = cardume.Strength, CardumeFilled = cardume.Filled, Active = Active() };
+            var view = new ExpeditionsView { CardumeStrength = cardume.Strength, CardumeFilled = cardume.Filled, CardumeSize = cardume.Size, Active = Active() };
             foreach (var e in Config.Expeditions.Expeditions)
             {
                 var efficiency = ExpeditionRules.Efficiency(Config, cardume.Strength, e.RecommendedStrength);

@@ -11,7 +11,8 @@ Painel de Desenvolvimento. Não precisa de servidor nem de internet.
 4. Na primeira abertura, o projeto se configura sozinho: cria e abre a cena
    `Assets/Scenes/Principal.unity`, e define nome do produto, janela redimensionável e "rodar em
    segundo plano" (para a pesca continuar com a janela sem foco).
-5. Aperte **Play** e clique em **Iniciar pesca**.
+5. Aperte **Play** e siga o tutorial (a Vara Inicial é pega de graça na **Loja**; depois,
+   **Iniciar pesca**).
 
 Depois da primeira abertura, versione os arquivos que o Unity gerou: `ProjectSettings/`, os arquivos
 `.meta` e `Assets/Scenes/`. As pastas `Library/`, `Temp/`, `Logs/` e `UserSettings/` ficam de fora

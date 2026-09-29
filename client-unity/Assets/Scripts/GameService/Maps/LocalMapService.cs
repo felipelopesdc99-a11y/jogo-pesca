@@ -182,7 +182,10 @@ namespace FishingIdle.GameService.Maps
             Save.Travel = new TravelState();
             if (resume)
             {
-                _fishing.ResumeAfterTravel(now);
+                // Fishing restarts at the moment of arrival, not now: if the game was closed after the
+                // boat arrived, that time is credited as offline fishing by the next sync.
+                _fishing.ResumeAfterTravel(Math.Min(now, t.ArrivesAtMs));
+                _fishing.Sync();
             }
 
             _session.Persist();

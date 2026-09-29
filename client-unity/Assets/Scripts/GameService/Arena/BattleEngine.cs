@@ -90,7 +90,13 @@ namespace FishingIdle.GameService.Arena
 
                 time = best;
                 var enemy = 1 - side;
-                var target = priority.Select(p => p - 1).FirstOrDefault(i => i >= 0 && i < 6 && hp[enemy][i] > 0);
+                var target = priority.Select(p => p - 1).Where(i => i >= 0 && i < 6 && hp[enemy][i] > 0).DefaultIfEmpty(-1).First();
+                if (target < 0)
+                {
+                    // A priority list that skips positions must never make a fish attack an empty slot.
+                    target = Array.FindIndex(hp[enemy], h => h > 0);
+                }
+
                 var attacker = teams[side][index].Stats;
                 var defender = teams[enemy][target].Stats;
 

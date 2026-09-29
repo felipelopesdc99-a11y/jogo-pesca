@@ -200,8 +200,10 @@ namespace FishingIdle.GameService.Profile
                 return ServiceResult<RodItemView>.Fail(ServiceError.ItemNotFound);
             }
 
+            // During a trip the rod must also be allowed where the boat is going.
             Config.TryGetMap(Save.CurrentMapId, out var map);
-            if (map != null && rod.Tier < map.MinimumRodTier)
+            Config.TryGetMap(Save.Travel.Active ? Save.Travel.ToMapId : null, out var destination);
+            if ((map != null && rod.Tier < map.MinimumRodTier) || (destination != null && rod.Tier < destination.MinimumRodTier))
             {
                 return ServiceResult<RodItemView>.Fail(ServiceError.RodNotAllowedOnMap);
             }

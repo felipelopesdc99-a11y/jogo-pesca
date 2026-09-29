@@ -55,7 +55,7 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.Label(new Rect(area.x, area.y, 400, 22), GameTexts.Expedition.YourStrength, skin.SmallMuted);
-            GUI.Label(new Rect(area.x, area.y + 20, 400, 30), Format.Number(_view.CardumeStrength) + "  ·  " + GameTexts.Cardume.Filled(_view.CardumeFilled, 6), skin.Number);
+            GUI.Label(new Rect(area.x, area.y + 20, 400, 30), Format.Number(_view.CardumeStrength) + "  ·  " + GameTexts.Cardume.Filled(_view.CardumeFilled, _view.CardumeSize), skin.Number);
 
             var top = area.y + 64;
             var active = _view.Active;

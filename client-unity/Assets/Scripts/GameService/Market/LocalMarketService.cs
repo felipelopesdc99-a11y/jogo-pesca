@@ -64,7 +64,7 @@ namespace FishingIdle.GameService.Market
 
         public MarketView GetMarket()
         {
-            Settle();
+            SettleAndPersist();
             var view = new MarketView
             {
                 Coins = Save.Coins,
@@ -84,7 +84,7 @@ namespace FishingIdle.GameService.Market
 
         public List<ListingView> Search(MarketQuery query)
         {
-            Settle();
+            SettleAndPersist();
             query = query ?? new MarketQuery();
             var results = State.BotListings.Select(l => ToView(l, false)).Where(v => Matches(v, query));
             switch (query.Sort)
@@ -311,6 +311,15 @@ namespace FishingIdle.GameService.Market
         }
 
         // ------------------------------------------------------------------ simulation
+
+        /// <summary>For read-only requests: whatever the simulated traders did is written right away.</summary>
+        private void SettleAndPersist()
+        {
+            if (Settle())
+            {
+                _session.Persist();
+            }
+        }
 
         /// <summary>Brings the simulated traders up to the present. Returns whether anything changed.</summary>
         private bool Settle()

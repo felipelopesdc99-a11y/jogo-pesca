@@ -3,6 +3,39 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m11.2] — 29/09/2026
+
+Revisão geral do projeto, a pedido do proprietário. Nenhum número do balanceamento mudou.
+
+### Corrigido
+
+- **Pesca offline perdida depois de uma viagem:** se o jogo fosse fechado durante a viagem, o tempo
+  entre a chegada do barco e a volta do jogador não virava pesca offline. Agora vira.
+- **Vara fraca demais no destino:** durante a viagem dava para equipar uma vara que não serve para o
+  mapa de destino. Agora isso é recusado.
+- **Tela de alimentar:** a janela de confirmação podia travar quando um peixe novo chegava enquanto
+  ela estava aberta.
+- **Caixa de Pesca:** a lista voltava para o topo a cada peixe novo, atrapalhando quem estava
+  rolando e selecionando.
+- **Perfil:** apertar Esc com a confirmação de vender/destruir vara aberta fechava a janela e deixava
+  a confirmação "presa" para a próxima vez.
+- **Avisos e Opções:** o painel continuava aberto por cima de uma janela e roubava os cliques dela.
+- **Mercado e Leilão:** o que os jogadores simulados fazem enquanto a tela está aberta agora é gravado
+  na hora.
+- **Combate:** uma lista de prioridade de alvos incompleta em `arena.json` poderia fazer um peixe
+  atacar uma vaga vazia; o combate agora se protege disso e o balanceamento recusa essa lista.
+- **Balanceamento:** agora é recusado um mapa onde uma vara permitida não teria nenhum peixe para
+  pescar (antes isso parava o jogo com erro), e uma vara que cita uma raridade inexistente.
+- Se o serviço de jogo parasse com um erro, o `GameRoot` ainda tentava ler o estado no mesmo quadro.
+- Sons e imagens gerados pelo jogo continuam válidos ao apertar Play de novo no Editor.
+- Hora das notificações no formato 24 h pela função padrão; a janela de Expedição não fixa mais "6"
+  como tamanho do Cardume.
+
+### Mudado
+
+- A confirmação de venda de um peixe do Aquário avisa quando ele está no Cardume.
+- `README.md` e `client-unity/README.md` atualizados: situação atual e o começo com o tutorial.
+
 ## [0.1.0-m11.1] — 29/09/2026
 
 Milestone 11 — Preparação do balanceamento, testes de abuso e correções. Com ele, todos os

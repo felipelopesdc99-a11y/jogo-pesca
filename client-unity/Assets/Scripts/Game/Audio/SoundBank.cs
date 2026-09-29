@@ -13,7 +13,8 @@ namespace FishingIdle.Game.Audio
 
         public static AudioClip For(ToastKind kind)
         {
-            if (!Effects.TryGetValue(kind, out var clip))
+            // "clip == null" also catches a clip Unity destroyed when play mode ended.
+            if (!Effects.TryGetValue(kind, out var clip) || clip == null)
             {
                 clip = Build(kind);
                 Effects[kind] = clip;
@@ -65,6 +66,7 @@ namespace FishingIdle.Game.Audio
             }
 
             var clip = AudioClip.Create(name, length, 1, Rate, false);
+            clip.hideFlags = HideFlags.DontSave;
             clip.SetData(data, 0);
             return clip;
         }
@@ -72,7 +74,7 @@ namespace FishingIdle.Game.Audio
         /// <summary>Six seconds of gentle water: filtered noise with slow swells, looping without a seam.</summary>
         public static AudioClip WaterAmbience()
         {
-            if (_water != null)
+            if (_water != null && _water)
             {
                 return _water;
             }
@@ -101,6 +103,7 @@ namespace FishingIdle.Game.Audio
             }
 
             _water = AudioClip.Create("Água", length - fade, 1, Rate, false);
+            _water.hideFlags = HideFlags.DontSave;
             var trimmed = new float[length - fade];
             System.Array.Copy(data, trimmed, trimmed.Length);
             _water.SetData(trimmed, 0);

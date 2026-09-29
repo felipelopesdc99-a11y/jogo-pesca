@@ -324,12 +324,16 @@ namespace FishingIdle.Game.UI
         {
             while (_aquarium.IsOpen) _aquarium.Close();
             while (_box.IsOpen) _box.Close();
-            _profile.Close();
+            while (_profile.IsOpen) _profile.Close();
             _map.Close();
             _shop.Close();
             _expedition.Close();
             while (_arena.IsOpen) _arena.Close();
             while (_market.IsOpen) _market.Close();
+
+            // A panel left open would sit on top of the window and catch its clicks.
+            _showNotifications = false;
+            _showSettings = false;
         }
 
         private void DrawPlayerCard(UiSkin skin)
@@ -645,7 +649,7 @@ namespace FishingIdle.Game.UI
                         textX = panel.x + 86;
                     }
 
-                    GUI.Label(new Rect(textX, y, 60, 18), entry.At.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture), skin.SmallMuted);
+                    GUI.Label(new Rect(textX, y, 60, 18), Format.Time(entry.At), skin.SmallMuted);
                     GUI.Label(new Rect(textX, y + 18, panel.xMax - textX - 16, 36), entry.Text, entry.Kind == ToastKind.Warning ? skin.SmallGold : skin.Small);
                     y += 58;
                 }

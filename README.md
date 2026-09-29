@@ -2,10 +2,11 @@
 
 Um jogo idle 2.5D relaxante de pesca e coleção, feito em **Unity 6.3 LTS + C#**.
 
-**Situação atual: MVP local jogável — Milestones 0 e 1.** O jogo roda inteiro no seu PC, sem
-servidor, sem internet e sem nenhum serviço pago. Você abre o projeto no Unity, aperta Play e pesca:
-o pescador arremessa, o peixe morde, aparece na tela, vai para a Caixa de Pesca, e você vende,
-ganha Moedas e sobe de nível.
+**Situação atual: MVP local completo — Milestones 0 a 11.** O jogo roda inteiro no seu PC, sem
+servidor, sem internet e sem nenhum serviço pago. Estão no jogo: pesca online e offline, Caixa de
+Pesca, Aquário, alimentação e níveis dos peixes, Cardume, Perfil e Enciclopédia, dois mapas e viagem,
+varas com melhorias, Expedições, Arena, Mercado, Leilão e um tutorial curto. Os números do
+balanceamento ainda são provisórios (veja `docs/relatorios/SIMULACAO_BALANCEAMENTO.md`).
 
 O progresso do projeto está em **`docs/roadmap.json`** e aparece no Painel de Desenvolvimento,
 dentro do próprio Unity.
@@ -23,10 +24,11 @@ Você só precisa do **Unity**. Nada mais.
 4. Abra o projeto. Se o Unity perguntar se quer atualizar para a versão instalada, responda que sim.
    A primeira abertura demora alguns minutos (o Unity está preparando o projeto).
 5. Aperte **Play** (▶, no topo da tela).
-6. Clique em **Iniciar pesca**.
+6. Siga o tutorial: ele pede para pegar a **Vara Inicial** (grátis, na **Loja**) e depois clicar em
+   **Iniciar pesca**. Dá para pular o tutorial a qualquer momento.
 
 A cada 30 segundos sai um peixe. Clique em **Caixa de Pesca** (canto inferior direito) para ver os
-peixes, selecionar e vender.
+peixes, vender ou guardar no Aquário. Os outros menus ficam no alto da tela.
 
 > Se aparecer algum erro vermelho no **Console** do Unity, copie a mensagem e mande no chat.
 
