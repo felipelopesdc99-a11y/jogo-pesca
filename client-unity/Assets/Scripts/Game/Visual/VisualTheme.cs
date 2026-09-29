@@ -5,7 +5,7 @@ namespace FishingIdle.Game.Visual
 {
     /// <summary>
     /// The central visual theme (Art Bible, section 36): palette, rarity accents, glow intensity and
-    /// the durations of toasts and celebrations, read from Resources/Visual/tema_visual.json.
+    /// the size-category accents, the durations of toasts and celebrations, read from Resources/Visual/tema_visual.json.
     /// </summary>
     /// <remarks>
     /// Presentation only, so it lives with the client and not in /config. Every colour the
@@ -47,12 +47,19 @@ namespace FishingIdle.Game.Visual
 
         private RarityColor[] _rarities =
         {
-            new RarityColor { id = "common", color = "#8193A8" },
+            new RarityColor { id = "common", color = "#F2F5F8" },
             new RarityColor { id = "uncommon", color = "#2CCB7F" },
             new RarityColor { id = "rare", color = "#4D8DFF" },
             new RarityColor { id = "epic", color = "#A855F7" },
             new RarityColor { id = "legendary", color = "#F6B93B" },
             new RarityColor { id = "mythic", color = "#EF6B5B" },
+        };
+
+        private RarityColor[] _sizes =
+        {
+            new RarityColor { id = "small", color = "#8FD9A8" },
+            new RarityColor { id = "adult", color = "#B9A6F2" },
+            new RarityColor { id = "large", color = "#FF9F6B" },
         };
 
         /// <summary>The theme in use. Loaded on first access.</summary>
@@ -69,7 +76,26 @@ namespace FishingIdle.Game.Visual
                 }
             }
 
-            return Hex("#8193A8");
+            return Hex("#F2F5F8");
+        }
+
+        /// <summary>Accent colour of a size category id; Excepcional always uses its own gold.</summary>
+        public Color Size(string sizeCategoryId)
+        {
+            if (sizeCategoryId == "exceptional")
+            {
+                return Exceptional;
+            }
+
+            foreach (var s in _sizes)
+            {
+                if (s.id == sizeCategoryId)
+                {
+                    return Hex(s.color);
+                }
+            }
+
+            return TextMuted;
         }
 
         private static VisualTheme Load()
@@ -126,6 +152,11 @@ namespace FishingIdle.Game.Visual
                 _rarities = f.rarities;
             }
 
+            if (f.size_categories != null && f.size_categories.Length > 0)
+            {
+                _sizes = f.size_categories;
+            }
+
             PanelOpacity = Positive(f.panel_opacity, PanelOpacity, 1f);
             OverlayOpacity = Positive(f.overlay_opacity, OverlayOpacity, 1f);
             GlowIntensity = Positive(f.glow_intensity, GlowIntensity, 1f);
@@ -164,6 +195,7 @@ namespace FishingIdle.Game.Visual
         {
             public Palette palette;
             public RarityColor[] rarities;
+            public RarityColor[] size_categories;
             public string exceptional_color;
             public float panel_opacity;
             public float overlay_opacity;

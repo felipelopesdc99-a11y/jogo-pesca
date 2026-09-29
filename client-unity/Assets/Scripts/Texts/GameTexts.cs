@@ -83,8 +83,11 @@ namespace FishingIdle.Texts
             public const string RecordBadge = "RECORDE";
             public const string Value = "Valor";
 
-            // Filters (GDD section 11: one primary filter at a time).
-            public const string FilterAll = "Todos";
+            // Filters: rarity and size are separate groups that combine (addendum A-079).
+            public const string RarityLabel = "Raridade";
+            public const string SizeLabel = "Tamanho";
+            public const string AllRarities = "Todas";
+            public const string AllSizes = "Todos";
 
             public static string Count(int count) => count == 1 ? "1 peixe" : count + " peixes";
             public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : count + " selecionados") + " · " + coins + " moedas";

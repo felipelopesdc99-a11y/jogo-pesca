@@ -3,6 +3,19 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.6] — 29/09/2026
+
+### Mudado
+
+- **Caixa de Pesca com dois filtros:** Raridade (Todas, Comum, Raro) e Tamanho (Todos, Pequeno,
+  Adulto, Grande, Excepcional), que se combinam.
+- **Cores:** Comum branco, Raro azul; Pequeno verde, Adulto lilás, Grande laranja, Excepcional
+  dourado. Aparecem nos filtros e nos cards (o nome do tamanho vem na cor dele).
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M14-T15`).
+
 ## [0.2.0-m14.5] — 29/09/2026
 
 ### Adicionado

@@ -247,9 +247,11 @@ Regras:
   correnteza. Ao chegar a outro mapa (`GameRoot.MapChanged`), a cena é destruída e montada de novo.
 - **Visual "Lago Dourado — Clean Premium"** (V0.2, M14; fonte de verdade: `docs/ART_BIBLE_V0_1.md`):
   - **Tema em dados** (`Visual/VisualTheme`, lê `Resources/Visual/tema_visual.json`): paleta, cores de
-    raridade, cor do Excepcional, opacidades, intensidade do brilho, tempos de aviso, de celebração,
-    do fade das janelas e do contador de moedas. Nenhuma cor fica espalhada nas telas: elas usam
-    `UiSkin` (que lê o tema) e `UiSkin.RarityColor(id)`.
+    raridade, cores das categorias de tamanho, cor do Excepcional, opacidades, intensidade do brilho,
+    tempos de aviso, de celebração, do fade das janelas e do contador de moedas. Nenhuma cor fica
+    espalhada nas telas: elas usam `UiSkin` (que lê o tema), `UiSkin.RarityColor(id)` e
+    `UiSkin.SizeColor(id)`. Filtros coloridos usam `UiSkin.ColorChip` (ponto na cor; fundo e borda
+    na cor quando escolhido).
   - **Arte trocável** (`Visual/ArtAssets`): toda imagem é um arquivo em `Resources/Arte`, carregado
     pelo nome (`ArtAssets.Texture("Peixes/fish_lambari_master")`, `ArtAssets.Sprite(caminho, largura em
     unidades, pivô)`, `ArtAssets.Icon(Icons.X)`). Um arquivo que falta devolve `null` e quem chamou

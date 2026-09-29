@@ -688,3 +688,29 @@ cada animal tem a sua raridade e não repete logo em seguida; as plantas balanç
 que atravessam a tela, quase paradas entre elas; nada novo aparece durante uma celebração ou com
 uma janela aberta. O ritmo do que já existe (peixes saltando, pássaros, libélulas, sombras) passa
 pela mesma regra quando isso for feito.
+
+### A-079 · Dois filtros na Caixa de Pesca e cores de raridade e tamanho
+**Seção do GDD:** 11 · **Situação:** Decidido pelo proprietário (29/09/2026)
+
+Muda a regra "um filtro principal por vez" da seção 11, a pedido do proprietário: a Caixa de Pesca
+tem **dois grupos de filtro separados**, Raridade (Todas · Comum · Raro) e Tamanho (Todos · Pequeno ·
+Adulto · Grande · Excepcional). Um de cada grupo pode estar escolhido ao mesmo tempo e eles se
+combinam (Raro + Grande mostra só os Raros grandes). "Revisar peixes", na confirmação de venda,
+continua mostrando só os peixes valiosos da venda, por cima dos dois filtros.
+
+Cores (primeira definição, ajustáveis em `Resources/Visual/tema_visual.json`):
+
+| | Cor |
+|---|---|
+| Comum | branco |
+| Raro | azul |
+| Pequeno | verde |
+| Adulto | lilás |
+| Grande | laranja |
+| Excepcional | dourado (o mesmo selo com brilho de sempre) |
+
+A cor continua sendo só acento, como manda a Bíblia de Arte: um ponto colorido no filtro (fundo e
+borda na cor quando escolhido), a borda, o selo e a barra do card para a raridade, e o nome do
+tamanho escrito na cor dele no card. As raridades reservadas para depois (Incomum, Épico, Lendário,
+Mítico) têm cores guardadas no tema; se alguma entrar no jogo, as cores de tamanho são revistas para
+não se confundirem.

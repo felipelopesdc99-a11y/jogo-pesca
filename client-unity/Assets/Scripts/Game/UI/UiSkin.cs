@@ -35,9 +35,12 @@ namespace FishingIdle.Game.UI
         /// <summary>The accent colour of a rarity id.</summary>
         public static Color RarityColor(string rarityId) => Theme.Rarity(rarityId);
 
+        /// <summary>The accent colour of a size category id (Excepcional = gold).</summary>
+        public static Color SizeColor(string sizeCategoryId) => Theme.Size(sizeCategoryId);
+
         public GUIStyle Panel, PanelSolid, Card, CardHovered, CardSelected, CardImportant, Shadow, Glow, Outline, Pill, IconTile;
         public GUIStyle Button, ButtonPrimary, ButtonDanger, ButtonReward, Chip, ChipActive, Nav, NavActive;
-        public GUIStyle Title, Heading, Body, BodyBold, Small, SmallBold, SmallMuted, SmallRight, SmallMutedRight, SmallGold, SmallGoldRight, Number, NumberRight, Center, Badge, Display, DisplaySub, PillText;
+        public GUIStyle Title, Heading, Body, BodyBold, ChipText, Small, SmallBold, SmallMuted, SmallRight, SmallMutedRight, SmallGold, SmallGoldRight, Number, NumberRight, Center, Badge, Display, DisplaySub, PillText;
 
         public Texture2D White, Overlay, Coin, Rays;
 
@@ -120,6 +123,9 @@ namespace FishingIdle.Game.UI
             Body = Label(BodyFont, 16, Text);
             BodyBold = Label(BodyBoldFont, 16, Text);
             Small = Label(BodyFont, 13, Text);
+            ChipText = Label(BodyBoldFont, 13, Text);
+            ChipText.alignment = TextAnchor.MiddleCenter;
+            ChipText.wordWrap = false;
             SmallMuted = Label(BodyFont, 13, Muted);
             SmallBold = Label(BodyBoldFont, 13, Text);
             SmallRight = new GUIStyle(Small) { alignment = TextAnchor.UpperRight };
@@ -258,6 +264,41 @@ namespace FishingIdle.Game.UI
             GUI.contentColor = Color.Lerp(color, Color.white, 0.45f);
             GUI.Label(textRect, text, PillText);
             GUI.contentColor = prevContent;
+        }
+
+        /// <summary>
+        /// A filter chip in a category colour (rarity or size): a coloured dot when idle, a tinted fill
+        /// and outline when chosen. Returns true when clicked.
+        /// </summary>
+        public bool ColorChip(Rect rect, string text, Color color, bool active)
+        {
+            var clicked = GUI.Button(rect, GUIContent.none, Chip);
+            var hovered = GUI.enabled && rect.Contains(Event.current.mousePosition);
+            if (active)
+            {
+                GUI.DrawTexture(new Rect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2), White, ScaleMode.StretchToFill, true, 0, new Color(color.r, color.g, color.b, 0.2f), 0, 9);
+                DrawOutline(rect, new Color(color.r, color.g, color.b, 0.95f));
+            }
+            else if (hovered)
+            {
+                DrawOutline(rect, new Color(color.r, color.g, color.b, 0.45f));
+            }
+
+            var dot = 8f;
+            var x = rect.x + 12f;
+            GUI.DrawTexture(new Rect(x, rect.y + (rect.height - dot) / 2f, dot, dot), White, ScaleMode.StretchToFill, true, 0, color, 0, dot / 2f);
+
+            var previous = GUI.contentColor;
+            GUI.contentColor = active ? Color.Lerp(color, Color.white, 0.55f) : hovered ? Text : Muted;
+            GUI.Label(new Rect(x + dot + 2f, rect.y, rect.width - dot - 16f, rect.height), text, ChipText);
+            GUI.contentColor = previous;
+            return clicked;
+        }
+
+        /// <summary>Width a <see cref="ColorChip"/> needs for its text.</summary>
+        public float ColorChipWidth(string text)
+        {
+            return ChipText.CalcSize(new GUIContent(text)).x + 40f;
         }
 
         /// <summary>Width a pill needs for its text (and icon).</summary>

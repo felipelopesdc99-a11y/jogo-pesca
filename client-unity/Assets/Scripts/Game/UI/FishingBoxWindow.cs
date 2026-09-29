@@ -9,7 +9,8 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// The Fishing Box (GDD section 11): visual cards, one primary filter at a time, multi-select,
+    /// The Fishing Box (GDD section 11): visual cards, a rarity filter and a size filter that combine
+    /// (addendum A-079), multi-select,
     /// bulk sale, and a single "Revisar peixes / Confirmar" check when valuable fish are included.
     /// </summary>
     /// <remarks>
@@ -22,15 +23,19 @@ namespace FishingIdle.Game.UI
         private const float CardHeight = 196f;
         private const float Gap = 12f;
 
-        private const string FilterAll = "all";
-        private const string FilterReview = "review";
+        private const float FilterHeight = 32f;
 
         private readonly GameRoot _root;
         private readonly HashSet<long> _selected = new HashSet<long>();
         private IReadOnlyList<CatchView> _catches = new List<CatchView>();
         private List<CatchView> _visible = new List<CatchView>();
-        private List<KeyValuePair<string, string>> _filters = new List<KeyValuePair<string, string>>();
-        private string _filter = FilterAll;
+        private List<KeyValuePair<string, string>> _rarityFilters = new List<KeyValuePair<string, string>>();
+        private List<KeyValuePair<string, string>> _sizeFilters = new List<KeyValuePair<string, string>>();
+
+        // null = every rarity / every size. Review mode shows only the valuable fish of a pending sale.
+        private string _rarityFilter;
+        private string _sizeFilter;
+        private bool _review;
         private Vector2 _scroll;
         private bool _dirty = true;
         private SalePreview _pendingConfirmation;
@@ -48,7 +53,9 @@ namespace FishingIdle.Game.UI
         {
             IsOpen = true;
             _dirty = true;
-            _filter = FilterAll;
+            _rarityFilter = null;
+            _sizeFilter = null;
+            _review = false;
         }
 
         public void Close()
@@ -83,24 +90,37 @@ namespace FishingIdle.Game.UI
                 Close();
             }
 
-            // Filters (one at a time)
-            var fx = panel.x + 28;
-            foreach (var filter in _filters)
-            {
-                var label = new GUIContent(filter.Value);
-                var w = skin.Chip.CalcSize(label).x + 8;
-                if (GUI.Button(new Rect(fx, panel.y + 92, w, 32), label, _filter == filter.Key ? skin.ChipActive : skin.Chip))
-                {
-                    _filter = filter.Key;
-                    ApplyFilter();
-                    _scroll = Vector2.zero;
-                }
+            // Filters: rarity and size are two separate groups, side by side when they fit.
+            var left = panel.x + 28;
+            var y = panel.y + 92;
+            var rarityWidth = FilterGroupWidth(skin, GameTexts.Box.RarityLabel, _rarityFilters);
+            var sizeWidth = FilterGroupWidth(skin, GameTexts.Box.SizeLabel, _sizeFilters);
+            var oneRow = rarityWidth + 36f + sizeWidth <= panel.width - 56f;
 
-                fx += w + 8;
+            var picked = DrawFilterGroup(skin, left, y, GameTexts.Box.RarityLabel, _rarityFilters, _rarityFilter, UiSkin.RarityColor);
+            if (picked != null)
+            {
+                _rarityFilter = picked.Length == 0 ? null : picked;
+                FiltersChanged();
+            }
+
+            var sizeX = oneRow ? left + rarityWidth + 36f : left;
+            var sizeY = oneRow ? y : y + FilterHeight + 10f;
+            if (oneRow)
+            {
+                GUI.DrawTexture(new Rect(sizeX - 18f, y + 4f, 1f, FilterHeight - 8f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.9f), 0, 0);
+            }
+
+            picked = DrawFilterGroup(skin, sizeX, sizeY, GameTexts.Box.SizeLabel, _sizeFilters, _sizeFilter, UiSkin.SizeColor);
+            if (picked != null)
+            {
+                _sizeFilter = picked.Length == 0 ? null : picked;
+                FiltersChanged();
             }
 
             // Grid
-            var gridRect = new Rect(panel.x + 20, panel.y + 140, panel.width - 40, panel.height - 140 - 96);
+            var gridTop = sizeY + FilterHeight + 16f - panel.y;
+            var gridRect = new Rect(panel.x + 20, panel.y + gridTop, panel.width - 40, panel.height - gridTop - 96);
             DrawGrid(skin, gridRect);
 
             // Footer
@@ -198,9 +218,9 @@ namespace FishingIdle.Game.UI
             {
                 _selected.Clear();
                 _preview = null;
-                if (_filter == FilterReview)
+                if (_review)
                 {
-                    _filter = FilterAll;
+                    _review = false;
                     ApplyFilter();
                 }
             }
@@ -264,7 +284,7 @@ namespace FishingIdle.Game.UI
             {
                 // Show exactly the valuable fish in this sale, so the player can deselect any.
                 _pendingConfirmation = null;
-                _filter = FilterReview;
+                _review = true;
                 ApplyFilter();
                 _scroll = Vector2.zero;
             }
@@ -286,10 +306,7 @@ namespace FishingIdle.Game.UI
             if (_root.Sell(_selected.ToList()))
             {
                 _selected.Clear();
-                if (_filter == FilterReview)
-                {
-                    _filter = FilterAll;
-                }
+                _review = false;
             }
 
             Reload();
@@ -308,7 +325,8 @@ namespace FishingIdle.Game.UI
 
         private void BuildFilters()
         {
-            _filters = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(FilterAll, GameTexts.Box.FilterAll) };
+            _rarityFilters = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(string.Empty, GameTexts.Box.AllRarities) };
+            _sizeFilters = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(string.Empty, GameTexts.Box.AllSizes) };
             var config = _root.Game?.Session.Config;
             if (config == null)
             {
@@ -317,31 +335,81 @@ namespace FishingIdle.Game.UI
 
             foreach (var tier in config.Progression.Rarity.Tiers)
             {
-                _filters.Add(new KeyValuePair<string, string>("rarity:" + tier.Id, tier.DisplayName));
+                _rarityFilters.Add(new KeyValuePair<string, string>(tier.Id, tier.DisplayName));
             }
 
             foreach (var category in config.SizeCategories)
             {
-                _filters.Add(new KeyValuePair<string, string>("size:" + category.Id, category.DisplayName));
+                _sizeFilters.Add(new KeyValuePair<string, string>(category.Id, category.DisplayName));
             }
+        }
+
+        private static float FilterGroupWidth(UiSkin skin, string label, List<KeyValuePair<string, string>> filters)
+        {
+            var w = skin.SmallMuted.CalcSize(new GUIContent(label)).x + 12f;
+            foreach (var f in filters)
+            {
+                w += skin.ColorChipWidth(f.Value) + 8f;
+            }
+
+            return w - 8f;
+        }
+
+        /// <summary>
+        /// One labelled row of chips. Returns the id clicked (empty = "Todas"/"Todos"), or null when
+        /// nothing was clicked. "Todas"/"Todos" uses the action turquoise; the others their own colour.
+        /// </summary>
+        private string DrawFilterGroup(UiSkin skin, float x, float y, string label, List<KeyValuePair<string, string>> filters,
+            string current, System.Func<string, Color> colorOf)
+        {
+            var content = new GUIContent(label);
+            var lw = skin.SmallMuted.CalcSize(content).x;
+            GUI.Label(new Rect(x, y + 7f, lw + 4f, 20f), content, skin.SmallMuted);
+            x += lw + 12f;
+
+            string picked = null;
+            foreach (var f in filters)
+            {
+                var all = f.Key.Length == 0;
+                var active = !_review && (all ? current == null : current == f.Key);
+                var w = skin.ColorChipWidth(f.Value);
+                if (skin.ColorChip(new Rect(x, y, w, FilterHeight), f.Value, all ? UiSkin.Accent : colorOf(f.Key), active))
+                {
+                    picked = f.Key;
+                }
+
+                x += w + 8f;
+            }
+
+            return picked;
+        }
+
+        private void FiltersChanged()
+        {
+            _review = false;
+            ApplyFilter();
+            _scroll = Vector2.zero;
         }
 
         private void ApplyFilter()
         {
             IEnumerable<CatchView> query = _catches;
-            if (_filter == FilterReview)
+            if (_review)
             {
                 query = query.Where(c => c.IsProtected && _selected.Contains(c.CatchId));
             }
-            else if (_filter.StartsWith("rarity:", System.StringComparison.Ordinal))
+            else
             {
-                var id = _filter.Substring("rarity:".Length);
-                query = query.Where(c => c.RarityId == id);
-            }
-            else if (_filter.StartsWith("size:", System.StringComparison.Ordinal))
-            {
-                var id = _filter.Substring("size:".Length);
-                query = query.Where(c => c.SizeCategoryId == id);
+                // The two filters combine: e.g. Raro + Grande shows only large rare fish.
+                if (_rarityFilter != null)
+                {
+                    query = query.Where(c => c.RarityId == _rarityFilter);
+                }
+
+                if (_sizeFilter != null)
+                {
+                    query = query.Where(c => c.SizeCategoryId == _sizeFilter);
+                }
             }
 
             // The scroll position is kept: new catches arriving must not throw the player back to the top.

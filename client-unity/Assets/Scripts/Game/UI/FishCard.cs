@@ -34,7 +34,7 @@ namespace FishingIdle.Game.UI
 
     /// <summary>
     /// The official fish card (Art Bible, section 6): the same layout for every rarity, the rarity
-    /// colour only as an accent (border, seal, bar), the size category as a separate seal, and a
+    /// colour only as an accent (border, seal, bar), the size category in its own colour, and a
     /// gold gleam reserved for the Excepcional size. Used by the Fishing Box, Aquarium, Market,
     /// Profile and Encyclopedia.
     /// </summary>
@@ -100,7 +100,7 @@ namespace FishingIdle.Game.UI
             y += 21f;
             if (!string.IsNullOrEmpty(m.Line))
             {
-                GUI.Label(new Rect(x, y, w, 20), m.Line, skin.SmallMuted);
+                DrawLine(skin, new Rect(x, y, w, 20), m);
                 y += 20f;
             }
 
@@ -124,6 +124,30 @@ namespace FishingIdle.Game.UI
             }
 
             return clicked;
+        }
+
+        /// <summary>
+        /// The line under the name. When it ends with the size category ("48,6 cm · Grande"), the
+        /// category is written in its size colour (addendum A-079); the rest stays muted.
+        /// </summary>
+        private static void DrawLine(UiSkin skin, Rect rect, FishCardModel m)
+        {
+            var size = m.SizeCategoryName;
+            if (string.IsNullOrEmpty(size) || string.IsNullOrEmpty(m.SizeCategoryId) || m.Silhouette
+                || m.Line.Length <= size.Length || !m.Line.EndsWith(size, System.StringComparison.Ordinal))
+            {
+                GUI.Label(rect, m.Line, skin.SmallMuted);
+                return;
+            }
+
+            var head = m.Line.Substring(0, m.Line.Length - size.Length);
+            var hw = skin.SmallMuted.CalcSize(new GUIContent(head)).x - skin.SmallMuted.padding.right;
+            GUI.Label(rect, head, skin.SmallMuted);
+
+            var previous = GUI.contentColor;
+            GUI.contentColor = Color.Lerp(UiSkin.SizeColor(m.SizeCategoryId), Color.white, 0.15f);
+            GUI.Label(new Rect(rect.x + hw - skin.SmallBold.padding.left, rect.y, rect.width - hw, rect.height), size, skin.SmallBold);
+            GUI.contentColor = previous;
         }
 
         /// <summary>The gold "EXCEPCIONAL" size seal, with a light sweeping across it.</summary>

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-29T21:01:45Z",
+  "updated_at": "2026-09-29T23:42:16Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -1987,6 +1987,18 @@
             "M14-T20"
           ],
           "updated_at": "2026-09-29T21:01:45Z"
+        },
+        {
+          "id": "M14-T22",
+          "title": "Filtros separados e cores de raridade e tamanho",
+          "subsystem": "client",
+          "description": "A pedido do proprietário: na Caixa de Pesca, o filtro de raridade (Comum/Raro) e o de tamanho (Pequeno/Adulto/Grande/Excepcional) viram dois grupos separados que se combinam, e cada raridade e cada tamanho ganham uma cor.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T02"
+          ],
+          "completion_notes": "Dois grupos de filtro (Raridade: Todas/Comum/Raro; Tamanho: Todos/Pequeno/Adulto/Grande/Excepcional), lado a lado quando cabem, que se combinam (ex.: Raro + Grande). Cores no tema_visual.json: Comum branco, Raro azul; Pequeno verde, Adulto lilás, Grande laranja, Excepcional dourado. Os filtros mostram a cor num ponto e, escolhidos, ficam com fundo e borda nessa cor; o card escreve o nome do tamanho na cor dele. Registrado no GDD_ADENDO (A-079). Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-29T23:42:16Z"
         }
       ]
     }
