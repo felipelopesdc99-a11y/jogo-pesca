@@ -105,6 +105,12 @@ Não construir sistemas fora da lista da V0.1 do GDD "porque seriam úteis". Qua
 realmente faltar, registrar como uma tarefa `NEEDS_OWNER_DECISION` no `docs/roadmap.json` e avisar
 o proprietário — nunca inventar a mecânica.
 
+### V0.2 em andamento
+
+Desde 29/09/2026, tudo que o proprietário pedir entra na **V0.2** (milestones a partir do M13 no
+`docs/roadmap.json`). Os testes da V0.1 pelo proprietário (OD-010 a OD-014) estão em espera. Continua
+valendo: não inventar sistemas; fazer o que foi pedido e registrar o resto como decisão pendente.
+
 ## 5. O painel reflete o repositório
 
 `docs/roadmap.json` é a fonte de verdade do progresso. Uma tarefa vira `DONE` **na mesma mudança que

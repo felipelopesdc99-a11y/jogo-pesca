@@ -61,7 +61,7 @@ client-unity/Assets/
 │   ├── Game/           FishingIdle.Game         Apresentação no Unity
 │   │   ├── Bootstrap/     GameBootstrap (Play em qualquer cena), GameRoot (ponte com o serviço), GamePaths
 │   │   ├── Scene/         Arte provisória por código (Art), cena (FishingScene), pescador (FishermanRig), ambiente
-│   │   ├── Audio/         Áudio provisório gerado por código (SoundBank) e quem toca (GameAudio)
+│   │   ├── Audio/         Sons: quais arquivos (SoundBank), quando tocam (SoundCue) e quem toca (GameAudio)
 │   │   └── UI/            HUD, janelas, avisos e central de notificações, estilos (IMGUI)
 │   ├── Editor/         FishingIdle.Editor       Só no Editor: Painel de Desenvolvimento, setup do projeto, passo de build
 │   └── Core/ Diagnostics/  FishingIdle.Client   Dormente: cliente HTTP e diagnóstico do servidor online (M12)
@@ -253,9 +253,13 @@ Regras:
   aviso; com `notify: true` ele também entra na lista do sino (até 50, só enquanto o jogo está
   aberto). Entram: espécie nova, recorde, Excepcional, subir de nível, Mercado/Leilão, Expedição,
   ataques recebidos na Arena.
-- **Áudio provisório** (`Audio/`): `SoundBank` sintetiza sons curtos por tipo de aviso e um loop de
-  água; `GameAudio` toca um som a cada aviso (`ToastFeed.Pushed`), sem empilhar. Trocar pelo áudio
-  final = trocar o que `SoundBank` devolve.
+- **Áudio** (`Audio/`, V0.2): os sons são arquivos `.wav` em `client-unity/Assets/Resources/Sons`,
+  carregados pelo nome (`SoundBank`). Trocar um som = trocar o arquivo mantendo o nome (um arquivo
+  que falta fica em silêncio). Os arquivos atuais saem de `tools/Audio/gerar_sons.py` (Python com
+  numpy e scipy; sempre iguais). Cada aviso diz qual som faz (`ToastFeed.Push(…, sound:)`, tipo
+  `SoundCue`; sem isso, segue o tipo do aviso); `GameAudio` toca um por quadro, o mais importante, e
+  mantém dois loops de ambiente (mar e brisa) com fade. `Editor/AudioImportSettings` ajusta a
+  importação: ambiente comprimido (Vorbis), efeitos sem compressão.
 - **Preferências de apresentação** (`GameSettings`): som, som ambiente e volume, no `PlayerPrefs` do
   PC. Não entram no save porque não mudam nenhuma regra.
 - **Modo compacto** (Opções → Modo compacto): janela de 480×270 só com a cena, uma linha de status e a

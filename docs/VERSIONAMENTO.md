@@ -25,9 +25,9 @@ O `web/dev-console/package.json` repete a mesma string por exigência do npm. El
 | Parte | Significa |
 |---|---|
 | `0.` | Produto pré-lançamento. A V0.1 não é 1.0. |
-| `<menor>` | A versão do produto: `1` durante toda a V0.1. |
+| `<menor>` | A versão do produto: `1` durante a V0.1, `2` durante a V0.2. |
 | `<correção>` | Correções dentro de uma versão lançada. `0` até a V0.1 sair. |
-| `-m<milestone>` | O milestone do roadmap de onde o build saiu: `m0` a `m12`. |
+| `-m<milestone>` | O milestone do roadmap de onde o build saiu: `m0` a `m12` na V0.1; a V0.2 continua a numeração a partir de `m13`. |
 | `.<build>` | Contador interno de build, zerado quando o milestone muda. |
 
 Exemplos: `0.1.0-m0.1` (primeiro build do Milestone 0), `0.1.0-m7.3` (terceiro build da Arena),

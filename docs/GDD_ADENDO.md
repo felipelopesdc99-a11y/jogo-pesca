@@ -524,3 +524,31 @@ de destino. Assim ninguém chega a um mapa com uma vara que ele não aceita.
 **Seção do GDD:** 12, 23 · **Situação:** Em vigor
 
 A confirmação de venda avisa, em destaque, quando o peixe está no Cardume e vai sair dele.
+
+---
+
+## V0.2 — Milestone 13: Áudio e ambiente
+
+### A-066 · Som de cada momento
+**Seção do GDD:** 8, 39 · **Situação:** Confirmar
+
+| Momento | Som |
+|---|---|
+| Peixe pescado | Respingo curto e uma nota de marimba |
+| Captura rara, Excepcional ou espécie nova | Respingo e um arpejo de sininhos |
+| Recorde pessoal | Duas notas de marimba com brilho |
+| Subir de nível (Pescador ou peixe) | Arpejo subindo com um acorde suave |
+| Moedas (venda) | Tilintar de moedas |
+| Momento importante (Expedição, leilão ganho…) | Dois sininhos |
+| Aviso ou erro | Duas notas graves de marimba |
+| Outros avisos (iniciar pesca…) | Clique bem discreto |
+
+Se vários chegam juntos, toca só o mais importante, nesta ordem: recorde, subir de nível, captura
+rara, momento importante, moedas, peixe pescado, aviso, clique.
+
+### A-067 · Ambiente
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+Mar calmo (ondas a cada 6–9 s) na frente e uma brisa bem baixa atrás, os dois em loop. O mesmo
+ambiente nos dois mapas por enquanto. Entra e sai com fade de 3 s. "Som ambiente" em Opções liga e
+desliga os dois.

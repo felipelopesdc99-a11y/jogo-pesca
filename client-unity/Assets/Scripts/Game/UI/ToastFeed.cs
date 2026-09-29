@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FishingIdle.Game.Audio;
 using UnityEngine;
 
 namespace FishingIdle.Game.UI
@@ -51,11 +52,14 @@ namespace FishingIdle.Game.UI
 
         public int Unread { get; private set; }
 
-        /// <summary>Raised for every toast shown (the audio listens to it).</summary>
-        public event Action<ToastKind> Pushed;
+        /// <summary>Raised for every toast shown, with the sound it should make (the audio listens to it).</summary>
+        public event Action<SoundCue> Pushed;
 
-        /// <summary>Shows a toast. <paramref name="notify"/> also keeps it in the Notification Center.</summary>
-        public void Push(string text, ToastKind kind, Texture2D icon = null, bool notify = false)
+        /// <summary>
+        /// Shows a toast. <paramref name="notify"/> also keeps it in the Notification Center.
+        /// <paramref name="sound"/> picks a specific sound; by default it follows the kind.
+        /// </summary>
+        public void Push(string text, ToastKind kind, Texture2D icon = null, bool notify = false, SoundCue? sound = null)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -87,7 +91,20 @@ namespace FishingIdle.Game.UI
                 Unread++;
             }
 
-            Pushed?.Invoke(kind);
+            Pushed?.Invoke(sound ?? DefaultSound(kind));
+        }
+
+        private static SoundCue DefaultSound(ToastKind kind)
+        {
+            switch (kind)
+            {
+                case ToastKind.Catch: return SoundCue.Catch;
+                case ToastKind.Important: return SoundCue.Important;
+                case ToastKind.Coins: return SoundCue.Coins;
+                case ToastKind.LevelUp: return SoundCue.LevelUp;
+                case ToastKind.Warning: return SoundCue.Warning;
+                default: return SoundCue.Click;
+            }
         }
 
         public void MarkAllRead() => Unread = 0;

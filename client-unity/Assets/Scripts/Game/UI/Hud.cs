@@ -1,3 +1,4 @@
+using FishingIdle.Game.Audio;
 using FishingIdle.Game.Bootstrap;
 using FishingIdle.Game.Scene;
 using System;
@@ -80,19 +81,19 @@ namespace FishingIdle.Game.UI
                 var icon = Art.FishTexture(c.SpeciesId);
                 if (c.IsNewSpecies)
                 {
-                    _root.Toasts.Push(GameTexts.Toasts.NewSpecies(c.SpeciesName), ToastKind.Important, icon, notify: true);
+                    _root.Toasts.Push(GameTexts.Toasts.NewSpecies(c.SpeciesName), ToastKind.Important, icon, notify: true, sound: SoundCue.RareCatch);
                 }
                 else if (c.SizeCategoryId == "exceptional")
                 {
-                    _root.Toasts.Push(GameTexts.Toasts.Exceptional(c.SpeciesName) + " " + size, ToastKind.Important, icon, notify: true);
+                    _root.Toasts.Push(GameTexts.Toasts.Exceptional(c.SpeciesName) + " " + size, ToastKind.Important, icon, notify: true, sound: SoundCue.RareCatch);
                 }
                 else if (c.IsPersonalRecord)
                 {
-                    _root.Toasts.Push(GameTexts.Toasts.PersonalRecord(c.SpeciesName, size), ToastKind.Important, icon, notify: true);
+                    _root.Toasts.Push(GameTexts.Toasts.PersonalRecord(c.SpeciesName, size), ToastKind.Important, icon, notify: true, sound: SoundCue.Record);
                 }
                 else
                 {
-                    _root.Toasts.Push(GameTexts.Toasts.Catch(c.SpeciesName, size, c.SizeCategoryName), ToastKind.Catch, icon);
+                    _root.Toasts.Push(GameTexts.Toasts.Catch(c.SpeciesName, size, c.SizeCategoryName), ToastKind.Catch, icon, sound: c.IsImportant ? SoundCue.RareCatch : SoundCue.Catch);
                 }
             }
 

@@ -407,3 +407,19 @@ precisam da validação e das migrações do save.
 **Rever se.** O áudio final chegar (arquivos em `Assets/Audio`) ou as preferências precisarem ir junto
 com a conta, online.
 
+## TD-025 — Sons como arquivos gerados por script (substitui parte da TD-024)
+
+**Origem.** V0.2, Milestone 13 (29/09/2026): o proprietário achou o som ambiente anterior ruim e pediu
+sons para captura, recorde, subir de nível e um ambiente de mar e vento.
+
+**Decisão.** Os sons deixam de ser sintetizados dentro do jogo e passam a ser arquivos `.wav` em
+`Assets/Resources/Sons`, carregados pelo nome. Os arquivos atuais são gerados por
+`tools/Audio/gerar_sons.py` com uma semente fixa. As preferências de som continuam no `PlayerPrefs`
+(TD-024).
+
+**Por quê.** Com arquivos, qualquer som pode ser trocado por uma gravação sem mexer em código, o som
+pode ser ouvido fora do Unity antes de testar, e a síntese fora do jogo pode ser bem mais cuidadosa
+(filtros, estéreo, loops sem emenda) sem custo na hora de jogar.
+
+**Rever se.** Chegar áudio final (gravado ou comprado): basta substituir os arquivos.
+

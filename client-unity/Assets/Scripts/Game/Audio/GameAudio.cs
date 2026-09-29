@@ -1,37 +1,42 @@
 using System.Collections.Generic;
 using FishingIdle.Game.Bootstrap;
-using FishingIdle.Game.UI;
 using UnityEngine;
 
 namespace FishingIdle.Game.Audio
 {
     /// <summary>
-    /// Placeholder audio (START HERE M10): short sounds synthesised in code for each kind of notice,
-    /// and a soft water ambience. No audio files to import; the real sounds replace these later by
-    /// swapping the clips built in <see cref="SoundBank"/>.
+    /// Plays the game's sounds: a short effect for each notice (catch, rare catch, record, level up,
+    /// coins…) and two calm ambience loops, gentle waves and a soft breeze. The sounds themselves are
+    /// files (see <see cref="SoundBank"/>); the volume and on/off switches are in Opções.
     /// </summary>
     public sealed class GameAudio : MonoBehaviour
     {
         private const float MinGapSeconds = 0.12f;
 
+        // Mix of the ambience layers under the player's volume: the sea in front, the breeze far behind.
+        private const float SeaGain = 0.55f;
+        private const float WindGain = 0.28f;
+        private const float AmbientFadeSeconds = 3f;
+
         private GameRoot _root;
         private AudioSource _effects;
-        private AudioSource _ambient;
-        private readonly Dictionary<ToastKind, float> _lastPlayed = new Dictionary<ToastKind, float>();
+        private AudioSource _sea;
+        private AudioSource _wind;
+        private float _ambientLevel;
+        private SoundCue _pending;
+        private readonly Dictionary<SoundCue, float> _lastPlayed = new Dictionary<SoundCue, float>();
 
         private void Start()
         {
             _root = GetComponent<GameRoot>();
             _effects = gameObject.AddComponent<AudioSource>();
             _effects.playOnAwake = false;
-            _ambient = gameObject.AddComponent<AudioSource>();
-            _ambient.playOnAwake = false;
-            _ambient.loop = true;
-            _ambient.clip = SoundBank.WaterAmbience();
+            _sea = Loop(SoundBank.Sea);
+            _wind = Loop(SoundBank.Wind);
 
             if (_root != null)
             {
-                _root.Toasts.Pushed += OnToast;
+                _root.Toasts.Pushed += Play;
             }
         }
 
@@ -39,39 +44,97 @@ namespace FishingIdle.Game.Audio
         {
             if (_root != null)
             {
-                _root.Toasts.Pushed -= OnToast;
+                _root.Toasts.Pushed -= Play;
             }
+        }
+
+        private AudioSource Loop(string file)
+        {
+            var source = gameObject.AddComponent<AudioSource>();
+            source.playOnAwake = false;
+            source.loop = true;
+            source.clip = SoundBank.Load(file);
+            source.volume = 0f;
+            return source;
         }
 
         private void Update()
         {
-            var ambientWanted = GameSettings.SoundOn && GameSettings.AmbientOn;
-            _ambient.volume = GameSettings.Volume * 0.35f;
-            if (ambientWanted && !_ambient.isPlaying)
+            // The ambience fades in on start and when switched on, and fades out when switched off.
+            var wanted = GameSettings.SoundOn && GameSettings.AmbientOn ? 1f : 0f;
+            _ambientLevel = Mathf.MoveTowards(_ambientLevel, wanted, Time.unscaledDeltaTime / AmbientFadeSeconds);
+            Mix(_sea, SeaGain);
+            Mix(_wind, WindGain);
+        }
+
+        private void Mix(AudioSource source, float gain)
+        {
+            if (source == null || source.clip == null)
             {
-                _ambient.Play();
+                return;
             }
-            else if (!ambientWanted && _ambient.isPlaying)
+
+            source.volume = GameSettings.Volume * gain * _ambientLevel;
+            if (_ambientLevel > 0f && !source.isPlaying)
             {
-                _ambient.Stop();
+                source.Play();
+            }
+            else if (_ambientLevel <= 0f && source.isPlaying)
+            {
+                source.Stop();
             }
         }
 
-        private void OnToast(ToastKind kind)
+        /// <summary>
+        /// Asks for the effect of a notice. Notices that arrive together (a catch that also levels you
+        /// up) play only the most important sound, once.
+        /// </summary>
+        public void Play(SoundCue cue)
         {
-            if (!GameSettings.SoundOn)
+            if (Priority(cue) > Priority(_pending))
+            {
+                _pending = cue;
+            }
+        }
+
+        private void LateUpdate()
+        {
+            var cue = _pending;
+            _pending = SoundCue.None;
+            if (!GameSettings.SoundOn || cue == SoundCue.None)
             {
                 return;
             }
 
-            // A burst of notices plays one sound per kind, not a pile-up.
-            if (_lastPlayed.TryGetValue(kind, out var last) && Time.unscaledTime - last < MinGapSeconds)
+            if (_lastPlayed.TryGetValue(cue, out var last) && Time.unscaledTime - last < MinGapSeconds)
             {
                 return;
             }
 
-            _lastPlayed[kind] = Time.unscaledTime;
-            _effects.PlayOneShot(SoundBank.For(kind), GameSettings.Volume);
+            var clip = SoundBank.For(cue);
+            if (clip == null)
+            {
+                return;
+            }
+
+            _lastPlayed[cue] = Time.unscaledTime;
+            _effects.PlayOneShot(clip, GameSettings.Volume);
+        }
+
+        private static int Priority(SoundCue cue)
+        {
+            switch (cue)
+            {
+                case SoundCue.Record: return 8;
+                case SoundCue.LevelUp: return 7;
+                case SoundCue.RareCatch: return 6;
+                case SoundCue.Important: return 5;
+                case SoundCue.Coins: return 4;
+                case SoundCue.Catch: return 3;
+                case SoundCue.Warning: return 2;
+                case SoundCue.Click: return 1;
+                default: return 0;
+            }
         }
     }
 }

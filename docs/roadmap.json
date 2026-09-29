@@ -1,9 +1,9 @@
 {
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
-  "target_version": "0.1.0",
-  "updated_at": "2026-09-29T01:00:16Z",
-  "current_milestone": "M11",
+  "target_version": "0.2.0",
+  "updated_at": "2026-09-29T01:20:56Z",
+  "current_milestone": "M13",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -11,7 +11,7 @@
     "BLOCKED",
     "NEEDS_OWNER_DECISION"
   ],
-  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR.",
+  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR. Desde 29/09/2026 o trabalho novo faz parte da V0.2 (a partir do M13); os testes da V0.1 pelo proprietário (OD-010 a OD-014) ficaram em espera, a pedido dele.",
   "owner_decisions": [
     {
       "id": "OD-001",
@@ -124,6 +124,14 @@
       "title": "Jogar o MVP completo e decidir quando balancear",
       "detail": "Todos os sistemas do MVP local estão no jogo. Jogue do começo (Painel → Save → resetar) e me diga o que achou. Você pediu para não balancear agora, então nenhum número foi mudado; o relatório docs/relatorios/SIMULACAO_BALANCEAMENTO.md mostra os números atuais e alguns pontos de atenção (por exemplo: batalhas de 8 a 22 s contra a meta de ~60 s; Moedas por hora sobem ~8× no segundo mapa; Expedições rendem ~10% da pesca por hora). Quando quiser balancear, diga as metas (quanto tempo até o Nível 10/20, quanto uma Expedição deve render, etc.).",
       "raised_at": "2026-09-29T01:00:16Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-015",
+      "task_id": "M13-T04",
+      "title": "Ouvir e aprovar os sons novos",
+      "detail": "Aperte Play e pesque um pouco: ouça o mar e a brisa, o som de peixe pescado, de recorde e de subir de nível (também mandei os arquivos no chat para ouvir fora do Unity). Diga o que ficou bom e o que trocar — por exemplo, mais ou menos ondas, brisa mais alta ou mais baixa, notas diferentes. Se preferir sons gravados, dá para trocar os arquivos em client-unity/Assets/Resources/Sons pelo mesmo nome.",
+      "raised_at": "2026-09-29T01:20:56Z",
       "status": "OPEN"
     }
   ],
@@ -1635,6 +1643,63 @@
             "M11-T07"
           ],
           "updated_at": "2026-09-28T22:23:54Z"
+        }
+      ]
+    },
+    {
+      "id": "M13",
+      "title": "V0.2 · Áudio e ambiente",
+      "goal": "Primeiro milestone da V0.2 (pedido do proprietário em 29/09/2026): sons do jogo mais agradáveis — captura, recorde, subir de nível e um ambiente calmo de mar e brisa — como arquivos fáceis de trocar.",
+      "completion_criteria": [
+        "Os sons tocam nos momentos certos e o ambiente é calmo, com aprovação do proprietário."
+      ],
+      "tasks": [
+        {
+          "id": "M13-T01",
+          "title": "Sons do jogo como arquivos trocáveis",
+          "subsystem": "client",
+          "description": "Os sons ficam em Assets/Resources/Sons e o jogo os carrega pelo nome.",
+          "status": "DONE",
+          "dependencies": [
+            "M10-T06"
+          ],
+          "completion_notes": "Dez arquivos .wav em client-unity/Assets/Resources/Sons, gerados por tools/Audio/gerar_sons.py (sempre iguais). Para usar um som gravado, basta trocar o arquivo mantendo o nome. Configuração de importação automática no Unity: ambiente comprimido, efeitos sem compressão. Os sons antigos, gerados dentro do jogo, foram removidos.",
+          "updated_at": "2026-09-29T01:20:56Z"
+        },
+        {
+          "id": "M13-T02",
+          "title": "Ambiente calmo: mar e brisa",
+          "subsystem": "client",
+          "description": "Troca do som ambiente anterior por ondas suaves e uma brisa leve.",
+          "status": "DONE",
+          "dependencies": [
+            "M13-T01"
+          ],
+          "completion_notes": "Dois loops de 40 s sem emenda: mar (ondas a cada 6–9 s que sobem, quebram de leve e recuam, com espuma fina, em estéreo) e brisa (bem baixa, grave, com rajadas lentas). A brisa toca bem atrás do mar. O ambiente entra e sai com fade de 3 s. Liga/desliga e volume continuam em Opções. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T01:20:56Z"
+        },
+        {
+          "id": "M13-T03",
+          "title": "Sons de captura, recorde e subir de nível",
+          "subsystem": "client",
+          "description": "Cada momento tem o seu som.",
+          "status": "DONE",
+          "dependencies": [
+            "M13-T01"
+          ],
+          "completion_notes": "Peixe pescado: respingo curto + nota de marimba. Captura rara, Excepcional ou espécie nova: respingo + arpejo de sininhos. Recorde pessoal: duas notas de marimba com brilho. Subir de nível: arpejo subindo com um acorde suave. Também moedas, aviso, momento importante e um clique discreto. Quando dois avisos chegam juntos (captura que sobe de nível), toca só o mais importante. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T01:20:56Z"
+        },
+        {
+          "id": "M13-T04",
+          "title": "Ouvir e aprovar os sons",
+          "subsystem": "client",
+          "description": "O proprietário ouve os sons no jogo e diz o que trocar.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M13-T03"
+          ],
+          "updated_at": "2026-09-29T01:20:56Z"
         }
       ]
     }

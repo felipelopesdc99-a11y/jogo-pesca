@@ -1,17 +1,17 @@
 {
   "project": "Fishing Idle",
-  "target_version": "0.1.0",
-  "current_milestone": "M11",
+  "target_version": "0.2.0",
+  "current_milestone": "M13",
   "convention": "0.<menor>.<correção>-m<milestone>.<build>  —  veja docs/VERSIONAMENTO.md",
   "components": {
-    "client": "0.1.0-m11.2",
+    "client": "0.2.0-m13.1",
     "server": "0.1.0-m0.4",
     "web": "0.1.0-m0.4"
   },
   "build": {
     "number": 1,
     "channel": "internal-dev",
-    "date": "2026-09-28",
+    "date": "2026-09-29",
     "commit": null
   },
   "downloads": {

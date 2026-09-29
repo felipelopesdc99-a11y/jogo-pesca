@@ -59,6 +59,7 @@ depois (ou clique em *Descartar alterações* antes de salvar).
 | Saber por que algo foi feito de determinado jeito | `docs/DECISOES.md` |
 | O que mudou em cada versão | `docs/CHANGELOG.md` |
 | Mudar um número de balanceamento à mão | `config/README.md` |
+| Trocar um som do jogo | Coloque o novo arquivo em `client-unity/Assets/Resources/Sons` com o mesmo nome |
 | A prioridade atual do projeto | `docs/CLAUDE_START_HERE_V0_1_1.md` |
 
 ---

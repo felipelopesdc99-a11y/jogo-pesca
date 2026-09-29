@@ -3,6 +3,29 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m13.1] — 29/09/2026
+
+Primeira entrega da **V0.2** — Áudio e ambiente. Os testes da V0.1 pelo proprietário ficaram em
+espera, a pedido dele.
+
+### Adicionado
+
+- **Ambiente calmo:** ondas suaves de mar e uma brisa leve (loops de 40 s, sem emenda), entrando
+  com fade.
+- **Sons novos:** peixe pescado, captura rara/Excepcional/espécie nova, recorde pessoal, subir de
+  nível, moedas, aviso, momento importante e um clique discreto.
+- Os sons agora são **arquivos** em `client-unity/Assets/Resources/Sons` (fáceis de trocar por sons
+  gravados) e são gerados por `tools/Audio/gerar_sons.py`.
+
+### Mudado
+
+- O som ambiente antigo (ruído que parecia vento forte) foi substituído.
+- Quando dois avisos chegam ao mesmo tempo, toca só o som mais importante.
+
+### Não verificado
+
+- Os sons ainda não foram ouvidos dentro do Unity (`M13-T04`).
+
 ## [0.1.0-m11.2] — 29/09/2026
 
 Revisão geral do projeto, a pedido do proprietário. Nenhum número do balanceamento mudou.

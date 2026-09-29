@@ -35,12 +35,14 @@ public sealed class RoadmapIntegrityTests
     }
 
     [Fact]
-    public void Milestones_run_from_0_to_12_and_the_current_one_exists()
+    public void Milestones_are_numbered_in_order_from_0_and_the_current_one_exists()
     {
         var roadmap = Roadmap;
         var milestoneIds = roadmap["milestones"]!.Select(m => (string)m["id"]!).ToList();
 
-        Assert.Equal(Enumerable.Range(0, 13).Select(i => "M" + i), milestoneIds);
+        // M0–M12 are V0.1 (M12 deferred); V0.2 continues the numbering from M13.
+        Assert.True(milestoneIds.Count >= 13);
+        Assert.Equal(Enumerable.Range(0, milestoneIds.Count).Select(i => "M" + i), milestoneIds);
         Assert.Contains((string)roadmap["current_milestone"]!, milestoneIds);
     }
 
