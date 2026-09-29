@@ -52,6 +52,8 @@ namespace FishingIdle.GameService.Core
         AlreadyHighestBidder,
         AuctionHasNoBids,
         AuctionEnded,
+        NoRod,
+        TutorialStepMismatch,
     }
 
     /// <summary>

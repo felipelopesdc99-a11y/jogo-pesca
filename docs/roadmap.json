@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.1.0",
-  "updated_at": "2026-09-29T00:34:32Z",
-  "current_milestone": "M9",
+  "updated_at": "2026-09-29T00:43:26Z",
+  "current_milestone": "M10",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -108,6 +108,14 @@
       "title": "Testar o Leilão",
       "detail": "No Mercado, aba Leilão: dê um lance num leilão aberto e veja o valor reservado; crie um leilão seu e espere lances (a cada ~10 minutos pode chegar um). Experimente Encerrar agora. Não bloqueia: eu sigo com o Milestone 10.",
       "raised_at": "2026-09-29T00:34:32Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-013",
+      "task_id": "M10-T08",
+      "title": "Testar o tutorial, os avisos, o som e o modo compacto",
+      "detail": "No Painel de Desenvolvimento → Save, resete o save e aperte Play: siga o tutorial do começo (a Vara Inicial agora é pega na Loja). Depois abra Avisos e Opções (som, volume, modo compacto — este só muda o tamanho da janela num build, não no Editor). Diga se os sons provisórios incomodam. Não bloqueia: eu sigo com o Milestone 11.",
+      "raised_at": "2026-09-29T00:43:26Z",
       "status": "OPEN"
     }
   ],
@@ -1246,57 +1254,97 @@
         {
           "id": "M10-T01",
           "title": "Tutorial curto",
-          "subsystem": "client",
-          "description": "Primeira vara, primeira pesca, Caixa, primeira venda, Cardume, Expedição.",
-          "status": "TODO",
+          "subsystem": "server",
+          "description": "Primeira vara, primeira pesca, Caixa, primeira venda, Aquário, Cardume, Expedição.",
+          "status": "DONE",
           "dependencies": [
             "M9-T05"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Nove passos (GDD seção 40): boas-vindas, pegar a Vara Inicial grátis na Loja, iniciar a pesca, primeira captura, abrir a Caixa de Pesca, vender um peixe, guardar um no Aquário, colocar um no Cardume e conhecer a Expedição. Cada passo termina sozinho quando o jogador faz a ação; boas-vindas, Caixa e Expedição terminam ao ver. Dá para pular a qualquer momento (quem pula recebe a Vara Inicial). O jogador novo começa sem vara. Saves antigos entram com o tutorial concluído. Save versão 9. Testado.",
+          "updated_at": "2026-09-29T00:43:26Z"
         },
         {
           "id": "M10-T02",
-          "title": "Menus superiores completos e card retrátil",
+          "title": "Tela do tutorial",
           "subsystem": "client",
-          "description": "Navegação principal do GDD.",
-          "status": "TODO",
+          "description": "Diálogo de boas-vindas, cartão do passo e destaque do que usar.",
+          "status": "DONE",
           "dependencies": [
             "M10-T01"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Boas-vindas num diálogo com Começar e Pular tutorial; depois, um cartão abaixo do cartão do jogador (ou uma faixa embaixo, quando uma janela está aberta) com o passo, o que fazer e Pular tutorial. O botão ou menu da vez ganha um contorno dourado pulsando (Loja, Iniciar pesca, Caixa de Pesca, Perfil, Expedição). A Loja mostra a Vara Inicial como Grátis / Pegar grátis. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:43:26Z"
         },
         {
           "id": "M10-T03",
-          "title": "Modo compacto / barra de tarefas",
+          "title": "Menus superiores completos e card retrátil",
           "subsystem": "client",
-          "description": "Janela pequena com água, barco e pescador.",
-          "status": "TODO",
+          "description": "Os 8 menus principais, sino de avisos e Opções.",
+          "status": "DONE",
           "dependencies": [
-            "M10-T01"
+            "M8-T05"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Menu de cima com os 8 menus do GDD (Pesca, Mapa, Aquário, Arena, Expedição, Mercado, Loja, Perfil) e, à direita, as Moedas, o sino de Avisos (com contador) e Opções. As Conchas passaram para o cartão do jogador (só quando há alguma), que continua retrátil. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:43:26Z"
         },
         {
           "id": "M10-T04",
-          "title": "Áudio provisório",
+          "title": "Central de notificações",
           "subsystem": "client",
-          "description": "Sons de água, arremesso e captura.",
-          "status": "TODO",
+          "description": "Sino com os últimos avisos relevantes.",
+          "status": "DONE",
           "dependencies": [
-            "M10-T01"
+            "M10-T03"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Lista dos últimos 50 avisos relevantes com hora (espécie nova, recorde, Excepcional, subir de nível, vendas e leilões, lance superado, Expedição concluída, ataques recebidos). Contador de não lidos no sino; Limpar. Não é gravada: some ao fechar o jogo (GDD seção 39). Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:43:26Z"
         },
         {
           "id": "M10-T05",
+          "title": "Modo compacto / barra de tarefas",
+          "subsystem": "client",
+          "description": "Janela pequena só com a cena.",
+          "status": "DONE",
+          "dependencies": [
+            "M10-T03"
+          ],
+          "completion_notes": "Opções → Modo compacto: janela de 480×270 só com a água, o barco e o pescador, uma linha com o estado da pesca e a Caixa, e a última captura por alguns segundos. Expandir volta ao tamanho anterior. Só apresentação: a pesca continua igual. No Editor do Unity o tamanho da janela não muda (só num build). Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:43:26Z"
+        },
+        {
+          "id": "M10-T06",
+          "title": "Áudio provisório",
+          "subsystem": "client",
+          "description": "Sons gerados por código e som ambiente.",
+          "status": "DONE",
+          "dependencies": [
+            "M10-T03"
+          ],
+          "completion_notes": "Sons curtos sintetizados para captura, captura importante, moedas, subir de nível, aviso e clique, e um loop suave de água. Opções: Som, Som ambiente e Volume (guardados no PC, fora do save). Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:43:26Z"
+        },
+        {
+          "id": "M10-T07",
           "title": "Animações e feedback visual melhores",
           "subsystem": "client",
-          "description": "Capturas importantes com mais brilho, transições de menu.",
-          "status": "TODO",
+          "description": "Captura importante com brilho e transição dos menus.",
+          "status": "DONE",
           "dependencies": [
-            "M10-T01"
+            "M10-T03"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "completion_notes": "Captura importante (rara, Excepcional ou espécie nova) agora solta faíscas coloridas além da aura pulsante; as janelas entram com um fade curto. Regras cobertas por testes automáticos; a tela foi checada por compilação, mas ainda não aberta no Editor do Unity.",
+          "updated_at": "2026-09-29T00:43:26Z"
+        },
+        {
+          "id": "M10-T08",
+          "title": "Teste do tutorial e do polimento pelo proprietário",
+          "subsystem": "client",
+          "description": "Jogar o começo com um save novo e experimentar Opções e Avisos.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M10-T07"
+          ],
+          "updated_at": "2026-09-29T00:43:26Z"
         }
       ]
     },

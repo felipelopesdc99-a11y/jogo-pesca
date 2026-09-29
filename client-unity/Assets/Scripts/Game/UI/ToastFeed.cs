@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,19 +23,39 @@ namespace FishingIdle.Game.UI
         public Texture2D Icon;
     }
 
+    /// <summary>An entry of the Notification Center (the bell).</summary>
+    public sealed class NotificationEntry
+    {
+        public string Text;
+        public ToastKind Kind;
+        public DateTime At;
+        public Texture2D Icon;
+    }
+
     /// <summary>
-    /// Non-blocking notifications (GDD section 39). A small bounded list: old entries simply drop
-    /// off, nothing is persisted. Built from authoritative results the client already has; no
-    /// extra request per notification.
+    /// Non-blocking notifications (GDD section 39): short-lived toasts, plus a bounded list of the
+    /// relevant ones for the Notification Center. Nothing is persisted. Built from authoritative
+    /// results the client already has; no extra request per notification.
     /// </summary>
     public sealed class ToastFeed
     {
         private const int MaxVisible = 5;
+        private const int HistoryLimit = 50;
         private readonly List<Toast> _items = new List<Toast>();
+        private readonly List<NotificationEntry> _history = new List<NotificationEntry>();
 
         public IReadOnlyList<Toast> Items => _items;
 
-        public void Push(string text, ToastKind kind, Texture2D icon = null)
+        /// <summary>Most recent first.</summary>
+        public IReadOnlyList<NotificationEntry> History => _history;
+
+        public int Unread { get; private set; }
+
+        /// <summary>Raised for every toast shown (the audio listens to it).</summary>
+        public event Action<ToastKind> Pushed;
+
+        /// <summary>Shows a toast. <paramref name="notify"/> also keeps it in the Notification Center.</summary>
+        public void Push(string text, ToastKind kind, Texture2D icon = null, bool notify = false)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -54,6 +75,27 @@ namespace FishingIdle.Game.UI
             {
                 _items.RemoveAt(0);
             }
+
+            if (notify)
+            {
+                _history.Insert(0, new NotificationEntry { Text = text, Kind = kind, At = DateTime.Now, Icon = icon });
+                if (_history.Count > HistoryLimit)
+                {
+                    _history.RemoveRange(HistoryLimit, _history.Count - HistoryLimit);
+                }
+
+                Unread++;
+            }
+
+            Pushed?.Invoke(kind);
+        }
+
+        public void MarkAllRead() => Unread = 0;
+
+        public void ClearHistory()
+        {
+            _history.Clear();
+            Unread = 0;
         }
 
         /// <summary>Drops expired toasts. Called once per frame by the HUD.</summary>

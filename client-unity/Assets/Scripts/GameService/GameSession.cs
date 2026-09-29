@@ -91,6 +91,8 @@ namespace FishingIdle.GameService
         }
 
         /// <summary>Equips the Starter Rod, adding it to the Inventory if the player does not own one.</summary>
+        internal void EquipStarterRod() => EquipStarterRod(Save, Clock.UtcNowMs);
+
         private void EquipStarterRod(PlayerSave save, long now)
         {
             var starter = save.Inventory.Find(i => i.Kind == InventoryItem.KindRod && i.RodId == Config.StarterRod.Id);
@@ -140,9 +142,7 @@ namespace FishingIdle.GameService
                 RngSeed = Rng.NewSeed(),
                 CurrentMapId = Config.StartingMap.Id,
             };
-            // The tutorial's "claim the Starter Rod" step arrives in Milestone 10; until then
-            // every new player simply starts with it equipped.
-            EquipStarterRod(save, now);
+            // No rod yet: the tutorial has the player claim the free Starter Rod in the Shop (GDD section 40).
             for (var i = 0; i < Config.CardumeSize; i++)
             {
                 save.CardumeSlots.Add(0);
@@ -165,7 +165,8 @@ namespace FishingIdle.GameService
             }
 
             var equipped = Save.EquippedRodItem();
-            if (equipped == null || !Config.TryGetRod(equipped.RodId, out _))
+            var waitingForTutorialRod = Save.EquippedRodItemId == 0 && !Save.Tutorial.Completed;
+            if (!waitingForTutorialRod && (equipped == null || !Config.TryGetRod(equipped.RodId, out _)))
             {
                 _log("Equipped rod is missing from the config; equipping " + Config.StarterRod.Id);
                 EquipStarterRod(Save, Clock.UtcNowMs);

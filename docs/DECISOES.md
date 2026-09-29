@@ -392,3 +392,18 @@ peixe anunciado deixam de ser possíveis por construção, e o limite do Aquári
 
 **Rever se.** O Mercado for para o servidor (Milestone 12).
 
+## TD-024 — Áudio provisório sintetizado e preferências no PlayerPrefs
+
+**Origem.** Milestone 10 (START HERE V0.1.1: "áudio provisório").
+
+**Decisão.** Os sons do MVP são gerados por código na primeira vez que tocam (`SoundBank`), sem
+arquivos de áudio no projeto. Som ligado/desligado, som ambiente e volume ficam no `PlayerPrefs`,
+fora do save.
+
+**Por quê.** Nada para importar nem licenciar agora, e o som final entra trocando só o `SoundBank`.
+Preferências de apresentação não são estado do jogo: não mudam captura, preço nem batalha, então não
+precisam da validação e das migrações do save.
+
+**Rever se.** O áudio final chegar (arquivos em `Assets/Audio`) ou as preferências precisarem ir junto
+com a conta, online.
+

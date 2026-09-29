@@ -1,6 +1,8 @@
 using FishingIdle.Game.Bootstrap;
 using FishingIdle.Game.Scene;
+using System;
 using FishingIdle.GameService.Fishing;
+using FishingIdle.GameService.Tutorial;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -30,6 +32,17 @@ namespace FishingIdle.Game.UI
         private ArenaWindow _arena;
         private MarketWindow _market;
         private bool _cardExpanded = true;
+        private bool _showNotifications;
+        private bool _showSettings;
+        private bool _compact;
+        private int _restoreWidth;
+        private int _restoreHeight;
+        private FullScreenMode _restoreMode;
+        private bool _windowWasOpen;
+        private float _windowOpenedAt;
+        private string _lastCatchText;
+        private float _lastCatchAt;
+        private GUIStyle _outline;
         private float _boxPulseUntil;
         private float _width;
         private float _height;
@@ -61,19 +74,21 @@ namespace FishingIdle.Game.UI
         {
             foreach (var c in update.NewCatches)
             {
+                _lastCatchText = c.SpeciesName + " · " + Format.SizeCm(c.SizeCm);
+                _lastCatchAt = Time.unscaledTime;
                 var size = Format.SizeCm(c.SizeCm);
                 var icon = Art.FishTexture(c.SpeciesId);
                 if (c.IsNewSpecies)
                 {
-                    _root.Toasts.Push(GameTexts.Toasts.NewSpecies(c.SpeciesName), ToastKind.Important, icon);
+                    _root.Toasts.Push(GameTexts.Toasts.NewSpecies(c.SpeciesName), ToastKind.Important, icon, notify: true);
                 }
                 else if (c.SizeCategoryId == "exceptional")
                 {
-                    _root.Toasts.Push(GameTexts.Toasts.Exceptional(c.SpeciesName) + " " + size, ToastKind.Important, icon);
+                    _root.Toasts.Push(GameTexts.Toasts.Exceptional(c.SpeciesName) + " " + size, ToastKind.Important, icon, notify: true);
                 }
                 else if (c.IsPersonalRecord)
                 {
-                    _root.Toasts.Push(GameTexts.Toasts.PersonalRecord(c.SpeciesName, size), ToastKind.Important, icon);
+                    _root.Toasts.Push(GameTexts.Toasts.PersonalRecord(c.SpeciesName, size), ToastKind.Important, icon, notify: true);
                 }
                 else
                 {
@@ -83,7 +98,7 @@ namespace FishingIdle.Game.UI
 
             foreach (var level in update.LevelsReached)
             {
-                _root.Toasts.Push(GameTexts.Toasts.LevelUp(level), ToastKind.LevelUp);
+                _root.Toasts.Push(GameTexts.Toasts.LevelUp(level), ToastKind.LevelUp, notify: true);
             }
 
             if (update.ShellsGained > 0)
@@ -114,9 +129,21 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
+            if (_compact)
+            {
+                DrawCompact(skin);
+                return;
+            }
+
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
             {
-                if (_arena.IsOpen)
+                if (_showNotifications || _showSettings)
+                {
+                    _showNotifications = false;
+                    _showSettings = false;
+                    Event.current.Use();
+                }
+                else if (_arena.IsOpen)
                 {
                     _arena.Close();
                     Event.current.Use();
@@ -160,7 +187,8 @@ namespace FishingIdle.Game.UI
             }
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _root.WelcomeBack != null || _root.ExpeditionResult != null;
+            var welcomeDialog = _root.Tutorial != null && _root.Tutorial.Active && _root.Tutorial.Step == TutorialSteps.Welcome;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _root.WelcomeBack != null || _root.ExpeditionResult != null || welcomeDialog;
             GUI.enabled = !windowOpen;
             DrawTopBar(skin);
             DrawPlayerCard(skin);
@@ -168,6 +196,15 @@ namespace FishingIdle.Game.UI
             DrawBoxButton(skin);
             GUI.enabled = true;
 
+            // Menu transition: a window fades in when the first one opens.
+            if (windowOpen && !_windowWasOpen)
+            {
+                _windowOpenedAt = Time.unscaledTime;
+            }
+
+            _windowWasOpen = windowOpen;
+            var previousColor = GUI.color;
+            GUI.color = new Color(1f, 1f, 1f, Mathf.Clamp01((Time.unscaledTime - _windowOpenedAt) / 0.18f));
             _box.Draw(skin, _width, _height);
             _aquarium.Draw(skin, _width, _height);
             _profile.Draw(skin, _width, _height);
@@ -176,16 +213,19 @@ namespace FishingIdle.Game.UI
             _expedition.Draw(skin, _width, _height);
             _arena.Draw(skin, _width, _height);
             _market.Draw(skin, _width, _height);
+            GUI.color = previousColor;
             GUI.enabled = true;
             if (windowOpen)
             {
                 // The navigation stays usable above the windows (not above the welcome-back summary).
-                GUI.enabled = _root.WelcomeBack == null && _root.ExpeditionResult == null;
+                GUI.enabled = _root.WelcomeBack == null && _root.ExpeditionResult == null && !welcomeDialog;
                 DrawNavigation(skin);
                 GUI.enabled = true;
             }
 
             DrawToasts(skin);
+            DrawTutorial(skin, windowOpen);
+            DrawPanels(skin);
 
             ExpeditionWindow.DrawResult(skin, _root, _width, _height);
             if (WelcomeBackDialog.Draw(skin, _root, _width, _height))
@@ -218,17 +258,27 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
+            // Secondary menu (GDD section 7): notifications bell and settings.
             var x = _width - 24;
-            if (player.Shells > 0)
+            const float settingsWidth = 96f;
+            x -= settingsWidth;
+            if (GUI.Button(new Rect(x, 12, settingsWidth, 40), GameTexts.Hud.SettingsShort, _showSettings ? skin.ChipActive : skin.Chip))
             {
-                var shells = Format.Number(player.Shells);
-                var w = skin.Number.CalcSize(new GUIContent(shells)).x;
-                x -= w;
-                GUI.Label(new Rect(x, 18, w, 30), shells, skin.Number);
-                x -= 90;
-                GUI.Label(new Rect(x, 22, 86, 24), GameTexts.Player.Shells, skin.SmallMuted);
-                x -= 20;
+                _showSettings = !_showSettings;
+                _showNotifications = false;
             }
+
+            var bellLabel = _root.Toasts.Unread > 0 ? GameTexts.Hud.Bell + " · " + _root.Toasts.Unread : GameTexts.Hud.Bell;
+            var bellWidth = skin.Chip.CalcSize(new GUIContent(bellLabel)).x + 16;
+            x -= bellWidth + 8;
+            if (GUI.Button(new Rect(x, 12, bellWidth, 40), bellLabel, _showNotifications ? skin.ChipActive : _root.Toasts.Unread > 0 ? skin.ButtonPrimary : skin.Chip))
+            {
+                _showNotifications = !_showNotifications;
+                _showSettings = false;
+                _root.Toasts.MarkAllRead();
+            }
+
+            x -= 18;
 
             var coins = Format.Number(player.Coins);
             var coinsWidth = skin.Number.CalcSize(new GUIContent(coins)).x;
@@ -300,7 +350,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var card = new Rect(20, 84, 330, 276);
+            var card = new Rect(20, 84, 330, player.Shells > 0 ? 308 : 276);
             GUI.Box(card, GUIContent.none, skin.Panel);
 
             GUI.Label(new Rect(card.x + 18, card.y + 14, 200, 28), player.PlayerName, skin.Heading);
@@ -325,12 +375,17 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(card.x + 18, card.y + 96, card.width - 36, 20), GameTexts.Player.MaxLevel, skin.SmallMuted);
             }
 
-            var rod = player.RodHasLevels ? player.RodName + " (" + GameTexts.Player.LevelShort + " " + player.RodLevel + ")" : player.RodName;
+            var rod = player.RodName == null ? GameTexts.Player.NoRod
+                : player.RodHasLevels ? player.RodName + " (" + GameTexts.Player.LevelShort + " " + player.RodLevel + ")" : player.RodName;
             var y = card.y + 130;
             Row(skin, card, ref y, GameTexts.Player.Rod, rod);
             Row(skin, card, ref y, GameTexts.Player.Map, player.MapName);
             Row(skin, card, ref y, GameTexts.Player.TotalCatches, Format.Number(player.TotalCatches));
             Row(skin, card, ref y, GameTexts.Player.SpeciesDiscovered, player.SpeciesDiscovered.ToString());
+            if (player.Shells > 0)
+            {
+                Row(skin, card, ref y, GameTexts.Player.Shells, Format.Number(player.Shells));
+            }
         }
 
         private static void Row(UiSkin skin, Rect card, ref float y, string label, string value)
@@ -439,6 +494,260 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(textX, rect.y + 10, rect.xMax - textX - 12, 40), toast.Text, style);
                 GUI.color = previous;
                 y += 66;
+            }
+        }
+
+        // ------------------------------------------------------------------ tutorial (GDD section 40)
+
+        private void DrawTutorial(UiSkin skin, bool windowOpen)
+        {
+            var tutorial = _root.Tutorial;
+            if (tutorial == null || !tutorial.Active || _root.WelcomeBack != null || _root.ExpeditionResult != null)
+            {
+                return;
+            }
+
+            // Steps that end by looking: the Fishing Box and the Expedition menu count as seen when opened.
+            if (tutorial.Step == TutorialSteps.OpenBox && _box.IsOpen)
+            {
+                _root.AcknowledgeTutorial(TutorialSteps.OpenBox);
+                return;
+            }
+
+            if (tutorial.Step == TutorialSteps.Expedition && _expedition.IsOpen)
+            {
+                _root.AcknowledgeTutorial(TutorialSteps.Expedition);
+                return;
+            }
+
+            if (tutorial.Step == TutorialSteps.Welcome)
+            {
+                var dialog = WindowFrame.Dialog(skin, _width, _height, 300f, 680f);
+                GUI.Label(new Rect(dialog.x + 28, dialog.y + 24, dialog.width - 56, 32), GameTexts.Tutorial.Title(tutorial.Step), skin.Title);
+                GUI.Label(new Rect(dialog.x + 28, dialog.y + 70, dialog.width - 56, 120), GameTexts.Tutorial.Body(tutorial.Step), skin.Body);
+                if (GUI.Button(new Rect(dialog.xMax - 228, dialog.yMax - 66, 200, 44), GameTexts.Tutorial.Begin, skin.ButtonPrimary))
+                {
+                    _root.AcknowledgeTutorial(TutorialSteps.Welcome);
+                }
+
+                if (GUI.Button(new Rect(dialog.x + 28, dialog.yMax - 66, 200, 44), GameTexts.Tutorial.Skip, skin.Button))
+                {
+                    _root.SkipTutorial();
+                }
+
+                return;
+            }
+
+            // With a window open the hint moves to a strip under it; otherwise it sits under the player card.
+            var rect = windowOpen
+                ? new Rect(_width / 2f - 440, _height - 88, 880, 76)
+                : new Rect(20, _cardExpanded ? 412 : 144, 330, 200);
+            GUI.Box(rect, GUIContent.none, skin.CardImportant);
+            if (windowOpen)
+            {
+                GUI.Label(new Rect(rect.x + 18, rect.y + 10, rect.width - 220, 22), GameTexts.Tutorial.Title(tutorial.Step), skin.BodyBold);
+                GUI.Label(new Rect(rect.x + 18, rect.y + 34, rect.width - 220, 40), GameTexts.Tutorial.Body(tutorial.Step), skin.Small);
+            }
+            else
+            {
+                GUI.Label(new Rect(rect.x + 16, rect.y + 12, rect.width - 32, 18), GameTexts.Tutorial.StepOf(tutorial.StepNumber, tutorial.StepCount), skin.SmallGold);
+                GUI.Label(new Rect(rect.x + 16, rect.y + 32, rect.width - 32, 26), GameTexts.Tutorial.Title(tutorial.Step), skin.BodyBold);
+                GUI.Label(new Rect(rect.x + 16, rect.y + 60, rect.width - 32, 90), GameTexts.Tutorial.Body(tutorial.Step), skin.Small);
+            }
+
+            var buttons = windowOpen ? new Rect(rect.xMax - 190, rect.y + 20, 172, 36) : new Rect(rect.x + 16, rect.yMax - 46, 140, 32);
+            if (tutorial.NeedsAcknowledge && GUI.Button(new Rect(buttons.x, buttons.y, 84, buttons.height), GameTexts.Tutorial.GotIt, skin.ButtonPrimary))
+            {
+                _root.AcknowledgeTutorial(tutorial.Step);
+            }
+
+            var skipRect = windowOpen ? new Rect(rect.xMax - 190 + (tutorial.NeedsAcknowledge ? 92 : 0), rect.y + 20, tutorial.NeedsAcknowledge ? 80 : 172, 36)
+                                      : new Rect(rect.xMax - 16 - 150, rect.yMax - 46, 150, 32);
+            if (GUI.Button(skipRect, GameTexts.Tutorial.Skip, skin.Chip))
+            {
+                _root.SkipTutorial();
+            }
+
+            if (!windowOpen)
+            {
+                DrawTutorialHighlight(tutorial.Step);
+            }
+        }
+
+        /// <summary>A pulsing gold outline around what the current step asks the player to use.</summary>
+        private void DrawTutorialHighlight(string step)
+        {
+            Rect target;
+            switch (step)
+            {
+                case TutorialSteps.ClaimRod: target = NavRect(6); break;
+                case TutorialSteps.Cardume: target = NavRect(7); break;
+                case TutorialSteps.Expedition: target = NavRect(4); break;
+                case TutorialSteps.StartFishing: target = new Rect(_width / 2f - 120, _height - 70, 240, 38); break;
+                case TutorialSteps.OpenBox:
+                case TutorialSteps.SellFish:
+                case TutorialSteps.KeepFish: target = new Rect(_width - 274, _height - 120, 250, 96); break;
+                default: return;
+            }
+
+            if (_outline == null)
+            {
+                _outline = new GUIStyle { border = new RectOffset(12, 12, 12, 12) };
+                _outline.normal.background = Art.RoundedRectTexture(new Color(0f, 0f, 0f, 0f), UiSkin.Gold, 12, 3f);
+            }
+
+            var pulse = 0.55f + 0.45f * Mathf.Sin(Time.unscaledTime * 5f);
+            var previous = GUI.color;
+            GUI.color = new Color(1f, 1f, 1f, pulse);
+            var grow = 6f + 3f * pulse;
+            GUI.Box(new Rect(target.x - grow, target.y - grow, target.width + grow * 2, target.height + grow * 2), GUIContent.none, _outline);
+            GUI.color = previous;
+        }
+
+        private Rect NavRect(int index)
+        {
+            const float navWidth = 112f;
+            var x = _width / 2f - (8 * (navWidth + 10f) - 10f) / 2f;
+            return new Rect(x + index * (navWidth + 10f), 12, navWidth, 40);
+        }
+
+        // ------------------------------------------------------------------ notifications and settings
+
+        private void DrawPanels(UiSkin skin)
+        {
+            if (_showNotifications)
+            {
+                var panel = new Rect(_width - 24 - 470, 70, 470, 560);
+                GUI.Box(panel, GUIContent.none, skin.Panel);
+                GUI.Label(new Rect(panel.x + 20, panel.y + 16, 300, 26), GameTexts.Hud.Notifications, skin.Heading);
+                if (_root.Toasts.History.Count > 0 && GUI.Button(new Rect(panel.xMax - 110, panel.y + 14, 90, 30), GameTexts.Hud.ClearNotifications, skin.Chip))
+                {
+                    _root.Toasts.ClearHistory();
+                }
+
+                var y = panel.y + 58;
+                if (_root.Toasts.History.Count == 0)
+                {
+                    GUI.Label(new Rect(panel.x + 20, y, panel.width - 40, 24), GameTexts.Hud.NoNotifications, skin.SmallMuted);
+                }
+
+                foreach (var entry in _root.Toasts.History)
+                {
+                    if (y + 56 > panel.yMax - 10)
+                    {
+                        break;
+                    }
+
+                    var textX = panel.x + 20;
+                    if (entry.Icon != null)
+                    {
+                        GUI.DrawTexture(new Rect(panel.x + 16, y + 6, 60, 34), entry.Icon, ScaleMode.ScaleToFit, true);
+                        textX = panel.x + 86;
+                    }
+
+                    GUI.Label(new Rect(textX, y, 60, 18), entry.At.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture), skin.SmallMuted);
+                    GUI.Label(new Rect(textX, y + 18, panel.xMax - textX - 16, 36), entry.Text, entry.Kind == ToastKind.Warning ? skin.SmallGold : skin.Small);
+                    y += 58;
+                }
+            }
+
+            if (_showSettings)
+            {
+                var panel = new Rect(_width - 24 - 380, 70, 380, 340);
+                GUI.Box(panel, GUIContent.none, skin.Panel);
+                var x = panel.x + 20;
+                var w = panel.width - 40;
+                var y = panel.y + 16;
+                GUI.Label(new Rect(x, y, w, 26), GameTexts.Hud.Settings, skin.Heading);
+                y += 42;
+
+                GameSettingsToggle(skin, x, ref y, w, GameTexts.Hud.Sound, GameSettings.SoundOn, v => GameSettings.SoundOn = v);
+                GameSettingsToggle(skin, x, ref y, w, GameTexts.Hud.Ambient, GameSettings.AmbientOn, v => GameSettings.AmbientOn = v);
+
+                GUI.Label(new Rect(x, y + 4, 120, 22), GameTexts.Hud.Volume, skin.Body);
+                GameSettings.Volume = GUI.HorizontalSlider(new Rect(x + 130, y + 10, w - 130, 20), GameSettings.Volume, 0f, 1f);
+                y += 44;
+
+                if (GUI.Button(new Rect(x, y, w, 40), GameTexts.Hud.CompactMode, skin.ButtonPrimary))
+                {
+                    EnterCompact();
+                }
+
+                GUI.Label(new Rect(x, y + 46, w, 60), GameTexts.Hud.CompactNote, skin.SmallMuted);
+            }
+        }
+
+        private static void GameSettingsToggle(UiSkin skin, float x, ref float y, float w, string label, bool value, Action<bool> set)
+        {
+            GUI.Label(new Rect(x, y + 6, w - 150, 22), label, skin.Body);
+            if (GUI.Button(new Rect(x + w - 140, y, 140, 34), value ? GameTexts.Hud.On : GameTexts.Hud.Off, value ? skin.ChipActive : skin.Chip))
+            {
+                set(!value);
+            }
+
+            y += 44;
+        }
+
+        // ------------------------------------------------------------------ compact / taskbar mode (GDD section 9)
+
+        private void EnterCompact()
+        {
+            CloseAllWindows();
+            _showSettings = false;
+            _showNotifications = false;
+            _restoreWidth = Screen.width;
+            _restoreHeight = Screen.height;
+            _restoreMode = Screen.fullScreenMode;
+            _compact = true;
+
+            // Pure presentation: the game service keeps fishing exactly the same.
+            Screen.SetResolution(480, 270, FullScreenMode.Windowed);
+        }
+
+        private void ExitCompact()
+        {
+            _compact = false;
+            if (_restoreWidth > 0 && _restoreHeight > 0)
+            {
+                Screen.SetResolution(_restoreWidth, _restoreHeight, _restoreMode);
+            }
+        }
+
+        /// <summary>Only the scene, a status line and the last catch; everything else hidden.</summary>
+        private void DrawCompact(UiSkin skin)
+        {
+            const float virtualHeight = 300f;
+            var scale = Screen.height / virtualHeight;
+            var width = Screen.width / scale;
+            GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(scale, scale, 1f));
+
+            if (GUI.Button(new Rect(width - 108, 8, 100, 30), GameTexts.Hud.Expand, skin.Chip))
+            {
+                ExitCompact();
+                return;
+            }
+
+            var status = _root.Status;
+            var player = _root.Player;
+            var line = status != null && status.IsFishing
+                ? GameTexts.Hud.Fishing + " · " + Format.Countdown((status.NextCatchAtMs - status.NowMs) / 1000.0)
+                : GameTexts.Hud.Stopped;
+            if (player != null)
+            {
+                line += "   " + GameTexts.Hud.BoxCount(player.FishingBoxCount);
+            }
+
+            var bar = new Rect(8, virtualHeight - 38, width - 16, 30);
+            GUI.DrawTexture(bar, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.04f, 0.07f, 0.11f, 0.6f), 0, 8);
+            GUI.Label(new Rect(bar.x + 10, bar.y + 7, bar.width - 20, 20), line, skin.Small);
+
+            if (_lastCatchText != null && Time.unscaledTime - _lastCatchAt < 5f)
+            {
+                var alpha = Mathf.Clamp01(5f - (Time.unscaledTime - _lastCatchAt));
+                var previous = GUI.color;
+                GUI.color = new Color(1f, 1f, 1f, alpha);
+                GUI.Label(new Rect(12, 12, width - 130, 22), _lastCatchText, skin.SmallGold);
+                GUI.color = previous;
             }
         }
 

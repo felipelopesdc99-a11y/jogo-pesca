@@ -347,6 +347,15 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 8;
             }
 
+            if (save.SaveVersion == 8)
+            {
+                // v9 adds the tutorial (Milestone 10). Existing players have already learned the game.
+                save.Tutorial = new TutorialState { Completed = true, Step = "done" };
+                save.SaveVersion = 9;
+            }
+
+            save.Tutorial = save.Tutorial ?? new TutorialState { Completed = true, Step = "done" };
+
             save.Market = save.Market ?? new MarketState();
             save.Market.MyListings = save.Market.MyListings ?? new List<MarketListing>();
             save.Market.BotListings = save.Market.BotListings ?? new List<MarketListing>();
@@ -400,7 +409,8 @@ namespace FishingIdle.GameService.Persistence
                 if (save.Inventory.Any(i => i == null || string.IsNullOrWhiteSpace(i.Kind))) problems.Add("inventory has malformed entries");
                 if (itemIds.Count != itemIds.Distinct().Count()) problems.Add("inventory has duplicate ids");
                 if (itemIds.Any(id => id <= 0 || id >= save.NextItemId)) problems.Add("inventory id outside issued range");
-                if (save.EquippedRodItem() == null) problems.Add("equipped rod is not a rod in the inventory");
+                // 0 = no rod yet (a new player before claiming the free Starter Rod in the tutorial).
+                if (save.EquippedRodItemId != 0 && save.EquippedRodItem() == null) problems.Add("equipped rod is not a rod in the inventory");
             }
 
             if (save.Arena == null) problems.Add("arena missing");

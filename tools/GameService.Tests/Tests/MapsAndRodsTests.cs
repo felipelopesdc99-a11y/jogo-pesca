@@ -35,7 +35,8 @@ public sealed class MapsAndRodsTests
         Assert.Equal(ServiceError.MapLocked, game.Maps.TravelTo("map_02").Error);
         Assert.Equal(ServiceError.AlreadyOnMap, game.Maps.TravelTo("map_01").Error);
         Assert.Equal(ServiceError.RodLocked, game.Shop.BuyRod("rod_01").Error);
-        Assert.Equal(ServiceError.RodNotForSale, game.Shop.BuyRod("rod_00_starter").Error);
+        Assert.Equal(ServiceError.RodAlreadyOwned, game.Shop.BuyRod("rod_00_starter").Error);
+        Assert.Equal(ServiceError.RodNotForSale, game.Shop.BuyRod("rod_99").Error);
     }
 
     [Fact]

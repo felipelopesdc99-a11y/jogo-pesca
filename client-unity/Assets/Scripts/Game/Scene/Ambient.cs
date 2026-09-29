@@ -150,6 +150,53 @@ namespace FishingIdle.Game.Scene
         }
     }
 
+    /// <summary>A few soft sparks rising and fading around an important catch (GDD section 8).</summary>
+    public sealed class SparkleEffect : MonoBehaviour
+    {
+        private SpriteRenderer _renderer;
+        private Vector3 _velocity;
+        private Color _color;
+        private float _life;
+        private float _age;
+        private float _size;
+
+        public static void Burst(Transform parent, Vector3 position, int sortingOrder, Color color, int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                var go = new GameObject("Brilho");
+                go.transform.SetParent(parent, false);
+                go.transform.localPosition = position + new Vector3(Random.Range(-0.35f, 0.35f), Random.Range(-0.2f, 0.25f), 0f);
+                var renderer = go.AddComponent<SpriteRenderer>();
+                renderer.sprite = Art.Glow;
+                renderer.sortingOrder = sortingOrder;
+                var spark = go.AddComponent<SparkleEffect>();
+                spark._renderer = renderer;
+                spark._color = color;
+                spark._velocity = new Vector3(Random.Range(-0.35f, 0.35f), Random.Range(0.4f, 1.0f), 0f);
+                spark._life = Random.Range(0.9f, 1.6f);
+                spark._size = Random.Range(0.12f, 0.24f);
+                go.transform.localScale = Vector3.one * spark._size;
+                renderer.color = new Color(color.r, color.g, color.b, 0f);
+            }
+        }
+
+        private void Update()
+        {
+            _age += Time.deltaTime;
+            var t = Mathf.Clamp01(_age / _life);
+            transform.localPosition += _velocity * Time.deltaTime;
+            _velocity *= 1f - Time.deltaTime * 0.8f;
+            var alpha = Mathf.Sin(t * Mathf.PI) * _color.a;
+            _renderer.color = new Color(_color.r, _color.g, _color.b, alpha);
+            transform.localScale = Vector3.one * _size * (0.6f + 0.4f * Mathf.Sin(_age * 14f + _size * 50f));
+            if (t >= 1f)
+            {
+                Destroy(gameObject);
+            }
+        }
+    }
+
     /// <summary>A small flock crossing the sky now and then.</summary>
     public sealed class BirdFlock : MonoBehaviour
     {

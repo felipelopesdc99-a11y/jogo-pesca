@@ -14,6 +14,7 @@ using FishingIdle.GameService.Market;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
 using FishingIdle.GameService.Shop;
+using FishingIdle.GameService.Tutorial;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -55,6 +56,9 @@ namespace FishingIdle.Game.Bootstrap
         /// <summary>A finished Expedition waiting to be shown, or null.</summary>
         public ExpeditionResultView ExpeditionResult { get; private set; }
 
+        /// <summary>The tutorial step to show (GDD section 40); Active is false once it is over.</summary>
+        public TutorialView Tutorial { get; private set; }
+
         /// <summary>The trip between maps in progress, refreshed every frame.</summary>
         public TravelView Travel { get; private set; }
 
@@ -93,6 +97,7 @@ namespace FishingIdle.Game.Bootstrap
             var scene = gameObject.AddComponent<FishingScene>();
             scene.Build(this);
             gameObject.AddComponent<Hud>();
+            gameObject.AddComponent<FishingIdle.Game.Audio.GameAudio>();
         }
 
         private void OnDestroy()
@@ -133,7 +138,7 @@ namespace FishingIdle.Game.Bootstrap
                     TakeOfflineReport();
                     if (Game.Expeditions.Update() != null)
                     {
-                        Toasts.Push(GameTexts.Expedition.CompletedToast, ToastKind.Important);
+                        Toasts.Push(GameTexts.Expedition.CompletedToast, ToastKind.Important, notify: true);
                         Refresh();
                         BoxChanged?.Invoke();
                         AquariumChanged?.Invoke();
@@ -145,8 +150,10 @@ namespace FishingIdle.Game.Bootstrap
                     {
                         Toasts.Push(defense.PlayerWon
                             ? GameTexts.Arena.DefenseWon(defense.OpponentName, Format.Number(defense.HonorChange))
-                            : GameTexts.Arena.DefenseLost(defense.OpponentName, defense.RankAfter), defense.PlayerWon ? ToastKind.Info : ToastKind.Warning);
+                            : GameTexts.Arena.DefenseLost(defense.OpponentName, defense.RankAfter), defense.PlayerWon ? ToastKind.Info : ToastKind.Warning, notify: true);
                     }
+
+                    RefreshTutorial();
 
                     var marketNews = Game.Market.Update();
                     foreach (var news in marketNews)
@@ -415,6 +422,39 @@ namespace FishingIdle.Game.Bootstrap
             return report;
         }
 
+        // ------------------------------------------------------------------ Tutorial intents
+
+        public void AcknowledgeTutorial(string step)
+        {
+            Guard(() =>
+            {
+                if (Game.Tutorial.Acknowledge(step).Succeeded)
+                {
+                    RefreshTutorial();
+                }
+            });
+        }
+
+        public void SkipTutorial()
+        {
+            Guard(() =>
+            {
+                Game.Tutorial.Skip();
+                RefreshTutorial();
+                Refresh();
+            });
+        }
+
+        private void RefreshTutorial()
+        {
+            var wasActive = Tutorial != null && Tutorial.Active;
+            Tutorial = Game.Tutorial.Get();
+            if (wasActive && !Tutorial.Active)
+            {
+                Toasts.Push(GameTexts.Tutorial.Completed, ToastKind.Important);
+            }
+        }
+
         // ------------------------------------------------------------------ Market intents
 
         public MarketView GetMarket() => IsRunning ? Game.Market.GetMarket() : null;
@@ -520,25 +560,25 @@ namespace FishingIdle.Game.Bootstrap
             switch (news.Kind)
             {
                 case MarketEvent.KindSold:
-                    Toasts.Push(GameTexts.Market.Sold(news.BuyerName, news.GoodsName, Format.Number(news.NetCoins)), ToastKind.Coins);
+                    Toasts.Push(GameTexts.Market.Sold(news.BuyerName, news.GoodsName, Format.Number(news.NetCoins)), ToastKind.Coins, notify: true);
                     break;
                 case MarketEvent.KindAuctionSold:
-                    Toasts.Push(GameTexts.Market.AuctionSold(news.GoodsName, Format.Number(news.NetCoins)), ToastKind.Coins);
+                    Toasts.Push(GameTexts.Market.AuctionSold(news.GoodsName, Format.Number(news.NetCoins)), ToastKind.Coins, notify: true);
                     break;
                 case MarketEvent.KindAuctionUnsold:
-                    Toasts.Push(GameTexts.Market.AuctionUnsold(news.GoodsName), ToastKind.Info);
+                    Toasts.Push(GameTexts.Market.AuctionUnsold(news.GoodsName), ToastKind.Info, notify: true);
                     break;
                 case MarketEvent.KindAuctionWon:
-                    Toasts.Push(GameTexts.Market.AuctionWon(news.GoodsName), ToastKind.Important);
+                    Toasts.Push(GameTexts.Market.AuctionWon(news.GoodsName), ToastKind.Important, notify: true);
                     break;
                 case MarketEvent.KindAuctionLost:
-                    Toasts.Push(GameTexts.Market.AuctionLost(news.GoodsName), ToastKind.Info);
+                    Toasts.Push(GameTexts.Market.AuctionLost(news.GoodsName), ToastKind.Info, notify: true);
                     break;
                 case MarketEvent.KindOutbid:
-                    Toasts.Push(GameTexts.Market.Outbid(news.GoodsName, news.BuyerName), ToastKind.Warning);
+                    Toasts.Push(GameTexts.Market.Outbid(news.GoodsName, news.BuyerName), ToastKind.Warning, notify: true);
                     break;
                 default:
-                    Toasts.Push(GameTexts.Market.Expired(news.GoodsName), ToastKind.Info);
+                    Toasts.Push(GameTexts.Market.Expired(news.GoodsName), ToastKind.Info, notify: true);
                     break;
             }
         }
@@ -748,6 +788,7 @@ namespace FishingIdle.Game.Bootstrap
                 kept = Game.Session.ResetSave();
                 Toasts.Push(GameTexts.Toasts.SaveReset, ToastKind.Info);
                 Refresh();
+                Tutorial = Game.Tutorial.Get();
                 BoxChanged?.Invoke();
                 AquariumChanged?.Invoke();
                 MapChanged?.Invoke(Player.MapId);
@@ -784,6 +825,7 @@ namespace FishingIdle.Game.Bootstrap
                           ", save at " + Game.Session.SaveLocation);
                 AnnounceSaveStatus(Game.Session.LoadStatus);
                 Refresh();
+                Tutorial = Game.Tutorial.Get();
                 TakeOfflineReport();
             }
             catch (Exception exception)

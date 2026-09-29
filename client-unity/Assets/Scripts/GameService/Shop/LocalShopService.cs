@@ -26,6 +26,9 @@ namespace FishingIdle.GameService.Shop
         public bool GeneratesShells { get; internal set; }
         public bool Owned { get; internal set; }
 
+        /// <summary>The free Starter Rod, claimed rather than bought (GDD section 40).</summary>
+        public bool IsFree { get; internal set; }
+
         /// <summary>Why buying is refused right now; None when it is possible.</summary>
         public ServiceError BuyBlocker { get; internal set; }
     }
@@ -41,7 +44,7 @@ namespace FishingIdle.GameService.Shop
     {
         ShopView GetShop();
 
-        /// <summary>Buys a rod, adds it to the Inventory and equips it.</summary>
+        /// <summary>Buys a rod (or claims the free Starter Rod), adds it to the Inventory and equips it.</summary>
         ServiceResult<RodOfferView> BuyRod(string rodId);
     }
 
@@ -62,7 +65,7 @@ namespace FishingIdle.GameService.Shop
         public ShopView GetShop()
         {
             var view = new ShopView { Coins = Save.Coins };
-            foreach (var rod in Config.Rods.Rods.Where(Config.IsPurchasable).OrderBy(r => r.Tier))
+            foreach (var rod in Config.Rods.Rods.Where(r => Config.IsPurchasable(r) || (IsClaimable(r) && !Owns(r))).OrderBy(r => r.Tier))
             {
                 view.Rods.Add(Offer(rod));
             }
@@ -72,7 +75,7 @@ namespace FishingIdle.GameService.Shop
 
         public ServiceResult<RodOfferView> BuyRod(string rodId)
         {
-            if (!Config.TryGetRod(rodId, out var rod) || !Config.IsPurchasable(rod))
+            if (!Config.TryGetRod(rodId, out var rod) || !(Config.IsPurchasable(rod) || IsClaimable(rod)))
             {
                 return ServiceResult<RodOfferView>.Fail(ServiceError.RodNotForSale);
             }
@@ -124,14 +127,19 @@ namespace FishingIdle.GameService.Shop
                 ShellBonusAtMax = atMax.ShellYield,
                 CanCatchRare = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 0),
                 GeneratesShells = rod.GeneratesShells,
-                Owned = Save.Inventory.Any(i => i.Kind == InventoryItem.KindRod && i.RodId == rod.Id),
+                Owned = Owns(rod),
+                IsFree = IsClaimable(rod),
                 BuyBlocker = Blocker(rod),
             };
         }
 
+        private static bool IsClaimable(RodConfig rod) => rod.Acquisition != null && rod.Acquisition.Method == "free_claim_in_shop";
+
+        private bool Owns(RodConfig rod) => Save.Inventory.Any(i => i.Kind == InventoryItem.KindRod && i.RodId == rod.Id);
+
         private ServiceError Blocker(RodConfig rod)
         {
-            if (Save.Inventory.Any(i => i.Kind == InventoryItem.KindRod && i.RodId == rod.Id)) return ServiceError.RodAlreadyOwned;
+            if (Owns(rod)) return ServiceError.RodAlreadyOwned;
             if (Save.FisherLevel < rod.Acquisition.UnlockFisherLevel) return ServiceError.RodLocked;
             if (Save.Coins < rod.Acquisition.PurchaseCostCoins) return ServiceError.NotEnoughCoins;
             return ServiceError.None;

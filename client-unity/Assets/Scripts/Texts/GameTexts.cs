@@ -27,6 +27,7 @@ namespace FishingIdle.Texts
             public const string Rod = "Vara";
             public const string TotalCatches = "Capturas";
             public const string SpeciesDiscovered = "Espécies descobertas";
+            public const string NoRod = "Nenhuma — pegue na Loja";
             public const string CollapseCard = "Recolher";
             public const string ExpandCard = "Perfil";
 
@@ -204,6 +205,76 @@ namespace FishingIdle.Texts
             public static string DefenseLost(string attacker, int rank) => attacker + " venceu você na Arena. Sua posição agora é #" + rank + ".";
             public static string Versus(string opponent) => "Você × " + opponent;
             public static string Clock(string time) => "Tempo: " + time;
+        }
+
+        // ------------------------------------------------------------------ Tutorial (GDD section 40)
+
+        public static class Tutorial
+        {
+            public const string Begin = "Começar";
+            public const string GotIt = "Entendi";
+            public const string Skip = "Pular tutorial";
+            public const string Completed = "Tutorial concluído! Agora é com você: pesque, evolua seus peixes e explore os menus.";
+
+            public static string StepOf(int step, int total) => "Tutorial · passo " + step + " de " + total;
+
+            public static string Title(string step)
+            {
+                switch (step)
+                {
+                    case "welcome": return "Bem-vindo ao Fishing Idle!";
+                    case "claim_rod": return "Pegue sua primeira vara";
+                    case "start_fishing": return "Comece a pescar";
+                    case "first_catch": return "Espere a primeira captura";
+                    case "open_box": return "Abra a Caixa de Pesca";
+                    case "sell_fish": return "Venda um peixe";
+                    case "keep_fish": return "Guarde um peixe no Aquário";
+                    case "cardume": return "Monte o seu Cardume";
+                    case "expedition": return "Expedições";
+                    default: return string.Empty;
+                }
+            }
+
+            public static string Body(string step)
+            {
+                switch (step)
+                {
+                    case "welcome": return "Você é um pescador no Lago Sereno. O barco pesca sozinho, até com o jogo fechado. Vamos dar os primeiros passos — leva uns 2 minutos.";
+                    case "claim_rod": return "Abra a " + Navigation.Shop + " (menu de cima) e pegue a Vara Inicial. Ela é grátis.";
+                    case "start_fishing": return "Clique em \"" + Fishing.Start + "\", embaixo, no centro.";
+                    case "first_catch": return "A cada ciclo o pescador tira um peixe da água. Quando ele aparecer, veja no aviso a espécie, o tamanho e a categoria.";
+                    case "open_box": return "Todo peixe pescado vai para a " + Box.Open + " (canto de baixo, à direita). Abra para ver os peixes.";
+                    case "sell_fish": return "Na Caixa, selecione um peixe e clique em \"" + Box.SellSelected + "\". As Moedas compram varas melhores.";
+                    case "keep_fish": return "Selecione outro peixe e clique em \"" + Aquarium.KeepSelected + "\". Peixes guardados sobem de nível e lutam por você.";
+                    case "cardume": return "Abra o " + Navigation.Profile + " → " + Profile.TabCardume + " e coloque um peixe numa posição. O Cardume luta na Arena e vai em Expedições.";
+                    case "expedition": return "No menu " + Navigation.Expedition + ", você envia o Cardume por 30 min a 6 h para trazer Moedas e, às vezes, um peixe. Enquanto isso, ele fica ocupado.";
+                    default: return string.Empty;
+                }
+            }
+        }
+
+        // ------------------------------------------------------------------ Notifications, settings and compact mode
+
+        public static class Hud
+        {
+            public const string Notifications = "Notificações";
+            public const string NoNotifications = "Nada por aqui ainda.";
+            public const string ClearNotifications = "Limpar";
+            public const string Settings = "Configurações";
+            public const string SettingsShort = "Opções";
+            public const string Sound = "Som";
+            public const string Ambient = "Som ambiente";
+            public const string Volume = "Volume";
+            public const string On = "Ligado";
+            public const string Off = "Desligado";
+            public const string CompactMode = "Modo compacto";
+            public const string CompactNote = "Uma janela pequena só com a água, o barco e o pescador, para deixar aberta enquanto trabalha. A pesca continua igual.";
+            public const string Expand = "Expandir";
+            public const string Fishing = "Pescando";
+            public const string Stopped = "Parado";
+            public const string Bell = "Avisos";
+
+            public static string BoxCount(int count) => "Caixa: " + count;
         }
 
         // ------------------------------------------------------------------ Market (GDD sections 33–34)
@@ -387,6 +458,8 @@ namespace FishingIdle.Texts
 
         public static class Shop
         {
+            public const string Free = "Grátis";
+            public const string ClaimFree = "Pegar grátis";
             public const string Title = "Loja";
             public const string Rods = "Varas";
             public const string Buy = "Comprar";
@@ -576,6 +649,8 @@ namespace FishingIdle.Texts
                 case "AlreadyHighestBidder": return "Você já tem o maior lance neste leilão.";
                 case "AuctionHasNoBids": return "Sem lances, o leilão não pode ser encerrado antes: espere as 6 horas.";
                 case "AuctionEnded": return "Esse leilão já terminou.";
+                case "NoRod": return "Você ainda não tem vara. Pegue a Vara Inicial grátis na Loja.";
+                case "TutorialStepMismatch": return "O tutorial já passou desse ponto.";
                 case "SpeciesMissingFromConfig": return "Um dos peixes é de uma espécie que não existe mais no balanceamento, então não pode ser vendido agora.";
                 default: return "Não foi possível fazer isso agora.";
             }

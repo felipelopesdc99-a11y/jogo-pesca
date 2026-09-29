@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 8;
+        public const int CurrentVersion = 9;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -46,7 +46,7 @@ namespace FishingIdle.GameService.Persistence
 
         public long NextItemId { get; set; } = 1;
 
-        /// <summary>The Inventory item in the only equipment slot, the Fishing Rod.</summary>
+        /// <summary>The Inventory item in the only equipment slot, the Fishing Rod. 0 only before the tutorial's free Starter Rod is claimed.</summary>
         public long EquippedRodItemId { get; set; }
 
         /// <summary>
@@ -71,6 +71,9 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Market listings, custody and simulated traders (Milestone 8). Added in save version 7.</summary>
         public MarketState Market { get; set; } = new MarketState();
+
+        /// <summary>The first-session tutorial (Milestone 10). Added in save version 9.</summary>
+        public TutorialState Tutorial { get; set; } = new TutorialState();
 
         /// <summary>Counts every Expedition ever started; part of its RNG stream.</summary>
         public long ExpeditionsStarted { get; set; }
@@ -176,6 +179,15 @@ namespace FishingIdle.GameService.Persistence
         public int RankBefore { get; set; }
         public int RankAfter { get; set; }
         public long HonorChange { get; set; }
+    }
+
+    public sealed class TutorialState
+    {
+        /// <summary>Current step key (see TutorialSteps). Ignored once completed.</summary>
+        public string Step { get; set; } = "welcome";
+
+        public bool Completed { get; set; }
+        public bool Skipped { get; set; }
     }
 
     public sealed class MarketState

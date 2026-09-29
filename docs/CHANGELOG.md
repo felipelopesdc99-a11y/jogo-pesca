@@ -3,6 +3,31 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.1.0-m10.1] — 29/09/2026
+
+Milestone 10 — Tutorial, UX e polimento.
+
+### Adicionado
+
+- **Tutorial curto** (9 passos) que ensina fazendo: pegar a Vara Inicial grátis na Loja, pescar,
+  abrir a Caixa, vender, guardar no Aquário, montar o Cardume e conhecer a Expedição. Dá para pular.
+- **Sino de Avisos**: os últimos 50 avisos relevantes, com contador de não lidos.
+- **Opções**: som, som ambiente, volume e **modo compacto** (janela pequena só com a cena).
+- **Áudio provisório** gerado por código e som ambiente de água.
+- Faíscas nas capturas importantes e fade ao abrir os menus.
+- 4 testes novos do tutorial (135 no total).
+
+### Mudado
+
+- **Jogador novo começa sem vara** e pega a Vara Inicial na Loja (GDD seção 40). Saves antigos não
+  mudam: entram com o tutorial concluído.
+- **Formato do save: versão 9.**
+- As Conchas saíram do menu de cima e foram para o cartão do jogador.
+
+### Não verificado
+
+- Nada desta versão foi aberto no Editor do Unity ainda (`M10-T08`).
+
 ## [0.1.0-m9.1] — 29/09/2026
 
 Milestone 9 — Leilão local.

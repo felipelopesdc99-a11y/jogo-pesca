@@ -437,3 +437,50 @@ Cerca de 8 leilões de outros jogadores ficam abertos, com 2 novos por hora; o l
 entre 50% e 90% da referência e nunca abaixo do que o NPC paga. A cada 10 minutos cada leilão —
 inclusive o seu — tem 30% de chance de receber um lance simulado, de até 1,4× a referência. Tudo em
 `config/market_bots.json → auctions`.
+
+---
+
+## Milestone 10 — Tutorial, UX e polimento
+
+### A-055 · Passos do tutorial
+**Seção do GDD:** 40 · **Situação:** Confirmar
+
+Nove passos: boas-vindas → pegar a Vara Inicial na Loja (grátis, equipa sozinha) → iniciar a pesca →
+primeira captura (o aviso mostra espécie, tamanho e categoria) → abrir a Caixa de Pesca → vender um
+peixe → guardar um peixe no Aquário → colocar um peixe no Cardume → conhecer a Expedição (basta abrir
+o menu ou clicar em Entendi; não precisa enviar). Os passos "ver as informações do peixe" e "a
+Caixa" do GDD ficaram juntos no aviso da primeira captura e na abertura da Caixa. Arena, Mercado e
+Leilão não entram no tutorial.
+
+### A-056 · Pular o tutorial e saves antigos
+**Seção do GDD:** 40 · **Situação:** Em vigor
+
+O botão Pular tutorial aparece em todos os passos. Quem pula antes de pegar a vara recebe a Vara
+Inicial na hora, para nunca ficar sem poder pescar. Quem já jogava antes desta versão não vê o
+tutorial.
+
+### A-057 · Central de notificações
+**Seção do GDD:** 39 · **Situação:** Confirmar
+
+O sino guarda os últimos 50 avisos relevantes enquanto o jogo está aberto (não são gravados). Entram:
+espécie nova, recorde pessoal, Excepcional, subir de nível, venda no Mercado, leilão vendido/sem
+lances/ganho/perdido, lance superado, anúncio vencido, Expedição concluída e ataques recebidos na
+Arena. Capturas comuns e mensagens de erro ficam só como aviso rápido.
+
+### A-058 · Modo compacto
+**Seção do GDD:** 9 · **Situação:** Em vigor
+
+Opções → Modo compacto muda a janela para 480×270 e esconde tudo, menos a cena, uma linha com o estado
+da pesca e a Caixa, e o nome da última captura por 5 segundos. Expandir volta ao tamanho anterior.
+
+### A-059 · Menu secundário
+**Seção do GDD:** 7 · **Situação:** Em vigor
+
+À direita do menu de cima: Moedas, Avisos (o sino, com contador de não lidos) e Opções (som, som
+ambiente, volume e modo compacto). As Conchas foram para o cartão do jogador, só quando houver alguma.
+
+### A-060 · Destaque de captura importante
+**Seção do GDD:** 8 · **Situação:** Em vigor
+
+Além da aura pulsante (roxa para rara, dourada para Excepcional, azul-clara para espécie nova), a
+captura importante solta um punhado de faíscas da mesma cor que sobem e somem.

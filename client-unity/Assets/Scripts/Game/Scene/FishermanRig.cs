@@ -235,6 +235,11 @@ namespace FishingIdle.Game.Scene
                     _fishGlow.enabled = _shown.IsImportant;
                     _fishGlow.color = GlowColor(_shown);
                     RippleEffect.Spawn(_world, _fishFrom, FishingScene.OrderWaterDetail, 1.4f, 0.8f);
+                    if (_shown.IsImportant)
+                    {
+                        // Stands out before any text is read: glow, pulse and a few rising sparks.
+                        SparkleEffect.Burst(_world, TipPosition() + new Vector3(-0.8f, 0.2f, 0f), FishingScene.OrderCatchGlow + 1, GlowColor(_shown), 14);
+                    }
                     break;
                 case Phase.Idle:
                     _fish.enabled = false;

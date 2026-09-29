@@ -95,6 +95,11 @@ namespace FishingIdle.GameService.Fishing
                 return ServiceResult<FishingUpdate>.Fail(ServiceError.Traveling);
             }
 
+            if (Save.EquippedRodItem() == null)
+            {
+                return ServiceResult<FishingUpdate>.Fail(ServiceError.NoRod);
+            }
+
             StartNewRun(Now);
             _session.Persist();
             _session.Log("Fishing started on " + Save.CurrentMapId);

@@ -52,7 +52,8 @@ client-unity/Assets/
 │   │   ├── Maps/          Mapas e viagem
 │   │   ├── Expeditions/   Expedições e a fórmula de aproveitamento (ExpeditionRules)
 │   │   ├── Arena/         Motor de combate (BattleEngine), adversários simulados (ArenaBots), Arena
-│   │   ├── Market/        Mercado: anúncios, compra, custódia (Itens a Retirar), vendedores e compradores simulados
+│   │   ├── Market/        Mercado e Leilão: anúncios, compra, custódia (Itens a Retirar), lances, jogadores simulados
+│   │   ├── Tutorial/      Tutorial curto: passos, avanço automático pelo que o jogador fez, pular
 │   │   ├── Shop/          Loja e regras de preço/revenda de vara (RodRules)
 │   │   ├── GameSession.cs Estado vivo de um jogador (config + save + relógio + armazenamento)
 │   │   ├── PlayerService.cs
@@ -60,7 +61,8 @@ client-unity/Assets/
 │   ├── Game/           FishingIdle.Game         Apresentação no Unity
 │   │   ├── Bootstrap/     GameBootstrap (Play em qualquer cena), GameRoot (ponte com o serviço), GamePaths
 │   │   ├── Scene/         Arte provisória por código (Art), cena (FishingScene), pescador (FishermanRig), ambiente
-│   │   └── UI/            HUD, Caixa de Pesca, avisos, estilos (IMGUI)
+│   │   ├── Audio/         Áudio provisório gerado por código (SoundBank) e quem toca (GameAudio)
+│   │   └── UI/            HUD, janelas, avisos e central de notificações, estilos (IMGUI)
 │   ├── Editor/         FishingIdle.Editor       Só no Editor: Painel de Desenvolvimento, setup do projeto, passo de build
 │   └── Core/ Diagnostics/  FishingIdle.Client   Dormente: cliente HTTP e diagnóstico do servidor online (M12)
 ├── Scenes/Principal.unity   Criada automaticamente na primeira abertura
@@ -102,6 +104,7 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
 | `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
 | `IAuctionService` | `LocalMarketService` | Leilão: criar (1 por vez, 6 h), lances com reserva e taxa, último minuto, encerrar antes |
+| `ITutorialService` | `LocalTutorialService` | Tutorial: passo atual, avanço automático, "Entendi", pular |
 | `IProfileService` | `LocalProfileService` | Perfil próprio: vara equipada, Inventário, Enciclopédia, Destaques |
 | `IPlayerRepository` | `JsonFilePlayerRepository` | Ler/gravar/resetar o save |
 | `IClock` | `SystemClock` | A única fonte de "agora" das regras |
@@ -207,8 +210,13 @@ Regras:
   e adiciona o Cardume, v4 adiciona a viagem (`TravelState`) e separa o preço pago pela vara do que
   foi gasto em melhorias, v5 adiciona a Expedição (`ExpeditionState`, `LastExpedition`), v6 adiciona a Arena
   (`ArenaState`: ranking como lista de ids, Energia, Honra, adversários, histórico), v7 adiciona o
-  Mercado (`MarketState`), v8 adiciona os leilões (`MarketState.Auctions`). Cada passo está em
-  `SaveMigrations.Upgrade`.
+  Mercado (`MarketState`), v8 adiciona os leilões (`MarketState.Auctions`), v9 adiciona o tutorial
+  (`TutorialState`; saves antigos entram com ele concluído). Cada passo está em `SaveMigrations.Upgrade`.
+- Tutorial (desde a versão 9): o jogador novo começa **sem vara** (`EquippedRodItemId = 0`) e pega a
+  Vara Inicial de graça na Loja (`free_claim_in_shop` em `rods.json`). O save só aceita "sem vara"
+  enquanto o tutorial não terminou; pular o tutorial entrega a Vara Inicial. Cada passo termina sozinho
+  quando o save mostra que o jogador fez aquilo (pegou a vara, pescou, vendeu, guardou, montou o
+  Cardume); os passos só de leitura (boas-vindas, Caixa, Expedição) terminam com `Acknowledge`.
 - Mercado (desde a versão 7): um item anunciado **sai** do Aquário/Inventário e passa a morar dentro
   do anúncio (`MarketListing.Goods`, com todos os dados do peixe ou da vara). Comprado, cancelado ou
   vencido, ele vai para `Withdrawals` (Itens a Retirar) e só volta ao Aquário/Inventário quando o
@@ -241,6 +249,18 @@ Regras:
 - **Interface em IMGUI** (`Hud`, `FishingBoxWindow`, `UiSkin`): tela virtual de 1080 px de altura,
   escalada. Todos os estilos ficam em `UiSkin`, o que isola uma futura troca para UI Toolkit.
 - **Textos:** sempre de `GameTexts`. Nunca escreva uma frase em PT-BR direto num `.cs` fora de `Texts/`.
+- **Avisos e central de notificações** (`ToastFeed`): `Push(texto, tipo, ícone, notify)` mostra o
+  aviso; com `notify: true` ele também entra na lista do sino (até 50, só enquanto o jogo está
+  aberto). Entram: espécie nova, recorde, Excepcional, subir de nível, Mercado/Leilão, Expedição,
+  ataques recebidos na Arena.
+- **Áudio provisório** (`Audio/`): `SoundBank` sintetiza sons curtos por tipo de aviso e um loop de
+  água; `GameAudio` toca um som a cada aviso (`ToastFeed.Pushed`), sem empilhar. Trocar pelo áudio
+  final = trocar o que `SoundBank` devolve.
+- **Preferências de apresentação** (`GameSettings`): som, som ambiente e volume, no `PlayerPrefs` do
+  PC. Não entram no save porque não mudam nenhuma regra.
+- **Modo compacto** (Opções → Modo compacto): janela de 480×270 só com a cena, uma linha de status e a
+  última captura. É só apresentação; o serviço pesca igual. No Editor o tamanho da janela não muda.
+- **Transição de menus:** a janela que abre faz um fade de 0,18 s (`Hud`).
 
 ## 7. Painel de Desenvolvimento (Editor)
 

@@ -76,7 +76,7 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, y, w, 22), GameTexts.Profile.Tier(rod.Tier) + " · " + GameTexts.Shop.MaxLevelOf(rod.MaxLevel), skin.SmallMuted);
             y += 30;
             skin.CoinIcon(new Rect(x, y + 2, 22, 22));
-            GUI.Label(new Rect(x + 30, y, w - 30, 28), GameTexts.Shop.Price(Format.Number(rod.PriceCoins)), skin.Number);
+            GUI.Label(new Rect(x + 30, y, w - 30, 28), rod.IsFree ? GameTexts.Shop.Free : GameTexts.Shop.Price(Format.Number(rod.PriceCoins)), skin.Number);
             y += 40;
 
             GUI.Label(new Rect(x, y, w, 20), GameTexts.Shop.AtLevel1 + " → " + GameTexts.Shop.AtMax, skin.SmallMuted);
@@ -98,7 +98,7 @@ namespace FishingIdle.Game.UI
             {
                 GUI.Label(button, GameTexts.ServiceErrorMessage(rod.BuyBlocker.ToString()), skin.SmallGold);
             }
-            else if (GUI.Button(button, GameTexts.Shop.Buy, skin.ButtonPrimary))
+            else if (GUI.Button(button, rod.IsFree ? GameTexts.Shop.ClaimFree : GameTexts.Shop.Buy, skin.ButtonPrimary))
             {
                 _root.BuyRod(rod.RodId);
                 _dirty = true;

@@ -57,11 +57,17 @@ internal static class TestSupport
         return path;
     }
 
-    public static (LocalGame Game, ManualClock Clock, string SaveDir) NewGame(GameConfig config = null, string saveDir = null, ManualClock clock = null)
+    /// <summary>A running game. By default the tutorial is skipped, so the player starts with the Starter Rod equipped.</summary>
+    public static (LocalGame Game, ManualClock Clock, string SaveDir) NewGame(GameConfig config = null, string saveDir = null, ManualClock clock = null, bool skipTutorial = true)
     {
         saveDir ??= NewTempDirectory();
         clock ??= new ManualClock(StartMs);
         var result = LocalGame.Start(config ?? RealConfig(), new JsonFilePlayerRepository(saveDir), clock, _ => { });
+        if (skipTutorial)
+        {
+            result.Game.Tutorial.Skip();
+        }
+
         return (result.Game, clock, saveDir);
     }
 
