@@ -78,7 +78,7 @@ namespace FishingIdle.Editor
 
             DrawActions();
 
-            _section = GUILayout.Toolbar(_section, new[] { T.SectionFishing, T.SectionSpecies, T.SectionMaps, T.SectionSizes, T.SectionXp, T.SectionRods, T.SectionEconomy, T.SectionOthers });
+            _section = GUILayout.Toolbar(_section, new[] { T.SectionFishing, T.SectionSpecies, T.SectionMaps, T.SectionSizes, T.SectionRarities, T.SectionXp, T.SectionRods, T.SectionEconomy, T.SectionOthers });
             EditorGUILayout.Space(6);
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
@@ -88,9 +88,10 @@ namespace FishingIdle.Editor
                 case 1: DrawSpecies(); break;
                 case 2: DrawMaps(); break;
                 case 3: DrawSizes(); break;
-                case 4: DrawXp(); break;
-                case 5: DrawRods(); break;
-                case 6: DrawEconomy(); break;
+                case 4: DrawRarities(); break;
+                case 5: DrawXp(); break;
+                case 6: DrawRods(); break;
+                case 7: DrawEconomy(); break;
                 default: DrawOthers(); break;
             }
 
@@ -314,6 +315,89 @@ namespace FishingIdle.Editor
             Number(file, "size.sale_value_influence.influence", T.SaleInfluence, 0);
             Number(file, "size.stat_influence.influence", T.StatInfluence, 0);
             Number(file, "size.feed_xp_influence.influence", T.FeedInfluence, 0);
+        }
+
+        /// <summary>
+        /// What each rarity is worth over the species' base values, and how it changes the size draw
+        /// (size_weight_multipliers, addendum A-083), with the resulting chance of each size.
+        /// </summary>
+        private void DrawRarities()
+        {
+            const string file = GameConfigLoader.ProgressionFile;
+            var tiers = (JArray)_documents[file].SelectToken("rarity.tiers");
+            var categories = (JArray)_documents[file].SelectToken("size.categories");
+            if (tiers == null || categories == null)
+            {
+                return;
+            }
+
+            EditorGUILayout.LabelField(T.RarityValuesTitle, EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(T.RarityValuesNote, MessageType.None);
+            Header(new[] { T.RarityName, T.RaritySale, T.RarityStat, T.RarityFisherXp, T.RarityFeedXp });
+            for (var i = 0; i < tiers.Count; i++)
+            {
+                var prefix = "rarity.tiers[" + i + "].";
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    Text(file, prefix + "display_name", 130);
+                    Cell(file, prefix + "sale_value_multiplier");
+                    Cell(file, prefix + "stat_multiplier");
+                    Cell(file, prefix + "fisher_xp_multiplier");
+                    Cell(file, prefix + "feed_xp_multiplier");
+                }
+            }
+
+            EditorGUILayout.Space(12);
+            EditorGUILayout.LabelField(T.RaritySizeTitle, EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(T.RaritySizeNote, MessageType.None);
+            var names = categories.Select(c => c.Value<string>("display_name") ?? c.Value<string>("id")).ToList();
+            Header(new[] { T.RarityName }.Concat(names.Select(T.TimesSize)).Concat(names));
+            foreach (JObject tier in tiers)
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    GUILayout.Label(tier.Value<string>("display_name") ?? tier.Value<string>("id"), GUILayout.Width(130));
+                    var weights = new List<double>();
+                    foreach (var category in categories)
+                    {
+                        var id = category.Value<string>("id");
+                        var multiplier = SizeMultiplierCell(file, tier, id);
+                        weights.Add(Math.Max(0, category.Value<double>("draw_weight")) * multiplier);
+                    }
+
+                    var total = weights.Sum();
+                    foreach (var w in weights)
+                    {
+                        GUILayout.Label(total > 0 ? Format.Percent(w / total, w / total < 0.01 ? 2 : 1) : "—", GUILayout.Width(70));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// One size multiplier of a rarity. A size not listed counts as 1 and is only written to the
+        /// file when the owner changes it, so untouched rarities keep their file unchanged.
+        /// </summary>
+        private double SizeMultiplierCell(string file, JObject tier, string sizeId)
+        {
+            var map = tier["size_weight_multipliers"] as JObject;
+            var current = map?[sizeId] is JValue v ? v.Value<double>() : 1.0;
+            EditorGUI.BeginChangeCheck();
+            var result = Math.Max(0.0, EditorGUILayout.DoubleField(current, GUILayout.Width(70)));
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (map == null)
+                {
+                    map = new JObject();
+                    tier["size_weight_multipliers"] = map;
+                }
+
+                map[sizeId] = result;
+                _dirty.Add(file);
+                return result;
+            }
+
+            return current;
         }
 
         private void DrawXp()

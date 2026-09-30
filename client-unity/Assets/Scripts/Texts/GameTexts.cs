@@ -785,6 +785,7 @@ namespace FishingIdle.Texts
             public const string SectionSpecies = "Espécies";
             public const string SectionMaps = "Mapas e chances";
             public const string SectionSizes = "Distribuição de tamanho";
+            public const string SectionRarities = "Raridades";
             public const string SectionXp = "XP do Pescador";
             public const string SectionEconomy = "Economia";
             public const string SectionOthers = "Outros arquivos";
@@ -809,6 +810,18 @@ namespace FishingIdle.Texts
             public const string SizePercentileMax = "Percentil máx.";
             public const string SizeXpMultiplier = "Mult. XP";
             public const string SaleInfluence = "Influência do tamanho no preço";
+
+            // Raridades (addendum A-083)
+            public const string RarityValuesTitle = "Quanto cada raridade vale a mais";
+            public const string RarityValuesNote = "Multiplicadores sobre os valores de cada espécie: 2 = o dobro, 1 = igual ao básico. \"Venda\" é o preço para o comerciante; \"Atributos\", Vida, Ataque, Defesa e Velocidade.";
+            public const string RarityName = "Raridade";
+            public const string RarityStat = "Atributos";
+            public const string RarityFisherXp = "XP Pescador";
+            public const string RarityFeedXp = "XP alimento";
+            public const string RaritySale = "Venda";
+            public const string RaritySizeTitle = "Chance de cada tamanho, por raridade";
+            public const string RaritySizeNote = "Multiplica o peso de cada tamanho só para os peixes daquela raridade (1 = sem mudança; 0,85 = 15% menos). Ao lado, a chance final de cada tamanho. O bônus de tamanho da vara vem por cima destes números.";
+            public static string TimesSize(string size) => "× " + size;
             public const string XpLevel = "Nível";
             public const string XpToNext = "XP para o próximo";
             public const string ShellChance = "Chance de Concha por captura (0 a 1)";

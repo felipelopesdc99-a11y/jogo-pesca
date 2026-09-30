@@ -350,6 +350,10 @@ Menu **Fishing Idle → Painel de Desenvolvimento** (`DevPanelWindow`).
 - **Balanceamento** (`BalanceEditor`): edita os JSON como árvore, preservando ordem, notas e
   formatação (um teste garante que salvar sem editar não muda nenhum byte). Valida antes de gravar.
   Com o jogo rodando, "Salvar e aplicar" recarrega o config na hora (`GameRoot.ReloadConfig`).
+  Seções: Pesca, Espécies, Mapas e chances, Distribuição de tamanho, Raridades (multiplicadores de
+  venda, atributos e XP, e `size_weight_multipliers` com a chance final de cada tamanho por
+  raridade; um tamanho não listado vale 1 e só é gravado se for mudado), XP, Varas, Economia e
+  Outros arquivos.
 - **Save:** leitura sem efeitos colaterais, e reset com confirmação.
 - **Primeira abertura** (`ProjectSetup`): cria e abre `Assets/Scenes/Principal.unity`, registra no
   Build Settings e, só se o projeto ainda estiver com os valores padrão do Unity, define nome do

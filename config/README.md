@@ -21,6 +21,20 @@ de Desenvolvimento → Balanceamento). Ele valida tudo antes de gravar, só alte
 mudou e, com o jogo rodando, aplica na hora. Editar os arquivos à mão também funciona: o jogo valida
 ao apertar Play e, se algo estiver errado, mostra a lista de problemas na tela.
 
+Onde fica cada coisa no painel:
+
+| Quero mudar… | Seção do painel | Arquivo |
+|---|---|---|
+| Preço de venda, tamanho, XP e atributos de um peixe | Espécies | `fish_catalog.json` |
+| Chance de cada peixe em cada mapa | Mapas e chances | `maps.json` |
+| Chance de Pequeno, Adulto, Grande e Excepcional | Distribuição de tamanho | `progression.json` |
+| Quanto o Raro vale a mais (venda, atributos, XP) e a chance de tamanho por raridade | Raridades | `progression.json` |
+| Tempo de pesca | Pesca | `progression.json` |
+| Níveis do Pescador e do peixe | XP do Pescador | `progression.json` |
+| Varas (bônus e custo) | Varas | `rods.json` |
+| Preço mínimo, Conchas, Aquário, Mercado | Economia | `economy.json` |
+| Arena, Cardume, Expedições | Outros arquivos | `arena.json`, `expeditions.json`… |
+
 ## Regras
 
 - **Os pesos de captura ficam em `maps.json`, não em `fish_catalog.json`.** Um pool é propriedade de

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T01:54:30Z",
+  "updated_at": "2026-09-30T02:28:03Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -2081,6 +2081,18 @@
           ],
           "completion_notes": "Campo Buscar peixe pelo nome (UI/NameSearch, ícone novo ico_buscar) na Caixa de Pesca e no Aquário (ao lado de Fechar; no Aquário também na escolha de alimento) e no Mercado (primeiro filtro de Comprar e no alto de Vender). Ignora maiúsculas e acentos; soma com os outros filtros. GDD_ADENDO A-084. Compila; não aberto no Unity ainda.",
           "updated_at": "2026-09-30T01:54:30Z"
+        },
+        {
+          "id": "M14-T27",
+          "title": "Seção Raridades no painel de Balanceamento",
+          "subsystem": "client",
+          "description": "A pedido do proprietário: poder mudar no painel quanto cada raridade vale a mais e a chance de tamanho por raridade.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T25"
+          ],
+          "completion_notes": "Nova seção Raridades na aba Balanceamento do Painel de Desenvolvimento: por raridade, multiplicadores de venda, atributos, XP do Pescador e XP como alimento, e os multiplicadores de cada tamanho com a chance final de Pequeno, Adulto, Grande e Excepcional calculada na hora. Valida antes de salvar, como o resto do painel. config/README.md ganhou a tabela de onde fica cada coisa. Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-30T02:28:03Z"
         }
       ]
     }

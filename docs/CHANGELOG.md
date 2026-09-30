@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.15] — 30/09/2026
+
+### Adicionado
+
+- **Painel de Balanceamento → Raridades:** quanto cada raridade vale a mais (venda, atributos, XP) e
+  a chance de cada tamanho por raridade, com as porcentagens finais na hora.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M14-T15`).
+
 ## [0.2.0-m14.14] — 30/09/2026
 
 ### Adicionado
