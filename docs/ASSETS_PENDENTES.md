@@ -20,6 +20,11 @@ jacaré, macacos), pedidos no documento
 leva nova: `python3 tools/Arte/processar_vivos.py <pasta com os Vivo_XX_*.png>`. Onde cada um aparece e
 com que frequência fica em `Resources/Visual/paisagem_viva.json`.
 
+Os mapas 3 e 4 (Pantanal Dourado e Estuário das Marés) e a Vara 2 estão pedidos no documento
+[Fishing Idle — Pedidos de arte: Pantanal Dourado e Estuário das Marés](https://claude.ai/code/artifact/71e40506-b9ce-48dd-bf16-d9409c2a9442)
+(`ASSET_PENDENTE`, tarefa `M14-T29`): cenário em camadas, 10 peixes de cada mapa, fauna e plantas vivas
+de cada um. Jacaré, capivara e garça do Pantanal reaproveitam a paisagem viva que já existe.
+
 Os pedidos prontos para colar no ChatGPT, na ordem certa, estão no documento
 [Fishing Idle — Pedidos de arte para o ChatGPT](https://claude.ai/code/artifact/320602da-0a64-4e9b-b729-4108aef7656e).
 Mande as imagens geradas no chat; o recorte e a padronização ficam por minha conta.

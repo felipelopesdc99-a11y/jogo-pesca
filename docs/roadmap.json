@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T14:59:37Z",
+  "updated_at": "2026-09-30T17:58:27Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -157,6 +157,15 @@
       "title": "Criar os mapas 3 e 4 (Pantanal Dourado e Estuário das Marés)?",
       "detail": "O documento de identidade por mapa fala de dois mapas que o jogo ainda não tem. Criar exige: a raridade Épico (cor, multiplicadores de venda, atributos, XP e tamanho), a Vara 2 (preço e bônus), a lista de espécies de cada mapa (o documento só cita Barbado, Camurupim e Mero; os mapas atuais têm 10 espécies cada), os níveis de liberação (20 e 30) e a arte de cada mapa (camadas, peixes, fauna, fotos) pedida ao ChatGPT como nos pedidos anteriores. Diga se é para criar agora e, se sim, se eu proponho a lista de espécies e os números para você aprovar.",
       "raised_at": "2026-09-30T14:59:37Z",
+      "status": "RESOLVED",
+      "resolution": "30/09/2026: o proprietário pediu para seguir e preparar os pedidos de arte. Os números e as espécies propostos ficam para aprovação na OD-019."
+    },
+    {
+      "id": "OD-019",
+      "task_id": "M14-T29",
+      "title": "Aprovar as espécies e os números dos mapas 3 e 4",
+      "detail": "Proposta: Pantanal Dourado (nível 20, Vara 1): Piraputanga, Piavuçu, Mandi-amarelo, Sardinha-de-água-doce, Jejum (comuns); Jurupoca, Jurupensém, Pacu-peva, Piau-flamengo (raros); Barbado (épico). Estuário das Marés (nível 30, Vara 2): Tainha, Carapeba, Bagre-do-mar, Baiacu, Corvina (comuns); Robalo-peva, Robalo-flecha, Pescada-amarela (raros); Camurupim e Mero (épicos). Raridade Épico: roxo, venda ×5, atributos ×1,35, XP do Pescador ×6, XP como alimento ×4,5, Grande ×0,7 e Excepcional ×0,45. Vara 1 passa a pegar Épico. Vara 2: 25.000 moedas, liberada no nível 25, pega Comum, Raro e Épico, bônus maiores que a Vara 1. Chance do épico: Barbado 2% no Pantanal; Camurupim e Mero 1,5% cada no Estuário. Tudo ajustável depois no painel de Balanceamento.",
+      "raised_at": "2026-09-30T17:58:27Z",
       "status": "OPEN"
     }
   ],
@@ -2116,10 +2125,22 @@
           "id": "M14-T29",
           "title": "Mapas 3 e 4: Pantanal Dourado e Estuário das Marés",
           "subsystem": "config",
-          "description": "O documento de identidade por mapa pede o Pantanal Dourado (nível 20, Vara 1, com peixes Épicos e o Barbado como peixe-sonho) e o Estuário das Marés (nível 30, Vara 2, com Camurupim e Mero Épicos). Nada disso existe ainda: faltam os dois mapas, a raridade Épico, a Vara 2, a lista completa de espécies e toda a arte e o som. Esperando a decisão OD-018.",
+          "description": "Criar o Pantanal Dourado e o Estuário das Marés (docs/IDENTIDADE_POR_MAPA.md): raridade Épico, Vara 2, 10 espécies por mapa, cenário, fauna, som e fotos. ASSET_PENDENTE: as imagens do documento de pedidos (M14-T30). Esperando a aprovação das espécies e dos números (OD-019).",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-09-30T14:59:37Z"
+          "updated_at": "2026-09-30T17:58:27Z"
+        },
+        {
+          "id": "M14-T30",
+          "title": "Pedidos de arte dos mapas 3 e 4 para o ChatGPT",
+          "subsystem": "docs",
+          "description": "Documento com os pedidos de arte do Pantanal Dourado, do Estuário das Marés e da Vara 2, no mesmo formato dos anteriores.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T29"
+          ],
+          "completion_notes": "36 pedidos (Novo 00 estilo mestre; Pantanal 01 a 18: cenário em camadas, 10 peixes com o Barbado, tuiuiú, arara-azul, colhereiro, borboletas, aguapés, carandás e ipês; Estuário 01 a 17: cenário, 10 peixes com Camurupim e Mero, guará, chama-maré, boto-cinza, trinta-réis, plantas e mangues; Novo 01: Vara 2). Link em docs/ASSETS_PENDENTES.md.",
+          "updated_at": "2026-09-30T17:58:27Z"
         }
       ]
     }
