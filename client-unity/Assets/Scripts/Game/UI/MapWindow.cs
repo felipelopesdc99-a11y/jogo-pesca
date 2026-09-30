@@ -85,10 +85,25 @@ namespace FishingIdle.Game.UI
                 y = picture.yMax + 14;
             }
 
+            // Each map is a chapter of the journey (addendum A-085).
+            var chapter = ArrivalTitle.ChapterOf(_root, map.MapId);
+            if (chapter > 0)
+            {
+                GUI.Label(new Rect(x, y, w, 18), GameTexts.Map.Chapter(chapter), skin.SmallGold);
+                y += 18;
+            }
+
             GUI.Label(new Rect(x, y, w, 30), map.Name, skin.Heading);
-            y += 34;
-            GUI.Label(new Rect(x, y, w, 64), map.Summary ?? string.Empty, skin.Small);
-            y += 70;
+            y += 32;
+            var feeling = GameTexts.Map.Feeling(map.MapId);
+            if (!string.IsNullOrEmpty(feeling))
+            {
+                GUI.Label(new Rect(x, y, w, 20), feeling, skin.SmallMuted);
+                y += 22;
+            }
+
+            GUI.Label(new Rect(x, y, w, 50), map.Summary ?? string.Empty, skin.Small);
+            y += 56;
 
             Row(skin, x, ref y, w, GameTexts.Map.NeedsLevel, GameTexts.Map.LevelRequirement(map.UnlockFisherLevel), map.LevelUnlocked);
             Row(skin, x, ref y, w, GameTexts.Map.NeedsRod, map.MinimumRodTier == 0 ? GameTexts.Map.AnyRod : map.MinimumRodName, map.RodAllowed);

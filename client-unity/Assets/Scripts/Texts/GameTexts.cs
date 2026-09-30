@@ -463,12 +463,23 @@ namespace FishingIdle.Texts
             public const string AnyRod = "Qualquer vara";
 
             public static string Departing(string map) => "Partindo para " + map + ".";
-            public static string Arrived(string map) => "Você chegou a " + map + ".";
             public static string Traveling(string map) => "Viajando para " + map + "…";
             public static string ArrivesIn(string countdown) => "Chegada em " + countdown;
             public static string TravelTime(string duration) => "Viagem: " + duration;
             public static string Discovered(int found, int total) => found + " de " + total + " descobertas";
             public static string LevelRequirement(int level) => "Nível " + level;
+            public static string Chapter(int number) => "CAPÍTULO " + number;
+
+            /// <summary>The one-line feeling of each map on arrival (docs/IDENTIDADE_POR_MAPA.md).</summary>
+            public static string Feeling(string mapId)
+            {
+                switch (mapId)
+                {
+                    case "map_01": return "Um começo tranquilo e bonito.";
+                    case "map_02": return "A aventura sai do conforto do lago.";
+                    default: return null;
+                }
+            }
         }
 
         // ------------------------------------------------------------------ Shop (GDD sections 7, 19)

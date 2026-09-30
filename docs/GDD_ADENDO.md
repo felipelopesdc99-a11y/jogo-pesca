@@ -820,3 +820,17 @@ A Caixa de Pesca, o Aquário e o Mercado têm um campo "Buscar peixe pelo nome",
 Basta digitar parte do nome, sem se preocupar com maiúsculas ou acentos ("tilapia" acha "Tilápia",
 "dour" acha "Dourado"). O ✕ limpa a busca. Ao abrir a janela de novo, a busca começa vazia. É só um
 jeito de achar o peixe na tela: não muda nenhuma regra.
+
+### A-085 · Cada mapa é um capítulo da jornada
+**Seção do GDD:** 18 · **Situação:** Decidido pelo proprietário (30/09/2026, `docs/IDENTIDADE_POR_MAPA.md`)
+
+Ao chegar a um mapa depois da viagem, o nome dele aparece por cima da cena como o título de um
+capítulo: "CAPÍTULO 2" em dourado, o nome do mapa grande e uma frase curta com a sensação do lugar
+(Lago Sereno: "Um começo tranquilo e bonito."; Rio Selvagem: "A aventura sai do conforto do lago.").
+Ele surge devagar, fica uns 4 segundos e some sozinho, sem caixa, sem raios e sem bloquear nada; o
+aviso "Você chegou a…" saiu, porque o título faz esse papel. No menu do Mapa, cada card mostra o
+capítulo e a mesma frase. O número do capítulo segue o nível que libera o mapa.
+
+O resto do documento de identidade já vale para os dois mapas: fauna própria (A-078), água própria
+(A-077: calma no Lago, correnteza no Rio), luz própria (fim de tarde e manhã) e som ambiente próprio
+por mapa (A-081, gravações pendentes). Os mapas 3 e 4 dependem da decisão `OD-018`.

@@ -3,6 +3,23 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.16] — 30/09/2026
+
+### Adicionado
+
+- **Cada mapa é um capítulo:** ao chegar, o nome do mapa aparece por cima da cena como título de
+  capítulo ("CAPÍTULO 2 · Rio Selvagem" e uma frase curta) e some sozinho. O menu do Mapa mostra o
+  capítulo e a frase em cada card.
+- `docs/IDENTIDADE_POR_MAPA.md`: o documento de identidade por mapa do proprietário.
+
+### Mudado
+
+- O aviso "Você chegou a…" saiu; o título de capítulo faz esse papel.
+
+### Pendente
+
+- Mapas 3 e 4 (Pantanal Dourado e Estuário das Marés): decisão `OD-018`.
+
 ## [0.2.0-m14.15] — 30/09/2026
 
 ### Adicionado

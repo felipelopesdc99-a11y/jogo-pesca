@@ -68,6 +68,9 @@ namespace FishingIdle.Game.Bootstrap
         /// <summary>Raised when the player arrives on a new map (the scene rebuilds its scenery).</summary>
         public event Action<string> MapChanged;
 
+        /// <summary>Raised only when the boat arrives on a map after a trip (not on a reset).</summary>
+        public event Action<string> MapArrived;
+
         public ToastFeed Toasts { get; } = new ToastFeed();
 
         /// <summary>The big moments (level 3 of the visual intensity system).</summary>
@@ -130,8 +133,8 @@ namespace FishingIdle.Game.Bootstrap
                     if (arrival.Arrived)
                     {
                         Refresh();
-                        Toasts.Push(GameTexts.Map.Arrived(Player.MapName), ToastKind.Info);
                         MapChanged?.Invoke(arrival.MapId);
+                        MapArrived?.Invoke(arrival.MapId);
                         AquariumChanged?.Invoke();
                     }
 

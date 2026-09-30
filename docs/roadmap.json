@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T02:28:03Z",
+  "updated_at": "2026-09-30T14:59:37Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -149,6 +149,14 @@
       "title": "Ver o visual novo no Unity e dizer o que ajustar",
       "detail": "Aperte Play e passeie pelo jogo: a cena do Lago Sereno, a Caixa de Pesca, o Aquário, o Mapa (viaje ao Rio Selvagem), a Loja, as Expedições, a Arena e o Mercado. Pesque até ver uma celebração (espécie nova é a primeira). Tire prints e diga o que ajustar — cores e tempos mudam direto em client-unity/Assets/Resources/Visual/tema_visual.json. Toda arte é provisória e pode ser trocada pela arte final seguindo docs/ASSETS_PENDENTES.md. Se aparecer erro vermelho no Console, mande a mensagem.",
       "raised_at": "2026-09-29T02:49:14Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-018",
+      "task_id": "M14-T29",
+      "title": "Criar os mapas 3 e 4 (Pantanal Dourado e Estuário das Marés)?",
+      "detail": "O documento de identidade por mapa fala de dois mapas que o jogo ainda não tem. Criar exige: a raridade Épico (cor, multiplicadores de venda, atributos, XP e tamanho), a Vara 2 (preço e bônus), a lista de espécies de cada mapa (o documento só cita Barbado, Camurupim e Mero; os mapas atuais têm 10 espécies cada), os níveis de liberação (20 e 30) e a arte de cada mapa (camadas, peixes, fauna, fotos) pedida ao ChatGPT como nos pedidos anteriores. Diga se é para criar agora e, se sim, se eu proponho a lista de espécies e os números para você aprovar.",
+      "raised_at": "2026-09-30T14:59:37Z",
       "status": "OPEN"
     }
   ],
@@ -1746,7 +1754,7 @@
           "id": "M13-T07",
           "title": "Gravações de ambiente sem direitos autorais",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE: 4 gravações de 2 a 3 minutos para o Lago Sereno (água calma na margem, pássaros ao longe) e 4 para o Rio Selvagem (correnteza, mata), de fonte sem direitos autorais (CC0 ou licença que permita uso em jogo). O proprietário baixa e manda, ou libera no ambiente o acesso a um site de sons.",
+          "description": "ASSET_PENDENTE: 4 gravações de 2 a 3 minutos por mapa, de fonte sem direitos autorais (CC0 ou licença que permita uso em jogo), seguindo docs/IDENTIDADE_POR_MAPA.md. Lago Sereno: água leve na margem, vento suave, pássaros calmos, madeira do barco. Rio Selvagem: água correndo, cachoeira ao longe, pássaros da mata, insetos discretos. O proprietário baixa e manda, ou libera no ambiente o acesso a um site de sons.",
           "status": "TODO",
           "dependencies": [
             "M13-T06"
@@ -2093,6 +2101,25 @@
           ],
           "completion_notes": "Nova seção Raridades na aba Balanceamento do Painel de Desenvolvimento: por raridade, multiplicadores de venda, atributos, XP do Pescador e XP como alimento, e os multiplicadores de cada tamanho com a chance final de Pequeno, Adulto, Grande e Excepcional calculada na hora. Valida antes de salvar, como o resto do painel. config/README.md ganhou a tabela de onde fica cada coisa. Compila; não aberto no Unity ainda.",
           "updated_at": "2026-09-30T02:28:03Z"
+        },
+        {
+          "id": "M14-T28",
+          "title": "Chegada ao mapa como capítulo",
+          "subsystem": "client",
+          "description": "Do documento de identidade por mapa do proprietário: o nome do mapa mais visível ao chegar e cada mapa como um capítulo da jornada.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "Título de capítulo ao chegar (UI/ArrivalTitle: CAPÍTULO N, nome do mapa e uma frase, some sozinho em uns 6 s, sem bloquear nada) no lugar do aviso de chegada; o menu do Mapa mostra o capítulo e a frase em cada card. Documento guardado em docs/IDENTIDADE_POR_MAPA.md. GDD_ADENDO A-085. Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-30T14:59:37Z"
+        },
+        {
+          "id": "M14-T29",
+          "title": "Mapas 3 e 4: Pantanal Dourado e Estuário das Marés",
+          "subsystem": "config",
+          "description": "O documento de identidade por mapa pede o Pantanal Dourado (nível 20, Vara 1, com peixes Épicos e o Barbado como peixe-sonho) e o Estuário das Marés (nível 30, Vara 2, com Camurupim e Mero Épicos). Nada disso existe ainda: faltam os dois mapas, a raridade Épico, a Vara 2, a lista completa de espécies e toda a arte e o som. Esperando a decisão OD-018.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-09-30T14:59:37Z"
         }
       ]
     }

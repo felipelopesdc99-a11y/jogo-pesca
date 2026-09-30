@@ -31,6 +31,7 @@ namespace FishingIdle.Game.UI
         private MapWindow _map;
         private ShopWindow _shop;
         private ExpeditionWindow _expedition;
+        private readonly ArrivalTitle _arrival = new ArrivalTitle();
         private ArenaWindow _arena;
         private MarketWindow _market;
         private bool _cardExpanded = true;
@@ -68,6 +69,7 @@ namespace FishingIdle.Game.UI
             _arena = new ArenaWindow(_root);
             _market = new MarketWindow(_root);
             _root.CatchesArrived += OnCatchesArrived;
+            _root.MapArrived += OnMapArrived;
         }
 
         private void OnDestroy()
@@ -75,7 +77,15 @@ namespace FishingIdle.Game.UI
             if (_root != null)
             {
                 _root.CatchesArrived -= OnCatchesArrived;
+                _root.MapArrived -= OnMapArrived;
             }
+        }
+
+        /// <summary>A new map is a new chapter of the journey: its title card over the scene.</summary>
+        private void OnMapArrived(string mapId)
+        {
+            var chapter = ArrivalTitle.ChapterOf(_root, mapId);
+            _arrival.Show(chapter > 0 ? GameTexts.Map.Chapter(chapter) : null, _root.Player?.MapName, GameTexts.Map.Feeling(mapId));
         }
 
         private void OnCatchesArrived(FishingUpdate update)
@@ -279,6 +289,7 @@ namespace FishingIdle.Game.UI
                 GUI.enabled = true;
             }
 
+            _arrival.Draw(skin, _width, _height);
             DrawToasts(skin);
             _root.Celebrations.Draw(skin, _width);
             DrawTutorial(skin, windowOpen);
