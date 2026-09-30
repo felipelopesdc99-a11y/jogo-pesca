@@ -23,11 +23,12 @@
     { "id": "legendary", "color": "#F6B93B" },
     { "id": "mythic", "color": "#EF6B5B" }
   ],
-  "_tamanhos": "Cor de cada categoria de tamanho (filtro da Caixa de Pesca e nome do tamanho no card): Pequeno verde, Adulto lilás, Grande laranja. Excepcional não entra aqui: usa sempre o dourado de exceptional_color.",
+  "_tamanhos": "Cor de cada categoria de tamanho (filtro da Caixa de Pesca e nome do tamanho no card): Pequeno verde, Adulto lilás, Grande laranja, Perfeição azul-diamante. Excepcional não entra aqui: usa sempre o dourado de exceptional_color.",
   "size_categories": [
     { "id": "small", "color": "#8FD9A8" },
     { "id": "adult", "color": "#B9A6F2" },
-    { "id": "large", "color": "#FF9F6B" }
+    { "id": "large", "color": "#FF9F6B" },
+    { "id": "perfect", "color": "#8FF3FF" }
   ],
   "_excepcional": "Tamanho Excepcional é tamanho, não raridade: tem o seu próprio selo dourado com brilho.",
   "exceptional_color": "#F6B93B",

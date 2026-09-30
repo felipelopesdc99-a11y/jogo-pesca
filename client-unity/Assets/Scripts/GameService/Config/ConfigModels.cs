@@ -141,6 +141,12 @@ namespace FishingIdle.GameService.Config
         public double PercentileMin { get; set; }
         public double PercentileMax { get; set; }
         public double FisherXpMultiplier { get; set; }
+
+        /// <summary>Multiplies every attribute of fish of this size (Perfeição: 1,05 = +5%). 1 when not set.</summary>
+        public double StatMultiplier { get; set; } = 1.0;
+
+        /// <summary>A size that is a highlight of its own (Excepcional, Perfeição): seal, celebration, protected on sale.</summary>
+        public bool Special { get; set; }
     }
 
     public sealed class InfluenceConfig

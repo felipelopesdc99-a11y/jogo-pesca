@@ -197,7 +197,7 @@ namespace FishingIdle.Game.UI
                 {
                     SpeciesId = fish.SpeciesId,
                     Name = fish.SpeciesName,
-                    Line = fish.SizeCategoryId == "exceptional" ? Format.SizeCm(fish.SizeCm) : Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName,
+                    Line = VisualTheme.IsSpecialSize(fish.SizeCategoryId) ? Format.SizeCm(fish.SizeCm) : Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName,
                     RarityId = fish.RarityId,
                     RarityName = fish.RarityName,
                     SizeCategoryId = fish.SizeCategoryId,

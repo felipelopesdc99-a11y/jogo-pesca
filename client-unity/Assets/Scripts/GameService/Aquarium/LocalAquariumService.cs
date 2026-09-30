@@ -363,13 +363,13 @@ namespace FishingIdle.GameService.Aquarium
                 view.SpeciesMinCm = species.SizeCm.Min;
                 view.SpeciesMaxCm = species.SizeCm.Max;
                 view.SizePercentile = CatchRules.Percentile(species, fish.SizeMm);
-                view.Stats = FishRules.Stats(Config, species, fish.SizeMm, fish.Level);
+                view.Stats = FishRules.Stats(Config, species, fish.SizeMm, fish.Level, fish.SizeCategoryId);
                 view.SalePriceCoins = CatchRules.SalePrice(Config, species, fish.SizeMm);
                 view.FeedXp = FishRules.FeedValue(Config, species, fish.SizeMm, fish.InvestedXp);
                 view.IsValuableFood = FishRules.IsValuableFood(Config, species.Rarity, fish.SizeCategoryId, fish.Level);
             }
 
-            view.IsImportant = fish.SizeCategoryId == "exceptional" || (view.RarityId != null && Config.RarityRank(view.RarityId) > 0);
+            view.IsImportant = Config.IsSpecialSize(fish.SizeCategoryId) || (view.RarityId != null && Config.RarityRank(view.RarityId) > 0);
             return view;
         }
 

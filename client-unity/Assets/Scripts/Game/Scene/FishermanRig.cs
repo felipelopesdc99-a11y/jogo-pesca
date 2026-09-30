@@ -462,9 +462,9 @@ namespace FishingIdle.Game.Scene
             {
                 color = theme.Rarity(c.RarityId);
             }
-            else if (c.SizeCategoryId == "exceptional")
+            else if (Visual.VisualTheme.IsSpecialSize(c.SizeCategoryId))
             {
-                color = theme.Exceptional;
+                color = theme.Size(c.SizeCategoryId);
             }
             else
             {

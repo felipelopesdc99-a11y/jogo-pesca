@@ -834,3 +834,17 @@ capítulo e a mesma frase. O número do capítulo segue o nível que libera o ma
 O resto do documento de identidade já vale para os dois mapas: fauna própria (A-078), água própria
 (A-077: calma no Lago, correnteza no Rio), luz própria (fim de tarde e manhã) e som ambiente próprio
 por mapa (A-081, gravações pendentes). Os mapas 3 e 4 dependem da decisão `OD-018`.
+
+### A-086 · Tamanho Perfeição, acima do Excepcional
+**Seção do GDD:** 36 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+Nova categoria de tamanho, acima do Excepcional: **Perfeição**. De cada 100 peixes que viriam
+Excepcionais, 1 vem Perfeição (no Comum: Excepcional 0,99% e Perfeição 0,01%; no Raro, os dois caem
+na mesma proporção, 0,72% e 0,007%). É o maior tamanho possível da espécie (percentil 99,8 a 100) e dá
+**+5% em todos os atributos** daquele peixe (Vida, Ataque, Defesa e Velocidade), para sempre.
+
+Como o Excepcional, ela tem selo próprio (PERFEIÇÃO, em azul-diamante com o brilho que passa),
+aviso com som, celebração própria ("Perfeição!"), pede confirmação na venda em lote, conta como
+alimento valioso e ganha um filtro na Caixa de Pesca. O Perfil conta as capturas Perfeição. O bônus
+de tamanho da vara vale para ela como vale para o Excepcional. Tudo ajustável em
+`config/progression.json` (`draw_weight`, `stat_multiplier`).

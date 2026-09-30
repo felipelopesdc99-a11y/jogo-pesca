@@ -447,6 +447,9 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>Catches of Exceptional size (counted from save version 3 on).</summary>
         public long ExceptionalCatches { get; set; }
 
+        /// <summary>Catches of the Perfeição size (added in V0.2; 0 in older saves).</summary>
+        public long PerfectCatches { get; set; }
+
         /// <summary>Catches above common rarity (counted from save version 3 on).</summary>
         public long RareCatches { get; set; }
     }

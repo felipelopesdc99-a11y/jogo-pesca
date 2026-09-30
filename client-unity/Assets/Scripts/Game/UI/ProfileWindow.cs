@@ -447,6 +447,7 @@ namespace FishingIdle.Game.UI
             Row(skin, x, ref y, w, GameTexts.Profile.Biggest, r.BiggestSpeciesName == null ? GameTexts.Profile.None : r.BiggestSpeciesName + " · " + Format.SizeCm(r.BiggestCm));
             Row(skin, x, ref y, w, GameTexts.Profile.HighestLevel, r.HighestFishLevel == 0 ? GameTexts.Profile.None : GameTexts.Player.LevelShort + " " + r.HighestFishLevel);
             Row(skin, x, ref y, w, GameTexts.Profile.Exceptional, Format.Number(r.ExceptionalCatches));
+            Row(skin, x, ref y, w, GameTexts.Profile.Perfect, Format.Number(r.PerfectCatches));
             Row(skin, x, ref y, w, GameTexts.Profile.Rare, Format.Number(r.RareCatches));
             Row(skin, x, ref y, w, GameTexts.Profile.Sold, Format.Number(r.FishSold));
             Row(skin, x, ref y, w, GameTexts.Profile.CoinsFromSales, Format.Number(r.CoinsFromSales));

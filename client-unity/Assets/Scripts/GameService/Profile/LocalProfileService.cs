@@ -360,6 +360,7 @@ namespace FishingIdle.GameService.Profile
                 SpeciesTotal = Config.FishCatalog.Species.Count,
                 HighestFishLevel = Save.Aquarium.Count == 0 ? 0 : Save.Aquarium.Max(f => f.Level),
                 ExceptionalCatches = Save.Stats.ExceptionalCatches,
+                PerfectCatches = Save.Stats.PerfectCatches,
                 RareCatches = Save.Stats.RareCatches,
                 FishSold = Save.Stats.FishSold,
                 CoinsFromSales = Save.Stats.CoinsFromSales,

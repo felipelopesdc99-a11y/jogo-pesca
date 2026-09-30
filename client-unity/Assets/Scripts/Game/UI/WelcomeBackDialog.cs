@@ -77,7 +77,7 @@ namespace FishingIdle.Game.UI
                 for (var i = 0; i < best.Count; i++)
                 {
                     var c = best[i];
-                    var accent = c.SizeCategoryId == "exceptional" ? UiSkin.Gold : UiSkin.RarityColor(c.RarityId);
+                    var accent = VisualTheme.IsSpecialSize(c.SizeCategoryId) ? UiSkin.SizeColor(c.SizeCategoryId) : UiSkin.RarityColor(c.RarityId);
                     skin.DrawGlow(new Rect(x + i * cw + cw * 0.2f, y + 14, cw * 0.5f, 28), accent, 0.3f);
                     GUI.DrawTexture(new Rect(x + i * cw, y, cw - 10, 56), Art.FishTexture(c.SpeciesId), ScaleMode.ScaleToFit, true);
                     GUI.Label(new Rect(x + i * cw, y + 58, cw - 10, 20), c.SpeciesName, skin.Small);

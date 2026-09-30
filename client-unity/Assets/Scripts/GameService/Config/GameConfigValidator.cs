@@ -94,6 +94,11 @@ namespace FishingIdle.GameService.Config
                         errors.Add(V.BadPercentileBand(category.Id));
                     }
 
+                    if (category.StatMultiplier <= 0)
+                    {
+                        errors.Add(V.NegativeValue(GameConfigLoader.ProgressionFile, "size " + category.Id + " stat_multiplier"));
+                    }
+
                     if (category.FisherXpMultiplier < 0)
                     {
                         errors.Add(V.NegativeValue(GameConfigLoader.ProgressionFile, "size " + category.Id + " fisher_xp_multiplier"));

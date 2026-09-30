@@ -87,6 +87,7 @@ namespace FishingIdle.GameService.Profile
         public double BiggestCm { get; internal set; }
         public int HighestFishLevel { get; internal set; }
         public long ExceptionalCatches { get; internal set; }
+        public long PerfectCatches { get; internal set; }
         public long RareCatches { get; internal set; }
         public long FishSold { get; internal set; }
         public long CoinsFromSales { get; internal set; }

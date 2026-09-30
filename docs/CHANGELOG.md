@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.17] — 30/09/2026
+
+### Adicionado
+
+- **Tamanho Perfeição**, acima do Excepcional: 1 a cada 100 excepcionais, o maior tamanho possível
+  e +5% em todos os atributos do peixe. Selo azul-diamante, aviso, celebração e filtro próprio.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M14-T15`).
+
 ## [0.2.0-m14.16] — 30/09/2026
 
 ### Adicionado

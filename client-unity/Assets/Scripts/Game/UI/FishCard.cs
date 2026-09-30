@@ -45,7 +45,9 @@ namespace FishingIdle.Game.UI
         {
             var hovered = GUI.enabled && rect.Contains(Event.current.mousePosition);
             var accent = UiSkin.RarityColor(m.RarityId);
-            var exceptional = m.SizeCategoryId == "exceptional";
+            // Excepcional and Perfeição: their own seal and gleam, in the size colour.
+            var exceptional = VisualTheme.IsSpecialSize(m.SizeCategoryId);
+            var sizeColor = UiSkin.SizeColor(m.SizeCategoryId);
 
             var clicked = GUI.Button(rect, GUIContent.none, m.Selected ? skin.CardSelected : hovered ? skin.CardHovered : skin.Card);
             if (!m.Selected)
@@ -83,7 +85,7 @@ namespace FishingIdle.Game.UI
             var bob = hovered ? Mathf.Sin(Time.unscaledTime * 3f) * 1.5f : 0f;
             if (exceptional && !m.Silhouette)
             {
-                skin.DrawGlow(new Rect(art.x + art.width * 0.2f, art.y + art.height * 0.25f, art.width * 0.6f, art.height * 0.5f), VisualTheme.Current.Exceptional, 0.35f + 0.1f * Mathf.Sin(Time.unscaledTime * 2.4f));
+                skin.DrawGlow(new Rect(art.x + art.width * 0.2f, art.y + art.height * 0.25f, art.width * 0.6f, art.height * 0.5f), sizeColor, 0.35f + 0.1f * Mathf.Sin(Time.unscaledTime * 2.4f));
             }
 
             var tex = m.Art != null ? m.Art : Scene.Art.FishTexture(m.SpeciesId);
@@ -98,7 +100,7 @@ namespace FishingIdle.Game.UI
                 // The gold seal sits at the right end of the size line, never over the fish.
                 var seal = m.SizeCategoryName.ToUpperInvariant();
                 var sw = skin.Badge.CalcSize(new GUIContent(seal)).x + 10f;
-                ExceptionalSeal(skin, new Rect(x + w - sw, y + 1, sw, 18), seal);
+                ExceptionalSeal(skin, new Rect(x + w - sw, y + 1, sw, 18), seal, sizeColor);
                 var rest = WithoutSize(m.Line, m.SizeCategoryName);
                 if (!string.IsNullOrEmpty(rest))
                 {
@@ -160,11 +162,10 @@ namespace FishingIdle.Game.UI
             return string.Join(sep, System.Array.FindAll(parts, p => p != size));
         }
 
-        /// <summary>The gold "EXCEPCIONAL" size seal, with a light sweeping across it.</summary>
-        public static void ExceptionalSeal(UiSkin skin, Rect rect, string text)
+        /// <summary>The "EXCEPCIONAL" (gold) or "PERFEIÇÃO" (diamond) size seal, with a light sweeping across it.</summary>
+        public static void ExceptionalSeal(UiSkin skin, Rect rect, string text, Color? color = null)
         {
-            var gold = VisualTheme.Current.Exceptional;
-            skin.Tag(rect, text, gold);
+            skin.Tag(rect, text, color ?? VisualTheme.Current.Exceptional);
 
             // Gleam: a soft white band that crosses the seal every few seconds.
             var period = 2.8f;

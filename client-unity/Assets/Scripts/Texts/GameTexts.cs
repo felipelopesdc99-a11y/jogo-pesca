@@ -569,6 +569,7 @@ namespace FishingIdle.Texts
             public const string Biggest = "Maior peixe já pescado";
             public const string HighestLevel = "Peixe de nível mais alto";
             public const string Exceptional = "Capturas Excepcionais";
+            public const string Perfect = "Capturas Perfeição";
             public const string Rare = "Capturas Raras";
             public const string Sold = "Peixes vendidos";
             public const string CoinsFromSales = "Moedas com vendas";
@@ -604,6 +605,7 @@ namespace FishingIdle.Texts
             public static string NewSpecies(string species) => "Nova espécie descoberta: " + species + "!";
             public static string PersonalRecord(string species, string size) => "Novo recorde de " + species + ": " + size + "!";
             public static string Exceptional(string species) => "Captura Excepcional: " + species + "!";
+            public static string Perfect(string species) => "Perfeição: " + species + "! O maior possível, com +5% em todos os atributos.";
             public static string LevelUp(int level) => "Você subiu para o Nível " + level + "!";
             public static string Shells(string amount) => "+" + amount + " Conchas";
             public const string FishingStarted = "Pesca iniciada.";
@@ -618,6 +620,7 @@ namespace FishingIdle.Texts
         {
             public const string RareCatch = "Captura rara!";
             public const string Exceptional = "Tamanho Excepcional!";
+            public const string Perfect = "Perfeição!";
             public const string Record = "Novo recorde!";
             public const string NewSpecies = "Nova espécie!";
             public static string LevelUp(int level) => "Nível " + level + "!";

@@ -44,7 +44,7 @@ namespace FishingIdle.GameService.Fishing
                 (protection.SizeCategories != null && protection.SizeCategories.Contains(entry.SizeCategoryId));
 
             view.IsValuableFood = FishRules.IsValuableFood(config, view.RarityId, entry.SizeCategoryId, 1);
-            view.IsImportant = view.IsProtected || view.IsNewSpecies || entry.SizeCategoryId == "exceptional";
+            view.IsImportant = view.IsProtected || view.IsNewSpecies || config.IsSpecialSize(entry.SizeCategoryId);
             return view;
         }
     }

@@ -4,7 +4,7 @@ Gerado por `./ops/scripts/simular.sh` (ferramenta em `tools/Simulador`). Ele jog
 do jogo com um relógio simulado e mede os números atuais de `/config`. Não muda nenhum valor: serve
 para decidir o balanceamento com dados. Rode de novo depois de editar o balanceamento.
 
-- Versão do balanceamento: `b8c744fbf3`
+- Versão do balanceamento: `0fac26101a`
 - Jogadores simulados por medição: 5 (a tabela mostra a média)
 
 ## Pontos de atenção
@@ -40,18 +40,18 @@ que pode e viaja para o próximo mapa assim que ele libera. Offline, cada captur
 | 13 | 2,6 h | 17.428 |
 | 14 | 2,8 h | 22.825 |
 | 15 | 3,1 h | 30.052 |
-| 16 | 3,3 h | 37.990 |
+| 16 | 3,3 h | 37.989 |
 | 17 | 3,6 h | 45.779 |
 | 18 | 3,9 h | 54.012 |
 | 19 | 4,2 h | 63.826 |
-| 20 | 4,6 h | 73.283 |
-| 30 | 10,1 h | 219.557 |
-| 40 | 19,1 h | 458.242 |
-| 50 | 32,2 h | 819.092 |
-| 60 | 50,2 h | 1.301.995 |
-| 70 | 73,0 h | 1.931.201 |
-| 80 | 101,4 h | 2.712.943 |
-| 90 | 136,0 h | 3.649.070 |
+| 20 | 4,6 h | 73.282 |
+| 30 | 10,1 h | 219.555 |
+| 40 | 19,1 h | 458.236 |
+| 50 | 32,2 h | 819.084 |
+| 60 | 50,2 h | 1.301.981 |
+| 70 | 73,0 h | 1.931.177 |
+| 80 | 101,4 h | 2.712.914 |
+| 90 | 136,0 h | 3.649.030 |
 
 Até o Nível 20 aparecem todos os níveis; depois, de 10 em 10. A simulação para no nível máximo ou com 150 h.
 
@@ -63,13 +63,13 @@ Até o Nível 20 aparecem todos os níveis; depois, de 10 em 10. A simulação p
 
 200.000 sorteios reais (`CatchRules.Roll`) por combinação de mapa e vara.
 
-| Mapa · vara | Comum | Raro | Pequeno | Adulto | Grande | Excepcional | Conchas por 100 capturas |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| Lago Sereno · Vara Inicial | 100,00% | 0,00% | 19,98% | 59,94% | 19,06% | 1,02% | 0,0 |
-| Lago Sereno · Vara 1 Nv.1 | 100,00% | 0,00% | 19,98% | 59,94% | 19,06% | 1,02% | 7,5 |
-| Lago Sereno · Vara 1 Nv.10 | 100,00% | 0,00% | 19,16% | 57,53% | 22,14% | 1,18% | 11,5 |
-| Rio Selvagem · Vara 1 Nv.1 | 99,50% | 0,50% | 19,98% | 59,95% | 19,05% | 1,02% | 7,5 |
-| Rio Selvagem · Vara 1 Nv.10 | 99,39% | 0,61% | 19,16% | 57,55% | 22,11% | 1,18% | 11,5 |
+| Mapa · vara | Comum | Raro | Pequeno | Adulto | Grande | Excepcional | Perfeição | Conchas por 100 capturas |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Lago Sereno · Vara Inicial | 100,00% | 0,00% | 19,98% | 59,94% | 19,06% | 1,01% | 0,01% | 0,0 |
+| Lago Sereno · Vara 1 Nv.1 | 100,00% | 0,00% | 19,98% | 59,94% | 19,06% | 1,01% | 0,01% | 7,5 |
+| Lago Sereno · Vara 1 Nv.10 | 100,00% | 0,00% | 19,16% | 57,53% | 22,14% | 1,17% | 0,01% | 11,5 |
+| Rio Selvagem · Vara 1 Nv.1 | 99,50% | 0,50% | 19,98% | 59,95% | 19,05% | 1,01% | 0,01% | 7,5 |
+| Rio Selvagem · Vara 1 Nv.10 | 99,39% | 0,61% | 19,16% | 57,55% | 22,11% | 1,17% | 0,01% | 11,5 |
 
 ## 3. Economia
 

@@ -498,10 +498,22 @@
       {
         "id": "exceptional",
         "display_name": "Excepcional",
-        "draw_weight": 1.0,
+        "draw_weight": 0.99,
         "percentile_min": 0.99,
+        "percentile_max": 0.998,
+        "fisher_xp_multiplier": 1.1,
+        "special": true
+      },
+      {
+        "id": "perfect",
+        "display_name": "Perfeição",
+        "note": "Acima do Excepcional: de cada 100 peixes que viriam Excepcionais, 1 vem Perfeição (peso 0,01 contra 0,99). O maior tamanho possível da espécie e +5% em todos os atributos (stat_multiplier).",
+        "draw_weight": 0.01,
+        "percentile_min": 0.998,
         "percentile_max": 1.0,
-        "fisher_xp_multiplier": 1.1
+        "fisher_xp_multiplier": 1.15,
+        "stat_multiplier": 1.05,
+        "special": true
       }
     ],
     "stat_influence": {
@@ -521,7 +533,7 @@
   },
   "rarity": {
     "note": "A raridade é uma hierarquia de poder e é diferente da categoria de tamanho. Um peixe Comum pode ser de tamanho Excepcional.",
-    "size_note": "size_weight_multipliers: quanto mais rara a raridade, um pouco menos de chance de o peixe vir Grande ou Excepcional (multiplica o draw_weight do tamanho; o que não estiver listado fica 1). Raro: Grande × 0,85 e Excepcional × 0,7, o que dá Pequeno 20,7%, Adulto 62,0%, Grande 16,7% e Excepcional 0,72% (o Comum fica 20%, 60%, 19% e 1%).",
+    "size_note": "size_weight_multipliers: quanto mais rara a raridade, um pouco menos de chance de o peixe vir Grande ou Excepcional (multiplica o draw_weight do tamanho; o que não estiver listado fica 1). Raro: Grande × 0,85, Excepcional × 0,7 e Perfeição × 0,7, o que dá Pequeno 20,7%, Adulto 62,0%, Grande 16,7%, Excepcional 0,72% e Perfeição 0,007% (o Comum fica 20%, 60%, 19%, 0,99% e 0,01%).",
     "tiers": [
       {
         "id": "common",
@@ -540,7 +552,8 @@
         "sale_value_multiplier": 2.0,
         "size_weight_multipliers": {
           "large": 0.85,
-          "exceptional": 0.7
+          "exceptional": 0.7,
+          "perfect": 0.7
         }
       }
     ]
@@ -553,7 +566,8 @@
     "valuable_feed_rules": {
       "rarity_at_or_above": "rare",
       "size_categories": [
-        "exceptional"
+        "exceptional",
+        "perfect"
       ],
       "min_level": 2
     }

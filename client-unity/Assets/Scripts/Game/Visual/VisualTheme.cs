@@ -60,6 +60,7 @@ namespace FishingIdle.Game.Visual
             new RarityColor { id = "small", color = "#8FD9A8" },
             new RarityColor { id = "adult", color = "#B9A6F2" },
             new RarityColor { id = "large", color = "#FF9F6B" },
+            new RarityColor { id = "perfect", color = "#8FF3FF" },
         };
 
         /// <summary>The theme in use. Loaded on first access.</summary>
@@ -78,6 +79,9 @@ namespace FishingIdle.Game.Visual
 
             return Hex("#F2F5F8");
         }
+
+        /// <summary>Whether a size has its own seal and celebration (Excepcional and, above it, Perfeição).</summary>
+        public static bool IsSpecialSize(string sizeCategoryId) => sizeCategoryId == "exceptional" || sizeCategoryId == "perfect";
 
         /// <summary>Accent colour of a size category id; Excepcional always uses its own gold.</summary>
         public Color Size(string sizeCategoryId)

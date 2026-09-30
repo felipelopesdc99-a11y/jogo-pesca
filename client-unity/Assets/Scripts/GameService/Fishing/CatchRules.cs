@@ -100,7 +100,7 @@ namespace FishingIdle.GameService.Fishing
 
         /// <summary>
         /// Size category by draw weight. The rod's size quality multiplies the weight of the
-        /// "large" and "exceptional" categories, and the species' rarity multiplies each category by
+        /// "large", "exceptional" and "perfect" categories, and the species' rarity multiplies each category by
         /// its size_weight_multipliers (rarer fish come big a little less often, addendum A-083);
         /// the draw renormalises over the new total.
         /// </summary>
@@ -168,7 +168,7 @@ namespace FishingIdle.GameService.Fishing
 
         private static bool IsBoostedBySizeQuality(SizeCategoryConfig category)
         {
-            return category.Id == "large" || category.Id == "exceptional";
+            return category.Id == "large" || category.Id == "exceptional" || category.Id == "perfect";
         }
 
         private static T PickWeighted<T>(IReadOnlyList<KeyValuePair<T, double>> candidates, Rng rng)

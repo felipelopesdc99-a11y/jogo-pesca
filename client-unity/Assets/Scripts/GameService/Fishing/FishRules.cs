@@ -21,15 +21,16 @@ namespace FishingIdle.GameService.Fishing
     {
         /// <summary>
         /// attribute = base × rarity multiplier × (1 + size influence × (percentile − 0,5))
-        ///           × (1 + level bonus × (level − 1)).
+        ///           × (1 + level bonus × (level − 1)) × size category multiplier (Perfeição: +5%).
         /// </summary>
-        public static FishStats Stats(GameConfig config, SpeciesConfig species, int sizeMm, int level)
+        public static FishStats Stats(GameConfig config, SpeciesConfig species, int sizeMm, int level, string sizeCategoryId = null)
         {
             config.TryGetRarity(species.Rarity, out var rarity);
             var rarityFactor = rarity?.StatMultiplier ?? 1.0;
             var sizeFactor = 1.0 + config.Progression.Size.StatInfluence.Influence * (CatchRules.Percentile(species, sizeMm) - 0.5);
             var levelFactor = 1.0 + config.Progression.FishLevel.StatBonusPerLevelPercent / 100.0 * (Math.Max(1, level) - 1);
-            var factor = rarityFactor * sizeFactor * levelFactor;
+            var categoryFactor = sizeCategoryId != null && config.TryGetSizeCategory(sizeCategoryId, out var category) ? category.StatMultiplier : 1.0;
+            var factor = rarityFactor * sizeFactor * levelFactor * categoryFactor;
             var b = species.BaseStats;
 
             return new FishStats

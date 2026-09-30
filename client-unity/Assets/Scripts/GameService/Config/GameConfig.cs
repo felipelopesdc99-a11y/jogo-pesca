@@ -91,6 +91,9 @@ namespace FishingIdle.GameService.Config
         public bool TryGetMap(string id, out MapConfig map) => _maps.TryGetValue(id ?? string.Empty, out map);
         public bool TryGetRod(string id, out RodConfig rod) => _rods.TryGetValue(id ?? string.Empty, out rod);
         public bool TryGetSizeCategory(string id, out SizeCategoryConfig category) => _sizeCategories.TryGetValue(id ?? string.Empty, out category);
+
+        /// <summary>Whether a size category is a highlight of its own (Excepcional, Perfeição; "special" in progression.json).</summary>
+        public bool IsSpecialSize(string id) => TryGetSizeCategory(id, out var category) && category.Special;
         public bool TryGetRarity(string id, out RarityTierConfig rarity) => _rarities.TryGetValue(id ?? string.Empty, out rarity);
 
         /// <summary>XP needed to go from <paramref name="level"/> to the next; 0 at the max level.</summary>

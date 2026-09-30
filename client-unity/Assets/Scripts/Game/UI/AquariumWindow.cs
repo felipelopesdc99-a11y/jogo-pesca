@@ -206,11 +206,11 @@ namespace FishingIdle.Game.UI
             var accent = UiSkin.RarityColor(fish.RarityId);
             skin.DrawOutline(area, new Color(accent.r, accent.g, accent.b, 0.8f));
             var art = new Rect(x, y + 6, w, 124);
-            var exceptional = fish.SizeCategoryId == "exceptional";
+            var exceptional = VisualTheme.IsSpecialSize(fish.SizeCategoryId);
             if (fish.IsImportant)
             {
                 skin.DrawGlow(new Rect(art.x + art.width * 0.25f, art.y + art.height * 0.3f, art.width * 0.5f, art.height * 0.4f),
-                    exceptional ? VisualTheme.Current.Exceptional : accent, 0.4f);
+                    exceptional ? UiSkin.SizeColor(fish.SizeCategoryId) : accent, 0.4f);
             }
 
             GUI.DrawTexture(art, Art.FishTexture(fish.SpeciesId), ScaleMode.ScaleToFit, true);
@@ -223,7 +223,7 @@ namespace FishingIdle.Game.UI
             skin.AccentPill(new Rect(x, y, pillWidth, 22), rarityLabel, accent, Icons.Star);
             if (exceptional)
             {
-                UI.FishCard.ExceptionalSeal(skin, new Rect(x + pillWidth + 8, y + 1, 110, 20), fish.SizeCategoryName.ToUpperInvariant());
+                UI.FishCard.ExceptionalSeal(skin, new Rect(x + pillWidth + 8, y + 1, 110, 20), fish.SizeCategoryName.ToUpperInvariant(), UiSkin.SizeColor(fish.SizeCategoryId));
             }
             else
             {
@@ -237,7 +237,7 @@ namespace FishingIdle.Game.UI
             // Size: number and a bar inside the species range (GDD section 14).
             GUI.Label(new Rect(x, y, w, 22), GameTexts.Aquarium.Size + ": " + Format.SizeCm(fish.SizeCm) + "  (" + Format.SizeCm(fish.SpeciesMinCm) + " – " + Format.SizeCm(fish.SpeciesMaxCm) + ")", skin.Small);
             y += 22;
-            skin.Bar(new Rect(x, y, w, 8), (float)fish.SizePercentile, exceptional ? VisualTheme.Current.Exceptional : accent);
+            skin.Bar(new Rect(x, y, w, 8), (float)fish.SizePercentile, exceptional ? UiSkin.SizeColor(fish.SizeCategoryId) : accent);
             y += 20;
 
             GUI.Label(new Rect(x, y, w, 22), GameTexts.Aquarium.LevelOf(fish.Level, fish.MaxLevel), skin.BodyBold);

@@ -48,6 +48,9 @@ Onde fica cada coisa no painel:
 - **Os atributos base valem para nível 1, tamanho no percentil 0,50, antes dos modificadores de
   raridade, tamanho e nível.** O servidor aplica esses modificadores usando o `progression.json`;
   ele nunca grava atributos derivados de forma redundante.
+- **Tamanho Perfeição:** acima do Excepcional, com `draw_weight` 0,01 (1 em cada 100 dos dois) e
+  `stat_multiplier` 1,05 (+5% em todos os atributos). Qualquer categoria de tamanho pode ter um
+  `stat_multiplier` (1 quando não tem) e `special: true` (selo, celebração e proteção na venda).
 - **Tamanho por raridade:** cada raridade pode ter `size_weight_multipliers` (em
   `progression.json → rarity.tiers`), que multiplica o `draw_weight` de cada categoria de tamanho
   para os peixes dessa raridade. O que não estiver listado fica 1. Hoje o Raro tem Grande × 0,85 e

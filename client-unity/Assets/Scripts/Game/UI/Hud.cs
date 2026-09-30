@@ -100,6 +100,10 @@ namespace FishingIdle.Game.UI
                 {
                     _root.Toasts.Push(GameTexts.Toasts.NewSpecies(c.SpeciesName), ToastKind.Important, icon, notify: true, sound: SoundCue.RareCatch);
                 }
+                else if (c.SizeCategoryId == "perfect")
+                {
+                    _root.Toasts.Push(GameTexts.Toasts.Perfect(c.SpeciesName) + " " + size, ToastKind.Important, icon, notify: true, sound: SoundCue.RareCatch);
+                }
                 else if (c.SizeCategoryId == "exceptional")
                 {
                     _root.Toasts.Push(GameTexts.Toasts.Exceptional(c.SpeciesName) + " " + size, ToastKind.Important, icon, notify: true, sound: SoundCue.RareCatch);
@@ -139,7 +143,7 @@ namespace FishingIdle.Game.UI
             CatchView best = null;
             foreach (var c in update.NewCatches)
             {
-                if ((c.IsNewSpecies || c.IsPersonalRecord || c.SizeCategoryId == "exceptional" || (c.RarityId != null && c.RarityId != "common"))
+                if ((c.IsNewSpecies || c.IsPersonalRecord || VisualTheme.IsSpecialSize(c.SizeCategoryId) || (c.RarityId != null && c.RarityId != "common"))
                     && (best == null || c.SalePriceCoins > best.SalePriceCoins))
                 {
                     best = c;
@@ -153,6 +157,10 @@ namespace FishingIdle.Game.UI
                 if (best.IsNewSpecies)
                 {
                     _root.Celebrations.Show(GameTexts.Celebration.NewSpecies, GameTexts.Celebration.NewSpeciesLine(best.SpeciesName), theme.Action, art, reveal: true);
+                }
+                else if (best.SizeCategoryId == "perfect")
+                {
+                    _root.Celebrations.Show(GameTexts.Celebration.Perfect, GameTexts.Celebration.CatchLine(best.SpeciesName, size), theme.Size("perfect"), art);
                 }
                 else if (best.SizeCategoryId == "exceptional")
                 {

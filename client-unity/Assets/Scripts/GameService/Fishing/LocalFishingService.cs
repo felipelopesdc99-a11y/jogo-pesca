@@ -440,6 +440,7 @@ namespace FishingIdle.GameService.Fishing
             Save.FishingBox.Add(entry);
             Save.Stats.TotalCatches++;
             if (rolled.SizeCategory.Id == "exceptional") Save.Stats.ExceptionalCatches++;
+            if (rolled.SizeCategory.Id == "perfect") Save.Stats.PerfectCatches++;
             if (!CatchRules.IsCommon(rolled.Species)) Save.Stats.RareCatches++;
             Save.Shells += rolled.Shells;
             update.ShellsGained += rolled.Shells;

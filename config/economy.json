@@ -77,7 +77,8 @@
         "rare"
       ],
       "size_categories": [
-        "exceptional"
+        "exceptional",
+        "perfect"
       ]
     }
   },

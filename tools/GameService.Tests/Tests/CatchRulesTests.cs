@@ -31,6 +31,36 @@ public sealed class CatchRulesTests
     }
 
     [Fact]
+    public void One_in_a_hundred_exceptional_sized_fish_comes_perfect()
+    {
+        var rng = new Rng(4242);
+        long exceptional = 0, perfect = 0;
+        for (var i = 0; i < 2_000_000; i++)
+        {
+            var id = CatchRules.RollSizeCategory(Config, new RodBonusesConfig(), rng, "common").Id;
+            if (id == "exceptional") exceptional++;
+            if (id == "perfect") perfect++;
+        }
+
+        // 0,99% Excepcional and 0,01% Perfeição: about 1 Perfeição for every 100 of the two.
+        Assert.InRange(perfect / (double)(perfect + exceptional), 0.006, 0.014);
+        Assert.True(Config.IsSpecialSize("perfect") && Config.IsSpecialSize("exceptional") && !Config.IsSpecialSize("large"));
+    }
+
+    [Fact]
+    public void A_perfect_fish_has_five_percent_more_of_every_attribute()
+    {
+        Config.TryGetSpecies("tilapia", out var tilapia);
+        var plain = FishRules.Stats(Config, tilapia, 500, 3, "exceptional");
+        var perfect = FishRules.Stats(Config, tilapia, 500, 3, "perfect");
+
+        Assert.Equal(plain.Hp * 1.05, perfect.Hp, 6);
+        Assert.Equal(plain.Attack * 1.05, perfect.Attack, 6);
+        Assert.Equal(plain.Defense * 1.05, perfect.Defense, 6);
+        Assert.Equal(plain.Speed * 1.05, perfect.Speed, 6);
+    }
+
+    [Fact]
     public void Rare_fish_come_large_or_exceptional_a_little_less_often()
     {
         static Dictionary<string, double> Shares(string rarity)
