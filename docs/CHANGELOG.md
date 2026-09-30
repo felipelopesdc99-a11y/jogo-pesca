@@ -3,6 +3,13 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.12] — 30/09/2026
+
+### Corrigido
+
+- As cores de tamanho (Pequeno verde, Adulto lilás, Grande laranja, Excepcional dourado) agora
+  aparecem também no Aquário, no Mercado e no Perfil.
+
 ## [0.2.0-m14.11] — 30/09/2026
 
 ### Mudado

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T01:13:32Z",
+  "updated_at": "2026-09-30T01:47:58Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -2047,6 +2047,18 @@
           ],
           "completion_notes": "O resultado saiu da tela principal e virou um relatório por cima da aba Expedição (foto, data e hora da volta, moedas, aproveitamento e o peixe no card oficial). Ponto vermelho no botão Expedição e aviso quando o Cardume volta. O botão Ótimo! marca como lido; fechado sem ler, continua lá (também depois de fechar o jogo; teste novo). GDD_ADENDO A-082. Compila, 152 testes; não aberto no Unity ainda.",
           "updated_at": "2026-09-30T01:13:32Z"
+        },
+        {
+          "id": "M14-T24",
+          "title": "Cores de tamanho no Aquário, Mercado e Perfil",
+          "subsystem": "client",
+          "description": "A pedido do proprietário: as cores de Pequeno, Adulto, Grande e Excepcional não apareciam no Aquário, no Mercado e no Perfil.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T22"
+          ],
+          "completion_notes": "UiSkin.SizeLine escreve o tamanho na cor dele em qualquer posição da linha (antes só no fim, e o Aquário não passava o tamanho ao card). Aplicado nos cards do Aquário (inclusive alimento) e do Mercado, na ficha do Aquário (selo na cor do tamanho), nas linhas e filtros do Mercado e na lista do Cardume no Perfil. GDD_ADENDO A-079. Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-30T01:47:58Z"
         }
       ]
     }

@@ -745,6 +745,11 @@ direito da linha do tamanho, abaixo do nome), em vez de ficar por cima do desenh
 Mítico) têm cores guardadas no tema; se alguma entrar no jogo, as cores de tamanho são revistas para
 não se confundirem.
 
+A cor do tamanho vale em todas as telas, não só na Caixa de Pesca: nos cards do Aquário (inclusive
+na escolha de alimento) e do Mercado, na ficha do peixe no Aquário (um selo na cor do tamanho ao lado
+do selo da raridade), nas linhas do Mercado (anúncios, retiradas e detalhes), nos filtros de
+raridade e tamanho do Mercado e na lista de peixes do Cardume, no Perfil.
+
 ### A-080 · Som só nos momentos que importam
 **Seção do GDD:** 8, 39 · **Situação:** Decidido pelo proprietário (29/09/2026)
 
