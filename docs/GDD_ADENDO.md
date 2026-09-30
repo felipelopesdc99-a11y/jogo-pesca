@@ -761,3 +761,14 @@ Os outros avisos (peixe pescado, peixe raro, recorde, moedas, Expedição, Merca
 iniciar pesca…) continuam aparecendo na tela, mas em silêncio. O som ambiente (mar e brisa) não muda
 e continua com a sua própria chave em Opções. Os arquivos dos sons silenciados ficam guardados em
 `Resources/Sons`, sem uso.
+
+### A-081 · Ambiente com gravações longas
+**Seção do GDD:** 8, 39 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+Muda a A-067: o proprietário achou esquisito o som de ondas feito por código, que se repete a cada
+poucos segundos. O ambiente de cada mapa passa a ser uma lista de gravações reais e sem direitos
+autorais, de 2 a 3 minutos cada (Lago Sereno: água calma batendo na margem, pássaros ao longe; Rio
+Selvagem: correnteza, mata), tocadas uma depois da outra em ordem sorteada, com 8 segundos de
+passagem suave entre elas e sem repetir a que acabou de tocar. Com 4 gravações por mapa, o que se
+ouviu só volta depois de uns 10 minutos. Ao trocar de mapa, o som passa suavemente para o do mapa
+novo. Enquanto as gravações não chegam, fica o som antigo. `ASSET_PENDENTE`: as gravações.

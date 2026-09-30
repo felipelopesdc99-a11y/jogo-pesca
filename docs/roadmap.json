@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T00:14:46Z",
+  "updated_at": "2026-09-30T01:03:22Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -1729,6 +1729,29 @@
           ],
           "completion_notes": "Os avisos só tocam som ao subir de nível (Pescador ou peixe), numa captura Excepcional e numa espécie nova. Peixe pescado, raro, recorde, moedas, Expedição, Mercado, avisos e cliques ficaram em silêncio (continuam na tela). O som ambiente não mudou. Registrado no GDD_ADENDO (A-080). Compila; não ouvido no Unity ainda.",
           "updated_at": "2026-09-29T23:51:44Z"
+        },
+        {
+          "id": "M13-T06",
+          "title": "Ambiente em lista de gravações longas",
+          "subsystem": "client",
+          "description": "A pedido do proprietário: o som de ondas feito por código soava esquisito e repetia rápido. Tocar gravações longas (2 a 3 minutos) em sequência sorteada, para o que se ouviu só voltar depois de uns 10 minutos.",
+          "status": "DONE",
+          "dependencies": [
+            "M13-T02"
+          ],
+          "completion_notes": "AmbiencePlaylist: por mapa, gravações de Resources/Sons/Ambiente listadas em Resources/Sons/ambiente.json, em ordem sorteada, sem repetir a última, com 8 s de passagem suave; troca suave ao mudar de mapa; sem gravação, usa o som antigo. Importação em streaming (Vorbis). tools/Audio/processar_ambiente.py prepara os arquivos. GDD_ADENDO A-081. Compila; não ouvido no Unity ainda.",
+          "updated_at": "2026-09-30T01:03:22Z"
+        },
+        {
+          "id": "M13-T07",
+          "title": "Gravações de ambiente sem direitos autorais",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE: 4 gravações de 2 a 3 minutos para o Lago Sereno (água calma na margem, pássaros ao longe) e 4 para o Rio Selvagem (correnteza, mata), de fonte sem direitos autorais (CC0 ou licença que permita uso em jogo). O proprietário baixa e manda, ou libera no ambiente o acesso a um site de sons.",
+          "status": "TODO",
+          "dependencies": [
+            "M13-T06"
+          ],
+          "updated_at": "2026-09-30T01:03:22Z"
         }
       ]
     },

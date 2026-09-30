@@ -3,6 +3,19 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.10] — 30/09/2026
+
+### Adicionado
+
+- **Ambiente em lista de gravações longas:** cada mapa toca gravações de 2 a 3 minutos em ordem
+  sorteada, com passagem suave entre elas, para o som só se repetir depois de uns 10 minutos. As
+  gravações ainda não chegaram (`M13-T07`); até lá, fica o som antigo.
+- `tools/Audio/processar_ambiente.py` prepara as gravações para o jogo.
+
+### Não verificado
+
+- Não ouvido no Editor do Unity ainda.
+
 ## [0.2.0-m14.9] — 30/09/2026
 
 ### Adicionado

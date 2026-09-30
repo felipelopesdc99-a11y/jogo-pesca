@@ -4,9 +4,10 @@ using UnityEngine;
 namespace FishingIdle.Editor
 {
     /// <summary>
-    /// Import settings for the game's sounds (Assets/Resources/Sons): the long ambience loops are
-    /// compressed and stay compressed in memory; the short effects are kept uncompressed so they
-    /// start instantly. Applies automatically when a file is added or replaced.
+    /// Import settings for the game's sounds (Assets/Resources/Sons): the long ambience recordings
+    /// (Sons/Ambiente) are compressed and streamed from disk; the old ambience loops are compressed
+    /// and stay compressed in memory; the short effects are kept uncompressed so they start instantly.
+    /// Applies automatically when a file is added or replaced.
     /// </summary>
     public sealed class AudioImportSettings : AssetPostprocessor
     {
@@ -22,7 +23,14 @@ namespace FishingIdle.Editor
             var importer = (AudioImporter)assetImporter;
             var settings = importer.defaultSampleSettings;
             var ambience = System.IO.Path.GetFileName(assetPath).StartsWith("ambiente", System.StringComparison.Ordinal);
-            if (ambience)
+            if (assetPath.StartsWith(Folder + "Ambiente/", System.StringComparison.Ordinal))
+            {
+                // Minutes-long recordings: streamed, so they never sit whole in memory.
+                settings.loadType = AudioClipLoadType.Streaming;
+                settings.compressionFormat = AudioCompressionFormat.Vorbis;
+                settings.quality = 0.6f;
+            }
+            else if (ambience)
             {
                 settings.loadType = AudioClipLoadType.CompressedInMemory;
                 settings.compressionFormat = AudioCompressionFormat.Vorbis;
