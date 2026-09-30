@@ -24,7 +24,7 @@ namespace FishingIdle.Game.Scene
         public int Count = 14;
         public Rect Area = new Rect(-9f, -3f, 18f, 6f);
         public Color Color = new Color(1f, 0.88f, 0.6f, 1f);
-        public int SortingOrder = 15;
+        public int SortingOrder = FishingScene.OrderRod;
 
         private readonly List<SpriteRenderer> _motes = new List<SpriteRenderer>();
         private readonly List<Vector3> _seed = new List<Vector3>();
@@ -70,7 +70,7 @@ namespace FishingIdle.Game.Scene
     {
         public float MinDelay = 25f;
         public float MaxDelay = 55f;
-        public int SortingOrder = 32;
+        public int SortingOrder = FishingScene.OrderForeground + 2;
         public float HalfWidth = 9.6f;
 
         private float _nextAt;
@@ -84,6 +84,13 @@ namespace FishingIdle.Game.Scene
         {
             if (LifeSettings.Off || Time.time < _nextAt)
             {
+                return;
+            }
+
+            // The scene director keeps small effects apart and holds them while a window is open.
+            if (!SceneDirector.AllowSmall())
+            {
+                _nextAt = Time.time + Random.Range(2f, 5f);
                 return;
             }
 
@@ -178,7 +185,7 @@ namespace FishingIdle.Game.Scene
     {
         public float MinDelay = 12f;
         public float MaxDelay = 26f;
-        public int SortingOrder = 8;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
         public Color Tint = new Color(0.02f, 0.08f, 0.14f, 1f);
 
         private float _nextAt;
@@ -192,6 +199,13 @@ namespace FishingIdle.Game.Scene
         {
             if (LifeSettings.Off || Time.time < _nextAt)
             {
+                return;
+            }
+
+            // The scene director keeps small effects apart and holds them while a window is open.
+            if (!SceneDirector.AllowSmall())
+            {
+                _nextAt = Time.time + Random.Range(2f, 5f);
                 return;
             }
 
@@ -251,7 +265,7 @@ namespace FishingIdle.Game.Scene
     {
         public Vector2 Sun;
         public Color Color = new Color(1f, 0.86f, 0.6f, 1f);
-        public int SortingOrder = 8;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
 
         private readonly List<SpriteRenderer> _beams = new List<SpriteRenderer>();
         private readonly List<float> _phase = new List<float>();
@@ -290,7 +304,7 @@ namespace FishingIdle.Game.Scene
         public float Y = 0.3f;
         public Color Color = new Color(1f, 0.92f, 0.85f, 1f);
         public float MaxAlpha = 0.22f;
-        public int SortingOrder = 8;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
 
         private void Start()
         {
@@ -318,7 +332,7 @@ namespace FishingIdle.Game.Scene
     public sealed class BoatRipples : MonoBehaviour
     {
         public Transform Boat;
-        public int SortingOrder = 8;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
         public float HalfLength = 1.6f;
 
         private float _nextAt;
@@ -341,7 +355,7 @@ namespace FishingIdle.Game.Scene
     public sealed class SunGlints : MonoBehaviour
     {
         public float X;
-        public int SortingOrder = 8;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
 
         private float _nextAt;
 
@@ -404,7 +418,7 @@ namespace FishingIdle.Game.Scene
         public float Horizon = 0.2f;
         public float Current;
         public Color Tint = Color.white;
-        public int SortingOrder = 9;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
 
         private const int Rows = 10;
         private const float TileAtScaleOne = 10f;

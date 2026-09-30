@@ -225,7 +225,7 @@ namespace FishingIdle.Game.Scene
     {
         public float MinDelay = 18f;
         public float MaxDelay = 40f;
-        public int SortingOrder = 3;
+        public int SortingOrder = FishingScene.OrderBirds;
 
         private float _nextAt;
 
@@ -293,7 +293,7 @@ namespace FishingIdle.Game.Scene
     {
         public float MinDelay = 7f;
         public float MaxDelay = 18f;
-        public int SortingOrder = 8;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
         public Rect Area = new Rect(-8f, -1.4f, 16f, 1.2f);
 
         private float _nextAt;
@@ -307,6 +307,12 @@ namespace FishingIdle.Game.Scene
         {
             if (Time.time < _nextAt)
             {
+                return;
+            }
+
+            if (!SceneDirector.AllowSmall())
+            {
+                _nextAt = Time.time + Random.Range(2f, 5f);
                 return;
             }
 
@@ -338,7 +344,7 @@ namespace FishingIdle.Game.Scene
         public float Direction = 1f;
         public float Scale = 0.2f;
         public float Duration = 0.9f;
-        public int SortingOrder = 8;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
 
         private float _age;
 

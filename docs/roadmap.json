@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-29T23:51:44Z",
+  "updated_at": "2026-09-30T00:14:46Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -1993,12 +1993,13 @@
           "id": "M14-T21",
           "title": "Colocar plantas e animais vivos na cena",
           "subsystem": "client",
-          "description": "Quando as imagens do documento \"Pedidos de arte: paisagem viva\" chegarem: plantas soltas balançando e animais aparecendo de vez em quando. ASSET_PENDENTE: todas as imagens desse documento. Ritmo: um diretor de cenário (um animal por vez, descanso mínimo, intervalos sorteados, raridade por animal, vento em rajadas, pausa durante celebrações e janelas), revisando também o ritmo dos efeitos que já existem.",
-          "status": "TODO",
+          "description": "Plantas soltas balançando e animais aparecendo de vez em quando, com as imagens do documento \"Pedidos de arte: paisagem viva\". Ritmo: um diretor de cenário (um animal por vez, descanso mínimo, intervalos sorteados, raridade por animal, vento em rajadas, pausa durante celebrações e janelas), revisando também o ritmo dos efeitos que já existem.",
+          "status": "DONE",
           "dependencies": [
             "M14-T20"
           ],
-          "updated_at": "2026-09-29T21:01:45Z"
+          "updated_at": "2026-09-30T00:14:46Z",
+          "completion_notes": "Imagens Vivo 01 a 18 recortadas (tools/Arte/processar_vivos.py → Resources/Arte/Vivos, 94 arquivos, quadros alinhados). Plantas nas margens, nos cantos e boiando, vergando com rajadas de vento. Diretor de cenário: um animal por vez, descanso de 25 a 60 s, sorteio por peso sem repetir, pausa com janela, celebração ou viagem; libélulas, sombras e saltos de peixe pedem vez a ele. 16 comportamentos (patos, garça voando e na beira, andorinhas, martim-pescador, capivaras, tartaruga, sapo, araras, tucano, jacaré, macacos). Posições, pesos e tempos em Resources/Visual/paisagem_viva.json. GDD_ADENDO A-078, TD-027. Compila; não aberto no Unity ainda."
         },
         {
           "id": "M14-T22",

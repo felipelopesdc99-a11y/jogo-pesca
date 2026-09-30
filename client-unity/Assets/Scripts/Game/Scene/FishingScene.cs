@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FishingIdle.Game.Bootstrap;
 using FishingIdle.Game.Visual;
 using UnityEngine;
@@ -111,10 +112,11 @@ namespace FishingIdle.Game.Scene
         public const float Horizon = 0.2f;
 
         // Sorting orders, back to front.
-        public const int OrderSky = 0, OrderSun = 1, OrderClouds = 2, OrderBirds = 3, OrderFarHills = 4,
-            OrderMidHills = 5, OrderTrees = 6, OrderWater = 7, OrderReflection = 8, OrderWaterDetail = 9, OrderDistantFish = 10,
-            OrderBobber = 11, OrderBoat = 12, OrderFisherman = 13, OrderBoatFront = 14, OrderRod = 15, OrderCatchGlow = 20,
-            OrderCatch = 21, OrderForeground = 30;
+        public const int OrderSky = 0, OrderSun = 10, OrderClouds = 20, OrderBirds = 30, OrderFarHills = 40,
+            OrderMidHills = 50, OrderSkyLife = 55, OrderTrees = 60, OrderShorePlants = 62, OrderShoreLife = 65, OrderWater = 70,
+            OrderReflection = 80, OrderWaterDetail = 90, OrderWaterLife = 95, OrderDistantFish = 100,
+            OrderBobber = 110, OrderBoat = 120, OrderFisherman = 130, OrderBoatFront = 140, OrderRod = 150, OrderCatchGlow = 200,
+            OrderCatch = 210, OrderCornerBack = 295, OrderForeground = 300, OrderCornerFront = 305;
 
         private Transform _world;
         private Transform _boatLayer;
@@ -273,11 +275,15 @@ namespace FishingIdle.Game.Scene
                 cloud.gameObject.AddComponent<Drift>().Speed = Random.Range(0.04f, 0.1f);
             }
 
-            var birds = new GameObject("Pássaros");
-            birds.transform.SetParent(clouds, false);
-            birds.AddComponent<BirdFlock>().SortingOrder = OrderBirds;
-
             var halfWidth = Camera != null ? Camera.orthographicSize * Camera.aspect : 9.6f;
+            var living = LivingConfig.For(theme.ArtFolder);
+            if (living == null)
+            {
+                // Without the living landscape, the simple drawn flock keeps the sky alive.
+                var birds = new GameObject("Pássaros");
+                birds.transform.SetParent(clouds, false);
+                birds.AddComponent<BirdFlock>().SortingOrder = OrderBirds;
+            }
 
             // Land layers, each with its reflection on the water (drawn from the art itself, so it
             // always matches whatever painting is in the file).
@@ -353,6 +359,67 @@ namespace FishingIdle.Game.Scene
             var fg = Layer("Primeiro plano", -0.25f);
             Corner(fg, theme.ArtPath("fg_left"), new Vector2(0f, 0f), new Vector3(-halfWidth - 0.4f, -5.7f, 0f), theme.CornerHeight);
             Corner(fg, theme.ArtPath("fg_right"), new Vector2(1f, 0f), new Vector3(halfWidth + 0.4f, -5.7f, 0f), theme.CornerHeight);
+
+            if (living != null)
+            {
+                BuildLiving(theme, living, halfWidth, clouds, shore, water, fg);
+            }
+        }
+
+        /// <summary>
+        /// The living landscape (addendum A-078, Resources/Visual/paisagem_viva.json): loose plants
+        /// that bend in the gusts, lily pads, and the scene director that brings the animals.
+        /// </summary>
+        private void BuildLiving(SceneTheme theme, LivingSceneConfig living, float halfWidth, Transform sky, Transform shore, Transform water, Transform corner)
+        {
+            var pads = new List<Transform>();
+            if (living.plants != null)
+            {
+                foreach (var p in living.plants)
+                {
+                    if (p == null || string.IsNullOrEmpty(p.art) || p.height <= 0f)
+                    {
+                        continue;
+                    }
+
+                    var floating = p.layer == "water";
+                    var sprite = ArtAssets.SpriteByHeight("Vivos/Plantas/" + p.art, p.height, floating ? new Vector2(0.5f, 0.5f) : new Vector2(0.5f, 0f));
+                    if (sprite == null)
+                    {
+                        continue;
+                    }
+
+                    var position = LivingConfig.Place(p.side, p.x, p.y, halfWidth);
+                    switch (p.layer)
+                    {
+                        case "water":
+                            var pad = Sprite(water, "Vitória-régia", sprite, position, Vector3.one, OrderWaterLife);
+                            pad.gameObject.AddComponent<Floating>();
+                            pads.Add(pad.transform);
+                            break;
+                        case "corner_back":
+                        case "corner_front":
+                            var reed = Sprite(corner, "Planta", sprite, position, Vector3.one, p.layer == "corner_back" ? OrderCornerBack : OrderCornerFront);
+                            var reedSway = reed.gameObject.AddComponent<WindSway>();
+                            reedSway.Bend = p.bend;
+                            reedSway.Stiffness = 1.3f;
+                            break;
+                        default:
+                            // A touch of the distance haze, so a loose tree matches the painted shore behind it.
+                            var tree = Sprite(shore, "Árvore", sprite, position, Vector3.one, OrderShorePlants, new Color(0.9f, 0.9f, 0.95f));
+                            var treeSway = tree.gameObject.AddComponent<WindSway>();
+                            treeSway.Bend = p.bend;
+                            treeSway.Stiffness = 0.7f;
+                            Reflect(tree, 0.7f, 0.5f);
+                            break;
+                    }
+                }
+            }
+
+            var rhythm = LivingConfig.File;
+            var director = new GameObject("Diretor de cenário").AddComponent<SceneDirector>();
+            director.transform.SetParent(_world, false);
+            director.Setup(_root, living, rhythm, new LivingAnimals(living, halfWidth, theme.Current, sky, shore, water, corner, pads));
         }
 
         /// <summary>The small, quiet signs of life (Life.cs), tuned per map; all of them fade with "ambient_life".</summary>

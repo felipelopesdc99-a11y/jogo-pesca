@@ -244,6 +244,7 @@ namespace FishingIdle.Game.UI
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
             var welcomeDialog = _root.Tutorial != null && _root.Tutorial.Active && _root.Tutorial.Step == TutorialSteps.Welcome;
             var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _root.WelcomeBack != null || _root.ExpeditionResult != null || welcomeDialog;
+            _root.WindowOpen = windowOpen;
             GUI.enabled = !windowOpen;
             DrawTopBar(skin);
             DrawPlayerCard(skin);

@@ -3,6 +3,24 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.9] — 30/09/2026
+
+### Adicionado
+
+- **Paisagem viva** (imagens Vivo 01 a 18 do proprietário): árvores, palmeiras, juncos e folhagens
+  que vergam com rajadas de vento; vitórias-régias boiando; e animais que aparecem de vez em quando:
+  patos, garças, andorinhas, martim-pescador, capivaras, tartaruga e sapo no Lago Sereno; araras,
+  tucano, jacaré e macacos no Rio Selvagem.
+- **Diretor de cenário:** um animal por vez, com descanso sorteado entre eles, nunca o mesmo duas
+  vezes seguidas e nada novo com uma janela aberta ou durante uma celebração. Libélulas, sombras e
+  saltos de peixe seguem o mesmo ritmo.
+- `Resources/Visual/paisagem_viva.json` (onde fica cada um, com que frequência aparece, vento) e
+  `tools/Arte/processar_vivos.py` (recorta as imagens do ChatGPT).
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M14-T15`).
+
 ## [0.2.0-m14.8] — 29/09/2026
 
 ### Mudado

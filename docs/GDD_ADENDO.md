@@ -674,7 +674,7 @@ frente. Os reflexos das margens e montanhas são cortados em faixas que balança
 mais longe do horizonte, mais balançam e mais apagados ficam. A textura das ondas é o arquivo
 `Arte/Agua/ondas.png` (pode ser trocada).
 
-### A-078 · Paisagem viva (pendente)
+### A-078 · Paisagem viva
 **Seção do GDD:** 8 · **Situação:** Confirmar
 
 Plantas e árvores soltas balançando na frente das margens, e animais que aparecem de vez em quando
@@ -688,6 +688,35 @@ cada animal tem a sua raridade e não repete logo em seguida; as plantas balanç
 que atravessam a tela, quase paradas entre elas; nada novo aparece durante uma celebração ou com
 uma janela aberta. O ritmo do que já existe (peixes saltando, pássaros, libélulas, sombras) passa
 pela mesma regra quando isso for feito.
+
+**Feito (30/09/2026), com as imagens Vivo 01 a 18.** Plantas: pinheiros e uma árvore de copa redonda
+nas pontas das margens do Lago Sereno, palmeiras e bananeiras nas do Rio Selvagem (com reflexo na
+água), juncos e taboas (Lago) ou folhagens tropicais (Rio) junto das moitas dos cantos, e
+vitórias-régias boiando no Lago. Elas vergam nas rajadas de vento, que atravessam a tela da esquerda
+para a direita a cada 8 a 20 segundos; entre as rajadas, ficam quase paradas.
+
+Animais (um por vez; depois que um sai, a cena descansa de 25 a 60 segundos; o primeiro aparece de
+12 a 25 segundos depois de abrir o jogo):
+
+| Animal | Onde | Como se comporta |
+|---|---|---|
+| Patos-do-mato voando | Céu, os dois mapas | Bando de 3 a 5 em fila solta, batendo as asas rápido |
+| Garça-branca voando | Céu, os dois mapas | Sozinha, asas lentas (umas duas batidas por segundo) |
+| Garça-branca na beira | Água rasa junto da moita da direita | Pousa planando, fica parada muito tempo, às vezes espreita e dá uma bicada na água; depois voa embora |
+| Andorinhas | Rente à água | 2 ou 3, rasantes rápidos, batendo as asas em rajadas |
+| Martim-pescador | Galho na moita da esquerda | Chega voando, espera no galho, mergulha com respingo e sai voando (às vezes só vai embora); o galho fica |
+| Patos nadando | Meio do lago/rio | Casal atravessando devagar (no Rio, com a correnteza), às vezes mergulha a cabeça ou sacode as asas |
+| Capivaras | Margem esquerda, ao fundo | Chega andando (às vezes com filhote), pasta um tempo e volta |
+| Tartaruga | Pedra do canto direito | Sobe da água, toma sol, estica a cabeça de vez em quando e escorrega de volta |
+| Sapo | Vitória-régia (só Lago) | Pula na folha, coaxa em sequências curtas e pula na água |
+| Araras | Céu (só Rio) | Sempre em casal |
+| Tucano | Céu (só Rio) | Voo em "bate e plana" |
+| Jacaré | Água (só Rio) | Sobe à tona, desce o rio só com olhos e focinho de fora e afunda |
+| Jacaré na margem | Margem direita (só Rio) | Sai da água e fica deitado de boca entreaberta |
+| Macaco-prego e bugio | Árvores das margens (só Rio) | Aparecem entre as folhas, um pendurado pela cauda balançando |
+
+As posições, a chance de cada animal e os tempos ficam em `Resources/Visual/paisagem_viva.json` e
+podem ser ajustados sem mexer em código.
 
 ### A-079 · Dois filtros na Caixa de Pesca e cores de raridade e tamanho
 **Seção do GDD:** 11 · **Situação:** Decidido pelo proprietário (29/09/2026)

@@ -67,9 +67,9 @@ client-unity/Assets/
 │   ├── Editor/         FishingIdle.Editor       Só no Editor: Painel de Desenvolvimento, setup do projeto, passo de build
 │   └── Core/ Diagnostics/  FishingIdle.Client   Dormente: cliente HTTP e diagnóstico do servidor online (M12)
 ├── Resources/
-│   ├── Arte/            Arte trocável: Peixes/, Mapas/<Mapa>/, Cena/, Varas/, Expedicoes/, Icones/ (ver docs/ASSETS_PENDENTES.md)
+│   ├── Arte/            Arte trocável: Peixes/, Mapas/<Mapa>/, Cena/, Varas/, Expedicoes/, Icones/, Vivos/ (ver docs/ASSETS_PENDENTES.md)
 │   ├── Fontes/          Fredoka e Nunito (OFL)
-│   ├── Visual/          tema_visual.json (cores, brilho, tempos)
+│   ├── Visual/          tema_visual.json (cores, brilho, tempos) e paisagem_viva.json (plantas, animais, ritmo)
 │   └── Sons/            Sons (.wav)
 ├── Scenes/Principal.unity   Criada automaticamente na primeira abertura
 └── link.xml                 Protege o GameService da remoção de código no IL2CPP
@@ -286,6 +286,19 @@ Regras:
     (`SunRays`), névoa (`HorizonMist`), brilhos no reflexo (`SunGlints`), anéis do barco (`BoatRipples`)
     e respingos (`Droplet.Splash`, usado pelo `FishermanRig`). Tudo de baixa opacidade e escalado por
     `ambient_life` do tema (0 desliga).
+  - **Paisagem viva** (`Scene/LivingScenery.cs`, `Scene/LivingAnimals.cs`, montada em
+    `FishingScene.BuildLiving`; dados em `Resources/Visual/paisagem_viva.json`, lido por `LivingConfig`):
+    plantas soltas na margem do fundo (com reflexo), nos cantos e boiando (`WindSway`: uma mola que verga
+    com as rajadas de `Wind`, que atravessam a tela da esquerda para a direita em intervalos sorteados;
+    `Floating` para as vitórias-régias). Os animais são chamados pelo **diretor de cenário**
+    (`SceneDirector`): um por vez, descanso sorteado entre um e outro, sorteio por peso sem repetir o
+    último, nada novo com janela aberta (`GameRoot.WindowOpen`, marcado pelo `Hud`), celebração ou
+    viagem. Cada animal é uma corrotina em `LivingAnimals` que termina quando ele sai; posições por mapa
+    ("spots", medidas a partir da borda da tela, como os cantos) no JSON. Libélulas, sombras e saltos de
+    peixe pedem vez a `SceneDirector.AllowSmall()`. Os quadros vêm de `tools/Arte/processar_vivos.py`,
+    todos do mesmo tamanho e alinhados num ponto fixo (bico, pés ou traseira), para a troca de quadro
+    não fazer o corpo pular. Novas ordens de desenho: `OrderSkyLife`, `OrderShorePlants`,
+    `OrderShoreLife`, `OrderWaterLife`, `OrderCornerBack`, `OrderCornerFront`.
   - **Card oficial de peixe** (`UI/FishCard`, dados em `FishCardModel`): mesmo layout para toda
     raridade; a raridade é borda, selo e barra; o Excepcional tem selo dourado com brilho que passa
     (`FishCard.ExceptionalSeal`); usado na Caixa, Aquário, Mercado (varas também, com `Art`).

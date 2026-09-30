@@ -62,6 +62,9 @@ namespace FishingIdle.Game.Bootstrap
         /// <summary>The trip between maps in progress, refreshed every frame.</summary>
         public TravelView Travel { get; private set; }
 
+        /// <summary>True while a window or dialog covers the scene (set by the HUD each frame; presentation only).</summary>
+        public bool WindowOpen { get; set; }
+
         /// <summary>Raised when the player arrives on a new map (the scene rebuilds its scenery).</summary>
         public event Action<string> MapChanged;
 

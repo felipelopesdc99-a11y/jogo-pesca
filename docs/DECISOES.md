@@ -446,3 +446,24 @@ não importa SVG sem um pacote extra.
 **Rever se.** A arte final chegar (basta trocar os arquivos), ou a interface migrar para UI Toolkit
 (o tema e os arquivos continuam valendo).
 
+## TD-027 — Paisagem viva em dados de apresentação, com um diretor de cenário
+
+**Origem.** V0.2, Milestone 14 (30/09/2026): as imagens "Vivo 01 a 18" do proprietário e o pedido dele
+de não fazer "spam" de animação (intervalos realistas entre os animais).
+
+**Decisão.** Onde fica cada planta e cada animal, o peso de cada animal e os tempos de descanso e de
+vento ficam em `Assets/Resources/Visual/paisagem_viva.json`, ao lado do tema visual. Um único
+`SceneDirector` por cena decide quando o próximo animal aparece: um por vez, descanso sorteado,
+sorteio por peso sem repetir o último, pausa com janela aberta, celebração ou viagem. Os efeitos
+pequenos que já existiam passam a pedir vez a ele. O comportamento de cada animal é código
+(`LivingAnimals`), porque é movimento, não número de balanceamento. Os quadros de animação são
+alinhados no script de recorte, não no jogo.
+
+**Por quê.** Um relógio central é o jeito simples de garantir o ritmo pedido: cada efeito com o seu
+próprio temporizador acaba coincidindo e parece "spam". Posições e frequências em arquivo deixam o
+proprietário ajustar sem mexer em código, como o tema. É apresentação pura, então fica em
+`Resources` e não em `/config` (mesma razão da TD-026). Alinhar os quadros no recorte mantém o jogo
+simples: todo quadro de um animal tem o mesmo tamanho e o mesmo pivô.
+
+**Rever se.** Entrarem muitos animais novos (talvez um animal por "faixa" da tela ao mesmo tempo) ou
+se o proprietário quiser horários do dia (hoje o ritmo não depende da hora).

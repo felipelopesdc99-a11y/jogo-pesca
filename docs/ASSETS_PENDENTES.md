@@ -14,9 +14,11 @@ Bíblia de Arte, seção 39). Tarefa `M14-T14` no roadmap.
 > arte provisória nunca sobrescrevem esses arquivos.
 
 Plantas soltas que balançam e animais de cenário (aves, garça, capivara, tartaruga, sapo, patos,
-jacaré, macacos) estão pedidos no documento
-[Fishing Idle — Pedidos de arte: paisagem viva](https://claude.ai/code/artifact/d385fa64-2459-4fb0-aae8-c22ab6454965)
-(`ASSET_PENDENTE`, tarefa `M14-T21`).
+jacaré, macacos), pedidos no documento
+[Fishing Idle — Pedidos de arte: paisagem viva](https://claude.ai/code/artifact/d385fa64-2459-4fb0-aae8-c22ab6454965),
+**chegaram (Vivo 01 a 18) e estão no jogo** em `Resources/Arte/Vivos` (`Plantas/` e `Animais/`). Para uma
+leva nova: `python3 tools/Arte/processar_vivos.py <pasta com os Vivo_XX_*.png>`. Onde cada um aparece e
+com que frequência fica em `Resources/Visual/paisagem_viva.json`.
 
 Os pedidos prontos para colar no ChatGPT, na ordem certa, estão no documento
 [Fishing Idle — Pedidos de arte para o ChatGPT](https://claude.ai/code/artifact/320602da-0a64-4e9b-b729-4108aef7656e).
