@@ -135,28 +135,16 @@ namespace FishingIdle.Game.UI
             return clicked;
         }
 
-        /// <summary>
-        /// The line under the name. When it ends with the size category ("48,6 cm · Grande"), the
-        /// category is written in its size colour (addendum A-079); the rest stays muted.
-        /// </summary>
+        /// <summary>The line under the name, with the size category in its own colour (addendum A-079).</summary>
         private static void DrawLine(UiSkin skin, Rect rect, FishCardModel m)
         {
-            var size = m.SizeCategoryName;
-            if (string.IsNullOrEmpty(size) || string.IsNullOrEmpty(m.SizeCategoryId) || m.Silhouette
-                || m.Line.Length <= size.Length || !m.Line.EndsWith(size, System.StringComparison.Ordinal))
+            if (m.Silhouette)
             {
                 GUI.Label(rect, m.Line, skin.SmallMuted);
                 return;
             }
 
-            var head = m.Line.Substring(0, m.Line.Length - size.Length);
-            var hw = skin.SmallMuted.CalcSize(new GUIContent(head)).x - skin.SmallMuted.padding.right;
-            GUI.Label(rect, head, skin.SmallMuted);
-
-            var previous = GUI.contentColor;
-            GUI.contentColor = Color.Lerp(UiSkin.SizeColor(m.SizeCategoryId), Color.white, 0.15f);
-            GUI.Label(new Rect(rect.x + hw - skin.SmallBold.padding.left, rect.y, rect.width - hw, rect.height), size, skin.SmallBold);
-            GUI.contentColor = previous;
+            skin.SizeLine(rect, m.Line, m.SizeCategoryName, m.SizeCategoryId, skin.SmallMuted);
         }
 
         /// <summary>The line without the size name, which the Excepcional seal already shows ("98,4 cm · Excepcional · Nv. 3" → "98,4 cm · Nv. 3").</summary>

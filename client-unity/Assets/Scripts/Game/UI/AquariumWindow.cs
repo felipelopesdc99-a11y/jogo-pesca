@@ -162,7 +162,7 @@ namespace FishingIdle.Game.UI
                 var clicked = FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
                     Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName, (float)fish.SizePercentile,
                     GameTexts.Player.LevelShort + " " + fish.Level + (fish.CardumePosition > 0 ? "  ·  " + GameTexts.Cardume.Badge(fish.CardumePosition) : string.Empty),
-                    fish.RarityId, fish.RarityName, fish.FishId == _selectedId, fish.IsImportant, fish.SizeCategoryId == "exceptional", fish.SizeCategoryName);
+                    fish.RarityId, fish.RarityName, fish.FishId == _selectedId, fish.IsImportant, fish.SizeCategoryId, fish.SizeCategoryName);
                 if (clicked)
                 {
                     _selectedId = fish.FishId;
@@ -209,7 +209,9 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                GUI.Label(new Rect(x + pillWidth + 10, y + 2, w - pillWidth - 10, 20), fish.SizeCategoryName, skin.SmallMuted);
+                // The size seal next to the rarity, in the size colour (addendum A-079).
+                var sizeLabel = fish.SizeCategoryName.ToUpperInvariant();
+                skin.AccentPill(new Rect(x + pillWidth + 8, y, skin.PillWidth(sizeLabel, false), 22), sizeLabel, UiSkin.SizeColor(fish.SizeCategoryId));
             }
 
             y += 32;
@@ -321,9 +323,9 @@ namespace FishingIdle.Game.UI
                 DrawGrid(grid, others, ref _feedScroll, (rect, fish) =>
                 {
                     if (FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
-                        GameTexts.Player.LevelShort + " " + fish.Level + " · " + Format.SizeCm(fish.SizeCm), (float)fish.SizePercentile,
+                        GameTexts.Player.LevelShort + " " + fish.Level + " · " + Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName, (float)fish.SizePercentile,
                         GameTexts.Aquarium.FeedXp(Format.Number(fish.FeedXp)), fish.RarityId, fish.RarityName,
-                        _foodFish.Contains(fish.FishId), fish.IsValuableFood, fish.SizeCategoryId == "exceptional", fish.SizeCategoryName))
+                        _foodFish.Contains(fish.FishId), fish.IsValuableFood, fish.SizeCategoryId, fish.SizeCategoryName))
                     {
                         Toggle(_foodFish, fish.FishId);
                     }
@@ -336,7 +338,7 @@ namespace FishingIdle.Game.UI
                     if (FishCard(skin, rect, c.SpeciesId, c.SpeciesName,
                         Format.SizeCm(c.SizeCm) + " · " + c.SizeCategoryName, (float)c.SizePercentile,
                         GameTexts.Aquarium.FeedXp(Format.Number(c.FeedXp)), c.RarityId, c.RarityName,
-                        _foodBox.Contains(c.CatchId), c.IsValuableFood, c.SizeCategoryId == "exceptional", c.SizeCategoryName))
+                        _foodBox.Contains(c.CatchId), c.IsValuableFood, c.SizeCategoryId, c.SizeCategoryName))
                     {
                         Toggle(_foodBox, c.CatchId);
                     }
@@ -593,7 +595,7 @@ namespace FishingIdle.Game.UI
 
         /// <summary>One fish card (the official template). Returns true when clicked.</summary>
         private static bool FishCard(UiSkin skin, Rect rect, string speciesId, string name, string line, float sizeFraction,
-            string corner, string rarityId, string rarityName, bool selected, bool important, bool exceptional, string sizeCategoryName = null)
+            string corner, string rarityId, string rarityName, bool selected, bool important, string sizeCategoryId, string sizeCategoryName)
         {
             return UI.FishCard.Draw(skin, rect, new FishCardModel
             {
@@ -602,7 +604,7 @@ namespace FishingIdle.Game.UI
                 Line = line,
                 RarityId = rarityId,
                 RarityName = rarityName,
-                SizeCategoryId = exceptional ? "exceptional" : null,
+                SizeCategoryId = sizeCategoryId,
                 SizeCategoryName = sizeCategoryName,
                 Bar = sizeFraction,
                 Footer = corner,

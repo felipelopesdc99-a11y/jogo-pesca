@@ -301,6 +301,73 @@ namespace FishingIdle.Game.UI
             return ChipText.CalcSize(new GUIContent(text)).x + 40f;
         }
 
+        /// <summary>
+        /// A "48,6 cm · Grande · Nv. 3" line where the size category is written in its own colour
+        /// (addendum A-079), wherever it sits in the line; the rest keeps <paramref name="style"/>.
+        /// </summary>
+        public void SizeLine(Rect rect, string line, string sizeName, string sizeId, GUIStyle style)
+        {
+            const string sep = " · ";
+            if (string.IsNullOrEmpty(line) || string.IsNullOrEmpty(sizeName) || string.IsNullOrEmpty(sizeId))
+            {
+                GUI.Label(rect, line, style);
+                return;
+            }
+
+            var parts = line.Split(new[] { sep }, System.StringSplitOptions.None);
+            if (System.Array.IndexOf(parts, sizeName) < 0)
+            {
+                GUI.Label(rect, line, style);
+                return;
+            }
+
+            // Draw piece by piece; each label's text starts where the previous one ended.
+            var x = rect.x + style.padding.left;
+            var bold = SizeBold(style);
+            var previous = GUI.contentColor;
+            for (var i = 0; i < parts.Length; i++)
+            {
+                var text = i < parts.Length - 1 ? parts[i] + sep : parts[i];
+                var isSize = parts[i] == sizeName;
+                var piece = isSize ? parts[i] : text;
+                var s = isSize ? bold : style;
+                var width = s.CalcSize(new GUIContent(piece)).x - s.padding.horizontal;
+                if (isSize)
+                {
+                    GUI.contentColor = Color.Lerp(SizeColor(sizeId), Color.white, 0.15f);
+                }
+
+                GUI.Label(new Rect(x - s.padding.left, rect.y, Mathf.Max(0f, rect.xMax - x + s.padding.left), rect.height), piece, s);
+                GUI.contentColor = previous;
+                x += width;
+                if (isSize && i < parts.Length - 1)
+                {
+                    var tail = style.CalcSize(new GUIContent(sep)).x - style.padding.horizontal;
+                    GUI.Label(new Rect(x - style.padding.left, rect.y, Mathf.Max(0f, rect.xMax - x + style.padding.left), rect.height), sep, style);
+                    x += tail;
+                }
+
+                if (x >= rect.xMax)
+                {
+                    break;
+                }
+            }
+        }
+
+        private readonly System.Collections.Generic.Dictionary<GUIStyle, GUIStyle> _sizeBold = new System.Collections.Generic.Dictionary<GUIStyle, GUIStyle>();
+
+        /// <summary>The bold twin of a label style, made once and kept (IMGUI draws every frame).</summary>
+        private GUIStyle SizeBold(GUIStyle style)
+        {
+            if (!_sizeBold.TryGetValue(style, out var bold))
+            {
+                bold = new GUIStyle(style) { font = BodyBoldFont, wordWrap = false };
+                _sizeBold[style] = bold;
+            }
+
+            return bold;
+        }
+
         /// <summary>Width a pill needs for its text (and icon).</summary>
         public float PillWidth(string text, bool icon)
         {

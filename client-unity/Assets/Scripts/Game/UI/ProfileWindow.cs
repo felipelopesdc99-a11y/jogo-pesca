@@ -381,7 +381,7 @@ namespace FishingIdle.Game.UI
 
                 GUI.DrawTexture(new Rect(row.x + 8, row.y + 6, 80, 46), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
                 GUI.Label(new Rect(row.x + 96, row.y + 8, row.width - 150, 20), f.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + f.Level, skin.BodyBold);
-                GUI.Label(new Rect(row.x + 96, row.y + 30, row.width - 150, 20), Format.SizeCm(f.SizeCm) + " · " + f.SizeCategoryName, skin.Small);
+                skin.SizeLine(new Rect(row.x + 96, row.y + 30, row.width - 150, 20), Format.SizeCm(f.SizeCm) + " · " + f.SizeCategoryName, f.SizeCategoryName, f.SizeCategoryId, skin.Small);
                 if (f.CardumePosition > 0)
                 {
                     skin.AccentPill(new Rect(row.xMax - 50, row.y + 17, 40, 22), GameTexts.Cardume.Badge(f.CardumePosition), UiSkin.Accent);

@@ -271,8 +271,8 @@ namespace FishingIdle.Game.UI
 
             y += 42;
             changed |= Cycle(skin, x, ref y, w, GameTexts.Market.FilterSpecies, GameTexts.Market.AnyFemale, _options.Species, ref _species);
-            changed |= Cycle(skin, x, ref y, w, GameTexts.Market.FilterRarity, GameTexts.Market.AnyFemale, _options.Rarities, ref _rarity);
-            changed |= Cycle(skin, x, ref y, w, GameTexts.Market.FilterSize, GameTexts.Market.AnyFemale, _options.SizeCategories, ref _sizeCategory);
+            changed |= Cycle(skin, x, ref y, w, GameTexts.Market.FilterRarity, GameTexts.Market.AnyFemale, _options.Rarities, ref _rarity, UiSkin.RarityColor);
+            changed |= Cycle(skin, x, ref y, w, GameTexts.Market.FilterSize, GameTexts.Market.AnyFemale, _options.SizeCategories, ref _sizeCategory, UiSkin.SizeColor);
             changed |= Range(skin, x, ref y, w, GameTexts.Market.SizeRange, ref _minSize, ref _maxSize);
             changed |= Range(skin, x, ref y, w, GameTexts.Market.LevelRange, ref _minLevel, ref _maxLevel);
             changed |= Range(skin, x, ref y, w, GameTexts.Market.PriceRange, ref _minPrice, ref _maxPrice);
@@ -320,7 +320,7 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>A filter that cycles through "any" and the options. Returns true when it changed.</summary>
-        private static bool Cycle(UiSkin skin, float x, ref float y, float w, string label, string any, List<FilterOption> options, ref int index)
+        private static bool Cycle(UiSkin skin, float x, ref float y, float w, string label, string any, List<FilterOption> options, ref int index, System.Func<string, Color> colorOf = null)
         {
             GUI.Label(new Rect(x, y, w, 18), label, skin.SmallMuted);
             y += 20;
@@ -333,7 +333,20 @@ namespace FishingIdle.Game.UI
                 changed = true;
             }
 
-            GUI.Label(new Rect(x + 40, y + 6, w - 80, 22), index == 0 ? any : options[index - 1].Name, skin.Center);
+            if (index > 0 && colorOf != null)
+            {
+                // A chosen rarity or size shows in its colour, like the Fishing Box filters.
+                var c = colorOf(options[index - 1].Id);
+                GUI.DrawTexture(new Rect(x + 40, y, w - 80, 30), skin.White, ScaleMode.StretchToFill, true, 0, new Color(c.r, c.g, c.b, 0.18f), 0, 8);
+                var previous = GUI.contentColor;
+                GUI.contentColor = Color.Lerp(c, Color.white, 0.4f);
+                GUI.Label(new Rect(x + 40, y + 6, w - 80, 22), options[index - 1].Name, skin.Center);
+                GUI.contentColor = previous;
+            }
+            else
+            {
+                GUI.Label(new Rect(x + 40, y + 6, w - 80, 22), index == 0 ? any : options[index - 1].Name, skin.Center);
+            }
             if (GUI.Button(new Rect(x + w - 34, y, 34, 30), "»", skin.Chip))
             {
                 index = (index + 1) % count;
@@ -457,7 +470,7 @@ namespace FishingIdle.Game.UI
                 GUI.Box(row, GUIContent.none, skin.Card);
                 GoodsIcon(skin, new Rect(row.x + 14, row.y + 12, 110, 60), l.Goods);
                 GUI.Label(new Rect(row.x + 140, row.y + 14, 320, 24), l.Goods.Name, skin.BodyBold);
-                GUI.Label(new Rect(row.x + 140, row.y + 40, 320, 20), GoodsLine(l.Goods), skin.Small);
+                GoodsLabel(skin, new Rect(row.x + 140, row.y + 40, 320, 20), l.Goods, skin.Small);
                 GUI.Label(new Rect(row.x + 140, row.y + 62, 320, 20), GameTexts.Market.EndsIn(Format.TimeLeft(l.RemainingSeconds)), skin.SmallMuted);
 
                 GUI.Label(new Rect(row.x + 480, row.y + 14, 200, 20), GameTexts.Market.Price, skin.SmallMuted);
@@ -716,7 +729,7 @@ namespace FishingIdle.Game.UI
                 GUI.Box(row, GUIContent.none, skin.Card);
                 GoodsIcon(skin, new Rect(row.x + 14, row.y + 12, 110, 60), w.Goods);
                 GUI.Label(new Rect(row.x + 140, row.y + 12, 360, 24), w.Goods.Name, skin.BodyBold);
-                GUI.Label(new Rect(row.x + 140, row.y + 38, 360, 20), GoodsLine(w.Goods), skin.Small);
+                GoodsLabel(skin, new Rect(row.x + 140, row.y + 38, 360, 20), w.Goods, skin.Small);
                 GUI.Label(new Rect(row.x + 520, row.y + 16, 300, 20), GameTexts.Market.Reason(w.Reason), skin.SmallGold);
                 GUI.Label(new Rect(row.x + 520, row.y + 38, 300, 20), Format.DateTimeFromUnixMs(w.AtMs), skin.SmallMuted);
 
@@ -748,7 +761,7 @@ namespace FishingIdle.Game.UI
             y += 120;
             GUI.Label(new Rect(x, y, w, 26), goods.Name, skin.Heading);
             y += 28;
-            GUI.Label(new Rect(x, y, w, 20), GoodsLine(goods), skin.Small);
+            GoodsLabel(skin, new Rect(x, y, w, 20), goods, skin.Small);
             y += 30;
 
             if (goods.IsFish)
@@ -769,6 +782,13 @@ namespace FishingIdle.Game.UI
             }
 
             return y + 6;
+        }
+
+        /// <summary>The goods line with a fish's size category in its colour (addendum A-079).</summary>
+        private static void GoodsLabel(UiSkin skin, Rect rect, GoodsView goods, GUIStyle style)
+        {
+            var fish = goods.IsFish ? goods.Fish : null;
+            skin.SizeLine(rect, GoodsLine(goods), fish?.SizeCategoryName, fish?.SizeCategoryId, style);
         }
 
         private static string GoodsLine(GoodsView goods)
