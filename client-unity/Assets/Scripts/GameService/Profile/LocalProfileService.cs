@@ -320,6 +320,7 @@ namespace FishingIdle.GameService.Profile
                 SizeBonus = bonuses.SizeQuality,
                 ShellBonus = bonuses.ShellYield,
                 CanCatchRare = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 0),
+                CanCatchEpic = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 1),
                 GeneratesShells = rod.GeneratesShells,
                 IsEquipped = item.Id == Save.EquippedRodItemId,
                 AllowedOnCurrentMap = map == null || rod.Tier >= map.MinimumRodTier,

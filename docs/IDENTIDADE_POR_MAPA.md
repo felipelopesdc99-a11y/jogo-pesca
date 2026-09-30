@@ -4,7 +4,8 @@
 > **Situação no repositório (30/09/2026):** documento de direção enviado pelo proprietário, guardado
 > como está. O que vale para os dois mapas que existem (Lago Sereno e Rio Selvagem) já está no jogo ou
 > registrado (GDD_ADENDO A-078, A-081, A-085). Os mapas 3 e 4 (Pantanal Dourado e Estuário das Marés),
-> a raridade Épico e a Vara 2 ainda não existem: são a decisão `OD-018` do `docs/roadmap.json`.
+> a raridade Épico e a Vara 2 entraram em 30/09/2026 com `docs/PROGRESSAO_MAPAS_3_4.md` (GDD_ADENDO
+> A-093), com arte provisória até as imagens finais chegarem.
 
 **Idioma:** PT-BR  
 **Objetivo:** orientar o Claude a reforçar a identidade de cada mapa do Fishing Idle, para que cada nova região pareça um novo capítulo da jornada do jogador, e não apenas um novo background.

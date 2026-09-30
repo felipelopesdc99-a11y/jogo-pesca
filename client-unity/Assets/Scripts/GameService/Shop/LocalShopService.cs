@@ -27,6 +27,7 @@ namespace FishingIdle.GameService.Shop
         public double CatchBonus { get; internal set; }
         public double CatchBonusAtMax { get; internal set; }
         public bool CanCatchRare { get; internal set; }
+        public bool CanCatchEpic { get; internal set; }
         public bool GeneratesShells { get; internal set; }
         public bool Owned { get; internal set; }
 
@@ -132,6 +133,7 @@ namespace FishingIdle.GameService.Shop
                 CatchBonus = at1.CatchSuccess,
                 CatchBonusAtMax = atMax.CatchSuccess,
                 CanCatchRare = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 0),
+                CanCatchEpic = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 1),
                 GeneratesShells = rod.GeneratesShells,
                 Owned = Owns(rod),
                 IsFree = IsClaimable(rod),

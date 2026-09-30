@@ -3,6 +3,29 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.20] — 30/09/2026
+
+### Adicionado
+
+- **Pantanal Dourado** (nível 20, Vara 1) e **Estuário das Marés** (nível 30, Vara 2), com 10 espécies
+  cada (`docs/PROGRESSAO_MAPAS_3_4.md`). Enciclopédia com 40 espécies.
+- **Raridade Épico** (roxo): Barbado no Pantanal; Camurupim e Mero no Estuário. A Vara 1 passa a pescar
+  Épico onde o mapa tem Épico.
+- **Vara 2**: 90.000 moedas no nível 30, Nv.1 a 10.
+- Cenários, peixes, Vara 2 e miniaturas provisórios, pintados por script; paisagem viva com os
+  animais que já existem.
+- Pedidos de arte dos mapas 3 e 4 atualizados com as espécies novas, os seis barcos e os ícones de barco
+  e isca.
+
+### Balanceamento
+
+- Nível 20→30 em 3,7 h online (meta 3,8 h) e 30→40 em 4,0 h (meta 4,0 h), com a Chance de Sucesso.
+  Os mapas 3 e 4 têm valores ×1,75 e ×1,55 sobre o documento (A-093).
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M16-T06`).
+
 ## [0.2.0-m15.19] — 30/09/2026
 
 ### Adicionado

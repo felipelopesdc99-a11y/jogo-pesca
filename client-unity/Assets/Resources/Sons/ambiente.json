@@ -5,6 +5,8 @@
   "gain": 0.6,
   "scenes": [
     { "scene": "LagoSereno", "tracks": ["lago_01", "lago_02", "lago_03", "lago_04"] },
-    { "scene": "RioSelvagem", "tracks": ["rio_01", "rio_02", "rio_03", "rio_04"] }
+    { "scene": "RioSelvagem", "tracks": ["rio_01", "rio_02", "rio_03", "rio_04"] },
+    { "scene": "PantanalDourado", "tracks": ["pantanal_01", "pantanal_02", "pantanal_03", "pantanal_04"] },
+    { "scene": "EstuarioDasMares", "tracks": ["estuario_01", "estuario_02", "estuario_03", "estuario_04"] }
   ]
 }

@@ -953,3 +953,36 @@ Resultado medido no simulador (5 jogadores, estratégia da seção 1 do relatór
 O Rio Selvagem rende mais que antes porque o jogador simulado compra barcos. Os barcos (543 mil
 moedas e 500 conchas no total) e as iscas são o gasto novo. Detalhes em
 `docs/relatorios/SIMULACAO_BALANCEAMENTO.md`, seção 7.
+
+### A-093 · Mapas 3 e 4, raridade Épico e Vara 2
+**Seção do GDD:** 17, 19, 21, 22 · **Situação:** Decidido pelo proprietário (30/09/2026, `docs/PROGRESSAO_MAPAS_3_4.md`)
+
+| Mapa | Nível | Vara mínima | Espécies | Épicos |
+|---|---:|---|---|---|
+| Pantanal Dourado (`map_03`) | 20 | Vara 1 | 6 Comuns, 3 Raros, 1 Épico | Barbado |
+| Estuário das Marés (`map_04`) | 30 | Vara 2 | 5 Comuns, 3 Raros, 2 Épicos | Camurupim e Mero |
+
+- **Épico**, acima do Raro: roxo `#A855F7`, venda ×4, atributos ×1,3, XP do Pescador ×5, XP como
+  alimento ×3,5. Chance de puxar 24% (A-088). Vem Grande ×0,7, Excepcional ×0,45 e Perfeição ×0,45 (a
+  regra do A-083 levada ao Épico). Pede confirmação na venda em lote e conta como alimento valioso.
+- **Vara 1** agora pesca Épico, mas só onde o mapa tem Épico: o Rio Selvagem continua sem nenhum.
+- **Vara 2:** 90.000 moedas, liberada no nível 30, Nv.1 a 10 (melhorias de 10.000 a 260.000; 765.000 no
+  total), bônus de raridade de +24% a +50%, tamanho de +23% a +42%, Conchas de +55% a +110% e puxar de
+  +8% a +20%. O Nv.1 começa um pouco acima da Vara 1 Nv.10.
+- Atributos, tamanhos e pesos das 20 espécies são os do documento. **Venda, XP e XP como alimento
+  foram multiplicados por 1,75 no Pantanal e 1,55 no Estuário.** O documento mede com 100% de captura;
+  nessa fase a vara e o barco já puxam 60% a 70% dos peixes, então o fator é menor que o ×2 dos mapas 1 e
+  2. Assim as metas do documento se mantêm: Nível 20→30 em 3,7 h online (meta 3,8 h) e 30→40 em 4,0 h
+  (meta 4,0 h).
+- Com a Chance de Sucesso, um Épico puxado leva em média umas 11 h no Pantanal com a Vara 1 Nv.1 sem
+  barco (0,30% de mordida × 26%), umas 5 h com a Vara 1 Nv.10 e o Barco 3, e umas 2,5 h no Estuário
+  com a Vara 2 e o Barco 4. Sem pity timer.
+- Viagem igual (manual, 30 s). Ao abrir o jogo, quem já está no nível 20 ou 30 vê os mapas liberados,
+  sem ser levado para eles. A Enciclopédia passa a ter 40 espécies. O título de capítulo tem as frases
+  "Agora o mundo se abriu de verdade." (Capítulo 3) e "Cheguei em uma nova fronteira do jogo."
+  (Capítulo 4).
+- Cenários, peixes, Vara 2 e miniaturas dos mapas são **provisórios**, pintados por script
+  (`ASSET_PENDENTE`); os pedidos para o ChatGPT estão no documento "Pedidos de arte: Pantanal Dourado e
+  Estuário das Marés". A paisagem viva usa os animais que já existem (araras, garças, capivaras,
+  jacaré, patos, andorinhas) até as artes novas chegarem. O som ambiente espera gravações
+  `pantanal_01..04` e `estuario_01..04` (até lá, o som antigo).

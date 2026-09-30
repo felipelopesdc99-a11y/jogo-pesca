@@ -75,7 +75,8 @@
     "bulk_sale_protection": {
       "note": "Peixes que disparam a confirmação única \"Revisar peixes / Confirmar\" quando entram numa venda da Caixa de Pesca (seção 11 do GDD). Por raridade e por categoria de tamanho.",
       "rarities": [
-        "rare"
+        "rare",
+        "epic"
       ],
       "size_categories": [
         "exceptional",

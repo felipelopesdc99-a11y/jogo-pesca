@@ -174,6 +174,25 @@ Arena ficam como ícone até existir um sistema de avatar (não faz parte da V0.
 
 ---
 
+## Mapas 3 e 4 (V0.2, `M16-T05`)
+
+Provisórios pintados por script (`gerar_cenarios.py`, `gerar_peixes.py`) até chegarem as imagens do
+documento [Pedidos de arte: Pantanal Dourado e Estuário das Marés](https://claude.ai/code/artifact/71e40506-b9ce-48dd-bf16-d9409c2a9442).
+
+| O quê | Arquivos | Pedido |
+|---|---|---|
+| Cenário do Pantanal | `Arte/Mapas/PantanalDourado/map_pantanal_dourado_*.png` (céu, horizonte, capões, margens, cantos, nuvens, água) | Pantanal 01 a 09 |
+| Peixes do Pantanal | `Arte/Peixes/fish_<id>_master.png`: mandi_amarelo, pacu_peva, jundia, jurupensem, mucum, piavucu, piraputanga, jurupoca, armado, barbado | Pantanal 10 e 11 |
+| Paisagem viva do Pantanal | tuiuiú, arara-azul, colhereiro, borboletas, aguapés, carandaás e ipês | Pantanal 12 a 18 |
+| Cenário do Estuário | `Arte/Mapas/EstuarioDasMares/map_estuario_das_mares_*.png` | Estuário 01 a 09 |
+| Peixes do Estuário | parati, tainha, carapeba, corvina, bagre_marinho, robalo_peva, pescada_amarela, xareu, camurupim, mero | Estuário 10 e 11 |
+| Paisagem viva do Estuário | guará, caranguejo, boto, trinta-réis, plantas e mangues | Estuário 12 a 17 |
+| Vara 2 | `Arte/Varas/rod_02.png` | Novo 01 |
+| Barcos | `Arte/Barcos/boat_00.png` a `boat_05.png` | Novo 02 |
+| Ícones de barco e isca | `Arte/Icones/ico_barco.png`, `ico_isca.png` | Novo 03 |
+
+As miniaturas dos mapas (`*_thumb.png`) saem das camadas do cenário.
+
 ## Prioridade C
 
 Refinamento, skins, equipamentos futuros e mapas posteriores (seção 38) — nada a fazer agora.

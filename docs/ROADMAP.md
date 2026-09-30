@@ -65,6 +65,7 @@ infraestrutura online que já existia foi preservada no M12, adiada.
 | **M13** | V0.2 · Áudio e ambiente | Sons de captura, recorde e subir de nível; mar e brisa calmos; sons como arquivos trocáveis |
 | **M14** | V0.2 · Visual Lago Dourado | A Bíblia de Arte (`docs/ART_BIBLE_V0_1.md`) aplicada: tema central, fontes, card de peixe, cena em luz dourada, níveis de intensidade e momentos especiais |
 | **M15** | V0.2 · Sucesso da pesca e equipamentos | O peixe que morde pode escapar; barcos e iscas na Loja, com Moedas e Conchas; chance visível; painel com simulador; rebalanceamento (`docs/SISTEMA_SUCESSO_PESCA.md`) |
+| **M16** | V0.2 · Mapas 3 e 4 | Pantanal Dourado e Estuário das Marés, raridade Épico, Vara 2 e 20 espécies (`docs/PROGRESSAO_MAPAS_3_4.md`) |
 
 ## Regras que o roadmap impõe a si mesmo
 

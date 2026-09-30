@@ -469,6 +469,208 @@ def rio_selvagem(out):
     thumbnail(out, 'map_rio_selvagem')
 
 
+# ----------------------------------------------------------------------------- Pantanal Dourado
+
+def palms(img, layer, items, trunk, crown, light):
+    """Carandaá palms: thin straight trunks with a fan crown, drawn on a shore layer."""
+    d = ImageDraw.Draw(img)
+    for cx, hgt in items:
+        px = (cx - layer.x0) * layer.ppu
+        base = (layer.y1 - HORIZON) * layer.ppu
+        top = base - hgt * layer.ppu
+        d.line([(px, base), (px + hgt * 3, top)], fill=trunk + (255,), width=max(3, int(layer.ppu * 0.05)))
+        tx = px + hgt * 3
+        r = layer.ppu * (0.28 + hgt * 0.06)
+        for i in range(15):
+            a = math.radians(200 + i * (140 / 14))
+            ex, ey = tx + math.cos(a) * r, top + math.sin(a) * r * 0.9
+            d.line([(tx, top), (ex, ey)], fill=(light if i < 5 else crown) + (255,), width=max(2, int(layer.ppu * 0.03)))
+        for i in range(3):
+            a = math.radians(40 + i * 25)
+            d.line([(tx, top), (tx + math.cos(a) * r * 0.6, top + math.sin(a) * r * 0.9)], fill=(150, 120, 70, 255), width=max(2, int(layer.ppu * 0.02)))
+
+
+def pantanal_dourado(out):
+    rng = np.random.default_rng(13)
+    sun = (-5.2, 1.4)
+    sky = Layer(-HALF_W, HALF_W, HORIZON - 0.2, 5.8, 48)
+    t = np.clip((sky.Y - HORIZON) / 5.4, 0, 1)
+    col = mix(hexc('#FFE3A6'), hexc('#F6C58A'), smooth(0.0, 0.16, t))
+    col = mix(col, hexc('#A9C3D8'), smooth(0.14, 0.55, t))
+    col = mix(col, hexc('#6F95C4'), smooth(0.5, 1.0, t))
+    d = np.sqrt((sky.X - sun[0]) ** 2 + ((sky.Y - sun[1]) * 1.4) ** 2)
+    col = mix(col, hexc('#FFD27A'), np.exp(-d / 2.6) * 0.7)
+    col = mix(col, hexc('#FFF4CC'), np.exp(-d / 0.6) * 0.9)
+    sky.over(col, np.ones_like(t))
+    n = noise2(rng, sky.h, sky.w, 70, 5)
+    streak = smooth(0.2, 0.6, n) * smooth(2.0, 3.0, sky.Y) * (1 - smooth(4.4, 5.6, sky.Y))
+    sky.rgb = mix(sky.rgb, hexc('#F7D6C0'), streak * 0.2)
+    disc = np.clip((0.40 - np.sqrt((sky.X - sun[0]) ** 2 + (sky.Y - sun[1]) ** 2)) * sky.ppu, 0, 1)
+    sky.rgb = mix(sky.rgb, hexc('#FFF9E2'), disc)
+    sky.save(os.path.join(out, 'map_pantanal_dourado_bg_sky.png'))
+
+    # Far: a flat, misty line of forest and a low serra on the right third only.
+    far = Layer(-HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 2.4, 70)
+    xs = far.col_x()
+    serra = HORIZON + 0.25 + 0.55 * np.exp(-((xs - 8.0) / 2.6) ** 2) + 0.08 * noise1(rng, far.w, 6)
+    far.ridge(serra, mix(hexc('#8FA6B8'), hexc('#E8D2B0'), smooth(HORIZON + 0.8, HORIZON, far.Y) * 0.8))
+    line = HORIZON + 0.14 + 0.05 * noise1(rng, far.w, 7)
+    far.ridge(line, mix(hexc('#7F9A8E'), hexc('#E6D4A8'), smooth(HORIZON + 0.3, HORIZON, far.Y) * 0.6))
+    far.save(os.path.join(out, 'map_pantanal_dourado_bg_far.png'))
+
+    # Mid: capões (round islands of forest) spread over open grass.
+    mid = Layer(-HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 1.5, 90)
+    xs = mid.col_x()
+    grass = HORIZON + 0.06 + 0.02 * noise1(rng, mid.w, 6)
+    capoes = broadleaf_profile(xs, rng, 26, -HALF_W, HALF_W, HORIZON, 0.12, 0.34)
+    prof = np.maximum(grass, capoes)
+    colm = mix(hexc('#56703E'), hexc('#7C8E48'), smooth(HORIZON, HORIZON + 0.8, mid.Y))
+    colm = mix(colm, hexc('#C9B98A'), smooth(HORIZON + 0.3, HORIZON, mid.Y) * 0.35)
+    mid.ridge(prof, colm * (1 + noise2(rng, mid.h, mid.w, 12, 3)[..., None] * 0.1))
+    light_rim(mid, prof, sun[0], 0.6, hexc('#F2C874'), 0.05)
+    mid.save(os.path.join(out, 'map_pantanal_dourado_bg_mid.png'))
+
+    # Shore: low flooded grass fields with carandaá palms and a few broad trees on both sides.
+    near = Layer(-HALF_W, HALF_W, HORIZON - 0.15, HORIZON + 3.2, 100)
+    xs = near.col_x()
+    left = broadleaf_profile(xs, rng, 14, -HALF_W, -5.4, HORIZON - 0.1, 0.25, 0.6)
+    right = broadleaf_profile(xs, rng, 10, 7.0, HALF_W, HORIZON - 0.1, 0.25, 0.55)
+    field = HORIZON + 0.12 + 0.05 * np.abs(noise1(rng, near.w, 8))
+    field = np.where((xs < -3.8) | (xs > 6.2), field + 0.1, field * 0 - 99)
+    prof = np.maximum(np.maximum(left, right), field)
+    coln = mix(hexc('#3E5A2C'), hexc('#6E8240'), smooth(HORIZON, HORIZON + 1.6, near.Y))
+    near.ridge(prof, coln * (1 + noise2(rng, near.h, near.w, 16, 4)[..., None] * 0.16), 1.2)
+    light_rim(near, prof, sun[0], 0.7, hexc('#F0C470'), 0.06)
+    img = near.image()
+    palms(img, near, [(-11.5, 2.2), (-9.8, 1.7), (-7.2, 2.5), (-5.0, 1.4), (7.8, 1.9), (9.6, 2.6), (11.8, 1.6)], (92, 72, 50), (70, 96, 52), (196, 180, 96))
+    img.save(os.path.join(out, 'map_pantanal_dourado_bg_near.png'), optimize=True)
+
+    # Water: wide, shallow and mirror-calm, with a golden column from the low sun.
+    water = Layer(-HALF_W, HALF_W, -5.8, HORIZON, 64)
+    depth = np.clip((HORIZON - water.Y) / 6.0, 0, 1)
+    colw = mix(hexc('#F6D59A'), hexc('#9FB3B8'), smooth(0.0, 0.08, depth))
+    colw = mix(colw, hexc('#4E7C84'), smooth(0.06, 0.45, depth))
+    colw = mix(colw, hexc('#23464E'), smooth(0.4, 1.0, depth))
+    spread = 0.4 + depth * 1.8
+    col_k = np.exp(-((water.X - sun[0]) / spread) ** 2)
+    ripple = np.clip(noise2(rng, water.h, water.w, 7, 3) * 2.4 + 0.2, 0, 1)
+    rows = (np.sin(water.Y * 36 + noise2(rng, water.h, water.w, 30, 2) * 6) * 0.5 + 0.5) ** 3
+    colw = mix(colw, hexc('#FFE6A8'), np.clip(col_k * ripple * rows * 1.1 * (1 - depth * 0.5), 0, 1))
+    colw = colw * (1 + noise2(rng, water.h, water.w, 10, 3)[..., None] * 0.05)
+    water.over(colw, np.ones_like(depth))
+    water.save(os.path.join(out, 'map_pantanal_dourado_water.png'))
+
+    for side, name in ((-1, 'left'), (1, 'right')):
+        fg = foreground_corner(np.random.default_rng(70 if side < 0 else 71), side, '#3A5A2A', '#8A9A48', '#E8C060', lily=True)
+        fg.save(os.path.join(out, 'map_pantanal_dourado_fg_' + name + '.png'), optimize=True)
+
+    for i in range(3):
+        c = cloud_sprite(np.random.default_rng(80 + i), 520, 260, hexc('#FFE2B8'), hexc('#A8A8C8'))
+        c.save(os.path.join(out, 'map_pantanal_dourado_cloud_%02d.png' % (i + 1)), optimize=True)
+
+    thumbnail(out, 'map_pantanal_dourado')
+
+
+# ----------------------------------------------------------------------------- Estuário das Marés
+
+def mangrove_roots(img, layer, x_from, x_to, rng, colour):
+    """Arched prop roots of the red mangrove along the waterline."""
+    d = ImageDraw.Draw(img)
+    base = (layer.y1 - HORIZON) * layer.ppu
+    x = x_from
+    while x < x_to:
+        px = (x - layer.x0) * layer.ppu
+        hgt = layer.ppu * rng.uniform(0.25, 0.5)
+        wid = layer.ppu * rng.uniform(0.15, 0.35)
+        d.arc([px - wid, base - hgt, px + wid, base + hgt], 180, 360, fill=colour + (255,), width=max(2, int(layer.ppu * 0.025)))
+        x += rng.uniform(0.12, 0.3)
+
+
+def estuario_das_mares(out):
+    rng = np.random.default_rng(17)
+    sun = (1.8, 1.25)
+    sky = Layer(-HALF_W, HALF_W, HORIZON - 0.2, 5.8, 48)
+    t = np.clip((sky.Y - HORIZON) / 5.4, 0, 1)
+    col = mix(hexc('#FFB36A'), hexc('#F08A5C'), smooth(0.0, 0.2, t))
+    col = mix(col, hexc('#9A6E9C'), smooth(0.18, 0.6, t))
+    col = mix(col, hexc('#3C3F7E'), smooth(0.55, 1.0, t))
+    d = np.sqrt((sky.X - sun[0]) ** 2 + ((sky.Y - sun[1]) * 1.5) ** 2)
+    col = mix(col, hexc('#FFC06A'), np.exp(-d / 2.4) * 0.8)
+    col = mix(col, hexc('#FFF0C0'), np.exp(-d / 0.7) * 0.9)
+    sky.over(col, np.ones_like(t))
+    n = noise2(rng, sky.h, sky.w, 90, 5)
+    streak = smooth(0.1, 0.5, n) * smooth(1.4, 2.2, sky.Y) * (1 - smooth(3.6, 4.8, sky.Y))
+    sky.rgb = mix(sky.rgb, hexc('#FF9A7A'), streak * 0.35)
+    disc = np.clip((0.55 - np.sqrt((sky.X - sun[0]) ** 2 + (sky.Y - sun[1]) ** 2)) * sky.ppu, 0, 1)
+    sky.rgb = mix(sky.rgb, hexc('#FFF4D6'), disc)
+    sky.save(os.path.join(out, 'map_estuario_das_mares_bg_sky.png'))
+
+    # Far: low coastal hills with a thin bright line of open sea between them.
+    far = Layer(-HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 2.4, 70)
+    xs = far.col_x()
+    sea = np.full_like(xs, HORIZON + 0.05)
+    far.ridge(sea, np.broadcast_to(hexc('#F4C890'), far.rgb.shape))
+    gap = 1 - np.exp(-((xs - sun[0]) / 3.0) ** 2)
+    hills = HORIZON - 0.05 + (0.35 + 0.5 * np.exp(-((xs + 7.5) / 3.0) ** 2) + 0.35 * np.exp(-((xs - 9.0) / 2.2) ** 2) + 0.06 * noise1(rng, far.w, 6)) * gap
+    far.ridge(hills, mix(hexc('#6A5A86'), hexc('#D69A86'), smooth(HORIZON + 0.8, HORIZON, far.Y) * 0.7))
+    far.save(os.path.join(out, 'map_estuario_das_mares_bg_far.png'))
+
+    # Mid: a band of dense, rounded mangrove canopy.
+    mid = Layer(-HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 1.5, 90)
+    xs = mid.col_x()
+    open_ = 1 - np.exp(-((xs - sun[0]) / 1.8) ** 2)
+    band = HORIZON - 0.05 + (broadleaf_profile(xs, rng, 160, -HALF_W, HALF_W, HORIZON + 0.02, 0.08, 0.2) - HORIZON + 0.05) * open_
+    colm = mix(hexc('#1E3A30'), hexc('#34503A'), smooth(HORIZON, HORIZON + 0.6, mid.Y))
+    mid.ridge(band, colm * (1 + noise2(rng, mid.h, mid.w, 12, 3)[..., None] * 0.12))
+    light_rim(mid, band, sun[0], 0.7, hexc('#F2A868'), 0.05)
+    mid.save(os.path.join(out, 'map_estuario_das_mares_bg_mid.png'))
+
+    # Shore: tall, dense red mangrove on both sides with prop roots over the mud.
+    near = Layer(-HALF_W, HALF_W, HORIZON - 0.15, HORIZON + 3.2, 100)
+    xs = near.col_x()
+    left = broadleaf_profile(xs, rng, 50, -HALF_W, -4.4, HORIZON + 0.35, 0.4, 1.0)
+    right = broadleaf_profile(xs, rng, 36, 6.4, HALF_W, HORIZON + 0.35, 0.4, 0.9)
+    prof = np.maximum(left, right)
+    coln = mix(hexc('#0E2418'), hexc('#244A30'), smooth(HORIZON + 0.3, HORIZON + 2.4, near.Y))
+    near.ridge(prof, coln * (1 + noise2(rng, near.h, near.w, 16, 4)[..., None] * 0.18), 1.2)
+    light_rim(near, prof, sun[0], 0.6, hexc('#E89A5A'), 0.06)
+    img = near.image()
+    mangrove_roots(img, near, -HALF_W, -4.6, rng, (58, 42, 30))
+    mangrove_roots(img, near, 6.6, HALF_W, rng, (58, 42, 30))
+    mud = ImageDraw.Draw(img)
+    for x0, x1 in ((-HALF_W, -4.2), (6.2, HALF_W)):
+        y = (near.y1 - HORIZON) * near.ppu
+        mud.rectangle([(x0 - near.x0) * near.ppu, y - near.ppu * 0.06, (x1 - near.x0) * near.ppu, y + 2], fill=(46, 36, 30, 255))
+    img.save(os.path.join(out, 'map_estuario_das_mares_bg_near.png'), optimize=True)
+
+    # Water: brackish, heavier and darker, with strong sunset reflections and a slow tidal flow.
+    water = Layer(-HALF_W, HALF_W, -5.8, HORIZON, 64)
+    depth = np.clip((HORIZON - water.Y) / 6.0, 0, 1)
+    colw = mix(hexc('#F2A870'), hexc('#5E6A78'), smooth(0.0, 0.06, depth))
+    colw = mix(colw, hexc('#1E4A4E'), smooth(0.05, 0.4, depth))
+    colw = mix(colw, hexc('#0C2428'), smooth(0.35, 1.0, depth))
+    spread = 0.5 + depth * 1.9
+    col_k = np.exp(-((water.X - sun[0]) / spread) ** 2)
+    ripple = np.clip(noise2(rng, water.h, water.w, 7, 3) * 2.4 + 0.2, 0, 1)
+    rows = (np.sin(water.Y * 30 + noise2(rng, water.h, water.w, 30, 2) * 6) * 0.5 + 0.5) ** 3
+    colw = mix(colw, hexc('#FFC27A'), np.clip(col_k * ripple * rows * 1.3 * (1 - depth * 0.4), 0, 1))
+    stretched = np.asarray(Image.fromarray(((noise2(rng, water.h, max(8, water.w // 8), 6, 3) + 1) * 127.5).astype(np.uint8)).resize((water.w, water.h), Image.BICUBIC), dtype=np.float32) / 255.0
+    colw = mix(colw, hexc('#6E9A98'), smooth(0.66, 0.86, stretched) * 0.15 * (0.4 + depth))
+    colw = colw * (1 + noise2(rng, water.h, water.w, 9, 3)[..., None] * 0.06)
+    water.over(colw, np.ones_like(depth))
+    water.save(os.path.join(out, 'map_estuario_das_mares_water.png'))
+
+    for side, name in ((-1, 'left'), (1, 'right')):
+        fg = foreground_corner(np.random.default_rng(90 if side < 0 else 91), side, '#1A3A26', '#4E6A3A', '#D8905A', lily=False, cattails=False)
+        fg.save(os.path.join(out, 'map_estuario_das_mares_fg_' + name + '.png'), optimize=True)
+
+    for i in range(3):
+        c = cloud_sprite(np.random.default_rng(95 + i), 560, 220, hexc('#FFB890'), hexc('#8A6E9A'), 1.0)
+        c.save(os.path.join(out, 'map_estuario_das_mares_cloud_%02d.png' % (i + 1)), optimize=True)
+
+    thumbnail(out, 'map_estuario_das_mares')
+
+
 def boat_and_fisherman(out):
     """The rowing boat, the seated fisherman (without the arm, which the game animates) and a tackle box."""
     S = 4
@@ -586,6 +788,7 @@ def rods(out):
     specs = {
         'rod_00_starter': dict(blank=(168, 120, 64), tip=(120, 84, 44), grip=(120, 78, 44), reel=(150, 156, 160), bands=(92, 60, 34), thick=11),
         'rod_01': dict(blank=(88, 96, 112), tip=(220, 70, 60), grip=(196, 150, 96), reel=(54, 120, 196), bands=(214, 176, 90), thick=12),
+        'rod_02': dict(blank=(24, 72, 74), tip=(214, 176, 90), grip=(112, 78, 52), reel=(168, 128, 52), bands=(214, 176, 90), thick=13),
     }
     for rod_id, sp in specs.items():
         w, h = 1024 * S, 512 * S
@@ -668,7 +871,7 @@ def main():
     cena = os.path.join(ROOT, 'Cena')
     os.makedirs(cena, exist_ok=True)
     boat_and_fisherman(cena)
-    for folder, fn in (('LagoSereno', lago_sereno), ('RioSelvagem', rio_selvagem)):
+    for folder, fn in (('LagoSereno', lago_sereno), ('RioSelvagem', rio_selvagem), ('PantanalDourado', pantanal_dourado), ('EstuarioDasMares', estuario_das_mares)):
         out = os.path.join(ROOT, 'Mapas', folder)
         os.makedirs(out, exist_ok=True)
         fn(out)

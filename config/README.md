@@ -82,7 +82,10 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
   (aproximadamente 2 horas de pesca online). Desde a V0.2 só metade delas vira peixe no começo
   (Chance de Sucesso da Captura), e por isso o XP, o valor e o XP como alimento das espécies foram
   dobrados (30/09/2026, `docs/GDD_ADENDO.md` A-092).
-- Chance de Sucesso da Captura: Comum 50%, Raro 38% (Épico 24% quando existir), entre 5% e 95%.
+- Mapas 3 e 4 (V0.2, `docs/PROGRESSAO_MAPAS_3_4.md`): venda, XP e XP como alimento das espécies
+  multiplicados por 1,75 (Pantanal Dourado) e 1,55 (Estuário das Marés) em relação ao documento, para o
+  Nível 20→30 e o 30→40 ficarem perto de 3,8 h e 4,0 h online com a Chance de Sucesso (A-093).
+- Chance de Sucesso da Captura: Comum 50%, Raro 38%, Épico 24%, entre 5% e 95%.
   Barcos de +3% a +15%, iscas de +5% a +15% por 100 tentativas, Vara 1 de +2% a +12%.
 - O XP do Pescador do nível 1 ao 100 soma **711.000 XP**, contra uma meta de cerca de 90 dias. É o
   valor com maior chance de precisar de recalibragem quando houver dados reais de jogo.

@@ -88,6 +88,8 @@
         { "id": "monkey_hanging", "weight": 1 },
         { "id": "howler", "weight": 0.8 }
       ]
-    }
+    },
+    {"scene": "PantanalDourado", "plants": [], "spots": [{"id": "heron", "side": "right", "x": 4.0, "y": -4.95}, {"id": "capybara", "side": "left", "x": 2.0, "y": 0.13}, {"id": "ducks", "side": "center", "x": 0, "y": -1.0}, {"id": "caiman", "side": "center", "x": 0, "y": -1.4}], "animals": [{"id": "macaws", "weight": 3}, {"id": "heron_flyover", "weight": 2}, {"id": "ducks_flying", "weight": 2}, {"id": "swallows", "weight": 1.5}, {"id": "caiman", "weight": 1.5}, {"id": "capybaras", "weight": 1.5}, {"id": "heron_wading", "weight": 1}, {"id": "ducks_swimming", "weight": 1}]},
+    {"scene": "EstuarioDasMares", "plants": [], "spots": [{"id": "heron", "side": "right", "x": 4.0, "y": -4.95}, {"id": "ducks", "side": "center", "x": 0, "y": -1.0}], "animals": [{"id": "heron_flyover", "weight": 2.5}, {"id": "swallows", "weight": 2}, {"id": "ducks_flying", "weight": 1.5}, {"id": "heron_wading", "weight": 1.5}]}
   ]
 }

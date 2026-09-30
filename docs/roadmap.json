@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T21:13:40Z",
-  "current_milestone": "M15",
+  "updated_at": "2026-09-30T22:18:05Z",
+  "current_milestone": "M16",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -166,7 +166,8 @@
       "title": "Aprovar as espécies e os números dos mapas 3 e 4",
       "detail": "Proposta: Pantanal Dourado (nível 20, Vara 1): Piraputanga, Piavuçu, Mandi-amarelo, Sardinha-de-água-doce, Jejum (comuns); Jurupoca, Jurupensém, Pacu-peva, Piau-flamengo (raros); Barbado (épico). Estuário das Marés (nível 30, Vara 2): Tainha, Carapeba, Bagre-do-mar, Baiacu, Corvina (comuns); Robalo-peva, Robalo-flecha, Pescada-amarela (raros); Camurupim e Mero (épicos). Raridade Épico: roxo, venda ×5, atributos ×1,35, XP do Pescador ×6, XP como alimento ×4,5, Grande ×0,7 e Excepcional ×0,45. Vara 1 passa a pegar Épico. Vara 2: 25.000 moedas, liberada no nível 25, pega Comum, Raro e Épico, bônus maiores que a Vara 1. Chance do épico: Barbado 2% no Pantanal; Camurupim e Mero 1,5% cada no Estuário. Tudo ajustável depois no painel de Balanceamento. Com o Sucesso da Captura (30/09): chance-base de puxar o Épico 24%; o XP e o valor das espécies novas devem seguir a escala já dobrada dos mapas 1 e 2.",
       "raised_at": "2026-09-30T17:58:27Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "30/09/2026: o proprietário mandou docs/PROGRESSAO_MAPAS_3_4.md, que substitui a proposta: espécies, Épico, Vara 2 e números do documento (com venda e XP ajustados pela Chance de Sucesso, A-093)."
     },
     {
       "id": "OD-020",
@@ -2134,9 +2135,10 @@
           "title": "Mapas 3 e 4: Pantanal Dourado e Estuário das Marés",
           "subsystem": "config",
           "description": "Criar o Pantanal Dourado e o Estuário das Marés (docs/IDENTIDADE_POR_MAPA.md): raridade Épico, Vara 2, 10 espécies por mapa, cenário, fauna, som e fotos. ASSET_PENDENTE: as imagens do documento de pedidos (M14-T30). Esperando a aprovação das espécies e dos números (OD-019).",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-09-30T17:58:27Z"
+          "updated_at": "2026-09-30T22:18:05Z",
+          "completion_notes": "Decidido pelo documento do proprietário docs/PROGRESSAO_MAPAS_3_4.md (OD-019) e implementado no Milestone 16."
         },
         {
           "id": "M14-T30",
@@ -2291,6 +2293,88 @@
             "M15-T05"
           ],
           "updated_at": "2026-09-30T21:13:40Z"
+        }
+      ]
+    },
+    {
+      "id": "M16",
+      "title": "V0.2 · Mapas 3 e 4",
+      "goal": "Pedido do proprietário em 30/09/2026 (docs/PROGRESSAO_MAPAS_3_4.md): Pantanal Dourado e Estuário das Marés, raridade Épico, Vara 2 e 20 espécies, levando a progressão do nível 20 ao 40 sem mudar o loop do jogo.",
+      "completion_criteria": [
+        "Os mapas 3 e 4 funcionam no fluxo normal, online e offline.",
+        "Épico funciona em todos os sistemas que lidam com raridade.",
+        "A Vara 2 pode ser comprada, melhorada, equipada e negociada.",
+        "XP e economia perto dos alvos do documento; saves antigos intactos.",
+        "O proprietário testou no Play."
+      ],
+      "tasks": [
+        {
+          "id": "M16-T01",
+          "title": "Raridade Épico e Vara 2",
+          "subsystem": "config",
+          "description": "docs/PROGRESSAO_MAPAS_3_4.md: Épico acima do Raro, Vara 1 passa a pegar Épico, Vara 2 no nível 30 por 90.000 moedas.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "Épico em progression.json (×4 venda, ×1,3 atributos, ×5 XP, ×3,5 alimento, puxar 24%, tamanhos grandes um pouco menos); Vara 1 com epic; rod_02 com bônus, custos e revenda do documento e puxar de +8% a +20%; Épico na proteção de venda em lote. A-093.",
+          "updated_at": "2026-09-30T22:18:05Z"
+        },
+        {
+          "id": "M16-T02",
+          "title": "20 espécies e os mapas 3 e 4",
+          "subsystem": "config",
+          "description": "Pantanal Dourado (nível 20, Vara 1) e Estuário das Marés (nível 30, Vara 2), 10 espécies cada, pools de 1000.",
+          "status": "DONE",
+          "dependencies": [
+            "M16-T01"
+          ],
+          "completion_notes": "fish_catalog com 20 espécies (atributos, tamanhos e pesos do documento; venda e XP ×1,75 e ×1,55 pela Chance de Sucesso); maps.json com map_03 e map_04. Testes MapsThreeFourTests: níveis, varas, Épico nos mapas certos, distribuição e médias do documento, venda/alimento/Aquário com Épico, save antigo.",
+          "updated_at": "2026-09-30T22:18:05Z"
+        },
+        {
+          "id": "M16-T03",
+          "title": "Rebalanceamento e simulação dos mapas 3 e 4",
+          "subsystem": "config",
+          "description": "Rodar a simulação e ajustar só se sair muito dos alvos do documento.",
+          "status": "DONE",
+          "dependencies": [
+            "M16-T02"
+          ],
+          "completion_notes": "Simulador segue o jogador por todos os mapas e compra todas as varas; Nível 20→30 em 3,7 h e 30→40 em 4,0 h online (metas 3,8 e 4,0 h). Tabela por mapa (chegada, XP/h, Moedas/h, Conchas/h) e coluna de Épicos nas combinações de equipamento.",
+          "updated_at": "2026-09-30T22:18:05Z"
+        },
+        {
+          "id": "M16-T04",
+          "title": "Cena, peixes e Vara 2 provisórios",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE: cenário, 20 peixes, Vara 2 e miniaturas pintados por script até as imagens do ChatGPT chegarem.",
+          "status": "DONE",
+          "dependencies": [
+            "M16-T02"
+          ],
+          "completion_notes": "SceneTheme PantanalDourado e EstuarioDasMares; gerar_cenarios.py (camadas, água, nuvens, miniatura, rod_02) e gerar_peixes.py (20 peixes); paisagem viva com animais existentes; lugar para o som ambiente; frases de capítulo; cards de vara dizem “Pesca peixes Raros e Épicos”. Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-30T22:18:05Z"
+        },
+        {
+          "id": "M16-T05",
+          "title": "Arte final dos mapas 3 e 4",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE: as imagens do documento de pedidos (Pantanal 01–18, Estuário 01–17, Novo 01–03). Lista em docs/ASSETS_PENDENTES.md.",
+          "status": "TODO",
+          "dependencies": [
+            "M16-T04"
+          ],
+          "updated_at": "2026-09-30T22:18:05Z"
+        },
+        {
+          "id": "M16-T06",
+          "title": "Testar no Unity (Play)",
+          "subsystem": "client",
+          "description": "O proprietário aperta Play e confere os dois mapas, o Épico nos cards e filtros, a Vara 2 na Loja e a viagem.",
+          "status": "TODO",
+          "dependencies": [
+            "M16-T04"
+          ],
+          "updated_at": "2026-09-30T22:18:05Z"
         }
       ]
     }

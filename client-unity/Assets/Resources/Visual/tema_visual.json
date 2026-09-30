@@ -14,7 +14,7 @@
     "danger": "#EF6B5B",
     "success": "#2CCB7F"
   },
-  "_raridades": "Cor de cada raridade: aparece só como acento (borda, selo, barra, filtro). Comum = branco, Raro = azul. Só as raridades que existem nos dados são usadas; as outras ficam reservadas.",
+  "_raridades": "Cor de cada raridade: aparece só como acento (borda, selo, barra, filtro). Comum = branco, Raro = azul, Épico = roxo. Só as raridades que existem nos dados são usadas; as outras ficam reservadas.",
   "rarities": [
     { "id": "common", "color": "#F2F5F8" },
     { "id": "uncommon", "color": "#2CCB7F" },

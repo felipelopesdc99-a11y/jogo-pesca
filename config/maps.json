@@ -2,7 +2,7 @@
   "config_file": "maps",
   "config_schema_version": 1,
   "balance_status": "PROVISÓRIO",
-  "description": "Mapas jogáveis, seus pools de peixes com pesos de captura, requisitos de desbloqueio e regras de viagem. Só os Mapas 1 e 2 são jogáveis na V0.1; a escada de desbloqueio dos Mapas 3 a 10 fica registrada apenas como referência e nenhum mapa além do 2 está definido aqui.",
+  "description": "Mapas jogáveis, seus pools de peixes com pesos de captura, requisitos de desbloqueio e regras de viagem. Mapas 1 e 2 desde a V0.1; mapas 3 e 4 desde a V0.2 (docs/PROGRESSAO_MAPAS_3_4.md). A escada dos Mapas 5 a 10 fica registrada apenas como referência.",
   "catch_success_rebalance_note": "30/09/2026: o peso do Aruanã no Rio Selvagem foi de 5 para 10 com a Chance de Sucesso da Captura (docs/SISTEMA_SUCESSO_PESCA.md). Ele morde 1% das vezes, mas só é puxado em cerca de 40% delas, e o primeiro Raro continua chegando perto do tempo de antes.",
   "travel": {
     "duration_seconds": 30,
@@ -14,7 +14,7 @@
     "cooldown_seconds": 0
   },
   "unlock_ladder_reference": {
-    "note": "Escada de progressão da seção 17 do GDD. Os Mapas 3 a 10 estão fora do escopo da V0.1 e de propósito não são definidos abaixo.",
+    "note": "Escada de progressão da seção 17 do GDD. Os Mapas 5 a 10 ainda não existem e de propósito não são definidos abaixo.",
     "fisher_level_per_map": {
       "map_01": 1,
       "map_02": 10,
@@ -159,6 +159,128 @@
         }
       ],
       "fish_pool_weight_total": 1000
+    },
+    {
+      "id": "map_03",
+      "display_name": "Pantanal Dourado",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 20,
+      "minimum_rod_tier": 1,
+      "visual_theme": {
+        "summary": "Grande área alagada e aberta, água calma com reflexos dourados, ilhas baixas de vegetação, gramíneas e árvores espaçadas, céu amplo e névoa leve no horizonte. Amplitude viva.",
+        "water": "alagada e calma",
+        "light": "dourada, manhã cedo",
+        "mood": "riqueza natural"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "mandi_amarelo",
+          "catch_weight": 220
+        },
+        {
+          "species_id": "pacu_peva",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "jundia",
+          "catch_weight": 170
+        },
+        {
+          "species_id": "jurupensem",
+          "catch_weight": 150
+        },
+        {
+          "species_id": "mucum",
+          "catch_weight": 120
+        },
+        {
+          "species_id": "piavucu",
+          "catch_weight": 102
+        },
+        {
+          "species_id": "piraputanga",
+          "catch_weight": 15
+        },
+        {
+          "species_id": "jurupoca",
+          "catch_weight": 15
+        },
+        {
+          "species_id": "armado",
+          "catch_weight": 15
+        },
+        {
+          "species_id": "barbado",
+          "catch_weight": 3
+        }
+      ]
+    },
+    {
+      "id": "map_04",
+      "display_name": "Estuário das Marés",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 30,
+      "minimum_rod_tier": 2,
+      "visual_theme": {
+        "summary": "Canal de maré largo, raízes de mangue nas margens, bancos de areia e lama, água verde-azulada, abertura para o mar ao fundo e névoa salgada leve. Fronteira nova.",
+        "water": "salobra, canal de maré",
+        "light": "quente, fim de tarde",
+        "mood": "transição de mundo"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "parati",
+          "catch_weight": 250
+        },
+        {
+          "species_id": "tainha",
+          "catch_weight": 220
+        },
+        {
+          "species_id": "carapeba",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "corvina",
+          "catch_weight": 150
+        },
+        {
+          "species_id": "bagre_marinho",
+          "catch_weight": 124
+        },
+        {
+          "species_id": "robalo_peva",
+          "catch_weight": 20
+        },
+        {
+          "species_id": "pescada_amarela",
+          "catch_weight": 20
+        },
+        {
+          "species_id": "xareu",
+          "catch_weight": 20
+        },
+        {
+          "species_id": "camurupim",
+          "catch_weight": 3
+        },
+        {
+          "species_id": "mero",
+          "catch_weight": 3
+        }
+      ]
     }
   ]
 }

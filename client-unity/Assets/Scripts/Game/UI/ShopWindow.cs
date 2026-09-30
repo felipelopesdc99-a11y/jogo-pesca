@@ -162,7 +162,8 @@ namespace FishingIdle.Game.UI
         private void DrawRods(UiSkin skin, Rect content)
         {
             var x = content.x;
-            var w = (content.width - 20f) / 2f;
+            var count = Mathf.Max(2, _shop.Rods.Count);
+            var w = (content.width - 20f * (count - 1)) / count;
             foreach (var rod in _shop.Rods)
             {
                 DrawRod(skin, new Rect(x, content.y, w, content.height), rod);
@@ -200,7 +201,7 @@ namespace FishingIdle.Game.UI
             Row(skin, x, ref y, w, GameTexts.Profile.SizeBonus, rod.SizeBonus, rod.SizeBonusAtMax);
             Row(skin, x, ref y, w, GameTexts.Profile.ShellBonus, rod.ShellBonus, rod.ShellBonusAtMax);
             y += 6;
-            GUI.Label(new Rect(x, y, w, 20), rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare, skin.Small);
+            GUI.Label(new Rect(x, y, w, 20), rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare, skin.Small);
             y += 22;
             GUI.Label(new Rect(x, y, w, 20), GameTexts.Shop.Requires(rod.UnlockFisherLevel), skin.Small);
 

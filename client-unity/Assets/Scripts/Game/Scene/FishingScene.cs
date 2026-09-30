@@ -35,7 +35,74 @@ namespace FishingIdle.Game.Scene
         /// <summary>The scenery for a map id. Unknown maps fall back to the lake.</summary>
         public static SceneTheme For(string mapId)
         {
-            return mapId == "map_02" ? RioSelvagem() : LagoSereno();
+            switch (mapId)
+            {
+                case "map_02": return RioSelvagem();
+                case "map_03": return PantanalDourado();
+                case "map_04": return EstuarioDasMares();
+                default: return LagoSereno();
+            }
+        }
+
+        /// <summary>Pantanal Dourado: wide flooded plain at dawn, calm golden water, palms and capões (docs/PROGRESSAO_MAPAS_3_4.md).</summary>
+        public static SceneTheme PantanalDourado()
+        {
+            return new SceneTheme
+            {
+                SkyTop = new Color(0.44f, 0.58f, 0.77f),
+                SkyHorizon = new Color(1f, 0.89f, 0.65f),
+                Sun = new Color(1f, 0.96f, 0.80f),
+                FarHillTop = new Color(0.56f, 0.65f, 0.72f),
+                FarHillBottom = new Color(0.86f, 0.80f, 0.66f),
+                MidHillTop = new Color(0.34f, 0.44f, 0.24f),
+                MidHillBottom = new Color(0.49f, 0.56f, 0.28f),
+                TreeCrown = new Color(0.24f, 0.35f, 0.17f),
+                TreeShade = new Color(0.15f, 0.24f, 0.12f),
+                WaterHorizon = new Color(0.96f, 0.84f, 0.60f),
+                WaterMid = new Color(0.31f, 0.49f, 0.52f),
+                WaterDeep = new Color(0.14f, 0.27f, 0.31f),
+                Glint = new Color(1f, 0.90f, 0.66f),
+                HillSeed = 13,
+                TreeSeed = 57,
+                HillHeight = 0.9f,
+                TreeHeight = 0.9f,
+                ArtFolder = "PantanalDourado",
+                ArtPrefix = "map_pantanal_dourado",
+                SunPosition = new Vector2(-5.2f, 1.4f),
+                NearLeftHeight = 2.6f,
+                NearRightHeight = 2.6f,
+            };
+        }
+
+        /// <summary>Estuário das Marés: mangrove channel at a warm coastal sunset, darker brackish water, a slow tide.</summary>
+        public static SceneTheme EstuarioDasMares()
+        {
+            return new SceneTheme
+            {
+                SkyTop = new Color(0.24f, 0.25f, 0.49f),
+                SkyHorizon = new Color(1f, 0.70f, 0.42f),
+                Sun = new Color(1f, 0.94f, 0.75f),
+                FarHillTop = new Color(0.42f, 0.35f, 0.53f),
+                FarHillBottom = new Color(0.84f, 0.60f, 0.53f),
+                MidHillTop = new Color(0.12f, 0.23f, 0.19f),
+                MidHillBottom = new Color(0.20f, 0.31f, 0.23f),
+                TreeCrown = new Color(0.14f, 0.29f, 0.19f),
+                TreeShade = new Color(0.05f, 0.14f, 0.09f),
+                WaterHorizon = new Color(0.95f, 0.66f, 0.44f),
+                WaterMid = new Color(0.12f, 0.29f, 0.31f),
+                WaterDeep = new Color(0.05f, 0.14f, 0.16f),
+                Glint = new Color(1f, 0.76f, 0.48f),
+                HillSeed = 17,
+                TreeSeed = 63,
+                HillHeight = 1.2f,
+                TreeHeight = 1.4f,
+                Current = 0.25f,
+                ArtFolder = "EstuarioDasMares",
+                ArtPrefix = "map_estuario_das_mares",
+                SunPosition = new Vector2(1.8f, 1.25f),
+                NearLeftHeight = 3f,
+                NearRightHeight = 2.8f,
+            };
         }
 
         /// <summary>Rio Selvagem: bigger river, current, rocks, dense forest, waterfall and mist, cooler light.</summary>

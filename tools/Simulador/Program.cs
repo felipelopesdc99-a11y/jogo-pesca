@@ -105,33 +105,67 @@ public static class Program
         public long CoinsEarned;
     }
 
+    private sealed class MapStay
+    {
+        public double ArrivedAtHours;
+        public double Hours;
+        public double Coins;
+        public double Shells;
+        public double Xp;
+        public int Players;
+    }
+
     private sealed class ProgressionResult
     {
         /// <summary>Per level (2..max): average online hours and coins earned (all sold) to reach it.</summary>
         public SortedDictionary<int, LevelMark> Levels = new();
+
+        /// <summary>Per map id: when the players got there and what an hour there gave, on average.</summary>
+        public Dictionary<string, MapStay> Maps = new();
+
+        /// <summary>Per rod name: when it was bought, on average.</summary>
+        public List<string> RodsBought = new();
         public double RodBoughtAtHours;
-        public double Map2At;
-        public double CoinsPerHourMap1;
-        public double CoinsPerHourMap2;
+        public double Map2At => At("map_02");
+        public double CoinsPerHourMap1 => CoinsPerHour("map_01");
+        public double CoinsPerHourMap2 => CoinsPerHour("map_02");
+        public double ShellsPerHourMap2 => Maps.TryGetValue("map_02", out var m) && m.Hours > 0 ? m.Shells / m.Hours : 0;
         public double CatchesPerHour;
-        public double ShellsPerHourMap2;
         public double FirstRareAtHours;
         public double EscapesPerHour;
         public List<string> BoatsBought = new();
+
+        public double At(string mapId) => Maps.TryGetValue(mapId, out var m) && m.Players > 0 ? m.ArrivedAtHours / m.Players : 0;
+        public double CoinsPerHour(string mapId) => Maps.TryGetValue(mapId, out var m) && m.Hours > 0 ? m.Coins / m.Hours : 0;
+        public double XpPerHour(string mapId) => Maps.TryGetValue(mapId, out var m) && m.Hours > 0 ? m.Xp / m.Hours : 0;
     }
 
     /// <summary>
-    /// A simple, sensible player fishing online non-stop: sells everything every 10 minutes, buys Vara 1
-    /// as soon as allowed and affordable, travels to the next map as soon as it can.
+    /// A simple, sensible player fishing online non-stop: sells everything every 10 minutes, buys each
+    /// rod as soon as allowed and affordable, buys boats with what is left (saving up when the next rod
+    /// is 3 levels away), and travels to the best map it can as soon as it opens.
     /// </summary>
     private static ProgressionResult Progression(GameConfig config)
     {
         var result = new ProgressionResult();
         var sums = new Dictionary<int, (double hours, long coins, int n)>();
-        double rodAt = 0, map2At = 0, map1Coins = 0, map1Hours = 0, map2Coins = 0, map2Hours = 0, shells2 = 0, catches = 0, totalHours = 0, firstRare = 0, escapes = 0;
+        double catches = 0, totalHours = 0, firstRare = 0, escapes = 0;
         var boatTimes = new Dictionary<string, (double hours, int n)>();
+        var rodTimes = new Dictionary<string, (double hours, int n)>();
         var buyable = config.Rods.Rods.Where(config.IsPurchasable).OrderBy(r => r.Tier).ToList();
+        var mapOrder = config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel).Select(m => m.Id).ToList();
         const double capHours = 150;
+
+        MapStay Stay(string mapId)
+        {
+            if (!result.Maps.TryGetValue(mapId, out var stay))
+            {
+                stay = new MapStay();
+                result.Maps[mapId] = stay;
+            }
+
+            return stay;
+        }
 
         for (var p = 0; p < Players; p++)
         {
@@ -142,10 +176,9 @@ public static class Program
             var bought = new HashSet<string>();
             var steps = 0;
             double hours = 0;
-            long shellsAtMap2 = 0;
-            double map2Start = -1;
-            long coinsAtMap2 = 0;
             double rareAt = -1;
+            var mapId = game.Player.GetPlayer().MapId;
+            Stay(mapId).Players++;
 
             while (hours < capHours && game.Player.GetPlayer().FisherLevel < config.Progression.Fisher.MaxLevel)
             {
@@ -154,6 +187,10 @@ public static class Program
                 hours = steps * 30 / 3600.0;
                 game.Maps.Update();
                 var sync = game.Fishing.Sync();
+                var stay = Stay(mapId);
+                stay.Hours += 30 / 3600.0;
+                stay.Xp += sync.XpGained;
+                stay.Shells += sync.ShellsGained;
                 if (rareAt < 0 && sync.NewCatches.Any(c => c.RarityId != "common"))
                 {
                     rareAt = hours;
@@ -168,14 +205,7 @@ public static class Program
                         if (sale.Succeeded)
                         {
                             earned += sale.Value.CoinsGained;
-                            if (map2Start < 0)
-                            {
-                                map1Coins += sale.Value.CoinsGained;
-                            }
-                            else
-                            {
-                                map2Coins += sale.Value.CoinsGained;
-                            }
+                            stay.Coins += sale.Value.CoinsGained;
                         }
                     }
 
@@ -184,12 +214,16 @@ public static class Program
                         if (game.Shop.BuyRod(rod.Id).Succeeded)
                         {
                             bought.Add(rod.Id);
-                            rodAt += hours;
+                            var t = rodTimes.TryGetValue(rod.DisplayName, out var rt) ? rt : (0, 0);
+                            rodTimes[rod.DisplayName] = (t.hours + hours, t.n + 1);
                         }
                     }
 
-                    // Boats only once every rod is owned: the rod opens the next map, the boat just helps.
-                    if (bought.Count == buyable.Count)
+                    // Boats with what is left: never while a rod the player could already use is not
+                    // bought, and not in the 3 levels before the next rod (saving up for it).
+                    var level = game.Player.GetPlayer().FisherLevel;
+                    var nextRod = buyable.FirstOrDefault(r => !bought.Contains(r.Id));
+                    if (nextRod == null || level < nextRod.Acquisition.UnlockFisherLevel - 3)
                     {
                         foreach (var boat in game.Gear.GetGear().Boats.Where(x => !x.Owned && x.BuyBlocker == ServiceError.None))
                         {
@@ -201,22 +235,20 @@ public static class Program
                         }
                     }
 
-                    var player = game.Player.GetPlayer();
-                    if (map2Start < 0)
+                    var best = game.Maps.GetMaps().Maps
+                        .Where(m => m.MapId != mapId && m.TravelBlocker == ServiceError.None && mapOrder.IndexOf(m.MapId) > mapOrder.IndexOf(mapId))
+                        .OrderByDescending(m => mapOrder.IndexOf(m.MapId))
+                        .FirstOrDefault();
+                    if (best != null && game.Maps.TravelTo(best.MapId).Succeeded)
                     {
-                        var next = game.Maps.GetMaps().Maps.FirstOrDefault(m => m.MapId != player.MapId && m.TravelBlocker == ServiceError.None);
-                        if (next != null && game.Maps.TravelTo(next.MapId).Succeeded)
-                        {
-                            map2Start = hours;
-                            map2At += hours;
-                            coinsAtMap2 = earned;
-                            shellsAtMap2 = player.Shells;
-                        }
+                        mapId = best.MapId;
+                        Stay(mapId).ArrivedAtHours += hours;
+                        Stay(mapId).Players++;
                     }
                 }
 
-                var level = game.Player.GetPlayer().FisherLevel;
-                while (lastLevel < level)
+                var reached = game.Player.GetPlayer().FisherLevel;
+                while (lastLevel < reached)
                 {
                     lastLevel++;
                     var s = sums.TryGetValue(lastLevel, out var v) ? v : (0, 0, 0);
@@ -229,16 +261,6 @@ public static class Program
             escapes += game.Session.Save.Stats.Escapes;
             firstRare += rareAt < 0 ? hours : rareAt;
             totalHours += hours;
-            if (map2Start >= 0)
-            {
-                map1Hours += map2Start;
-                map2Hours += hours - map2Start;
-                shells2 += end.Shells - shellsAtMap2;
-            }
-            else
-            {
-                map1Hours += hours;
-            }
         }
 
         foreach (var (level, v) in sums)
@@ -246,11 +268,12 @@ public static class Program
             result.Levels[level] = new LevelMark { Hours = v.hours / v.n, CoinsEarned = v.coins / v.n };
         }
 
-        result.RodBoughtAtHours = rodAt / Players;
-        result.Map2At = map2At / Players;
-        result.CoinsPerHourMap1 = map1Hours > 0 ? map1Coins / map1Hours : 0;
-        result.CoinsPerHourMap2 = map2Hours > 0 ? map2Coins / map2Hours : 0;
-        result.ShellsPerHourMap2 = map2Hours > 0 ? shells2 / map2Hours : 0;
+        result.RodBoughtAtHours = buyable.Count > 0 && rodTimes.TryGetValue(buyable[0].DisplayName, out var first) ? first.hours / first.n : 0;
+        foreach (var (name, t) in rodTimes)
+        {
+            result.RodsBought.Add(name + " com " + Format.Decimal(t.hours / t.n, 1) + " h" + (t.n < Players ? " (" + t.n + " de " + Players + " jogadores)" : ""));
+        }
+
         result.CatchesPerHour = totalHours > 0 ? catches / totalHours : 0;
         result.EscapesPerHour = totalHours > 0 ? escapes / totalHours : 0;
         result.FirstRareAtHours = firstRare / Players;
@@ -283,8 +306,19 @@ public static class Program
         r.AppendLine("- Capturas por hora online: " + Format.Decimal(p.CatchesPerHour, 0));
         if (p.Levels.TryGetValue(10, out var l10)) Attention.Add("Nível 10 (libera o segundo mapa) chega com " + Format.Decimal(l10.Hours, 1) + " h de pesca online (" + Format.Decimal(l10.Hours * config.Progression.Fishing.OfflineCycleSeconds / config.Progression.Fishing.OnlineCycleSeconds, 1) + " h se fosse só offline).");
         if (p.Levels.TryGetValue(20, out var l20)) Attention.Add("Nível 20 chega com " + Format.Decimal(l20.Hours, 1) + " h de pesca online.");
-        if (p.RodBoughtAtHours > 0) r.AppendLine("- Vara comprada (em média) com " + Format.Decimal(p.RodBoughtAtHours, 1) + " h de pesca");
-        if (p.Map2At > 0) r.AppendLine("- Viagem ao segundo mapa com " + Format.Decimal(p.Map2At, 1) + " h de pesca");
+        if (p.Levels.TryGetValue(20, out var a20) && p.Levels.TryGetValue(30, out var a30)) Attention.Add("Do Nível 20 ao 30 (Pantanal Dourado): " + Format.Decimal(a30.Hours - a20.Hours, 1) + " h online (meta de docs/PROGRESSAO_MAPAS_3_4.md: ~3,8 h, com 100% de captura).");
+        if (p.Levels.TryGetValue(30, out var b30) && p.Levels.TryGetValue(40, out var b40)) Attention.Add("Do Nível 30 ao 40 (Estuário das Marés): " + Format.Decimal(b40.Hours - b30.Hours, 1) + " h online (meta: ~4,0 h, com 100% de captura).");
+        foreach (var rod in p.RodsBought) r.AppendLine("- " + rod + " de pesca");
+        r.AppendLine();
+        r.AppendLine("| Mapa | Chegada | XP por hora | Moedas por hora (vendendo tudo) | Conchas por hora |");
+        r.AppendLine("|---|---:|---:|---:|---:|");
+        foreach (var map in config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel))
+        {
+            if (!p.Maps.TryGetValue(map.Id, out var stay) || stay.Hours <= 0) continue;
+            r.AppendLine("| " + map.DisplayName + " | " + Format.Decimal(p.At(map.Id), 1) + " h | " + Format.Number((long)p.XpPerHour(map.Id)) + " | " + Format.Number((long)p.CoinsPerHour(map.Id)) + " | " + Format.Decimal(stay.Shells / stay.Hours, 1) + " |");
+        }
+
+        r.AppendLine();
         foreach (var boat in p.BoatsBought) r.AppendLine("- " + boat + " de pesca");
         r.AppendLine();
     }
@@ -569,7 +603,7 @@ public static class Program
         r.AppendLine("| Medida | Se toda mordida virasse captura | Com a Chance de Sucesso |");
         r.AppendLine("|---|---:|---:|");
         string Hours(ProgressionResult p, int level) => p.Levels.TryGetValue(level, out var m) ? Format.Decimal(m.Hours, 1) + " h" : "—";
-        foreach (var level in new[] { 5, 10, 15, 20, 30 })
+        foreach (var level in new[] { 5, 10, 15, 20, 30, 40 })
         {
             r.AppendLine("| Nível " + level + " | " + Hours(before, level) + " | " + Hours(after, level) + " |");
         }
@@ -590,8 +624,9 @@ public static class Program
         r.AppendLine("Combinações de equipamento, 10.000 tentativas cada (`CatchSimulator`, a mesma regra do jogo). A isca fica");
         r.AppendLine("sempre ligada; o custo dela por hora já está descontado em \"Moedas/h líquidas\".");
         r.AppendLine();
-        r.AppendLine("| Mapa · vara · barco · isca | Taxa real | Comuns (chance) | Raros (chance) | Capturas/h | Escapes/h | XP/h | Moedas/h | Moedas/h líquidas | Conchas/h |");
-        r.AppendLine("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|");
+        var tiers = config.Progression.Rarity.Tiers;
+        r.AppendLine("| Mapa · vara · barco · isca | Taxa real | " + string.Join(" | ", tiers.Select(t => t.DisplayName + " puxados (chance)")) + " | Capturas/h | Escapes/h | XP/h | Moedas/h | Moedas/h líquidas | Conchas/h |");
+        r.AppendLine("|---|---:|" + string.Concat(Enumerable.Repeat("---:|", tiers.Count)) + "---:|---:|---:|---:|---:|---:|");
         var boats = config.Equipment.Boats.OrderBy(b => b.Tier).ToList();
         var baits = config.Equipment.Baits.OrderBy(b => b.Tier).ToList();
         var combos = new List<(MapConfig map, RodConfig rod, int level, BoatConfig boat, BaitConfig bait)>();
@@ -626,7 +661,7 @@ public static class Program
             }
 
             var label = map.DisplayName + " · " + rod.DisplayName + (rod.HasInternalLevels ? " Nv." + level : "") + " · " + boat.DisplayName + " · " + (bait?.DisplayName ?? "sem isca");
-            r.AppendLine("| " + label + " | " + Format.Percent(sim.SuccessRate, 1) + " | " + Cell("common") + " | " + Cell("rare") + " | "
+            r.AppendLine("| " + label + " | " + Format.Percent(sim.SuccessRate, 1) + " | " + string.Join(" | ", tiers.Select(t => Cell(t.Id))) + " | "
                          + Format.Decimal(sim.CatchesPerHour, 0) + " | " + Format.Decimal(sim.EscapesPerHour, 0) + " | " + Format.Number((long)sim.XpPerHour) + " | "
                          + Format.Number((long)sim.CoinsPerHour) + " | " + Format.Number((long)(sim.CoinsPerHour - sim.BaitCoinsPerHour)) + " | "
                          + Format.Decimal(sim.ShellsPerHour - sim.BaitShellsPerHour, 1) + " |");

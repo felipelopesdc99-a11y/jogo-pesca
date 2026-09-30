@@ -155,6 +155,7 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 
 | O quê | Como | Onde está o número |
 |---|---|---|
+| Raridade da vara | A eficiência de raridade multiplica o peso de toda espécie não Comum (Raro e Épico) que a vara pode pegar; os Comuns ficam iguais | `rods.json` |
 | Chance de Sucesso | Chance-base da raridade + vara (`catch_success`) + barco + isca, entre o piso e o teto; sorteada depois da espécie e antes do tamanho | `progression.json → rarity.tiers, fishing`, `rods.json`, `equipment.json` |
 | Espécie | Peso de captura do mapa, só raridades que o mapa **e** a vara permitem; a eficiência de raridade da vara multiplica só o peso das espécies não comuns | `maps.json`, `rods.json` |
 | Categoria de tamanho | Peso 20/60/19/1; a qualidade de tamanho da vara multiplica Grande e Excepcional | `progression.json → size` |

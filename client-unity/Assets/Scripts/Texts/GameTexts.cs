@@ -490,6 +490,8 @@ namespace FishingIdle.Texts
                 {
                     case "map_01": return "Um começo tranquilo e bonito.";
                     case "map_02": return "A aventura sai do conforto do lago.";
+                    case "map_03": return "Agora o mundo se abriu de verdade.";
+                    case "map_04": return "Cheguei em uma nova fronteira do jogo.";
                     default: return null;
                 }
             }
@@ -606,6 +608,7 @@ namespace FishingIdle.Texts
             public const string SizeBonus = "Qualidade de tamanho";
             public const string ShellBonus = "Conchas";
             public const string CatchesRare = "Pesca peixes Raros";
+            public const string CatchesRareAndEpic = "Pesca peixes Raros e Épicos";
             public const string NoRare = "Não pesca peixes Raros";
             public const string NoShells = "Não gera Conchas";
             public const string InventoryNote = "Suas varas ficam aqui. Novas varas chegam com a Loja (Milestone 4).";
