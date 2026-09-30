@@ -43,6 +43,7 @@ namespace FishingIdle.GameService.Expeditions
 
     public sealed class ExpeditionResultView
     {
+        public string ExpeditionId { get; internal set; }
         public string Name { get; internal set; }
         public long CompletedAtMs { get; internal set; }
         public long Coins { get; internal set; }
@@ -50,6 +51,9 @@ namespace FishingIdle.GameService.Expeditions
 
         /// <summary>The fish found, or null. It is already in the Fishing Box.</summary>
         public CatchView FoundFish { get; internal set; }
+
+        /// <summary>Whether a fish was found, even if it has left the Fishing Box since (sold or kept).</summary>
+        public bool FoundAFish { get; internal set; }
     }
 
     public sealed class ExpeditionsView
@@ -210,11 +214,13 @@ namespace FishingIdle.GameService.Expeditions
             var box = Save.FishingBox.FirstOrDefault(c => c.Id == result.FoundCatchId);
             return new ExpeditionResultView
             {
+                ExpeditionId = result.ExpeditionId,
                 Name = e?.DisplayName ?? result.ExpeditionId,
                 CompletedAtMs = result.CompletedAtMs,
                 Coins = result.Coins,
                 Efficiency = result.Efficiency,
                 FoundFish = box != null ? CatchViews.Create(Config, box) : null,
+                FoundAFish = result.FoundCatchId != 0,
             };
         }
 

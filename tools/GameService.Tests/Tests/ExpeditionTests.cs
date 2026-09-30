@@ -71,6 +71,25 @@ public sealed class ExpeditionTests
     }
 
     [Fact]
+    public void The_report_names_the_expedition_and_waits_until_it_is_read()
+    {
+        var (game, clock, dir) = GameWithCardume(3);
+        game.Expeditions.Start("exp_30m");
+        clock.AdvanceSeconds(31 * 60);
+        game.Expeditions.Update();
+
+        var report = game.Expeditions.PendingResult();
+        Assert.Equal("exp_30m", report.ExpeditionId);
+        Assert.Equal(report.FoundFish != null, report.FoundAFish);
+
+        // Not read yet: still there after the game is closed and opened again.
+        var (reopened, _, _) = TestSupport.NewGame(saveDir: dir, clock: clock);
+        Assert.NotNull(reopened.Expeditions.PendingResult());
+        reopened.Expeditions.AcknowledgeResult();
+        Assert.Null(reopened.Expeditions.PendingResult());
+    }
+
+    [Fact]
     public void An_expedition_finished_while_closed_is_paid_on_start()
     {
         var (game, clock, dir) = GameWithCardume(2);

@@ -772,3 +772,15 @@ Selvagem: correnteza, mata), tocadas uma depois da outra em ordem sorteada, com 
 passagem suave entre elas e sem repetir a que acabou de tocar. Com 4 gravações por mapa, o que se
 ouviu só volta depois de uns 10 minutos. Ao trocar de mapa, o som passa suavemente para o do mapa
 novo. Enquanto as gravações não chegam, fica o som antigo. `ASSET_PENDENTE`: as gravações.
+
+### A-082 · Relatório da Expedição dentro da aba Expedição
+**Seção do GDD:** 32 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+Quando o Cardume volta, o resultado não aparece mais solto por cima da tela, onde o jogador estiver.
+Aparece um aviso ("Seu Cardume voltou da Expedição!") e um ponto vermelho no botão Expedição. Na
+próxima vez que o jogador abrir a Expedição, o **relatório** abre por cima da aba: a foto da
+Expedição, quando ela voltou (data e hora), as moedas que trouxe, o aproveitamento e o peixe
+encontrado, com o card oficial em destaque. Enquanto o relatório está aberto, a aba fica por trás,
+sem poder ser usada. Ao clicar em "Ótimo!", o relatório some e não volta; se o jogador fechar a aba
+sem clicar, ele continua lá na próxima vez (também depois de fechar o jogo). As moedas e o peixe já
+estão com o jogador desde a volta: o relatório só mostra.

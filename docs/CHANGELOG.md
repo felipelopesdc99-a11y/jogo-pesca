@@ -3,6 +3,18 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.11] — 30/09/2026
+
+### Mudado
+
+- **Relatório da Expedição:** quando o Cardume volta, aparece um aviso e um ponto vermelho no botão
+  Expedição; ao abrir a aba, um relatório mostra o que ele trouxe (moedas, peixe, quando voltou) e
+  some depois de lido. Antes, o resultado aparecia por cima da tela, onde o jogador estivesse.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M14-T15`).
+
 ## [0.2.0-m14.10] — 30/09/2026
 
 ### Adicionado

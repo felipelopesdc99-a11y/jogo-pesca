@@ -243,7 +243,7 @@ namespace FishingIdle.Game.UI
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
             var welcomeDialog = _root.Tutorial != null && _root.Tutorial.Active && _root.Tutorial.Step == TutorialSteps.Welcome;
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _root.WelcomeBack != null || _root.ExpeditionResult != null || welcomeDialog;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _root.WelcomeBack != null || welcomeDialog;
             _root.WindowOpen = windowOpen;
             GUI.enabled = !windowOpen;
             DrawTopBar(skin);
@@ -274,7 +274,7 @@ namespace FishingIdle.Game.UI
             if (windowOpen)
             {
                 // The navigation stays usable above the windows (not above the welcome-back summary).
-                GUI.enabled = _root.WelcomeBack == null && _root.ExpeditionResult == null && !welcomeDialog;
+                GUI.enabled = _root.WelcomeBack == null && !welcomeDialog;
                 DrawNavigation(skin);
                 GUI.enabled = true;
             }
@@ -284,7 +284,6 @@ namespace FishingIdle.Game.UI
             DrawTutorial(skin, windowOpen);
             DrawPanels(skin);
 
-            ExpeditionWindow.DrawResult(skin, _root, _width, _height);
             if (WelcomeBackDialog.Draw(skin, _root, _width, _height))
             {
                 CloseAllWindows();
@@ -437,7 +436,15 @@ namespace FishingIdle.Game.UI
 
             for (var i = 0; i < labels.Length; i++)
             {
-                if (skin.IconButton(rects[i], NavIcons[i], iconsOnly ? null : labels[i], i == active ? skin.NavActive : skin.Nav) && i != active)
+                var clicked = skin.IconButton(rects[i], NavIcons[i], iconsOnly ? null : labels[i], i == active ? skin.NavActive : skin.Nav) && i != active;
+                if (i == 4 && _root.ExpeditionResult != null && !_expedition.IsOpen)
+                {
+                    // The Cardume is back: a dot until the player opens the Expedition and reads the report.
+                    var dot = new Rect(rects[i].xMax - 14, rects[i].y + 3, 11, 11);
+                    GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Danger, 0, 5.5f);
+                }
+
+                if (clicked)
                 {
                     CloseAllWindows();
                     if (i == 1) _map.Open();
@@ -703,7 +710,7 @@ namespace FishingIdle.Game.UI
         private void DrawTutorial(UiSkin skin, bool windowOpen)
         {
             var tutorial = _root.Tutorial;
-            if (tutorial == null || !tutorial.Active || _root.WelcomeBack != null || _root.ExpeditionResult != null)
+            if (tutorial == null || !tutorial.Active || _root.WelcomeBack != null)
             {
                 return;
             }

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T01:03:22Z",
+  "updated_at": "2026-09-30T01:13:32Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -2035,6 +2035,18 @@
           ],
           "completion_notes": "Dois grupos de filtro (Raridade: Todas/Comum/Raro; Tamanho: Todos/Pequeno/Adulto/Grande/Excepcional), lado a lado quando cabem, que se combinam (ex.: Raro + Grande). Cores no tema_visual.json: Comum branco, Raro azul; Pequeno verde, Adulto lilás, Grande laranja, Excepcional dourado. Os filtros mostram a cor num ponto e, escolhidos, ficam com fundo e borda nessa cor; o card escreve o nome do tamanho na cor dele. O selo Excepcional saiu de cima do peixe e foi para o canto direito da linha do tamanho. Registrado no GDD_ADENDO (A-079). Compila; não aberto no Unity ainda.",
           "updated_at": "2026-09-29T23:47:32Z"
+        },
+        {
+          "id": "M14-T23",
+          "title": "Relatório da Expedição dentro da aba",
+          "subsystem": "client",
+          "description": "A pedido do proprietário: o resultado da Expedição aparece como um relatório ao abrir a aba Expedição, mostrando o que o Cardume trouxe, e some depois de lido.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T02"
+          ],
+          "completion_notes": "O resultado saiu da tela principal e virou um relatório por cima da aba Expedição (foto, data e hora da volta, moedas, aproveitamento e o peixe no card oficial). Ponto vermelho no botão Expedição e aviso quando o Cardume volta. O botão Ótimo! marca como lido; fechado sem ler, continua lá (também depois de fechar o jogo; teste novo). GDD_ADENDO A-082. Compila, 152 testes; não aberto no Unity ainda.",
+          "updated_at": "2026-09-30T01:13:32Z"
         }
       ]
     }
