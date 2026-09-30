@@ -354,6 +354,17 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 9;
             }
 
+            if (save.SaveVersion == 9)
+            {
+                // v10 adds boats and baits (Catch Success). Everyone starts on the starter boat, no bait.
+                save.OwnedBoatIds = new List<string>();
+                save.BaitCharges = new Dictionary<string, int>();
+                save.SaveVersion = 10;
+            }
+
+            save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
+            save.BaitCharges = save.BaitCharges ?? new Dictionary<string, int>();
+
             save.Tutorial = save.Tutorial ?? new TutorialState { Completed = true, Step = "done" };
 
             save.Market = save.Market ?? new MarketState();

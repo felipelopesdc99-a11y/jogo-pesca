@@ -269,11 +269,12 @@ public sealed class FishingServiceTests
     [Fact]
     public void Level_10_takes_roughly_two_hours_of_online_fishing()
     {
-        // GDD section 17: Lv.1→10 around 2 hours online (~240 catches), on average.
+        // GDD section 17: Lv.1→10 around 2 hours online, on average, with the real Catch Success
+        // (about half of the 240 bites pulled out; the fish XP was doubled to keep the pace).
         var levels = new List<int>();
         for (var run = 0; run < 5; run++)
         {
-            var (game, clock, _) = TestSupport.NewGame();
+            var (game, clock, _) = TestSupport.NewGame(TestSupport.RealConfig());
             game.Fishing.StartFishing();
             TestSupport.PlayFor(game, clock, 2 * 3600, stepSeconds: 30);
             levels.Add(game.Player.GetPlayer().FisherLevel);
@@ -308,7 +309,7 @@ public sealed class FishingServiceTests
         TestSupport.PlayFor(game, clock, 45);
 
         var faster = TestSupport.ConfigWith(GameConfigLoader.ProgressionFile,
-            json => json.Replace("\"online_cycle_seconds\": 30", "\"online_cycle_seconds\": 5"));
+            json => json.Replace("\"online_cycle_seconds\": 30", "\"online_cycle_seconds\": 5"), certainCatch: true);
         game.Session.ReplaceConfig(faster.Config);
 
         Assert.Equal(6, TestSupport.PlayFor(game, clock, 30).Count);
@@ -327,7 +328,7 @@ public sealed class FishingServiceTests
 
         Assert.Equal(box.Count, preview.Count);
         Assert.Equal(box.Sum(c => c.SalePriceCoins), preview.TotalCoins);
-        Assert.All(preview.ProtectedCatches, c => Assert.Equal("exceptional", c.SizeCategoryId));
-        Assert.Equal(box.Count(c => c.SizeCategoryId == "exceptional"), preview.ProtectedCatches.Count);
+        Assert.All(preview.ProtectedCatches, c => Assert.Contains(c.SizeCategoryId, new[] { "exceptional", "perfect" }));
+        Assert.Equal(box.Count(c => c.SizeCategoryId == "exceptional" || c.SizeCategoryId == "perfect"), preview.ProtectedCatches.Count);
     }
 }

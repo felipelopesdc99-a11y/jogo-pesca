@@ -61,9 +61,18 @@ namespace FishingIdle.Texts
             public const string Bite = "Mordeu!";
             public const string Reeling = "Puxando a linha…";
             public const string Caught = "Pegou!";
+            public const string Escaped = "Escapou…";
 
-            public static string NextCatchIn(string countdown) => "Próxima captura em " + countdown;
-            public static string CycleInfo(string duration) => "1 captura a cada " + duration;
+            // Catch Success (docs/SISTEMA_SUCESSO_PESCA.md): the owner's approved failure message.
+            public const string EscapeMessage = "Você ainda não é bom o suficiente.";
+            public const string EscapeHint = "Melhore sua vara, barco ou isca para aumentar suas chances.";
+
+            public static string NextCatchIn(string countdown) => "Próxima fisgada em " + countdown;
+            public static string CycleInfo(string duration) => "1 tentativa a cada " + duration;
+            public static string ChanceShort(string rarity, string percent) => rarity + " " + percent;
+            public static string RareEscaped(string rarity, string percent) => "Um peixe " + rarity + " escapou! Sua chance de puxar era " + percent + ".";
+            public static string BaitRanOut(string bait) => "Sua " + bait + " acabou. Compre mais na Loja → Iscas.";
+            public static string BaitLeft(int charges) => charges == 1 ? "1 tentativa" : charges + " tentativas";
         }
 
         // ------------------------------------------------------------------ Fishing Box
@@ -169,7 +178,7 @@ namespace FishingIdle.Texts
             public const string OpenBox = "Abrir a Caixa de Pesca";
             public const string Best = "Destaques";
             public const string NothingCaught = "Nenhum peixe desta vez.";
-            public const string Note = "Enquanto o jogo fica fechado, o pescador continua: 1 peixe a cada 60 segundos, por até 24 horas. Os peixes esperam na Caixa de Pesca.";
+            public const string Note = "Enquanto o jogo fica fechado, o pescador continua: 1 tentativa a cada 60 segundos, por até 24 horas, com a mesma chance de puxar. Os peixes esperam na Caixa de Pesca.";
 
             public static string Away(string duration) => "Você ficou fora por " + duration + ".";
             public static string CappedAt(string duration) => "Só as primeiras " + duration + " contam para a pesca offline.";
@@ -177,6 +186,7 @@ namespace FishingIdle.Texts
             public static string Xp(string xp) => "+" + xp + " XP de Pescador";
             public static string Levels(int level) => "Subiu para o Nível " + level + "!";
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
+            public static string Escaped(int count) => count == 1 ? "1 peixe escapou" : count + " peixes escaparam";
         }
 
         // ------------------------------------------------------------------ Arena (GDD sections 27–30)
@@ -516,6 +526,42 @@ namespace FishingIdle.Texts
             public static string SellBody(string coins) => "O jogo paga " + coins + " moedas por ela. A vara sai do seu Inventário.";
             public static string DestroyTitle(string rod) => "Destruir " + rod + "?";
             public const string DestroyBody = "A vara some do Inventário e você não recebe nada. Esta ação não pode ser desfeita.";
+            public const string CatchBonus = "Sucesso da captura";
+        }
+
+        // ------------------------------------------------------------------ gear: boats, baits, Catch Success (docs/SISTEMA_SUCESSO_PESCA.md)
+
+        public static class Gear
+        {
+            public const string TabRods = "Varas";
+            public const string TabBoats = "Barcos";
+            public const string TabBaits = "Iscas";
+            public const string Yours = "Seu equipamento";
+            public const string Rod = "Vara";
+            public const string Boat = "Barco";
+            public const string Bait = "Isca";
+            public const string NoBait = "Nenhuma";
+            public const string Total = "Bônus total";
+            public const string ChanceTitle = "Chance de puxar o peixe";
+            public const string ChanceNote = "Depois que o peixe morde, esta é a chance de puxá-lo. Se ele escapa, nada entra na Caixa. Nunca passa de 95% nem fica abaixo de 5%.";
+            public const string NotHere = "não morde aqui";
+            public const string InUse = "Em uso";
+            public const string Use = "Usar";
+            public const string PutAway = "Guardar";
+            public const string BoatsNote = "O barco fica com você para sempre e aumenta a chance de puxar todo peixe. Troque quando quiser.";
+            public const string BaitsNote = "A isca dura um número de tentativas: gasta 1 por tentativa, puxando o peixe ou não, também offline. Comprar de novo soma tentativas. Só uma isca fica em uso.";
+            public const string OpenDetails = "Ver equipamento e chances";
+
+            public static string ChanceLine(string rarity, string percent) => "Chance de puxar peixe " + rarity + ": " + percent;
+            public static string Bonus(string percent) => "+" + percent + " de chance";
+            public static string Charges(int charges) => charges == 1 ? "1 tentativa por compra" : charges + " tentativas por compra";
+            public static string ChargesLeft(int charges) => charges == 1 ? "Resta 1 tentativa" : "Restam " + charges + " tentativas";
+            public static string CostCoinsAndShells(string coins, string shells) => coins + " moedas + " + shells + " conchas";
+            public static string BoughtBoat(string boat) => boat + " comprado! Ele já está em uso.";
+            public static string UsingBoat(string boat) => "Agora você pesca com o " + boat + ".";
+            public static string BoughtBait(string bait, int charges) => bait + ": +" + charges + " tentativas.";
+            public static string UsingBait(string bait) => "Isca em uso: " + bait + ".";
+            public const string BaitPutAway = "Isca guardada. As tentativas que sobraram ficam para depois.";
         }
 
         // ------------------------------------------------------------------ Cardume (GDD sections 23, 26, 31)
@@ -678,6 +724,14 @@ namespace FishingIdle.Texts
                 case "RodNotForSale": return "Essa vara não está à venda.";
                 case "RodLocked": return "Você ainda não tem nível para comprar esta vara.";
                 case "RodAlreadyOwned": return "Você já tem esta vara no Inventário.";
+                case "BoatNotFound": return "Esse barco não existe.";
+                case "BoatLocked": return "Você ainda não tem nível para comprar este barco.";
+                case "BoatAlreadyOwned": return "Você já tem este barco.";
+                case "BoatNotOwned": return "Compre este barco antes de usá-lo.";
+                case "BaitNotFound": return "Essa isca não existe.";
+                case "BaitLocked": return "Você ainda não tem nível para comprar esta isca.";
+                case "BaitNoCharges": return "Essa isca acabou. Compre mais na Loja.";
+                case "NotEnoughShells": return "Conchas insuficientes.";
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
                 case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";
@@ -747,6 +801,7 @@ namespace FishingIdle.Texts
             public static string FishXpTableGap(int level) => "progression.json: a tabela de XP do peixe (fish_level.xp_table) não tem o nível " + level + ".";
             public static string BadBaseStats(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de base_stats com Vida e Velocidade maiores que zero e Ataque e Defesa não negativos.";
             public static string XpTableGap(int level) => "progression.json: a tabela de XP do Pescador não tem o nível " + level + ".";
+            public static string StarterBoatNotFree(string boat) => "equipment.json: o barco inicial \"" + boat + "\" (o de menor tier) precisa custar 0 moedas e 0 conchas.";
             public static string UnknownSizeInRarity(string rarity, string size) => "progression.json: a raridade \"" + rarity + "\" cita o tamanho \"" + (size ?? "") + "\" em size_weight_multipliers, que não existe em size.categories.";
             public static string UnknownRarity(string species, string rarity) => "fish_catalog.json: a espécie \"" + species + "\" usa a raridade \"" + (rarity ?? "") + "\", que não existe em progression.json.";
             public static string BadSizeRange(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de size_cm com mínimo maior que zero e máximo maior que o mínimo.";
@@ -803,13 +858,14 @@ namespace FishingIdle.Texts
             public const string SectionMaps = "Mapas e chances";
             public const string SectionSizes = "Distribuição de tamanho";
             public const string SectionRarities = "Raridades";
+            public const string SectionSuccess = "Sucesso da pesca";
             public const string SectionXp = "XP do Pescador";
             public const string SectionEconomy = "Economia";
             public const string SectionOthers = "Outros arquivos";
             public const string OthersNote = "Valores da Arena, dos adversários simulados, do Cardume e das Expedições. O jogo usa todos eles; salvar com o jogo rodando aplica na hora.";
 
-            public const string OnlineCycle = "Tempo de pesca online (segundos por captura)";
-            public const string OfflineCycle = "Tempo de pesca offline (segundos por captura)";
+            public const string OnlineCycle = "Tempo de pesca online (segundos por tentativa)";
+            public const string OfflineCycle = "Tempo de pesca offline (segundos por tentativa)";
             public const string OfflineCap = "Limite de acúmulo offline (horas)";
             public const string OfflineNote = "A pesca offline chega no Milestone 5; os dois valores offline já ficam aqui para quando ela existir.";
             public const string SpeciesName = "Nome";
@@ -877,8 +933,55 @@ namespace FishingIdle.Texts
             public const string RodRarityBonus = "Raridade";
             public const string RodSizeBonus = "Tamanho";
             public const string RodShellBonus = "Conchas";
+            public const string RodCatchBonus = "Puxar";
             public const string RodUpgradeCost = "Custo p/ este nível";
-            public const string RodsNote = "Bônus são o total naquele nível (0,10 = +10%). A compra e a melhoria de varas chegam no Milestone 4; a Vara Inicial já está em uso.";
+            public const string RodsNote = "Bônus são o total naquele nível (0,10 = +10%). \"Puxar\" soma pontos na Chance de Sucesso da Captura (0,05 = +5%); ele também aparece na aba Sucesso da pesca.";
+            public const string RodStarterCatchBonus = "Bônus de puxar da Vara Inicial (0,05 = +5%)";
+
+            // ---- Sucesso da pesca (docs/SISTEMA_SUCESSO_PESCA.md)
+            public const string SuccessIntro = "Depois que o peixe morde, o jogo sorteia se o pescador consegue puxá-lo. Chance = chance-base da raridade + vara + barco + isca, entre o mínimo e o máximo abaixo. Se o peixe escapa, nada entra na Caixa: sem XP, sem Conchas, sem descoberta, sem recorde.";
+            public const string SuccessBaseTitle = "Chance-base por raridade";
+            public const string SuccessBase = "Chance-base";
+            public const string SuccessMin = "Chance mínima (0,05 = 5%)";
+            public const string SuccessMax = "Chance máxima (0,95 = 95%)";
+            public const string SuccessRodsNote = "O bônus de cada vara por nível fica na aba Varas, na coluna \"Puxar\".";
+            public const string BoatsTitle = "Barcos";
+            public const string BaitsTitle = "Iscas";
+            public const string GearBonus = "Bônus";
+            public const string GearCoins = "Moedas";
+            public const string GearShells = "Conchas";
+            public const string GearLevel = "Nível";
+            public const string GearCharges = "Tentativas";
+            public const string GearNote = "Bônus em pontos (0,05 = +5%). O barco de menor tier é o inicial: todo jogador já tem e ele precisa custar 0. A isca gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline.";
+            public const string SimulatorTitle = "Simulador de sucesso";
+            public const string SimulatorNote = "Roda as regras do jogo com os números desta tela, mesmo os que ainda não foram salvos. A isca fica sempre ligada; o custo dela por hora é descontado das Moedas.";
+            public const string SimMap = "Mapa";
+            public const string SimRod = "Vara";
+            public const string SimRodLevel = "Nível da vara";
+            public const string SimBoat = "Barco";
+            public const string SimBait = "Isca";
+            public const string SimNoBait = "Sem isca";
+            public const string SimAttempts = "Tentativas";
+            public const string SimRun = "Simular";
+            public const string SimInvalid = "O balanceamento desta tela tem problemas; corrija antes de simular:";
+            public const string SimRodCannotFish = "Esta vara não pesca neste mapa (tier mínimo do mapa ou raridades).";
+            public const string SimResultAttempts = "Tentativas";
+            public const string SimResultCatches = "Capturas";
+            public const string SimResultEscapes = "Escapes";
+            public const string SimResultRate = "Taxa real de sucesso";
+            public const string SimPerHour = "Por hora de pesca online";
+            public const string SimCatchesHour = "Capturas por hora";
+            public const string SimEscapesHour = "Escapes por hora";
+            public const string SimXpHour = "XP por hora";
+            public const string SimCoinsHour = "Moedas por hora (venda ao NPC)";
+            public const string SimBaitHour = "Custo da isca por hora";
+            public const string SimNetCoinsHour = "Moedas por hora, descontada a isca";
+            public const string SimShellsHour = "Conchas por hora, descontada a isca";
+            public const string SimRarity = "Raridade";
+            public const string SimBites = "Mordidas";
+            public const string SimCaught = "Puxadas";
+            public const string SimChance = "Chance";
+            public static string SimBaitCost(string coins, string shells) => coins + " moedas + " + shells + " conchas";
             public const string ShellMin = "Conchas por drop (mínimo)";
             public const string ShellMax = "Conchas por drop (máximo)";
             public const string ExpeditionsTable = "Expedições";

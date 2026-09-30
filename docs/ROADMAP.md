@@ -64,6 +64,7 @@ infraestrutura online que já existia foi preservada no M12, adiada.
 | **M12** | Infraestrutura online (adiada) | Servidor ASP.NET, PostgreSQL, Docker, painel web (já construídos), serviços remotos, contas, site público |
 | **M13** | V0.2 · Áudio e ambiente | Sons de captura, recorde e subir de nível; mar e brisa calmos; sons como arquivos trocáveis |
 | **M14** | V0.2 · Visual Lago Dourado | A Bíblia de Arte (`docs/ART_BIBLE_V0_1.md`) aplicada: tema central, fontes, card de peixe, cena em luz dourada, níveis de intensidade e momentos especiais |
+| **M15** | V0.2 · Sucesso da pesca e equipamentos | O peixe que morde pode escapar; barcos e iscas na Loja, com Moedas e Conchas; chance visível; painel com simulador; rebalanceamento (`docs/SISTEMA_SUCESSO_PESCA.md`) |
 
 ## Regras que o roadmap impõe a si mesmo
 

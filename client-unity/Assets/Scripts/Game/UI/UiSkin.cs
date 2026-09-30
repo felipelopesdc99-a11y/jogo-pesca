@@ -40,7 +40,7 @@ namespace FishingIdle.Game.UI
 
         public GUIStyle Panel, PanelSolid, Card, CardHovered, CardSelected, CardImportant, Shadow, Glow, Outline, Pill, IconTile;
         public GUIStyle Button, ButtonPrimary, ButtonDanger, ButtonReward, Chip, ChipActive, Nav, NavActive;
-        public GUIStyle Title, Heading, Body, BodyBold, ChipText, Small, SmallBold, SmallMuted, SmallRight, SmallMutedRight, SmallGold, SmallGoldRight, Number, NumberRight, Center, Badge, Display, DisplaySub, PillText;
+        public GUIStyle Title, Heading, Body, BodyBold, ChipText, Small, SmallBold, SmallMuted, SmallRight, SmallMutedRight, SmallGold, SmallGoldRight, Number, NumberRight, Center, CenterBold, SmallMutedCenter, Badge, Display, DisplaySub, PillText;
 
         public Texture2D White, Overlay, Coin, Rays;
 
@@ -136,6 +136,9 @@ namespace FishingIdle.Game.UI
             NumberRight = new GUIStyle(Number) { alignment = TextAnchor.UpperRight };
             Center = Label(BodyFont, 16, Text);
             Center.alignment = TextAnchor.MiddleCenter;
+            CenterBold = Label(BodyBoldFont, 17, Text);
+            CenterBold.alignment = TextAnchor.MiddleCenter;
+            SmallMutedCenter = new GUIStyle(SmallMuted) { alignment = TextAnchor.MiddleCenter };
             Display = Label(TitleBoldFont, 44, Text);
             Display.wordWrap = false;
             DisplaySub = Label(BodyBoldFont, 18, Text);

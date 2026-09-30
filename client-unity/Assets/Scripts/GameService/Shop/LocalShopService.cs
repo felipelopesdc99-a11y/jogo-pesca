@@ -22,6 +22,10 @@ namespace FishingIdle.GameService.Shop
         public double RarityBonusAtMax { get; internal set; }
         public double SizeBonusAtMax { get; internal set; }
         public double ShellBonusAtMax { get; internal set; }
+
+        /// <summary>Points added to the Catch Success chance (docs/SISTEMA_SUCESSO_PESCA.md).</summary>
+        public double CatchBonus { get; internal set; }
+        public double CatchBonusAtMax { get; internal set; }
         public bool CanCatchRare { get; internal set; }
         public bool GeneratesShells { get; internal set; }
         public bool Owned { get; internal set; }
@@ -125,6 +129,8 @@ namespace FishingIdle.GameService.Shop
                 RarityBonusAtMax = atMax.RarityEfficiency,
                 SizeBonusAtMax = atMax.SizeQuality,
                 ShellBonusAtMax = atMax.ShellYield,
+                CatchBonus = at1.CatchSuccess,
+                CatchBonusAtMax = atMax.CatchSuccess,
                 CanCatchRare = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 0),
                 GeneratesShells = rod.GeneratesShells,
                 Owned = Owns(rod),

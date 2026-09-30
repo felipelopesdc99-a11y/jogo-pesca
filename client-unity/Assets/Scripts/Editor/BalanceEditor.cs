@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using FishingIdle.Game.Bootstrap;
 using FishingIdle.GameService.Config;
+using FishingIdle.GameService.Fishing;
 using FishingIdle.Texts;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -37,6 +38,22 @@ namespace FishingIdle.Editor
         private int _section;
         private Vector2 _scroll;
 
+        // Simulator of the "Sucesso da pesca" section.
+        private int _simMap;
+        private int _simRod;
+        private int _simRodLevel = 1;
+        private int _simBoat;
+        private int _simBait;
+        private int _simAttempts = 10000;
+        private CatchSimulationResult _simResult;
+        private ConfigLoadResult _simConfig;
+
+        private void MarkDirty(string file)
+        {
+            _dirty.Add(file);
+            _simConfig = null;
+        }
+
         public bool HasUnsavedChanges => _dirty.Count > 0;
 
         public void Load()
@@ -44,6 +61,7 @@ namespace FishingIdle.Editor
             _documents.Clear();
             _originals.Clear();
             _dirty.Clear();
+            _simConfig = null;
             _loadError = null;
 
             foreach (var file in Files)
@@ -78,7 +96,7 @@ namespace FishingIdle.Editor
 
             DrawActions();
 
-            _section = GUILayout.Toolbar(_section, new[] { T.SectionFishing, T.SectionSpecies, T.SectionMaps, T.SectionSizes, T.SectionRarities, T.SectionXp, T.SectionRods, T.SectionEconomy, T.SectionOthers });
+            _section = GUILayout.Toolbar(_section, new[] { T.SectionFishing, T.SectionSpecies, T.SectionMaps, T.SectionSizes, T.SectionRarities, T.SectionSuccess, T.SectionXp, T.SectionRods, T.SectionEconomy, T.SectionOthers });
             EditorGUILayout.Space(6);
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
@@ -89,9 +107,10 @@ namespace FishingIdle.Editor
                 case 2: DrawMaps(); break;
                 case 3: DrawSizes(); break;
                 case 4: DrawRarities(); break;
-                case 5: DrawXp(); break;
-                case 6: DrawRods(); break;
-                case 7: DrawEconomy(); break;
+                case 5: DrawSuccess(); break;
+                case 6: DrawXp(); break;
+                case 7: DrawRods(); break;
+                case 8: DrawEconomy(); break;
                 default: DrawOthers(); break;
             }
 
@@ -393,11 +412,156 @@ namespace FishingIdle.Editor
                 }
 
                 map[sizeId] = result;
-                _dirty.Add(file);
+                MarkDirty(file);
                 return result;
             }
 
             return current;
+        }
+
+        /// <summary>
+        /// Catch Success (docs/SISTEMA_SUCESSO_PESCA.md, section 22): base chance per rarity, floor and
+        /// ceiling, boats and baits, and a simulator of any gear combination.
+        /// </summary>
+        private void DrawSuccess()
+        {
+            const string progression = GameConfigLoader.ProgressionFile;
+            const string equipment = GameConfigLoader.EquipmentFile;
+            EditorGUILayout.HelpBox(T.SuccessIntro, MessageType.None);
+
+            EditorGUILayout.LabelField(T.SuccessBaseTitle, EditorStyles.boldLabel);
+            var tiers = (JArray)_documents[progression].SelectToken("rarity.tiers");
+            Header(new[] { T.RarityName, T.SuccessBase });
+            for (var i = 0; tiers != null && i < tiers.Count; i++)
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    GUILayout.Label(tiers[i].Value<string>("display_name"), GUILayout.Width(130));
+                    Cell(progression, "rarity.tiers[" + i + "].catch_success_base");
+                    var value = tiers[i].Value<double?>("catch_success_base");
+                    GUILayout.Label(value.HasValue ? Format.Percent(value.Value, 0) : "—", GUILayout.Width(70));
+                }
+            }
+
+            Number(progression, "fishing.catch_success_min", T.SuccessMin, 0);
+            Number(progression, "fishing.catch_success_max", T.SuccessMax, 0);
+            EditorGUILayout.HelpBox(T.SuccessRodsNote, MessageType.None);
+
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField(T.BoatsTitle, EditorStyles.boldLabel);
+            var boats = (JArray)_documents[equipment]["boats"];
+            Header(new[] { T.SpeciesName, T.GearBonus, T.GearCoins, T.GearShells, T.GearLevel });
+            for (var i = 0; boats != null && i < boats.Count; i++)
+            {
+                var prefix = "boats[" + i + "].";
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    Text(equipment, prefix + "display_name", 130);
+                    Cell(equipment, prefix + "catch_success_bonus");
+                    Cell(equipment, prefix + "cost_coins");
+                    Cell(equipment, prefix + "cost_shells");
+                    Cell(equipment, prefix + "unlock_fisher_level");
+                }
+            }
+
+            EditorGUILayout.Space(8);
+            EditorGUILayout.LabelField(T.BaitsTitle, EditorStyles.boldLabel);
+            var baits = (JArray)_documents[equipment]["baits"];
+            Header(new[] { T.SpeciesName, T.GearBonus, T.GearCharges, T.GearCoins, T.GearShells, T.GearLevel });
+            for (var i = 0; baits != null && i < baits.Count; i++)
+            {
+                var prefix = "baits[" + i + "].";
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    Text(equipment, prefix + "display_name", 130);
+                    Cell(equipment, prefix + "catch_success_bonus");
+                    Cell(equipment, prefix + "charges");
+                    Cell(equipment, prefix + "cost_coins");
+                    Cell(equipment, prefix + "cost_shells");
+                    Cell(equipment, prefix + "unlock_fisher_level");
+                }
+            }
+
+            EditorGUILayout.HelpBox(T.GearNote, MessageType.None);
+            EditorGUILayout.Space(10);
+            DrawSimulator();
+        }
+
+        private void DrawSimulator()
+        {
+            EditorGUILayout.LabelField(T.SimulatorTitle, EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(T.SimulatorNote, MessageType.None);
+
+            // The config exactly as it is on this screen, unsaved edits included.
+            // Rebuilt only after an edit, not on every repaint.
+            var load = _simConfig ?? (_simConfig = GameConfigLoader.LoadFromTexts(Files.ToDictionary(f => f, f => Serialize(_documents[f]))));
+            if (!load.Succeeded)
+            {
+                EditorGUILayout.HelpBox(T.SimInvalid + "\n" + string.Join("\n", load.Errors), MessageType.Warning);
+                return;
+            }
+
+            var config = load.Config;
+            var maps = config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel).ToList();
+            var rods = config.Rods.Rods.OrderBy(r => r.Tier).ToList();
+            var boats = config.Equipment.Boats.OrderBy(b => b.Tier).ToList();
+            var baits = config.Equipment.Baits.OrderBy(b => b.Tier).ToList();
+
+            _simMap = EditorGUILayout.Popup(T.SimMap, Mathf.Clamp(_simMap, 0, maps.Count - 1), maps.Select(m => m.DisplayName).ToArray());
+            _simRod = EditorGUILayout.Popup(T.SimRod, Mathf.Clamp(_simRod, 0, rods.Count - 1), rods.Select(r => r.DisplayName).ToArray());
+            var rod = rods[_simRod];
+            var maxLevel = config.RodMaxLevel(rod);
+            _simRodLevel = maxLevel > 1 ? EditorGUILayout.IntSlider(T.SimRodLevel, Mathf.Clamp(_simRodLevel, 1, maxLevel), 1, maxLevel) : 1;
+            _simBoat = EditorGUILayout.Popup(T.SimBoat, Mathf.Clamp(_simBoat, 0, boats.Count - 1), boats.Select(b => b.DisplayName).ToArray());
+            _simBait = EditorGUILayout.Popup(T.SimBait, Mathf.Clamp(_simBait, 0, baits.Count), new[] { T.SimNoBait }.Concat(baits.Select(b => b.DisplayName)).ToArray());
+            _simAttempts = Mathf.Clamp(EditorGUILayout.IntField(T.SimAttempts, _simAttempts), 100, 1000000);
+
+            var map = maps[_simMap];
+            if (rod.Tier < map.MinimumRodTier || CatchRules.EligiblePool(config, map, rod).Count == 0)
+            {
+                EditorGUILayout.HelpBox(T.SimRodCannotFish, MessageType.Warning);
+                return;
+            }
+
+            if (GUILayout.Button(T.SimRun, GUILayout.Height(26)))
+            {
+                var bait = _simBait > 0 ? baits[_simBait - 1] : null;
+                _simResult = CatchSimulator.Run(config, map, rod, _simRodLevel, boats[_simBoat], bait, _simAttempts, 12345);
+            }
+
+            if (_simResult == null)
+            {
+                return;
+            }
+
+            var r = _simResult;
+            EditorGUILayout.Space(4);
+            EditorGUILayout.LabelField(T.SimResultAttempts, Format.Number(r.Attempts));
+            EditorGUILayout.LabelField(T.SimResultCatches, Format.Number(r.Catches));
+            EditorGUILayout.LabelField(T.SimResultEscapes, Format.Number(r.Escapes));
+            EditorGUILayout.LabelField(T.SimResultRate, Format.Percent(r.SuccessRate, 1));
+
+            Header(new[] { T.SimRarity, T.SimBites, T.SimCaught, T.SimChance });
+            foreach (var row in r.ByRarity)
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    GUILayout.Label(row.RarityName, GUILayout.Width(130));
+                    GUILayout.Label(Format.Number(row.Bites), GUILayout.Width(70));
+                    GUILayout.Label(Format.Number(row.Caught), GUILayout.Width(70));
+                    GUILayout.Label(Format.Percent(row.Chance, 0), GUILayout.Width(70));
+                }
+            }
+
+            EditorGUILayout.Space(4);
+            EditorGUILayout.LabelField(T.SimPerHour, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(T.SimCatchesHour, Format.Decimal(r.CatchesPerHour, 0));
+            EditorGUILayout.LabelField(T.SimEscapesHour, Format.Decimal(r.EscapesPerHour, 0));
+            EditorGUILayout.LabelField(T.SimXpHour, Format.Number((long)r.XpPerHour));
+            EditorGUILayout.LabelField(T.SimCoinsHour, Format.Number((long)r.CoinsPerHour));
+            EditorGUILayout.LabelField(T.SimBaitHour, T.SimBaitCost(Format.Number((long)r.BaitCoinsPerHour), Format.Decimal(r.BaitShellsPerHour, 1)));
+            EditorGUILayout.LabelField(T.SimNetCoinsHour, Format.Number((long)(r.CoinsPerHour - r.BaitCoinsPerHour)));
+            EditorGUILayout.LabelField(T.SimShellsHour, Format.Decimal(r.ShellsPerHour - r.BaitShellsPerHour, 1));
         }
 
         private void DrawXp()
@@ -465,16 +629,18 @@ namespace FishingIdle.Editor
                 EditorGUILayout.LabelField(rod.Value<string>("display_name"), EditorStyles.boldLabel);
                 Number(file, prefix + "acquisition.purchase_cost_coins", T.RodPrice, 0);
                 Number(file, prefix + "acquisition.unlock_fisher_level", T.UnlockLevel, 1);
+                Number(file, prefix + "bonuses.catch_success", T.RodStarterCatchBonus, 0);
 
                 if (rod["bonuses_per_level"] != null)
                 {
-                    Header(new[] { T.XpLevel, T.RodRarityBonus, T.RodSizeBonus, T.RodShellBonus, T.RodUpgradeCost });
+                    Header(new[] { T.XpLevel, T.RodCatchBonus, T.RodRarityBonus, T.RodSizeBonus, T.RodShellBonus, T.RodUpgradeCost });
                     var levels = ((JArray)rod.SelectToken("bonuses_per_level.rarity_efficiency")).Count;
                     for (var level = 0; level < levels; level++)
                     {
                         using (new EditorGUILayout.HorizontalScope())
                         {
                             GUILayout.Label((level + 1).ToString(), GUILayout.Width(130));
+                            Cell(file, prefix + "bonuses_per_level.catch_success[" + level + "]");
                             Cell(file, prefix + "bonuses_per_level.rarity_efficiency[" + level + "]");
                             Cell(file, prefix + "bonuses_per_level.size_quality[" + level + "]");
                             Cell(file, prefix + "bonuses_per_level.shell_yield[" + level + "]");
@@ -562,7 +728,7 @@ namespace FishingIdle.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     value.Value = (long)Math.Max(minimum, result);
-                    _dirty.Add(file);
+                    MarkDirty(file);
                 }
             }
             else if (value.Type == JTokenType.Float)
@@ -571,7 +737,7 @@ namespace FishingIdle.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     value.Value = Math.Max(minimum, result);
-                    _dirty.Add(file);
+                    MarkDirty(file);
                 }
             }
             else
@@ -596,7 +762,7 @@ namespace FishingIdle.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     value.Value = Math.Max(0L, result);
-                    _dirty.Add(file);
+                    MarkDirty(file);
                 }
             }
             else
@@ -605,7 +771,7 @@ namespace FishingIdle.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     value.Value = Math.Max(0.0, result);
-                    _dirty.Add(file);
+                    MarkDirty(file);
                 }
             }
         }
@@ -622,7 +788,7 @@ namespace FishingIdle.Editor
             if (EditorGUI.EndChangeCheck())
             {
                 value.Value = result;
-                _dirty.Add(file);
+                MarkDirty(file);
             }
         }
 

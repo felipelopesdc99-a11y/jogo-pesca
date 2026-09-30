@@ -3,6 +3,51 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m15.19] — 30/09/2026
+
+### Adicionado
+
+- **Sucesso da Captura** (`docs/SISTEMA_SUCESSO_PESCA.md`): depois que o peixe morde, o jogo sorteia
+  se o pescador consegue puxá-lo. Chance = chance-base da raridade (Comum 50%, Raro 38%) + vara +
+  barco + isca, entre 5% e 95%. Peixe que escapa não dá nada. Offline com a mesma regra.
+- **Escape na tela:** a vara luta, a boia afunda, uma sombra aparece na água, a linha afrouxa com um
+  respingo e sobe "Você ainda não é bom o suficiente." por cima da boia. Peixe Raro luta mais e deixa
+  um aviso na lista.
+- **Loja → Barcos** (Inicial e 1 a 5, de +3% a +15%, com Moedas e, nos maiores, Conchas) e
+  **Loja → Iscas** (Simples, Melhorada e Premium, de +5% a +15%, 100 tentativas por compra).
+- **Seu equipamento** na Loja, com a chance de puxar cada raridade; a mesma chance no painel de pesca.
+- **Painel de Desenvolvimento → Balanceamento → Sucesso da pesca:** chance-base, mínimo e máximo,
+  barcos, iscas e um simulador (mapa + vara + barco + isca + 10.000 tentativas). Varas ganhou a
+  coluna "Puxar".
+- `config/equipment.json` (barcos e iscas). Save versão 10, compatível com os anteriores.
+
+### Mudado
+
+- **Rebalanceamento:** XP, valor de venda e XP como alimento das espécies dobrados; Conchas por peixe
+  puxado de 5% para 10%; Aruanã com peso 10 (era 5). Antes e depois, medidos no simulador:
+
+  | Medida | Antes | Agora |
+  |---|---:|---:|
+  | Nível 10 | 2,1 h | 2,1 h |
+  | Nível 20 | 4,6 h | 4,4 h |
+  | Nível 30 | 10,1 h | 8,8 h |
+  | Moedas por hora, Lago Sereno | 3.375 | 3.298 |
+  | Moedas por hora, Rio Selvagem | 27.182 | 37.481 |
+  | Conchas por hora, Rio Selvagem | 5,6 | 7,6 |
+  | Primeiro peixe Raro | 3,8 h | 3,9 h |
+
+- Os textos da pesca falam em "tentativa" e "fisgada" ("1 tentativa a cada 30 s").
+- Conchas agora têm onde ser gastas (barcos e Isca Premium).
+
+### Pendente
+
+- Arte dos barcos (`M15-T07`, `ASSET_PENDENTE`); som ao escapar (`OD-020`); chance do Épico (24%)
+  quando a raridade existir (`OD-019`).
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M15-T09`).
+
 ## [0.2.0-m14.18] — 30/09/2026
 
 ### Adicionado

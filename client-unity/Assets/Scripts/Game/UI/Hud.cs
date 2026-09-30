@@ -130,7 +130,25 @@ namespace FishingIdle.Game.UI
                 _root.Toasts.Push(GameTexts.Toasts.Shells(Format.Number(update.ShellsGained)), ToastKind.Info);
             }
 
-            _boxPulseUntil = Time.unscaledTime + 1.2f;
+            // Escapes (docs/SISTEMA_SUCESSO_PESCA.md): a common one is told only near the bobber; a
+            // rarer one also leaves a toast, so the player notices what was lost. No sound (addendum A-080).
+            foreach (var escape in update.Escapes)
+            {
+                if (escape.RarityId != "common")
+                {
+                    _root.Toasts.Push(GameTexts.Fishing.RareEscaped(escape.RarityName, Format.Percent(escape.Chance, 0)), ToastKind.Warning);
+                }
+            }
+
+            if (update.BaitRanOut != null)
+            {
+                _root.Toasts.Push(GameTexts.Fishing.BaitRanOut(update.BaitRanOut), ToastKind.Warning, notify: true);
+            }
+
+            if (update.NewCatches.Count > 0)
+            {
+                _boxPulseUntil = Time.unscaledTime + 1.2f;
+            }
         }
 
         /// <summary>
@@ -268,6 +286,11 @@ namespace FishingIdle.Game.UI
             DrawPlayerCard(skin);
             DrawFishingControls(skin);
             DrawBoxButton(skin);
+            if (!windowOpen)
+            {
+                DrawEscapeMessage(skin);
+            }
+
             GUI.enabled = true;
 
             // Menu transition: a window fades in when the first one opens.
@@ -606,7 +629,7 @@ namespace FishingIdle.Game.UI
 
             var info = new Rect(panel.xMax - 250, panel.y + 20, 230, 40);
             GUI.Label(new Rect(info.x, info.y, info.width, 20), GameTexts.Fishing.CycleInfo(Format.Duration(status.CycleSeconds)), skin.SmallMutedRight);
-            GUI.Label(new Rect(info.x, info.y + 20, info.width, 20), status.MapName, skin.SmallMutedRight);
+            DrawChanceLine(skin, new Rect(info.x - 40, info.y + 20, info.width + 40, 22));
 
             if (status.IsFishing)
             {
@@ -633,6 +656,89 @@ namespace FishingIdle.Game.UI
             {
                 _root.StartFishing();
             }
+        }
+
+        /// <summary>
+        /// The compact gear line of the fishing panel (docs/SISTEMA_SUCESSO_PESCA.md, section 12): the
+        /// bait in use with its tentativas left, and the chance of pulling out each rarity that bites
+        /// here. Clicking it opens the Shop with the full equipment and chances.
+        /// </summary>
+        private void DrawChanceLine(UiSkin skin, Rect rect)
+        {
+            var gear = _root.Gear;
+            if (gear == null)
+            {
+                return;
+            }
+
+            var parts = new System.Collections.Generic.List<string>();
+            foreach (var chance in gear.Chances)
+            {
+                if (chance.BitesHere)
+                {
+                    parts.Add(GameTexts.Fishing.ChanceShort(chance.RarityName, Format.Percent(chance.Chance, 0)));
+                }
+            }
+
+            var text = string.Join(" · ", parts);
+            var textWidth = skin.SmallMutedRight.CalcSize(new GUIContent(text)).x;
+            var x = rect.xMax - textWidth - 26;
+            skin.DrawIcon(new Rect(x, rect.y + 2, 18, 18), Icons.Fishing, UiSkin.Accent);
+            if (gear.BaitName != null)
+            {
+                var left = gear.BaitChargesLeft.ToString();
+                var leftWidth = skin.SmallGoldRight.CalcSize(new GUIContent(left)).x;
+                GUI.Label(new Rect(x - leftWidth - 8, rect.y, leftWidth, 22), left, skin.SmallGoldRight);
+                skin.DrawIcon(new Rect(x - leftWidth - 30, rect.y + 2, 18, 18), Icons.Bait, UiSkin.Gold);
+            }
+
+            GUI.Label(new Rect(rect.x, rect.y, rect.width - 4, 22), text, skin.SmallMutedRight);
+            if (GUI.Button(new Rect(rect.x, rect.y - 2, rect.width, 26), new GUIContent(string.Empty, GameTexts.Gear.OpenDetails), GUIStyle.none))
+            {
+                CloseAllWindows();
+                _shop.Open();
+            }
+        }
+
+        /// <summary>
+        /// "Você ainda não é bom o suficiente." rising over the bobber for a moment after a fish
+        /// breaks free; the hint below it, smaller. Never a blocking popup (docs/SISTEMA_SUCESSO_PESCA.md, section 3).
+        /// </summary>
+        private void DrawEscapeMessage(UiSkin skin)
+        {
+            var rig = _scene != null ? _scene.Fisherman : null;
+            var camera = Camera.main;
+            if (rig == null || camera == null)
+            {
+                return;
+            }
+
+            var age = Time.time - rig.LastEscapeAt;
+            const float duration = 2.8f;
+            if (age < 0f || age > duration)
+            {
+                return;
+            }
+
+            var scale = Screen.height / VirtualHeight;
+            var point = camera.WorldToScreenPoint(rig.LastEscapePoint);
+            var alpha = Mathf.Clamp01(age / 0.2f) * Mathf.Clamp01((duration - age) / 0.6f);
+            var cx = point.x / scale;
+            var cy = (Screen.height - point.y) / scale - 70f - age * 14f;
+            var rare = rig.LastEscapeRarityId != null && rig.LastEscapeRarityId != "common";
+
+            var previous = GUI.color;
+            GUI.color = new Color(1f, 1f, 1f, alpha);
+            var panel = new Rect(cx - 250, cy - 8, 500, 64);
+            skin.FloatingPanel(panel);
+            if (rare)
+            {
+                GUI.DrawTexture(new Rect(panel.x + 6, panel.y + 10, 4, panel.height - 20), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.RarityColor(rig.LastEscapeRarityId), 0, 2);
+            }
+
+            GUI.Label(new Rect(panel.x, panel.y + 6, panel.width, 26), GameTexts.Fishing.EscapeMessage, skin.CenterBold);
+            GUI.Label(new Rect(panel.x, panel.y + 34, panel.width, 22), GameTexts.Fishing.EscapeHint, skin.SmallMutedCenter);
+            GUI.color = previous;
         }
 
         private Rect BoxButtonRect => new Rect(_width - 24 - 270, _height - 24 - 92, 270, 92);

@@ -13,6 +13,7 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | `expeditions.json` | Durações, Força Recomendada, curvas de eficiência, recompensas |
 | `arena_bots.json` | Só no jogo local: como os 200 adversários simulados da Arena são montados e com que frequência atacam você |
 | `market_bots.json` | Só no jogo local: vendedores e compradores simulados do Mercado (quantos anúncios, preços de referência, chance de vender) |
+| `equipment.json` | Barcos e iscas: bônus na Chance de Sucesso da Captura, custo em Moedas e Conchas, nível, tentativas de cada isca |
 
 ## Como editar
 
@@ -29,6 +30,8 @@ Onde fica cada coisa no painel:
 | Chance de cada peixe em cada mapa | Mapas e chances | `maps.json` |
 | Chance de Pequeno, Adulto, Grande e Excepcional | Distribuição de tamanho | `progression.json` |
 | Quanto o Raro vale a mais (venda, atributos, XP) e a chance de tamanho por raridade | Raridades | `progression.json` |
+| Chance de puxar o peixe (por raridade, mínimo e máximo), barcos e iscas, e o simulador | Sucesso da pesca | `progression.json`, `equipment.json` |
+| Bônus de puxar de cada vara por nível | Varas (coluna "Puxar") | `rods.json` |
 | Tempo de pesca | Pesca | `progression.json` |
 | Níveis do Pescador e do peixe | XP do Pescador | `progression.json` |
 | Varas (bônus e custo) | Varas | `rods.json` |
@@ -75,8 +78,12 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
 
 ## Calibragem provisória registrada
 
-- O XP do Pescador do nível 1 ao 10 soma **2000 XP**, mirando cerca de 240 capturas no Mapa 1
-  (aproximadamente 2 horas de pesca online).
+- O XP do Pescador do nível 1 ao 10 soma **2000 XP**, mirando cerca de 240 tentativas no Mapa 1
+  (aproximadamente 2 horas de pesca online). Desde a V0.2 só metade delas vira peixe no começo
+  (Chance de Sucesso da Captura), e por isso o XP, o valor e o XP como alimento das espécies foram
+  dobrados (30/09/2026, `docs/GDD_ADENDO.md` A-092).
+- Chance de Sucesso da Captura: Comum 50%, Raro 38% (Épico 24% quando existir), entre 5% e 95%.
+  Barcos de +3% a +15%, iscas de +5% a +15% por 100 tentativas, Vara 1 de +2% a +12%.
 - O XP do Pescador do nível 1 ao 100 soma **711.000 XP**, contra uma meta de cerca de 90 dias. É o
   valor com maior chance de precisar de recalibragem quando houver dados reais de jogo.
 - O XP do peixe do nível 1 ao 10 soma **995 XP**.

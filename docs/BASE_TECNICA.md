@@ -106,6 +106,7 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `ICardumeService` | `LocalCardumeService` | Posições 1–6, bônus 6/6, Força privada |
 | `IMapService` | `LocalMapService` | Mapas, requisitos, viagem de 30s (pausa e retoma a pesca) |
 | `IShopService` | `LocalShopService` | Loja: varas à venda e compra |
+| `IGearService` | `LocalGearService` | Barcos e iscas: comprar, usar, guardar; equipamento em uso e chance de puxar por raridade |
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
 | `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
 | `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
@@ -119,6 +120,12 @@ Cada sistema novo segue o mesmo desenho: uma interface `I...Service`, uma implem
 `Local...Service` que trabalha sobre a `GameSession`, e visões somente-leitura para a tela.
 
 ### Como a pesca online funciona
+
+Cada ciclo é uma **tentativa** (`LocalFishingService.Attempt`): o barco e a isca dão o bônus deles
+(`GearRules.SpendAttempt`, que gasta uma carga da isca), `CatchRules.Attempt` sorteia o peixe e se ele
+é puxado, e só um peixe puxado vira captura. Um escape entra em `FishingUpdate.Escapes` (só a
+raridade e a chance) e em `Stats.Escapes`; quando a isca acaba, `FishingUpdate.BaitRanOut` traz o
+nome dela. Veja `docs/SISTEMA_SUCESSO_PESCA.md`.
 
 O serviço **não** roda um cronômetro por jogador. Ele guarda no save um cursor:
 
@@ -148,11 +155,12 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 
 | O quê | Como | Onde está o número |
 |---|---|---|
+| Chance de Sucesso | Chance-base da raridade + vara (`catch_success`) + barco + isca, entre o piso e o teto; sorteada depois da espécie e antes do tamanho | `progression.json → rarity.tiers, fishing`, `rods.json`, `equipment.json` |
 | Espécie | Peso de captura do mapa, só raridades que o mapa **e** a vara permitem; a eficiência de raridade da vara multiplica só o peso das espécies não comuns | `maps.json`, `rods.json` |
 | Categoria de tamanho | Peso 20/60/19/1; a qualidade de tamanho da vara multiplica Grande e Excepcional | `progression.json → size` |
 | Tamanho exato | Uniforme dentro da faixa de percentil da categoria, sobre a faixa de cm da espécie; gravado em milímetros | `fish_catalog.json → size_cm` |
 | XP do Pescador | XP base da espécie × raridade × multiplicador da categoria, arredondado, mínimo 1 | `fish_catalog.json`, `progression.json` |
-| Conchas | Só varas que geram Conchas; chance base × (1 + bônus da vara) | `economy.json → shells` |
+| Conchas | Só peixe puxado e só varas que geram Conchas; chance base × (1 + bônus da vara) | `economy.json → shells` |
 | Preço de venda | Valor base × raridade × (1 + influência × (percentil − 0,5)), mínimo configurável | `economy.json`, `progression.json` |
 | Atributos do peixe | Base × raridade × (1 + influência × (percentil − 0,5)) × (1 + bônus por nível × (nível − 1)) | `fish_catalog.json`, `progression.json` |
 | XP como alimento | XP base × raridade × fator de tamanho + 50% do XP investido | `progression.json → feeding` |
@@ -174,7 +182,8 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
   `ConfigBuildStep` coloca em `StreamingAssets/config` (essa cópia não é versionada).
 - O jogo carrega todos os arquivos de `GameConfigLoader.RequiredFiles`: `fish_catalog`, `maps`,
   `progression`, `rods`, `economy`, `arena`, `expeditions`, `arena_bots` (adversários simulados do
-  MVP local) e `market_bots` (vendedores e compradores simulados do Mercado). O Painel de Desenvolvimento usa a mesma lista.
+  MVP local), `market_bots` (vendedores e compradores simulados do Mercado) e `equipment` (barcos e
+  iscas, desde a V0.2). O Painel de Desenvolvimento usa a mesma lista.
 - `GameConfigLoader.LoadFromTexts` é usado tanto pelo jogo quanto pelo Painel de Desenvolvimento:
   o painel só grava se a mesma validação que o jogo usa passar.
 - `GameConfig.Version` é uma impressão digital curta do conteúdo. Mesmos arquivos, mesma versão.
@@ -217,7 +226,9 @@ Regras:
   foi gasto em melhorias, v5 adiciona a Expedição (`ExpeditionState`, `LastExpedition`), v6 adiciona a Arena
   (`ArenaState`: ranking como lista de ids, Energia, Honra, adversários, histórico), v7 adiciona o
   Mercado (`MarketState`), v8 adiciona os leilões (`MarketState.Auctions`), v9 adiciona o tutorial
-  (`TutorialState`; saves antigos entram com ele concluído). Cada passo está em `SaveMigrations.Upgrade`.
+  (`TutorialState`; saves antigos entram com ele concluído), v10 adiciona barcos e iscas (`BoatId`,
+`OwnedBoatIds`, `BaitCharges`, `ActiveBaitId`) e a contagem de escapes (`Stats.Escapes`); saves
+antigos entram com o Barco Inicial e sem isca. Cada passo está em `SaveMigrations.Upgrade`.
 - Tutorial (desde a versão 9): o jogador novo começa **sem vara** (`EquippedRodItemId = 0`) e pega a
   Vara Inicial de graça na Loja (`free_claim_in_shop` em `rods.json`). O save só aceita "sem vara"
   enquanto o tutorial não terminou; pular o tutorial entrega a Vara Inicial. Cada passo termina sozinho
@@ -352,7 +363,10 @@ Menu **Fishing Idle → Painel de Desenvolvimento** (`DevPanelWindow`).
   Com o jogo rodando, "Salvar e aplicar" recarrega o config na hora (`GameRoot.ReloadConfig`).
   Seções: Pesca, Espécies, Mapas e chances, Distribuição de tamanho, Raridades (multiplicadores de
   venda, atributos e XP, e `size_weight_multipliers` com a chance final de cada tamanho por
-  raridade; um tamanho não listado vale 1 e só é gravado se for mudado), XP, Varas, Economia e
+  raridade; um tamanho não listado vale 1 e só é gravado se for mudado), Sucesso da pesca (chance-base
+  por raridade, piso e teto, barcos, iscas e um simulador: mapa + vara + nível + barco + isca + N
+  tentativas → capturas, escapes, taxa real, por raridade, XP/h, Moedas/h, Conchas/h e custo da
+  isca; roda com os números da tela, mesmo não salvos), XP, Varas (com a coluna "Puxar"), Economia e
   Outros arquivos.
 - **Save:** leitura sem efeitos colaterais, e reset com confirmação.
 - **Primeira abertura** (`ProjectSetup`): cria e abre `Assets/Scenes/Principal.unity`, registra no
@@ -396,7 +410,8 @@ Joga as **regras reais** (`LocalGame`) com um relógio manual e um save em memó
 sem parar, vende tudo, compra a vara e troca de mapa assim que pode), frequência de raridade/tamanho
 e Conchas por mapa e vara (200 mil sorteios), preços de venda por espécie, retorno das varas, duração
 e resultado das batalhas entre adversários simulados, Moedas das Expedições, tempo de venda no
-Mercado e preço final dos leilões. No topo, "Pontos de atenção" lista o que chama atenção nos números
+Mercado, preço final dos leilões e o Sucesso da Captura (seção 7: o jogo de hoje com e sem a
+chance, e combinações de equipamento com `CatchSimulator`). No topo, "Pontos de atenção" lista o que chama atenção nos números
 — sem mudar nada. Para medir algo novo, acrescente uma seção em `tools/Simulador/Program.cs`.
 As checagens do Unity pegam erros de digitação, tipos e membros inexistentes. Elas **não**
 substituem abrir o projeto no Editor: comportamento visual só se confirma apertando Play.

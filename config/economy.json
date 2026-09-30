@@ -15,7 +15,7 @@
       "display_name": "Conchas",
       "is_primary": false,
       "spendable_in_v0_1": false,
-      "note": "Ganháveis na V0.1, mas de propósito ainda não têm onde ser gastas. Não podem ser usadas para melhorar varas nem peixes."
+      "note": "Na V0.1 não tinham onde ser gastas. Desde a V0.2 compram barcos e iscas (equipment.json, docs/SISTEMA_SUCESSO_PESCA.md). Continuam sem melhorar varas nem peixes."
     },
     {
       "id": "honor",
@@ -32,7 +32,8 @@
   },
   "shells": {
     "source": "fishing_only_in_v0_1",
-    "base_drop_chance_per_catch": 0.05,
+    "base_drop_chance_per_catch": 0.1,
+    "base_drop_chance_note": "Era 0,05; dobrou junto com a Chance de Sucesso da Captura, porque só peixe puxado dá Conchas.",
     "amount_per_drop": {
       "min": 1,
       "max": 2

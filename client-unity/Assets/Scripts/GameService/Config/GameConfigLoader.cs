@@ -44,11 +44,12 @@ namespace FishingIdle.GameService.Config
         public const string ExpeditionsFile = "expeditions.json";
         public const string ArenaBotsFile = "arena_bots.json";
         public const string MarketBotsFile = "market_bots.json";
+        public const string EquipmentFile = "equipment.json";
 
         /// <summary>The files the implemented milestones need, in a stable order.</summary>
         public static readonly IReadOnlyList<string> RequiredFiles = new[]
         {
-            FishCatalogFile, MapsFile, ProgressionFile, RodsFile, EconomyFile, ArenaFile, ExpeditionsFile, ArenaBotsFile, MarketBotsFile,
+            FishCatalogFile, MapsFile, ProgressionFile, RodsFile, EconomyFile, ArenaFile, ExpeditionsFile, ArenaBotsFile, MarketBotsFile, EquipmentFile,
         };
 
         public static ConfigLoadResult LoadFromDirectory(string directory)
@@ -106,19 +107,20 @@ namespace FishingIdle.GameService.Config
             var expeditions = Parse<ExpeditionsConfig>(texts, ExpeditionsFile, errors);
             var bots = Parse<ArenaBotsConfig>(texts, ArenaBotsFile, errors);
             var marketBots = Parse<MarketBotsConfig>(texts, MarketBotsFile, errors);
+            var equipment = Parse<EquipmentConfig>(texts, EquipmentFile, errors);
 
             if (errors.Count > 0)
             {
                 return new ConfigLoadResult(null, errors);
             }
 
-            errors.AddRange(GameConfigValidator.Validate(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots));
+            errors.AddRange(GameConfigValidator.Validate(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots, equipment));
             if (errors.Count > 0)
             {
                 return new ConfigLoadResult(null, errors);
             }
 
-            var config = new GameConfig(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots, Fingerprint(texts));
+            var config = new GameConfig(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots, equipment, Fingerprint(texts));
             return new ConfigLoadResult(config, errors);
         }
 

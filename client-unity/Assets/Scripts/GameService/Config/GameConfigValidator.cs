@@ -21,7 +21,8 @@ namespace FishingIdle.GameService.Config
             ArenaConfig arena,
             ExpeditionsConfig expeditions,
             ArenaBotsConfig bots,
-            MarketBotsConfig marketBots)
+            MarketBotsConfig marketBots,
+            EquipmentConfig equipment)
         {
             var errors = new List<string>();
 
@@ -684,6 +685,85 @@ namespace FishingIdle.GameService.Config
                     if (e.FishFindChance < 0 || e.FishFindChance > 1)
                     {
                         errors.Add(V.ChanceOutOfRange(GameConfigLoader.ExpeditionsFile, e.Id + ".fish_find_chance"));
+                    }
+                }
+            }
+
+            // ---- Catch Success (docs/SISTEMA_SUCESSO_PESCA.md)
+            foreach (var tier in progression.Rarity?.Tiers ?? new List<RarityTierConfig>())
+            {
+                if (tier.CatchSuccessBase < 0 || tier.CatchSuccessBase > 1)
+                {
+                    errors.Add(V.ChanceOutOfRange(GameConfigLoader.ProgressionFile, "rarity " + tier.Id + " catch_success_base"));
+                }
+            }
+
+            if (progression.Fishing != null && (progression.Fishing.CatchSuccessMin < 0 || progression.Fishing.CatchSuccessMax > 1
+                || progression.Fishing.CatchSuccessMin > progression.Fishing.CatchSuccessMax))
+            {
+                errors.Add(V.ChanceOutOfRange(GameConfigLoader.ProgressionFile, "fishing.catch_success_min / catch_success_max"));
+            }
+
+            // ---- equipment.json
+            if (equipment?.Boats == null || equipment.Boats.Count == 0)
+            {
+                errors.Add(V.Missing(GameConfigLoader.EquipmentFile, "boats"));
+            }
+            else
+            {
+                var boatIds = new HashSet<string>(StringComparer.Ordinal);
+                foreach (var boat in equipment.Boats)
+                {
+                    if (string.IsNullOrWhiteSpace(boat.Id) || !boatIds.Add(boat.Id))
+                    {
+                        errors.Add(V.DuplicateOrEmptyId(GameConfigLoader.EquipmentFile, "boats", boat.Id));
+                    }
+
+                    if (boat.CatchSuccessBonus < 0 || boat.CatchSuccessBonus > 1)
+                    {
+                        errors.Add(V.ChanceOutOfRange(GameConfigLoader.EquipmentFile, boat.Id + ".catch_success_bonus"));
+                    }
+
+                    if (boat.CostCoins < 0 || boat.CostShells < 0)
+                    {
+                        errors.Add(V.NegativeValue(GameConfigLoader.EquipmentFile, boat.Id + " (custo)"));
+                    }
+                }
+
+                var starter = equipment.Boats.OrderBy(b => b.Tier).First();
+                if (starter.CostCoins != 0 || starter.CostShells != 0)
+                {
+                    errors.Add(V.StarterBoatNotFree(starter.Id));
+                }
+            }
+
+            if (equipment?.Baits == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.EquipmentFile, "baits"));
+            }
+            else
+            {
+                var baitIds = new HashSet<string>(StringComparer.Ordinal);
+                foreach (var bait in equipment.Baits)
+                {
+                    if (string.IsNullOrWhiteSpace(bait.Id) || !baitIds.Add(bait.Id))
+                    {
+                        errors.Add(V.DuplicateOrEmptyId(GameConfigLoader.EquipmentFile, "baits", bait.Id));
+                    }
+
+                    if (bait.CatchSuccessBonus < 0 || bait.CatchSuccessBonus > 1)
+                    {
+                        errors.Add(V.ChanceOutOfRange(GameConfigLoader.EquipmentFile, bait.Id + ".catch_success_bonus"));
+                    }
+
+                    if (bait.Charges < 1)
+                    {
+                        errors.Add(V.AtLeast(GameConfigLoader.EquipmentFile, bait.Id + ".charges", 1));
+                    }
+
+                    if (bait.CostCoins < 0 || bait.CostShells < 0)
+                    {
+                        errors.Add(V.NegativeValue(GameConfigLoader.EquipmentFile, bait.Id + " (custo)"));
                     }
                 }
             }

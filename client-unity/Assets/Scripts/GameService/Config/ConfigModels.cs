@@ -168,6 +168,9 @@ namespace FishingIdle.GameService.Config
         public double FeedXpMultiplier { get; set; }
         public double SaleValueMultiplier { get; set; }
 
+        /// <summary>Chance of pulling a fish of this rarity out with no equipment bonus (0,5 = 50%). 1 when not set.</summary>
+        public double CatchSuccessBase { get; set; } = 1.0;
+
         /// <summary>
         /// Multiplies the draw weight of size categories for fish of this rarity (e.g. "large": 0.85):
         /// rarer fish come big a little less often. Categories not listed keep their weight.
@@ -186,6 +189,10 @@ namespace FishingIdle.GameService.Config
         public double OnlineCycleSeconds { get; set; }
         public double OfflineCycleSeconds { get; set; }
         public double OfflineAccumulationCapHours { get; set; }
+
+        /// <summary>Floor and ceiling of the Catch Success chance (docs/SISTEMA_SUCESSO_PESCA.md).</summary>
+        public double CatchSuccessMin { get; set; } = 0.05;
+        public double CatchSuccessMax { get; set; } = 0.95;
     }
 
     // ---------------------------------------------------------------- rods.json
@@ -244,6 +251,9 @@ namespace FishingIdle.GameService.Config
         public double RarityEfficiency { get; set; }
         public double SizeQuality { get; set; }
         public double ShellYield { get; set; }
+
+        /// <summary>Percentage points added to the Catch Success chance (0,05 = +5%).</summary>
+        public double CatchSuccess { get; set; }
     }
 
     public sealed class RodBonusesPerLevelConfig
@@ -251,6 +261,7 @@ namespace FishingIdle.GameService.Config
         public List<double> RarityEfficiency { get; set; }
         public List<double> SizeQuality { get; set; }
         public List<double> ShellYield { get; set; }
+        public List<double> CatchSuccess { get; set; }
     }
 
     // ---------------------------------------------------------------- economy.json
@@ -552,5 +563,40 @@ namespace FishingIdle.GameService.Config
         public double RecommendedStrength { get; set; }
         public long RewardCoins { get; set; }
         public double FishFindChance { get; set; }
+    }
+
+    // ---------------------------------------------------------------- equipment.json
+
+    /// <summary>Boats and baits: both only raise the Catch Success chance (docs/SISTEMA_SUCESSO_PESCA.md).</summary>
+    public sealed class EquipmentConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+        public List<BoatConfig> Boats { get; set; }
+        public List<BaitConfig> Baits { get; set; }
+    }
+
+    public sealed class BoatConfig
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
+        public int Tier { get; set; }
+        public double CatchSuccessBonus { get; set; }
+        public long CostCoins { get; set; }
+        public long CostShells { get; set; }
+        public int UnlockFisherLevel { get; set; } = 1;
+    }
+
+    public sealed class BaitConfig
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
+        public int Tier { get; set; }
+        public double CatchSuccessBonus { get; set; }
+
+        /// <summary>Fishing attempts one purchase lasts; each attempt uses one, caught or not.</summary>
+        public int Charges { get; set; }
+        public long CostCoins { get; set; }
+        public long CostShells { get; set; }
+        public int UnlockFisherLevel { get; set; } = 1;
     }
 }

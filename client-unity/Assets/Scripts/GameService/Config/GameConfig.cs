@@ -23,6 +23,9 @@ namespace FishingIdle.GameService.Config
         private readonly Dictionary<int, long> _fishXpTable;
         private readonly Dictionary<string, int> _rarityRank;
 
+        private readonly Dictionary<string, BoatConfig> _boats;
+        private readonly Dictionary<string, BaitConfig> _baits;
+
         internal GameConfig(
             FishCatalogConfig fishCatalog,
             MapsConfig maps,
@@ -33,8 +36,12 @@ namespace FishingIdle.GameService.Config
             ExpeditionsConfig expeditions,
             ArenaBotsConfig arenaBots,
             MarketBotsConfig marketBots,
+            EquipmentConfig equipment,
             string version)
         {
+            Equipment = equipment;
+            _boats = equipment.Boats.ToDictionary(b => b.Id, StringComparer.Ordinal);
+            _baits = equipment.Baits.ToDictionary(b => b.Id, StringComparer.Ordinal);
             FishCatalog = fishCatalog;
             Maps = maps;
             Progression = progression;
@@ -65,6 +72,13 @@ namespace FishingIdle.GameService.Config
         public ExpeditionsConfig Expeditions { get; }
         public ArenaBotsConfig ArenaBots { get; }
         public MarketBotsConfig MarketBots { get; }
+        public EquipmentConfig Equipment { get; }
+
+        /// <summary>The boat every player owns from the start: the lowest tier.</summary>
+        public BoatConfig StarterBoat => Equipment.Boats.OrderBy(b => b.Tier).First();
+
+        public bool TryGetBoat(string id, out BoatConfig boat) => _boats.TryGetValue(id ?? string.Empty, out boat);
+        public bool TryGetBait(string id, out BaitConfig bait) => _baits.TryGetValue(id ?? string.Empty, out bait);
         public MarketFixedPriceConfig Market => Economy.MarketFixedPrice;
         public AuctionConfig Auction => Economy.Auction;
 
@@ -166,6 +180,7 @@ namespace FishingIdle.GameService.Config
                 RarityEfficiency = At(perLevel.RarityEfficiency, index),
                 SizeQuality = At(perLevel.SizeQuality, index),
                 ShellYield = At(perLevel.ShellYield, index),
+                CatchSuccess = At(perLevel.CatchSuccess, index),
             };
         }
 

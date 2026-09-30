@@ -26,6 +26,7 @@ namespace FishingIdle.Game.Scene
             Bite,
             Reeling,
             Showing,
+            Escaping,
         }
 
         private const int LineSegments = 18;
@@ -57,6 +58,20 @@ namespace FishingIdle.Game.Scene
         private CatchView _shown;
         private Vector3 _fishFrom;
 
+        // The fish that got away (docs/SISTEMA_SUCESSO_PESCA.md): only its rarity is known here.
+        private SpriteRenderer _shadow;
+        private int _escapeStrength;
+        private Vector3 _escapeFrom;
+        private Vector3 _shadowDir;
+        private bool _snapped;
+
+        /// <summary>When the last fish broke free (Time.time), for the message near the bobber; below 0 = never.</summary>
+        public float LastEscapeAt { get; private set; } = -100f;
+
+        /// <summary>Rarity of the last fish that broke free, and where (world position of the bobber then).</summary>
+        public string LastEscapeRarityId { get; private set; }
+        public Vector3 LastEscapePoint { get; private set; }
+
         /// <summary>What the fisherman is doing, in PT-BR, for the HUD.</summary>
         public string PhaseText
         {
@@ -69,6 +84,7 @@ namespace FishingIdle.Game.Scene
                     case Phase.Bite: return GameTexts.Fishing.Bite;
                     case Phase.Reeling: return GameTexts.Fishing.Reeling;
                     case Phase.Showing: return GameTexts.Fishing.Caught;
+                    case Phase.Escaping: return GameTexts.Fishing.Escaped;
                     default: return GameTexts.Fishing.Idle;
                 }
             }
@@ -147,6 +163,8 @@ namespace FishingIdle.Game.Scene
             _fish = FishingScene.Sprite(world, "Captura", Art.Pixel, Vector3.zero, Vector3.one, FishingScene.OrderCatch);
             _fish.enabled = false;
             _fishGlow.enabled = false;
+            _shadow = FishingScene.Sprite(world, "Sombra do peixe", Art.Glow, Vector3.zero, Vector3.one, FishingScene.OrderWaterDetail + 1, new Color(0.02f, 0.06f, 0.08f, 0f));
+            _shadow.enabled = false;
 
             _root.CatchesArrived += OnCatchesArrived;
             Enter(Phase.Idle);
@@ -164,6 +182,16 @@ namespace FishingIdle.Game.Scene
         {
             if (update.NewCatches.Count == 0)
             {
+                // Only escapes: the fight is lost. A catch being shown is never interrupted.
+                if (update.Escapes.Count > 0 && _phase != Phase.Showing)
+                {
+                    var notable = update.Escapes.OrderByDescending(e => Strength(e.RarityId)).First();
+                    LastEscapeRarityId = notable.RarityId;
+                    _escapeStrength = Strength(notable.RarityId);
+                    _escapeFrom = _phase == Phase.Idle ? WaterTarget : _bobber.localPosition;
+                    Enter(Phase.Escaping);
+                }
+
                 return;
             }
 
@@ -184,7 +212,7 @@ namespace FishingIdle.Game.Scene
             var fishing = status != null && status.IsFishing;
             var now = Time.time - _phaseStartedAt;
 
-            if (!fishing && _phase != Phase.Idle && _phase != Phase.Showing)
+            if (!fishing && _phase != Phase.Idle && _phase != Phase.Showing && _phase != Phase.Escaping)
             {
                 Enter(Phase.Idle);
             }
@@ -235,6 +263,10 @@ namespace FishingIdle.Game.Scene
                 case Phase.Showing:
                     UpdateShowing(now, fishing);
                     break;
+
+                case Phase.Escaping:
+                    UpdateEscaping(now, fishing);
+                    break;
             }
 
             DrawLine();
@@ -267,10 +299,21 @@ namespace FishingIdle.Game.Scene
                         SparkleEffect.Burst(_world, TipPosition() + new Vector3(-0.8f, 0.2f, 0f), FishingScene.OrderCatchGlow + 1, GlowColor(_shown), 14);
                     }
                     break;
+                case Phase.Escaping:
+                    _snapped = false;
+                    _shadow.enabled = true;
+                    _shadowDir = new Vector3(Random.value < 0.5f ? -1f : 1f, -0.25f, 0f);
+                    break;
                 case Phase.Idle:
                     _fish.enabled = false;
                     _fishGlow.enabled = false;
+                    _shadow.enabled = false;
                     break;
+            }
+
+            if (phase != Phase.Escaping)
+            {
+                _shadow.enabled = false;
             }
         }
 
@@ -403,6 +446,74 @@ namespace FishingIdle.Game.Scene
             }
         }
 
+        /// <summary>
+        /// A fish that bit and got away, in a few seconds (docs/SISTEMA_SUCESSO_PESCA.md, section 14):
+        /// the rod fights, the bobber is dragged under and a dark shape moves in the water; then the
+        /// line goes slack with a short splash, the shape darts off and the fisherman casts again.
+        /// Rarer fish fight longer and harder (section 15).
+        /// </summary>
+        private void UpdateEscaping(float t, bool fishing)
+        {
+            var s = _escapeStrength;
+            var fight = 0.45f + 0.35f * s;
+            var total = fight + 1.2f + 0.2f * s;
+            var shadowAlpha = 0.28f + 0.1f * s;
+            var shadowSize = new Vector3(0.9f + 0.35f * s, 0.32f + 0.1f * s, 1f);
+
+            if (t < fight)
+            {
+                var shake = 3f + 2.5f * s;
+                _rodAngle = 22f + Mathf.Sin(Time.time * (20f + 4f * s)) * shake - 4f * s * Mathf.Clamp01(t / fight);
+                ApplyRod();
+                var pull = Mathf.Clamp01(t / 0.25f) * (0.16f + 0.06f * s);
+                _bobber.localPosition = _escapeFrom + new Vector3(Mathf.Sin(Time.time * 17f) * 0.05f, -pull, 0f);
+
+                // The fish almost shows itself: a dark shape pulling under the bobber.
+                _shadow.transform.localPosition = _escapeFrom + new Vector3(Mathf.Sin(Time.time * 5f) * 0.25f, -0.35f, 0f);
+                _shadow.transform.localScale = shadowSize;
+                _shadow.color = new Color(0.02f, 0.06f, 0.08f, shadowAlpha * Mathf.Clamp01(t / 0.2f));
+                if (Time.time >= _nextBiteRippleAt)
+                {
+                    _nextBiteRippleAt = Time.time + 0.3f;
+                    RippleEffect.Spawn(_world, _bobber.localPosition, FishingScene.OrderWaterDetail, 0.7f + 0.2f * s, 0.5f);
+                }
+            }
+            else
+            {
+                if (!_snapped)
+                {
+                    // The line loses tension: a short splash where the fish broke free.
+                    _snapped = true;
+                    LastEscapeAt = Time.time;
+                    LastEscapePoint = _world.TransformPoint(_bobber.localPosition);
+                    RippleEffect.Spawn(_world, _bobber.localPosition, FishingScene.OrderWaterDetail, 1.1f + 0.4f * s, 0.5f);
+                    Droplet.Splash(_world, _bobber.localPosition, FishingScene.OrderCatch + 1, 7 + 5 * s, 0.8f + 0.2f * s);
+                }
+
+                var k = Mathf.Clamp01((t - fight) / 0.5f);
+                // The rod springs back past rest and settles; the bobber floats up on a slack line.
+                _rodAngle = Mathf.Lerp(72f, 58f, Ease(Mathf.Clamp01((t - fight) / 0.8f))) + Mathf.Sin((t - fight) * 18f) * 4f * (1f - k);
+                ApplyRod();
+                var rest = TipPosition() + new Vector3(0.35f, -0.95f, 0f);
+                _bobber.localPosition = Vector3.Lerp(_escapeFrom, rest, Ease(k)) + new Vector3(0f, Mathf.Sin(k * Mathf.PI) * 0.25f, 0f);
+
+                var gone = Mathf.Clamp01((t - fight) / 0.6f);
+                _shadow.transform.localPosition = _escapeFrom + new Vector3(0f, -0.35f, 0f) + _shadowDir * (gone * (1.8f + 0.5f * s));
+                _shadow.color = new Color(0.02f, 0.06f, 0.08f, shadowAlpha * (1f - gone));
+            }
+
+            if (t >= total)
+            {
+                Enter(fishing ? Phase.Casting : Phase.Idle);
+            }
+        }
+
+        /// <summary>How hard a fish of this rarity fights: 0 common, 1 rare, 2 above.</summary>
+        private static int Strength(string rarityId)
+        {
+            return rarityId == null || rarityId == "common" ? 0 : rarityId == "rare" ? 1 : 2;
+        }
+
         // ------------------------------------------------------------------ helpers
 
         private void ApplyRod()
@@ -420,7 +531,7 @@ namespace FishingIdle.Game.Scene
         {
             var from = TipPosition();
             var to = _bobber.localPosition;
-            var slack = _phase == Phase.Waiting ? 0.45f : _phase == Phase.Casting ? 0.2f : 0.05f;
+            var slack = _phase == Phase.Waiting ? 0.45f : _phase == Phase.Casting ? 0.2f : _phase == Phase.Escaping && _snapped ? 0.65f : 0.05f;
             var control = (from + to) * 0.5f + new Vector3(0f, -slack, 0f);
 
             var previous = from;

@@ -42,10 +42,45 @@ internal static class TestSupport
         return result.Config;
     }
 
-    /// <summary>The real config with a JSON edit applied to one file.</summary>
-    public static ConfigLoadResult ConfigWith(string file, Func<string, string> edit)
+    private static GameConfig _certain;
+
+    /// <summary>
+    /// The real config with every bite pulled out (Catch Success 100%). Tests about timing, the box,
+    /// sales and the other systems use it so they keep counting one fish per cycle; the Catch
+    /// Success tests use <see cref="RealConfig"/>.
+    /// </summary>
+    public static GameConfig CertainCatchConfig()
+    {
+        if (_certain != null)
+        {
+            return _certain;
+        }
+
+        var result = ConfigWith(GameConfigLoader.ProgressionFile, json => json, certainCatch: true);
+        if (!result.Succeeded)
+        {
+            throw new InvalidOperationException(string.Join("\n", result.Errors));
+        }
+
+        return _certain = result.Config;
+    }
+
+    /// <summary>The real config with a JSON edit applied to one file (and, if asked, every bite pulled out).</summary>
+    public static ConfigLoadResult ConfigWith(string file, Func<string, string> edit, bool certainCatch = false)
     {
         var texts = ConfigTexts();
+        if (certainCatch)
+        {
+            var root = Newtonsoft.Json.Linq.JObject.Parse(texts[GameConfigLoader.ProgressionFile]);
+            foreach (var tier in root["rarity"]!["tiers"]!)
+            {
+                tier["catch_success_base"] = 1.0;
+            }
+
+            root["fishing"]!["catch_success_max"] = 1.0;
+            texts[GameConfigLoader.ProgressionFile] = root.ToString();
+        }
+
         texts[file] = edit(texts[file]);
         return GameConfigLoader.LoadFromTexts(texts);
     }
@@ -57,12 +92,16 @@ internal static class TestSupport
         return path;
     }
 
-    /// <summary>A running game. By default the tutorial is skipped, so the player starts with the Starter Rod equipped.</summary>
+    /// <summary>
+    /// A running game. By default the tutorial is skipped, so the player starts with the Starter Rod
+    /// equipped, and every bite is pulled out (<see cref="CertainCatchConfig"/>); pass
+    /// <see cref="RealConfig"/> to play with the real Catch Success.
+    /// </summary>
     public static (LocalGame Game, ManualClock Clock, string SaveDir) NewGame(GameConfig config = null, string saveDir = null, ManualClock clock = null, bool skipTutorial = true)
     {
         saveDir ??= NewTempDirectory();
         clock ??= new ManualClock(StartMs);
-        var result = LocalGame.Start(config ?? RealConfig(), new JsonFilePlayerRepository(saveDir), clock, _ => { });
+        var result = LocalGame.Start(config ?? CertainCatchConfig(), new JsonFilePlayerRepository(saveDir), clock, _ => { });
         if (skipTutorial)
         {
             result.Game.Tutorial.Skip();

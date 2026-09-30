@@ -292,6 +292,19 @@ def icons():
         p.ring(42, 42, 26, 9)
         p.line([(62, 62), (86, 86)], 12)
 
+    def boat(p):  # small hull with a seat
+        p.poly([(6, 52), (94, 52), (80, 78), (20, 78)])
+        p.rrect(30, 40, 70, 48, 3)
+        p.line([(8, 88), (92, 88)], 6)
+
+    def bait(p):  # worm on a hook
+        p.ring(62, 14, 6, 6)
+        p.line([(62, 20), (62, 64)], 8)
+        p.arc(46, 64, 16, 0, 180, 8)
+        p.line([(30, 64), (30, 52)], 8)
+        pts = [(22 + i * 2, 40 + 8 * math.sin(i * 0.45)) for i in range(22)]
+        p.line(pts, 9)
+
     def compact(p):  # minimise window
         p.rrect(10, 18, 90, 82, 8, outline=True, w=7)
         p.rrect(50, 50, 82, 74, 4)
@@ -334,7 +347,7 @@ NAMES = {
     'plus': 'adicionar', 'box': 'caixa', 'tag': 'vender', 'swords': 'atacar', 'refresh': 'trocar',
     'ranking': 'ranking', 'info': 'info', 'warning': 'aviso', 'hourglass': 'ampulheta', 'level': 'nivel',
     'cart': 'comprar', 'sort': 'ordenar', 'feed': 'alimentar', 'home': 'inicio', 'wave': 'ondas',
-    'compact': 'compacto', 'search': 'buscar',
+    'compact': 'compacto', 'search': 'buscar', 'boat': 'barco', 'bait': 'isca',
 }
 
 

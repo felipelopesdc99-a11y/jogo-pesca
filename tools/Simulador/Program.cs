@@ -75,6 +75,9 @@ public static class Program
         Console.WriteLine("Simulando Mercado e Leilão...");
         WriteMarket(body, config);
 
+        Console.WriteLine("Medindo o Sucesso da Captura...");
+        WriteCatchSuccess(body, config, progression, CertainCatch(root));
+
         report.AppendLine("## Pontos de atenção");
         report.AppendLine();
         report.AppendLine("Observações automáticas sobre os números atuais. São só fatos medidos: decidir se algo muda é do");
@@ -112,6 +115,9 @@ public static class Program
         public double CoinsPerHourMap2;
         public double CatchesPerHour;
         public double ShellsPerHourMap2;
+        public double FirstRareAtHours;
+        public double EscapesPerHour;
+        public List<string> BoatsBought = new();
     }
 
     /// <summary>
@@ -122,7 +128,8 @@ public static class Program
     {
         var result = new ProgressionResult();
         var sums = new Dictionary<int, (double hours, long coins, int n)>();
-        double rodAt = 0, map2At = 0, map1Coins = 0, map1Hours = 0, map2Coins = 0, map2Hours = 0, shells2 = 0, catches = 0, totalHours = 0;
+        double rodAt = 0, map2At = 0, map1Coins = 0, map1Hours = 0, map2Coins = 0, map2Hours = 0, shells2 = 0, catches = 0, totalHours = 0, firstRare = 0, escapes = 0;
+        var boatTimes = new Dictionary<string, (double hours, int n)>();
         var buyable = config.Rods.Rods.Where(config.IsPurchasable).OrderBy(r => r.Tier).ToList();
         const double capHours = 150;
 
@@ -138,6 +145,7 @@ public static class Program
             long shellsAtMap2 = 0;
             double map2Start = -1;
             long coinsAtMap2 = 0;
+            double rareAt = -1;
 
             while (hours < capHours && game.Player.GetPlayer().FisherLevel < config.Progression.Fisher.MaxLevel)
             {
@@ -145,7 +153,11 @@ public static class Program
                 steps++;
                 hours = steps * 30 / 3600.0;
                 game.Maps.Update();
-                game.Fishing.Sync();
+                var sync = game.Fishing.Sync();
+                if (rareAt < 0 && sync.NewCatches.Any(c => c.RarityId != "common"))
+                {
+                    rareAt = hours;
+                }
 
                 if (steps % 20 == 0)
                 {
@@ -176,6 +188,19 @@ public static class Program
                         }
                     }
 
+                    // Boats only once every rod is owned: the rod opens the next map, the boat just helps.
+                    if (bought.Count == buyable.Count)
+                    {
+                        foreach (var boat in game.Gear.GetGear().Boats.Where(x => !x.Owned && x.BuyBlocker == ServiceError.None))
+                        {
+                            if (game.Gear.BuyBoat(boat.BoatId).Succeeded)
+                            {
+                                var t = boatTimes.TryGetValue(boat.Name, out var bt) ? bt : (0, 0);
+                                boatTimes[boat.Name] = (t.hours + hours, t.n + 1);
+                            }
+                        }
+                    }
+
                     var player = game.Player.GetPlayer();
                     if (map2Start < 0)
                     {
@@ -201,6 +226,8 @@ public static class Program
 
             var end = game.Player.GetPlayer();
             catches += end.TotalCatches;
+            escapes += game.Session.Save.Stats.Escapes;
+            firstRare += rareAt < 0 ? hours : rareAt;
             totalHours += hours;
             if (map2Start >= 0)
             {
@@ -225,6 +252,13 @@ public static class Program
         result.CoinsPerHourMap2 = map2Hours > 0 ? map2Coins / map2Hours : 0;
         result.ShellsPerHourMap2 = map2Hours > 0 ? shells2 / map2Hours : 0;
         result.CatchesPerHour = totalHours > 0 ? catches / totalHours : 0;
+        result.EscapesPerHour = totalHours > 0 ? escapes / totalHours : 0;
+        result.FirstRareAtHours = firstRare / Players;
+        foreach (var (name, t) in boatTimes)
+        {
+            result.BoatsBought.Add(name + " com " + Format.Decimal(t.hours / t.n, 1) + " h" + (t.n < Players ? " (" + t.n + " de " + Players + " jogadores)" : ""));
+        }
+
         return result;
     }
 
@@ -233,7 +267,7 @@ public static class Program
         r.AppendLine("## 1. Progressão do Pescador (pesca online, sem parar)");
         r.AppendLine();
         r.AppendLine("Estratégia simulada: pesca o tempo todo, vende tudo a cada 10 minutos, compra a próxima vara assim");
-        r.AppendLine("que pode e viaja para o próximo mapa assim que ele libera. Offline, cada captura leva " +
+        r.AppendLine("que pode, depois os barcos, e viaja para o próximo mapa assim que ele libera. Não usa isca. Offline, cada captura leva " +
                      Format.Duration(config.Progression.Fishing.OfflineCycleSeconds) + " em vez de " + Format.Duration(config.Progression.Fishing.OnlineCycleSeconds) + ".");
         r.AppendLine();
         r.AppendLine("| Nível | Horas de pesca online | Moedas ganhas até ali |");
@@ -251,6 +285,7 @@ public static class Program
         if (p.Levels.TryGetValue(20, out var l20)) Attention.Add("Nível 20 chega com " + Format.Decimal(l20.Hours, 1) + " h de pesca online.");
         if (p.RodBoughtAtHours > 0) r.AppendLine("- Vara comprada (em média) com " + Format.Decimal(p.RodBoughtAtHours, 1) + " h de pesca");
         if (p.Map2At > 0) r.AppendLine("- Viagem ao segundo mapa com " + Format.Decimal(p.Map2At, 1) + " h de pesca");
+        foreach (var boat in p.BoatsBought) r.AppendLine("- " + boat + " de pesca");
         r.AppendLine();
     }
 
@@ -260,7 +295,7 @@ public static class Program
     {
         r.AppendLine("## 2. Frequência de raridade e de tamanho");
         r.AppendLine();
-        r.AppendLine("200.000 sorteios reais (`CatchRules.Roll`) por combinação de mapa e vara.");
+        r.AppendLine("200.000 sorteios reais (`CatchRules.Roll`) por combinação de mapa e vara: o que morde, antes da Chance de Sucesso (seção 7).");
         r.AppendLine();
         var combos = new List<(string label, MapConfig map, RodConfig rod, int level)>();
         foreach (var map in config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel))
@@ -297,7 +332,8 @@ public static class Program
             var rare = rarities.Skip(1).Sum(x => byRarity[x.Id]) / (double)n;
             if (rare > 0 && level == 1 && rod.HasInternalLevels)
             {
-                Attention.Add("Peixes acima de comum: " + Format.Percent(rare, 2) + " das capturas em " + label + " (um a cada ~" + Format.Number((long)Math.Round(1 / rare)) + " capturas, ~" + Format.Decimal(1 / rare / 120.0, 1) + " h online).");
+                var pulled = rare * CatchRules.SuccessChance(config, rarities[1].Id, config.RodBonusesAt(rod, level).CatchSuccess + config.StarterBoat.CatchSuccessBonus);
+                Attention.Add("Peixes acima de comum: " + Format.Percent(rare, 2) + " das mordidas em " + label + "; com a Chance de Sucesso, um puxado a cada ~" + Format.Number((long)Math.Round(1 / pulled)) + " tentativas (~" + Format.Decimal(1 / pulled / 120.0, 1) + " h online, sem barco nem isca).");
             }
 
             r.AppendLine("| " + label + " | " + string.Join(" | ", rarities.Select(x => Format.Percent(byRarity[x.Id] / (double)n, 2)))
@@ -497,6 +533,116 @@ public static class Program
         if (ratios.Count > 0)
         {
             r.AppendLine("- Preço final médio: " + Format.Decimal(ratios.Average(), 2) + "× a referência (mín. " + Format.Decimal(ratios.Min(), 2) + "×, máx. " + Format.Decimal(ratios.Max(), 2) + "×)");
+        }
+
+        r.AppendLine();
+    }
+
+    // ------------------------------------------------------------------ catch success
+
+    /// <summary>The same config with every bite pulled out: the game as it was before Catch Success.</summary>
+    private static GameConfig CertainCatch(string root)
+    {
+        var dir = Path.Combine(root, "config");
+        var texts = GameConfigLoader.RequiredFiles.ToDictionary(f => f, f => File.ReadAllText(Path.Combine(dir, f)));
+        var progression = Newtonsoft.Json.Linq.JObject.Parse(texts[GameConfigLoader.ProgressionFile]);
+        foreach (var tier in progression["rarity"]!["tiers"]!)
+        {
+            tier["catch_success_base"] = 1.0;
+        }
+
+        progression["fishing"]!["catch_success_max"] = 1.0;
+        texts[GameConfigLoader.ProgressionFile] = progression.ToString();
+        return GameConfigLoader.LoadFromTexts(texts).Config;
+    }
+
+    private static void WriteCatchSuccess(StringBuilder r, GameConfig config, ProgressionResult after, GameConfig beforeConfig)
+    {
+        var before = Progression(beforeConfig);
+        r.AppendLine("## 7. Sucesso da Captura: quanto ela muda o jogo");
+        r.AppendLine();
+        r.AppendLine("A primeira coluna é o jogo de hoje se toda mordida virasse captura, com os mesmos números de `/config`;");
+        r.AppendLine("a segunda é o jogo de verdade, com a Chance de Sucesso (docs/SISTEMA_SUCESSO_PESCA.md). Mesma estratégia");
+        r.AppendLine("da seção 1. O intervalo da pesca não muda. A comparação com a versão de antes do rebalanceamento está");
+        r.AppendLine("no CHANGELOG (0.2.0-m14.19).");
+        r.AppendLine();
+        r.AppendLine("| Medida | Se toda mordida virasse captura | Com a Chance de Sucesso |");
+        r.AppendLine("|---|---:|---:|");
+        string Hours(ProgressionResult p, int level) => p.Levels.TryGetValue(level, out var m) ? Format.Decimal(m.Hours, 1) + " h" : "—";
+        foreach (var level in new[] { 5, 10, 15, 20, 30 })
+        {
+            r.AppendLine("| Nível " + level + " | " + Hours(before, level) + " | " + Hours(after, level) + " |");
+        }
+
+        r.AppendLine("| Capturas por hora | " + Format.Decimal(before.CatchesPerHour, 0) + " | " + Format.Decimal(after.CatchesPerHour, 0) + " |");
+        r.AppendLine("| Escapes por hora | 0 | " + Format.Decimal(after.EscapesPerHour, 0) + " |");
+        r.AppendLine("| Moedas por hora, primeiro mapa | " + Format.Number((long)before.CoinsPerHourMap1) + " | " + Format.Number((long)after.CoinsPerHourMap1) + " |");
+        r.AppendLine("| Moedas por hora, segundo mapa | " + Format.Number((long)before.CoinsPerHourMap2) + " | " + Format.Number((long)after.CoinsPerHourMap2) + " |");
+        r.AppendLine("| Conchas por hora, segundo mapa | " + Format.Decimal(before.ShellsPerHourMap2, 1) + " | " + Format.Decimal(after.ShellsPerHourMap2, 1) + " |");
+        r.AppendLine("| Primeiro peixe Raro | " + Format.Decimal(before.FirstRareAtHours, 1) + " h | " + Format.Decimal(after.FirstRareAtHours, 1) + " h |");
+        r.AppendLine("| Vara 1 comprada | " + Format.Decimal(before.RodBoughtAtHours, 1) + " h | " + Format.Decimal(after.RodBoughtAtHours, 1) + " h |");
+        r.AppendLine();
+        if (before.Levels.TryGetValue(10, out var b10) && after.Levels.TryGetValue(10, out var a10))
+        {
+            Attention.Add("Sucesso da Captura: " + Format.Decimal(after.EscapesPerHour, 0) + " peixes escapam por hora. Se toda mordida virasse captura, o Nível 10 chegaria com " + Format.Decimal(b10.Hours, 1) + " h em vez de " + Format.Decimal(a10.Hours, 1) + " h.");
+        }
+
+        r.AppendLine("Combinações de equipamento, 10.000 tentativas cada (`CatchSimulator`, a mesma regra do jogo). A isca fica");
+        r.AppendLine("sempre ligada; o custo dela por hora já está descontado em \"Moedas/h líquidas\".");
+        r.AppendLine();
+        r.AppendLine("| Mapa · vara · barco · isca | Taxa real | Comuns (chance) | Raros (chance) | Capturas/h | Escapes/h | XP/h | Moedas/h | Moedas/h líquidas | Conchas/h |");
+        r.AppendLine("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|");
+        var boats = config.Equipment.Boats.OrderBy(b => b.Tier).ToList();
+        var baits = config.Equipment.Baits.OrderBy(b => b.Tier).ToList();
+        var combos = new List<(MapConfig map, RodConfig rod, int level, BoatConfig boat, BaitConfig bait)>();
+        foreach (var map in config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel))
+        {
+            foreach (var rod in config.Rods.Rods.Where(x => x.Tier >= map.MinimumRodTier).OrderBy(x => x.Tier))
+            {
+                var levels = rod.HasInternalLevels ? new[] { 1, config.RodMaxLevel(rod) } : new[] { 1 };
+                foreach (var level in levels)
+                {
+                    combos.Add((map, rod, level, boats[0], null));
+                    if (level > 1 || !rod.HasInternalLevels)
+                    {
+                        combos.Add((map, rod, level, boats[Math.Min(1, boats.Count - 1)], baits.FirstOrDefault()));
+                    }
+
+                    if (level > 1)
+                    {
+                        combos.Add((map, rod, level, boats[boats.Count - 1], baits.LastOrDefault()));
+                    }
+                }
+            }
+        }
+
+        foreach (var (map, rod, level, boat, bait) in combos)
+        {
+            var sim = CatchSimulator.Run(config, map, rod, level, boat, bait, 10_000, 42);
+            string Cell(string rarity)
+            {
+                var row = sim.ByRarity.FirstOrDefault(x => x.RarityId == rarity);
+                return row == null ? "—" : Format.Number(row.Caught) + " (" + Format.Percent(row.Chance, 0) + ")";
+            }
+
+            var label = map.DisplayName + " · " + rod.DisplayName + (rod.HasInternalLevels ? " Nv." + level : "") + " · " + boat.DisplayName + " · " + (bait?.DisplayName ?? "sem isca");
+            r.AppendLine("| " + label + " | " + Format.Percent(sim.SuccessRate, 1) + " | " + Cell("common") + " | " + Cell("rare") + " | "
+                         + Format.Decimal(sim.CatchesPerHour, 0) + " | " + Format.Decimal(sim.EscapesPerHour, 0) + " | " + Format.Number((long)sim.XpPerHour) + " | "
+                         + Format.Number((long)sim.CoinsPerHour) + " | " + Format.Number((long)(sim.CoinsPerHour - sim.BaitCoinsPerHour)) + " | "
+                         + Format.Decimal(sim.ShellsPerHour - sim.BaitShellsPerHour, 1) + " |");
+        }
+
+        r.AppendLine();
+        r.AppendLine("Preço dos barcos em horas de pesca no segundo mapa (Moedas e Conchas por hora da seção 1):");
+        r.AppendLine();
+        r.AppendLine("| Barco | Bônus | Custo | Nível | Horas de pesca | Conchas |");
+        r.AppendLine("|---|---:|---:|---:|---:|---:|");
+        foreach (var boat in boats.Skip(1))
+        {
+            var hours = after.CoinsPerHourMap2 > 0 ? boat.CostCoins / after.CoinsPerHourMap2 : 0;
+            var shellHours = after.ShellsPerHourMap2 > 0 ? boat.CostShells / after.ShellsPerHourMap2 : 0;
+            r.AppendLine("| " + boat.DisplayName + " | +" + Format.Percent(boat.CatchSuccessBonus, 0) + " | " + Format.Number(boat.CostCoins) + " Moedas + " + Format.Number(boat.CostShells) + " Conchas | "
+                         + boat.UnlockFisherLevel + " | " + Format.Decimal(hours, 1) + " h | " + (boat.CostShells > 0 ? Format.Decimal(shellHours, 1) + " h" : "—") + " |");
         }
 
         r.AppendLine();

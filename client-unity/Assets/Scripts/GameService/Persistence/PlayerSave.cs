@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 9;
+        public const int CurrentVersion = 10;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -48,6 +48,18 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>The Inventory item in the only equipment slot, the Fishing Rod. 0 only before the tutorial's free Starter Rod is claimed.</summary>
         public long EquippedRodItemId { get; set; }
+
+        /// <summary>The boat in use (docs/SISTEMA_SUCESSO_PESCA.md). Null = the starter boat.</summary>
+        public string BoatId { get; set; }
+
+        /// <summary>Boats bought (the starter boat is always owned and not listed).</summary>
+        public List<string> OwnedBoatIds { get; set; } = new List<string>();
+
+        /// <summary>Charges left of each bait bought, by bait id.</summary>
+        public Dictionary<string, int> BaitCharges { get; set; } = new Dictionary<string, int>();
+
+        /// <summary>The bait in use, or null. It spends one charge per fishing attempt while it has any.</summary>
+        public string ActiveBaitId { get; set; }
 
         /// <summary>
         /// The one Cardume: six positions (index 0 = position 1), each an Aquarium fish id or 0 when
@@ -449,6 +461,9 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Catches of the Perfeição size (added in V0.2; 0 in older saves).</summary>
         public long PerfectCatches { get; set; }
+
+        /// <summary>Fish that bit and escaped (Catch Success, save version 10 on).</summary>
+        public long Escapes { get; set; }
 
         /// <summary>Catches above common rarity (counted from save version 3 on).</summary>
         public long RareCatches { get; set; }

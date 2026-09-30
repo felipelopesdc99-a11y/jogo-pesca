@@ -3,6 +3,7 @@
   "config_schema_version": 1,
   "balance_status": "PROVISÓRIO",
   "description": "Mapas jogáveis, seus pools de peixes com pesos de captura, requisitos de desbloqueio e regras de viagem. Só os Mapas 1 e 2 são jogáveis na V0.1; a escada de desbloqueio dos Mapas 3 a 10 fica registrada apenas como referência e nenhum mapa além do 2 está definido aqui.",
+  "catch_success_rebalance_note": "30/09/2026: o peso do Aruanã no Rio Selvagem foi de 5 para 10 com a Chance de Sucesso da Captura (docs/SISTEMA_SUCESSO_PESCA.md). Ele morde 1% das vezes, mas só é puxado em cerca de 40% delas, e o primeiro Raro continua chegando perto do tempo de antes.",
   "travel": {
     "duration_seconds": 30,
     "fishing_paused_during_travel": true,
@@ -154,7 +155,7 @@
         },
         {
           "species_id": "aruana",
-          "catch_weight": 5
+          "catch_weight": 10
         }
       ],
       "fish_pool_weight_total": 1000

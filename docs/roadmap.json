@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T20:44:46Z",
-  "current_milestone": "M14",
+  "updated_at": "2026-09-30T21:13:40Z",
+  "current_milestone": "M15",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -164,8 +164,16 @@
       "id": "OD-019",
       "task_id": "M14-T29",
       "title": "Aprovar as espécies e os números dos mapas 3 e 4",
-      "detail": "Proposta: Pantanal Dourado (nível 20, Vara 1): Piraputanga, Piavuçu, Mandi-amarelo, Sardinha-de-água-doce, Jejum (comuns); Jurupoca, Jurupensém, Pacu-peva, Piau-flamengo (raros); Barbado (épico). Estuário das Marés (nível 30, Vara 2): Tainha, Carapeba, Bagre-do-mar, Baiacu, Corvina (comuns); Robalo-peva, Robalo-flecha, Pescada-amarela (raros); Camurupim e Mero (épicos). Raridade Épico: roxo, venda ×5, atributos ×1,35, XP do Pescador ×6, XP como alimento ×4,5, Grande ×0,7 e Excepcional ×0,45. Vara 1 passa a pegar Épico. Vara 2: 25.000 moedas, liberada no nível 25, pega Comum, Raro e Épico, bônus maiores que a Vara 1. Chance do épico: Barbado 2% no Pantanal; Camurupim e Mero 1,5% cada no Estuário. Tudo ajustável depois no painel de Balanceamento.",
+      "detail": "Proposta: Pantanal Dourado (nível 20, Vara 1): Piraputanga, Piavuçu, Mandi-amarelo, Sardinha-de-água-doce, Jejum (comuns); Jurupoca, Jurupensém, Pacu-peva, Piau-flamengo (raros); Barbado (épico). Estuário das Marés (nível 30, Vara 2): Tainha, Carapeba, Bagre-do-mar, Baiacu, Corvina (comuns); Robalo-peva, Robalo-flecha, Pescada-amarela (raros); Camurupim e Mero (épicos). Raridade Épico: roxo, venda ×5, atributos ×1,35, XP do Pescador ×6, XP como alimento ×4,5, Grande ×0,7 e Excepcional ×0,45. Vara 1 passa a pegar Épico. Vara 2: 25.000 moedas, liberada no nível 25, pega Comum, Raro e Épico, bônus maiores que a Vara 1. Chance do épico: Barbado 2% no Pantanal; Camurupim e Mero 1,5% cada no Estuário. Tudo ajustável depois no painel de Balanceamento. Com o Sucesso da Captura (30/09): chance-base de puxar o Épico 24%; o XP e o valor das espécies novas devem seguir a escala já dobrada dos mapas 1 e 2.",
       "raised_at": "2026-09-30T17:58:27Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-020",
+      "task_id": "M15-T08",
+      "title": "Som ao peixe escapar?",
+      "detail": "A especificação do Sucesso da Captura sugere um som leve de linha escapando ou água. Em 29/09 você pediu som só ao subir de nível, no Excepcional e na espécie nova, então o escape está sem som. Quer um som curto e baixo só quando escapa um peixe Raro ou acima, para nenhum escape, ou para todos?",
+      "raised_at": "2026-09-30T21:13:40Z",
       "status": "OPEN"
     }
   ],
@@ -2165,6 +2173,124 @@
           ],
           "completion_notes": "Linha Ordenar: Mais recentes / Mais caros abaixo dos filtros (mesmos botões do Aquário); soma com filtros e busca; abre em Mais recentes. GDD_ADENDO A-087. Compila; não aberto no Unity ainda.",
           "updated_at": "2026-09-30T20:44:46Z"
+        }
+      ]
+    },
+    {
+      "id": "M15",
+      "title": "V0.2 · Sucesso da pesca e equipamentos",
+      "goal": "Pedido do proprietário em 30/09/2026 (docs/SISTEMA_SUCESSO_PESCA.md): o peixe que morde pode escapar, e Vara, Barco e Isca viram progressão real, com novos gastos de Moedas e Conchas, sem perder o ritmo de progresso.",
+      "completion_criteria": [
+        "Cada tentativa sorteia o peixe e depois se ele é puxado; escape não dá nada, online e offline.",
+        "Barcos e iscas se compram na Loja e o jogador vê a chance de puxar cada raridade.",
+        "O painel edita e simula tudo, e o simulador mostra o antes e o depois do rebalanceamento.",
+        "O proprietário testou no Play."
+      ],
+      "tasks": [
+        {
+          "id": "M15-T01",
+          "title": "Chance de Sucesso da Captura (regra)",
+          "subsystem": "server",
+          "description": "Especificação do proprietário (docs/SISTEMA_SUCESSO_PESCA.md): depois que o peixe morde, sortear se ele é puxado. Chance = chance-base da raridade + vara + barco + isca, entre 5% e 95%. Escape não dá nada. Offline com a mesma regra.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "CatchRules.Attempt (espécie → chance → puxar → tamanho, XP e Conchas só se puxou), mesmo Rng do ciclo; chance-base Comum 50% e Raro 38% em progression.json, piso e teto em fishing; eixo catch_success nas varas (Vara 1 +2% a +12%). Escape: Stats.Escapes e FishingUpdate.Escapes, nada mais. Offline tentativa por tentativa. Testes CatchSuccessTests. GDD_ADENDO A-088, TD-028.",
+          "updated_at": "2026-09-30T21:13:40Z"
+        },
+        {
+          "id": "M15-T02",
+          "title": "Barcos e iscas (dados, serviço e save)",
+          "subsystem": "server",
+          "description": "Barcos (Inicial e 1 a 5) comprados com Moedas e/ou Conchas, para sempre; iscas Simples, Melhorada e Premium que duram tentativas e gastam 1 por pescaria, também offline. Save compatível.",
+          "status": "DONE",
+          "dependencies": [
+            "M15-T01"
+          ],
+          "completion_notes": "config/equipment.json (novo arquivo obrigatório, validado); IGearService/LocalGearService: comprar e usar barco, comprar, usar e guardar isca, chance por raridade; GearRules.SpendAttempt gasta a carga dentro da tentativa. Save v10 com migração (Barco Inicial, sem isca). Primeiro gasto de Conchas. Testes de compra, bloqueios, cargas e offline. A-089, A-090.",
+          "updated_at": "2026-09-30T21:13:40Z"
+        },
+        {
+          "id": "M15-T03",
+          "title": "Loja: abas Barcos e Iscas e resumo de equipamento",
+          "subsystem": "client",
+          "description": "Mostrar ao jogador o que cada compra melhora: equipamento em uso e \"Chance de puxar peixe Comum: X%\" por raridade.",
+          "status": "DONE",
+          "dependencies": [
+            "M15-T02"
+          ],
+          "completion_notes": "ShopWindow com abas Varas, Barcos e Iscas e, à esquerda, Seu equipamento (vara, barco, isca, bônus, total) e a chance por raridade com barra. A vara mostra o bônus Sucesso da captura. Painel de pesca com a linha de chances e a isca em uso (clique abre a Loja). Ícones ico_barco e ico_isca provisórios. A-091. Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-30T21:13:40Z"
+        },
+        {
+          "id": "M15-T04",
+          "title": "Escape: animação, mensagem e avisos",
+          "subsystem": "client",
+          "description": "Feedback curto e não bloqueante quando o peixe escapa, mais forte conforme a raridade, com a mensagem aprovada \"Você ainda não é bom o suficiente.\".",
+          "status": "DONE",
+          "dependencies": [
+            "M15-T01"
+          ],
+          "completion_notes": "FishermanRig: fase Escapou (vara luta, boia afunda, sombra na água, linha afrouxa, respingo, sombra foge); Raro luta mais tempo e mais forte. Mensagem e complemento sobem por cima da boia; aviso na lista só para Raro ou acima; aviso de isca acabando; Bem-vindo de volta mostra escapes. Sem som novo (A-080; OD-020). Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-30T21:13:40Z"
+        },
+        {
+          "id": "M15-T05",
+          "title": "Painel: Sucesso da pesca e simulador",
+          "subsystem": "client",
+          "description": "No Painel de Desenvolvimento: editar chance-base, piso e teto, bônus das varas, barcos e iscas, e simular mapa + vara + barco + isca + 10.000 tentativas.",
+          "status": "DONE",
+          "dependencies": [
+            "M15-T02"
+          ],
+          "completion_notes": "Balanceamento → nova aba Sucesso da pesca (chance-base por raridade, mínimo e máximo, tabelas de barcos e iscas, simulador com tentativas, capturas, escapes, taxa real, por raridade, XP/h, Moedas/h, Conchas/h, custo da isca e Moedas líquidas; usa os números da tela, mesmo não salvos). Varas ganhou a coluna Puxar. CatchSimulator no GameService. Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-30T21:13:40Z"
+        },
+        {
+          "id": "M15-T06",
+          "title": "Rebalanceamento com comparação antes/depois",
+          "subsystem": "config",
+          "description": "Recalibrar XP, Moedas e Conchas por hora e o tempo até um Raro para que o sucesso de ~50% não dobre o tempo de progresso, sem mudar o intervalo da pesca.",
+          "status": "DONE",
+          "dependencies": [
+            "M15-T01"
+          ],
+          "completion_notes": "XP, valor e XP como alimento das espécies ×2; Conchas por peixe puxado 5% → 10%; Aruanã peso 5 → 10. Nível 10 continua em 2,1 h; Nível 30 10,1 → 8,8 h; primeiro Raro 3,8 → 3,9 h; Moedas/h no Lago Sereno 3.375 → 3.298. Simulador ganhou a seção 7 (com e sem a chance, e combinações de equipamento). A-092.",
+          "updated_at": "2026-09-30T21:13:40Z"
+        },
+        {
+          "id": "M15-T07",
+          "title": "Arte dos barcos (ASSET_PENDENTE)",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE: uma imagem por barco (Inicial e 1 a 5) para a Loja, e os ícones finais de barco e isca. Hoje a Loja usa o ícone provisório. Lista em docs/ASSETS_PENDENTES.md.",
+          "status": "TODO",
+          "dependencies": [
+            "M15-T03"
+          ],
+          "updated_at": "2026-09-30T21:13:40Z"
+        },
+        {
+          "id": "M15-T08",
+          "title": "Som ao peixe escapar?",
+          "subsystem": "client",
+          "description": "A especificação sugere um som leve de linha escapando, mas o proprietário pediu som só no nível, no Excepcional e na espécie nova (A-080). Decisão OD-020.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M15-T04"
+          ],
+          "updated_at": "2026-09-30T21:13:40Z"
+        },
+        {
+          "id": "M15-T09",
+          "title": "Testar no Unity (Play)",
+          "subsystem": "client",
+          "description": "O proprietário aperta Play e confere: escape, mensagem, Loja com barcos e iscas, linha de chances, Bem-vindo de volta e a aba Sucesso da pesca do painel. Só então o visual e a jogabilidade contam como verificados.",
+          "status": "TODO",
+          "dependencies": [
+            "M15-T03",
+            "M15-T04",
+            "M15-T05"
+          ],
+          "updated_at": "2026-09-30T21:13:40Z"
         }
       ]
     }

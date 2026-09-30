@@ -688,6 +688,42 @@ namespace FishingIdle.Game.Bootstrap
 
         public ShopView GetShop() => IsRunning ? Game.Shop.GetShop() : null;
 
+        /// <summary>Rod, boat and bait in use and the chances they give (refreshed with the player).</summary>
+        public GearView Gear { get; private set; }
+
+        public void BuyBoat(string boatId) => GearIntent(() => Game.Gear.BuyBoat(boatId), gear => GameTexts.Gear.BoughtBoat(gear.BoatName), ToastKind.Important);
+
+        public void UseBoat(string boatId) => GearIntent(() => Game.Gear.UseBoat(boatId), gear => GameTexts.Gear.UsingBoat(gear.BoatName), ToastKind.Info);
+
+        public void BuyBait(string baitId)
+        {
+            var charges = 0;
+            GearIntent(() =>
+            {
+                var result = Game.Gear.BuyBait(baitId);
+                charges = result.Succeeded ? result.Value.Baits.Find(b => b.BaitId == baitId).ChargesPerPurchase : 0;
+                return result;
+            }, gear => GameTexts.Gear.BoughtBait(gear.Baits.Find(b => b.BaitId == baitId).Name, charges), ToastKind.Info);
+        }
+
+        public void UseBait(string baitId) => GearIntent(() => Game.Gear.UseBait(baitId), gear => gear.BaitName != null ? GameTexts.Gear.UsingBait(gear.BaitName) : GameTexts.Gear.BaitPutAway, ToastKind.Info);
+
+        private void GearIntent(Func<ServiceResult<GearView>> call, Func<GearView, string> message, ToastKind kind)
+        {
+            Guard(() =>
+            {
+                var result = call();
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(message(result.Value), kind);
+                Refresh();
+            });
+        }
+
         public void TravelTo(string mapId)
         {
             Guard(() =>
@@ -896,6 +932,7 @@ namespace FishingIdle.Game.Bootstrap
             Player = Game.Player.GetPlayer();
             Status = Game.Fishing.GetStatus();
             Travel = Game.Maps.GetTravel();
+            Gear = Game.Gear.GetGear();
         }
 
         /// <summary>

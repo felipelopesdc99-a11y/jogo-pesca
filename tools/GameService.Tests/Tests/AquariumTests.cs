@@ -59,7 +59,7 @@ public sealed class AquariumTests
     [Fact]
     public void The_aquarium_never_goes_past_its_capacity_and_fishing_continues()
     {
-        var small = TestSupport.ConfigWith(GameConfigLoader.EconomyFile, j => j.Replace("\"hard_capacity\": 100", "\"hard_capacity\": 3")).Config;
+        var small = TestSupport.ConfigWith(GameConfigLoader.EconomyFile, j => j.Replace("\"hard_capacity\": 100", "\"hard_capacity\": 3"), certainCatch: true).Config;
         var (game, clock, _) = GameWithCatches(config: small);
 
         Assert.True(game.Aquarium.KeepCatches(BoxIds(game, 3)).Succeeded);

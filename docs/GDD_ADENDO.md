@@ -855,3 +855,101 @@ de tamanho da vara vale para ela como vale para o Excepcional. Tudo ajustável e
 Abaixo dos filtros da Caixa de Pesca, uma linha "Ordenar:" com **Mais recentes** (a ordem de sempre,
 a que aparece ao abrir) e **Mais caros** (o peixe que vale mais moedas primeiro, pelo mesmo valor do
 card; em empate, o mais recente primeiro). A ordem se soma aos filtros e à busca.
+
+### A-088 · Sucesso da Captura: o peixe pode escapar
+**Seção do GDD:** 8, 9, 10 · **Situação:** Decidido pelo proprietário (30/09/2026, `docs/SISTEMA_SUCESSO_PESCA.md`)
+
+Cada tentativa de pesca tem duas etapas. Primeiro o jogo sorteia o peixe que mordeu, como sempre.
+Depois sorteia se o pescador consegue puxá-lo, com a **Chance de Sucesso da Captura**:
+
+> chance = chance-base da raridade + vara + barco + isca, sempre entre 5% e 95%
+
+Chance-base: **Comum 50%**, **Raro 38%**. A do **Épico (24%)** entra quando essa raridade existir
+(mapas 3 e 4, decisão `OD-019`). Se o peixe escapa, nada acontece com o save além da contagem de
+escapes: sem peixe na Caixa, sem XP, sem Conchas, sem espécie descoberta, sem recorde. A pesca
+offline usa a mesma regra, tentativa por tentativa. O intervalo da pesca não mudou (30 s online,
+60 s offline); os textos agora falam em "tentativa" e "fisgada" em vez de "captura".
+
+O escape dura poucos segundos e nunca bloqueia: a vara luta, a boia afunda e uma sombra escura se
+mexe na água; depois a linha afrouxa, sobe um respingo curto, a sombra foge e o pescador lança de
+novo. Por cima da boia sobe **"Você ainda não é bom o suficiente."** e, menor, "Melhore sua vara,
+barco ou isca para aumentar suas chances.". A espécie que escapou não é revelada, só a raridade.
+Peixe mais raro luta mais tempo e mais forte, a mensagem ganha a cor da raridade e fica um aviso na
+lista ("Um peixe Raro escapou! Sua chance de puxar era 43%."). O escape de um Comum não gera aviso na
+lista, para não virar spam. **Sem som novo:** vale a regra do proprietário de som só no nível, no
+Excepcional/Perfeição e na espécie nova (A-080); se ele quiser um som leve de linha escapando, é a
+decisão `OD-020`. O "Bem-vindo de volta" mostra quantos peixes escaparam. O Perfil ainda não mostra
+os escapes (só ficam contados no save).
+
+### A-089 · Barcos
+**Seção do GDD:** 7, 19 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+Nova aba **Barcos** na Loja. O barco é para sempre, soma pontos na Chance de Sucesso e pode ser
+trocado por outro que o jogador já tem. Comprar já coloca em uso.
+
+| Barco | Bônus | Custo | Nível |
+|---|---:|---:|---:|
+| Barco Inicial | +0% | todo jogador tem | 1 |
+| Barco 1 | +3% | 3.000 moedas | 5 |
+| Barco 2 | +6% | 15.000 moedas | 12 |
+| Barco 3 | +9% | 45.000 moedas + 30 conchas | 20 |
+| Barco 4 | +12% | 130.000 moedas + 120 conchas | 30 |
+| Barco 5 | +15% | 350.000 moedas + 350 conchas | 40 |
+
+São as primeiras compras que gastam **Conchas**. O barco ainda não aparece na cena: cada um usa o
+ícone de barco até a arte existir (`ASSET_PENDENTE`, `M15-T07`). Números provisórios, em
+`config/equipment.json`.
+
+### A-090 · Iscas
+**Seção do GDD:** 7 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+Nova aba **Iscas** na Loja. Cada compra dá **100 tentativas**; comprar de novo soma. A isca em uso
+gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline. Só uma fica em uso;
+"Guardar" tira a isca de uso sem perder as tentativas, e "Usar" troca por outra que ainda tem
+tentativas. Quando a última tentativa acaba, a isca sai de uso sozinha e aparece o aviso "Sua Isca
+Simples acabou. Compre mais na Loja → Iscas." (também no "Bem-vindo de volta"). O jogo não troca
+sozinho para outra isca.
+
+| Isca | Bônus | Custo (100 tentativas) | Nível |
+|---|---:|---:|---:|
+| Isca Simples | +5% | 200 moedas | 1 |
+| Isca Melhorada | +10% | 1.200 moedas | 10 |
+| Isca Premium | +15% | 800 moedas + 6 conchas | 18 |
+
+### A-091 · Onde o jogador vê a chance
+**Seção do GDD:** 8 · **Situação:** Decidido na implementação (30/09/2026)
+
+- **Painel de pesca:** a segunda linha da direita (antes, o nome do mapa, que continua na barra de
+  cima) mostra a chance de cada raridade que morde ali ("Comum 50% · Raro 38%") e, com isca em uso, o
+  ícone da isca com as tentativas que faltam. Clicar abre a Loja.
+- **Loja:** à esquerda, "Seu equipamento" com a vara, o barco e a isca, o bônus de cada um e o total,
+  e "Chance de puxar o peixe" por raridade, com barra. Raridade que não morde no mapa atual aparece
+  apagada, com "não morde aqui". A vara mostra o novo bônus "Sucesso da captura" (Vara Inicial +0%,
+  Vara 1 de +2% a +12%).
+
+### A-092 · Rebalanceamento do Sucesso da Captura
+**Seção do GDD:** 17, 36 · **Situação:** Decidido na implementação (30/09/2026), números provisórios
+
+Com metade das mordidas escapando no começo, o jogo ficaria duas vezes mais lento. Para manter o
+ritmo sem mexer no intervalo de pesca:
+
+- XP do Pescador, valor de venda e XP como alimento de todas as espécies foram **dobrados**;
+- a chance de Conchas por peixe puxado foi de 5% para **10%**;
+- o Aruanã (Raro) morde duas vezes mais: peso de 5 para **10** no Rio Selvagem.
+
+Resultado medido no simulador (5 jogadores, estratégia da seção 1 do relatório):
+
+| Medida | Antes | Agora |
+|---|---:|---:|
+| Nível 10 | 2,1 h | 2,1 h |
+| Nível 20 | 4,6 h | 4,4 h |
+| Nível 30 | 10,1 h | 8,8 h |
+| Peixes na Caixa por hora | 120 | 78 (e 42 escapes) |
+| Moedas por hora, Lago Sereno | 3.375 | 3.298 |
+| Moedas por hora, Rio Selvagem | 27.182 | 37.481 |
+| Conchas por hora, Rio Selvagem | 5,6 | 7,6 |
+| Primeiro peixe Raro | 3,8 h | 3,9 h |
+
+O Rio Selvagem rende mais que antes porque o jogador simulado compra barcos. Os barcos (543 mil
+moedas e 500 conchas no total) e as iscas são o gasto novo. Detalhes em
+`docs/relatorios/SIMULACAO_BALANCEAMENTO.md`, seção 7.

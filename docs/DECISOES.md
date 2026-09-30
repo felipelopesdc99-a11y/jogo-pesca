@@ -467,3 +467,33 @@ simples: todo quadro de um animal tem o mesmo tamanho e o mesmo pivô.
 
 **Rever se.** Entrarem muitos animais novos (talvez um animal por "faixa" da tela ao mesmo tempo) ou
 se o proprietário quiser horários do dia (hoje o ritmo não depende da hora).
+
+## TD-028 — Sucesso da Captura como segunda etapa do mesmo sorteio, com barcos e iscas em `equipment.json`
+
+**Origem.** V0.2, Milestone 15 (30/09/2026): `docs/SISTEMA_SUCESSO_PESCA.md`, do proprietário.
+
+**Decisão.** `CatchRules.Attempt` faz, na ordem: espécie, chance de sucesso, sorteio de puxar e, só se
+puxou, tamanho, XP e Conchas. Usa o mesmo `Rng` do ciclo (semente do save + sessão + ciclo), então a
+mesma tentativa sempre dá o mesmo resultado, online, offline ou refeita. Expedições continuam com
+`CatchRules.Roll` (sempre acha o peixe), porque a especificação só fala da pesca. A chance-base fica
+em cada raridade (`progression.json → rarity.tiers[].catch_success_base`), o piso e o teto em
+`fishing`, o bônus da vara num novo eixo `catch_success` de `rods.json`, e barcos e iscas num arquivo
+novo, `config/equipment.json`, que entrou em `GameConfigLoader.RequiredFiles`. O save passou para a
+versão 10 (`BoatId`, `OwnedBoatIds`, `BaitCharges`, `ActiveBaitId`, `Stats.Escapes`); saves antigos
+entram com o Barco Inicial e sem isca. A isca gasta a carga em `GearRules.SpendAttempt`, dentro da
+própria tentativa, e a compra e a troca de equipamento sincronizam a pesca antes (as tentativas já
+completas usam o equipamento antigo). O novo `IGearService` (`LocalGearService`) cuida de barcos e
+iscas. `CatchSimulator` roda N tentativas de uma combinação sem save; o Painel de Desenvolvimento e
+`tools/Simulador` usam o mesmo.
+
+Nos testes, `TestSupport.NewGame()` usa por padrão o config real com 100% de sucesso
+(`CertainCatchConfig`), porque os testes de tempo, Caixa, venda e demais sistemas contam um peixe por
+ciclo. Os testes do sucesso (`CatchSuccessTests`) e o de "Nível 10 em cerca de 2 h" usam o config de
+verdade.
+
+**Por quê.** Ser a segunda etapa do mesmo sorteio mantém a regra auditável e determinística, sem
+estado novo além do equipamento. Um arquivo próprio para o equipamento deixa barcos e iscas fáceis de
+achar e editar, e prepara barcos e iscas futuros sem inchar `rods.json`.
+
+**Rever se.** Entrar a raridade Épico (chance-base 24%, `OD-019`), bônus temporários
+(`bonus_temporario_configuravel` da especificação) ou multiplicadores por mapa.

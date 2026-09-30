@@ -54,6 +54,14 @@ namespace FishingIdle.GameService.Core
         AuctionEnded,
         NoRod,
         TutorialStepMismatch,
+        BoatNotFound,
+        BoatLocked,
+        BoatAlreadyOwned,
+        BoatNotOwned,
+        BaitNotFound,
+        BaitLocked,
+        BaitNoCharges,
+        NotEnoughShells,
     }
 
     /// <summary>

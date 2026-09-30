@@ -1,0 +1,96 @@
+{
+  "config_file": "equipment.json",
+  "config_schema_version": 1,
+  "balance_status": "provisional",
+  "description": "Barcos e iscas (docs/SISTEMA_SUCESSO_PESCA.md). Os dois só aumentam a Chance de Sucesso da Captura, somando pontos percentuais à chance-base da raridade (progression.json → rarity.tiers → catch_success_base) e aos da vara (rods.json → catch_success). Todos os números são provisórios.",
+  "boats": [
+    {
+      "id": "boat_00",
+      "display_name": "Barco Inicial",
+      "tier": 0,
+      "catch_success_bonus": 0.0,
+      "cost_coins": 0,
+      "cost_shells": 0,
+      "unlock_fisher_level": 1,
+      "note": "Todo jogador já tem."
+    },
+    {
+      "id": "boat_01",
+      "display_name": "Barco 1",
+      "tier": 1,
+      "catch_success_bonus": 0.03,
+      "cost_coins": 3000,
+      "cost_shells": 0,
+      "unlock_fisher_level": 5
+    },
+    {
+      "id": "boat_02",
+      "display_name": "Barco 2",
+      "tier": 2,
+      "catch_success_bonus": 0.06,
+      "cost_coins": 15000,
+      "cost_shells": 0,
+      "unlock_fisher_level": 12
+    },
+    {
+      "id": "boat_03",
+      "display_name": "Barco 3",
+      "tier": 3,
+      "catch_success_bonus": 0.09,
+      "cost_coins": 45000,
+      "cost_shells": 30,
+      "unlock_fisher_level": 20
+    },
+    {
+      "id": "boat_04",
+      "display_name": "Barco 4",
+      "tier": 4,
+      "catch_success_bonus": 0.12,
+      "cost_coins": 130000,
+      "cost_shells": 120,
+      "unlock_fisher_level": 30
+    },
+    {
+      "id": "boat_05",
+      "display_name": "Barco 5",
+      "tier": 5,
+      "catch_success_bonus": 0.15,
+      "cost_coins": 350000,
+      "cost_shells": 350,
+      "unlock_fisher_level": 40
+    }
+  ],
+  "baits_note": "Cada compra é um pacote de cargas; cada tentativa de pesca (online ou offline) gasta 1 carga da isca em uso, pegando o peixe ou não. Quando as cargas acabam, a pesca continua sem isca.",
+  "baits": [
+    {
+      "id": "bait_01",
+      "display_name": "Isca Simples",
+      "tier": 1,
+      "catch_success_bonus": 0.05,
+      "charges": 100,
+      "cost_coins": 200,
+      "cost_shells": 0,
+      "unlock_fisher_level": 1
+    },
+    {
+      "id": "bait_02",
+      "display_name": "Isca Melhorada",
+      "tier": 2,
+      "catch_success_bonus": 0.1,
+      "charges": 100,
+      "cost_coins": 1200,
+      "cost_shells": 0,
+      "unlock_fisher_level": 10
+    },
+    {
+      "id": "bait_03",
+      "display_name": "Isca Premium",
+      "tier": 3,
+      "catch_success_bonus": 0.15,
+      "charges": 100,
+      "cost_coins": 800,
+      "cost_shells": 6,
+      "unlock_fisher_level": 18
+    }
+  ]
+}

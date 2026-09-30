@@ -5,7 +5,8 @@ bonito e coerente, mas deve ser trocada pela arte final produzida pelo propriet�
 Bíblia de Arte, seção 39). Tarefa `M14-T14` no roadmap.
 
 > **Situação em 29/09/2026:** os 32 pedidos chegaram e já estão no jogo (arte final). Ainda
-> provisórios: 27 dos 45 ícones (os que não estavam no pedido 26, mais a lupa `ico_buscar` da busca por nome), a água dos dois mapas (feita por
+> provisórios: 29 dos 47 ícones (os que não estavam no pedido 26, mais a lupa `ico_buscar` da busca por
+> nome e, desde 30/09, `ico_barco` e `ico_isca` da Loja), a água dos dois mapas (feita por
 > script, com os reflexos desenhados pelo jogo a partir das camadas) e as camadas `bg_near` antigas,
 > que só aparecem se as margens novas faltarem.
 >
@@ -145,6 +146,17 @@ está em x = −4,5, y = 3,9 (alto, sem coluna de luz na água). A cachoeira est
 | `Arte/Varas/rod_01.png` | Vara 1 | 1024×512 | Loja, Mercado |
 
 Vara na diagonal, do canto inferior esquerdo ao superior direito, com molinete visível.
+
+### Barcos (V0.2, `M15-T07`)
+
+| Arquivo | Barco | Tamanho | Onde aparece |
+|---|---|---|---|
+| `Arte/Barcos/boat_00.png` | Barco Inicial | 1024×512 | Loja → Barcos |
+| `Arte/Barcos/boat_01.png` a `boat_05.png` | Barcos 1 a 5 | 1024×512 | Loja → Barcos |
+
+Barco de lado, fundo transparente, do mais simples (canoa de madeira) ao mais completo, sem fantasia
+(Bíblia de Arte, seção 27). Enquanto o arquivo não existe, a Loja mostra o ícone de barco. O barco
+da cena continua o mesmo para todos: trocar o barco da cena pelo barco em uso é uma decisão futura.
 
 ### Expedições
 

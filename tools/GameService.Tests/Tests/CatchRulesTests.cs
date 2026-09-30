@@ -130,9 +130,10 @@ public sealed class CatchRulesTests
         var level1 = CountRare(1) / (double)draws;
         var level10 = CountRare(10) / (double)draws;
 
-        // Aruanã is 5 of 1000 weight: 0.5% at Lv.1; +22% efficiency at Lv.10 must stay near 0.6%, never 22%.
-        Assert.InRange(level1, 0.004, 0.006);
-        Assert.InRange(level10, 0.005, 0.0075);
+        // Aruanã is 10 of 1005 weight: 1% of the bites at Lv.1 (doubled with Catch Success, since a rare
+        // bite is pulled out only ~40% of the time); +22% efficiency at Lv.10 must stay near 1.2%, never 22%.
+        Assert.InRange(level1, 0.009, 0.011);
+        Assert.InRange(level10, 0.011, 0.0135);
     }
 
     [Fact]
@@ -153,7 +154,7 @@ public sealed class CatchRulesTests
         var largest = CatchRules.SalePrice(Config, tambaqui, 1100);
 
         Assert.True(smallest < middle && middle < largest);
-        Assert.Equal(120, middle); // base value at the 50th percentile
+        Assert.Equal(tambaqui.BaseSaleValueCoins, middle); // base value at the 50th percentile
     }
 
     [Fact]

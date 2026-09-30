@@ -17,16 +17,65 @@ namespace FishingIdle.GameService.Fishing
     }
 
     /// <summary>
+    /// One fishing attempt (docs/SISTEMA_SUCESSO_PESCA.md): the fish that bit, the chance of pulling
+    /// it out, and the catch when it was pulled out (null when it escaped).
+    /// </summary>
+    public sealed class CatchAttempt
+    {
+        public SpeciesConfig Species { get; internal set; }
+        public double Chance { get; internal set; }
+        public bool Caught => Catch != null;
+        public RolledCatch Catch { get; internal set; }
+    }
+
+    /// <summary>
     /// The fishing formulas: which species, which size, how much XP, how many Shells, what price.
     /// Pure functions of config + RNG, so they are easy to test and simulate.
     /// </summary>
     public static class CatchRules
     {
-        /// <summary>Rolls one catch for a map with a given rod.</summary>
+        /// <summary>Rolls one catch for a map with a given rod, always pulled out (Expeditions, bots).</summary>
         public static RolledCatch Roll(GameConfig config, MapConfig map, RodConfig rod, int rodLevel, Rng rng)
         {
             var bonuses = config.RodBonusesAt(rod, rodLevel);
             var species = RollSpecies(config, map, rod, bonuses, rng);
+            return RollCaught(config, species, rod, bonuses, rng);
+        }
+
+        /// <summary>
+        /// One fishing attempt, in the order of the design: the fish that bit (species), then the
+        /// Catch Success roll with the rod's bonus plus <paramref name="gearBonus"/> (boat + bait),
+        /// and only when it is pulled out, its size, XP and Shells.
+        /// </summary>
+        public static CatchAttempt Attempt(GameConfig config, MapConfig map, RodConfig rod, int rodLevel, double gearBonus, Rng rng)
+        {
+            var bonuses = config.RodBonusesAt(rod, rodLevel);
+            var species = RollSpecies(config, map, rod, bonuses, rng);
+            var chance = SuccessChance(config, species.Rarity, bonuses.CatchSuccess + gearBonus);
+            var attempt = new CatchAttempt { Species = species, Chance = chance };
+            if (rng.NextDouble() < chance)
+            {
+                attempt.Catch = RollCaught(config, species, rod, bonuses, rng);
+            }
+
+            return attempt;
+        }
+
+        /// <summary>
+        /// Catch Success chance = the rarity's base + equipment bonus (rod + boat + bait), kept between
+        /// the configured floor and ceiling (5% and 95%).
+        /// </summary>
+        public static double SuccessChance(GameConfig config, string rarityId, double equipmentBonus)
+        {
+            config.TryGetRarity(rarityId, out var rarity);
+            var chance = (rarity?.CatchSuccessBase ?? 1.0) + equipmentBonus;
+            var fishing = config.Fishing;
+            return Math.Max(fishing.CatchSuccessMin, Math.Min(fishing.CatchSuccessMax, chance));
+        }
+
+        /// <summary>Size, XP and Shells of a fish that was pulled out.</summary>
+        private static RolledCatch RollCaught(GameConfig config, SpeciesConfig species, RodConfig rod, RodBonusesConfig bonuses, Rng rng)
+        {
             var category = RollSizeCategory(config, bonuses, rng, species.Rarity);
 
             // Exact size: uniform inside the category's percentile band, mapped onto the species range.

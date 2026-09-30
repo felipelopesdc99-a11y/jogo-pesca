@@ -31,6 +31,7 @@ namespace FishingIdle.GameService
             Fishing = fishing;
             Maps = new LocalMapService(session, fishing);
             Shop = new LocalShopService(session, fishing);
+            Gear = new LocalGearService(session, fishing);
             Player = new LocalPlayerService(session);
             var aquarium = new LocalAquariumService(session);
             Aquarium = aquarium;
@@ -48,6 +49,7 @@ namespace FishingIdle.GameService
         public IFishingService Fishing { get; }
         public IMapService Maps { get; }
         public IShopService Shop { get; }
+        public IGearService Gear { get; }
         public IPlayerService Player { get; }
         public IAquariumService Aquarium { get; }
         public ICardumeService Cardume { get; }

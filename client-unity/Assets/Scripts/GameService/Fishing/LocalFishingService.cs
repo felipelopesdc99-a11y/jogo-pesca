@@ -361,8 +361,7 @@ namespace FishingIdle.GameService.Fishing
                 for (long k = 1; k <= cycles; k++)
                 {
                     var rng = Rng.For(Save.RngSeed, fishing.SessionIndex, fishing.CyclesProcessed + k);
-                    var rolled = CatchRules.Roll(Config, map, rod, rodLevel, rng);
-                    ApplyCatch(rolled, fromMs + k * cycleMs, update);
+                    Attempt(map, rod, rodLevel, rng, fromMs + k * cycleMs, update);
                 }
 
                 fishing.CyclesProcessed += cycles;
@@ -401,10 +400,35 @@ namespace FishingIdle.GameService.Fishing
                 var cycle = fishing.CyclesProcessed + 1;
                 var completedAt = fishing.StartedAtMs + cycle * fishing.CycleMs;
                 var rng = Rng.For(Save.RngSeed, fishing.SessionIndex, cycle);
-                var rolled = CatchRules.Roll(Config, map, rod, Save.EquippedRodItem()?.Level ?? 1, rng);
-                ApplyCatch(rolled, completedAt, update);
+                Attempt(map, rod, Save.EquippedRodItem()?.Level ?? 1, rng, completedAt, update);
                 fishing.CyclesProcessed = cycle;
             }
+        }
+
+        /// <summary>
+        /// One fishing cycle (docs/SISTEMA_SUCESSO_PESCA.md): the boat and bait bonus (the bait spends
+        /// a charge), the attempt, and either the catch or the escape. An escape gives nothing: no
+        /// fish, XP, Shells, discovery or record.
+        /// </summary>
+        private void Attempt(MapConfig map, RodConfig rod, int rodLevel, Rng rng, long atMs, FishingUpdate update)
+        {
+            var gear = Shop.GearRules.SpendAttempt(Config, Save, update);
+            var attempt = CatchRules.Attempt(Config, map, rod, rodLevel, gear, rng);
+            if (attempt.Caught)
+            {
+                ApplyCatch(attempt.Catch, atMs, update);
+                return;
+            }
+
+            Save.Stats.Escapes++;
+            Config.TryGetRarity(attempt.Species.Rarity, out var rarity);
+            update.Escapes.Add(new EscapeView
+            {
+                RarityId = attempt.Species.Rarity,
+                RarityName = rarity?.DisplayName ?? attempt.Species.Rarity,
+                Chance = attempt.Chance,
+                AtMs = atMs,
+            });
         }
 
         private void ApplyCatch(RolledCatch rolled, long caughtAtMs, FishingUpdate update, bool grantXp = true)

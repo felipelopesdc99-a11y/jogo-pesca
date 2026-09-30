@@ -111,7 +111,27 @@ namespace FishingIdle.GameService.Fishing
         public long XpGained { get; internal set; }
         public long ShellsGained { get; internal set; }
 
-        public bool HasChanges => NewCatches.Count > 0;
+        /// <summary>Fish that bit and escaped (docs/SISTEMA_SUCESSO_PESCA.md): nothing of them was kept.</summary>
+        public List<EscapeView> Escapes { get; } = new List<EscapeView>();
+
+        /// <summary>The name of the bait whose last charge was used in this update, or null.</summary>
+        public string BaitRanOut { get; internal set; }
+
+        public bool HasChanges => NewCatches.Count > 0 || Escapes.Count > 0 || BaitRanOut != null;
+    }
+
+    /// <summary>
+    /// A fish that bit and got away. Only its rarity is told (the species stays a mystery), so the
+    /// screen can show how big the fight was.
+    /// </summary>
+    public sealed class EscapeView
+    {
+        public string RarityId { get; internal set; }
+        public string RarityName { get; internal set; }
+
+        /// <summary>The chance the player had of pulling it out (0 to 1).</summary>
+        public double Chance { get; internal set; }
+        public long AtMs { get; internal set; }
     }
 
     /// <summary>What was fished while the game was closed (GDD section 10, offline fishing).</summary>

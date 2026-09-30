@@ -3,6 +3,7 @@
   "config_schema_version": 1,
   "balance_status": "PROVISÓRIO",
   "description": "Apenas dados próprios da espécie. Os pesos de captura por mapa ficam em maps.json, para que uma espécie que apareça em vários mapas não seja duplicada aqui. Os atributos base valem para nível 1 e tamanho no percentil 0,50, antes dos modificadores; raridade, tamanho e nível são aplicados por cima pelo servidor usando progression.json.",
+  "catch_success_rebalance_note": "30/09/2026: base_fisher_xp, base_sale_value_coins e base_feed_xp foram dobrados junto com a Chance de Sucesso da Captura (docs/SISTEMA_SUCESSO_PESCA.md). Com metade das mordidas escapando no começo, o Nível 10 continua chegando em cerca de 2 h. Comparação antes e depois em docs/relatorios/SIMULACAO_BALANCEAMENTO.md, seção 7.",
   "stat_reference": {
     "stats_are_for": "nível 1, tamanho no percentil 0,50, antes dos modificadores de raridade, tamanho e nível",
     "speed_note": "A Velocidade é mantida de propósito numa faixa estreita (88 a 110) para continuar sendo um eixo secundário de balanceamento."
@@ -23,9 +24,9 @@
         "defense": 5,
         "speed": 105
       },
-      "base_sale_value_coins": 8,
-      "base_feed_xp": 5,
-      "base_fisher_xp": 4
+      "base_sale_value_coins": 16,
+      "base_feed_xp": 10,
+      "base_fisher_xp": 8
     },
     {
       "id": "tilapia",
@@ -42,9 +43,9 @@
         "defense": 8,
         "speed": 98
       },
-      "base_sale_value_coins": 18,
-      "base_feed_xp": 9,
-      "base_fisher_xp": 6
+      "base_sale_value_coins": 36,
+      "base_feed_xp": 18,
+      "base_fisher_xp": 12
     },
     {
       "id": "piau",
@@ -61,9 +62,9 @@
         "defense": 7,
         "speed": 102
       },
-      "base_sale_value_coins": 22,
-      "base_feed_xp": 11,
-      "base_fisher_xp": 7
+      "base_sale_value_coins": 44,
+      "base_feed_xp": 22,
+      "base_fisher_xp": 14
     },
     {
       "id": "cascudo",
@@ -80,9 +81,9 @@
         "defense": 14,
         "speed": 88
       },
-      "base_sale_value_coins": 26,
-      "base_feed_xp": 13,
-      "base_fisher_xp": 8
+      "base_sale_value_coins": 52,
+      "base_feed_xp": 26,
+      "base_fisher_xp": 16
     },
     {
       "id": "curimbata",
@@ -99,9 +100,9 @@
         "defense": 10,
         "speed": 95
       },
-      "base_sale_value_coins": 30,
-      "base_feed_xp": 15,
-      "base_fisher_xp": 9
+      "base_sale_value_coins": 60,
+      "base_feed_xp": 30,
+      "base_fisher_xp": 18
     },
     {
       "id": "traira",
@@ -118,9 +119,9 @@
         "defense": 8,
         "speed": 100
       },
-      "base_sale_value_coins": 38,
-      "base_feed_xp": 18,
-      "base_fisher_xp": 10
+      "base_sale_value_coins": 76,
+      "base_feed_xp": 36,
+      "base_fisher_xp": 20
     },
     {
       "id": "pacu",
@@ -137,9 +138,9 @@
         "defense": 12,
         "speed": 94
       },
-      "base_sale_value_coins": 45,
-      "base_feed_xp": 21,
-      "base_fisher_xp": 12
+      "base_sale_value_coins": 90,
+      "base_feed_xp": 42,
+      "base_fisher_xp": 24
     },
     {
       "id": "matrinxa",
@@ -156,9 +157,9 @@
         "defense": 10,
         "speed": 101
       },
-      "base_sale_value_coins": 60,
-      "base_feed_xp": 26,
-      "base_fisher_xp": 14
+      "base_sale_value_coins": 120,
+      "base_feed_xp": 52,
+      "base_fisher_xp": 28
     },
     {
       "id": "carpa",
@@ -175,9 +176,9 @@
         "defense": 15,
         "speed": 90
       },
-      "base_sale_value_coins": 75,
-      "base_feed_xp": 32,
-      "base_fisher_xp": 16
+      "base_sale_value_coins": 150,
+      "base_feed_xp": 64,
+      "base_fisher_xp": 32
     },
     {
       "id": "tambaqui",
@@ -194,9 +195,9 @@
         "defense": 16,
         "speed": 92
       },
-      "base_sale_value_coins": 120,
-      "base_feed_xp": 45,
-      "base_fisher_xp": 22
+      "base_sale_value_coins": 240,
+      "base_feed_xp": 90,
+      "base_fisher_xp": 44
     },
     {
       "id": "piranha",
@@ -213,9 +214,9 @@
         "defense": 8,
         "speed": 108
       },
-      "base_sale_value_coins": 90,
-      "base_feed_xp": 38,
-      "base_fisher_xp": 20
+      "base_sale_value_coins": 180,
+      "base_feed_xp": 76,
+      "base_fisher_xp": 40
     },
     {
       "id": "piracanjuba",
@@ -232,9 +233,9 @@
         "defense": 12,
         "speed": 103
       },
-      "base_sale_value_coins": 120,
-      "base_feed_xp": 46,
-      "base_fisher_xp": 24
+      "base_sale_value_coins": 240,
+      "base_feed_xp": 92,
+      "base_fisher_xp": 48
     },
     {
       "id": "peixe_cachorra",
@@ -251,9 +252,9 @@
         "defense": 10,
         "speed": 106
       },
-      "base_sale_value_coins": 150,
-      "base_feed_xp": 55,
-      "base_fisher_xp": 27
+      "base_sale_value_coins": 300,
+      "base_feed_xp": 110,
+      "base_fisher_xp": 54
     },
     {
       "id": "tucunare",
@@ -270,9 +271,9 @@
         "defense": 13,
         "speed": 104
       },
-      "base_sale_value_coins": 190,
-      "base_feed_xp": 68,
-      "base_fisher_xp": 31
+      "base_sale_value_coins": 380,
+      "base_feed_xp": 136,
+      "base_fisher_xp": 62
     },
     {
       "id": "cachara",
@@ -289,9 +290,9 @@
         "defense": 17,
         "speed": 97
       },
-      "base_sale_value_coins": 230,
-      "base_feed_xp": 80,
-      "base_fisher_xp": 35
+      "base_sale_value_coins": 460,
+      "base_feed_xp": 160,
+      "base_fisher_xp": 70
     },
     {
       "id": "dourado",
@@ -308,9 +309,9 @@
         "defense": 15,
         "speed": 107
       },
-      "base_sale_value_coins": 300,
-      "base_feed_xp": 100,
-      "base_fisher_xp": 40
+      "base_sale_value_coins": 600,
+      "base_feed_xp": 200,
+      "base_fisher_xp": 80
     },
     {
       "id": "pintado",
@@ -327,9 +328,9 @@
         "defense": 20,
         "speed": 95
       },
-      "base_sale_value_coins": 380,
-      "base_feed_xp": 125,
-      "base_fisher_xp": 46
+      "base_sale_value_coins": 760,
+      "base_feed_xp": 250,
+      "base_fisher_xp": 92
     },
     {
       "id": "jau",
@@ -346,9 +347,9 @@
         "defense": 24,
         "speed": 88
       },
-      "base_sale_value_coins": 520,
-      "base_feed_xp": 160,
-      "base_fisher_xp": 54
+      "base_sale_value_coins": 1040,
+      "base_feed_xp": 320,
+      "base_fisher_xp": 108
     },
     {
       "id": "pirarucu",
@@ -365,9 +366,9 @@
         "defense": 22,
         "speed": 90
       },
-      "base_sale_value_coins": 700,
-      "base_feed_xp": 210,
-      "base_fisher_xp": 64
+      "base_sale_value_coins": 1400,
+      "base_feed_xp": 420,
+      "base_fisher_xp": 128
     },
     {
       "id": "aruana",
@@ -384,9 +385,9 @@
         "defense": 20,
         "speed": 110
       },
-      "base_sale_value_coins": 1800,
-      "base_feed_xp": 420,
-      "base_fisher_xp": 150
+      "base_sale_value_coins": 3600,
+      "base_feed_xp": 840,
+      "base_fisher_xp": 300
     }
   ]
 }

@@ -538,6 +538,7 @@
       {
         "id": "common",
         "display_name": "Comum",
+        "catch_success_base": 0.5,
         "stat_multiplier": 1.0,
         "fisher_xp_multiplier": 1.0,
         "feed_xp_multiplier": 1.0,
@@ -546,6 +547,7 @@
       {
         "id": "rare",
         "display_name": "Raro",
+        "catch_success_base": 0.38,
         "stat_multiplier": 1.15,
         "fisher_xp_multiplier": 2.5,
         "feed_xp_multiplier": 2.0,
@@ -576,6 +578,9 @@
     "online_cycle_seconds": 30,
     "offline_cycle_seconds": 60,
     "offline_accumulation_cap_hours": 24,
-    "offline_note": "Depois do limite, nenhuma captura offline a mais se acumula até o jogador voltar."
+    "offline_note": "Depois do limite, nenhuma captura offline a mais se acumula até o jogador voltar.",
+    "catch_success_min": 0.05,
+    "catch_success_max": 0.95,
+    "catch_success_note": "Chance de Sucesso da Captura = chance-base da raridade (rarity.tiers → catch_success_base) + vara + barco + isca, limitada entre catch_success_min e catch_success_max. Se o peixe escapa, nada entra na Caixa: sem XP, sem Conchas, sem descoberta, sem recorde. A chance-base do Épico (24%, docs/SISTEMA_SUCESSO_PESCA.md) entra quando essa raridade existir."
   }
 }
