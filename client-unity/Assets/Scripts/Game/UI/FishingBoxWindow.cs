@@ -37,6 +37,7 @@ namespace FishingIdle.Game.UI
         private string _sizeFilter;
         private bool _review;
         private string _search = string.Empty;
+        private bool _byPrice;
         private Vector2 _scroll;
         private bool _dirty = true;
         private SalePreview _pendingConfirmation;
@@ -58,6 +59,7 @@ namespace FishingIdle.Game.UI
             _sizeFilter = null;
             _review = false;
             _search = string.Empty;
+            _byPrice = false;
         }
 
         public void Close()
@@ -128,8 +130,29 @@ namespace FishingIdle.Game.UI
                 FiltersChanged();
             }
 
+            // Order: newest first (as the box fills) or the most valuable first.
+            var sortY = sizeY + FilterHeight + 10f;
+            skin.DrawIcon(new Rect(left, sortY + 7f, 18, 18), Icons.Sort, UiSkin.Muted);
+            var sortLabel = new GUIContent(GameTexts.Box.SortLabel);
+            var slw = skin.SmallMuted.CalcSize(sortLabel).x;
+            GUI.Label(new Rect(left + 24f, sortY + 7f, slw + 4f, 20f), sortLabel, skin.SmallMuted);
+            var sx = left + 24f + slw + 12f;
+            foreach (var option in new[] { false, true })
+            {
+                var content = new GUIContent(option ? GameTexts.Box.SortPrice : GameTexts.Box.SortNewest);
+                var sw = skin.Chip.CalcSize(content).x + 8f;
+                if (GUI.Button(new Rect(sx, sortY, sw, FilterHeight), content, _byPrice == option ? skin.ChipActive : skin.Chip) && _byPrice != option)
+                {
+                    _byPrice = option;
+                    ApplyFilter();
+                    _scroll = Vector2.zero;
+                }
+
+                sx += sw + 8f;
+            }
+
             // Grid
-            var gridTop = sizeY + FilterHeight + 16f - panel.y;
+            var gridTop = sortY + FilterHeight + 16f - panel.y;
             var gridRect = new Rect(panel.x + 20, panel.y + gridTop, panel.width - 40, panel.height - gridTop - 96);
             DrawGrid(skin, gridRect);
 
@@ -425,6 +448,12 @@ namespace FishingIdle.Game.UI
                 {
                     query = query.Where(c => NameSearch.Matches(c.SpeciesName, _search));
                 }
+            }
+
+            if (_byPrice)
+            {
+                // Most valuable first: the same price the card shows; newest first among equal prices.
+                query = query.OrderByDescending(c => c.SalePriceCoins).ThenByDescending(c => c.CatchId);
             }
 
             // The scroll position is kept: new catches arriving must not throw the player back to the top.

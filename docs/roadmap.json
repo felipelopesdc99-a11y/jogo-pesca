@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T20:42:59Z",
+  "updated_at": "2026-09-30T20:44:46Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -2153,6 +2153,18 @@
           ],
           "completion_notes": "Categoria perfect em progression.json (peso 0,01 contra 0,99 do Excepcional, percentil 99,8 a 100, stat_multiplier 1,05, special), aplicada nos atributos (FishRules.Stats), no bônus de tamanho da vara, na proteção de venda e no alimento valioso. Selo azul-diamante, aviso com som, celebração e contador no Perfil. Save antigo continua valendo (contador novo começa em 0). 2 testes novos. GDD_ADENDO A-086. Compila; não aberto no Unity ainda.",
           "updated_at": "2026-09-30T20:42:59Z"
+        },
+        {
+          "id": "M14-T32",
+          "title": "Caixa de Pesca: ordenar pelos mais caros",
+          "subsystem": "client",
+          "description": "A pedido do proprietário, aprovado pela prévia: ordenar os peixes da Caixa de Pesca pelo mais caro.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T26"
+          ],
+          "completion_notes": "Linha Ordenar: Mais recentes / Mais caros abaixo dos filtros (mesmos botões do Aquário); soma com filtros e busca; abre em Mais recentes. GDD_ADENDO A-087. Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-30T20:44:46Z"
         }
       ]
     }

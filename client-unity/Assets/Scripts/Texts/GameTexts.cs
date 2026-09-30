@@ -88,6 +88,9 @@ namespace FishingIdle.Texts
             public const string SizeLabel = "Tamanho";
             public const string AllRarities = "Todas";
             public const string AllSizes = "Todos";
+            public const string SortLabel = "Ordenar:";
+            public const string SortNewest = "Mais recentes";
+            public const string SortPrice = "Mais caros";
 
             public static string Count(int count) => count == 1 ? "1 peixe" : count + " peixes";
             public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : count + " selecionados") + " · " + coins + " moedas";

@@ -848,3 +848,10 @@ aviso com som, celebração própria ("Perfeição!"), pede confirmação na ven
 alimento valioso e ganha um filtro na Caixa de Pesca. O Perfil conta as capturas Perfeição. O bônus
 de tamanho da vara vale para ela como vale para o Excepcional. Tudo ajustável em
 `config/progression.json` (`draw_weight`, `stat_multiplier`).
+
+### A-087 · Ordenar a Caixa de Pesca pelos mais caros
+**Seção do GDD:** 11 · **Situação:** Decidido pelo proprietário (30/09/2026, aprovado pela prévia)
+
+Abaixo dos filtros da Caixa de Pesca, uma linha "Ordenar:" com **Mais recentes** (a ordem de sempre,
+a que aparece ao abrir) e **Mais caros** (o peixe que vale mais moedas primeiro, pelo mesmo valor do
+card; em empate, o mais recente primeiro). A ordem se soma aos filtros e à busca.
