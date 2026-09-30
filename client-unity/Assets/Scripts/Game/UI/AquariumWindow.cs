@@ -36,6 +36,7 @@ namespace FishingIdle.Game.UI
         // Feeding
         private bool _feeding;
         private bool _feedFromAquarium;
+        private string _search = string.Empty;
         private readonly HashSet<long> _foodBox = new HashSet<long>();
         private readonly HashSet<long> _foodFish = new HashSet<long>();
         private IReadOnlyList<CatchView> _box = new List<CatchView>();
@@ -61,6 +62,7 @@ namespace FishingIdle.Game.UI
         {
             IsOpen = true;
             _dirty = true;
+            _search = string.Empty;
         }
 
         /// <summary>Closes the innermost thing first: a dialog, then feeding, then the window.</summary>
@@ -100,6 +102,15 @@ namespace FishingIdle.Game.UI
                     GameTexts.Aquarium.Count(_aquarium.Count, _aquarium.Capacity), Icons.Aquarium))
             {
                 Close();
+            }
+
+            // Search by name, next to Fechar (the same place in the Fishing Box).
+            var search = NameSearch.Field(skin, new Rect(panel.xMax - 156 - 16 - 300, panel.y + 24, 300, 38), _search, "busca_aquario");
+            if (search != _search)
+            {
+                _search = search;
+                _scroll = Vector2.zero;
+                _feedScroll = Vector2.zero;
             }
 
             var detailWidth = 420f;
@@ -157,7 +168,14 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            DrawGrid(grid, _aquarium.Fish, ref _scroll, (rect, fish) =>
+            var shown = _aquarium.Fish.Where(f => NameSearch.Matches(f.SpeciesName, _search)).ToList();
+            if (shown.Count == 0)
+            {
+                GUI.Label(new Rect(grid.x, grid.y + grid.height / 2f - 30, grid.width, 60), GameTexts.Search.NoMatch, skin.Center);
+                return;
+            }
+
+            DrawGrid(grid, shown, ref _scroll, (rect, fish) =>
             {
                 var clicked = FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
                     Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName, (float)fish.SizePercentile,
@@ -320,7 +338,7 @@ namespace FishingIdle.Game.UI
             var grid = new Rect(area.x - 4, area.y + 118, area.width + 8, area.height - 118);
             if (_feedFromAquarium)
             {
-                DrawGrid(grid, others, ref _feedScroll, (rect, fish) =>
+                DrawGrid(grid, others.Where(f => NameSearch.Matches(f.SpeciesName, _search)).ToList(), ref _feedScroll, (rect, fish) =>
                 {
                     if (FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
                         GameTexts.Player.LevelShort + " " + fish.Level + " · " + Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName, (float)fish.SizePercentile,
@@ -333,7 +351,7 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                DrawGrid(grid, _box, ref _feedScroll, (rect, c) =>
+                DrawGrid(grid, _box.Where(c => NameSearch.Matches(c.SpeciesName, _search)).ToList(), ref _feedScroll, (rect, c) =>
                 {
                     if (FishCard(skin, rect, c.SpeciesId, c.SpeciesName,
                         Format.SizeCm(c.SizeCm) + " · " + c.SizeCategoryName, (float)c.SizePercentile,

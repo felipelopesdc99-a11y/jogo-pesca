@@ -251,7 +251,8 @@ Regras:
     tempos de aviso, de celebração, do fade das janelas e do contador de moedas. Nenhuma cor fica
     espalhada nas telas: elas usam `UiSkin` (que lê o tema), `UiSkin.RarityColor(id)` e
     `UiSkin.SizeColor(id)`; uma linha "48,6 cm · Grande · Nv. 3" usa `UiSkin.SizeLine`, que escreve o
-    tamanho na cor dele onde quer que ele esteja. Filtros coloridos usam `UiSkin.ColorChip` (ponto na cor; fundo e borda
+    tamanho na cor dele onde quer que ele esteja. A busca pelo nome (`UI/NameSearch`: campo com lupa e ✕;
+    `NameSearch.Matches` ignora maiúsculas e acentos) filtra só o que é mostrado. Filtros coloridos usam `UiSkin.ColorChip` (ponto na cor; fundo e borda
     na cor quando escolhido).
   - **Arte trocável** (`Visual/ArtAssets`): toda imagem é um arquivo em `Resources/Arte`, carregado
     pelo nome (`ArtAssets.Texture("Peixes/fish_lambari_master")`, `ArtAssets.Sprite(caminho, largura em

@@ -36,6 +36,7 @@ namespace FishingIdle.Game.UI
         private string _rarityFilter;
         private string _sizeFilter;
         private bool _review;
+        private string _search = string.Empty;
         private Vector2 _scroll;
         private bool _dirty = true;
         private SalePreview _pendingConfirmation;
@@ -56,6 +57,7 @@ namespace FishingIdle.Game.UI
             _rarityFilter = null;
             _sizeFilter = null;
             _review = false;
+            _search = string.Empty;
         }
 
         public void Close()
@@ -88,6 +90,14 @@ namespace FishingIdle.Game.UI
             if (WindowFrame.Header(skin, panel, GameTexts.Box.Title, GameTexts.Box.Count(_catches.Count), Icons.Box))
             {
                 Close();
+            }
+
+            // Search by name, next to Fechar (the same place in the Aquarium).
+            var search = NameSearch.Field(skin, new Rect(panel.xMax - 156 - 16 - 300, panel.y + 24, 300, 38), _search, "busca_caixa");
+            if (search != _search)
+            {
+                _search = search;
+                FiltersChanged();
             }
 
             // Filters: rarity and size are two separate groups, side by side when they fit.
@@ -138,7 +148,7 @@ namespace FishingIdle.Game.UI
             if (_visible.Count == 0)
             {
                 GUI.Label(new Rect(area.x, area.y + area.height / 2f - 20, area.width, 40),
-                    _catches.Count == 0 ? GameTexts.Box.Empty : GameTexts.Box.EmptyFilter, skin.Center);
+                    _catches.Count == 0 ? GameTexts.Box.Empty : !string.IsNullOrWhiteSpace(_search) ? GameTexts.Search.NoMatch : GameTexts.Box.EmptyFilter, skin.Center);
                 return;
             }
 
@@ -409,6 +419,11 @@ namespace FishingIdle.Game.UI
                 if (_sizeFilter != null)
                 {
                     query = query.Where(c => c.SizeCategoryId == _sizeFilter);
+                }
+
+                if (!string.IsNullOrWhiteSpace(_search))
+                {
+                    query = query.Where(c => NameSearch.Matches(c.SpeciesName, _search));
                 }
             }
 

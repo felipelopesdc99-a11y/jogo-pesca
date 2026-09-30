@@ -806,3 +806,17 @@ Adulto. A mudança é pequena de propósito. Com os valores atuais (`progression
 O bônus de qualidade de tamanho da vara continua valendo por cima (ele multiplica Grande e
 Excepcional, e a raridade multiplica de novo). Raridades novas, quando entrarem, ganham os seus
 próprios multiplicadores, cada vez menores.
+
+### A-084 · Busca pelo nome do peixe
+**Seção do GDD:** 11, 12, 30 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+A Caixa de Pesca, o Aquário e o Mercado têm um campo "Buscar peixe pelo nome", com uma lupa:
+
+- **Caixa de Pesca e Aquário:** no alto da janela, ao lado de "Fechar". Na Caixa, a busca se soma
+  aos filtros de raridade e tamanho; no Aquário, vale para a lista e para a escolha de alimento.
+- **Mercado:** na aba Comprar, é o primeiro filtro da coluna ("Nome do peixe"); na aba Vender, fica
+  no alto, à direita.
+
+Basta digitar parte do nome, sem se preocupar com maiúsculas ou acentos ("tilapia" acha "Tilápia",
+"dour" acha "Dourado"). O ✕ limpa a busca. Ao abrir a janela de novo, a busca começa vazia. É só um
+jeito de achar o peixe na tela: não muda nenhuma regra.

@@ -288,6 +288,10 @@ def icons():
             pts = [(8 + i * 2, y + 7 * math.sin(i * 0.33)) for i in range(43)]
             p.line(pts, 7)
 
+    def search(p):  # magnifier
+        p.ring(42, 42, 26, 9)
+        p.line([(62, 62), (86, 86)], 12)
+
     def compact(p):  # minimise window
         p.rrect(10, 18, 90, 82, 8, outline=True, w=7)
         p.rrect(50, 50, 82, 74, 4)
@@ -330,7 +334,7 @@ NAMES = {
     'plus': 'adicionar', 'box': 'caixa', 'tag': 'vender', 'swords': 'atacar', 'refresh': 'trocar',
     'ranking': 'ranking', 'info': 'info', 'warning': 'aviso', 'hourglass': 'ampulheta', 'level': 'nivel',
     'cart': 'comprar', 'sort': 'ordenar', 'feed': 'alimentar', 'home': 'inicio', 'wave': 'ondas',
-    'compact': 'compacto',
+    'compact': 'compacto', 'search': 'buscar',
 }
 
 

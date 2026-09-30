@@ -94,6 +94,15 @@ namespace FishingIdle.Texts
             public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : count + " peixes vendidos") + " por " + coins + " moedas.";
         }
 
+        // ------------------------------------------------------------------ Search by fish name (addendum A-084)
+
+        public static class Search
+        {
+            public const string Placeholder = "Buscar peixe pelo nome";
+            public const string Label = "Nome do peixe";
+            public const string NoMatch = "Nenhum peixe com esse nome.";
+        }
+
         // ------------------------------------------------------------------ Aquarium (GDD sections 12, 13, 22)
 
         public static class Aquarium

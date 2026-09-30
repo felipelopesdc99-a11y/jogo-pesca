@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T01:51:00Z",
+  "updated_at": "2026-09-30T01:54:30Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -2069,6 +2069,18 @@
           "dependencies": [],
           "completion_notes": "size_weight_multipliers por raridade em progression.json (Raro: Grande × 0,85, Excepcional × 0,7), aplicados no sorteio de tamanho junto com o bônus da vara e checados pelo validador. Raro fica Pequeno 20,7%, Adulto 62,0%, Grande 16,7%, Excepcional 0,72%; Comum não muda. Teste novo; relatório de simulação atualizado. GDD_ADENDO A-083.",
           "updated_at": "2026-09-30T01:51:00Z"
+        },
+        {
+          "id": "M14-T26",
+          "title": "Busca pelo nome do peixe",
+          "subsystem": "client",
+          "description": "A pedido do proprietário: um lugar para escrever o nome do peixe na Caixa de Pesca, no Mercado e no Aquário.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T22"
+          ],
+          "completion_notes": "Campo Buscar peixe pelo nome (UI/NameSearch, ícone novo ico_buscar) na Caixa de Pesca e no Aquário (ao lado de Fechar; no Aquário também na escolha de alimento) e no Mercado (primeiro filtro de Comprar e no alto de Vender). Ignora maiúsculas e acentos; soma com os outros filtros. GDD_ADENDO A-084. Compila; não aberto no Unity ainda.",
+          "updated_at": "2026-09-30T01:54:30Z"
         }
       ]
     }

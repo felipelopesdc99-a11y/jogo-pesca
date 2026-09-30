@@ -5,7 +5,7 @@ bonito e coerente, mas deve ser trocada pela arte final produzida pelo propriet�
 Bíblia de Arte, seção 39). Tarefa `M14-T14` no roadmap.
 
 > **Situação em 29/09/2026:** os 32 pedidos chegaram e já estão no jogo (arte final). Ainda
-> provisórios: 26 dos 44 ícones (os que não estavam no pedido 26), a água dos dois mapas (feita por
+> provisórios: 27 dos 45 ícones (os que não estavam no pedido 26, mais a lupa `ico_buscar` da busca por nome), a água dos dois mapas (feita por
 > script, com os reflexos desenhados pelo jogo a partir das camadas) e as camadas `bg_near` antigas,
 > que só aparecem se as margens novas faltarem.
 >
@@ -92,7 +92,7 @@ ajustados pelo `tema_visual.json`; não precisam de arquivo.
 
 ### Ícones
 
-44 arquivos em `Arte/Icones/ico_<nome>.png`, 96×96, **brancos sobre transparente** (o jogo pinta na
+45 arquivos em `Arte/Icones/ico_<nome>.png`, 96×96, **brancos sobre transparente** (o jogo pinta na
 cor certa). Exceções coloridas: `ico_moeda.png` e `ico_concha.png`. Um traço só, cantos redondos.
 Gerados por `tools/Arte/gerar_icones.py`; a lista completa de nomes está no script.
 
