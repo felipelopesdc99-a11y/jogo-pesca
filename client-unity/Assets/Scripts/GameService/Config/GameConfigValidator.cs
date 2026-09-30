@@ -104,6 +104,28 @@ namespace FishingIdle.GameService.Config
                 {
                     errors.Add(V.WeightsSumToZero(GameConfigLoader.ProgressionFile, "size.categories"));
                 }
+
+                // Per-rarity size multipliers must name real size categories and never be negative.
+                foreach (var tier in progression.Rarity?.Tiers ?? new List<RarityTierConfig>())
+                {
+                    if (tier.SizeWeightMultipliers == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var pair in tier.SizeWeightMultipliers)
+                    {
+                        if (!categoryIds.Contains(pair.Key))
+                        {
+                            errors.Add(V.UnknownSizeInRarity(tier.Id, pair.Key));
+                        }
+
+                        if (pair.Value < 0)
+                        {
+                            errors.Add(V.NegativeValue(GameConfigLoader.ProgressionFile, "rarity " + tier.Id + " size_weight_multipliers." + pair.Key));
+                        }
+                    }
+                }
             }
 
             if (progression.Size?.SaleValueInfluence == null)

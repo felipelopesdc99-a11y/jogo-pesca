@@ -789,3 +789,20 @@ encontrado, com o card oficial em destaque. Enquanto o relatório está aberto, 
 sem poder ser usada. Ao clicar em "Ótimo!", o relatório some e não volta; se o jogador fechar a aba
 sem clicar, ele continua lá na próxima vez (também depois de fechar o jogo). As moedas e o peixe já
 estão com o jogador desde a volta: o relatório só mostra.
+
+### A-083 · Peixes mais raros vêm grandes um pouco menos
+**Seção do GDD:** 36 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+Muda o sorteio de tamanho da seção 36, que era igual para toda raridade: quanto mais rara a raridade
+do peixe, um pouco menor a chance de ele vir Grande ou Excepcional, e maior a de vir Pequeno ou
+Adulto. A mudança é pequena de propósito. Com os valores atuais (`progression.json`,
+`size_weight_multipliers` de cada raridade):
+
+| Raridade | Pequeno | Adulto | Grande | Excepcional |
+|---|---|---|---|---|
+| Comum | 20% | 60% | 19% | 1% |
+| Raro | 20,7% | 62,0% | 16,7% | 0,72% |
+
+O bônus de qualidade de tamanho da vara continua valendo por cima (ele multiplica Grande e
+Excepcional, e a raridade multiplica de novo). Raridades novas, quando entrarem, ganham os seus
+próprios multiplicadores, cada vez menores.

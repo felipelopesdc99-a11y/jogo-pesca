@@ -31,6 +31,33 @@ public sealed class CatchRulesTests
     }
 
     [Fact]
+    public void Rare_fish_come_large_or_exceptional_a_little_less_often()
+    {
+        static Dictionary<string, double> Shares(string rarity)
+        {
+            var rng = new Rng(777);
+            var counts = new Dictionary<string, int>();
+            const int draws = 200_000;
+            for (var i = 0; i < draws; i++)
+            {
+                var id = CatchRules.RollSizeCategory(Config, new RodBonusesConfig(), rng, rarity).Id;
+                counts[id] = counts.GetValueOrDefault(id) + 1;
+            }
+
+            return counts.ToDictionary(p => p.Key, p => p.Value / (double)draws);
+        }
+
+        var common = Shares("common");
+        var rare = Shares("rare");
+
+        // Common keeps 20/60/19/1; Rare: large × 0.85 and exceptional × 0.7 (progression.json).
+        Assert.InRange(common["large"], 0.18, 0.20);
+        Assert.InRange(rare["large"], 0.158, 0.176);
+        Assert.InRange(rare["exceptional"], 0.0055, 0.009);
+        Assert.True(rare["small"] + rare["adult"] > common["small"] + common["adult"]);
+    }
+
+    [Fact]
     public void Every_catch_on_map_1_comes_from_map_1_with_a_size_inside_its_range()
     {
         var map = Map("map_01");

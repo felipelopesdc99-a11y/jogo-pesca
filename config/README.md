@@ -34,6 +34,10 @@ ao apertar Play e, se algo estiver errado, mostra a lista de problemas na tela.
 - **Os atributos base valem para nível 1, tamanho no percentil 0,50, antes dos modificadores de
   raridade, tamanho e nível.** O servidor aplica esses modificadores usando o `progression.json`;
   ele nunca grava atributos derivados de forma redundante.
+- **Tamanho por raridade:** cada raridade pode ter `size_weight_multipliers` (em
+  `progression.json → rarity.tiers`), que multiplica o `draw_weight` de cada categoria de tamanho
+  para os peixes dessa raridade. O que não estiver listado fica 1. Hoje o Raro tem Grande × 0,85 e
+  Excepcional × 0,7 (GDD_ADENDO A-083). Campo opcional: arquivos sem ele continuam valendo.
 - Todo arquivo carrega `config_schema_version`. Aumente-o quando o *formato* do arquivo mudar, não
   quando um número mudar.
 

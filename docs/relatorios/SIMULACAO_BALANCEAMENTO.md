@@ -4,7 +4,7 @@ Gerado por `./ops/scripts/simular.sh` (ferramenta em `tools/Simulador`). Ele jog
 do jogo com um relógio simulado e mede os números atuais de `/config`. Não muda nenhum valor: serve
 para decidir o balanceamento com dados. Rode de novo depois de editar o balanceamento.
 
-- Versão do balanceamento: `07a87985e2`
+- Versão do balanceamento: `b8c744fbf3`
 - Jogadores simulados por medição: 5 (a tabela mostra a média)
 
 ## Pontos de atenção
@@ -15,7 +15,7 @@ proprietário (o balanceamento ainda não foi feito de propósito).
 - Nível 10 (libera o segundo mapa) chega com 2,1 h de pesca online (4,1 h se fosse só offline).
 - Nível 20 chega com 4,6 h de pesca online.
 - Peixes acima de comum: 0,50% das capturas em Rio Selvagem · Vara 1 Nv.1 (um a cada ~200 capturas, ~1,7 h online).
-- Ao chegar ao segundo mapa, as Moedas por hora sobem 8,1× (3.345 → 27.196).
+- Ao chegar ao segundo mapa, as Moedas por hora sobem 8,1× (3.345 → 27.170).
 - As batalhas duram em média 8 a 22 s, bem abaixo da meta de ~60 s.
 - A Expedição que mais rende por hora, na Força recomendada, dá 333 Moedas/h — 10% do que a pesca rende no primeiro mapa (ela roda junto com a pesca).
 
@@ -46,12 +46,12 @@ que pode e viaja para o próximo mapa assim que ele libera. Offline, cada captur
 | 19 | 4,2 h | 63.826 |
 | 20 | 4,6 h | 73.283 |
 | 30 | 10,1 h | 219.557 |
-| 40 | 19,1 h | 458.715 |
-| 50 | 32,2 h | 820.790 |
-| 60 | 50,2 h | 1.303.693 |
-| 70 | 73,0 h | 1.933.257 |
-| 80 | 101,4 h | 2.716.177 |
-| 90 | 136,0 h | 3.652.995 |
+| 40 | 19,1 h | 458.242 |
+| 50 | 32,2 h | 819.092 |
+| 60 | 50,2 h | 1.301.995 |
+| 70 | 73,0 h | 1.931.201 |
+| 80 | 101,4 h | 2.712.943 |
+| 90 | 136,0 h | 3.649.070 |
 
 Até o Nível 20 aparecem todos os níveis; depois, de 10 em 10. A simulação para no nível máximo ou com 150 h.
 
@@ -68,13 +68,13 @@ Até o Nível 20 aparecem todos os níveis; depois, de 10 em 10. A simulação p
 | Lago Sereno · Vara Inicial | 100,00% | 0,00% | 19,98% | 59,94% | 19,06% | 1,02% | 0,0 |
 | Lago Sereno · Vara 1 Nv.1 | 100,00% | 0,00% | 19,98% | 59,94% | 19,06% | 1,02% | 7,5 |
 | Lago Sereno · Vara 1 Nv.10 | 100,00% | 0,00% | 19,16% | 57,53% | 22,14% | 1,18% | 11,5 |
-| Rio Selvagem · Vara 1 Nv.1 | 99,50% | 0,50% | 19,98% | 59,94% | 19,06% | 1,02% | 7,5 |
-| Rio Selvagem · Vara 1 Nv.10 | 99,39% | 0,61% | 19,16% | 57,53% | 22,14% | 1,18% | 11,5 |
+| Rio Selvagem · Vara 1 Nv.1 | 99,50% | 0,50% | 19,98% | 59,95% | 19,05% | 1,02% | 7,5 |
+| Rio Selvagem · Vara 1 Nv.10 | 99,39% | 0,61% | 19,16% | 57,55% | 22,11% | 1,18% | 11,5 |
 
 ## 3. Economia
 
 - Moedas por hora vendendo tudo, primeiro mapa: 3.345
-- Moedas por hora vendendo tudo, segundo mapa (com a vara comprada, Nv.1): 27.196
+- Moedas por hora vendendo tudo, segundo mapa (com a vara comprada, Nv.1): 27.170
 - Conchas por hora no segundo mapa: 8,9
 
 | Vara | Preço | Todas as melhorias | Horas de pesca para pagar a vara | Horas para pagar as melhorias |

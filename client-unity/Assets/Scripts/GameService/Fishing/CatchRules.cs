@@ -27,7 +27,7 @@ namespace FishingIdle.GameService.Fishing
         {
             var bonuses = config.RodBonusesAt(rod, rodLevel);
             var species = RollSpecies(config, map, rod, bonuses, rng);
-            var category = RollSizeCategory(config, bonuses, rng);
+            var category = RollSizeCategory(config, bonuses, rng, species.Rarity);
 
             // Exact size: uniform inside the category's percentile band, mapped onto the species range.
             var percentile = category.PercentileMin + rng.NextDouble() * (category.PercentileMax - category.PercentileMin);
@@ -100,14 +100,23 @@ namespace FishingIdle.GameService.Fishing
 
         /// <summary>
         /// Size category by draw weight. The rod's size quality multiplies the weight of the
-        /// "large" and "exceptional" categories; the draw renormalises over the new total.
+        /// "large" and "exceptional" categories, and the species' rarity multiplies each category by
+        /// its size_weight_multipliers (rarer fish come big a little less often, addendum A-083);
+        /// the draw renormalises over the new total.
         /// </summary>
-        public static SizeCategoryConfig RollSizeCategory(GameConfig config, RodBonusesConfig bonuses, Rng rng)
+        public static SizeCategoryConfig RollSizeCategory(GameConfig config, RodBonusesConfig bonuses, Rng rng, string rarityId = null)
         {
+            RarityTierConfig rarity = null;
+            if (rarityId != null)
+            {
+                config.TryGetRarity(rarityId, out rarity);
+            }
+
             var candidates = config.SizeCategories
                 .Select(c => new KeyValuePair<SizeCategoryConfig, double>(
                     c,
-                    IsBoostedBySizeQuality(c) ? c.DrawWeight * (1.0 + bonuses.SizeQuality) : c.DrawWeight))
+                    (IsBoostedBySizeQuality(c) ? c.DrawWeight * (1.0 + bonuses.SizeQuality) : c.DrawWeight)
+                        * (rarity?.SizeWeightMultiplier(c.Id) ?? 1.0)))
                 .ToList();
 
             return PickWeighted(candidates, rng);

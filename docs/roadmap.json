@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T01:47:58Z",
+  "updated_at": "2026-09-30T01:51:00Z",
   "current_milestone": "M14",
   "statuses": [
     "TODO",
@@ -2059,6 +2059,16 @@
           ],
           "completion_notes": "UiSkin.SizeLine escreve o tamanho na cor dele em qualquer posição da linha (antes só no fim, e o Aquário não passava o tamanho ao card). Aplicado nos cards do Aquário (inclusive alimento) e do Mercado, na ficha do Aquário (selo na cor do tamanho), nas linhas e filtros do Mercado e na lista do Cardume no Perfil. GDD_ADENDO A-079. Compila; não aberto no Unity ainda.",
           "updated_at": "2026-09-30T01:47:58Z"
+        },
+        {
+          "id": "M14-T25",
+          "title": "Peixes mais raros vêm grandes um pouco menos",
+          "subsystem": "config",
+          "description": "A pedido do proprietário: quanto mais rara a raridade, um pouco menor a chance de o peixe vir Grande ou Excepcional.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "size_weight_multipliers por raridade em progression.json (Raro: Grande × 0,85, Excepcional × 0,7), aplicados no sorteio de tamanho junto com o bônus da vara e checados pelo validador. Raro fica Pequeno 20,7%, Adulto 62,0%, Grande 16,7%, Excepcional 0,72%; Comum não muda. Teste novo; relatório de simulação atualizado. GDD_ADENDO A-083.",
+          "updated_at": "2026-09-30T01:51:00Z"
         }
       ]
     }

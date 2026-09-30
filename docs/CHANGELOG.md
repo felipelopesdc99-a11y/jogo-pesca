@@ -3,6 +3,13 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m14.13] — 30/09/2026
+
+### Mudado
+
+- **Tamanho por raridade:** peixes Raros vêm Grandes ou Excepcionais um pouco menos que os Comuns
+  (Grande 16,7% em vez de 19%; Excepcional 0,72% em vez de 1%). Ajustável em `config/progression.json`.
+
 ## [0.2.0-m14.12] — 30/09/2026
 
 ### Corrigido

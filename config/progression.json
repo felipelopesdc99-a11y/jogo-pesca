@@ -521,6 +521,7 @@
   },
   "rarity": {
     "note": "A raridade é uma hierarquia de poder e é diferente da categoria de tamanho. Um peixe Comum pode ser de tamanho Excepcional.",
+    "size_note": "size_weight_multipliers: quanto mais rara a raridade, um pouco menos de chance de o peixe vir Grande ou Excepcional (multiplica o draw_weight do tamanho; o que não estiver listado fica 1). Raro: Grande × 0,85 e Excepcional × 0,7, o que dá Pequeno 20,7%, Adulto 62,0%, Grande 16,7% e Excepcional 0,72% (o Comum fica 20%, 60%, 19% e 1%).",
     "tiers": [
       {
         "id": "common",
@@ -536,7 +537,11 @@
         "stat_multiplier": 1.15,
         "fisher_xp_multiplier": 2.5,
         "feed_xp_multiplier": 2.0,
-        "sale_value_multiplier": 2.0
+        "sale_value_multiplier": 2.0,
+        "size_weight_multipliers": {
+          "large": 0.85,
+          "exceptional": 0.7
+        }
       }
     ]
   },

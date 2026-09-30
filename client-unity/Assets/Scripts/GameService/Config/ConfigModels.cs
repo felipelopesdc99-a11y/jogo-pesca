@@ -161,6 +161,18 @@ namespace FishingIdle.GameService.Config
         public double FisherXpMultiplier { get; set; }
         public double FeedXpMultiplier { get; set; }
         public double SaleValueMultiplier { get; set; }
+
+        /// <summary>
+        /// Multiplies the draw weight of size categories for fish of this rarity (e.g. "large": 0.85):
+        /// rarer fish come big a little less often. Categories not listed keep their weight.
+        /// </summary>
+        public Dictionary<string, double> SizeWeightMultipliers { get; set; }
+
+        /// <summary>The multiplier of one size category (1 when not listed).</summary>
+        public double SizeWeightMultiplier(string sizeCategoryId)
+        {
+            return SizeWeightMultipliers != null && sizeCategoryId != null && SizeWeightMultipliers.TryGetValue(sizeCategoryId, out var m) ? m : 1.0;
+        }
     }
 
     public sealed class FishingConfig
