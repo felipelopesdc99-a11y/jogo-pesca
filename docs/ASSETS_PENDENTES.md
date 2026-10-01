@@ -190,6 +190,13 @@ as pastas da mais antiga para a mais nova: `python3 tools/Arte/processar_mapas_3
 A água dos dois mapas continua pintada por script, como nos mapas 1 e 2 (os reflexos são desenhados
 pelo jogo a partir das camadas).
 
+## Isca no anzol (V0.2, `M16-T12`)
+
+`ASSET_PENDENTE`: as três iscas (Simples, Melhorada e Premium) aparecem na cena como uma forma
+simples, de uma cor para cada uma, pendurada abaixo da boia (A-096). Falta uma pintura pequena de cada
+isca vista de lado, no estilo dos peixes, em fundo chapado. Quando chegar, basta trocar a cor pela
+imagem em `Resources/Visual/equipamento_cena.json`.
+
 ## Prioridade C
 
 Refinamento, skins, equipamentos futuros e mapas posteriores (seção 38) — nada a fazer agora.

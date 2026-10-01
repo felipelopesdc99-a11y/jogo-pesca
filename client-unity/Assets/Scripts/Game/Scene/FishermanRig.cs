@@ -60,6 +60,12 @@ namespace FishingIdle.Game.Scene
 
         // The fish that got away (docs/SISTEMA_SUCESSO_PESCA.md): only its rarity is known here.
         private SpriteRenderer _shadow;
+        private Vector3 _seat;
+        private SpriteRenderer[] _codeRod;
+        private SpriteRenderer _paintedRod;
+        private SpriteRenderer _bait;
+        private SpriteRenderer _baitLeader;
+        private Color _baitColor;
         private int _escapeStrength;
         private Vector3 _escapeFrom;
         private Vector3 _shadowDir;
@@ -135,8 +141,13 @@ namespace FishingIdle.Game.Scene
             _rodPivot = new GameObject("Vara").transform;
             _rodPivot.SetParent(_body, false);
             _rodPivot.localPosition = hands;
-            FishingScene.Sprite(_rodPivot, "Cabo", Art.PixelLeft, new Vector3(-0.15f, 0f, 0f), new Vector3(0.55f, 0.08f, 1f), FishingScene.OrderRod, new Color(0.72f, 0.56f, 0.36f));
-            FishingScene.Sprite(_rodPivot, "Haste", Art.PixelLeft, Vector3.zero, new Vector3(RodLength, 0.04f, 1f), FishingScene.OrderRod, new Color(0.26f, 0.18f, 0.12f));
+            _codeRod = new[]
+            {
+                FishingScene.Sprite(_rodPivot, "Cabo", Art.PixelLeft, new Vector3(-0.15f, 0f, 0f), new Vector3(0.55f, 0.08f, 1f), FishingScene.OrderRod, new Color(0.72f, 0.56f, 0.36f)),
+                FishingScene.Sprite(_rodPivot, "Haste", Art.PixelLeft, Vector3.zero, new Vector3(RodLength, 0.04f, 1f), FishingScene.OrderRod, new Color(0.26f, 0.18f, 0.12f)),
+            };
+            _paintedRod = FishingScene.Sprite(_rodPivot, "Vara pintada", null, Vector3.zero, Vector3.one, FishingScene.OrderRod);
+            _paintedRod.enabled = false;
             if (painted == null)
             {
                 FishingScene.Sprite(_body, "Mão", Art.Circle, hands, Vector3.one * 0.12f, FishingScene.OrderRod + 1, skin);
@@ -159,6 +170,12 @@ namespace FishingIdle.Game.Scene
             FishingScene.Sprite(_bobber, "Boia", Art.Circle, Vector3.zero, Vector3.one * 0.17f, FishingScene.OrderBobber, new Color(0.88f, 0.22f, 0.18f));
             FishingScene.Sprite(_bobber, "Topo", Art.Circle, new Vector3(0f, 0.05f, 0f), Vector3.one * 0.08f, FishingScene.OrderBobber + 1, new Color(0.98f, 0.97f, 0.92f));
 
+            // The bait in use hangs on the hook a little below the bobber (placeholder shape, A-096).
+            _baitLeader = FishingScene.Sprite(_bobber, "Linha da isca", Art.PixelLeft, new Vector3(0f, -0.07f, 0f), new Vector3(0.24f, 0.015f, 1f), FishingScene.OrderBobber - 1, new Color(0.92f, 0.92f, 0.88f, 0.75f));
+            _baitLeader.transform.localRotation = Quaternion.Euler(0f, 0f, -90f);
+            _bait = FishingScene.Sprite(_bobber, "Isca", Art.RoundedBox, new Vector3(0f, -0.33f, 0f), new Vector3(0.16f, 0.07f, 1f), FishingScene.OrderBobber - 1);
+            _baitLeader.enabled = _bait.enabled = false;
+
             _fishGlow = FishingScene.Sprite(world, "Aura da captura", Art.Glow, Vector3.zero, Vector3.one, FishingScene.OrderCatchGlow);
             _fish = FishingScene.Sprite(world, "Captura", Art.Pixel, Vector3.zero, Vector3.one, FishingScene.OrderCatch);
             _fish.enabled = false;
@@ -166,8 +183,71 @@ namespace FishingIdle.Game.Scene
             _shadow = FishingScene.Sprite(world, "Sombra do peixe", Art.Glow, Vector3.zero, Vector3.one, FishingScene.OrderWaterDetail + 1, new Color(0.02f, 0.06f, 0.08f, 0f));
             _shadow.enabled = false;
 
+            _seat = _body.localPosition;
             _root.CatchesArrived += OnCatchesArrived;
             Enter(Phase.Idle);
+        }
+
+        // ------------------------------------------------------------------ equipment (A-096)
+
+        /// <summary>Where he sits in the boat; null = the seat of the starter boat.</summary>
+        public void SitAt(Vector3? seat)
+        {
+            _body.localPosition = seat ?? _seat;
+        }
+
+        /// <summary>Shows the painted picture of the rod in use along the animated rod (the simple drawn rod without it).</summary>
+        public void UseRod(string rodId)
+        {
+            var look = EquipmentLook.Rod(rodId);
+            var tex = look != null ? Visual.ArtAssets.Texture(look.art) : null;
+            var painted = false;
+            if (tex != null)
+            {
+                // Lay the picture so its butt-to-tip line runs along the rod, the hands at "grip" and the tip at RodLength.
+                var du = (look.tip_u - look.butt_u) * tex.width;
+                var dv = (look.tip_v - look.butt_v) * tex.height;
+                var lengthPx = Mathf.Sqrt(du * du + dv * dv);
+                var grip = Mathf.Clamp(look.grip, 0f, 0.6f);
+                if (lengthPx > 1f)
+                {
+                    var total = RodLength / (1f - grip);
+                    _paintedRod.sprite = Visual.ArtAssets.Sprite(look.art, total * tex.width / lengthPx, new Vector2(look.butt_u, look.butt_v));
+                    _paintedRod.transform.localPosition = new Vector3(-grip * total, 0f, 0f);
+                    _paintedRod.transform.localRotation = Quaternion.Euler(0f, 0f, -Mathf.Atan2(dv, du) * Mathf.Rad2Deg);
+                    painted = _paintedRod.sprite != null;
+                }
+            }
+
+            _paintedRod.enabled = painted;
+            foreach (var part in _codeRod)
+            {
+                part.enabled = !painted;
+            }
+        }
+
+        /// <summary>Hangs the bait in use on the hook; nothing when no bait is in use.</summary>
+        public void UseBait(string baitId)
+        {
+            var color = baitId != null ? EquipmentLook.BaitColor(baitId) : null;
+            _baitColor = color ?? Color.clear;
+            _bait.enabled = _baitLeader.enabled = color.HasValue;
+        }
+
+        /// <summary>Under the water the bait is seen faintly; on a fish's catch it is hidden (the fish took it).</summary>
+        private void UpdateBait()
+        {
+            if (_baitColor.a <= 0f)
+            {
+                return;
+            }
+
+            var showing = _phase == Phase.Showing;
+            _bait.enabled = _baitLeader.enabled = !showing;
+            var underwater = _phase == Phase.Waiting || _phase == Phase.Bite;
+            var c = _baitColor;
+            c.a = underwater ? 0.45f : 1f;
+            _bait.color = c;
         }
 
         private void OnDestroy()
@@ -270,6 +350,7 @@ namespace FishingIdle.Game.Scene
             }
 
             DrawLine();
+            UpdateBait();
         }
 
         // ------------------------------------------------------------------ phases

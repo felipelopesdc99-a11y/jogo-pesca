@@ -3,6 +3,24 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.28] — 01/10/2026
+
+### Adicionado
+
+- O barco, a vara e a isca equipados aparecem na cena de pesca (GDD_ADENDO A-096): o pescador senta
+  dentro do Barco 1 a 5 com a pintura da Loja, segura a pintura da vara em uso e, com isca, ela fica
+  pendurada abaixo da boia. Trocar na Loja muda na hora.
+- `tools/Arte/equipamento_na_cena.py`: recorta a lateral da frente de cada barco, mede as varas e
+  monta a prévia.
+
+### Pendente
+
+- Pintura das iscas (`M16-T12`, `ASSET_PENDENTE`); por enquanto, uma forma colorida.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda.
+
 ## [0.2.0-m16.27] — 01/10/2026
 
 ### Mudado

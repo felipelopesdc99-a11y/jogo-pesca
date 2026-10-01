@@ -191,6 +191,13 @@ namespace FishingIdle.Game.Scene
         private SceneTheme _theme;
         private float _arrivedAt = -100f;
 
+        // The equipped boat (A-096): the starter hull pieces, the Shop boat pieces and what is shown now.
+        private readonly System.Collections.Generic.List<SpriteRenderer> _starterHull = new System.Collections.Generic.List<SpriteRenderer>();
+        private SpriteRenderer _gearHullBack;
+        private SpriteRenderer _gearHullFront;
+        private string _shownBoat, _shownRod, _shownBait;
+        private bool _gearShown;
+
         /// <summary>0–1 darkness the HUD draws over the scene while the trip ends and the new map appears.</summary>
         public float TravelFade
         {
@@ -262,6 +269,46 @@ namespace FishingIdle.Game.Scene
             var boat = BuildBoat();
             Fisherman = boat.gameObject.AddComponent<FishermanRig>();
             Fisherman.Build(_root, boat, _world);
+            _gearShown = false;
+            ShowGear();
+        }
+
+        /// <summary>Puts the boat, rod and bait in use in the scene, when they change (A-096).</summary>
+        private void ShowGear()
+        {
+            var gear = _root != null ? _root.Gear : null;
+            if (gear == null || Fisherman == null)
+            {
+                return;
+            }
+
+            if (_gearShown && gear.BoatId == _shownBoat && gear.RodId == _shownRod && gear.BaitId == _shownBait)
+            {
+                return;
+            }
+
+            _gearShown = true;
+            _shownBoat = gear.BoatId;
+            _shownRod = gear.RodId;
+            _shownBait = gear.BaitId;
+
+            // A Shop boat: its picture behind the fisherman and its near side in front of him. The
+            // starter boat (or a boat without pictures) keeps the scene's own hull.
+            var look = EquipmentLook.Boat(gear.BoatId);
+            var back = look != null ? ArtAssets.Sprite(look.art, look.width, new Vector2(0.5f, look.pivot_y)) : null;
+            var front = look != null ? ArtAssets.Sprite(look.front, look.width, new Vector2(0.5f, look.pivot_y)) : null;
+            var shopBoat = back != null && front != null;
+            foreach (var piece in _starterHull)
+            {
+                piece.enabled = !shopBoat;
+            }
+
+            _gearHullBack.sprite = back;
+            _gearHullFront.sprite = front;
+            _gearHullBack.enabled = _gearHullFront.enabled = shopBoat;
+            Fisherman.SitAt(shopBoat ? new Vector3(look.seat_x, look.seat_y, 0f) : (Vector3?)null);
+            Fisherman.UseRod(gear.RodId);
+            Fisherman.UseBait(gear.BaitId);
         }
 
         private void Update()
@@ -287,6 +334,7 @@ namespace FishingIdle.Game.Scene
             }
 
             _boatLayer.localPosition = new Vector3(x, 0f, 0f);
+            ShowGear();
         }
 
         private void BuildCamera(SceneTheme theme)
@@ -752,23 +800,29 @@ namespace FishingIdle.Game.Scene
             var hullBack = ArtAssets.Sprite("Cena/barco_fundo", 3.6f, new Vector2(0.5f, 0.3f));
             var hullFront = ArtAssets.Sprite("Cena/barco_frente", 3.6f, new Vector2(0.5f, 0.3f));
             var tackle = ArtAssets.Sprite("Cena/caixa_de_pesca", 0.5f, new Vector2(0.5f, 0f));
+            _starterHull.Clear();
             if (hullBack != null && hullFront != null)
             {
-                Sprite(boat, "Casco (fundo)", hullBack, Vector3.zero, Vector3.one, OrderBoat);
-                Sprite(boat, "Casco (frente)", hullFront, Vector3.zero, Vector3.one, OrderBoatFront);
+                _starterHull.Add(Sprite(boat, "Casco (fundo)", hullBack, Vector3.zero, Vector3.one, OrderBoat));
+                _starterHull.Add(Sprite(boat, "Casco (frente)", hullFront, Vector3.zero, Vector3.one, OrderBoatFront));
                 if (tackle != null)
                 {
-                    Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.95f, 0.22f, 0f), Vector3.one, OrderFisherman);
+                    _starterHull.Add(Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.95f, 0.22f, 0f), Vector3.one, OrderFisherman));
                 }
             }
             else
             {
-                Sprite(boat, "Casco", ArtAssets.Sprite("Cena/barco", 3.6f, new Vector2(0.5f, 0.3f)) ?? Art.Boat, Vector3.zero, Vector3.one, OrderBoat);
+                _starterHull.Add(Sprite(boat, "Casco", ArtAssets.Sprite("Cena/barco", 3.6f, new Vector2(0.5f, 0.3f)) ?? Art.Boat, Vector3.zero, Vector3.one, OrderBoat));
                 if (tackle != null)
                 {
-                    Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.55f, 0.32f, 0f), Vector3.one, OrderBoat - 1);
+                    _starterHull.Add(Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.55f, 0.32f, 0f), Vector3.one, OrderBoat - 1));
                 }
             }
+
+            // The equipped Shop boat, shown instead of the hull above (ShowGear).
+            _gearHullBack = Sprite(boat, "Barco equipado", null, Vector3.zero, Vector3.one, OrderBoat);
+            _gearHullFront = Sprite(boat, "Barco equipado (frente)", null, Vector3.zero, Vector3.one, OrderBoatFront);
+            _gearHullBack.enabled = _gearHullFront.enabled = false;
 
             // Soft shadow on the water under the hull.
             Sprite(layer, "Sombra do barco", Art.Circle, new Vector3(-1.2f, -2.35f, 0f), new Vector3(4.4f, 0.45f, 1f),

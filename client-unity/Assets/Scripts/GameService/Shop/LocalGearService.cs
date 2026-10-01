@@ -57,6 +57,7 @@ namespace FishingIdle.GameService.Shop
     {
         public long Coins { get; internal set; }
         public long Shells { get; internal set; }
+        public string RodId { get; internal set; }
         public string RodName { get; internal set; }
         public double RodBonus { get; internal set; }
         public string BoatId { get; internal set; }
@@ -124,6 +125,7 @@ namespace FishingIdle.GameService.Shop
             {
                 Coins = save.Coins,
                 Shells = save.Shells,
+                RodId = rod.Id,
                 RodName = rod.DisplayName,
                 RodBonus = config.RodBonusesAt(rod, rodLevel).CatchSuccess,
                 BoatId = boat.Id,

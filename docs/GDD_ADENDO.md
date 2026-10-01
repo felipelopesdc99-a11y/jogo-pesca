@@ -1020,3 +1020,21 @@ cada raridade não muda:
 
 Na simulação, do Nível 20 ao 30 passa de 3,7 h para 4,0 h online, e do 30 ao 40, de 4,0 h para 4,5 h.
 Escapam cerca de 45 peixes por hora, contra 37 antes.
+
+### A-096 · O barco, a vara e a isca equipados aparecem na cena
+**Seção do GDD:** 8, 19 · **Situação:** Pedido do proprietário (01/10/2026)
+
+O que o jogador equipa na Loja aparece na cena de pesca, na hora:
+
+- **Barco:** os Barcos 1 a 5 usam a mesma pintura da Loja. O pescador fica sentado dentro dele, atrás
+  da lateral da frente. Barcos maiores aparecem maiores. O Barco Inicial continua com o casco próprio
+  da cena.
+- **Vara:** a vara na mão dele é a pintura da vara em uso (Vara Inicial, Vara 1 ou Vara 2) e se mexe
+  com o arremesso como antes.
+- **Isca:** com uma isca em uso, ela fica pendurada no anzol logo abaixo da boia. Dentro da água ela
+  aparece mais apagada, e some quando o peixe é puxado (o peixe levou a isca). Sem isca, só a boia.
+  Por enquanto a isca é uma forma simples em uma cor para cada tipo (`ASSET_PENDENTE`, ver
+  `docs/ASSETS_PENDENTES.md`).
+
+É só visual: não muda nenhuma chance. Os números de posição e tamanho ficam em
+`Resources/Visual/equipamento_cena.json`, gerados por `tools/Arte/equipamento_na_cena.py`.

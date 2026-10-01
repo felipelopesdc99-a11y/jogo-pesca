@@ -277,6 +277,13 @@ antigos entram com o Barco Inicial e sem isca. Cada passo está em `SaveMigratio
     peixes de lado, mesmo "artista") e `gerar_cenarios.py` (camadas dos mapas, nuvens, barco,
     pescador, varas, fotos dos mapas e das Expedições). A lista do que falta como arte final e as
     regras de tamanho estão em `docs/ASSETS_PENDENTES.md`.
+  - **Equipamento na cena** (`Scene/EquipmentLook`, A-096): a `FishingScene` lê `GearView` (BoatId,
+    RodId, BaitId) a cada quadro e, quando muda, troca o casco (pintura da Loja atrás do pescador e a
+    lateral da frente recortada na frente dele), põe a vara pintada ao longo da vara animada
+    (`FishermanRig.UseRod`) e pendura a isca na boia (`UseBait`). Posições e tamanhos ficam em
+    `Resources/Visual/equipamento_cena.json`; `tools/Arte/equipamento_na_cena.py` recorta as laterais
+    (`Arte/Barcos/Cena/boat_XX_frente.png`), mede as varas e grava o arquivo (`--previa` monta uma
+    prévia fora do Unity).
   - **Arte dos mapas 3 e 4** (`tools/Arte/processar_mapas_3_4.py`): mesmo processo, com o fundo
     votado na borda inteira (verde, magenta ou azul), limpeza do magenta que vaza em partes finas, nuvens
     lado a lado ou empilhadas, o lado oposto espelhado quando uma margem vem sem fundo chapado, e a faixa
