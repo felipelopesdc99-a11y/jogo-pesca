@@ -129,7 +129,7 @@ def cut_at(img, fraction):
     return V.cut_waterline(img, fraction)
 
 
-def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_units, far_cut=None):
+def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_units, far_cut=None, remix_mid=False):
     base = 'Mapas/%s/%s_' % (out_folder, file_prefix)
     photo = find(folder, prefix, '01')
     if photo is not None:
@@ -150,8 +150,11 @@ def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_u
         P.save(P.extend_sideways(piece, 0.5, 0.0, (0.0, 0.5), (0.5, 1.0), 110), base + 'bg_far.png')
     mid = find(folder, prefix, '04')
     if mid is not None:
-        piece = P.layer_piece(mid, key_of(mid), mid_units, 120)
-        P.save(P.extend_sideways(piece, 0.5, 0.0, (0.0, 0.5), (0.5, 1.0), 120), base + 'bg_mid.png')
+        piece = P.trim(keyed(mid))
+        h = int(round(mid_units * 120))
+        piece = piece.resize((max(1, round(piece.width * h / piece.height)), h), Image.LANCZOS)
+        band = remix(piece, 120, seed=hash(prefix) % 1000) if remix_mid else P.extend_sideways(piece, 0.5, 0.0, (0.0, 0.5), (0.5, 1.0), 120)
+        P.save(band, base + 'bg_mid.png')
     for number, name in (('05', 'near_left'), ('06', 'near_right'), ('07', 'fg_left'), ('08', 'fg_right')):
         img = find(folder, prefix, number)
         if img is not None and not has_background(img):
@@ -194,6 +197,60 @@ def cloud_sheet(rgba, prefix):
     for i in range(3):
         box = (0, cuts[i], rgba.width, cuts[i + 1]) if stacked else (cuts[i], 0, cuts[i + 1], rgba.height)
         P.save(P.fit(P.main_piece(rgba.crop(box)), (640, 320), 0.04), prefix + '_cloud_%02d.png' % (i + 1))
+
+
+def remix(piece, ppu, seed):
+    """A band of separate groups (capões) rebuilt to 26 units without a visible pattern.
+
+    The piece is cut where its silhouette is lowest (the open grass between groups), and the groups
+    are laid side by side in a shuffled order, some mirrored, each a little bigger or smaller,
+    overlapping with a soft edge. The same group never comes twice in a row.
+    """
+    rng = np.random.default_rng(seed)
+    arr = np.asarray(piece)
+    alpha = arr[..., 3] > 40
+    height = np.where(alpha.any(axis=0), piece.height - alpha.argmax(axis=0), 0).astype(float)
+    smooth = np.convolve(height, np.ones(15) / 15, mode='same')
+    # Cut points: low places at least ~0.9 units apart.
+    order = np.argsort(smooth)
+    cuts = []
+    for x in order:
+        if x < 20 or x > piece.width - 20:
+            continue
+        if all(abs(x - c) > 0.9 * ppu for c in cuts):
+            cuts.append(int(x))
+        if len(cuts) >= 8:
+            break
+    cuts = [0] + sorted(cuts) + [piece.width]
+    groups = [piece.crop((cuts[i], 0, cuts[i + 1], piece.height)) for i in range(len(cuts) - 1) if cuts[i + 1] - cuts[i] > 30]
+    total = int(round(2 * P.HALF_W * ppu))
+    canvas = Image.new('RGBA', (total, piece.height), (0, 0, 0, 0))
+    overlap = int(0.25 * ppu)
+    x, last = -overlap, -1
+    while x < total:
+        i = int(rng.integers(len(groups)))
+        if i == last and len(groups) > 1:
+            continue
+        last = i
+        g = groups[i]
+        if rng.random() < 0.5:
+            g = g.transpose(Image.FLIP_LEFT_RIGHT)
+        k = float(rng.uniform(0.82, 1.08))
+        g = g.resize((max(1, int(g.width * k)), max(1, int(g.height * k))), Image.LANCZOS)
+        # Soft left and right edges so neighbours blend into each other.
+        a = np.asarray(g).astype(np.float32)
+        ramp = np.ones(g.width, dtype=np.float32)
+        n = min(overlap, g.width // 3)
+        if n > 1:
+            ramp[:n] = np.linspace(0, 1, n)
+            ramp[-n:] = np.linspace(1, 0, n)
+        a[..., 3] *= ramp[None, :]
+        g = Image.fromarray(a.astype(np.uint8), 'RGBA')
+        layer = Image.new('RGBA', canvas.size, (0, 0, 0, 0))
+        layer.paste(g, (x, piece.height - g.height))
+        canvas = Image.alpha_composite(layer, canvas) if rng.random() < 0.5 else Image.alpha_composite(canvas, layer)
+        x += g.width - overlap
+    return canvas
 
 
 def grid(img, cols, rows, names, folder_rel, size, margin):
@@ -256,7 +313,7 @@ def main():
         print(__doc__)
         sys.exit(1)
     folder = sys.argv[1]
-    scenery(folder, 'Pantanal', 'PantanalDourado', 'map_pantanal_dourado', (-5.0, 1.5), 0.9, 1.25)
+    scenery(folder, 'Pantanal', 'PantanalDourado', 'map_pantanal_dourado', (-5.0, 1.5), 0.9, 1.25, remix_mid=True)
     scenery(folder, 'Estuario', 'EstuarioDasMares', 'map_estuario_das_mares', (2.4, 1.8), 1.3, 1.2, far_cut=0.80)
     fish_and_gear(folder)
     living(folder)
