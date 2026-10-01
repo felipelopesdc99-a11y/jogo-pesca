@@ -1000,3 +1000,7 @@ Os animais novos reaproveitam os comportamentos que já existem (A-078), com o m
   caranguejo chama-maré que sai da lama do canto, acena com a garra e volta para a toca; um boto-cinza ao
   longe que aparece duas ou três vezes seguidas, às vezes saltando. Capim e samambaias do mangue
   balançam nos cantos.
+- No Pantanal, uma ou duas borboletas amarelas (uma limão, uma laranja) passam baixo pelos cantos, com
+  batidas rápidas e planadas curtas.
+- O fundo de cada mapa alterna duas faixas pintadas diferentes (capões no Pantanal, mangue no
+  Estuário), em vez de repetir a mesma espelhada.

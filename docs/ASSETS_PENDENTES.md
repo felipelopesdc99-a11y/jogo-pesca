@@ -181,13 +181,11 @@ Arena ficam como ícone até existir um sistema de avatar (não faz parte da V0.
 > chegaram e estão no jogo (cenários, 20 peixes, Vara 2, seis barcos, paisagem viva). Para uma leva
 > nova: `python3 tools/Arte/processar_mapas_3_4.py <pasta com Pantanal_XX_*.png, Estuario_XX_*.png, Novo_XX_*.png>`.
 
-Ainda faltam (`M16-T07`):
-
-| Pedido | O que aconteceu | No jogo agora |
-|---|---|---|
-| Pantanal 06 — Margem direita | Veio uma pintura de cena inteira, sem fundo magenta | A margem esquerda espelhada |
-| Pantanal 16 — Borboletas amarelas | O arquivo veio vazio (0 bytes) dentro do zip | Nada (borboleta ainda não tem comportamento) |
-| Novo 03 — Ícones de barco e isca | Não veio no pacote | Ícones provisórios `ico_barco` e `ico_isca` |
+A segunda leva (01/10/2026) trouxe os pedidos da seção "Refazer": duas faixas novas de capões e duas de
+mangue (o jogo alterna A e B, sem repetir a mesma faixa espelhada), a margem direita do Pantanal, as
+borboletas e os ícones de barco e isca. Nada dos mapas 3 e 4 está pendente. Para processar de novo, passe
+as pastas da mais antiga para a mais nova: `python3 tools/Arte/processar_mapas_3_4.py <pacote 1> <pacote 2>`
+(a mais nova vale; um arquivo corrompido é trocado pela cópia do pacote anterior).
 
 A água dos dois mapas continua pintada por script, como nos mapas 1 e 2 (os reflexos são desenhados
 pelo jogo a partir das camadas).

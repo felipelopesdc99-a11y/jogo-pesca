@@ -3,6 +3,23 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.22] — 01/10/2026
+
+### Mudado
+
+- O fundo do Pantanal e do Estuário alterna duas faixas pintadas novas, mais baixas e variadas, em vez
+  de repetir a mesma faixa espelhada.
+- Margem direita do Pantanal com a arte refeita (antes era a esquerda espelhada).
+- Ícones de barco e isca finais, no estilo do menu.
+
+### Adicionado
+
+- Borboletas amarelas no Pantanal.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M16-T06`).
+
 ## [0.2.0-m16.21] — 01/10/2026
 
 ### Adicionado

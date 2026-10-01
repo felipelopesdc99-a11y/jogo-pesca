@@ -279,7 +279,8 @@ antigos entram com o Barco Inicial e sem isca. Cada passo está em `SaveMigratio
     regras de tamanho estão em `docs/ASSETS_PENDENTES.md`.
   - **Arte dos mapas 3 e 4** (`tools/Arte/processar_mapas_3_4.py`): mesmo processo, com o fundo
     votado na borda inteira (verde, magenta ou azul), limpeza do magenta que vaza em partes finas, nuvens
-    lado a lado ou empilhadas, e o lado oposto espelhado quando uma margem vem sem fundo chapado. Os
+    lado a lado ou empilhadas, o lado oposto espelhado quando uma margem vem sem fundo chapado, e a faixa
+    do meio montada com duas pinturas diferentes alternadas (`alternate`, pedidos Refazer 01 a 04). Os
     animais novos (`LivingAnimals`: araras-azuis, tuiuiú, colhereiros, guarás, trinta-réis, caranguejo,
     boto) reaproveitam os comportamentos existentes com outra arte.
   - **Arte final do proprietário** (`tools/Arte/processar_pedidos.py`): recorta as imagens do ChatGPT

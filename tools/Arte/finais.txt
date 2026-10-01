@@ -18,6 +18,7 @@ Expedicoes/exp_6h.png
 Icones/ico_aquario.png
 Icones/ico_arena.png
 Icones/ico_avisos.png
+Icones/ico_barco.png
 Icones/ico_cadeado.png
 Icones/ico_caixa.png
 Icones/ico_concha.png
@@ -25,6 +26,7 @@ Icones/ico_estrela.png
 Icones/ico_expedicao.png
 Icones/ico_fechar.png
 Icones/ico_iniciar.png
+Icones/ico_isca.png
 Icones/ico_loja.png
 Icones/ico_mapa.png
 Icones/ico_mercado.png
@@ -132,6 +134,12 @@ Vivos/Animais/arara_azul_1.png
 Vivos/Animais/arara_azul_2.png
 Vivos/Animais/arara_azul_3.png
 Vivos/Animais/arara_azul_4.png
+Vivos/Animais/borboleta_laranja_1.png
+Vivos/Animais/borboleta_laranja_2.png
+Vivos/Animais/borboleta_laranja_3.png
+Vivos/Animais/borboleta_limao_1.png
+Vivos/Animais/borboleta_limao_2.png
+Vivos/Animais/borboleta_limao_3.png
 Vivos/Animais/boto_1.png
 Vivos/Animais/boto_2.png
 Vivos/Animais/boto_3.png

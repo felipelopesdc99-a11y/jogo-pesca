@@ -93,6 +93,7 @@ namespace FishingIdle.Game.Scene
                 case "terns": return Has("trinta_reis_1");
                 case "fiddler_crab": return Has("caranguejo_1") && _spots.ContainsKey("crab");
                 case "dolphin": return Has("boto_1") && _spots.ContainsKey("dolphin");
+                case "butterflies": return Has("borboleta_limao_1") && Has("borboleta_laranja_1");
                 default: return false;
             }
         }
@@ -127,6 +128,7 @@ namespace FishingIdle.Game.Scene
                 case "terns": return Flock("trinta_reis", 4, 0.5f, Random.Range(2, 4), 2.6f, 9f, 1.4f, 3.0f);
                 case "fiddler_crab": return FiddlerCrab();
                 case "dolphin": return Dolphin();
+                case "butterflies": return Butterflies();
                 default: return Nothing();
             }
         }
@@ -751,6 +753,63 @@ namespace FishingIdle.Game.Scene
         /// A guiana dolphin far out in the channel: two or three surfacings in a row, the back and fin
         /// showing, sometimes a leap, then the tail going down.
         /// </summary>
+        /// <summary>
+        /// One or two yellow butterflies drifting low past a corner of water hyacinths: a wobbly,
+        /// unhurried path with quick wing beats and short glides, then out of the screen.
+        /// </summary>
+        private IEnumerator Butterflies()
+        {
+            var lemon = Frames("borboleta_limao", 3, 0.2f, new Vector2(0.5f, 0.5f));
+            var orange = Frames("borboleta_laranja", 3, 0.2f, new Vector2(0.5f, 0.5f));
+            if (lemon == null || orange == null)
+            {
+                yield break;
+            }
+
+            var count = Random.value < 0.5f ? 1 : 2;
+            var dir = Random.value > 0.5f ? 1f : -1f;
+            var flies = new List<SpriteRenderer>();
+            var kinds = new List<Sprite[]>();
+            for (var i = 0; i < count; i++)
+            {
+                var kind = i == 0 ? (Random.value < 0.5f ? lemon : orange) : (kinds[0] == lemon ? orange : lemon);
+                kinds.Add(kind);
+                flies.Add(Spawn(_corner, "Borboleta", kind[0], new Vector3(-dir * (_halfWidth + 0.5f), -3f, 0f), FishingScene.OrderCornerFront + 1, dir < 0f));
+            }
+
+            var y0 = Random.Range(-3.6f, -2.4f);
+            var speed = Random.Range(0.9f, 1.3f);
+            var t = 0f;
+            var done = false;
+            while (!done)
+            {
+                t += Time.deltaTime;
+                done = true;
+                for (var i = 0; i < count; i++)
+                {
+                    var age = t - i * 0.8f;
+                    var x = -dir * (_halfWidth + 0.5f) + dir * speed * Mathf.Max(0f, age);
+                    if (Mathf.Abs(x) < _halfWidth + 0.7f || age < 0f)
+                    {
+                        done = false;
+                    }
+
+                    var wobble = Mathf.Sin(age * 2.3f + i * 1.7f) * 0.35f + Mathf.Sin(age * 5.1f + i) * 0.08f;
+                    flies[i].transform.localPosition = new Vector3(x, y0 + i * 0.3f + wobble, 0f);
+                    // Quick beats, then a short glide with the wings open.
+                    var beating = Mathf.Repeat(age + i * 0.4f, 1.6f) < 1.1f;
+                    flies[i].sprite = beating ? kinds[i][(int)(age * 14f) % 3] : kinds[i][0];
+                }
+
+                yield return null;
+            }
+
+            foreach (var r in flies)
+            {
+                Object.Destroy(r.gameObject);
+            }
+        }
+
         private IEnumerator Dolphin()
         {
             var frames = Frames("boto", 3, 0.9f, new Vector2(0.5f, 0f));

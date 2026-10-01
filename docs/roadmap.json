@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-01T01:39:14Z",
+  "updated_at": "2026-10-01T03:15:47Z",
   "current_milestone": "M16",
   "statuses": [
     "TODO",
@@ -2382,11 +2382,12 @@
           "title": "Refazer três imagens dos mapas 3 e 4",
           "subsystem": "client",
           "description": "ASSET_PENDENTE: Pantanal 06 (margem direita veio como pintura inteira, sem fundo magenta; hoje usa a esquerda espelhada), Pantanal 16 (borboletas: o arquivo veio vazio) e Novo 03 (ícones de barco e isca, não veio). Lista em docs/ASSETS_PENDENTES.md.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M16-T05"
           ],
-          "updated_at": "2026-10-01T01:39:14Z"
+          "updated_at": "2026-10-01T03:15:47Z",
+          "completion_notes": "Segunda leva de imagens (01/10/2026): margem direita do Pantanal refeita, borboletas (novo comportamento na paisagem viva do Pantanal), ícones de barco e isca em silhueta branca, e quatro faixas novas (Refazer 01 a 04) alternadas A/B no fundo dos dois mapas. Compila; não aberto no Unity ainda."
         }
       ]
     }

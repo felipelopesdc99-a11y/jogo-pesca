@@ -1,7 +1,9 @@
 """Turns the owner's art for maps 3 and 4 (the "Pedidos de arte: Pantanal Dourado e Estuário das Marés"
 document) into game files.
 
-Usage:  python3 tools/Arte/processar_mapas_3_4.py <folder with Pantanal_XX_*.png, Estuario_XX_*.png, Novo_XX_*.png>
+Usage:  python3 tools/Arte/processar_mapas_3_4.py <folder> [<newer folder> ...]
+        (folders with Pantanal_XX_*.png, Estuario_XX_*.png, Novo_XX_*.png, Refazer_XX_*.png; the newer wins,
+        and a broken file is replaced by the copy in an older folder)
 
 What it does, per request:
   Pantanal 01 / Estuário 01   map photo for the Map screen (thumb)
@@ -14,6 +16,9 @@ What it does, per request:
   Pantanal 12-18, Estuário 12-17   living landscape: animals (frames lined up) and plants
   Novo 01                     Vara 2
   Novo 02                     the six boats (3 x 2)
+  Novo 03                     boat and bait icons, turned into white menu glyphs
+  Refazer 01-04               two different middle bands per map, laid A, B, A, B (replace request 04)
+  Refazer 05, 06              Pantanal 06 (right shore) and 16 (butterflies) redone
 
 Every file written is listed in tools/Arte/finais.txt, so the placeholder generators never overwrite it.
 A missing or empty picture is skipped with a warning; the placeholder stays.
@@ -53,6 +58,7 @@ ANIMALS = {
     ('Estuario', '13'): [('caranguejo', [0, 1, 2], 'feet')],
     ('Estuario', '14'): [('boto', [0, 1, 2], 'center')],
     ('Estuario', '15'): [('trinta_reis', [0, 1, 2, 3], 'beak')],
+    ('Pantanal', '16'): [('borboleta_limao', [0, 1, 2], 'center'), ('borboleta_laranja', [3, 4, 5], 'center')],
 }
 
 # Plants with no real pink or purple in them: any magenta cast is background that bled in.
@@ -61,12 +67,34 @@ NO_MAGENTA = {'carandaa', 'mangue'}
 skipped = []
 
 
-def find(folder, prefix, number):
-    hits = sorted(glob.glob(os.path.join(folder, '%s_%s_*.png' % (prefix, number))))
-    if not hits or os.path.getsize(hits[0]) == 0:
+# A redone picture ("Refazer" section of the document) stands in for the original request.
+ALTERNATES = {
+    ('Pantanal', '06'): ('Refazer', '05'),
+    ('Pantanal', '16'): ('Refazer', '06'),
+}
+# Wide middle bands: two different paintings laid one after the other (Refazer 01-04).
+BANDS = {
+    'Pantanal': [('Refazer', '01'), ('Refazer', '02')],
+    'Estuario': [('Refazer', '03'), ('Refazer', '04')],
+}
+
+
+def find(folders, prefix, number, quiet=False):
+    """The picture of a request: the redone version first, then the newest folder that has a readable file."""
+    for want in ([ALTERNATES[(prefix, number)]] if (prefix, number) in ALTERNATES else []) + [(prefix, number)]:
+        for folder in reversed(folders):
+            for path in sorted(glob.glob(os.path.join(folder, '%s_%s_*.png' % want))):
+                if os.path.getsize(path) == 0:
+                    continue
+                try:
+                    img = Image.open(path)
+                    img.load()
+                    return img
+                except Exception:
+                    print('   aviso: %s está corrompido; procuro outra cópia' % os.path.basename(path))
+    if not quiet:
         skipped.append('%s %s' % (prefix, number))
-        return None
-    return Image.open(hits[0])
+    return None
 
 
 def key_of(img):
@@ -148,7 +176,10 @@ def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_u
         h = int(round(far_units * 110))
         piece = piece.resize((max(1, round(piece.width * h / piece.height)), h), Image.LANCZOS)
         P.save(P.extend_sideways(piece, 0.5, 0.0, (0.0, 0.5), (0.5, 1.0), 110), base + 'bg_far.png')
-    mid = find(folder, prefix, '04')
+    bands = [img for img in (find(folder, p, n, quiet=True) for p, n in BANDS.get(prefix, [])) if img is not None]
+    mid = None if bands else find(folder, prefix, '04')
+    if bands:
+        P.save(alternate(bands, mid_units, 120), base + 'bg_mid.png')
     if mid is not None:
         piece = P.trim(keyed(mid))
         h = int(round(mid_units * 120))
@@ -197,6 +228,36 @@ def cloud_sheet(rgba, prefix):
     for i in range(3):
         box = (0, cuts[i], rgba.width, cuts[i + 1]) if stacked else (cuts[i], 0, cuts[i + 1], rgba.height)
         P.save(P.fit(P.main_piece(rgba.crop(box)), (640, 320), 0.04), prefix + '_cloud_%02d.png' % (i + 1))
+
+
+def alternate(paintings, height_units, ppu):
+    """Several different band paintings, keyed and scaled to the same height, laid A, B, A, B... across
+    the 26 units, each joined to the next with a short soft overlap (the paintings were asked with
+    matching ends)."""
+    pieces = []
+    for img in paintings:
+        piece = P.trim(keyed(img))
+        h = int(round(height_units * ppu))
+        pieces.append(piece.resize((max(1, round(piece.width * h / piece.height)), h), Image.LANCZOS))
+    h = max(p.height for p in pieces)
+    total = int(round(2 * P.HALF_W * ppu))
+    canvas = Image.new('RGBA', (total, h), (0, 0, 0, 0))
+    overlap = int(0.2 * ppu)
+    # Start so the first seam does not fall in the middle of the screen.
+    x, i = -int(pieces[0].width * 0.3), 0
+    while x < total:
+        piece = pieces[i % len(pieces)]
+        a = np.asarray(piece).astype(np.float32)
+        if x > -piece.width:
+            ramp = np.ones(piece.width, dtype=np.float32)
+            ramp[:overlap] = np.linspace(0, 1, overlap)
+            a[..., 3] *= ramp[None, :]
+        layer = Image.new('RGBA', canvas.size, (0, 0, 0, 0))
+        layer.paste(Image.fromarray(a.astype(np.uint8), 'RGBA'), (x, h - piece.height))
+        canvas = Image.alpha_composite(canvas, layer)
+        x += piece.width - overlap
+        i += 1
+    return canvas
 
 
 def remix(piece, ppu, seed):
@@ -270,6 +331,25 @@ def fish_and_gear(folder):
     boats = find(folder, 'Novo', '02')
     if boats is not None:
         grid(boats, 3, 2, BOATS, 'Barcos/%s.png', (1024, 512), 0.05)
+    icons = find(folder, 'Novo', '03')
+    if icons is not None:
+        for cell, name in zip(P.cells(keyed(icons), 2, 1), ('barco', 'isca')):
+            P.save(glyph(P.fit(P.main_piece(cell), (384, 384), 0.06)).resize((96, 96), Image.LANCZOS), 'Icones/ico_%s.png' % name)
+
+
+def glyph(img):
+    """A painted icon turned into the menu's style: a white shape the game tints, with its dark
+    details (windows, the eye, the hooks' inside) cut out so it still reads at 20 pixels."""
+    from scipy import ndimage
+    arr = np.asarray(img).astype(np.float32)
+    lum = arr[..., :3].mean(axis=2) / 255.0
+    shape = ndimage.binary_closing(arr[..., 3] > 128, iterations=3)
+    # Only bigger dark areas become holes; specks of shading stay solid.
+    dark = ndimage.binary_opening((lum < 0.25) & shape, iterations=3)
+    alpha = np.where(shape & ~dark, 255.0, 0.0)
+    alpha = ndimage.gaussian_filter(alpha, 1.2)
+    out = np.dstack([np.full(lum.shape, 255.0), np.full(lum.shape, 255.0), np.full(lum.shape, 255.0), alpha])
+    return Image.fromarray(out.astype(np.uint8), 'RGBA')
 
 
 def living(folder):
@@ -312,7 +392,8 @@ def main():
     if len(sys.argv) < 2:
         print(__doc__)
         sys.exit(1)
-    folder = sys.argv[1]
+    # Several folders: the later ones win (a newer pack over an older one); broken files are skipped.
+    folder = sys.argv[1:]
     scenery(folder, 'Pantanal', 'PantanalDourado', 'map_pantanal_dourado', (-5.0, 1.5), 0.9, 1.25, remix_mid=True)
     scenery(folder, 'Estuario', 'EstuarioDasMares', 'map_estuario_das_mares', (2.4, 1.8), 1.3, 1.2, far_cut=0.80)
     fish_and_gear(folder)
