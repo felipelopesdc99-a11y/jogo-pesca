@@ -3,6 +3,14 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.27] — 01/10/2026
+
+### Mudado
+
+- Bônus de chance de puxar um terço menores (GDD_ADENDO A-095): barcos +2% a +10%, iscas +3% / +7%
+  / +10%, Vara 1 +1,5% a +8%, Vara 2 +5,5% a +13,5%. Simulação: Nível 20→30 em 4,0 h (antes 3,7 h),
+  30→40 em 4,5 h (antes 4,0 h).
+
 ## [0.2.0-m16.26] — 01/10/2026
 
 ### Corrigido

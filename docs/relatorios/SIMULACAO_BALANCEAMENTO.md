@@ -4,7 +4,7 @@ Gerado por `./ops/scripts/simular.sh` (ferramenta em `tools/Simulador`). Ele jog
 do jogo com um relógio simulado e mede os números atuais de `/config`. Não muda nenhum valor: serve
 para decidir o balanceamento com dados. Rode de novo depois de editar o balanceamento.
 
-- Versão do balanceamento: `cd2d225f5d`
+- Versão do balanceamento: `5bc4256b62`
 - Jogadores simulados por medição: 5 (a tabela mostra a média)
 
 ## Pontos de atenção
@@ -13,18 +13,18 @@ Observações automáticas sobre os números atuais. São só fatos medidos: dec
 proprietário (o balanceamento ainda não foi feito de propósito).
 
 - Nível 10 (libera o segundo mapa) chega com 2,1 h de pesca online (4,2 h se fosse só offline).
-- Nível 20 chega com 4,4 h de pesca online.
-- Do Nível 20 ao 30 (Pantanal Dourado): 3,7 h online (meta de docs/PROGRESSAO_MAPAS_3_4.md: ~3,8 h, com 100% de captura).
-- Do Nível 30 ao 40 (Estuário das Marés): 4,0 h online (meta: ~4,0 h, com 100% de captura).
-- Peixes acima de comum: 0,99% das mordidas em Rio Selvagem · Vara 1 Nv.1; com a Chance de Sucesso, um puxado a cada ~252 tentativas (~2,1 h online, sem barco nem isca).
-- Peixes acima de comum: 1,22% das mordidas em Rio Selvagem · Vara 2 Nv.1; com a Chance de Sucesso, um puxado a cada ~178 tentativas (~1,5 h online, sem barco nem isca).
+- Nível 20 chega com 4,5 h de pesca online.
+- Do Nível 20 ao 30 (Pantanal Dourado): 4,0 h online (meta de docs/PROGRESSAO_MAPAS_3_4.md: ~3,8 h, com 100% de captura).
+- Do Nível 30 ao 40 (Estuário das Marés): 4,5 h online (meta: ~4,0 h, com 100% de captura).
+- Peixes acima de comum: 0,99% das mordidas em Rio Selvagem · Vara 1 Nv.1; com a Chance de Sucesso, um puxado a cada ~255 tentativas (~2,1 h online, sem barco nem isca).
+- Peixes acima de comum: 1,22% das mordidas em Rio Selvagem · Vara 2 Nv.1; com a Chance de Sucesso, um puxado a cada ~189 tentativas (~1,6 h online, sem barco nem isca).
 - Peixes acima de comum: 4,83% das mordidas em Pantanal Dourado · Vara 1 Nv.1; com a Chance de Sucesso, um puxado a cada ~52 tentativas (~0,4 h online, sem barco nem isca).
-- Peixes acima de comum: 5,92% das mordidas em Pantanal Dourado · Vara 2 Nv.1; com a Chance de Sucesso, um puxado a cada ~37 tentativas (~0,3 h online, sem barco nem isca).
-- Peixes acima de comum: 8,08% das mordidas em Estuário das Marés · Vara 2 Nv.1; com a Chance de Sucesso, um puxado a cada ~27 tentativas (~0,2 h online, sem barco nem isca).
-- Ao chegar ao segundo mapa, as Moedas por hora sobem 9,2× (3.298 → 30.493).
+- Peixes acima de comum: 5,92% das mordidas em Pantanal Dourado · Vara 2 Nv.1; com a Chance de Sucesso, um puxado a cada ~39 tentativas (~0,3 h online, sem barco nem isca).
+- Peixes acima de comum: 8,08% das mordidas em Estuário das Marés · Vara 2 Nv.1; com a Chance de Sucesso, um puxado a cada ~28 tentativas (~0,2 h online, sem barco nem isca).
+- Ao chegar ao segundo mapa, as Moedas por hora sobem 8,6× (3.298 → 28.357).
 - As batalhas duram em média 8 a 22 s, bem abaixo da meta de ~60 s.
 - A Expedição que mais rende por hora, na Força recomendada, dá 333 Moedas/h — 10% do que a pesca rende no primeiro mapa (ela roda junto com a pesca).
-- Sucesso da Captura: 37 peixes escapam por hora. Se toda mordida virasse captura, o Nível 10 chegaria com 1,0 h em vez de 2,1 h.
+- Sucesso da Captura: 45 peixes escapam por hora. Se toda mordida virasse captura, o Nível 10 chegaria com 1,0 h em vez de 2,1 h.
 
 ## 1. Progressão do Pescador (pesca online, sem parar)
 
@@ -43,42 +43,42 @@ que pode, depois os barcos, e viaja para o próximo mapa assim que ele libera. N
 | 9 | 1,6 h | 4.851 |
 | 10 | 2,1 h | 6.807 |
 | 11 | 2,3 h | 7.257 |
-| 12 | 2,5 h | 11.273 |
-| 13 | 2,6 h | 18.487 |
-| 14 | 2,8 h | 24.104 |
-| 15 | 3,0 h | 31.084 |
-| 16 | 3,2 h | 34.964 |
-| 17 | 3,4 h | 44.086 |
-| 18 | 3,7 h | 52.191 |
-| 19 | 4,0 h | 60.907 |
-| 20 | 4,4 h | 70.285 |
-| 30 | 8,1 h | 278.937 |
-| 40 | 12,1 h | 768.223 |
-| 50 | 17,8 h | 1.489.645 |
-| 60 | 25,3 h | 2.447.751 |
-| 70 | 34,7 h | 3.711.034 |
-| 80 | 46,0 h | 5.247.267 |
-| 90 | 60,0 h | 7.094.499 |
-| 100 | 76,3 h | 9.319.121 |
+| 12 | 2,5 h | 12.207 |
+| 13 | 2,6 h | 18.871 |
+| 14 | 2,8 h | 23.564 |
+| 15 | 3,0 h | 31.590 |
+| 16 | 3,2 h | 38.410 |
+| 17 | 3,5 h | 44.276 |
+| 18 | 3,8 h | 52.488 |
+| 19 | 4,2 h | 62.168 |
+| 20 | 4,5 h | 71.179 |
+| 30 | 8,5 h | 279.561 |
+| 40 | 13,0 h | 763.520 |
+| 50 | 19,1 h | 1.485.959 |
+| 60 | 27,5 h | 2.451.104 |
+| 70 | 37,9 h | 3.715.639 |
+| 80 | 50,8 h | 5.249.438 |
+| 90 | 66,4 h | 7.083.744 |
+| 100 | 84,7 h | 9.300.115 |
 
 Até o Nível 20 aparecem todos os níveis; depois, de 10 em 10. A simulação para no nível máximo ou com 150 h.
 
-- Capturas por hora online: 83
+- Capturas por hora online: 75
 - Vara 1 com 2,2 h de pesca
-- Vara 2 com 8,2 h de pesca
+- Vara 2 com 8,6 h de pesca
 
 | Mapa | Chegada | XP por hora | Moedas por hora (vendendo tudo) | Conchas por hora |
 |---|---:|---:|---:|---:|
 | Lago Sereno | 0,0 h | 958 | 3.298 | 0,0 |
-| Rio Selvagem | 2,2 h | 4.673 | 30.493 | 10,5 |
-| Pantanal Dourado | 4,5 h | 5.834 | 56.531 | 11,9 |
-| Estuário das Marés | 8,2 h | 9.938 | 132.682 | 19,9 |
+| Rio Selvagem | 2,2 h | 4.346 | 28.357 | 9,9 |
+| Pantanal Dourado | 4,6 h | 5.519 | 53.492 | 10,6 |
+| Estuário das Marés | 8,6 h | 8.883 | 118.328 | 17,8 |
 
 - Barco 1 com 2,2 h de pesca
 - Barco 2 com 2,7 h de pesca
-- Barco 3 com 5,2 h de pesca
-- Barco 4 com 13,0 h de pesca
-- Barco 5 com 31,5 h de pesca
+- Barco 3 com 5,3 h de pesca
+- Barco 4 com 13,7 h de pesca
+- Barco 5 com 33,9 h de pesca
 
 ## 2. Frequência de raridade e de tamanho
 
@@ -105,13 +105,13 @@ Até o Nível 20 aparecem todos os níveis; depois, de 10 em 10. A simulação p
 ## 3. Economia
 
 - Moedas por hora vendendo tudo, primeiro mapa: 3.298
-- Moedas por hora vendendo tudo, segundo mapa (com a vara comprada, Nv.1): 30.493
-- Conchas por hora no segundo mapa: 10,5
+- Moedas por hora vendendo tudo, segundo mapa (com a vara comprada, Nv.1): 28.357
+- Conchas por hora no segundo mapa: 9,9
 
 | Vara | Preço | Todas as melhorias | Horas de pesca para pagar a vara | Horas para pagar as melhorias |
 |---|---:|---:|---:|---:|
-| Vara 1 | 2.500 | 138.050 | 0,8 h | 4,5 h |
-| Vara 2 | 90.000 | 765.000 | 27,3 h | 25,1 h |
+| Vara 1 | 2.500 | 138.050 | 0,8 h | 4,9 h |
+| Vara 2 | 90.000 | 765.000 | 27,3 h | 27,0 h |
 
 Preço de venda ao NPC por espécie (tamanho mínimo, médio e máximo da espécie):
 
@@ -217,15 +217,15 @@ no CHANGELOG (0.2.0-m14.19).
 | Nível 5 | 0,2 h | 0,4 h |
 | Nível 10 | 1,0 h | 2,1 h |
 | Nível 15 | 1,6 h | 3,0 h |
-| Nível 20 | 2,3 h | 4,4 h |
-| Nível 30 | 4,4 h | 8,1 h |
-| Nível 40 | 7,0 h | 12,1 h |
-| Capturas por hora | 120 | 83 |
-| Escapes por hora | 0 | 37 |
+| Nível 20 | 2,3 h | 4,5 h |
+| Nível 30 | 4,4 h | 8,5 h |
+| Nível 40 | 7,0 h | 13,0 h |
+| Capturas por hora | 120 | 75 |
+| Escapes por hora | 0 | 45 |
 | Moedas por hora, primeiro mapa | 6.491 | 3.298 |
-| Moedas por hora, segundo mapa | 56.428 | 30.493 |
-| Conchas por hora, segundo mapa | 14,6 | 10,5 |
-| Primeiro peixe Raro | 2,0 h | 4,0 h |
+| Moedas por hora, segundo mapa | 56.428 | 28.357 |
+| Conchas por hora, segundo mapa | 14,6 | 9,9 |
+| Primeiro peixe Raro | 2,0 h | 4,1 h |
 | Vara 1 comprada | 1,1 h | 2,2 h |
 
 Combinações de equipamento, 10.000 tentativas cada (`CatchSimulator`, a mesma regra do jogo). A isca fica
@@ -234,43 +234,43 @@ sempre ligada; o custo dela por hora já está descontado em "Moedas/h líquidas
 | Mapa · vara · barco · isca | Taxa real | Comum puxados (chance) | Raro puxados (chance) | Épico puxados (chance) | Capturas/h | Escapes/h | XP/h | Moedas/h | Moedas/h líquidas | Conchas/h |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Lago Sereno · Vara Inicial · Barco Inicial · sem isca | 49,4% | 4.944 (50%) | — | — | 59 | 61 | 963 | 3.311 | 3.311 | 0,0 |
-| Lago Sereno · Vara Inicial · Barco 1 · Isca Simples | 57,6% | 5.764 (58%) | — | — | 69 | 51 | 1.128 | 3.897 | 3.657 | 0,0 |
-| Lago Sereno · Vara 1 Nv.1 · Barco Inicial · sem isca | 51,6% | 5.159 (52%) | — | — | 62 | 58 | 1.009 | 3.476 | 3.476 | 9,2 |
-| Lago Sereno · Vara 1 Nv.10 · Barco Inicial · sem isca | 62,0% | 6.200 (62%) | — | — | 74 | 46 | 1.222 | 4.282 | 4.282 | 16,3 |
-| Lago Sereno · Vara 1 Nv.10 · Barco 1 · Isca Simples | 70,0% | 6.998 (70%) | — | — | 84 | 36 | 1.376 | 4.828 | 4.588 | 18,5 |
-| Lago Sereno · Vara 1 Nv.10 · Barco 5 · Isca Premium | 92,3% | 9.227 (92%) | — | — | 111 | 9 | 1.820 | 6.398 | 5.438 | 18,3 |
-| Lago Sereno · Vara 2 Nv.1 · Barco Inicial · sem isca | 57,6% | 5.764 (58%) | — | — | 69 | 51 | 1.129 | 3.958 | 3.958 | 15,6 |
-| Lago Sereno · Vara 2 Nv.10 · Barco Inicial · sem isca | 70,0% | 6.998 (70%) | — | — | 84 | 36 | 1.378 | 4.917 | 4.917 | 26,0 |
-| Lago Sereno · Vara 2 Nv.10 · Barco 1 · Isca Simples | 77,8% | 7.783 (78%) | — | — | 93 | 27 | 1.525 | 5.416 | 5.176 | 29,1 |
-| Lago Sereno · Vara 2 Nv.10 · Barco 5 · Isca Premium | 95,0% | 9.498 (95%) | — | — | 114 | 6 | 1.884 | 6.741 | 5.781 | 29,1 |
-| Rio Selvagem · Vara 1 Nv.1 · Barco Inicial · sem isca | 51,6% | 5.119 (52%) | 37 (40%) | — | 62 | 58 | 4.255 | 28.695 | 28.695 | 9,3 |
-| Rio Selvagem · Vara 1 Nv.10 · Barco Inicial · sem isca | 62,0% | 6.145 (62%) | 50 (50%) | — | 74 | 46 | 5.193 | 35.728 | 35.728 | 16,3 |
-| Rio Selvagem · Vara 1 Nv.10 · Barco 1 · Isca Simples | 69,9% | 6.935 (70%) | 56 (58%) | — | 84 | 36 | 5.837 | 40.193 | 39.953 | 18,5 |
-| Rio Selvagem · Vara 1 Nv.10 · Barco 5 · Isca Premium | 92,0% | 9.122 (92%) | 80 (80%) | — | 110 | 10 | 7.745 | 53.440 | 52.480 | 18,1 |
-| Rio Selvagem · Vara 2 Nv.1 · Barco Inicial · sem isca | 57,5% | 5.707 (58%) | 47 (46%) | — | 69 | 51 | 4.806 | 33.022 | 33.022 | 15,6 |
-| Rio Selvagem · Vara 2 Nv.10 · Barco Inicial · sem isca | 69,9% | 6.917 (70%) | 74 (58%) | — | 84 | 36 | 5.996 | 42.351 | 42.351 | 25,9 |
-| Rio Selvagem · Vara 2 Nv.10 · Barco 1 · Isca Simples | 77,6% | 7.683 (78%) | 80 (66%) | — | 93 | 27 | 6.620 | 46.489 | 46.249 | 29,1 |
-| Rio Selvagem · Vara 2 Nv.10 · Barco 5 · Isca Premium | 94,8% | 9.359 (95%) | 124 (88%) | — | 114 | 6 | 8.351 | 59.590 | 58.630 | 28,9 |
-| Pantanal Dourado · Vara 1 Nv.1 · Barco Inicial · sem isca | 50,9% | 4.927 (52%) | 157 (40%) | 8 (26%) | 61 | 59 | 4.869 | 45.409 | 45.409 | 9,1 |
-| Pantanal Dourado · Vara 1 Nv.10 · Barco Inicial · sem isca | 61,3% | 5.868 (62%) | 247 (50%) | 15 (36%) | 74 | 46 | 6.074 | 58.807 | 58.807 | 16,2 |
-| Pantanal Dourado · Vara 1 Nv.10 · Barco 1 · Isca Simples | 69,3% | 6.642 (70%) | 274 (58%) | 14 (44%) | 83 | 37 | 6.829 | 66.082 | 65.842 | 18,4 |
-| Pantanal Dourado · Vara 1 Nv.10 · Barco 5 · Isca Premium | 91,5% | 8.705 (92%) | 424 (80%) | 18 (66%) | 110 | 10 | 9.177 | 89.687 | 88.727 | 18,2 |
-| Pantanal Dourado · Vara 2 Nv.1 · Barco Inicial · sem isca | 56,8% | 5.434 (58%) | 232 (46%) | 11 (32%) | 68 | 52 | 5.599 | 54.079 | 54.079 | 15,6 |
-| Pantanal Dourado · Vara 2 Nv.10 · Barco Inicial · sem isca | 69,2% | 6.562 (70%) | 336 (58%) | 17 (44%) | 83 | 37 | 7.011 | 69.872 | 69.872 | 25,7 |
-| Pantanal Dourado · Vara 2 Nv.10 · Barco 1 · Isca Simples | 76,7% | 7.250 (78%) | 402 (66%) | 18 (52%) | 92 | 28 | 7.828 | 78.182 | 77.942 | 28,7 |
-| Pantanal Dourado · Vara 2 Nv.10 · Barco 5 · Isca Premium | 94,3% | 8.829 (95%) | 583 (88%) | 20 (74%) | 113 | 7 | 9.867 | 99.812 | 98.852 | 28,8 |
-| Estuário das Marés · Vara 2 Nv.1 · Barco Inicial · sem isca | 56,5% | 5.322 (58%) | 314 (46%) | 18 (32%) | 68 | 52 | 7.706 | 101.811 | 101.811 | 15,5 |
-| Estuário das Marés · Vara 2 Nv.10 · Barco Inicial · sem isca | 68,9% | 6.355 (70%) | 496 (58%) | 37 (44%) | 83 | 37 | 9.959 | 136.652 | 136.652 | 25,5 |
-| Estuário das Marés · Vara 2 Nv.10 · Barco 1 · Isca Simples | 76,4% | 7.020 (78%) | 579 (66%) | 38 (52%) | 92 | 28 | 11.089 | 151.849 | 151.609 | 28,5 |
-| Estuário das Marés · Vara 2 Nv.10 · Barco 5 · Isca Premium | 94,1% | 8.574 (95%) | 775 (88%) | 56 (74%) | 113 | 7 | 14.017 | 193.464 | 192.504 | 28,7 |
+| Lago Sereno · Vara Inicial · Barco 1 · Isca Simples | 54,3% | 5.434 (55%) | — | — | 65 | 55 | 1.066 | 3.680 | 3.440 | 0,0 |
+| Lago Sereno · Vara 1 Nv.1 · Barco Inicial · sem isca | 51,0% | 5.104 (52%) | — | — | 61 | 59 | 997 | 3.428 | 3.428 | 9,2 |
+| Lago Sereno · Vara 1 Nv.10 · Barco Inicial · sem isca | 57,6% | 5.764 (58%) | — | — | 69 | 51 | 1.129 | 3.953 | 3.953 | 15,3 |
+| Lago Sereno · Vara 1 Nv.10 · Barco 1 · Isca Simples | 62,9% | 6.289 (63%) | — | — | 75 | 45 | 1.239 | 4.345 | 4.105 | 16,4 |
+| Lago Sereno · Vara 1 Nv.10 · Barco 5 · Isca Premium | 77,8% | 7.783 (78%) | — | — | 93 | 27 | 1.522 | 5.319 | 4.359 | 13,8 |
+| Lago Sereno · Vara 2 Nv.1 · Barco Inicial · sem isca | 54,9% | 5.493 (56%) | — | — | 66 | 54 | 1.079 | 3.781 | 3.781 | 14,7 |
+| Lago Sereno · Vara 2 Nv.10 · Barco Inicial · sem isca | 63,4% | 6.335 (64%) | — | — | 76 | 44 | 1.250 | 4.463 | 4.463 | 23,4 |
+| Lago Sereno · Vara 2 Nv.10 · Barco 1 · Isca Simples | 68,4% | 6.842 (69%) | — | — | 82 | 38 | 1.353 | 4.847 | 4.607 | 25,3 |
+| Lago Sereno · Vara 2 Nv.10 · Barco 5 · Isca Premium | 83,4% | 8.337 (84%) | — | — | 100 | 20 | 1.632 | 5.823 | 4.863 | 24,5 |
+| Rio Selvagem · Vara 1 Nv.1 · Barco Inicial · sem isca | 51,0% | 5.064 (52%) | 37 (40%) | — | 61 | 59 | 4.207 | 28.337 | 28.337 | 9,2 |
+| Rio Selvagem · Vara 1 Nv.10 · Barco Inicial · sem isca | 57,5% | 5.708 (58%) | 46 (46%) | — | 69 | 51 | 4.798 | 32.913 | 32.913 | 15,4 |
+| Rio Selvagem · Vara 1 Nv.10 · Barco 1 · Isca Simples | 62,8% | 6.230 (63%) | 51 (51%) | — | 75 | 45 | 5.264 | 36.393 | 36.153 | 16,4 |
+| Rio Selvagem · Vara 1 Nv.10 · Barco 5 · Isca Premium | 77,7% | 7.704 (78%) | 61 (66%) | — | 93 | 27 | 6.449 | 44.120 | 43.160 | 13,8 |
+| Rio Selvagem · Vara 2 Nv.1 · Barco Inicial · sem isca | 54,8% | 5.432 (56%) | 49 (44%) | — | 66 | 54 | 4.617 | 31.825 | 31.825 | 14,7 |
+| Rio Selvagem · Vara 2 Nv.10 · Barco Inicial · sem isca | 63,3% | 6.260 (64%) | 67 (52%) | — | 76 | 44 | 5.442 | 38.600 | 38.600 | 23,3 |
+| Rio Selvagem · Vara 2 Nv.10 · Barco 1 · Isca Simples | 68,4% | 6.760 (69%) | 76 (57%) | — | 82 | 38 | 5.908 | 41.977 | 41.737 | 25,3 |
+| Rio Selvagem · Vara 2 Nv.10 · Barco 5 · Isca Premium | 83,2% | 8.236 (84%) | 85 (72%) | — | 100 | 20 | 7.089 | 50.155 | 49.195 | 24,5 |
+| Pantanal Dourado · Vara 1 Nv.1 · Barco Inicial · sem isca | 50,5% | 4.880 (52%) | 157 (40%) | 8 (26%) | 61 | 59 | 4.828 | 45.025 | 45.025 | 9,1 |
+| Pantanal Dourado · Vara 1 Nv.10 · Barco Inicial · sem isca | 56,8% | 5.438 (58%) | 230 (46%) | 11 (32%) | 68 | 52 | 5.595 | 53.937 | 53.937 | 15,3 |
+| Pantanal Dourado · Vara 1 Nv.10 · Barco 1 · Isca Simples | 62,2% | 5.954 (63%) | 249 (51%) | 15 (37%) | 75 | 45 | 6.155 | 59.535 | 59.295 | 16,4 |
+| Pantanal Dourado · Vara 1 Nv.10 · Barco 5 · Isca Premium | 76,9% | 7.341 (78%) | 330 (66%) | 15 (52%) | 92 | 28 | 7.618 | 73.671 | 72.711 | 13,6 |
+| Pantanal Dourado · Vara 2 Nv.1 · Barco Inicial · sem isca | 54,0% | 5.174 (56%) | 217 (44%) | 12 (30%) | 65 | 55 | 5.333 | 51.711 | 51.711 | 14,5 |
+| Pantanal Dourado · Vara 2 Nv.10 · Barco Inicial · sem isca | 62,5% | 5.916 (64%) | 318 (52%) | 16 (38%) | 75 | 45 | 6.380 | 63.561 | 63.561 | 23,1 |
+| Pantanal Dourado · Vara 2 Nv.10 · Barco 1 · Isca Simples | 67,6% | 6.399 (69%) | 339 (57%) | 17 (43%) | 81 | 39 | 6.885 | 68.737 | 68.497 | 25,0 |
+| Pantanal Dourado · Vara 2 Nv.10 · Barco 5 · Isca Premium | 82,4% | 7.771 (84%) | 446 (72%) | 18 (58%) | 99 | 21 | 8.438 | 84.504 | 83.544 | 24,4 |
+| Estuário das Marés · Vara 2 Nv.1 · Barco Inicial · sem isca | 53,7% | 5.062 (56%) | 295 (44%) | 17 (30%) | 64 | 56 | 7.309 | 96.602 | 96.602 | 14,3 |
+| Estuário das Marés · Vara 2 Nv.10 · Barco Inicial · sem isca | 62,0% | 5.721 (64%) | 447 (52%) | 36 (38%) | 74 | 46 | 9.008 | 123.733 | 123.733 | 23,1 |
+| Estuário das Marés · Vara 2 Nv.10 · Barco 1 · Isca Simples | 67,1% | 6.184 (69%) | 486 (57%) | 37 (43%) | 80 | 40 | 9.726 | 133.773 | 133.533 | 24,8 |
+| Estuário das Marés · Vara 2 Nv.10 · Barco 5 · Isca Premium | 82,2% | 7.525 (84%) | 654 (72%) | 36 (58%) | 99 | 21 | 11.980 | 164.072 | 163.112 | 24,5 |
 
 Preço dos barcos em horas de pesca no segundo mapa (Moedas e Conchas por hora da seção 1):
 
 | Barco | Bônus | Custo | Nível | Horas de pesca | Conchas |
 |---|---:|---:|---:|---:|---:|
-| Barco 1 | +3% | 3.000 Moedas + 0 Conchas | 5 | 0,1 h | — |
-| Barco 2 | +6% | 15.000 Moedas + 0 Conchas | 12 | 0,5 h | — |
-| Barco 3 | +9% | 45.000 Moedas + 30 Conchas | 20 | 1,5 h | 2,9 h |
-| Barco 4 | +12% | 130.000 Moedas + 120 Conchas | 30 | 4,3 h | 11,4 h |
-| Barco 5 | +15% | 350.000 Moedas + 350 Conchas | 40 | 11,5 h | 33,3 h |
+| Barco 1 | +2% | 3.000 Moedas + 0 Conchas | 5 | 0,1 h | — |
+| Barco 2 | +4% | 15.000 Moedas + 0 Conchas | 12 | 0,5 h | — |
+| Barco 3 | +6% | 45.000 Moedas + 30 Conchas | 20 | 1,6 h | 3,0 h |
+| Barco 4 | +8% | 130.000 Moedas + 120 Conchas | 30 | 4,6 h | 12,1 h |
+| Barco 5 | +10% | 350.000 Moedas + 350 Conchas | 40 | 12,3 h | 35,2 h |
 

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-01T04:21:11Z",
+  "updated_at": "2026-10-01T04:49:30Z",
   "current_milestone": "M16",
   "statuses": [
     "TODO",
@@ -2412,6 +2412,16 @@
           "dependencies": [],
           "updated_at": "2026-10-01T04:21:11Z",
           "completion_notes": "Rótulo de moedas com largura mínima do número (UiSkin.CoinAmount/CoinAmountWidth); folga no saldo do Mercado e nas tentativas de isca; Format.Number nas contagens; notas da pesca offline, do Leilão e da chance da Loja com os valores da config (OfflineReport.CapHours, AuctionsView.AntiSnipeResetSeconds, GearView.ChanceMin/Max); textos antigos de milestone corrigidos; texto sem uso EarlyEndNote removido. Regra em BASE_TECNICA. Compila; não aberto no Unity ainda."
+        },
+        {
+          "id": "M16-T10",
+          "title": "Bônus de chance do equipamento um terço menores",
+          "subsystem": "config",
+          "description": "Pedido do proprietário (01/10/2026): diminuir as chances dos barcos, das iscas e das varas, em um terço.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-01T04:49:30Z",
+          "completion_notes": "config/equipment.json (barcos 0,02–0,10; iscas 0,03/0,07/0,10) e config/rods.json (catch_success da Vara 1 0,015–0,08 e da Vara 2 0,055–0,135). Testes leem o bônus da config. Simulação refeita: 20→30 em 4,0 h, 30→40 em 4,5 h. GDD_ADENDO A-095."
         }
       ]
     }

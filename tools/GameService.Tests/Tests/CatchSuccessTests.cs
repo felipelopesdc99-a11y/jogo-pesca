@@ -113,7 +113,8 @@ public sealed class CatchSuccessTests
         Assert.True(bought.Succeeded);
         Assert.Equal("bait_01", bought.Value.BaitId);
         Assert.Equal(100, bought.Value.BaitChargesLeft);
-        Assert.Equal(0.55, bought.Value.Chances.Single(c => c.RarityId == "common").Chance, 6);
+        Assert.Equal(0.5 + bought.Value.BaitBonus, bought.Value.Chances.Single(c => c.RarityId == "common").Chance, 6);
+        Assert.True(bought.Value.BaitBonus > 0);
 
         game.Fishing.StartFishing();
         TestSupport.PlayFor(game, clock, 30 * 10);
@@ -145,7 +146,8 @@ public sealed class CatchSuccessTests
         Assert.True(bought.Succeeded);
         Assert.Equal(0, save.Coins);
         Assert.Equal("boat_01", bought.Value.BoatId);
-        Assert.Equal(0.53, bought.Value.Chances.Single(c => c.RarityId == "common").Chance, 6);
+        Assert.Equal(0.5 + bought.Value.BoatBonus, bought.Value.Chances.Single(c => c.RarityId == "common").Chance, 6);
+        Assert.True(bought.Value.BoatBonus > 0);
         Assert.Equal(ServiceError.BoatAlreadyOwned, game.Gear.BuyBoat("boat_01").Error);
 
         save.Coins = 1_000_000;

@@ -1004,3 +1004,19 @@ Os animais novos reaproveitam os comportamentos que já existem (A-078), com o m
   batidas rápidas e planadas curtas.
 - O fundo de cada mapa alterna duas faixas pintadas diferentes (capões no Pantanal, mangue no
   Estuário), em vez de repetir a mesma espelhada.
+
+### A-095 · Bônus de puxar das varas, barcos e iscas um terço menores
+**Seção do GDD:** 19 · **Situação:** Decidido pelo proprietário (01/10/2026)
+
+O proprietário achou altos os bônus de chance do equipamento. Todos caem um terço, e a chance-base de
+cada raridade não muda:
+
+| Equipamento | Antes | Agora |
+|---|---|---|
+| Barcos 1 a 5 | +3%, +6%, +9%, +12%, +15% | +2%, +4%, +6%, +8%, +10% |
+| Iscas Simples, Melhorada e Premium | +5%, +10%, +15% | +3%, +7%, +10% |
+| Vara 1, do Nv. 1 ao 10 | +2% a +12% | +1,5% a +8% |
+| Vara 2, do Nv. 1 ao 10 | +8% a +20% | +5,5% a +13,5% |
+
+Na simulação, do Nível 20 ao 30 passa de 3,7 h para 4,0 h online, e do 30 ao 40, de 4,0 h para 4,5 h.
+Escapam cerca de 45 peixes por hora, contra 37 antes.
