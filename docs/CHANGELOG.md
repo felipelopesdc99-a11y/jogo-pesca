@@ -3,6 +3,18 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.29] — 01/10/2026
+
+### Mudado
+
+- XP para subir de nível um pouco menor entre os níveis 20 e 50, para voltar às metas dos mapas 3 e 4
+  depois da redução dos bônus (A-095): 20→30 em 3,8 h e 30→40 em 4,0 h de pesca online.
+
+### Adicionado
+
+- O jogo já aceita a pintura das iscas (`Resources/Arte/Iscas`); até ela chegar, continua a forma
+  colorida. Pedido para o GPT em `docs/PEDIDO_ARTE_ISCAS.md`.
+
 ## [0.2.0-m16.28] — 01/10/2026
 
 ### Adicionado

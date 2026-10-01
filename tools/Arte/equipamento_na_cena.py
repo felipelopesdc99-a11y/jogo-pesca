@@ -1,6 +1,6 @@
 """Puts the equipped boat, rod and bait in the fishing scene (addendum A-096).
 
-Usage:  python3 tools/Arte/equipamento_na_cena.py [--previa <saida.png>]
+Usage:  python3 tools/Arte/equipamento_na_cena.py [--iscas <imagem.png>] [--previa <saida.png>]
 
 What it does:
   - For each Shop boat (Resources/Arte/Barcos/boat_01..05) cuts a "front" layer: the near side of the
@@ -9,6 +9,8 @@ What it does:
   - Measures each rod picture (Resources/Arte/Varas): the butt and the tip, so the scene can lay the
     painted rod along the animated one.
   - Writes Resources/Visual/equipamento_cena.json with all of it (plus the placeholder bait colours).
+  - With --iscas, cuts the bait picture from the owner (three baits side by side, Simples, Melhorada
+    and Premium, on a flat green, magenta or blue background) into Resources/Arte/Iscas/bait_0X.png.
   - With --previa, draws every boat with the fisherman and each rod, to check the fit outside Unity.
 
 The starter boat (boat_00) keeps the scene's own two-layer hull (Cena/barco_fundo + barco_frente).
@@ -50,7 +52,7 @@ WATERLINE = 0.22        # waterline: this fraction of the hull height above its 
 # Where the hands hold each rod, as a fraction from the butt to the tip.
 ROD_GRIP = {'rod_00_starter': 0.2, 'rod_01': 0.22, 'rod_02': 0.24}
 
-# Placeholder bait on the hook (ASSET_PENDENTE: no bait art yet): one colour per bait.
+# Bait on the hook: Resources/Arte/Iscas/<id>.png when it exists; until then this colour (ASSET_PENDENTE).
 BAITS = {'bait_01': '#9A6A4A', 'bait_02': '#E0803C', 'bait_03': '#E9BE45'}
 
 # Scene constants mirrored from FishermanRig / FishingScene (for the preview only).
@@ -125,31 +127,38 @@ def rod_entry(rod_id):
     }
 
 
+def bait_entry(bait_id, color):
+    # The picture (Resources/Arte/Iscas/<id>.png) is used when it exists; the colour stays as the fallback.
+    entry = {'id': bait_id, 'color': color, 'width': 0.22}
+    if os.path.exists(os.path.join(ARTE, 'Iscas', bait_id + '.png')):
+        entry['art'] = 'Iscas/' + bait_id
+    return entry
+
+
 def write_all():
     os.makedirs(os.path.join(ARTE, 'Barcos', 'Cena'), exist_ok=True)
     written = []
     for boat_id in GUNWALES:
         path = os.path.join(ARTE, 'Barcos', 'Cena', boat_id + '_frente.png')
         front_layer(boat_id).save(path, optimize=True)
-        written.append(os.path.relpath(path, ROOT))
+        written.append(os.path.relpath(path, ARTE).replace(os.sep, '/'))
     data = {
         'note': 'Gerado por tools/Arte/equipamento_na_cena.py. Barco, vara e isca equipados na cena (GDD_ADENDO A-096).',
         'boats': [boat_entry(b) for b in GUNWALES],
         'rods': [rod_entry(r) for r in sorted(ROD_GRIP)],
-        'baits': [{'id': k, 'color': v} for k, v in BAITS.items()],
+        'baits': [bait_entry(k, v) for k, v in BAITS.items()],
     }
     path = os.path.join(VISUAL, 'equipamento_cena.json')
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
         f.write('\n')
-    written.append(os.path.relpath(path, ROOT))
     with open(FINAIS, encoding='utf-8') as f:
         known = set(l.strip() for l in f if l.strip())
     with open(FINAIS, 'a', encoding='utf-8') as f:
         for p in written:
             if p not in known:
                 f.write(p + '\n')
-    print('Arquivos gravados:', len(written))
+    print('Arquivos gravados:', len(written) + 1)
     return data
 
 
@@ -256,7 +265,21 @@ def preview(data, out):
     print('Prévia:', out)
 
 
+def cut_baits(path):
+    import processar_mapas_3_4 as M
+    import processar_pedidos as P
+    M.grid(Image.open(path).convert('RGBA'), 3, 1, ['bait_01', 'bait_02', 'bait_03'], 'Iscas/%s.png', (256, 256), 0.06)
+    with open(FINAIS, encoding='utf-8') as f:
+        known = set(l.strip() for l in f if l.strip())
+    with open(FINAIS, 'a', encoding='utf-8') as f:
+        for rel in P.written:
+            if rel not in known:
+                f.write(rel + '\n')
+
+
 if __name__ == '__main__':
+    if '--iscas' in sys.argv:
+        cut_baits(sys.argv[sys.argv.index('--iscas') + 1])
     data = write_all()
     if '--previa' in sys.argv:
         preview(data, sys.argv[sys.argv.index('--previa') + 1])

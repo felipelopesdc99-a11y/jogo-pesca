@@ -4,7 +4,7 @@ Gerado por `./ops/scripts/simular.sh` (ferramenta em `tools/Simulador`). Ele jog
 do jogo com um relógio simulado e mede os números atuais de `/config`. Não muda nenhum valor: serve
 para decidir o balanceamento com dados. Rode de novo depois de editar o balanceamento.
 
-- Versão do balanceamento: `5bc4256b62`
+- Versão do balanceamento: `4a557681a4`
 - Jogadores simulados por medição: 5 (a tabela mostra a média)
 
 ## Pontos de atenção
@@ -14,8 +14,8 @@ proprietário (o balanceamento ainda não foi feito de propósito).
 
 - Nível 10 (libera o segundo mapa) chega com 2,1 h de pesca online (4,2 h se fosse só offline).
 - Nível 20 chega com 4,5 h de pesca online.
-- Do Nível 20 ao 30 (Pantanal Dourado): 4,0 h online (meta de docs/PROGRESSAO_MAPAS_3_4.md: ~3,8 h, com 100% de captura).
-- Do Nível 30 ao 40 (Estuário das Marés): 4,5 h online (meta: ~4,0 h, com 100% de captura).
+- Do Nível 20 ao 30 (Pantanal Dourado): 3,8 h online (meta de docs/PROGRESSAO_MAPAS_3_4.md: ~3,8 h, com 100% de captura).
+- Do Nível 30 ao 40 (Estuário das Marés): 4,0 h online (meta: ~4,0 h, com 100% de captura).
 - Peixes acima de comum: 0,99% das mordidas em Rio Selvagem · Vara 1 Nv.1; com a Chance de Sucesso, um puxado a cada ~255 tentativas (~2,1 h online, sem barco nem isca).
 - Peixes acima de comum: 1,22% das mordidas em Rio Selvagem · Vara 2 Nv.1; com a Chance de Sucesso, um puxado a cada ~189 tentativas (~1,6 h online, sem barco nem isca).
 - Peixes acima de comum: 4,83% das mordidas em Pantanal Dourado · Vara 1 Nv.1; com a Chance de Sucesso, um puxado a cada ~52 tentativas (~0,4 h online, sem barco nem isca).
@@ -52,33 +52,33 @@ que pode, depois os barcos, e viaja para o próximo mapa assim que ele libera. N
 | 18 | 3,8 h | 52.488 |
 | 19 | 4,2 h | 62.168 |
 | 20 | 4,5 h | 71.179 |
-| 30 | 8,5 h | 279.561 |
-| 40 | 13,0 h | 763.520 |
-| 50 | 19,1 h | 1.485.959 |
-| 60 | 27,5 h | 2.451.104 |
-| 70 | 37,9 h | 3.715.639 |
-| 80 | 50,8 h | 5.249.438 |
-| 90 | 66,4 h | 7.083.744 |
-| 100 | 84,7 h | 9.300.115 |
+| 30 | 8,3 h | 270.880 |
+| 40 | 12,3 h | 719.525 |
+| 50 | 18,3 h | 1.401.994 |
+| 60 | 26,6 h | 2.370.979 |
+| 70 | 37,1 h | 3.637.148 |
+| 80 | 50,0 h | 5.159.127 |
+| 90 | 65,6 h | 6.999.633 |
+| 100 | 84,0 h | 9.214.265 |
 
 Até o Nível 20 aparecem todos os níveis; depois, de 10 em 10. A simulação para no nível máximo ou com 150 h.
 
 - Capturas por hora online: 75
 - Vara 1 com 2,2 h de pesca
-- Vara 2 com 8,6 h de pesca
+- Vara 2 com 8,4 h de pesca
 
 | Mapa | Chegada | XP por hora | Moedas por hora (vendendo tudo) | Conchas por hora |
 |---|---:|---:|---:|---:|
 | Lago Sereno | 0,0 h | 958 | 3.298 | 0,0 |
 | Rio Selvagem | 2,2 h | 4.346 | 28.357 | 9,9 |
-| Pantanal Dourado | 4,6 h | 5.519 | 53.492 | 10,6 |
-| Estuário das Marés | 8,6 h | 8.883 | 118.328 | 17,8 |
+| Pantanal Dourado | 4,6 h | 5.524 | 53.603 | 10,9 |
+| Estuário das Marés | 8,4 h | 8.878 | 118.218 | 17,8 |
 
 - Barco 1 com 2,2 h de pesca
 - Barco 2 com 2,7 h de pesca
 - Barco 3 com 5,3 h de pesca
-- Barco 4 com 13,7 h de pesca
-- Barco 5 com 33,9 h de pesca
+- Barco 4 com 13,6 h de pesca
+- Barco 5 com 33,7 h de pesca
 
 ## 2. Frequência de raridade e de tamanho
 
@@ -218,8 +218,8 @@ no CHANGELOG (0.2.0-m14.19).
 | Nível 10 | 1,0 h | 2,1 h |
 | Nível 15 | 1,6 h | 3,0 h |
 | Nível 20 | 2,3 h | 4,5 h |
-| Nível 30 | 4,4 h | 8,5 h |
-| Nível 40 | 7,0 h | 13,0 h |
+| Nível 30 | 4,4 h | 8,3 h |
+| Nível 40 | 6,7 h | 12,3 h |
 | Capturas por hora | 120 | 75 |
 | Escapes por hora | 0 | 45 |
 | Moedas por hora, primeiro mapa | 6.491 | 3.298 |

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-01T04:58:44Z",
+  "updated_at": "2026-10-01T05:06:15Z",
   "current_milestone": "M16",
   "statuses": [
     "TODO",
@@ -2420,8 +2420,8 @@
           "description": "Pedido do proprietário (01/10/2026): diminuir as chances dos barcos, das iscas e das varas, em um terço.",
           "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-01T04:49:30Z",
-          "completion_notes": "config/equipment.json (barcos 0,02–0,10; iscas 0,03/0,07/0,10) e config/rods.json (catch_success da Vara 1 0,015–0,08 e da Vara 2 0,055–0,135). Testes leem o bônus da config. Simulação refeita: 20→30 em 4,0 h, 30→40 em 4,5 h. GDD_ADENDO A-095."
+          "updated_at": "2026-10-01T05:06:15Z",
+          "completion_notes": "config/equipment.json (barcos 0,02–0,10; iscas 0,03/0,07/0,10) e config/rods.json (catch_success da Vara 1 0,015–0,08 e da Vara 2 0,055–0,135). Testes leem o bônus da config. Simulação refeita: 20→30 em 4,0 h, 30→40 em 4,5 h. GDD_ADENDO A-095. Ajuste no mesmo dia: XP do Pescador 3-5% menor nos níveis 20-29, 9% nos 30-39, voltando ao normal até o 50; simulação 20→30 em 3,8 h e 30→40 em 4,0 h (metas de docs/PROGRESSAO_MAPAS_3_4.md)."
         },
         {
           "id": "M16-T11",
@@ -2437,12 +2437,12 @@
           "id": "M16-T12",
           "title": "Pintura das três iscas",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE: as iscas Simples, Melhorada e Premium aparecem na cena como uma forma colorida abaixo da boia (A-096). Falta uma pintura pequena de cada. Lista em docs/ASSETS_PENDENTES.md.",
+          "description": "ASSET_PENDENTE: as iscas Simples, Melhorada e Premium aparecem na cena como uma forma colorida abaixo da boia (A-096). Falta uma pintura pequena de cada. Lista em docs/ASSETS_PENDENTES.md. Pedido pronto em docs/PEDIDO_ARTE_ISCAS.md; o jogo já usa Resources/Arte/Iscas/bait_0X.png quando existir (tools/Arte/equipamento_na_cena.py --iscas).",
           "status": "TODO",
           "dependencies": [
             "M16-T11"
           ],
-          "updated_at": "2026-10-01T04:58:44Z"
+          "updated_at": "2026-10-01T05:06:15Z"
         }
       ]
     }

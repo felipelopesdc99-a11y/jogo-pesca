@@ -275,9 +275,8 @@ Vivos/Plantas/vitoria_05.png
 Vivos/Plantas/vitoria_06.png
 Vivos/Plantas/vitoria_07.png
 Vivos/Plantas/vitoria_08.png
-client-unity/Assets/Resources/Arte/Barcos/Cena/boat_01_frente.png
-client-unity/Assets/Resources/Arte/Barcos/Cena/boat_02_frente.png
-client-unity/Assets/Resources/Arte/Barcos/Cena/boat_03_frente.png
-client-unity/Assets/Resources/Arte/Barcos/Cena/boat_04_frente.png
-client-unity/Assets/Resources/Arte/Barcos/Cena/boat_05_frente.png
-client-unity/Assets/Resources/Visual/equipamento_cena.json
+Barcos/Cena/boat_01_frente.png
+Barcos/Cena/boat_02_frente.png
+Barcos/Cena/boat_03_frente.png
+Barcos/Cena/boat_04_frente.png
+Barcos/Cena/boat_05_frente.png

@@ -226,12 +226,27 @@ namespace FishingIdle.Game.Scene
             }
         }
 
-        /// <summary>Hangs the bait in use on the hook; nothing when no bait is in use.</summary>
+        /// <summary>Hangs the bait in use on the hook (its picture, or a coloured placeholder); nothing when no bait is in use.</summary>
         public void UseBait(string baitId)
         {
-            var color = baitId != null ? EquipmentLook.BaitColor(baitId) : null;
-            _baitColor = color ?? Color.clear;
-            _bait.enabled = _baitLeader.enabled = color.HasValue;
+            var look = baitId != null ? EquipmentLook.Bait(baitId) : null;
+            var art = look != null && !string.IsNullOrEmpty(look.art) ? Visual.ArtAssets.Sprite(look.art, look.width, new Vector2(0.5f, 0.85f)) : null;
+            if (art != null)
+            {
+                _bait.sprite = art;
+                _bait.transform.localScale = Vector3.one;
+                _bait.transform.localPosition = new Vector3(0f, -0.3f, 0f);
+                _baitColor = Color.white;
+            }
+            else
+            {
+                _bait.sprite = Art.RoundedBox;
+                _bait.transform.localScale = new Vector3(0.16f, 0.07f, 1f);
+                _bait.transform.localPosition = new Vector3(0f, -0.33f, 0f);
+                _baitColor = EquipmentLook.BaitColor(look) ?? Color.clear;
+            }
+
+            _bait.enabled = _baitLeader.enabled = _baitColor.a > 0f;
         }
 
         /// <summary>Under the water the bait is seen faintly; on a fish's catch it is hidden (the fish took it).</summary>

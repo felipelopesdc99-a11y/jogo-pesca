@@ -42,11 +42,13 @@ namespace FishingIdle.Game.Scene
         public float grip;
     }
 
-    /// <summary>The bait on the hook (placeholder colour until there is bait art).</summary>
+    /// <summary>The bait on the hook: its picture (Resources/Arte/Iscas) or, without it, a placeholder colour.</summary>
     [Serializable]
     public sealed class EquipmentBaitLook
     {
         public string id;
+        public string art;
+        public float width = 0.22f;
         public string color;
     }
 
@@ -60,10 +62,11 @@ namespace FishingIdle.Game.Scene
 
         public static EquipmentRodLook Rod(string id) => Find(File?.rods, r => r.id == id);
 
-        /// <summary>The colour of a bait, or null when the bait has no look (or none is in use).</summary>
-        public static Color? BaitColor(string id)
+        public static EquipmentBaitLook Bait(string id) => Find(File?.baits, b => b.id == id);
+
+        /// <summary>The placeholder colour of a bait, or null when it has none.</summary>
+        public static Color? BaitColor(EquipmentBaitLook bait)
         {
-            var bait = Find(File?.baits, b => b.id == id);
             return bait != null && ColorUtility.TryParseHtmlString(bait.color, out var color) ? color : (Color?)null;
         }
 

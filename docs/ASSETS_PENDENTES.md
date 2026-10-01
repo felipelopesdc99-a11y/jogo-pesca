@@ -194,8 +194,9 @@ pelo jogo a partir das camadas).
 
 `ASSET_PENDENTE`: as três iscas (Simples, Melhorada e Premium) aparecem na cena como uma forma
 simples, de uma cor para cada uma, pendurada abaixo da boia (A-096). Falta uma pintura pequena de cada
-isca vista de lado, no estilo dos peixes, em fundo chapado. Quando chegar, basta trocar a cor pela
-imagem em `Resources/Visual/equipamento_cena.json`.
+isca vista de lado, no estilo dos peixes, em fundo chapado — o pedido pronto está em
+`docs/PEDIDO_ARTE_ISCAS.md`. Quando chegar: `python3 tools/Arte/equipamento_na_cena.py --iscas <imagem>`
+(corta as três e o jogo passa a usá-las no lugar da cor).
 
 ## Prioridade C
 

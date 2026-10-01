@@ -1021,6 +1021,10 @@ cada raridade não muda:
 Na simulação, do Nível 20 ao 30 passa de 3,7 h para 4,0 h online, e do 30 ao 40, de 4,0 h para 4,5 h.
 Escapam cerca de 45 peixes por hora, contra 37 antes.
 
+*Ajuste no mesmo dia (pedido do proprietário):* para voltar às metas de `docs/PROGRESSAO_MAPAS_3_4.md`,
+o XP para subir de nível ficou menor entre os níveis 20 e 50 — de 3% a 5% menos do 20 ao 29, 9% menos
+do 30 ao 39, e voltando aos poucos ao normal até o 50. Simulação: 20→30 em 3,8 h e 30→40 em 4,0 h.
+
 ### A-096 · O barco, a vara e a isca equipados aparecem na cena
 **Seção do GDD:** 8, 19 · **Situação:** Pedido do proprietário (01/10/2026)
 

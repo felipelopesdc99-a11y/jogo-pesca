@@ -79,15 +79,18 @@
   "baits": [
     {
       "id": "bait_01",
-      "color": "#9A6A4A"
+      "color": "#9A6A4A",
+      "width": 0.22
     },
     {
       "id": "bait_02",
-      "color": "#E0803C"
+      "color": "#E0803C",
+      "width": 0.22
     },
     {
       "id": "bait_03",
-      "color": "#E9BE45"
+      "color": "#E9BE45",
+      "width": 0.22
     }
   ]
 }
