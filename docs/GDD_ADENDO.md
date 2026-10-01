@@ -876,9 +876,8 @@ novo. Por cima da boia sobe **"Você ainda não é bom o suficiente."** e, menor
 barco ou isca para aumentar suas chances.". A espécie que escapou não é revelada, só a raridade.
 Peixe mais raro luta mais tempo e mais forte, a mensagem ganha a cor da raridade e fica um aviso na
 lista ("Um peixe Raro escapou! Sua chance de puxar era 43%."). O escape de um Comum não gera aviso na
-lista, para não virar spam. **Sem som novo:** vale a regra do proprietário de som só no nível, no
-Excepcional/Perfeição e na espécie nova (A-080); se ele quiser um som leve de linha escapando, é a
-decisão `OD-020`. O "Bem-vindo de volta" mostra quantos peixes escaparam. O Perfil ainda não mostra
+lista, para não virar spam. **Sem som:** decidido pelo proprietário em 01/10/2026 (`OD-020`); vale a
+regra de som só no nível, no Excepcional/Perfeição e na espécie nova (A-080). O "Bem-vindo de volta" mostra quantos peixes escaparam. O Perfil ainda não mostra
 os escapes (só ficam contados no save).
 
 ### A-089 · Barcos

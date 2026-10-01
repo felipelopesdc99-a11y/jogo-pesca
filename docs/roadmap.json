@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-01T03:15:47Z",
+  "updated_at": "2026-10-01T03:19:35Z",
   "current_milestone": "M16",
   "statuses": [
     "TODO",
@@ -175,7 +175,8 @@
       "title": "Som ao peixe escapar?",
       "detail": "A especificação do Sucesso da Captura sugere um som leve de linha escapando ou água. Em 29/09 você pediu som só ao subir de nível, no Excepcional e na espécie nova, então o escape está sem som. Quer um som curto e baixo só quando escapa um peixe Raro ou acima, para nenhum escape, ou para todos?",
       "raised_at": "2026-09-30T21:13:40Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "01/10/2026: sem som de escape."
     }
   ],
   "milestones": [
@@ -2275,11 +2276,12 @@
           "title": "Som ao peixe escapar?",
           "subsystem": "client",
           "description": "A especificação sugere um som leve de linha escapando, mas o proprietário pediu som só no nível, no Excepcional e na espécie nova (A-080). Decisão OD-020.",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M15-T04"
           ],
-          "updated_at": "2026-09-30T21:13:40Z"
+          "updated_at": "2026-10-01T03:19:35Z",
+          "completion_notes": "Decidido pelo proprietário (01/10/2026): o escape fica sem som. Vale a regra do A-080 (som só no nível, no Excepcional/Perfeição e na espécie nova). Nada a mudar no código."
         },
         {
           "id": "M15-T09",
