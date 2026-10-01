@@ -68,7 +68,7 @@ namespace FishingIdle.Game.Scene
                 TreeHeight = 0.9f,
                 ArtFolder = "PantanalDourado",
                 ArtPrefix = "map_pantanal_dourado",
-                SunPosition = new Vector2(-5.2f, 1.4f),
+                SunPosition = new Vector2(-5.0f, 1.5f),
                 NearLeftHeight = 2.6f,
                 NearRightHeight = 2.6f,
             };
@@ -99,7 +99,7 @@ namespace FishingIdle.Game.Scene
                 Current = 0.25f,
                 ArtFolder = "EstuarioDasMares",
                 ArtPrefix = "map_estuario_das_mares",
-                SunPosition = new Vector2(1.8f, 1.25f),
+                SunPosition = new Vector2(2.4f, 1.8f),
                 NearLeftHeight = 3f,
                 NearRightHeight = 2.8f,
             };

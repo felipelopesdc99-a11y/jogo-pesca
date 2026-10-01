@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-09-30T22:18:05Z",
+  "updated_at": "2026-10-01T01:39:14Z",
   "current_milestone": "M16",
   "statuses": [
     "TODO",
@@ -2359,11 +2359,12 @@
           "title": "Arte final dos mapas 3 e 4",
           "subsystem": "client",
           "description": "ASSET_PENDENTE: as imagens do documento de pedidos (Pantanal 01–18, Estuário 01–17, Novo 01–03). Lista em docs/ASSETS_PENDENTES.md.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M16-T04"
           ],
-          "updated_at": "2026-09-30T22:18:05Z"
+          "updated_at": "2026-10-01T01:39:14Z",
+          "completion_notes": "As 37 imagens do proprietário (01/10/2026) entraram com tools/Arte/processar_mapas_3_4.py: cenários dos dois mapas, 20 peixes, Vara 2, seis barcos, paisagem viva (araras-azuis, tuiuiú, colhereiros, guarás, trinta-réis, caranguejo, boto, carandaás, aguapés, plantas de mangue). GDD_ADENDO A-094. Três imagens ficaram para a M16-T07. Compila; não aberto no Unity ainda."
         },
         {
           "id": "M16-T06",
@@ -2375,6 +2376,17 @@
             "M16-T04"
           ],
           "updated_at": "2026-09-30T22:18:05Z"
+        },
+        {
+          "id": "M16-T07",
+          "title": "Refazer três imagens dos mapas 3 e 4",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE: Pantanal 06 (margem direita veio como pintura inteira, sem fundo magenta; hoje usa a esquerda espelhada), Pantanal 16 (borboletas: o arquivo veio vazio) e Novo 03 (ícones de barco e isca, não veio). Lista em docs/ASSETS_PENDENTES.md.",
+          "status": "TODO",
+          "dependencies": [
+            "M16-T05"
+          ],
+          "updated_at": "2026-10-01T01:39:14Z"
         }
       ]
     }

@@ -986,3 +986,17 @@ moedas e 500 conchas no total) e as iscas são o gasto novo. Detalhes em
   Estuário das Marés". A paisagem viva usa os animais que já existem (araras, garças, capivaras,
   jacaré, patos, andorinhas) até as artes novas chegarem. O som ambiente espera gravações
   `pantanal_01..04` e `estuario_01..04` (até lá, o som antigo).
+
+### A-094 · Paisagem viva dos mapas 3 e 4
+**Seção do GDD:** 18 · **Situação:** Decidido na implementação (01/10/2026), com a arte do proprietário
+
+Os animais novos reaproveitam os comportamentos que já existem (A-078), com o mesmo diretor de cenário
+(um animal por vez, descanso sorteado):
+
+- **Pantanal Dourado:** casal de araras-azuis cruzando o céu; tuiuiú voando devagar e às vezes pousando
+  na beira para caçar (como a garça); colhereiros em fila de 1 a 3; andorinhas, patos, jacaré e
+  capivaras. Palmeiras carandaá balançam nas margens e aguapés boiam perto dos cantos.
+- **Estuário das Marés:** bando de 3 a 6 guarás; trinta-réis rápidos e baixos sobre a água; garça; um
+  caranguejo chama-maré que sai da lama do canto, acena com a garra e volta para a toca; um boto-cinza ao
+  longe que aparece duas ou três vezes seguidas, às vezes saltando. Capim e samambaias do mangue
+  balançam nos cantos.

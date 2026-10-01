@@ -3,6 +3,25 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.21] — 01/10/2026
+
+### Adicionado
+
+- **Arte final dos mapas 3 e 4**: cenários do Pantanal Dourado e do Estuário das Marés, os 20 peixes,
+  a Vara 2 e os seis barcos da Loja.
+- **Paisagem viva nova**: araras-azuis, tuiuiú (voando e pousando na beira), colhereiros, guarás,
+  trinta-réis, caranguejo chama-maré e boto-cinza; carandaás, aguapés e plantas de mangue.
+- `tools/Arte/processar_mapas_3_4.py` para colocar as imagens no jogo.
+
+### Pendente
+
+- Refazer Pantanal 06 (veio sem fundo chapado) e Pantanal 16 (arquivo vazio); Novo 03 (ícones) não
+  veio (`M16-T07`).
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda (`M16-T06`).
+
 ## [0.2.0-m16.20] — 30/09/2026
 
 ### Adicionado

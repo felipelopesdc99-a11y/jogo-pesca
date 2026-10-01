@@ -277,6 +277,11 @@ antigos entram com o Barco Inicial e sem isca. Cada passo está em `SaveMigratio
     peixes de lado, mesmo "artista") e `gerar_cenarios.py` (camadas dos mapas, nuvens, barco,
     pescador, varas, fotos dos mapas e das Expedições). A lista do que falta como arte final e as
     regras de tamanho estão em `docs/ASSETS_PENDENTES.md`.
+  - **Arte dos mapas 3 e 4** (`tools/Arte/processar_mapas_3_4.py`): mesmo processo, com o fundo
+    votado na borda inteira (verde, magenta ou azul), limpeza do magenta que vaza em partes finas, nuvens
+    lado a lado ou empilhadas, e o lado oposto espelhado quando uma margem vem sem fundo chapado. Os
+    animais novos (`LivingAnimals`: araras-azuis, tuiuiú, colhereiros, guarás, trinta-réis, caranguejo,
+    boto) reaproveitam os comportamentos existentes com outra arte.
   - **Arte final do proprietário** (`tools/Arte/processar_pedidos.py`): recorta as imagens do ChatGPT
     (fundo verde, magenta ou preto), separa grades de peixes e ícones, estende o céu e as camadas de
     montanha até as 26 unidades (espelhando faixas sem marcos, para a cachoeira aparecer uma vez só) e

@@ -84,6 +84,15 @@ namespace FishingIdle.Game.Scene
                 case "monkey": return Has("macaco") && _spots.ContainsKey("monkey");
                 case "monkey_hanging": return Has("macaco_pendurado") && _spots.ContainsKey("monkey_hanging");
                 case "howler": return Has("bugio") && _spots.ContainsKey("howler");
+                // Maps 3 and 4 (docs/PROGRESSAO_MAPAS_3_4.md): the same behaviours with the new art.
+                case "jabiru_flyover": return Has("tuiuiu_voo_1");
+                case "jabiru_wading": return Has("tuiuiu_1") && Has("tuiuiu_voo_1") && _spots.ContainsKey("heron");
+                case "hyacinth_macaws": return Has("arara_azul_1");
+                case "spoonbills": return Has("colhereiro_voo_1");
+                case "scarlet_ibis": return Has("guara_voo_1");
+                case "terns": return Has("trinta_reis_1");
+                case "fiddler_crab": return Has("caranguejo_1") && _spots.ContainsKey("crab");
+                case "dolphin": return Has("boto_1") && _spots.ContainsKey("dolphin");
                 default: return false;
             }
         }
@@ -98,7 +107,7 @@ namespace FishingIdle.Game.Scene
                 case "toucan": return Toucan();
                 case "swallows": return Swallows();
                 case "ducks_swimming": return DucksSwimming();
-                case "heron_wading": return HeronWading();
+                case "heron_wading": return HeronWading("garca", "garca_voo", 1.5f, 1.9f, "Garça");
                 case "kingfisher": return Kingfisher();
                 case "capybaras": return Capybaras();
                 case "turtle": return Turtle();
@@ -108,6 +117,16 @@ namespace FishingIdle.Game.Scene
                 case "monkey": return Appear("macaco", 0.42f, _spots["monkey"], _shore, FishingScene.OrderShoreLife, false, 25f, 50f, new Vector3(0f, -0.05f, 0f), false);
                 case "monkey_hanging": return HangingMonkey();
                 case "howler": return Appear("bugio", 0.45f, _spots["howler"], _shore, FishingScene.OrderShoreLife, true, 40f, 80f, new Vector3(0f, -0.05f, 0f), false);
+                // The jabiru flaps slowly and glides; spoonbills and scarlet ibises fly in small lines;
+                // terns fly fast and low over the water.
+                case "jabiru_flyover": return Flock("tuiuiu_voo", 4, 1.15f, 1, 1.2f, 6f, 2.6f, 4.0f);
+                case "jabiru_wading": return HeronWading("tuiuiu", "tuiuiu_voo", 1.7f, 2.2f, "Tuiuiú");
+                case "hyacinth_macaws": return Flock("arara_azul", 4, 0.8f, 2, 2.2f, 10f, 2.8f, 4.2f);
+                case "spoonbills": return Flock("colhereiro_voo", 4, 0.75f, Random.Range(1, 4), 1.6f, 8f, 2.4f, 3.8f);
+                case "scarlet_ibis": return Flock("guara_voo", 4, 0.6f, Random.Range(3, 7), 1.8f, 8f, 2.4f, 4.0f);
+                case "terns": return Flock("trinta_reis", 4, 0.5f, Random.Range(2, 4), 2.6f, 9f, 1.4f, 3.0f);
+                case "fiddler_crab": return FiddlerCrab();
+                case "dolphin": return Dolphin();
                 default: return Nothing();
             }
         }
@@ -373,10 +392,11 @@ namespace FishingIdle.Game.Scene
         /// A great egret glides down into the shallows by the reeds, stands very still, stalks and now
         /// and then strikes at the water, then flies off.
         /// </summary>
-        private IEnumerator HeronWading()
+        /// <summary>A wading bird (egret, jabiru) lands on its spot, stalks and strikes, then flies off.</summary>
+        private IEnumerator HeronWading(string standArt, string flyArt, float standHeight, float flyWidth, string label)
         {
-            var stand = FramesByHeight("garca", 3, 1.5f, new Vector2(0.5f, 0f));
-            var fly = Frames("garca_voo", 4, 1.9f, new Vector2(0.5f, 0.5f));
+            var stand = FramesByHeight(standArt, 3, standHeight, new Vector2(0.5f, 0f));
+            var fly = Frames(flyArt, 4, flyWidth, new Vector2(0.5f, 0.5f));
             if (stand == null || fly == null)
             {
                 yield break;
@@ -386,7 +406,7 @@ namespace FishingIdle.Game.Scene
             var above = spot + new Vector3(0.15f, 0.75f, 0f);
 
             // Arrive from the right, facing left, slowing down to land.
-            var bird = Spawn(_corner, "Garça", fly[0], new Vector3(_halfWidth + 2.5f, spot.y + 4f, 0f), FishingScene.OrderCornerBack, true);
+            var bird = Spawn(_corner, label, fly[0], new Vector3(_halfWidth + 2.5f, spot.y + 4f, 0f), FishingScene.OrderCornerBack, true);
             var book = bird.gameObject.AddComponent<Flipbook>();
             book.Frames = fly;
             book.Fps = 8f;
@@ -428,7 +448,7 @@ namespace FishingIdle.Game.Scene
 
             // Take off to the upper right.
             Object.Destroy(bird.gameObject);
-            var leaving = Spawn(_corner, "Garça", fly[0], above, FishingScene.OrderCornerBack, false);
+            var leaving = Spawn(_corner, label, fly[0], above, FishingScene.OrderCornerBack, false);
             var wings = leaving.gameObject.AddComponent<Flipbook>();
             wings.Frames = fly;
             wings.Fps = 9f;
@@ -683,6 +703,107 @@ namespace FishingIdle.Game.Scene
         /// An animal that comes out of cover (the leaves, or the water for the caiman on the bank),
         /// stays put for a while and goes back.
         /// </summary>
+        /// <summary>
+        /// A fiddler crab on the mud: it comes out, waves its big claw a few times, scuttles sideways
+        /// and goes back into its hole.
+        /// </summary>
+        private IEnumerator FiddlerCrab()
+        {
+            var frames = FramesByHeight("caranguejo", 3, 0.28f, new Vector2(0.5f, 0f));
+            if (frames == null)
+            {
+                yield break;
+            }
+
+            var spot = _spots["crab"];
+            var r = Spawn(_corner, "Caranguejo", frames[0], spot, FishingScene.OrderCornerFront, false);
+            for (var t = 0f; t < 1f; t += Time.deltaTime)
+            {
+                SetAlpha(r, t);
+                yield return null;
+            }
+
+            SetAlpha(r, 1f);
+            var waves = Random.Range(2, 5);
+            for (var i = 0; i < waves; i++)
+            {
+                yield return Wait(Random.Range(1.5f, 4f));
+                r.sprite = frames[1];
+                yield return Wait(0.5f);
+                r.sprite = frames[0];
+            }
+
+            // Sideways to the hole, legs moving.
+            var dir = Random.value > 0.5f ? 1f : -1f;
+            var from = r.transform.localPosition;
+            for (var t = 0f; t < 1.6f; t += Time.deltaTime)
+            {
+                r.sprite = frames[(int)(t * 8f) % 2 == 0 ? 2 : 0];
+                r.transform.localPosition = from + new Vector3(dir * 0.35f * t, 0f, 0f);
+                SetAlpha(r, Mathf.Clamp01((1.6f - t) / 0.5f));
+                yield return null;
+            }
+
+            Object.Destroy(r.gameObject);
+        }
+
+        /// <summary>
+        /// A guiana dolphin far out in the channel: two or three surfacings in a row, the back and fin
+        /// showing, sometimes a leap, then the tail going down.
+        /// </summary>
+        private IEnumerator Dolphin()
+        {
+            var frames = Frames("boto", 3, 0.9f, new Vector2(0.5f, 0f));
+            if (frames == null)
+            {
+                yield break;
+            }
+
+            var spot = _spots["dolphin"];
+            var dir = Random.value > 0.5f ? 1f : -1f;
+            var x = dir > 0 ? Random.Range(-_halfWidth + 2f, -2f) : Random.Range(2f, _halfWidth - 2f);
+            var r = Spawn(_water, "Boto", frames[0], new Vector3(x, spot.y, 0f), FishingScene.OrderWaterLife, dir < 0);
+            SetAlpha(r, 0f);
+            var surfacings = Random.Range(2, 4);
+            for (var i = 0; i < surfacings; i++)
+            {
+                var leap = Random.value < 0.35f;
+                var at = new Vector3(x, spot.y, 0f);
+                RippleEffect.Spawn(_water, at, FishingScene.OrderWaterDetail + 1, 0.7f, 0.5f);
+                // Back and fin roll through the surface.
+                r.sprite = leap ? frames[1] : frames[0];
+                for (var t = 0f; t < 1.4f; t += Time.deltaTime)
+                {
+                    var k = t / 1.4f;
+                    SetAlpha(r, Mathf.Sin(k * Mathf.PI));
+                    var rise = leap ? Mathf.Sin(k * Mathf.PI) * 0.45f : Mathf.Sin(k * Mathf.PI) * 0.06f - 0.06f;
+                    r.transform.localPosition = at + new Vector3(dir * 0.5f * k, rise, 0f);
+                    yield return null;
+                }
+
+                if (leap)
+                {
+                    Droplet.Splash(_water, at + new Vector3(dir * 0.5f, 0f, 0f), FishingScene.OrderWaterLife + 1, 8, 0.6f);
+                }
+
+                // The tail goes down.
+                r.sprite = frames[2];
+                var tailAt = at + new Vector3(dir * 0.55f, -0.02f, 0f);
+                for (var t = 0f; t < 0.9f; t += Time.deltaTime)
+                {
+                    SetAlpha(r, 1f - t / 0.9f);
+                    r.transform.localPosition = tailAt + new Vector3(0f, -0.12f * t, 0f);
+                    yield return null;
+                }
+
+                SetAlpha(r, 0f);
+                x += dir * Random.Range(1.6f, 2.6f);
+                yield return Wait(Random.Range(2.5f, 5f));
+            }
+
+            Object.Destroy(r.gameObject);
+        }
+
         private IEnumerator Appear(string art, float height, Vector3 spot, Transform parent, int order, bool faceLeft, float minStay, float maxStay, Vector3 from, bool reflect)
         {
             var sprite = SpriteTall(art, height, new Vector2(0.5f, 0f));
