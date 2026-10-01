@@ -129,7 +129,7 @@ def cut_at(img, fraction):
     return V.cut_waterline(img, fraction)
 
 
-def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_units, far_cut=None, remix_mid=False):
+def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_units, far_cut=None, remix_mid=False, extras=(), extra_size=(0.9, 1.1), extra_gap=(1.6, 3.2)):
     base = 'Mapas/%s/%s_' % (out_folder, file_prefix)
     photo = find(folder, prefix, '01')
     if photo is not None:
@@ -153,7 +153,11 @@ def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_u
         piece = P.trim(keyed(mid))
         h = int(round(mid_units * 120))
         piece = piece.resize((max(1, round(piece.width * h / piece.height)), h), Image.LANCZOS)
-        band = remix(piece, 120, seed=hash(prefix) % 1000) if remix_mid else P.extend_sideways(piece, 0.5, 0.0, (0.0, 0.5), (0.5, 1.0), 120)
+        trees = [Image.open(os.path.join(P.ART, 'Vivos/Plantas', name + '.png')).convert('RGBA') for name in extras
+                 if os.path.exists(os.path.join(P.ART, 'Vivos/Plantas', name + '.png'))]
+        # A fixed seed per map, so the same pictures always give the same band.
+        seed = sum(ord(c) for c in prefix)
+        band = remix(piece, 120, seed, trees, extra_size, extra_gap) if remix_mid else P.extend_sideways(piece, 0.5, 0.0, (0.0, 0.5), (0.5, 1.0), 120)
         P.save(band, base + 'bg_mid.png')
     for number, name in (('05', 'near_left'), ('06', 'near_right'), ('07', 'fg_left'), ('08', 'fg_right')):
         img = find(folder, prefix, number)
@@ -199,12 +203,14 @@ def cloud_sheet(rgba, prefix):
         P.save(P.fit(P.main_piece(rgba.crop(box)), (640, 320), 0.04), prefix + '_cloud_%02d.png' % (i + 1))
 
 
-def remix(piece, ppu, seed):
-    """A band of separate groups (capões) rebuilt to 26 units without a visible pattern.
+def remix(piece, ppu, seed, trees=(), tree_size=(0.9, 1.1), tree_gap=(1.6, 3.2)):
+    """A band of groups (capões, mangrove canopy) rebuilt to 26 units without a visible pattern.
 
-    The piece is cut where its silhouette is lowest (the open grass between groups), and the groups
-    are laid side by side in a shuffled order, some mirrored, each a little bigger or smaller,
-    overlapping with a soft edge. The same group never comes twice in a row.
+    The piece is cut where its silhouette is lowest (the open ground between groups), and the groups
+    are laid side by side in a shuffled order, each a little bigger or smaller, overlapping with a soft
+    edge. The same group never comes twice in a row, and nothing is mirrored (the light keeps coming
+    from the side the painter lit). Single trees from the living-landscape sheets are then scattered
+    along the band, some in front and some behind, so no stretch looks like another.
     """
     rng = np.random.default_rng(seed)
     arr = np.asarray(piece)
@@ -233,23 +239,53 @@ def remix(piece, ppu, seed):
             continue
         last = i
         g = groups[i]
-        if rng.random() < 0.5:
-            g = g.transpose(Image.FLIP_LEFT_RIGHT)
         k = float(rng.uniform(0.82, 1.08))
         g = g.resize((max(1, int(g.width * k)), max(1, int(g.height * k))), Image.LANCZOS)
-        # Soft left and right edges so neighbours blend into each other.
+        # Each group goes on top of the previous one with only its left edge faded, so the overlap is
+        # always backed by the solid group underneath (no see-through seam).
         a = np.asarray(g).astype(np.float32)
-        ramp = np.ones(g.width, dtype=np.float32)
         n = min(overlap, g.width // 3)
-        if n > 1:
+        if n > 1 and x > 0:
+            ramp = np.ones(g.width, dtype=np.float32)
             ramp[:n] = np.linspace(0, 1, n)
-            ramp[-n:] = np.linspace(1, 0, n)
-        a[..., 3] *= ramp[None, :]
+            a[..., 3] *= ramp[None, :]
         g = Image.fromarray(a.astype(np.uint8), 'RGBA')
         layer = Image.new('RGBA', canvas.size, (0, 0, 0, 0))
         layer.paste(g, (x, piece.height - g.height))
-        canvas = Image.alpha_composite(layer, canvas) if rng.random() < 0.5 else Image.alpha_composite(canvas, layer)
+        canvas = Image.alpha_composite(canvas, layer)
         x += g.width - overlap
+
+    # The single trees take the band's own light: their average colour is pulled to the band's.
+    band_rgb = np.asarray(piece).astype(np.float32)
+    solid = band_rgb[..., 3] > 200
+    target = band_rgb[..., :3][solid].mean(axis=0)
+    matched = []
+    for tree in trees:
+        t = np.asarray(tree).astype(np.float32)
+        own = t[..., :3][t[..., 3] > 200].mean(axis=0)
+        gain = np.clip(target / np.maximum(own, 1), 0.55, 1.15)
+        t[..., :3] = np.clip(t[..., :3] * gain, 0, 255)
+        matched.append(Image.fromarray(t.astype(np.uint8), 'RGBA'))
+    trees = matched
+
+    # Single trees every few units, never two of the same in a row.
+    x, last = float(rng.uniform(0.3, 1.2) * ppu), -1
+    while trees and x < total:
+        i = int(rng.integers(len(trees)))
+        if i == last and len(trees) > 1:
+            continue
+        last = i
+        tree = trees[i]
+        h = int(piece.height * rng.uniform(*tree_size))
+        tree = tree.resize((max(1, int(tree.width * h / tree.height)), h), Image.LANCZOS)
+        if h > canvas.height:
+            grown = Image.new('RGBA', (canvas.width, h), (0, 0, 0, 0))
+            grown.paste(canvas, (0, h - canvas.height))
+            canvas = grown
+        layer = Image.new('RGBA', canvas.size, (0, 0, 0, 0))
+        layer.paste(tree, (int(x - tree.width / 2), canvas.height - tree.height + int(0.04 * h)))
+        canvas = Image.alpha_composite(canvas, layer) if rng.random() < 0.6 else Image.alpha_composite(layer, canvas)
+        x += float(rng.uniform(*tree_gap) * ppu)
     return canvas
 
 
@@ -313,10 +349,12 @@ def main():
         print(__doc__)
         sys.exit(1)
     folder = sys.argv[1]
-    scenery(folder, 'Pantanal', 'PantanalDourado', 'map_pantanal_dourado', (-5.0, 1.5), 0.9, 1.25, remix_mid=True)
-    scenery(folder, 'Estuario', 'EstuarioDasMares', 'map_estuario_das_mares', (2.4, 1.8), 1.3, 1.2, far_cut=0.80)
+    living(folder)  # first: the single trees of the living landscape also go into the middle bands
+    scenery(folder, 'Pantanal', 'PantanalDourado', 'map_pantanal_dourado', (-5.0, 1.5), 0.9, 1.25, remix_mid=True,
+            extras=['carandaa_01', 'carandaa_02', 'carandaa_03', 'carandaa_04'], extra_size=(0.6, 0.85), extra_gap=(2.5, 5.0))
+    scenery(folder, 'Estuario', 'EstuarioDasMares', 'map_estuario_das_mares', (2.4, 1.8), 1.3, 1.2, far_cut=0.80, remix_mid=True,
+            extras=['mangue_01', 'mangue_02', 'mangue_03', 'mangue_04', 'mangue_05'], extra_size=(0.8, 1.05), extra_gap=(2.0, 3.6))
     fish_and_gear(folder)
-    living(folder)
     old = set()
     if os.path.exists(P.FINALS):
         old = {l.strip() for l in open(P.FINALS, encoding='utf-8') if l.strip() and not l.startswith('#')}

@@ -13,6 +13,12 @@ raiz do repositório, que o servidor serve em `GET /api/dev/version`.
   trinta-réis, caranguejo chama-maré e boto-cinza; carandaás, aguapés e plantas de mangue.
 - `tools/Arte/processar_mapas_3_4.py` para colocar as imagens no jogo.
 
+### Mudado
+
+- A faixa do meio do Pantanal (capões) e do Estuário (mangue) não é mais a mesma imagem repetida e
+  espelhada: os grupos são remontados em ordem sorteada, sem espelhar (a luz fica do lado certo), e
+  carandaás e mangues soltos entram no meio com a cor da faixa.
+
 ### Pendente
 
 - Refazer Pantanal 06 (veio sem fundo chapado) e Pantanal 16 (arquivo vazio); Novo 03 (ícones) não
