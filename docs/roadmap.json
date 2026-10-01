@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-01T04:00:54Z",
+  "updated_at": "2026-10-01T04:21:11Z",
   "current_milestone": "M16",
   "statuses": [
     "TODO",
@@ -2402,6 +2402,16 @@
           ],
           "updated_at": "2026-10-01T04:00:54Z",
           "completion_notes": "Campo Buscar peixe pelo nome no alto, à direita, em Comprar, Vender, Leilão e na escolha do peixe do leilão (MarketWindow.DrawSearch); trocar de aba ou reabrir o Mercado limpa a busca. Estilo novo UiSkin.SearchField, mais visível, usado também na Caixa e no Aquário. GDD_ADENDO A-084 revisto. Compila; não aberto no Unity ainda."
+        },
+        {
+          "id": "M16-T09",
+          "title": "Pequenos erros de texto e números na interface",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (01/10/2026): o preço na Caixa de Pesca perdia o último zero; procurar e corrigir erros pequenos assim no projeto.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-01T04:21:11Z",
+          "completion_notes": "Rótulo de moedas com largura mínima do número (UiSkin.CoinAmount/CoinAmountWidth); folga no saldo do Mercado e nas tentativas de isca; Format.Number nas contagens; notas da pesca offline, do Leilão e da chance da Loja com os valores da config (OfflineReport.CapHours, AuctionsView.AntiSnipeResetSeconds, GearView.ChanceMin/Max); textos antigos de milestone corrigidos; texto sem uso EarlyEndNote removido. Regra em BASE_TECNICA. Compila; não aberto no Unity ainda."
         }
       ]
     }

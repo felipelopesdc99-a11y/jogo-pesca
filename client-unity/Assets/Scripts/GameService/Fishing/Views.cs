@@ -145,6 +145,9 @@ namespace FishingIdle.GameService.Fishing
 
         public bool Capped { get; internal set; }
         public double CycleSeconds { get; internal set; }
+
+        /// <summary>How many hours away count for offline fishing at most (config).</summary>
+        public double CapHours { get; internal set; }
         public FishingUpdate Update { get; internal set; }
     }
 

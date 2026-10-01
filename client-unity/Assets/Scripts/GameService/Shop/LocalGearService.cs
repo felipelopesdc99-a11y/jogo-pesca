@@ -69,6 +69,10 @@ namespace FishingIdle.GameService.Shop
         public double BaitBonus { get; internal set; }
         public int BaitChargesLeft { get; internal set; }
         public double TotalBonus => RodBonus + BoatBonus + BaitBonus;
+
+        /// <summary>Floor and ceiling of the chance (config).</summary>
+        public double ChanceMin { get; internal set; }
+        public double ChanceMax { get; internal set; }
         public List<RarityChanceView> Chances { get; } = new List<RarityChanceView>();
         public List<BoatOfferView> Boats { get; } = new List<BoatOfferView>();
         public List<BaitOfferView> Baits { get; } = new List<BaitOfferView>();
@@ -129,6 +133,8 @@ namespace FishingIdle.GameService.Shop
                 BaitName = bait?.DisplayName,
                 BaitBonus = bait?.CatchSuccessBonus ?? 0.0,
                 BaitChargesLeft = bait != null ? GearRules.Charges(save, bait.Id) : 0,
+                ChanceMin = config.Fishing.CatchSuccessMin,
+                ChanceMax = config.Fishing.CatchSuccessMax,
             };
 
             foreach (var tier in config.Progression.Rarity.Tiers)

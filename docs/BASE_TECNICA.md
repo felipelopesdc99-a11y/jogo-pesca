@@ -329,6 +329,10 @@ antigos entram com o Barco Inicial e sem isca. Cada passo está em `SaveMigratio
   - **Peças da interface** (`UiSkin`): `FloatingPanel` (painel com sombra), `IconButton`,
     `AccentPill`, `Tag`, `Bar(rect, fração, cor)`, `DrawOutline`, `DrawGlow`, `IconBadge`, `CoinAmount`,
     e as janelas via `WindowFrame.Panel` + `WindowFrame.Header(…, ícone)`.
+  - **Dois cuidados com texto:** os rótulos do `UiSkin` quebram linha, então um rótulo da largura
+    exata do texto (`CalcSize`) pode jogar o último dígito para uma linha invisível. Dê folga (+4 px)
+    ou use `CoinAmountWidth` para moedas. E um texto que cita um número de `/config` (tempos, taxas,
+    limites) recebe esse número da view do serviço, nunca escrito na frase.
 - **Camadas e paralaxe:** câmera ortográfica que oscila devagar; cada camada acompanha a câmera numa
   fração diferente, criando profundidade (2.5D). Ordem de desenho nas constantes de `FishingScene`.
 - **Animação sincronizada ao serviço:** `FishermanRig` lê `FishingStatus` (início e fim do ciclo)

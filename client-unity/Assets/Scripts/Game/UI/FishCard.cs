@@ -130,7 +130,7 @@ namespace FishingIdle.Game.UI
 
             if (!string.IsNullOrEmpty(m.Coins))
             {
-                var cw = skin.SmallGold.CalcSize(new GUIContent(m.Coins)).x + 24f;
+                var cw = skin.CoinAmountWidth(m.Coins, 20f);
                 skin.CoinAmount(new Rect(rect.xMax - pad - cw, bottom - 1, cw, 20), m.Coins);
             }
 

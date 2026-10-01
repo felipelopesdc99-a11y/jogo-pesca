@@ -212,6 +212,9 @@ namespace FishingIdle.GameService.Market
         public double BidFeeRatio { get; internal set; }
         public double EarlyCloseFeeRatio { get; internal set; }
 
+        /// <summary>A bid in the last moments puts the clock back to this many seconds.</summary>
+        public double AntiSnipeResetSeconds { get; internal set; }
+
         /// <summary>The player's own active auction, or null.</summary>
         public AuctionView Mine { get; internal set; }
 

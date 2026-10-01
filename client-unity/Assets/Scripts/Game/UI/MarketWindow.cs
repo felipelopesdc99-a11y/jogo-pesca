@@ -186,7 +186,7 @@ namespace FishingIdle.Game.UI
             }
 
             var coins = Format.Number(_market.Coins);
-            var cw = skin.Number.CalcSize(new GUIContent(coins)).x;
+            var cw = skin.Number.CalcSize(new GUIContent(coins)).x + 4f;
             GUI.Label(new Rect(area.xMax - cw, area.y + 2, cw, 30), coins, skin.Number);
             skin.CoinIcon(new Rect(area.xMax - cw - 32, area.y + 4, 24, 24));
             GUI.Label(new Rect(area.xMax - cw - 250, area.y + 8, 200, 20), GameTexts.Market.AquariumSlots(_market.AquariumCount, _market.AquariumCapacity), skin.SmallMutedRight);
@@ -374,6 +374,11 @@ namespace FishingIdle.Game.UI
             max = newMax;
             y += 40;
             return changed;
+        }
+
+        private string AuctionHours()
+        {
+            return _auctions.DurationHours == 1 ? "1 hora" : Format.Decimal(_auctions.DurationHours, 0) + " horas";
         }
 
         /// <summary>The "search by fish name" box at the top right of a tab (A-084); <paramref name="right"/> is its right edge.</summary>
@@ -588,8 +593,9 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            GUI.Label(new Rect(body.x, body.y, body.width - SidePanelWidth - 16 - 320, 40), GameTexts.Market.AuctionNote, skin.SmallMuted);
-            var grid = new Rect(body.x, body.y + 46, body.width - SidePanelWidth - 16, body.height - 46);
+            // The note shares its row with the search box, so it gets room for three lines.
+            GUI.Label(new Rect(body.x, body.y, body.width - SidePanelWidth - 16 - 320, 60), GameTexts.Market.AuctionNote(AuctionHours(), Format.Percent(_auctions.MinIncrementRatio, 0), Format.Percent(_auctions.BidFeeRatio, 0), Format.Duration(_auctions.AntiSnipeResetSeconds)), skin.SmallMuted);
+            var grid = new Rect(body.x, body.y + 66, body.width - SidePanelWidth - 16, body.height - 66);
             DrawSearch(skin, grid.xMax, body.y, "busca_leilao");
             var shownAuctions = _auctions.Open.Where(a => NameSearch.Matches(a.Goods.Name, _search)).ToList();
             if (shownAuctions.Count == 0)
@@ -664,7 +670,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            GUI.Label(new Rect(area.x + 240, area.y + 6, area.width - SidePanelWidth - 260 - 320, 40), GameTexts.Market.StartAuctionNote, skin.SmallMuted);
+            GUI.Label(new Rect(area.x + 240, area.y + 6, area.width - SidePanelWidth - 260 - 320, 40), GameTexts.Market.StartAuctionNote(AuctionHours()), skin.SmallMuted);
             var grid = new Rect(area.x, area.y + 48, area.width - SidePanelWidth - 16, area.height - 48);
             DrawSearch(skin, grid.xMax, area.y, "busca_leilao_criar");
             var shownCandidates = _candidates.Where(c => NameSearch.Matches(c.Goods.Name, _search)).ToList();

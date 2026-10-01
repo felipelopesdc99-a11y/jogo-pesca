@@ -687,8 +687,8 @@ namespace FishingIdle.Game.UI
             skin.DrawIcon(new Rect(x, rect.y + 2, 18, 18), Icons.Fishing, UiSkin.Accent);
             if (gear.BaitName != null)
             {
-                var left = gear.BaitChargesLeft.ToString();
-                var leftWidth = skin.SmallGoldRight.CalcSize(new GUIContent(left)).x;
+                var left = Format.Number(gear.BaitChargesLeft);
+                var leftWidth = skin.SmallGoldRight.CalcSize(new GUIContent(left)).x + 4f;
                 GUI.Label(new Rect(x - leftWidth - 8, rect.y, leftWidth, 22), left, skin.SmallGoldRight);
                 skin.DrawIcon(new Rect(x - leftWidth - 30, rect.y + 2, 18, 18), Icons.Bait, UiSkin.Gold);
             }

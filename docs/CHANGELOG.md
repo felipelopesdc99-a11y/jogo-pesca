@@ -3,6 +3,26 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.26] — 01/10/2026
+
+### Corrigido
+
+- Preço cortado nos cards (Caixa de Pesca, Aquário, Mercado): o último dígito sumia ("10.44" em vez
+  de "10.440"). O rótulo das moedas nunca fica mais estreito que o número.
+- Mesmo problema evitado no saldo do Mercado e nas tentativas de isca do painel de pesca.
+- Números grandes com ponto de milhar também em contagens: peixes na Caixa, selecionados, vendidos,
+  pescados e escapados offline, tentativas de isca e Honra.
+- Textos que repetiam números da configuração agora leem o valor real: a nota da pesca offline
+  (tempo por tentativa e limite de horas), as notas do Leilão (duração, aumento mínimo, taxa e tempo
+  do último lance) e a nota de chance da Loja (mínimo e máximo).
+- Textos antigos que falavam de milestones já entregues: inventário do Perfil ("Novas varas chegam
+  com a Loja") e duas notas do Painel de Balanceamento.
+- Nota do Leilão ganhou altura para não cortar a última linha ao lado da busca.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda.
+
 ## [0.2.0-m16.25] — 01/10/2026
 
 ### Corrigido

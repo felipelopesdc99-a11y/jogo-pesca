@@ -72,7 +72,7 @@ namespace FishingIdle.Texts
             public static string ChanceShort(string rarity, string percent) => rarity + " " + percent;
             public static string RareEscaped(string rarity, string percent) => "Um peixe " + rarity + " escapou! Sua chance de puxar era " + percent + ".";
             public static string BaitRanOut(string bait) => "Sua " + bait + " acabou. Compre mais na Loja → Iscas.";
-            public static string BaitLeft(int charges) => charges == 1 ? "1 tentativa" : charges + " tentativas";
+            public static string BaitLeft(int charges) => charges == 1 ? "1 tentativa" : Format.Number(charges) + " tentativas";
         }
 
         // ------------------------------------------------------------------ Fishing Box
@@ -101,9 +101,9 @@ namespace FishingIdle.Texts
             public const string SortNewest = "Mais recentes";
             public const string SortPrice = "Mais caros";
 
-            public static string Count(int count) => count == 1 ? "1 peixe" : count + " peixes";
-            public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : count + " selecionados") + " · " + coins + " moedas";
-            public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : count + " peixes vendidos") + " por " + coins + " moedas.";
+            public static string Count(int count) => count == 1 ? "1 peixe" : Format.Number(count) + " peixes";
+            public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : Format.Number(count) + " selecionados") + " · " + coins + " moedas";
+            public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : Format.Number(count) + " peixes vendidos") + " por " + coins + " moedas.";
         }
 
         // ------------------------------------------------------------------ Search by fish name (addendum A-084)
@@ -177,15 +177,15 @@ namespace FishingIdle.Texts
             public const string OpenBox = "Abrir a Caixa de Pesca";
             public const string Best = "Destaques";
             public const string NothingCaught = "Nenhum peixe desta vez.";
-            public const string Note = "Enquanto o jogo fica fechado, o pescador continua: 1 tentativa a cada 60 segundos, por até 24 horas, com a mesma chance de puxar. Os peixes esperam na Caixa de Pesca.";
+            public static string Note(string cycle, string cap) => "Enquanto o jogo fica fechado, o pescador continua: 1 tentativa a cada " + cycle + ", por até " + cap + ", com a mesma chance de puxar. Os peixes esperam na Caixa de Pesca.";
 
             public static string Away(string duration) => "Você ficou fora por " + duration + ".";
             public static string CappedAt(string duration) => "Só as primeiras " + duration + " contam para a pesca offline.";
-            public static string Caught(int count) => count == 1 ? "1 peixe pescado" : count + " peixes pescados";
+            public static string Caught(int count) => count == 1 ? "1 peixe pescado" : Format.Number(count) + " peixes pescados";
             public static string Xp(string xp) => "+" + xp + " XP de Pescador";
             public static string Levels(int level) => "Subiu para o Nível " + level + "!";
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
-            public static string Escaped(int count) => count == 1 ? "1 peixe escapou" : count + " peixes escaparam";
+            public static string Escaped(int count) => count == 1 ? "1 peixe escapou" : Format.Number(count) + " peixes escaparam";
         }
 
         // ------------------------------------------------------------------ Arena (GDD sections 27–30)
@@ -225,7 +225,7 @@ namespace FishingIdle.Texts
             public static string NextEnergy(string countdown) => "+1 em " + countdown;
             public static string RerollsLeft(int left) => Reroll + " (" + left + ")";
             public static string RankChange(int before, int after) => before == after ? "Posição mantida: #" + after : "Posição: #" + before + " → #" + after;
-            public static string HonorChange(long change) => (change >= 0 ? "+" : "") + change + " de Honra";
+            public static string HonorChange(long change) => (change >= 0 ? "+" : "−") + Format.Number(System.Math.Abs(change)) + " de Honra";
             public static string DefenseWon(string attacker, string honor) => attacker + " atacou você e perdeu. +" + honor + " de Honra.";
             public static string DefenseLost(string attacker, int rank) => attacker + " venceu você na Arena. Sua posição agora é #" + rank + ".";
             public static string Versus(string opponent) => "Você × " + opponent;
@@ -362,13 +362,13 @@ namespace FishingIdle.Texts
             public const string Rod = "Vara";
 
             public const string TabAuction = "Leilão";
-            public const string AuctionNote = "Leilões duram 6 horas. Cada lance precisa ser pelo menos 3% maior que o atual e custa 1% dele em taxa, que não volta. O valor do lance fica reservado enquanto você estiver ganhando; se alguém passar, ele volta na hora. Lance no último minuto faz o tempo voltar para 1 minuto.";
+            public static string AuctionNote(string duration, string increment, string fee, string reset) => "Leilões duram " + duration + ". Cada lance precisa ser pelo menos " + increment + " maior que o atual e custa " + fee + " dele em taxa, que não volta. O valor do lance fica reservado enquanto você estiver ganhando; se alguém passar, ele volta na hora. Lance nos últimos instantes faz o tempo voltar para " + reset + ".";
             public const string MyAuction = "Meu leilão";
             public const string NoMyAuction = "Você não tem leilão ativo.";
             public const string CreateAuction = "Criar leilão";
             public const string BackToAuctions = "Voltar aos leilões";
             public const string StartingBid = "Lance inicial (Moedas)";
-            public const string StartAuctionNote = "Depois de criado, o leilão não pode ser cancelado. Sem lances, ele dura as 6 horas e o item volta por Itens a Retirar.";
+            public static string StartAuctionNote(string duration) => "Depois de criado, o leilão não pode ser cancelado. Sem lances, ele dura " + duration + " e o item volta por Itens a Retirar.";
             public const string CurrentBid = "Lance atual";
             public const string NoBids = "Sem lances";
             public const string YourBid = "Seu lance (Moedas)";
@@ -376,7 +376,6 @@ namespace FishingIdle.Texts
             public const string YouAreWinning = "Você está ganhando este leilão.";
             public const string Winning = "GANHANDO";
             public const string NoAuctions = "Nenhum leilão aberto agora.";
-            public const string EarlyEndNote = "Encerrar antes aceita o lance atual e custa 3% dele.";
 
             public static string StartAuctionFor(double hours) => "Leiloar por " + Format.Decimal(hours, 0) + " horas";
             public static string BidCount(int count) => count == 1 ? "1 lance" : count + " lances";
@@ -544,7 +543,7 @@ namespace FishingIdle.Texts
             public const string NoBait = "Nenhuma";
             public const string Total = "Bônus total";
             public const string ChanceTitle = "Chance de puxar o peixe";
-            public const string ChanceNote = "Depois que o peixe morde, esta é a chance de puxá-lo. Se ele escapa, nada entra na Caixa. Nunca passa de 95% nem fica abaixo de 5%.";
+            public static string ChanceNote(string min, string max) => "Depois que o peixe morde, esta é a chance de puxá-lo. Se ele escapa, nada entra na Caixa. Nunca passa de " + max + " nem fica abaixo de " + min + ".";
             public const string NotHere = "não morde aqui";
             public const string InUse = "Em uso";
             public const string Use = "Usar";
@@ -555,8 +554,8 @@ namespace FishingIdle.Texts
 
             public static string ChanceLine(string rarity, string percent) => "Chance de puxar peixe " + rarity + ": " + percent;
             public static string Bonus(string percent) => "+" + percent + " de chance";
-            public static string Charges(int charges) => charges == 1 ? "1 tentativa por compra" : charges + " tentativas por compra";
-            public static string ChargesLeft(int charges) => charges == 1 ? "Resta 1 tentativa" : "Restam " + charges + " tentativas";
+            public static string Charges(int charges) => charges == 1 ? "1 tentativa por compra" : Format.Number(charges) + " tentativas por compra";
+            public static string ChargesLeft(int charges) => charges == 1 ? "Resta 1 tentativa" : "Restam " + Format.Number(charges) + " tentativas";
             public static string CostCoinsAndShells(string coins, string shells) => coins + " moedas + " + shells + " conchas";
             public static string BoughtBoat(string boat) => boat + " comprado! Ele já está em uso.";
             public static string UsingBoat(string boat) => "Agora você pesca com o " + boat + ".";
@@ -610,7 +609,7 @@ namespace FishingIdle.Texts
             public const string CatchesRareAndEpic = "Pesca peixes Raros e Épicos";
             public const string NoRare = "Não pesca peixes Raros";
             public const string NoShells = "Não gera Conchas";
-            public const string InventoryNote = "Suas varas ficam aqui. Novas varas chegam com a Loja (Milestone 4).";
+            public const string InventoryNote = "Suas varas ficam aqui. Varas novas se compram na Loja.";
             public const string Undiscovered = "???";
             public const string Largest = "Maior";
             public const string TimesCaught = "Pescados";
@@ -869,7 +868,7 @@ namespace FishingIdle.Texts
             public const string OnlineCycle = "Tempo de pesca online (segundos por tentativa)";
             public const string OfflineCycle = "Tempo de pesca offline (segundos por tentativa)";
             public const string OfflineCap = "Limite de acúmulo offline (horas)";
-            public const string OfflineNote = "A pesca offline chega no Milestone 5; os dois valores offline já ficam aqui para quando ela existir.";
+            public const string OfflineNote = "Com o jogo fechado, o pescador faz 1 tentativa a cada \"tempo de pesca offline\", até o limite de horas.";
             public const string SpeciesName = "Nome";
             public const string SpeciesRarity = "Raridade";
             public const string SpeciesSizeMin = "Tam. mín. (cm)";
@@ -920,7 +919,7 @@ namespace FishingIdle.Texts
             public const string StatAttack = "Ataque";
             public const string StatDefense = "Defesa";
             public const string StatSpeed = "Velocidade";
-            public const string StatsNote = "Atributos-base valem para nível 1 e tamanho mediano. Eles só entram em jogo com o Aquário e a Arena (Milestones 2 e 7), mas já podem ser ajustados aqui.";
+            public const string StatsNote = "Atributos-base valem para nível 1 e tamanho mediano. São os números do peixe no Aquário e na Arena.";
             public const string TravelSeconds = "Duração da viagem entre mapas (segundos)";
             public const string UnlockLevel = "Nível do Pescador para liberar";
             public const string StatInfluence = "Influência do tamanho nos atributos";

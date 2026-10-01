@@ -43,6 +43,7 @@ namespace FishingIdle.GameService.Market
                 MinIncrementRatio = rules.MinBidIncrementRatio,
                 BidFeeRatio = rules.BidFeeRatio,
                 EarlyCloseFeeRatio = rules.SellerEarlyCloseFeeRatio,
+                AntiSnipeResetSeconds = rules.AntiSnipeResetToSeconds,
             };
 
             var mine = State.Auctions.FirstOrDefault(a => a.SellerName == null);

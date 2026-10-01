@@ -98,7 +98,7 @@ namespace FishingIdle.Game.UI
                 }
             }
 
-            GUI.Label(new Rect(x, rect.yMax - 112, w, 40), GameTexts.Offline.Note, skin.SmallMuted);
+            GUI.Label(new Rect(x, rect.yMax - 112, w, 40), GameTexts.Offline.Note(Format.Duration(report.CycleSeconds), report.CapHours == 1 ? "1 hora" : Format.Decimal(report.CapHours, 0) + " horas"), skin.SmallMuted);
             var openBox = false;
             if (count > 0 && skin.IconButton(new Rect(x, rect.yMax - 62, 280, 42), Icons.Box, GameTexts.Offline.OpenBox, skin.Button))
             {

@@ -375,6 +375,7 @@ namespace FishingIdle.GameService.Fishing
                     CountedMs = counted,
                     Capped = away > capMs,
                     CycleSeconds = cycleMs / 1000.0,
+                    CapHours = Config.Fishing.OfflineAccumulationCapHours,
                     Update = update,
                 };
                 _session.Log("Offline fishing: " + cycles + " catches for " + (counted / 1000) + " s away.");

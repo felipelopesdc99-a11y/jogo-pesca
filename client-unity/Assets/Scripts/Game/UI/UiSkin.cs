@@ -524,9 +524,18 @@ namespace FishingIdle.Game.UI
         /// <summary>A coin followed by an amount in gold.</summary>
         public void CoinAmount(Rect rect, string amount, GUIStyle style = null)
         {
+            style = style ?? SmallGold;
             var s = Mathf.Min(rect.height, 22f);
             CoinIcon(new Rect(rect.x, rect.y + (rect.height - s) / 2f, s, s));
-            GUI.Label(new Rect(rect.x + s + 6f, rect.y, rect.width - s - 6f, rect.height), amount, style ?? SmallGold);
+            // Never narrower than the number itself: a tight label wraps its last digit out of sight.
+            var width = Mathf.Max(rect.width - s - 6f, style.CalcSize(new GUIContent(amount)).x + 4f);
+            GUI.Label(new Rect(rect.x + s + 6f, rect.y, width, rect.height), amount, style);
+        }
+
+        /// <summary>The width <see cref="CoinAmount"/> needs for a number at a given height.</summary>
+        public float CoinAmountWidth(string amount, float height, GUIStyle style = null)
+        {
+            return Mathf.Min(height, 22f) + 6f + (style ?? SmallGold).CalcSize(new GUIContent(amount)).x + 4f;
         }
 
         /// <summary>A thin divider line.</summary>

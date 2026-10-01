@@ -146,7 +146,7 @@ namespace FishingIdle.Game.UI
                 y += 8;
             }
 
-            GUI.Label(new Rect(x, rect.yMax - 104, w, 92), GameTexts.Gear.ChanceNote, skin.SmallMuted);
+            GUI.Label(new Rect(x, rect.yMax - 104, w, 92), GameTexts.Gear.ChanceNote(Format.Percent(gear.ChanceMin, 0), Format.Percent(gear.ChanceMax, 0)), skin.SmallMuted);
         }
 
         private static void GearRow(UiSkin skin, float x, ref float y, float w, string icon, string label, string name, double bonus)
