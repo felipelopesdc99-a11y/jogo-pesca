@@ -111,7 +111,6 @@ namespace FishingIdle.Texts
         public static class Search
         {
             public const string Placeholder = "Buscar peixe pelo nome";
-            public const string Label = "Nome do peixe";
             public const string NoMatch = "Nenhum peixe com esse nome.";
         }
 

@@ -78,6 +78,7 @@ namespace FishingIdle.Game.UI
             IsOpen = true;
             _nextRefresh = 0f;
             _options = null;
+            _search = string.Empty;
         }
 
         public void Close()
@@ -173,6 +174,7 @@ namespace FishingIdle.Game.UI
                 {
                     _tab = tab;
                     _scroll = Vector2.zero;
+                    _search = string.Empty;
                     _selectedListing = 0;
                     _selectedCandidate = 0;
                     _selectedAuction = 0;
@@ -197,7 +199,8 @@ namespace FishingIdle.Game.UI
             var filters = new Rect(area.x, area.y, 270, area.height);
             DrawFilters(skin, filters);
 
-            var grid = new Rect(area.x + 290, area.y, area.width - 290 - SidePanelWidth - 16, area.height);
+            var grid = new Rect(area.x + 290, area.y + 46, area.width - 290 - SidePanelWidth - 16, area.height - 46);
+            DrawSearch(skin, grid.xMax, area.y, "busca_mercado");
             var shownResults = _results.Where(l => NameSearch.Matches(l.Goods.Name, _search)).ToList();
             if (shownResults.Count == 0)
             {
@@ -258,17 +261,6 @@ namespace FishingIdle.Game.UI
             var y = area.y + 12;
             var changed = false;
 
-            // Search by name first (addendum A-084).
-            GUI.Label(new Rect(x, y, w, 18), GameTexts.Search.Label, skin.SmallMuted);
-            y += 20;
-            var search = NameSearch.Field(skin, new Rect(x, y, w, 32), _search, "busca_mercado");
-            if (search != _search)
-            {
-                _search = search;
-                _scroll = Vector2.zero;
-            }
-
-            y += 42;
             GUI.Label(new Rect(x, y, w, 18), GameTexts.Market.FilterKind, skin.SmallMuted);
             y += 20;
             var kinds = new[] { (MarketKindFilter.All, GameTexts.Market.KindAll), (MarketKindFilter.Fish, GameTexts.Market.KindFish), (MarketKindFilter.Rods, GameTexts.Market.KindRods) };
@@ -384,18 +376,24 @@ namespace FishingIdle.Game.UI
             return changed;
         }
 
+        /// <summary>The "search by fish name" box at the top right of a tab (A-084); <paramref name="right"/> is its right edge.</summary>
+        private void DrawSearch(UiSkin skin, float right, float y, string controlName)
+        {
+            var search = NameSearch.Field(skin, new Rect(right - 300, y, 300, 36), _search, controlName);
+            if (search != _search)
+            {
+                _search = search;
+                _scroll = Vector2.zero;
+            }
+        }
+
         // ------------------------------------------------------------------ Sell
 
         private void DrawSell(UiSkin skin, Rect area)
         {
             var grid = new Rect(area.x, area.y + 46, area.width - SidePanelWidth - 16, area.height - 46);
             GUI.Label(new Rect(area.x, area.y + 8, grid.width - 320, 22), GameTexts.Market.SellHint, skin.SmallMuted);
-            var search = NameSearch.Field(skin, new Rect(area.x + grid.width - 300, area.y, 300, 36), _search, "busca_mercado_venda");
-            if (search != _search)
-            {
-                _search = search;
-                _scroll = Vector2.zero;
-            }
+            DrawSearch(skin, grid.xMax, area.y, "busca_mercado_venda");
 
             var shownCandidates = _candidates.Where(c => NameSearch.Matches(c.Goods.Name, _search)).ToList();
             if (shownCandidates.Count == 0)
@@ -550,6 +548,7 @@ namespace FishingIdle.Game.UI
                 if (!_creatingAuction && skin.IconButton(new Rect(strip.x + 440, strip.y + 20, 200, 40), Icons.Add, GameTexts.Market.CreateAuction, skin.ButtonPrimary))
                 {
                     _creatingAuction = true;
+                    _search = string.Empty;
                     _selectedCandidate = 0;
                     _selectedAuction = 0;
                     _scroll = Vector2.zero;
@@ -589,15 +588,17 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            GUI.Label(new Rect(body.x, body.y, body.width - SidePanelWidth - 16, 40), GameTexts.Market.AuctionNote, skin.SmallMuted);
+            GUI.Label(new Rect(body.x, body.y, body.width - SidePanelWidth - 16 - 320, 40), GameTexts.Market.AuctionNote, skin.SmallMuted);
             var grid = new Rect(body.x, body.y + 46, body.width - SidePanelWidth - 16, body.height - 46);
-            if (_auctions.Open.Count == 0)
+            DrawSearch(skin, grid.xMax, body.y, "busca_leilao");
+            var shownAuctions = _auctions.Open.Where(a => NameSearch.Matches(a.Goods.Name, _search)).ToList();
+            if (shownAuctions.Count == 0)
             {
-                GUI.Label(new Rect(grid.x, grid.y + 8, grid.width, 40), GameTexts.Market.NoAuctions, skin.Body);
+                GUI.Label(new Rect(grid.x, grid.y + 8, grid.width, 40), _auctions.Open.Count > 0 ? GameTexts.Search.NoMatch : GameTexts.Market.NoAuctions, skin.Body);
             }
             else
             {
-                DrawGrid(grid, _auctions.Open, ref _scroll, (rect, a) =>
+                DrawGrid(grid, shownAuctions, ref _scroll, (rect, a) =>
                 {
                     var corner = (a.BidCount == 0 ? GameTexts.Market.StartingAt(Format.Number(a.StartingBidCoins)) : GameTexts.Market.BidAt(Format.Number(a.HighestBidCoins)))
                                  + " · " + Format.TimeLeft(a.RemainingSeconds);
@@ -658,13 +659,21 @@ namespace FishingIdle.Game.UI
             if (GUI.Button(new Rect(area.x, area.y, 220, 34), "« " + GameTexts.Market.BackToAuctions, skin.Button))
             {
                 _creatingAuction = false;
+                _search = string.Empty;
                 _selectedCandidate = 0;
                 return;
             }
 
-            GUI.Label(new Rect(area.x + 240, area.y + 6, area.width - SidePanelWidth - 260, 40), GameTexts.Market.StartAuctionNote, skin.SmallMuted);
+            GUI.Label(new Rect(area.x + 240, area.y + 6, area.width - SidePanelWidth - 260 - 320, 40), GameTexts.Market.StartAuctionNote, skin.SmallMuted);
             var grid = new Rect(area.x, area.y + 48, area.width - SidePanelWidth - 16, area.height - 48);
-            DrawGrid(grid, _candidates, ref _scroll, (rect, c) =>
+            DrawSearch(skin, grid.xMax, area.y, "busca_leilao_criar");
+            var shownCandidates = _candidates.Where(c => NameSearch.Matches(c.Goods.Name, _search)).ToList();
+            if (shownCandidates.Count == 0 && _candidates.Count > 0)
+            {
+                GUI.Label(new Rect(grid.x, grid.y + 8, grid.width, 40), GameTexts.Search.NoMatch, skin.Body);
+            }
+
+            DrawGrid(grid, shownCandidates, ref _scroll, (rect, c) =>
             {
                 var previous = GUI.color;
                 if (c.Blocker != ServiceError.None)

@@ -39,7 +39,7 @@ namespace FishingIdle.Game.UI
         public static Color SizeColor(string sizeCategoryId) => Theme.Size(sizeCategoryId);
 
         public GUIStyle Panel, PanelSolid, Card, CardHovered, CardSelected, CardImportant, Shadow, Glow, Outline, Pill, IconTile;
-        public GUIStyle Button, ButtonPrimary, ButtonDanger, ButtonReward, Chip, ChipActive, Nav, NavActive;
+        public GUIStyle Button, ButtonPrimary, ButtonDanger, ButtonReward, Chip, ChipActive, Nav, NavActive, SearchField;
         public GUIStyle Title, Heading, Body, BodyBold, ChipText, Small, SmallBold, SmallMuted, SmallRight, SmallMutedRight, SmallGold, SmallGoldRight, Number, NumberRight, Center, CenterBold, SmallMutedCenter, Badge, Display, DisplaySub, PillText;
 
         public Texture2D White, Overlay, Coin, Rays;
@@ -117,6 +117,24 @@ namespace FishingIdle.Game.UI
             Nav = new GUIStyle(Chip) { fontSize = 14 };
             Nav.normal.textColor = Nav.hover.textColor = Nav.active.textColor = Nav.focused.textColor = t.Text;
             NavActive = new GUIStyle(ChipActive) { fontSize = 14 };
+
+            // The name search box (A-084): opaque, a touch lighter than the panel and with an accent
+            // border, so it reads as a place to type and not as one more chip.
+            var searchFill = Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.14f), 1f);
+            SearchField = new GUIStyle(GUI.skin.textField)
+            {
+                font = BodyFont,
+                fontSize = 15,
+                alignment = TextAnchor.MiddleLeft,
+                padding = new RectOffset(38, 32, 4, 4),
+                border = new RectOffset(10, 10, 10, 10),
+                wordWrap = false,
+                clipping = TextClipping.Clip,
+            };
+            SearchField.normal.background = Art.PanelTexture(searchFill, searchFill, Alpha(t.Action, 0.7f), 10, 2f, 40, 0f);
+            SearchField.hover.background = Art.PanelTexture(searchFill, searchFill, Alpha(t.Action, 0.95f), 10, 2f, 40, 0f);
+            SearchField.focused.background = SearchField.active.background = Art.PanelTexture(searchFill, searchFill, Alpha(t.ActionHover, 1f), 10, 2.5f, 40, 0f);
+            SearchField.normal.textColor = SearchField.hover.textColor = SearchField.focused.textColor = SearchField.active.textColor = t.Text;
 
             Title = Label(TitleFont, 27, Text);
             Heading = Label(TitleFont, 20, Text);

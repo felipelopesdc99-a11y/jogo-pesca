@@ -814,8 +814,9 @@ A Caixa de Pesca, o Aquário e o Mercado têm um campo "Buscar peixe pelo nome",
 
 - **Caixa de Pesca e Aquário:** no alto da janela, ao lado de "Fechar". Na Caixa, a busca se soma
   aos filtros de raridade e tamanho; no Aquário, vale para a lista e para a escolha de alimento.
-- **Mercado:** na aba Comprar, é o primeiro filtro da coluna ("Nome do peixe"); na aba Vender, fica
-  no alto, à direita.
+- **Mercado:** no alto, à direita, nas abas Comprar, Vender e Leilão (também na escolha do peixe para
+  criar um leilão). Trocar de aba começa a busca vazia. *(Revisto em 01/10/2026: antes, em Comprar, a
+  busca era o primeiro filtro da coluna e passava despercebida, e o Leilão não tinha busca.)*
 
 Basta digitar parte do nome, sem se preocupar com maiúsculas ou acentos ("tilapia" acha "Tilápia",
 "dour" acha "Dourado"). O ✕ limpa a busca. Ao abrir a janela de novo, a busca começa vazia. É só um

@@ -263,7 +263,7 @@ antigos entram com o Barco Inicial e sem isca. Cada passo está em `SaveMigratio
     tempos de aviso, de celebração, do fade das janelas e do contador de moedas. Nenhuma cor fica
     espalhada nas telas: elas usam `UiSkin` (que lê o tema), `UiSkin.RarityColor(id)` e
     `UiSkin.SizeColor(id)`; uma linha "48,6 cm · Grande · Nv. 3" usa `UiSkin.SizeLine`, que escreve o
-    tamanho na cor dele onde quer que ele esteja. A busca pelo nome (`UI/NameSearch`: campo com lupa e ✕;
+    tamanho na cor dele onde quer que ele esteja. A busca pelo nome (`UI/NameSearch`: campo com lupa e ✕, estilo `UiSkin.SearchField`; no Mercado, `MarketWindow.DrawSearch` o põe no alto de cada aba com peixes;
     `NameSearch.Matches` ignora maiúsculas e acentos) filtra só o que é mostrado. Filtros coloridos usam `UiSkin.ColorChip` (ponto na cor; fundo e borda
     na cor quando escolhido).
   - **Arte trocável** (`Visual/ArtAssets`): toda imagem é um arquivo em `Resources/Arte`, carregado

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-01T03:19:35Z",
+  "updated_at": "2026-10-01T04:00:54Z",
   "current_milestone": "M16",
   "statuses": [
     "TODO",
@@ -2390,6 +2390,18 @@
           ],
           "updated_at": "2026-10-01T03:15:47Z",
           "completion_notes": "Segunda leva de imagens (01/10/2026): margem direita do Pantanal refeita, borboletas (novo comportamento na paisagem viva do Pantanal), ícones de barco e isca em silhueta branca, e quatro faixas novas (Refazer 01 a 04) alternadas A/B no fundo dos dois mapas. Compila; não aberto no Unity ainda."
+        },
+        {
+          "id": "M16-T08",
+          "title": "Mercado: busca pelo nome em todas as abas com peixes",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (01/10/2026): a busca pelo nome não aparecia no Mercado. Em Comprar ela era o primeiro filtro da coluna e passava despercebida; o Leilão não tinha busca.",
+          "status": "DONE",
+          "dependencies": [
+            "M14-T26"
+          ],
+          "updated_at": "2026-10-01T04:00:54Z",
+          "completion_notes": "Campo Buscar peixe pelo nome no alto, à direita, em Comprar, Vender, Leilão e na escolha do peixe do leilão (MarketWindow.DrawSearch); trocar de aba ou reabrir o Mercado limpa a busca. Estilo novo UiSkin.SearchField, mais visível, usado também na Caixa e no Aquário. GDD_ADENDO A-084 revisto. Compila; não aberto no Unity ainda."
         }
       ]
     }

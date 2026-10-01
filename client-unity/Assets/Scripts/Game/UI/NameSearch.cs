@@ -13,35 +13,24 @@ namespace FishingIdle.Game.UI
     /// </summary>
     public static class NameSearch
     {
-        private static GUIStyle _field;
+        private static GUIStyle _placeholder;
 
         /// <summary>Draws the box and returns the (possibly edited) text.</summary>
         public static string Field(UiSkin skin, Rect rect, string text, string controlName)
         {
-            if (_field == null)
+            if (_placeholder == null)
             {
-                _field = new GUIStyle(GUI.skin.textField)
-                {
-                    font = skin.BodyFont,
-                    fontSize = 14,
-                    alignment = TextAnchor.MiddleLeft,
-                    padding = new RectOffset(34, 30, 4, 4),
-                    border = skin.Chip.border,
-                };
-                _field.normal.background = skin.Chip.normal.background;
-                _field.hover.background = skin.Chip.hover.background;
-                _field.focused.background = skin.Chip.hover.background;
-                _field.active.background = skin.Chip.hover.background;
-                _field.normal.textColor = _field.hover.textColor = _field.focused.textColor = _field.active.textColor = UiSkin.Text;
+                _placeholder = new GUIStyle(skin.Body) { alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Clip };
+                _placeholder.normal.textColor = UiSkin.Muted;
             }
 
             text = text ?? string.Empty;
             GUI.SetNextControlName(controlName);
-            var edited = GUI.TextField(rect, text, 40, _field);
-            skin.DrawIcon(new Rect(rect.x + 10, rect.y + (rect.height - 16f) / 2f, 16, 16), Icons.Search, UiSkin.Muted);
+            var edited = GUI.TextField(rect, text, 40, skin.SearchField);
+            skin.DrawIcon(new Rect(rect.x + 12, rect.y + (rect.height - 18f) / 2f, 18, 18), Icons.Search, UiSkin.Accent);
             if (edited.Length == 0 && GUI.GetNameOfFocusedControl() != controlName)
             {
-                GUI.Label(new Rect(rect.x + 34, rect.y, rect.width - 40, rect.height), GameTexts.Search.Placeholder, skin.SmallMuted);
+                GUI.Label(new Rect(rect.x + 38, rect.y, rect.width - 44, rect.height), GameTexts.Search.Placeholder, _placeholder);
             }
 
             if (edited.Length > 0 && GUI.Button(new Rect(rect.xMax - 28, rect.y + (rect.height - 22f) / 2f, 22, 22), GUIContent.none, GUIStyle.none))

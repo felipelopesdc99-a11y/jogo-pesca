@@ -3,6 +3,20 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.24] — 01/10/2026
+
+### Mudado
+
+- Mercado: o campo "Buscar peixe pelo nome" fica no alto, à direita, em Comprar, Vender e Leilão (e
+  na escolha do peixe para criar um leilão). Antes, em Comprar, ele ficava escondido na coluna de
+  filtros, e o Leilão não tinha busca. Trocar de aba ou reabrir o Mercado limpa a busca.
+- O campo de busca (Caixa de Pesca, Aquário e Mercado) ficou mais visível: fundo claro, borda
+  turquesa e lupa colorida.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda.
+
 ## [0.2.0-m16.23] — 01/10/2026
 
 ### Corrigido
