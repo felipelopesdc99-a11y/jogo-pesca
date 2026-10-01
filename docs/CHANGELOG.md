@@ -3,6 +3,13 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.23] — 01/10/2026
+
+### Corrigido
+
+- Janela do Mapa: com quatro mapas, os cards de baixo saíam da janela. Agora a lista rola dentro dela
+  (roda do mouse ou barra) e abre já mostrando o mapa onde você está. Visto pelo proprietário no Play.
+
 ## [0.2.0-m16.22] — 01/10/2026
 
 ### Mudado

@@ -14,6 +14,11 @@ namespace FishingIdle.Game.UI
         private readonly GameRoot _root;
         private MapsView _maps;
         private float _nextRefresh;
+        private Vector2 _scroll;
+        private bool _scrollToCurrent;
+
+        private const float CardHeight = 540f;
+        private const float RowGap = 20f;
 
         public MapWindow(GameRoot root)
         {
@@ -26,6 +31,7 @@ namespace FishingIdle.Game.UI
         {
             IsOpen = true;
             _nextRefresh = 0f;
+            _scrollToCurrent = true;
         }
 
         public void Close() => IsOpen = false;
@@ -56,12 +62,27 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var cardWidth = (area.width - 20f) / 2f;
+            // Two cards per row; with more than two maps the rows scroll inside the window.
+            var rows = (_maps.Maps.Count + 1) / 2;
+            var contentHeight = 6f + rows * (CardHeight + RowGap);
+            var scrolls = contentHeight > area.height;
+            var cardWidth = (area.width - 20f - (scrolls ? 18f : 0f)) / 2f;
+            if (_scrollToCurrent)
+            {
+                _scrollToCurrent = false;
+                var current = _maps.Maps.FindIndex(m => m.IsCurrent);
+                _scroll = new Vector2(0f, current > 1 ? current / 2 * (CardHeight + RowGap) : 0f);
+            }
+
+            var view = new Rect(0f, 0f, area.width - (scrolls ? 18f : 0f), contentHeight);
+            _scroll = GUI.BeginScrollView(area, _scroll, view, false, scrolls);
             for (var i = 0; i < _maps.Maps.Count; i++)
             {
-                var rect = new Rect(area.x + i % 2 * (cardWidth + 20f), area.y + 6 + i / 2 * 560f, cardWidth, Mathf.Min(540f, area.height - 10f));
+                var rect = new Rect(i % 2 * (cardWidth + 20f), 6f + i / 2 * (CardHeight + RowGap), cardWidth, CardHeight);
                 DrawMap(skin, rect, _maps.Maps[i]);
             }
+
+            GUI.EndScrollView();
         }
 
         private void DrawMap(UiSkin skin, Rect rect, MapView map)
