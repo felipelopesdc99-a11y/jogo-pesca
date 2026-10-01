@@ -3,6 +3,14 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.25] — 01/10/2026
+
+### Corrigido
+
+- Painel de pesca: o botão "Parar pesca" cobria a barra que conta o tempo até a próxima fisgada.
+  O painel ficou um pouco mais alto (para cima), e o botão continua no mesmo lugar. Visto pelo
+  proprietário no Play.
+
 ## [0.2.0-m16.24] — 01/10/2026
 
 ### Mudado

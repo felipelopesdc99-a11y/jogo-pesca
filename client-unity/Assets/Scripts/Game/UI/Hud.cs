@@ -608,7 +608,8 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var panel = new Rect(_width / 2f - 310, _height - 160, 620, 136);
+            // Tall enough that the button (always at the bottom) sits clear of the progress bar.
+            var panel = new Rect(_width / 2f - 310, _height - 176, 620, 152);
             skin.FloatingPanel(panel);
             var tile = new Rect(panel.x + 18, panel.y + 18, 56, 56);
 
