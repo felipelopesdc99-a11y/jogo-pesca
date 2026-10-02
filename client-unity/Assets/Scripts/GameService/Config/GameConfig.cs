@@ -144,6 +144,18 @@ namespace FishingIdle.GameService.Config
             return step?.CostCoins ?? 0;
         }
 
+        /// <summary>Conchas to go from <paramref name="level"/> to the next; 0 at the max level.</summary>
+        public long RodUpgradeShellCost(RodConfig rod, int level)
+        {
+            if (level >= RodMaxLevel(rod) || rod.UpgradeCosts == null)
+            {
+                return 0;
+            }
+
+            var step = rod.UpgradeCosts.FirstOrDefault(c => c.ToLevel == level + 1);
+            return step?.CostShells ?? 0;
+        }
+
         public bool IsPurchasable(RodConfig rod) => rod.Acquisition != null && rod.Acquisition.Method == "coin_purchase";
 
         /// <summary>XP a fish needs to go from <paramref name="level"/> to the next; 0 at the max level.</summary>

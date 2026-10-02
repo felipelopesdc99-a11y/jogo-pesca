@@ -19,6 +19,7 @@ public sealed class MapsThreeFourTests
         var (game, _, _) = TestSupport.NewGame();
         game.Session.Save.FisherLevel = level;
         game.Session.Save.Coins = 10_000_000;
+        game.Session.Save.Shells = 1_000_000;
         foreach (var rod in rods)
         {
             Assert.True(game.Shop.BuyRod(rod).Succeeded);

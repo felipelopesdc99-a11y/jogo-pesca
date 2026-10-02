@@ -87,6 +87,7 @@ public sealed class CatchSuccessTests
         var clock = new ManualClock(TestSupport.StartMs);
         var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock);
         game.Session.Save.Coins = 10_000;
+        game.Session.Save.Shells = 1_000; // every item asks for Conchas (A-099)
         Assert.True(game.Gear.BuyBait("bait_01").Succeeded);
         game.Fishing.StartFishing();
 
@@ -109,6 +110,7 @@ public sealed class CatchSuccessTests
     {
         var (game, clock, _) = TestSupport.NewGame(TestSupport.RealConfig());
         game.Session.Save.Coins = 10_000;
+        game.Session.Save.Shells = 1_000; // every item asks for Conchas (A-099)
         var bought = game.Gear.BuyBait("bait_01");
         Assert.True(bought.Succeeded);
         Assert.Equal("bait_01", bought.Value.BaitId);
@@ -142,18 +144,21 @@ public sealed class CatchSuccessTests
 
         save.FisherLevel = 20;
         save.Coins = 3000;
+        save.Shells = gear.Boats.Single(b => b.BoatId == "boat_01").CostShells;
         var bought = game.Gear.BuyBoat("boat_01");
         Assert.True(bought.Succeeded);
         Assert.Equal(0, save.Coins);
+        Assert.Equal(0, save.Shells);
         Assert.Equal("boat_01", bought.Value.BoatId);
         Assert.Equal(0.5 + bought.Value.BoatBonus, bought.Value.Chances.Single(c => c.RarityId == "common").Chance, 6);
         Assert.True(bought.Value.BoatBonus > 0);
         Assert.Equal(ServiceError.BoatAlreadyOwned, game.Gear.BuyBoat("boat_01").Error);
 
         save.Coins = 1_000_000;
-        save.Shells = 10;
+        var boat3Shells = gear.Boats.Single(b => b.BoatId == "boat_03").CostShells;
+        save.Shells = boat3Shells - 1;
         Assert.Equal(ServiceError.NotEnoughShells, game.Gear.BuyBoat("boat_03").Error);
-        save.Shells = 30;
+        save.Shells = boat3Shells;
         Assert.True(game.Gear.BuyBoat("boat_03").Succeeded);
         Assert.Equal(0, save.Shells);
         Assert.Equal(1_000_000 - 45_000, save.Coins);

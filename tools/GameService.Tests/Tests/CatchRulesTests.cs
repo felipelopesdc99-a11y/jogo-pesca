@@ -137,12 +137,16 @@ public sealed class CatchRulesTests
     }
 
     [Fact]
-    public void The_starter_rod_never_generates_shells()
+    public void The_starter_rod_gives_shells_at_the_base_chance()
     {
+        // Since A-099 every item asks for Conchas, so the Starter Rod gives them too (no shell bonus).
         var map = Map("map_01");
         var starter = Rod("rod_00_starter");
-        var shells = Enumerable.Range(0, 10_000).Sum(i => CatchRules.Roll(Config, map, starter, 1, Rng.For(1, 1, i)).Shells);
-        Assert.Equal(0, shells);
+        const int n = 20_000;
+        var shells = Enumerable.Range(0, n).Sum(i => CatchRules.Roll(Config, map, starter, 1, Rng.For(1, 1, i)).Shells);
+        var amount = Config.Economy.Shells.AmountPerDrop;
+        var expected = n * Config.Economy.Shells.BaseDropChancePerCatch * (amount.Min + amount.Max) / 2.0;
+        Assert.InRange(shells, expected * 0.85, expected * 1.15);
     }
 
     [Fact]

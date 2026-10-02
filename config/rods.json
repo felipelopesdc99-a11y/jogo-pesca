@@ -12,7 +12,8 @@
     "has_xp_bar": false,
     "has_failure_chance": false,
     "requires_materials": false,
-    "uses_shells": false
+    "uses_shells": true,
+    "uses_shells_note": "Desde 02/10/2026 (A-099) comprar e melhorar varas pede Conchas além das Moedas."
   },
   "bonus_axes": {
     "note": "Só existem bônus ligados à pesca. Os bônus são modestos porque percentuais pequenos se acumulam ao longo de milhares de capturas.",
@@ -55,7 +56,7 @@
       "can_catch_rarities": [
         "common"
       ],
-      "generates_shells": false,
+      "generates_shells": true,
       "bonuses": {
         "rarity_efficiency": 0.0,
         "size_quality": 0.0,
@@ -73,6 +74,7 @@
       "acquisition": {
         "method": "coin_purchase",
         "purchase_cost_coins": 2500,
+        "purchase_cost_shells": 5,
         "unlock_fisher_level": 10
       },
       "has_internal_levels": true,
@@ -136,39 +138,48 @@
       "upgrade_costs": [
         {
           "to_level": 2,
-          "cost_coins": 1500
+          "cost_coins": 1500,
+          "cost_shells": 2
         },
         {
           "to_level": 3,
-          "cost_coins": 2300
+          "cost_coins": 2300,
+          "cost_shells": 3
         },
         {
           "to_level": 4,
-          "cost_coins": 3600
+          "cost_coins": 3600,
+          "cost_shells": 4
         },
         {
           "to_level": 5,
-          "cost_coins": 5600
+          "cost_coins": 5600,
+          "cost_shells": 5
         },
         {
           "to_level": 6,
-          "cost_coins": 8650
+          "cost_coins": 8650,
+          "cost_shells": 6
         },
         {
           "to_level": 7,
-          "cost_coins": 13400
+          "cost_coins": 13400,
+          "cost_shells": 8
         },
         {
           "to_level": 8,
-          "cost_coins": 20800
+          "cost_coins": 20800,
+          "cost_shells": 10
         },
         {
           "to_level": 9,
-          "cost_coins": 32250
+          "cost_coins": 32250,
+          "cost_shells": 12
         },
         {
           "to_level": 10,
-          "cost_coins": 49950
+          "cost_coins": 49950,
+          "cost_shells": 15
         }
       ],
       "npc_resale": {
@@ -187,6 +198,7 @@
       "acquisition": {
         "method": "coin_purchase",
         "purchase_cost_coins": 90000,
+        "purchase_cost_shells": 40,
         "unlock_fisher_level": 30
       },
       "has_internal_levels": true,
@@ -250,39 +262,48 @@
       "upgrade_costs": [
         {
           "to_level": 2,
-          "cost_coins": 10000
+          "cost_coins": 10000,
+          "cost_shells": 10
         },
         {
           "to_level": 3,
-          "cost_coins": 15000
+          "cost_coins": 15000,
+          "cost_shells": 12
         },
         {
           "to_level": 4,
-          "cost_coins": 23000
+          "cost_coins": 23000,
+          "cost_shells": 15
         },
         {
           "to_level": 5,
-          "cost_coins": 35000
+          "cost_coins": 35000,
+          "cost_shells": 18
         },
         {
           "to_level": 6,
-          "cost_coins": 52000
+          "cost_coins": 52000,
+          "cost_shells": 22
         },
         {
           "to_level": 7,
-          "cost_coins": 78000
+          "cost_coins": 78000,
+          "cost_shells": 26
         },
         {
           "to_level": 8,
-          "cost_coins": 117000
+          "cost_coins": 117000,
+          "cost_shells": 30
         },
         {
           "to_level": 9,
-          "cost_coins": 175000
+          "cost_coins": 175000,
+          "cost_shells": 35
         },
         {
           "to_level": 10,
-          "cost_coins": 260000
+          "cost_coins": 260000,
+          "cost_shells": 40
         }
       ],
       "npc_resale": {

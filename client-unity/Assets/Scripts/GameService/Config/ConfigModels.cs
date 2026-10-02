@@ -230,6 +230,9 @@ namespace FishingIdle.GameService.Config
         /// <summary>"coin_purchase" rods are sold in the Shop; "free_claim_in_shop" is the Starter Rod.</summary>
         public string Method { get; set; }
         public long PurchaseCostCoins { get; set; }
+
+        /// <summary>Conchas asked on top of the coins (A-099).</summary>
+        public long PurchaseCostShells { get; set; }
         public int UnlockFisherLevel { get; set; }
     }
 
@@ -237,6 +240,9 @@ namespace FishingIdle.GameService.Config
     {
         public int ToLevel { get; set; }
         public long CostCoins { get; set; }
+
+        /// <summary>Conchas asked on top of the coins (A-099).</summary>
+        public long CostShells { get; set; }
     }
 
     /// <summary>NPC resale: part of the purchase price plus part of what was spent on upgrades.</summary>

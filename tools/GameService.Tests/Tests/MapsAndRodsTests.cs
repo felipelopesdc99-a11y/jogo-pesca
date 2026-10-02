@@ -23,6 +23,7 @@ public sealed class MapsAndRodsTests
         Assert.True(game.Player.GetPlayer().FisherLevel >= 10);
         // Sale prices are a balance knob (economy.json); these tests are about the Shop, not about income.
         game.Session.Save.Coins += 20_000;
+        game.Session.Save.Shells += 500;
         return (game, clock, dir);
     }
 
@@ -151,6 +152,25 @@ public sealed class MapsAndRodsTests
     }
 
     [Fact]
+    public void Buying_and_upgrading_a_rod_ask_for_the_configured_shells()
+    {
+        var (game, _, _) = VeteranPlayer();
+        var save = game.Session.Save;
+        game.Session.Config.TryGetRod("rod_01", out var rod);
+        save.Shells = rod.Acquisition.PurchaseCostShells - 1;
+        Assert.Equal(ServiceError.NotEnoughShells, game.Shop.BuyRod("rod_01").Error);
+
+        save.Shells = rod.Acquisition.PurchaseCostShells + 100;
+        Assert.True(game.Shop.BuyRod("rod_01").Succeeded);
+        Assert.Equal(100, save.Shells);
+
+        var item = game.Profile.GetProfile().EquippedRod;
+        Assert.True(item.NextUpgradeShells > 0);
+        Assert.True(game.Profile.UpgradeRod(item.ItemId).Succeeded);
+        Assert.Equal(100 - item.NextUpgradeShells, save.Shells);
+    }
+
+    [Fact]
     public void Upgrading_needs_coins_and_stops_at_level_10()
     {
         var (game, _, _) = VeteranPlayer();
@@ -164,6 +184,9 @@ public sealed class MapsAndRodsTests
         Assert.Equal(ServiceError.NotEnoughCoins, game.Profile.UpgradeRod(id).Error);
 
         game.Session.Save.Coins = 1_000_000;
+        game.Session.Save.Shells = 0;
+        Assert.Equal(ServiceError.NotEnoughShells, game.Profile.UpgradeRod(id).Error); // upgrades ask for Conchas too (A-099)
+        game.Session.Save.Shells = 1_000;
         for (var level = 2; level <= 10; level++)
         {
             Assert.True(game.Profile.UpgradeRod(id).Succeeded);

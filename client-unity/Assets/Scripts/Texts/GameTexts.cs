@@ -521,6 +521,7 @@ namespace FishingIdle.Texts
             public static string RodSold(string coins) => "Vara vendida por " + coins + " moedas.";
             public static string RodDestroyed(string rod) => rod + " foi destruída.";
             public static string UpgradeFor(int level, string coins) => "Melhorar p/ Nv. " + level + " (" + coins + ")";
+            public static string UpgradeForWithShells(int level, string coins, string shells) => "Nv. " + level + ": " + coins + " + " + shells + " Conchas";
             public static string SellFor(string coins) => "Vender (" + coins + ")";
             public static string MaxLevelOf(int max) => "Até o Nível " + max;
             public static string SellTitle(string rod) => "Vender " + rod + "?";

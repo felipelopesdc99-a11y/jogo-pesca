@@ -55,6 +55,9 @@ namespace FishingIdle.GameService.Profile
         /// <summary>Coins for the next internal level; 0 at the max level or for rods without levels.</summary>
         public long NextUpgradeCost { get; internal set; }
 
+        /// <summary>Conchas for the next internal level, on top of the coins.</summary>
+        public long NextUpgradeShells { get; internal set; }
+
         /// <summary>What the game pays for it (NPC resale).</summary>
         public long ResaleValue { get; internal set; }
 

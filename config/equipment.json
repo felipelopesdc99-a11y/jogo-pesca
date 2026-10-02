@@ -20,7 +20,7 @@
       "tier": 1,
       "catch_success_bonus": 0.02,
       "cost_coins": 3000,
-      "cost_shells": 0,
+      "cost_shells": 5,
       "unlock_fisher_level": 5
     },
     {
@@ -29,7 +29,7 @@
       "tier": 2,
       "catch_success_bonus": 0.04,
       "cost_coins": 15000,
-      "cost_shells": 0,
+      "cost_shells": 15,
       "unlock_fisher_level": 12
     },
     {
@@ -38,7 +38,7 @@
       "tier": 3,
       "catch_success_bonus": 0.06,
       "cost_coins": 45000,
-      "cost_shells": 30,
+      "cost_shells": 25,
       "unlock_fisher_level": 20
     },
     {
@@ -47,7 +47,7 @@
       "tier": 4,
       "catch_success_bonus": 0.08,
       "cost_coins": 130000,
-      "cost_shells": 120,
+      "cost_shells": 90,
       "unlock_fisher_level": 30
     },
     {
@@ -56,7 +56,7 @@
       "tier": 5,
       "catch_success_bonus": 0.1,
       "cost_coins": 350000,
-      "cost_shells": 350,
+      "cost_shells": 250,
       "unlock_fisher_level": 40
     }
   ],
@@ -69,7 +69,7 @@
       "catch_success_bonus": 0.03,
       "charges": 100,
       "cost_coins": 1000,
-      "cost_shells": 0,
+      "cost_shells": 1,
       "unlock_fisher_level": 1
     },
     {
@@ -79,7 +79,7 @@
       "catch_success_bonus": 0.07,
       "charges": 100,
       "cost_coins": 6000,
-      "cost_shells": 0,
+      "cost_shells": 3,
       "unlock_fisher_level": 10
     },
     {

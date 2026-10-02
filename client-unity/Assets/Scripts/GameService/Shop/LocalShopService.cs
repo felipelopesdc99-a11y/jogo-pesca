@@ -14,6 +14,7 @@ namespace FishingIdle.GameService.Shop
         public string Name { get; internal set; }
         public int Tier { get; internal set; }
         public long PriceCoins { get; internal set; }
+        public long PriceShells { get; internal set; }
         public int UnlockFisherLevel { get; internal set; }
         public int MaxLevel { get; internal set; }
         public double RarityBonus { get; internal set; }
@@ -94,7 +95,9 @@ namespace FishingIdle.GameService.Shop
             // Catches completed with the old rod are settled before the new one takes over.
             _fishing.Sync();
             var price = rod.Acquisition.PurchaseCostCoins;
+            var shells = rod.Acquisition.PurchaseCostShells;
             Save.Coins -= price;
+            Save.Shells -= shells;
             var item = new InventoryItem
             {
                 Id = Save.NextItemId++,
@@ -107,7 +110,7 @@ namespace FishingIdle.GameService.Shop
             Save.Inventory.Add(item);
             Save.EquippedRodItemId = item.Id;
             _session.Persist();
-            _session.Log("Bought rod " + rod.Id + " for " + price + " coins (item " + item.Id + ").");
+            _session.Log("Bought rod " + rod.Id + " for " + price + " coins and " + shells + " shells (item " + item.Id + ").");
             return ServiceResult<RodOfferView>.Ok(Offer(rod));
         }
 
@@ -122,6 +125,7 @@ namespace FishingIdle.GameService.Shop
                 Name = rod.DisplayName,
                 Tier = rod.Tier,
                 PriceCoins = rod.Acquisition.PurchaseCostCoins,
+                PriceShells = rod.Acquisition.PurchaseCostShells,
                 UnlockFisherLevel = rod.Acquisition.UnlockFisherLevel,
                 MaxLevel = max,
                 RarityBonus = at1.RarityEfficiency,
@@ -150,6 +154,7 @@ namespace FishingIdle.GameService.Shop
             if (Owns(rod)) return ServiceError.RodAlreadyOwned;
             if (Save.FisherLevel < rod.Acquisition.UnlockFisherLevel) return ServiceError.RodLocked;
             if (Save.Coins < rod.Acquisition.PurchaseCostCoins) return ServiceError.NotEnoughCoins;
+            if (Save.Shells < rod.Acquisition.PurchaseCostShells) return ServiceError.NotEnoughShells;
             return ServiceError.None;
         }
     }

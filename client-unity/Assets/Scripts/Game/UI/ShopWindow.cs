@@ -191,7 +191,16 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, y, w, 22), GameTexts.Profile.Tier(rod.Tier) + " · " + GameTexts.Shop.MaxLevelOf(rod.MaxLevel), skin.SmallMuted);
             y += 28;
             skin.CoinIcon(new Rect(x, y + 2, 22, 22));
-            GUI.Label(new Rect(x + 30, y, w - 30, 28), rod.IsFree ? GameTexts.Shop.Free : GameTexts.Shop.Price(Format.Number(rod.PriceCoins)), skin.Number);
+            var price = rod.IsFree ? GameTexts.Shop.Free : GameTexts.Shop.Price(Format.Number(rod.PriceCoins));
+            GUI.Label(new Rect(x + 30, y, w - 30, 28), price, skin.Number);
+            if (!rod.IsFree && rod.PriceShells > 0)
+            {
+                // Conchas on top of the coins (A-099).
+                var px = x + 30 + skin.Number.CalcSize(new GUIContent(price)).x + 12f;
+                skin.DrawIcon(new Rect(px, y + 2, 22, 22), Icons.Shell, Color.white);
+                GUI.Label(new Rect(px + 28, y, w - (px + 28 - x), 28), Format.Number(rod.PriceShells), skin.Number);
+            }
+
             y += 36;
 
             GUI.Label(new Rect(x, y, w, 20), GameTexts.Shop.AtLevel1 + " → " + GameTexts.Shop.AtMax, skin.SmallMuted);

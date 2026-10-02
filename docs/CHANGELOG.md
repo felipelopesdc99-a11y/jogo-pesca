@@ -3,6 +3,15 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m17.2] — 02/10/2026
+
+### Mudado
+
+- Toda compra e melhoria de equipamento pede Conchas (A-099): Vara 1 com 5, Vara 2 com 40, melhorias
+  de 2 a 40 por nível, barcos de 5 a 250, iscas de 1 a 12.
+- Conchas um pouco mais raras: 7% por peixe puxado (antes 10%). A Vara Inicial agora também dá
+  Conchas.
+
 ## [0.2.0-m17.1] — 02/10/2026
 
 ### Adicionado

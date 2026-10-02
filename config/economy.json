@@ -34,8 +34,8 @@
   },
   "shells": {
     "source": "fishing_only_in_v0_1",
-    "base_drop_chance_per_catch": 0.1,
-    "base_drop_chance_note": "Era 0,05; dobrou junto com a Chance de Sucesso da Captura, porque só peixe puxado dá Conchas.",
+    "base_drop_chance_per_catch": 0.07,
+    "base_drop_chance_note": "Era 0,05; dobrou para 0,1 junto com a Chance de Sucesso da Captura, porque só peixe puxado dá Conchas. Em 02/10/2026 caiu para 0,07 (A-099): as Conchas ficaram um pouco mais difíceis, agora que todo equipamento pede Conchas. A Vara Inicial também passa a dar Conchas.",
     "amount_per_drop": {
       "min": 1,
       "max": 2

@@ -355,7 +355,7 @@ namespace FishingIdle.GameService.Config
                     {
                         errors.Add(V.Missing(GameConfigLoader.RodsFile, rod.Id + ".acquisition"));
                     }
-                    else if (rod.Acquisition.PurchaseCostCoins < 0 || rod.Acquisition.UnlockFisherLevel < 1)
+                    else if (rod.Acquisition.PurchaseCostCoins < 0 || rod.Acquisition.PurchaseCostShells < 0 || rod.Acquisition.UnlockFisherLevel < 1)
                     {
                         errors.Add(V.NegativeValue(GameConfigLoader.RodsFile, rod.Id + ".acquisition"));
                     }
@@ -366,7 +366,7 @@ namespace FishingIdle.GameService.Config
                         for (var level = 2; level <= levelCount; level++)
                         {
                             var step = rod.UpgradeCosts?.FirstOrDefault(c => c.ToLevel == level);
-                            if (step == null || step.CostCoins <= 0)
+                            if (step == null || step.CostCoins <= 0 || step.CostShells < 0)
                             {
                                 errors.Add(V.RodUpgradeCostMissing(rod.Id, level));
                                 break;

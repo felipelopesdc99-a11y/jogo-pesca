@@ -240,13 +240,20 @@ namespace FishingIdle.GameService.Profile
                 return ServiceResult<RodItemView>.Fail(ServiceError.NotEnoughCoins);
             }
 
+            var shells = Config.RodUpgradeShellCost(rod, item.Level);
+            if (Save.Shells < shells)
+            {
+                return ServiceResult<RodItemView>.Fail(ServiceError.NotEnoughShells);
+            }
+
             // Cycles already completed are settled at the old level.
             _fishing.Sync();
             Save.Coins -= cost;
+            Save.Shells -= shells;
             item.Level++;
             item.UpgradeCoinsInvested += cost;
             _session.Persist();
-            _session.Log("Upgraded rod item " + item.Id + " to level " + item.Level + " for " + cost + " coins.");
+            _session.Log("Upgraded rod item " + item.Id + " to level " + item.Level + " for " + cost + " coins and " + shells + " shells.");
             Config.TryGetMap(Save.CurrentMapId, out var map);
             return ServiceResult<RodItemView>.Ok(ToRodView(item, map));
         }
@@ -325,6 +332,7 @@ namespace FishingIdle.GameService.Profile
                 IsEquipped = item.Id == Save.EquippedRodItemId,
                 AllowedOnCurrentMap = map == null || rod.Tier >= map.MinimumRodTier,
                 NextUpgradeCost = rod.HasInternalLevels ? Config.RodUpgradeCost(rod, item.Level) : 0,
+                NextUpgradeShells = rod.HasInternalLevels ? Config.RodUpgradeShellCost(rod, item.Level) : 0,
                 ResaleValue = RodRules.ResaleValue(rod, item),
                 CanDispose = item.Id != Save.EquippedRodItemId && RodRules.CanDispose(Config, rod),
             };

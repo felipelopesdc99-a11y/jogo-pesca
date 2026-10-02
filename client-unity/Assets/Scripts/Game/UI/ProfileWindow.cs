@@ -249,7 +249,9 @@ namespace FishingIdle.Game.UI
                 var upgradeWidth = rod.CanDispose ? w * 0.5f : w;
                 if (rod.NextUpgradeCost > 0)
                 {
-                    if (GUI.Button(new Rect(actions.x, actions.y, upgradeWidth - 6, 38), GameTexts.Shop.UpgradeFor(rod.Level + 1, Format.Number(rod.NextUpgradeCost)), skin.Button))
+                    if (GUI.Button(new Rect(actions.x, actions.y, upgradeWidth - 6, 38), (rod.NextUpgradeShells > 0
+                            ? GameTexts.Shop.UpgradeForWithShells(rod.Level + 1, Format.Number(rod.NextUpgradeCost), Format.Number(rod.NextUpgradeShells))
+                            : GameTexts.Shop.UpgradeFor(rod.Level + 1, Format.Number(rod.NextUpgradeCost))), skin.Button))
                     {
                         _root.UpgradeRod(rod.ItemId);
                     }

@@ -1073,3 +1073,26 @@ negociados entre jogadores.
 Na tela, as Conchas e os Dólares ficam numa faixa pequena logo abaixo das Moedas, no canto de cima à
 direita, sempre visíveis. Os avisos (toasts) descem um pouco para não cobrir a faixa. O ícone dos
 Dólares é provisório (`ASSET_PENDENTE`).
+
+### A-099 · Todo equipamento pede Conchas, e as Conchas ficaram mais raras
+**Seção do GDD:** 19, 21 · **Situação:** Pedido do proprietário (02/10/2026)
+
+O objetivo do proprietário é que os jogadores negociem Conchas (e Dólares) para comprar os itens
+antes. Por isso toda compra e toda melhoria de equipamento pede Conchas, além das Moedas:
+
+| Item | Moedas | Conchas |
+|---|---:|---:|
+| Vara 1 | 2.500 | 5 |
+| Melhorias da Vara 1 (Nv. 2 a 10) | como antes | 2, 3, 4, 5, 6, 8, 10, 12, 15 |
+| Vara 2 | 90.000 | 40 |
+| Melhorias da Vara 2 (Nv. 2 a 10) | como antes | 10, 12, 15, 18, 22, 26, 30, 35, 40 |
+| Barcos 1 a 5 | como antes | 5, 15, 25, 90, 250 (antes 0, 0, 30, 120, 350) |
+| Iscas Simples, Melhorada, Premium | 1.000, 6.000, 4.000 | 1, 3, 12 |
+
+As Conchas ficaram um pouco mais difíceis: a chance-base por peixe puxado caiu de 10% para 7%. Para
+ninguém ficar travado sem Conchas no começo, a Vara Inicial agora também dá Conchas, na chance-base e
+sem bônus.
+
+Na simulação, sem comércio: a Vara 1 chega com 2,2 h de pesca, como antes; a Vara 2 com 10,8 h (antes
+8,4 h), e o trecho do nível 30 ao 40 leva 4,9 h (antes 4,0 h). Os Barcos 3, 4 e 5 chegam com 9,9 h,
+20,3 h e 40,8 h. A diferença é o espaço do comércio de Conchas.
