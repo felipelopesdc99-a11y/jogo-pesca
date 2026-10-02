@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-01T05:06:15Z",
+  "updated_at": "2026-10-02T21:49:18Z",
   "current_milestone": "M16",
   "statuses": [
     "TODO",
@@ -2443,6 +2443,17 @@
             "M16-T11"
           ],
           "updated_at": "2026-10-01T05:06:15Z"
+        },
+        {
+          "id": "M16-T13",
+          "title": "Pescador segurando a vara e varas proporcionais na cena",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE: o proprietário viu no Play (02/10/2026) que a vara está desproporcional ao pescador e não parece estar na mão dele. Pedidos para o GPT em docs/PEDIDO_ARTE_PESCADOR_VARAS.md (pescador com as mãos fechadas, sem vara; três varas finas e retas). Ao chegar: recortar a mão da frente para desenhá-la por cima da vara.",
+          "status": "TODO",
+          "dependencies": [
+            "M16-T11"
+          ],
+          "updated_at": "2026-10-02T21:49:18Z"
         }
       ]
     }

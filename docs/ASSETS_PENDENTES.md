@@ -190,6 +190,15 @@ as pastas da mais antiga para a mais nova: `python3 tools/Arte/processar_mapas_3
 A água dos dois mapas continua pintada por script, como nos mapas 1 e 2 (os reflexos são desenhados
 pelo jogo a partir das camadas).
 
+## Pescador segurando a vara e varas da cena (V0.2, `M16-T13`)
+
+`ASSET_PENDENTE`: na cena, a vara usa a pintura da Loja, que é curta e grossa, e fica desproporcional
+ao pescador; e o pescador está com as mãos no joelho, então não parece segurá-la (visto pelo
+proprietário em 02/10/2026). Faltam: o pescador sentado com as mãos fechadas segurando um cabo (sem a
+vara) e as três varas finas e compridas, retas na horizontal. Pedido pronto em
+`docs/PEDIDO_ARTE_PESCADOR_VARAS.md`. Ao chegar, a mão da frente é recortada da figura e desenhada por
+cima da vara, para ela ficar dentro da mão.
+
 ## Isca no anzol (V0.2, `M16-T12`)
 
 `ASSET_PENDENTE`: as três iscas (Simples, Melhorada e Premium) aparecem na cena como uma forma
