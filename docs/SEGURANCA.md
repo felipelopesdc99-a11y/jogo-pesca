@@ -8,6 +8,17 @@
 Parta do princípio de que existem clientes modificados e bots. Toda ação com valor econômico, de
 progressão ou competitivo é decidida pelo servidor.
 
+## Na fase do MVP local
+
+Enquanto o jogo roda inteiro no PC (`docs/CLAUDE_START_HERE_V0_1_1.md`), o papel do "servidor" é do
+**serviço de jogo local** (`client-unity/Assets/Scripts/GameService`), separado da apresentação e
+proibido de usar o Unity. A regra acima vale igual entre essas duas partes: a tela só pede e mostra.
+
+O que o MVP local **não** protege, e só o servidor vai proteger (Milestone 12): o relógio é o do PC
+(a regra da TD-019 evita o abuso grosseiro, como adiantar o relógio com o jogo aberto) e o save é um
+arquivo no PC, que pode ser editado — por isso o save é validado ao carregar, mas não é tratado
+como a arquitetura definitiva.
+
 ## Nunca confiar no cliente para
 
 Hora atual · conclusão de ciclo de pesca · qual peixe foi capturado · tamanho ou raridade do peixe ·

@@ -1,0 +1,96 @@
+{
+  "note": "Gerado por tools/Arte/equipamento_na_cena.py. Barco, vara e isca equipados na cena (GDD_ADENDO A-096).",
+  "boats": [
+    {
+      "id": "boat_01",
+      "art": "Barcos/boat_01",
+      "front": "Barcos/Cena/boat_01_frente",
+      "width": 3.9,
+      "pivot_y": 0.2651,
+      "seat_x": -0.693,
+      "seat_y": 0.334
+    },
+    {
+      "id": "boat_02",
+      "art": "Barcos/boat_02",
+      "front": "Barcos/Cena/boat_02_frente",
+      "width": 4.1,
+      "pivot_y": 0.2876,
+      "seat_x": -0.729,
+      "seat_y": 0.276
+    },
+    {
+      "id": "boat_03",
+      "art": "Barcos/boat_03",
+      "front": "Barcos/Cena/boat_03_frente",
+      "width": 4.3,
+      "pivot_y": 0.2611,
+      "seat_x": -0.386,
+      "seat_y": 0.379
+    },
+    {
+      "id": "boat_04",
+      "art": "Barcos/boat_04",
+      "front": "Barcos/Cena/boat_04_frente",
+      "width": 4.6,
+      "pivot_y": 0.1518,
+      "seat_x": -0.952,
+      "seat_y": 0.482
+    },
+    {
+      "id": "boat_05",
+      "art": "Barcos/boat_05",
+      "front": "Barcos/Cena/boat_05_frente",
+      "width": 5.3,
+      "pivot_y": 0.112,
+      "seat_x": -1.097,
+      "seat_y": 0.505
+    }
+  ],
+  "rods": [
+    {
+      "id": "rod_00_starter",
+      "art": "Varas/rod_00_starter",
+      "butt_u": 0.0273,
+      "butt_v": 0.286,
+      "tip_u": 0.9756,
+      "tip_v": 0.7953,
+      "grip": 0.2
+    },
+    {
+      "id": "rod_01",
+      "art": "Varas/rod_01",
+      "butt_u": 0.0267,
+      "butt_v": 0.287,
+      "tip_u": 0.9741,
+      "tip_v": 0.8762,
+      "grip": 0.22
+    },
+    {
+      "id": "rod_02",
+      "art": "Varas/rod_02",
+      "butt_u": 0.1273,
+      "butt_v": 0.1192,
+      "tip_u": 0.8746,
+      "tip_v": 0.9498,
+      "grip": 0.24
+    }
+  ],
+  "baits": [
+    {
+      "id": "bait_01",
+      "color": "#9A6A4A",
+      "width": 0.22
+    },
+    {
+      "id": "bait_02",
+      "color": "#E0803C",
+      "width": 0.22
+    },
+    {
+      "id": "bait_03",
+      "color": "#E9BE45",
+      "width": 0.22
+    }
+  ]
+}

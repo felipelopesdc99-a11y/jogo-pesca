@@ -2,7 +2,7 @@
   "config_file": "rods",
   "config_schema_version": 1,
   "balance_status": "PROVISÓRIO",
-  "description": "Definições das varas e custos de melhoria. A V0.1 implementa apenas o Tier 0 (Vara Inicial) e o Tier 1 (Vara 1). A escada de tiers de longo prazo fica registrada como referência e de propósito não tem nenhuma vara definida.",
+  "description": "Definições das varas e custos de melhoria. Vara Inicial (Tier 0), Vara 1 (Tier 1) e, desde a V0.2, Vara 2 (Tier 2, docs/PROGRESSAO_MAPAS_3_4.md). A escada de tiers de longo prazo fica registrada como referência.",
   "upgrade_rules": {
     "internal_levels": {
       "min": 1,
@@ -12,23 +12,27 @@
     "has_xp_bar": false,
     "has_failure_chance": false,
     "requires_materials": false,
-    "uses_shells": false
+    "uses_shells": true,
+    "uses_shells_note": "Desde 02/10/2026 (A-099) comprar e melhorar varas pede Conchas além das Moedas."
   },
   "bonus_axes": {
     "note": "Só existem bônus ligados à pesca. Os bônus são modestos porque percentuais pequenos se acumulam ao longo de milhares de capturas.",
     "rarity_efficiency": {
-      "formula": "peso_efetivo(raro) = peso_base(raro) × (1 + rarity_efficiency)",
-      "clamp_note": "Escala a fatia rara do peso já existente no pool. Nunca pode introduzir uma raridade que o mapa não lista em available_rarities, e uma eficiência de +5% não pode transformar uma chance de 1% em 6%."
+      "formula": "peso_efetivo(espécie não Comum) = peso_base × (1 + rarity_efficiency), só para as raridades que a vara pode pegar; os Comuns ficam iguais e o pool é renormalizado.",
+      "clamp_note": "Escala a fatia não Comum (Raro e Épico) do peso já existente no pool. Nunca pode introduzir uma raridade que o mapa não lista em available_rarities, e uma eficiência de +5% não pode transformar uma chance de 1% em 6%."
     },
     "size_quality": {
       "formula": "draw_weight(grande) e draw_weight(excepcional) são multiplicados por (1 + size_quality); o peso restante é renormalizado."
     },
     "shell_yield": {
       "formula": "chance_de_concha = chance_base × (1 + shell_yield)"
+    },
+    "catch_success": {
+      "formula": "pontos percentuais somados à Chance de Sucesso da Captura (0,05 = +5%), junto com a chance-base da raridade, o barco e a isca."
     }
   },
   "tier_ladder_reference": {
-    "note": "Escada de progressão da seção 19 do GDD. As Varas 2 a 5 estão fora do escopo da V0.1 e de propósito não são definidas abaixo.",
+    "note": "Escada de progressão da seção 19 do GDD. As Varas 3 a 5 ainda não existem e de propósito não são definidas abaixo.",
     "purchase_unlock_fisher_level": {
       "rod_01": 10,
       "rod_02": 30,
@@ -40,7 +44,8 @@
   "rods": [
     {
       "id": "rod_00_starter",
-      "display_name": "Vara Inicial",
+      "display_name": "Caniço Manso",
+      "description": "Um equipamento simples e confiável para dar os primeiros passos na pesca.",
       "tier": 0,
       "implemented_in_v0_1": true,
       "acquisition": {
@@ -52,29 +57,33 @@
       "can_catch_rarities": [
         "common"
       ],
-      "generates_shells": false,
+      "generates_shells": true,
       "bonuses": {
         "rarity_efficiency": 0.0,
         "size_quality": 0.0,
-        "shell_yield": 0.0
+        "shell_yield": 0.0,
+        "catch_success": 0.0
       },
       "npc_resale_value_coins": 0,
       "tradable_on_market": false
     },
     {
       "id": "rod_01",
-      "display_name": "Vara 1",
+      "display_name": "Ponta Selvagem",
+      "description": "Fibra resistente para encarar rios fortes, peixes maiores e águas mais exigentes.",
       "tier": 1,
       "implemented_in_v0_1": true,
       "acquisition": {
         "method": "coin_purchase",
         "purchase_cost_coins": 2500,
+        "purchase_cost_shells": 5,
         "unlock_fisher_level": 10
       },
       "has_internal_levels": true,
       "can_catch_rarities": [
         "common",
-        "rare"
+        "rare",
+        "epic"
       ],
       "generates_shells": true,
       "bonuses_per_level": {
@@ -114,44 +123,190 @@
           0.38,
           0.45,
           0.52
+        ],
+        "catch_success": [
+          0.015,
+          0.02,
+          0.025,
+          0.035,
+          0.04,
+          0.045,
+          0.055,
+          0.06,
+          0.065,
+          0.08
         ]
       },
       "upgrade_costs": [
         {
           "to_level": 2,
-          "cost_coins": 1500
+          "cost_coins": 1500,
+          "cost_shells": 2
         },
         {
           "to_level": 3,
-          "cost_coins": 2300
+          "cost_coins": 2300,
+          "cost_shells": 3
         },
         {
           "to_level": 4,
-          "cost_coins": 3600
+          "cost_coins": 3600,
+          "cost_shells": 4
         },
         {
           "to_level": 5,
-          "cost_coins": 5600
+          "cost_coins": 5600,
+          "cost_shells": 5
         },
         {
           "to_level": 6,
-          "cost_coins": 8650
+          "cost_coins": 8650,
+          "cost_shells": 6
         },
         {
           "to_level": 7,
-          "cost_coins": 13400
+          "cost_coins": 13400,
+          "cost_shells": 8
         },
         {
           "to_level": 8,
-          "cost_coins": 20800
+          "cost_coins": 20800,
+          "cost_shells": 10
         },
         {
           "to_level": 9,
-          "cost_coins": 32250
+          "cost_coins": 32250,
+          "cost_shells": 12
         },
         {
           "to_level": 10,
-          "cost_coins": 49950
+          "cost_coins": 49950,
+          "cost_shells": 15
+        }
+      ],
+      "npc_resale": {
+        "base_value_ratio": 0.4,
+        "upgrade_investment_ratio": 0.25,
+        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
+      },
+      "tradable_on_market": true,
+      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus."
+    },
+    {
+      "id": "rod_02",
+      "display_name": "Maré Dourada",
+      "description": "Uma vara profissional, preparada para peixes grandes e águas salobras.",
+      "tier": 2,
+      "implemented_in_v0_1": false,
+      "acquisition": {
+        "method": "coin_purchase",
+        "purchase_cost_coins": 90000,
+        "purchase_cost_shells": 40,
+        "unlock_fisher_level": 30
+      },
+      "has_internal_levels": true,
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic"
+      ],
+      "generates_shells": true,
+      "bonuses_per_level": {
+        "note": "Os valores são o bônus total naquele nível interno, não um acréscimo por nível. O Nv.1 começa um pouco acima da Vara 1 Nv.10.",
+        "rarity_efficiency": [
+          0.24,
+          0.26,
+          0.28,
+          0.31,
+          0.34,
+          0.37,
+          0.4,
+          0.43,
+          0.47,
+          0.5
+        ],
+        "size_quality": [
+          0.23,
+          0.25,
+          0.27,
+          0.29,
+          0.31,
+          0.33,
+          0.35,
+          0.37,
+          0.4,
+          0.42
+        ],
+        "shell_yield": [
+          0.55,
+          0.6,
+          0.66,
+          0.72,
+          0.78,
+          0.84,
+          0.91,
+          0.98,
+          1.04,
+          1.1
+        ],
+        "catch_success": [
+          0.055,
+          0.065,
+          0.075,
+          0.085,
+          0.095,
+          0.1,
+          0.105,
+          0.115,
+          0.125,
+          0.135
+        ]
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "cost_coins": 10000,
+          "cost_shells": 10
+        },
+        {
+          "to_level": 3,
+          "cost_coins": 15000,
+          "cost_shells": 12
+        },
+        {
+          "to_level": 4,
+          "cost_coins": 23000,
+          "cost_shells": 15
+        },
+        {
+          "to_level": 5,
+          "cost_coins": 35000,
+          "cost_shells": 18
+        },
+        {
+          "to_level": 6,
+          "cost_coins": 52000,
+          "cost_shells": 22
+        },
+        {
+          "to_level": 7,
+          "cost_coins": 78000,
+          "cost_shells": 26
+        },
+        {
+          "to_level": 8,
+          "cost_coins": 117000,
+          "cost_shells": 30
+        },
+        {
+          "to_level": 9,
+          "cost_coins": 175000,
+          "cost_shells": 35
+        },
+        {
+          "to_level": 10,
+          "cost_coins": 260000,
+          "cost_shells": 40
         }
       ],
       "npc_resale": {
