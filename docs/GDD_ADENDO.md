@@ -1061,3 +1061,15 @@ se pagam: valem mais nos mapas de peixe caro.
 *Revisto no mesmo dia (pedido do proprietário):* a venda de peixes **voltou ao preço normal**
 (`price_multiplier` = 1), porque melhorar a vara e comprar barcos já pede bastante. As iscas continuam
 mais caras. O ajuste geral fica no Painel de Balanceamento para uso futuro.
+
+### A-098 · Dólares, a terceira moeda
+**Seção do GDD:** 21 · **Situação:** Pedido do proprietário (02/10/2026); uso ainda a decidir (OD-021)
+
+O jogo passa a ter três moedas: **Moedas**, **Conchas** e **Dólares**. Os Dólares começam em zero
+para todo mundo, inclusive em saves antigos, e por enquanto não se ganham nem se gastam. O que eles
+fazem é decisão do proprietário (OD-021). A intenção registrada é que Conchas e Dólares sejam
+negociados entre jogadores.
+
+Na tela, as Conchas e os Dólares ficam numa faixa pequena logo abaixo das Moedas, no canto de cima à
+direita, sempre visíveis. Os avisos (toasts) descem um pouco para não cobrir a faixa. O ícone dos
+Dólares é provisório (`ASSET_PENDENTE`).

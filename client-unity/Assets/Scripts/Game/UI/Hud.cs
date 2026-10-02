@@ -387,6 +387,30 @@ namespace FishingIdle.Game.UI
 
             x = bell.x - 18;
             DrawCoins(skin, x, player.Coins);
+            DrawWallet(skin, x, player);
+        }
+
+        /// <summary>
+        /// Conchas and Dólares in a small strip under the coins: Conchas buy and upgrade every item, and
+        /// both are traded between players (A-098).
+        /// </summary>
+        private void DrawWallet(UiSkin skin, float right, PlayerView player)
+        {
+            var x = right;
+            foreach (var (icon, label, value) in new[]
+                     {
+                         (Icons.Dollar, GameTexts.Player.Dollars, player.Dollars),
+                         (Icons.Shell, GameTexts.Player.Shells, player.Shells),
+                     })
+            {
+                var text = Format.Number(value);
+                var w = skin.SmallBold.CalcSize(new GUIContent(text)).x + 4f + 40f;
+                var chip = new Rect(x - w, 70, w, 30);
+                GUI.Box(chip, new GUIContent(string.Empty, label), skin.Chip);
+                skin.DrawIcon(new Rect(chip.x + 10, chip.y + 6, 18, 18), icon, Color.white);
+                GUI.Label(new Rect(chip.x + 34, chip.y + 6, w - 36, 20), text, skin.SmallBold);
+                x = chip.x - 8;
+            }
         }
 
         /// <summary>The coin counter: it counts up to the new total, with a "+N" that floats away.</summary>
@@ -772,7 +796,7 @@ namespace FishingIdle.Game.UI
         private void DrawToasts(UiSkin skin)
         {
             var items = _root.Toasts.Items;
-            var y = 84f;
+            var y = 112f; // below the Conchas / Dólares strip
             for (var i = items.Count - 1; i >= 0; i--)
             {
                 var toast = items[i];

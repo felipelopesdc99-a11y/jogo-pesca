@@ -199,6 +199,11 @@ vara) e as três varas finas e compridas, retas na horizontal. Pedido pronto em
 `docs/PEDIDO_ARTE_PESCADOR_VARAS.md`. Ao chegar, a mão da frente é recortada da figura e desenhada por
 cima da vara, para ela ficar dentro da mão.
 
+## Ícone dos Dólares (V0.2, `M17-T01`)
+
+`ASSET_PENDENTE`: `Icones/ico_dolar.png` é provisório (nota verde com "$", feita por
+`tools/Arte/gerar_icones.py`). Falta o ícone final no estilo de `ico_moeda` e `ico_concha`.
+
 ## Isca no anzol (V0.2, `M16-T12`)
 
 `ASSET_PENDENTE`: as três iscas (Simples, Melhorada e Premium) aparecem na cena como uma forma

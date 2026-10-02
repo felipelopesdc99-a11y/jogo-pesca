@@ -78,6 +78,6 @@ namespace FishingIdle.Game.Visual
             Chevron = "seta", Arrow = "seta_longa", Add = "adicionar", Box = "caixa", Sell = "vender", Attack = "atacar",
             Swap = "trocar", Ranking = "ranking", Info = "info", Warning = "aviso", Hourglass = "ampulheta", Level = "nivel",
             Buy = "comprar", Sort = "ordenar", Feed = "alimentar", Home = "inicio", Waves = "ondas", Compact = "compacto",
-            Coin = "moeda", Shell = "concha", Pause = "pausa", Search = "buscar", Boat = "barco", Bait = "isca";
+            Coin = "moeda", Shell = "concha", Pause = "pausa", Search = "buscar", Boat = "barco", Bait = "isca", Dollar = "dolar";
     }
 }

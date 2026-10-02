@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 10;
+        public const int CurrentVersion = 11;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -27,6 +27,9 @@ namespace FishingIdle.GameService.Persistence
 
         public long Coins { get; set; }
         public long Shells { get; set; }
+
+        /// <summary>Dólares (V0.2): a third currency; how it is earned and spent is still the owner's decision.</summary>
+        public long Dollars { get; set; }
 
         public int FisherLevel { get; set; } = 1;
 

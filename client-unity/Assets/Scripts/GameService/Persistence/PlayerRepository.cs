@@ -362,6 +362,13 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 10;
             }
 
+            if (save.SaveVersion == 10)
+            {
+                // v11 adds the Dólares currency, starting at zero.
+                save.Dollars = 0;
+                save.SaveVersion = 11;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BaitCharges = save.BaitCharges ?? new Dictionary<string, int>();
 
@@ -410,6 +417,7 @@ namespace FishingIdle.GameService.Persistence
             if (string.IsNullOrWhiteSpace(save.PlayerId)) problems.Add("player_id missing");
             if (save.Coins < 0) problems.Add("coins negative");
             if (save.Shells < 0) problems.Add("shells negative");
+            if (save.Dollars < 0) problems.Add("dollars negative");
             if (save.FisherLevel < 1) problems.Add("fisher_level below 1");
             if (save.FisherXp < 0 || save.FisherXpTotal < 0) problems.Add("fisher xp negative");
             if (string.IsNullOrWhiteSpace(save.CurrentMapId)) problems.Add("current_map_id missing");

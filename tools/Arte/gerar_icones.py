@@ -338,6 +338,20 @@ def coloured_shell():
     img.resize((SIZE, SIZE), Image.LANCZOS).save(os.path.join(OUT, 'ico_concha.png'), optimize=True)
 
 
+def coloured_dollar():
+    # Provisional (ASSET_PENDENTE): a green banknote with a "$", for the Dólares currency.
+    img = Image.new('RGBA', (C, C), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([P(4, 22), P(96, 80)], radius=C * 0.08, fill=(38, 120, 72, 255))
+    d.rounded_rectangle([P(9, 27), P(91, 75)], radius=C * 0.06, fill=(74, 170, 104, 255))
+    d.ellipse([P(34, 30), P(66, 72)], fill=(46, 136, 84, 255))
+    w = int(C * 0.06)
+    d.arc([P(40, 36), P(60, 52)], 90, 360, fill=(232, 250, 236, 255), width=w)
+    d.arc([P(40, 50), P(60, 66)], 270, 180, fill=(232, 250, 236, 255), width=w)
+    d.line([P(50, 32), P(50, 70)], fill=(232, 250, 236, 255), width=int(C * 0.04))
+    img.resize((SIZE, SIZE), Image.LANCZOS).save(os.path.join(OUT, 'ico_dolar.png'), optimize=True)
+
+
 NAMES = {
     'fishing': 'pesca', 'map': 'mapa', 'aquarium': 'aquario', 'arena': 'arena', 'expedition': 'expedicao',
     'market': 'mercado', 'shop': 'loja', 'profile': 'perfil', 'bell': 'avisos', 'gear': 'opcoes',
@@ -360,6 +374,7 @@ def main():
         pen.save(NAMES[key])
     coloured_coin()
     coloured_shell()
+    coloured_dollar()
     print('Ícones gerados em', os.path.normpath(OUT))
 
 

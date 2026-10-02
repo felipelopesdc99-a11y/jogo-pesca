@@ -18,6 +18,7 @@ namespace FishingIdle.GameService.Fishing
 
         public long Coins { get; internal set; }
         public long Shells { get; internal set; }
+        public long Dollars { get; internal set; }
         public string MapId { get; internal set; }
         public string MapName { get; internal set; }
         public string RodName { get; internal set; }

@@ -229,7 +229,8 @@ Regras:
   Mercado (`MarketState`), v8 adiciona os leilões (`MarketState.Auctions`), v9 adiciona o tutorial
   (`TutorialState`; saves antigos entram com ele concluído), v10 adiciona barcos e iscas (`BoatId`,
 `OwnedBoatIds`, `BaitCharges`, `ActiveBaitId`) e a contagem de escapes (`Stats.Escapes`); saves
-antigos entram com o Barco Inicial e sem isca. Cada passo está em `SaveMigrations.Upgrade`.
+antigos entram com o Barco Inicial e sem isca; v11 adiciona os Dólares (`Dollars`, começa em 0). Cada
+passo está em `SaveMigrations.Upgrade`.
 - Tutorial (desde a versão 9): o jogador novo começa **sem vara** (`EquippedRodItemId = 0`) e pega a
   Vara Inicial de graça na Loja (`free_claim_in_shop` em `rods.json`). O save só aceita "sem vara"
   enquanto o tutorial não terminou; pular o tutorial entrega a Vara Inicial. Cada passo termina sozinho

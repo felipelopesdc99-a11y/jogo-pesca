@@ -23,6 +23,7 @@ namespace FishingIdle.Texts
             public const string MaxLevel = "Nível máximo";
             public const string Coins = "Moedas";
             public const string Shells = "Conchas";
+            public const string Dollars = "Dólares";
             public const string Map = "Mapa";
             public const string Rod = "Vara";
             public const string TotalCatches = "Capturas";

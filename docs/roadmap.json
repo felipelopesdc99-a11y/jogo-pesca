@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-02T22:00:02Z",
-  "current_milestone": "M16",
+  "updated_at": "2026-10-02T22:00:38Z",
+  "current_milestone": "M17",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -177,6 +177,14 @@
       "raised_at": "2026-09-30T21:13:40Z",
       "status": "RESOLVED",
       "resolution": "01/10/2026: sem som de escape."
+    },
+    {
+      "id": "OD-021",
+      "task_id": "M17-T01",
+      "title": "O que os Dólares fazem e como se ganham",
+      "detail": "A moeda Dólares existe (começa em zero) e aparece na tela, mas não se ganha nem se gasta. Falta decidir: como o jogador consegue Dólares, em que eles são gastos e se podem ser comprados com dinheiro real (isso mudaria o jogo e pede cuidado com regras de loja e de idade). A intenção registrada é negociar Conchas e Dólares entre jogadores.",
+      "raised_at": "2026-10-02T22:00:38Z",
+      "status": "OPEN"
     }
   ],
   "milestones": [
@@ -2464,6 +2472,40 @@
           "dependencies": [],
           "updated_at": "2026-10-02T22:00:02Z",
           "completion_notes": "economy.json npc_fish_sale.price_multiplier = 0,5 (campo novo, usado em CatchRules.SalePrice, validado e editável no Painel de Balanceamento); iscas 1.000 / 6.000 / 4.000 + 12 Conchas em equipment.json. Testes leem o multiplicador. Simulação: 1.649 moedas/h no mapa 1, 13.783 no mapa 2. GDD_ADENDO A-097. Revisto no mesmo dia pelo proprietário: venda de peixes voltou ao normal (price_multiplier = 1); iscas continuam mais caras."
+        }
+      ]
+    },
+    {
+      "id": "M17",
+      "title": "V0.2 · Conchas, Dólares e Ranking",
+      "goal": "Pedido do proprietário em 02/10/2026: Conchas em todos os itens e melhorias, Conchas mais difíceis, uma terceira moeda (Dólares), comércio de Conchas e Dólares entre jogadores e um Ranking só de jogadores reais. No MVP local, Ranking e comércio ficam prontos na tela, mostrando só o jogador deste PC, para ligar no servidor depois.",
+      "completion_criteria": [
+        "Toda compra e melhoria de equipamento pede Conchas.",
+        "Dólares existem no save e na tela.",
+        "Menu Ranking com Nível, Moedas, Conchas e Peixes pescados, sem bots.",
+        "Aba de comércio de Conchas e Dólares no Mercado, sem bots.",
+        "O proprietário testou no Play."
+      ],
+      "tasks": [
+        {
+          "id": "M17-T01",
+          "title": "Moeda Dólares",
+          "subsystem": "client",
+          "description": "Terceira moeda pedida pelo proprietário; uso a decidir (OD-021).",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-02T22:00:38Z",
+          "completion_notes": "PlayerSave.Dollars (save v11, migração do v10 com 0), PlayerView.Dollars, faixa de Conchas e Dólares no alto à direita (Hud.DrawWallet), Painel de Desenvolvimento mostra o saldo. Ícone provisório ico_dolar (ASSET_PENDENTE). GDD_ADENDO A-098. Compila; não aberto no Unity ainda."
+        },
+        {
+          "id": "M17-T02",
+          "title": "Pedido de nomes próprios para varas, barcos e iscas",
+          "subsystem": "docs",
+          "description": "Pedido do proprietário: documento para o GPT sugerir nomes.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-02T22:00:38Z",
+          "completion_notes": "docs/PEDIDO_NOMES_EQUIPAMENTO.md com o pedido (3 opções por item, regras de tamanho e estilo). Os nomes entram em config quando o proprietário escolher."
         }
       ]
     }

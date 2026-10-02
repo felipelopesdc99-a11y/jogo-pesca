@@ -3,6 +3,18 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m17.1] — 02/10/2026
+
+### Adicionado
+
+- Moeda **Dólares** (A-098): começa em zero, sem ganho nem uso por enquanto (OD-021). Conchas e
+  Dólares aparecem sempre numa faixa abaixo das Moedas, no alto à direita. Save versão 11.
+- Pedido para o GPT com nomes próprios de varas, barcos e iscas (`docs/PEDIDO_NOMES_EQUIPAMENTO.md`).
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda.
+
 ## [0.2.0-m16.30] — 02/10/2026
 
 ### Mudado

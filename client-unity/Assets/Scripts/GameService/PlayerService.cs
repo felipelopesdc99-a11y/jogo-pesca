@@ -35,6 +35,7 @@ namespace FishingIdle.GameService
                 FisherXpToNext = config.FisherXpToNextLevel(save.FisherLevel),
                 Coins = save.Coins,
                 Shells = save.Shells,
+                Dollars = save.Dollars,
                 MapId = save.CurrentMapId,
                 MapName = map?.DisplayName ?? save.CurrentMapId,
                 RodName = rod?.DisplayName ?? rodItem?.RodId,
