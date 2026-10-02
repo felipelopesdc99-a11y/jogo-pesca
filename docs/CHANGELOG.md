@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m17.5] — 02/10/2026
+
+### Adicionado
+
+- Zoom da cena (A-102): rodinha do mouse sobre a cena ou "Aproximar" em Configurações, até cerca de
+  20% mais perto do barco. Fica guardado neste PC.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda.
+
 ## [0.2.0-m17.4] — 02/10/2026
 
 ### Adicionado

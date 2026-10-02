@@ -1123,3 +1123,11 @@ Só jogadores reais negociam. Decisão do proprietário: enquanto o jogo for loc
 lado (sem jogadores simulados). A lista "Ofertas de outros jogadores" aparece vazia, com uma nota
 explicando que os anúncios dos outros jogadores chegam com o jogo online. Comprar uma oferta e receber
 pela venda entram junto com o servidor.
+
+### A-102 · Zoom da cena
+**Seção do GDD:** 8 · **Situação:** Pedido do proprietário (02/10/2026)
+
+O jogador pode aproximar um pouco a câmera do pescador: girando a rodinha do mouse sobre a cena, ou no
+controle **Aproximar** em Configurações. Vai do cenário inteiro até cerca de 20% mais perto, mirando
+o barco, sempre com uma transição suave. Com uma janela ou painel aberto, a rodinha rola as listas e
+não mexe no zoom. A escolha fica guardada neste PC, como o volume. É só visual: não muda nada na pesca.

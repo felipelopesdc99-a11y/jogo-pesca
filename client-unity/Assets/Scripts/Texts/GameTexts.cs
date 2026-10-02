@@ -308,6 +308,7 @@ namespace FishingIdle.Texts
             public const string Sound = "Som";
             public const string Ambient = "Som ambiente";
             public const string Volume = "Volume";
+            public const string Zoom = "Aproximar";
             public const string On = "Ligado";
             public const string Off = "Desligado";
             public const string CompactMode = "Modo compacto";

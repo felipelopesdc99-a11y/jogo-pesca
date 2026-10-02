@@ -861,10 +861,32 @@ namespace FishingIdle.Game.Scene
     /// <summary>Very slow camera drift, so the layered scenery reveals its depth.</summary>
     public sealed class CameraSway : MonoBehaviour
     {
+        // Zoom (A-102): from the whole scene to a little closer to the boat. Kept small on purpose, so
+        // the painted layers never show their edges.
+        private const float WideSize = 5.4f;
+        private const float CloseSize = 4.3f;
+        private static readonly Vector2 CloseFocus = new Vector2(-0.6f, -0.75f);
+
+        private Camera _camera;
+        private float _zoom = -1f;
+
         private void LateUpdate()
         {
+            if (_camera == null)
+            {
+                _camera = GetComponent<Camera>();
+            }
+
+            var target = Bootstrap.GameSettings.Zoom;
+            _zoom = _zoom < 0f ? target : Mathf.Lerp(_zoom, target, 1f - Mathf.Exp(-Time.unscaledDeltaTime * 6f));
+            if (_camera != null)
+            {
+                _camera.orthographicSize = Mathf.Lerp(WideSize, CloseSize, _zoom);
+            }
+
             var t = Time.time;
-            transform.localPosition = new Vector3(Mathf.Sin(t * 0.05f) * 0.35f, Mathf.Sin(t * 0.037f) * 0.06f, -10f);
+            var focus = CloseFocus * _zoom;
+            transform.localPosition = new Vector3(Mathf.Sin(t * 0.05f) * 0.35f * (1f - 0.5f * _zoom) + focus.x, Mathf.Sin(t * 0.037f) * 0.06f + focus.y, -10f);
         }
     }
 
