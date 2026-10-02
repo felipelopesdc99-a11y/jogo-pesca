@@ -232,6 +232,9 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>Active auctions: the player's own and simulated sellers' (Milestone 9). Added in save version 8.</summary>
         public List<Auction> Auctions { get; set; } = new List<Auction>();
 
+        /// <summary>The player's Conchas / Dólares for sale (A-101). The amount lives here while listed. Added in save version 11.</summary>
+        public List<CurrencyListing> CurrencyListings { get; set; } = new List<CurrencyListing>();
+
         public long NextAuctionId { get; set; } = 1;
         public long BotAuctionsCreated { get; set; }
         public long AuctionSupplyTick { get; set; }
@@ -470,5 +473,17 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Catches above common rarity (counted from save version 3 on).</summary>
         public long RareCatches { get; set; }
+    }
+
+    /// <summary>An amount of Conchas or Dólares offered for coins (A-101).</summary>
+    public sealed class CurrencyListing
+    {
+        public long Id { get; set; }
+
+        /// <summary>"shells" or "dollars".</summary>
+        public string Currency { get; set; }
+        public long Amount { get; set; }
+        public long PriceCoins { get; set; }
+        public long CreatedAtMs { get; set; }
     }
 }

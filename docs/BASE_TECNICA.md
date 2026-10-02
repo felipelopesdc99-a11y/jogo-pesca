@@ -111,6 +111,7 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
 | `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
 | `IAuctionService` | `LocalMarketService` | Leilão: criar (1 por vez, 6 h), lances com reserva e taxa, último minuto, encerrar antes |
+| `ICurrencyTradeService` | `LocalCurrencyTradeService` | Venda de Conchas e Dólares por Moedas: anunciar (a quantidade sai da carteira) e cancelar; no MVP local não há ofertas nem compradores (`CurrencyTradeView.LocalOnly`) |
 | `IRankingService` | `LocalRankingService` | Ranking de jogadores reais por Nível, Moedas, Conchas e Peixes pescados; no MVP local só o jogador deste PC (`RankingView.LocalOnly`) |
 | `ITutorialService` | `LocalTutorialService` | Tutorial: passo atual, avanço automático, "Entendi", pular |
 | `IProfileService` | `LocalProfileService` | Perfil próprio: vara equipada, Inventário, Enciclopédia, Destaques |
@@ -230,7 +231,8 @@ Regras:
   Mercado (`MarketState`), v8 adiciona os leilões (`MarketState.Auctions`), v9 adiciona o tutorial
   (`TutorialState`; saves antigos entram com ele concluído), v10 adiciona barcos e iscas (`BoatId`,
 `OwnedBoatIds`, `BaitCharges`, `ActiveBaitId`) e a contagem de escapes (`Stats.Escapes`); saves
-antigos entram com o Barco Inicial e sem isca; v11 adiciona os Dólares (`Dollars`, começa em 0). Cada
+antigos entram com o Barco Inicial e sem isca; v11 adiciona os Dólares (`Dollars`, começa em 0) e os anúncios de Conchas e Dólares
+(`MarketState.CurrencyListings`). Cada
 passo está em `SaveMigrations.Upgrade`.
 - Tutorial (desde a versão 9): o jogador novo começa **sem vara** (`EquippedRodItemId = 0`) e pega a
   Vara Inicial de graça na Loja (`free_claim_in_shop` em `rods.json`). O save só aceita "sem vara"

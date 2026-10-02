@@ -31,6 +31,7 @@ namespace FishingIdle.Game.UI
             Mine,
             Auction,
             Withdraw,
+            Currency,
         }
 
         private static readonly MarketSort[] Sorts = { MarketSort.PriceAscending, MarketSort.PriceDescending, MarketSort.SizeDescending, MarketSort.SizeAscending, MarketSort.Newest };
@@ -54,6 +55,10 @@ namespace FishingIdle.Game.UI
         private long _selectedCandidate;
         private bool _selectedCandidateIsFish;
         private string _priceText = string.Empty;
+        private CurrencyTradeView _currency;
+        private CurrencyKind _currencyKind = CurrencyKind.Shells;
+        private string _currencyAmountText = string.Empty;
+        private string _currencyPriceText = string.Empty;
 
         // Buy filters.
         private MarketKindFilter _kind;
@@ -131,6 +136,7 @@ namespace FishingIdle.Game.UI
                 case Tab.Mine: DrawMine(skin, content); break;
                 case Tab.Auction: DrawAuction(skin, content); break;
                 case Tab.Withdraw: DrawWithdraw(skin, content); break;
+                case Tab.Currency: DrawCurrency(skin, content); break;
                 default: DrawBuy(skin, content); break;
             }
         }
@@ -153,6 +159,11 @@ namespace FishingIdle.Game.UI
             {
                 _auctions = _root.GetAuctions();
             }
+
+            if (_tab == Tab.Currency)
+            {
+                _currency = _root.GetCurrencyTrade();
+            }
         }
 
         private void DrawTabs(UiSkin skin, Rect area)
@@ -164,6 +175,7 @@ namespace FishingIdle.Game.UI
                 (Tab.Mine, GameTexts.Market.TabMineCount(_market.MyListings.Count, _market.MaxListings)),
                 (Tab.Auction, GameTexts.Market.TabAuction),
                 (Tab.Withdraw, GameTexts.Market.TabWithdrawCount(_market.Withdrawals.Count)),
+                (Tab.Currency, GameTexts.Market.TabCurrency),
             };
 
             var x = area.x;
@@ -390,6 +402,118 @@ namespace FishingIdle.Game.UI
                 _search = search;
                 _scroll = Vector2.zero;
             }
+        }
+
+        // ------------------------------------------------------------------ Conchas e Dólares (A-101)
+
+        private void DrawCurrency(UiSkin skin, Rect area)
+        {
+            if (_currency == null)
+            {
+                return;
+            }
+
+            // Left: the listing form.
+            var form = new Rect(area.x, area.y, 420, area.height);
+            GUI.Box(form, GUIContent.none, skin.Card);
+            var x = form.x + 22;
+            var w = form.width - 44;
+            var y = form.y + 18;
+            GUI.Label(new Rect(x, y, w, 28), GameTexts.Market.CurrencySellTitle, skin.Heading);
+            y += 44;
+
+            GUI.Label(new Rect(x, y, w, 18), GameTexts.Market.CurrencyWhat, skin.SmallMuted);
+            y += 22;
+            var half = (w - 10) / 2f;
+            foreach (var (kind, label, icon, i) in new[] { (CurrencyKind.Shells, GameTexts.Player.Shells, Icons.Shell, 0), (CurrencyKind.Dollars, GameTexts.Player.Dollars, Icons.Dollar, 1) })
+            {
+                if (skin.IconButton(new Rect(x + i * (half + 10), y, half, 36), icon, label, _currencyKind == kind ? skin.ChipActive : skin.Chip) && _currencyKind != kind)
+                {
+                    _currencyKind = kind;
+                }
+            }
+
+            y += 48;
+            var have = _currencyKind == CurrencyKind.Dollars ? _currency.Dollars : _currency.Shells;
+            InfoRow(skin, x, ref y, w, GameTexts.Market.CurrencyYouHave, Format.Number(have));
+            y += 6;
+
+            GUI.Label(new Rect(x, y, w, 18), GameTexts.Market.CurrencyAmount, skin.SmallMuted);
+            y += 20;
+            _currencyAmountText = Digits(GUI.TextField(new Rect(x, y, w, 32), _currencyAmountText, 9), false);
+            y += 44;
+            GUI.Label(new Rect(x, y, w, 18), GameTexts.Market.CurrencyTotalPrice, skin.SmallMuted);
+            y += 20;
+            _currencyPriceText = Digits(GUI.TextField(new Rect(x, y, w, 32), _currencyPriceText, 12), false);
+            y += 42;
+
+            var amount = ParseLong(_currencyAmountText) ?? 0;
+            var price = ParseLong(_currencyPriceText) ?? 0;
+            if (amount > 0 && price > 0)
+            {
+                GUI.Label(new Rect(x, y, w, 20), GameTexts.Market.CurrencyPerUnit(Format.Decimal(price / (double)amount, 1)), skin.SmallMuted);
+                y += 22;
+                var fee = (long)System.Math.Round(price * _currency.SaleFeeRatio, System.MidpointRounding.AwayFromZero);
+                GUI.Label(new Rect(x, y, w, 20), GameTexts.Market.YouReceive + ": " + Format.Number(price - fee) + " (" + GameTexts.Market.Fee(_currency.SaleFeeRatio) + ")", skin.SmallMuted);
+            }
+
+            GUI.Label(new Rect(x, form.yMax - 130, w, 60), GameTexts.Market.CurrencyHoldNote, skin.SmallMuted);
+            GUI.enabled = amount >= 1 && amount <= have && price >= _currency.MinimumPriceCoins && _currency.MyListings.Count < _currency.MaxListings;
+            if (skin.IconButton(new Rect(x, form.yMax - 62, w, 44), Icons.Sell, GameTexts.Market.CurrencyListButton, skin.ButtonPrimary))
+            {
+                if (_root.ListCurrency(_currencyKind, amount, price))
+                {
+                    _currencyAmountText = string.Empty;
+                    _currencyPriceText = string.Empty;
+                    _nextRefresh = 0f;
+                }
+            }
+
+            GUI.enabled = true;
+
+            // Right, top: other players' offers (none until the game is online — no simulated traders here).
+            var right = new Rect(form.xMax + 20, area.y, area.width - form.width - 20, area.height);
+            var offers = new Rect(right.x, right.y, right.width, 150);
+            GUI.Box(offers, GUIContent.none, skin.Card);
+            GUI.Label(new Rect(offers.x + 20, offers.y + 16, offers.width - 40, 26), GameTexts.Market.CurrencyOffersTitle, skin.Heading);
+            if (_currency.Offers.Count == 0)
+            {
+                skin.DrawIcon(new Rect(offers.x + 20, offers.y + 58, 18, 18), Icons.Info, UiSkin.Muted);
+                GUI.Label(new Rect(offers.x + 46, offers.y + 56, offers.width - 66, 80), GameTexts.Market.CurrencyNoOffers, skin.SmallMuted);
+            }
+
+            // Right, bottom: the player's own listings.
+            var mine = new Rect(right.x, offers.yMax + 16, right.width, right.yMax - offers.yMax - 16);
+            GUI.Label(new Rect(mine.x, mine.y, mine.width, 26), GameTexts.Market.CurrencyMineCount(_currency.MyListings.Count, _currency.MaxListings), skin.Heading);
+            if (_currency.MyListings.Count == 0)
+            {
+                GUI.Label(new Rect(mine.x, mine.y + 36, mine.width, 24), GameTexts.Market.CurrencyNoListings, skin.Body);
+                return;
+            }
+
+            var list = new Rect(mine.x, mine.y + 36, mine.width, mine.height - 36);
+            var content = new Rect(0, 0, list.width - 20, _currency.MyListings.Count * 82);
+            _scroll = GUI.BeginScrollView(list, _scroll, content);
+            var ry = 0f;
+            foreach (var l in _currency.MyListings)
+            {
+                var row = new Rect(0, ry, content.width, 74);
+                GUI.Box(row, GUIContent.none, skin.Card);
+                var isDollars = l.Kind == CurrencyKind.Dollars;
+                skin.DrawIcon(new Rect(row.x + 18, row.y + 22, 30, 30), isDollars ? Icons.Dollar : Icons.Shell, Color.white);
+                GUI.Label(new Rect(row.x + 62, row.y + 12, row.width - 240, 26),
+                    GameTexts.Market.CurrencyLine(Format.Number(l.Amount), isDollars ? GameTexts.Player.Dollars : GameTexts.Player.Shells, Format.Number(l.PriceCoins)), skin.BodyBold);
+                GUI.Label(new Rect(row.x + 62, row.y + 40, row.width - 240, 20), GameTexts.Market.YouReceive + ": " + Format.Number(l.NetCoins), skin.SmallMuted);
+                if (GUI.Button(new Rect(row.xMax - 150, row.y + 18, 132, 38), GameTexts.Market.CurrencyCancel, skin.Button))
+                {
+                    _root.CancelCurrencyListing(l.ListingId);
+                    _nextRefresh = 0f;
+                }
+
+                ry += 82;
+            }
+
+            GUI.EndScrollView();
         }
 
         // ------------------------------------------------------------------ Sell

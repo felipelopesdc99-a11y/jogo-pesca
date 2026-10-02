@@ -330,6 +330,24 @@ namespace FishingIdle.Texts
             public const string TabSell = "Vender";
             public const string TabMine = "Meus Anúncios";
             public const string TabWithdraw = "Itens a Retirar";
+            public const string TabCurrency = "Conchas e Dólares";
+            public const string CurrencySellTitle = "Anunciar Conchas ou Dólares";
+            public const string CurrencyWhat = "O que vender";
+            public const string CurrencyYouHave = "Você tem";
+            public const string CurrencyAmount = "Quantidade";
+            public const string CurrencyTotalPrice = "Preço total (Moedas)";
+            public const string CurrencyListButton = "Anunciar";
+            public const string CurrencyHoldNote = "Enquanto estiver anunciada, a quantidade sai da sua carteira. Cancelar devolve na hora.";
+            public const string CurrencyOffersTitle = "Ofertas de outros jogadores";
+            public const string CurrencyNoOffers = "Ninguém está vendendo ainda. Por enquanto o jogo roda só neste computador; quando ele for online, os anúncios dos outros jogadores aparecem aqui.";
+            public const string CurrencyMineTitle = "Seus anúncios";
+            public const string CurrencyNoListings = "Você não tem anúncios de Conchas ou Dólares.";
+            public const string CurrencyCancel = "Cancelar";
+            public const string CurrencyCancelled = "Anúncio cancelado. A quantidade voltou para a sua carteira.";
+            public static string CurrencyPerUnit(string coins) => "Por unidade: " + coins + " Moedas";
+            public static string CurrencyLine(string amount, string currency, string price) => amount + " " + currency + " por " + price + " Moedas";
+            public static string CurrencyListed(string amount, string currency, string price) => amount + " " + currency + " anunciadas por " + price + " Moedas.";
+            public static string CurrencyMineCount(int count, int max) => CurrencyMineTitle + " (" + count + "/" + max + ")";
             public const string Coins = "Suas Moedas";
 
             public const string FilterKind = "Tipo";
@@ -752,6 +770,8 @@ namespace FishingIdle.Texts
                 case "BaitLocked": return "Você ainda não tem nível para comprar esta isca.";
                 case "BaitNoCharges": return "Essa isca acabou. Compre mais na Loja.";
                 case "NotEnoughShells": return "Conchas insuficientes.";
+                case "NotEnoughDollars": return "Dólares insuficientes.";
+                case "InvalidAmount": return "Escolha uma quantidade de pelo menos 1.";
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
                 case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";

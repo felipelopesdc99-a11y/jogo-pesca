@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m17.4] — 02/10/2026
+
+### Adicionado
+
+- Aba **Conchas e Dólares** no Mercado (A-101): anunciar Conchas ou Dólares por Moedas e cancelar. No
+  jogo local ninguém compra ainda; as ofertas de outros jogadores chegam com o online.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda.
+
 ## [0.2.0-m17.3] — 02/10/2026
 
 ### Adicionado

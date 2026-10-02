@@ -43,6 +43,12 @@
     "starter_rod_generates_shells": false,
     "rod_bonus_axis": "shell_yield"
   },
+  "currency_trade": {
+    "note": "Venda de Conchas e Dólares entre jogadores reais, por Moedas (A-101). No jogo local só dá para anunciar e cancelar: ninguém compra até o jogo ser online.",
+    "max_active_listings_per_player": 5,
+    "completed_sale_fee_ratio": 0.03,
+    "minimum_price_coins": 1
+  },
   "market_fixed_price": {
     "max_active_listings_per_player": 5,
     "max_listing_duration_days": 7,

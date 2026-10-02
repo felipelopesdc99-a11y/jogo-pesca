@@ -364,8 +364,10 @@ namespace FishingIdle.GameService.Persistence
 
             if (save.SaveVersion == 10)
             {
-                // v11 adds the Dólares currency, starting at zero.
+                // v11 adds the Dólares currency, starting at zero, and the Conchas / Dólares trade listings.
                 save.Dollars = 0;
+                save.Market = save.Market ?? new MarketState();
+                save.Market.CurrencyListings = new List<CurrencyListing>();
                 save.SaveVersion = 11;
             }
 
@@ -380,6 +382,7 @@ namespace FishingIdle.GameService.Persistence
             save.Market.Withdrawals = save.Market.Withdrawals ?? new List<WithdrawalItem>();
             save.Market.Events = save.Market.Events ?? new List<MarketEvent>();
             save.Market.Auctions = save.Market.Auctions ?? new List<Auction>();
+            save.Market.CurrencyListings = save.Market.CurrencyListings ?? new List<CurrencyListing>();
 
             save.Arena = save.Arena ?? new ArenaState();
             save.Arena.Ranking = save.Arena.Ranking ?? new List<string>();

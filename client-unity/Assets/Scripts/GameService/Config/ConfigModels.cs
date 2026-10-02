@@ -280,6 +280,7 @@ namespace FishingIdle.GameService.Config
         public FishingBoxConfig FishingBox { get; set; }
         public AquariumConfig Aquarium { get; set; }
         public MarketFixedPriceConfig MarketFixedPrice { get; set; }
+        public CurrencyTradeConfig CurrencyTrade { get; set; }
         public AuctionConfig Auction { get; set; }
     }
 
@@ -304,6 +305,14 @@ namespace FishingIdle.GameService.Config
         public long ListingFeeCoins { get; set; }
         public double CompletedSaleFeeRatio { get; set; }
         public long MinimumListingPriceCoins { get; set; }
+    }
+
+    /// <summary>Selling Conchas and Dólares between players (A-101).</summary>
+    public sealed class CurrencyTradeConfig
+    {
+        public int MaxActiveListingsPerPlayer { get; set; }
+        public double CompletedSaleFeeRatio { get; set; }
+        public long MinimumPriceCoins { get; set; }
     }
 
     public sealed class AquariumConfig

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-02T22:09:38Z",
+  "updated_at": "2026-10-02T22:14:29Z",
   "current_milestone": "M17",
   "statuses": [
     "TODO",
@@ -2526,6 +2526,18 @@
           "dependencies": [],
           "updated_at": "2026-10-02T22:09:38Z",
           "completion_notes": "GameService/Ranking (IRankingService, LocalRankingService: só o jogador deste PC, LocalOnly = true), RankingWindow com as quatro abas e a nota do jogo local, botão Ranking ao lado de Conchas e Dólares. Testes RankingTests. GDD_ADENDO A-100. Compila; não aberto no Unity ainda. A versão com todos os jogadores depende do servidor (M12, adiado)."
+        },
+        {
+          "id": "M17-T05",
+          "title": "Comércio de Conchas e Dólares no Mercado (tela)",
+          "subsystem": "client",
+          "description": "Pedido do proprietário: jogadores negociam Conchas e Dólares para comprar itens antes. Decisão do proprietário (02/10/2026): no jogo local, só deixar a tela pronta, sem ninguém do outro lado.",
+          "status": "DONE",
+          "dependencies": [
+            "M17-T01"
+          ],
+          "updated_at": "2026-10-02T22:14:29Z",
+          "completion_notes": "GameService/Market/LocalCurrencyTradeService (anunciar com a quantidade reservada, cancelar com devolução, ofertas sempre vazias no local), MarketState.CurrencyListings no save v11, economy.json currency_trade (5 anúncios, taxa 3%, preço mínimo 1). Aba Conchas e Dólares no Mercado. Testes CurrencyTradeTests. GDD_ADENDO A-101. Compila; não aberto no Unity ainda. Comprar ofertas e receber pela venda dependem do servidor (M12, adiado)."
         }
       ]
     }

@@ -62,6 +62,8 @@ namespace FishingIdle.GameService.Core
         BaitLocked,
         BaitNoCharges,
         NotEnoughShells,
+        NotEnoughDollars,
+        InvalidAmount,
     }
 
     /// <summary>

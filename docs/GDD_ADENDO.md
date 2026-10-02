@@ -1110,3 +1110,16 @@ serviço do ranking já tem o formato da versão online; só a fonte muda.
 
 O botão **Ranking** fica ao lado das Conchas e dos Dólares, logo abaixo da barra do topo: a barra de
 menus principal já está cheia, e um nono item faria todos os menus virarem só ícone.
+
+### A-101 · Comércio de Conchas e Dólares no Mercado
+**Seção do GDD:** 31–33 · **Situação:** Pedido do proprietário (02/10/2026); no jogo local, só a tela
+
+O Mercado ganha a aba **Conchas e Dólares**: o jogador anuncia uma quantidade de Conchas ou de Dólares
+por um preço total em Moedas. Enquanto estiver anunciada, a quantidade sai da carteira; cancelar
+devolve na hora. Na venda, o vendedor paga a mesma taxa de 3% dos outros anúncios. Até 5 anúncios ao
+mesmo tempo (`economy.json → currency_trade`).
+
+Só jogadores reais negociam. Decisão do proprietário: enquanto o jogo for local, ninguém fica do outro
+lado (sem jogadores simulados). A lista "Ofertas de outros jogadores" aparece vazia, com uma nota
+explicando que os anúncios dos outros jogadores chegam com o jogo online. Comprar uma oferta e receber
+pela venda entram junto com o servidor.

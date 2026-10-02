@@ -604,6 +604,44 @@ namespace FishingIdle.Game.Bootstrap
 
         public RankingView GetRanking(RankingCategory category) => IsRunning ? Game.Ranking.GetRanking(category) : null;
 
+        public CurrencyTradeView GetCurrencyTrade() => IsRunning ? Game.CurrencyTrade.GetCurrencyTrade() : null;
+
+        /// <summary>Lists Conchas or Dólares for coins (A-101). Returns true when it happened.</summary>
+        public bool ListCurrency(CurrencyKind kind, long amount, long priceCoins)
+        {
+            var listed = false;
+            Guard(() =>
+            {
+                var result = Game.CurrencyTrade.ListCurrency(kind, amount, priceCoins);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                listed = true;
+                Toasts.Push(GameTexts.Market.CurrencyListed(Format.Number(amount), kind == CurrencyKind.Dollars ? GameTexts.Player.Dollars : GameTexts.Player.Shells, Format.Number(priceCoins)), ToastKind.Info);
+                Refresh();
+            });
+            return listed;
+        }
+
+        public void CancelCurrencyListing(long listingId)
+        {
+            Guard(() =>
+            {
+                var result = Game.CurrencyTrade.CancelCurrencyListing(listingId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Market.CurrencyCancelled, ToastKind.Info);
+                Refresh();
+            });
+        }
+
         public bool StartAuction(bool isFish, long sourceId, long startingBid)
         {
             var started = false;

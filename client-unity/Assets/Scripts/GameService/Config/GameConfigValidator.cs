@@ -555,6 +555,21 @@ namespace FishingIdle.GameService.Config
                 }
             }
 
+            // ---- economy.json → currency_trade (A-101)
+            var trade = economy.CurrencyTrade;
+            if (trade == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.EconomyFile, "currency_trade"));
+            }
+            else if (trade.MaxActiveListingsPerPlayer < 1 || trade.MinimumPriceCoins < 1)
+            {
+                errors.Add(V.AtLeast(GameConfigLoader.EconomyFile, "currency_trade (anúncios, preço mínimo)", 1));
+            }
+            else if (trade.CompletedSaleFeeRatio < 0 || trade.CompletedSaleFeeRatio >= 1)
+            {
+                errors.Add(V.NegativeValue(GameConfigLoader.EconomyFile, "currency_trade.completed_sale_fee_ratio"));
+            }
+
             // ---- economy.json → market_fixed_price (Milestone 8)
             var market = economy.MarketFixedPrice;
             if (market == null)
