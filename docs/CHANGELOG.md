@@ -7,8 +7,9 @@ raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
 ### Mudado
 
-- Peixes vendem pela metade do preço (ajuste geral novo `npc_fish_sale.price_multiplier` = 0,5, também
-  no Painel de Balanceamento) e iscas bem mais caras: 1.000, 6.000 e 4.000 + 12 Conchas (A-097).
+- Iscas bem mais caras: 1.000, 6.000 e 4.000 + 12 Conchas (A-097).
+- Ajuste geral novo do preço de venda dos peixes (`npc_fish_sale.price_multiplier`, no Painel de
+  Balanceamento). Esteve em 0,5 por algumas horas e voltou a 1: os peixes vendem pelo preço de antes.
 
 ### Adicionado
 

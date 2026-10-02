@@ -29,8 +29,8 @@
     "formula": "arredondar(base_sale_value_coins × multiplicador_de_raridade × influência_do_tamanho × price_multiplier)",
     "reimburses_invested_fish_xp": false,
     "minimum_price_coins": 1,
-    "price_multiplier": 0.5,
-    "price_multiplier_note": "Ajuste geral de todos os preços de venda. 0,5 em 02/10/2026: o proprietário juntava moedas demais sem ter onde gastar."
+    "price_multiplier": 1.0,
+    "price_multiplier_note": "Ajuste geral de todos os preços de venda (1 = valores do catálogo). Foi 0,5 por algumas horas em 02/10/2026 e voltou a 1: melhorar varas e barcos já pede bastante."
   },
   "shells": {
     "source": "fishing_only_in_v0_1",

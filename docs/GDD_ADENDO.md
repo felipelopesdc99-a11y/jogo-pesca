@@ -1057,3 +1057,7 @@ O proprietário juntava moedas demais sem ter onde gastar. Então:
 Na simulação, a pesca rende 1.649 moedas por hora no primeiro mapa (antes 3.246) e 13.783 no segundo
 (antes 28.215). A Vara 2 chega com 9,2 h de pesca (antes 8,6 h). No primeiro mapa as iscas quase não
 se pagam: valem mais nos mapas de peixe caro.
+
+*Revisto no mesmo dia (pedido do proprietário):* a venda de peixes **voltou ao preço normal**
+(`price_multiplier` = 1), porque melhorar a vara e comprar barcos já pede bastante. As iscas continuam
+mais caras. O ajuste geral fica no Painel de Balanceamento para uso futuro.
