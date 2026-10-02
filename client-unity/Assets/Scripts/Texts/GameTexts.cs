@@ -44,6 +44,7 @@ namespace FishingIdle.Texts
             public const string Map = "Mapa";
             public const string Aquarium = "Aquário";
             public const string Arena = "Arena";
+            public const string Ranking = "Ranking";
             public const string Expedition = "Expedição";
             public const string Shop = "Loja";
             public const string Market = "Mercado";
@@ -113,7 +114,6 @@ namespace FishingIdle.Texts
         {
             public const string Title = "Ranking";
             public const string Subtitle = "Só jogadores reais, sem jogadores simulados";
-            public const string Button = "Ranking";
             public const string TabLevel = "Nível";
             public const string TabCoins = "Moedas";
             public const string TabShells = "Conchas";
@@ -304,7 +304,6 @@ namespace FishingIdle.Texts
             public const string NoNotifications = "Nada por aqui ainda.";
             public const string ClearNotifications = "Limpar";
             public const string Settings = "Configurações";
-            public const string SettingsShort = "Opções";
             public const string Sound = "Som";
             public const string Ambient = "Som ambiente";
             public const string Volume = "Volume";
@@ -316,7 +315,6 @@ namespace FishingIdle.Texts
             public const string Expand = "Expandir";
             public const string Fishing = "Pescando";
             public const string Stopped = "Parado";
-            public const string Bell = "Avisos";
 
             public static string BoxCount(int count) => "Caixa: " + count;
         }

@@ -1108,8 +1108,9 @@ Enquanto o jogo é local, o único jogador real é o deste computador, então el
 com uma nota explicando que, quando o jogo for online, todos os jogadores reais aparecem ali. O
 serviço do ranking já tem o formato da versão online; só a fonte muda.
 
-O botão **Ranking** fica ao lado das Conchas e dos Dólares, logo abaixo da barra do topo: a barra de
-menus principal já está cheia, e um nono item faria todos os menus virarem só ícone.
+*Revisto no mesmo dia (pedido do proprietário):* o **Ranking** fica na barra de menus do topo, logo
+depois da Arena. Para os nove menus caberem com nome, o sino de avisos e as opções viraram só ícone, e
+a barra mede o espaço de verdade dos dois lados em vez de reservar um valor fixo.
 
 ### A-101 · Comércio de Conchas e Dólares no Mercado
 **Seção do GDD:** 31–33 · **Situação:** Pedido do proprietário (02/10/2026); no jogo local, só a tela

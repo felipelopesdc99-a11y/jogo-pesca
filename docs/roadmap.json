@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-02T22:22:12Z",
+  "updated_at": "2026-10-02T22:24:25Z",
   "current_milestone": "M17",
   "statuses": [
     "TODO",
@@ -2524,8 +2524,8 @@
           "description": "Pedido do proprietário: ranking de Nível, Moedas, Conchas e Peixes pescados, sem bots. Decisão do proprietário (02/10/2026): preparar já, local, pronto para o online.",
           "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-02T22:09:38Z",
-          "completion_notes": "GameService/Ranking (IRankingService, LocalRankingService: só o jogador deste PC, LocalOnly = true), RankingWindow com as quatro abas e a nota do jogo local, botão Ranking ao lado de Conchas e Dólares. Testes RankingTests. GDD_ADENDO A-100. Compila; não aberto no Unity ainda. A versão com todos os jogadores depende do servidor (M12, adiado)."
+          "updated_at": "2026-10-02T22:24:25Z",
+          "completion_notes": "GameService/Ranking (IRankingService, LocalRankingService: só o jogador deste PC, LocalOnly = true), RankingWindow com as quatro abas e a nota do jogo local, botão Ranking ao lado de Conchas e Dólares. Testes RankingTests. GDD_ADENDO A-100. Compila; não aberto no Unity ainda. A versão com todos os jogadores depende do servidor (M12, adiado). Revisto a pedido do proprietário: o Ranking fica na barra de menus do topo, depois da Arena; Avisos e Opções viraram só ícone e a barra calcula o espaço dos lados."
         },
         {
           "id": "M17-T05",

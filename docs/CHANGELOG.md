@@ -10,6 +10,11 @@ raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 - Zoom da cena (A-102): rodinha do mouse sobre a cena ou "Aproximar" em Configurações, até cerca de
   20% mais perto do barco. Fica guardado neste PC.
 
+### Mudado
+
+- Ranking na barra de menus do topo, ao lado da Arena (A-100). Avisos e Opções viraram só ícone para
+  os nove menus caberem com nome.
+
 ### Não verificado
 
 - Não aberto no Editor do Unity ainda.

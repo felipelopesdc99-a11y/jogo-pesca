@@ -57,6 +57,11 @@ namespace FishingIdle.Game.UI
         private float _width;
         private float _height;
 
+        // Measured each frame by the top bar, so the main menu knows how much room it has.
+        private float _topLeftExtent = 440f;
+        private float _topRightExtent = 440f;
+        private float _coinsBoxWidth = 170f;
+
         private void Start()
         {
             _root = GetComponent<GameRoot>();
@@ -363,7 +368,9 @@ namespace FishingIdle.Game.UI
             if (player != null)
             {
                 var titleWidth = skin.Title.CalcSize(new GUIContent(GameTexts.GameTitle)).x;
-                GUI.Label(new Rect(64 + titleWidth + 14, 23, 220, 24), "·  " + player.MapName, skin.SmallMuted);
+                var mapLabel = "·  " + player.MapName;
+                GUI.Label(new Rect(64 + titleWidth + 14, 23, 220, 24), mapLabel, skin.SmallMuted);
+                _topLeftExtent = 64 + titleWidth + 14 + Mathf.Min(220f, skin.SmallMuted.CalcSize(new GUIContent(mapLabel)).x);
             }
 
             // Primary navigation (GDD section 7).
@@ -376,16 +383,17 @@ namespace FishingIdle.Game.UI
 
             // Secondary menu (GDD section 7): notifications bell and settings.
             var x = _width - 20;
-            var settings = new Rect(x - 116, 12, 116, 40);
-            if (skin.IconButton(settings, Icons.Settings, GameTexts.Hud.SettingsShort, _showSettings ? skin.NavActive : skin.Nav))
+            // Bell and options are icons only, so the nine main menus keep their names (A-100).
+            var settings = new Rect(x - 48, 12, 48, 40);
+            if (skin.IconButton(settings, Icons.Settings, null, _showSettings ? skin.NavActive : skin.Nav))
             {
                 _showSettings = !_showSettings;
                 _showNotifications = false;
             }
 
             x = settings.x - 8;
-            var bell = new Rect(x - 112, 12, 112, 40);
-            if (skin.IconButton(bell, Icons.Bell, GameTexts.Hud.Bell, _showNotifications ? skin.NavActive : skin.Nav))
+            var bell = new Rect(x - 48, 12, 48, 40);
+            if (skin.IconButton(bell, Icons.Bell, null, _showNotifications ? skin.NavActive : skin.Nav))
             {
                 _showNotifications = !_showNotifications;
                 _showSettings = false;
@@ -396,13 +404,14 @@ namespace FishingIdle.Game.UI
             {
                 // Red dot with the count, like a phone badge.
                 var count = _root.Toasts.Unread > 9 ? "9+" : _root.Toasts.Unread.ToString();
-                var dot = new Rect(bell.x + 22, bell.y + 2, 18, 18);
+                var dot = new Rect(bell.xMax - 20, bell.y + 2, 18, 18);
                 GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Danger, 0, 9);
                 GUI.Label(dot, count, skin.PillText);
             }
 
             x = bell.x - 18;
             DrawCoins(skin, x, player.Coins);
+            _topRightExtent = _width - (x - _coinsBoxWidth);
             DrawWallet(skin, x, player);
         }
 
@@ -427,14 +436,6 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(chip.x + 34, chip.y + 6, w - 36, 20), text, skin.SmallBold);
                 x = chip.x - 8;
             }
-
-            // The Ranking menu (A-100) sits with the wallet: the main navigation has no room for a ninth item.
-            var rankingWidth = skin.Chip.CalcSize(new GUIContent(GameTexts.Ranking.Button)).x + 30f;
-            if (skin.IconButton(new Rect(x - rankingWidth, 70, rankingWidth, 30), Icons.Ranking, GameTexts.Ranking.Button, skin.Chip))
-            {
-                CloseAllWindows();
-                _ranking.Open();
-            }
         }
 
         /// <summary>The coin counter: it counts up to the new total, with a "+N" that floats away.</summary>
@@ -458,6 +459,7 @@ namespace FishingIdle.Game.UI
             var text = Format.Number(_coinsShown);
             var textWidth = skin.Number.CalcSize(new GUIContent(text)).x;
             var box = new Rect(right - textWidth - 58, 12, textWidth + 58, 40);
+            _coinsBoxWidth = box.width;
             GUI.Box(box, GUIContent.none, skin.Chip);
             var pulse = k < 1f ? 1f + 0.12f * Mathf.Sin(k * Mathf.PI) : 1f;
             var iconSize = 24f * pulse;
@@ -487,7 +489,9 @@ namespace FishingIdle.Game.UI
             }
 
             total -= 8f;
-            var available = _width - 2f * 440f;
+            // The nav is centred, so it gets the width between the wider of the two sides (title and map
+            // on the left; bell, options and coins on the right).
+            var available = _width - 2f * Mathf.Max(_topLeftExtent, _topRightExtent) - 32f;
             iconsOnly = total > available;
             if (iconsOnly)
             {
@@ -512,22 +516,22 @@ namespace FishingIdle.Game.UI
 
         private string[] NavLabels()
         {
-            return new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Arena, GameTexts.Navigation.Expedition, GameTexts.Navigation.Market, GameTexts.Navigation.Shop, GameTexts.Navigation.Profile };
+            return new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Arena, GameTexts.Navigation.Ranking, GameTexts.Navigation.Expedition, GameTexts.Navigation.Market, GameTexts.Navigation.Shop, GameTexts.Navigation.Profile };
         }
 
-        private static readonly string[] NavIcons = { Icons.Fishing, Icons.Map, Icons.Aquarium, Icons.Arena, Icons.Expedition, Icons.Market, Icons.Shop, Icons.Profile };
+        private static readonly string[] NavIcons = { Icons.Fishing, Icons.Map, Icons.Aquarium, Icons.Arena, Icons.Ranking, Icons.Expedition, Icons.Market, Icons.Shop, Icons.Profile };
 
         /// <summary>Main menus (GDD section 7). Pesca closes any window; the others open theirs.</summary>
         private void DrawNavigation(UiSkin skin)
         {
             var labels = NavLabels();
             var rects = NavLayout(skin, out var iconsOnly);
-            var active = _map.IsOpen ? 1 : _aquarium.IsOpen ? 2 : _arena.IsOpen ? 3 : _expedition.IsOpen ? 4 : _market.IsOpen ? 5 : _shop.IsOpen ? 6 : _profile.IsOpen ? 7 : 0;
+            var active = _map.IsOpen ? 1 : _aquarium.IsOpen ? 2 : _arena.IsOpen ? 3 : _ranking.IsOpen ? 4 : _expedition.IsOpen ? 5 : _market.IsOpen ? 6 : _shop.IsOpen ? 7 : _profile.IsOpen ? 8 : 0;
 
             for (var i = 0; i < labels.Length; i++)
             {
                 var clicked = skin.IconButton(rects[i], NavIcons[i], iconsOnly ? null : labels[i], i == active ? skin.NavActive : skin.Nav) && i != active;
-                if (i == 4 && _root.ExpeditionResult != null && !_expedition.IsOpen)
+                if (i == 5 && _root.ExpeditionResult != null && !_expedition.IsOpen)
                 {
                     // The Cardume is back: a dot until the player opens the Expedition and reads the report.
                     var dot = new Rect(rects[i].xMax - 14, rects[i].y + 3, 11, 11);
@@ -540,10 +544,11 @@ namespace FishingIdle.Game.UI
                     if (i == 1) _map.Open();
                     if (i == 2) _aquarium.Open();
                     if (i == 3) _arena.Open();
-                    if (i == 4) _expedition.Open();
-                    if (i == 5) _market.Open();
-                    if (i == 6) _shop.Open();
-                    if (i == 7) _profile.Open();
+                    if (i == 4) _ranking.Open();
+                    if (i == 5) _expedition.Open();
+                    if (i == 6) _market.Open();
+                    if (i == 7) _shop.Open();
+                    if (i == 8) _profile.Open();
                 }
             }
         }
@@ -967,9 +972,9 @@ namespace FishingIdle.Game.UI
             Rect target;
             switch (step)
             {
-                case TutorialSteps.ClaimRod: target = NavRect(6); break;
-                case TutorialSteps.Cardume: target = NavRect(7); break;
-                case TutorialSteps.Expedition: target = NavRect(4); break;
+                case TutorialSteps.ClaimRod: target = NavRect(7); break;
+                case TutorialSteps.Cardume: target = NavRect(8); break;
+                case TutorialSteps.Expedition: target = NavRect(5); break;
                 case TutorialSteps.StartFishing: target = new Rect(_width / 2f - 130, _height - 70, 260, 38); break;
                 case TutorialSteps.OpenBox:
                 case TutorialSteps.SellFish:
