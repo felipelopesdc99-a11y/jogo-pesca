@@ -3,6 +3,18 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m17.6] — 02/10/2026
+
+### Adicionado
+
+- Menu **Fishing Idle → Gerar versão para amigos (Windows)**: gera o jogo, um LEIA-ME para o
+  jogador e o zip para enviar, na pasta `dist` (TD-029). Passo a passo em
+  `docs/ENVIAR_PARA_AMIGOS.md`.
+
+### Não verificado
+
+- Não rodado no Editor do Unity ainda (o build depende do módulo Windows Build Support).
+
 ## [0.2.0-m17.5] — 02/10/2026
 
 ### Adicionado

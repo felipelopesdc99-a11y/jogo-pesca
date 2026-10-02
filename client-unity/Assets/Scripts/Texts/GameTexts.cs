@@ -1154,6 +1154,31 @@ namespace FishingIdle.Texts
 
         // ------------------------------------------------------------------ editor setup and build
 
+        public static class FriendsBuild
+        {
+            public const string Menu = "Fishing Idle/Gerar versão para amigos (Windows)";
+            public const string Title = "Versão para amigos";
+            public const string Ok = "OK";
+            public const string NoWindowsSupport = "Falta o módulo \"Windows Build Support\" no Unity. Abra o Unity Hub → Instalações → engrenagem da versão 6000.3 → Adicionar módulos → marque \"Windows Build Support (Mono)\" e instale. Depois tente de novo.";
+            public const string Failed = "A versão não foi gerada. Veja o Console do Unity para saber o motivo e me mande um print.";
+            public static string Done(string zip, string sizeMb) => "Pronto! O arquivo " + zip + " (" + sizeMb + " MB) está na pasta dist, que acabou de abrir. Mande esse zip para os seus amigos (Google Drive, WeTransfer ou itch.io).";
+            public static string Readme(string version) =>
+                "FISHING IDLE — versão de teste " + version + "\r\n" +
+                "\r\n" +
+                "Como jogar\r\n" +
+                "1. Extraia este zip numa pasta (botão direito → Extrair tudo).\r\n" +
+                "2. Abra FishingIdle.exe.\r\n" +
+                "3. Se o Windows mostrar \"O Windows protegeu o computador\", clique em \"Mais informações\" e depois em \"Executar assim mesmo\". Isso aparece porque o jogo ainda não tem assinatura digital; ele não instala nada.\r\n" +
+                "\r\n" +
+                "Bom saber\r\n" +
+                "- O jogo pesca sozinho, até com ele fechado (por até 24 horas).\r\n" +
+                "- O progresso fica salvo só neste computador.\r\n" +
+                "- Esta é uma versão de teste: Ranking e comércio de Conchas e Dólares ainda não são online, e algumas artes são provisórias.\r\n" +
+                "- Para jogar uma versão nova, extraia por cima ou numa pasta nova: o progresso continua.\r\n" +
+                "\r\n" +
+                "Achou um problema ou tem uma ideia? Mande um print e conte o que aconteceu para quem te enviou o jogo.\r\n";
+        }
+
         public static class ProjectSetup
         {
             public const string OpenSceneMenu = "Fishing Idle/Abrir cena principal";

@@ -497,3 +497,20 @@ achar e editar, e prepara barcos e iscas futuros sem inchar `rods.json`.
 
 **Rever se.** Entrar a raridade Épico (chance-base 24%, `OD-019`), bônus temporários
 (`bonus_temporario_configuravel` da especificação) ou multiplicadores por mapa.
+
+## TD-029 — Versão para testadores gerada por um menu do Editor, sem servidor
+
+**Decisão.** O menu **Fishing Idle → Gerar versão para amigos (Windows)** (`Editor/FriendsBuild.cs`)
+faz o build Windows 64 bits da cena principal em `/dist/FishingIdle_<versão>` (a versão vem de
+`version.json`), apaga a pasta de símbolos de depuração, grava um `LEIA-ME.txt` em PT-BR para o
+jogador (texto em `GameTexts.FriendsBuild`) e compacta tudo em `/dist/FishingIdle_<versão>.zip`, que é
+o arquivo a enviar. O `/config` entra no build pelo `ConfigBuildStep` de sempre. `/dist` não é
+versionado. O zip é feito com `ZipArchive`, para não depender de `ZipFile`.
+
+**Por quê.** O proprietário quer amigos testando já, e o MVP é local: cada amigo roda o jogo no
+próprio PC, com save próprio, sem servidor nem custo. Um clique evita errar a lista de cenas, o
+destino ou o nome do arquivo. Distribuição (Drive, WeTransfer, itch.io) e custos estão em
+`docs/ENVIAR_PARA_AMIGOS.md`.
+
+**Rever se.** O jogo for online (M12), entrar Mac ou celular, ou chegar a hora da Steam (taxa de
+US$ 100, decisão do proprietário).

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-02T22:24:25Z",
+  "updated_at": "2026-10-02T22:37:01Z",
   "current_milestone": "M17",
   "statuses": [
     "TODO",
@@ -2548,6 +2548,16 @@
           "dependencies": [],
           "updated_at": "2026-10-02T22:22:12Z",
           "completion_notes": "CameraSway aplica o zoom (tamanho ortográfico de 5,4 até 4,3, mirando o barco, com suavização); rodinha do mouse no Hud quando não há janela ou painel aberto; controle Aproximar nas Configurações; GameSettings.Zoom em PlayerPrefs. GDD_ADENDO A-102. Compila; não aberto no Unity ainda."
+        },
+        {
+          "id": "M17-T07",
+          "title": "Versão para amigos testarem (Windows)",
+          "subsystem": "ops",
+          "description": "Pedido do proprietário: mandar o jogo para amigos testarem e lançar algo já, sem custo.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-02T22:37:01Z",
+          "completion_notes": "Editor/FriendsBuild.cs: menu Gerar versão para amigos (Windows) com build, LEIA-ME e zip em /dist. Guia em docs/ENVIAR_PARA_AMIGOS.md (Drive, WeTransfer, itch.io; Steam custa US$ 100 e pode esperar). TD-029. Compila; o build em si só roda no Unity do proprietário."
         }
       ]
     }
