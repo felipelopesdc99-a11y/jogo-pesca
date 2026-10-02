@@ -68,7 +68,7 @@
       "tier": 1,
       "catch_success_bonus": 0.03,
       "charges": 100,
-      "cost_coins": 200,
+      "cost_coins": 1000,
       "cost_shells": 0,
       "unlock_fisher_level": 1
     },
@@ -78,7 +78,7 @@
       "tier": 2,
       "catch_success_bonus": 0.07,
       "charges": 100,
-      "cost_coins": 1200,
+      "cost_coins": 6000,
       "cost_shells": 0,
       "unlock_fisher_level": 10
     },
@@ -88,8 +88,8 @@
       "tier": 3,
       "catch_success_bonus": 0.1,
       "charges": 100,
-      "cost_coins": 800,
-      "cost_shells": 6,
+      "cost_coins": 4000,
+      "cost_shells": 12,
       "unlock_fisher_level": 18
     }
   ]

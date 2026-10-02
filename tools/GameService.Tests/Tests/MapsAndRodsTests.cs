@@ -21,6 +21,8 @@ public sealed class MapsAndRodsTests
         game.Fishing.StopFishing();
         game.Fishing.SellCatches(game.Fishing.GetFishingBox().Select(c => c.CatchId).ToList());
         Assert.True(game.Player.GetPlayer().FisherLevel >= 10);
+        // Sale prices are a balance knob (economy.json); these tests are about the Shop, not about income.
+        game.Session.Save.Coins += 20_000;
         return (game, clock, dir);
     }
 

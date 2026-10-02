@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-02T21:49:18Z",
+  "updated_at": "2026-10-02T21:53:43Z",
   "current_milestone": "M16",
   "statuses": [
     "TODO",
@@ -2454,6 +2454,16 @@
             "M16-T11"
           ],
           "updated_at": "2026-10-02T21:49:18Z"
+        },
+        {
+          "id": "M16-T14",
+          "title": "Peixes pela metade do preço e iscas bem mais caras",
+          "subsystem": "config",
+          "description": "Pedido do proprietário (02/10/2026): muitas moedas e nada onde gastar. Peixes 50% mais baratos; iscas bem mais caras.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-02T21:53:43Z",
+          "completion_notes": "economy.json npc_fish_sale.price_multiplier = 0,5 (campo novo, usado em CatchRules.SalePrice, validado e editável no Painel de Balanceamento); iscas 1.000 / 6.000 / 4.000 + 12 Conchas em equipment.json. Testes leem o multiplicador. Simulação: 1.649 moedas/h no mapa 1, 13.783 no mapa 2. GDD_ADENDO A-097."
         }
       ]
     }

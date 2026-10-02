@@ -196,7 +196,7 @@ namespace FishingIdle.GameService.Fishing
             config.TryGetRarity(species.Rarity, out var rarity);
             var influence = config.Progression.Size.SaleValueInfluence.Influence;
             var sizeFactor = 1.0 + influence * (Percentile(species, sizeMm) - 0.5);
-            var price = species.BaseSaleValueCoins * (rarity?.SaleValueMultiplier ?? 1.0) * sizeFactor;
+            var price = species.BaseSaleValueCoins * (rarity?.SaleValueMultiplier ?? 1.0) * sizeFactor * config.Economy.NpcFishSale.PriceMultiplier;
             return Math.Max(config.Economy.NpcFishSale.MinimumPriceCoins, (long)Math.Round(price, MidpointRounding.AwayFromZero));
         }
 

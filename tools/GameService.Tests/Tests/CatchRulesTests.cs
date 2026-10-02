@@ -154,7 +154,8 @@ public sealed class CatchRulesTests
         var largest = CatchRules.SalePrice(Config, tambaqui, 1100);
 
         Assert.True(smallest < middle && middle < largest);
-        Assert.Equal(tambaqui.BaseSaleValueCoins, middle); // base value at the 50th percentile
+        // Base value (times the general sale multiplier) at the 50th percentile.
+        Assert.Equal((long)System.Math.Round(tambaqui.BaseSaleValueCoins * Config.Economy.NpcFishSale.PriceMultiplier, System.MidpointRounding.AwayFromZero), middle);
     }
 
     [Fact]

@@ -663,6 +663,7 @@ namespace FishingIdle.Editor
             const string file = GameConfigLoader.EconomyFile;
             Number(file, "aquarium.hard_capacity", T.AquariumCapacity, 1);
             Number(file, "npc_fish_sale.minimum_price_coins", T.MinimumPrice, 0);
+            Number(file, "npc_fish_sale.price_multiplier", T.SalePriceMultiplier, 0);
             Number(file, "shells.base_drop_chance_per_catch", T.ShellChance, 0);
             Number(file, "shells.amount_per_drop.min", T.ShellMin, 0);
             Number(file, "shells.amount_per_drop.max", T.ShellMax, 0);

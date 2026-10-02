@@ -900,6 +900,7 @@ namespace FishingIdle.Texts
             public const string XpToNext = "XP para o próximo";
             public const string ShellChance = "Chance de Concha por captura (0 a 1)";
             public const string MinimumPrice = "Preço mínimo de venda (moedas)";
+            public const string SalePriceMultiplier = "Multiplicador do preço de venda dos peixes (1 = valores do catálogo; 0,5 = metade)";
 
             public const string SaveLocation = "Pasta do save";
             public const string OpenFolder = "Abrir pasta";

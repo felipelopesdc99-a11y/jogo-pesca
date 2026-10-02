@@ -1042,3 +1042,18 @@ O que o jogador equipa na Loja aparece na cena de pesca, na hora:
 
 É só visual: não muda nenhuma chance. Os números de posição e tamanho ficam em
 `Resources/Visual/equipamento_cena.json`, gerados por `tools/Arte/equipamento_na_cena.py`.
+
+### A-097 · Peixes pela metade do preço e iscas bem mais caras
+**Seção do GDD:** 21 · **Situação:** Decidido pelo proprietário (02/10/2026)
+
+O proprietário juntava moedas demais sem ter onde gastar. Então:
+
+- **Venda de peixes:** todo preço de venda ao comerciante vale metade. Um ajuste geral novo
+  (`economy.json → npc_fish_sale.price_multiplier`, hoje 0,5) multiplica todos os preços de uma vez,
+  sem mexer no valor de cada espécie.
+- **Iscas:** Simples 1.000 moedas (antes 200), Melhorada 6.000 (antes 1.200), Premium 4.000 moedas e
+  12 Conchas (antes 800 e 6). Continuam com 100 tentativas por compra.
+
+Na simulação, a pesca rende 1.649 moedas por hora no primeiro mapa (antes 3.246) e 13.783 no segundo
+(antes 28.215). A Vara 2 chega com 9,2 h de pesca (antes 8,6 h). No primeiro mapa as iscas quase não
+se pagam: valem mais nos mapas de peixe caro.

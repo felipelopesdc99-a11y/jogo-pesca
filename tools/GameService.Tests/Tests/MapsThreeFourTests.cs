@@ -86,7 +86,8 @@ public sealed class MapsThreeFourTests
         Assert.InRange(Share("rare"), rare - 0.003, rare + 0.003);
         Assert.InRange(Share("epic"), epic * 0.7, epic * 1.3);
         Assert.InRange(rolls.Average(c => c.FisherXp) / scale, xpTarget * 0.95, xpTarget * 1.05);
-        Assert.InRange(rolls.Average(c => CatchRules.SalePrice(Config, c.Species, c.SizeMm)) / scale, coinsTarget * 0.95, coinsTarget * 1.05);
+        var saleMultiplier = Config.Economy.NpcFishSale.PriceMultiplier; // general sale knob, applied after the document's targets
+        Assert.InRange(rolls.Average(c => CatchRules.SalePrice(Config, c.Species, c.SizeMm)) / scale / saleMultiplier, coinsTarget * 0.95, coinsTarget * 1.05);
     }
 
     [Fact]

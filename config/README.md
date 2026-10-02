@@ -35,7 +35,7 @@ Onde fica cada coisa no painel:
 | Tempo de pesca | Pesca | `progression.json` |
 | Níveis do Pescador e do peixe | XP do Pescador | `progression.json` |
 | Varas (bônus e custo) | Varas | `rods.json` |
-| Preço mínimo, Conchas, Aquário, Mercado | Economia | `economy.json` |
+| Preço mínimo, multiplicador geral do preço de venda dos peixes, Conchas, Aquário, Mercado | Economia | `economy.json` |
 | Arena, Cardume, Expedições | Outros arquivos | `arena.json`, `expeditions.json`… |
 
 ## Regras

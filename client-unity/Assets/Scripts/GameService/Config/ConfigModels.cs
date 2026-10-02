@@ -308,6 +308,9 @@ namespace FishingIdle.GameService.Config
     public sealed class NpcFishSaleConfig
     {
         public long MinimumPriceCoins { get; set; }
+
+        /// <summary>Scales every fish sale price at once (1 = the catalog values).</summary>
+        public double PriceMultiplier { get; set; } = 1.0;
     }
 
     public sealed class ShellsConfig

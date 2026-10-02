@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m16.30] — 02/10/2026
+
+### Mudado
+
+- Peixes vendem pela metade do preço (ajuste geral novo `npc_fish_sale.price_multiplier` = 0,5, também
+  no Painel de Balanceamento) e iscas bem mais caras: 1.000, 6.000 e 4.000 + 12 Conchas (A-097).
+
+### Adicionado
+
+- Pedidos para o GPT: pescador segurando a vara e varas finas para a cena (`M16-T13`).
+
 ## [0.2.0-m16.29] — 01/10/2026
 
 ### Mudado

@@ -422,6 +422,10 @@ namespace FishingIdle.GameService.Config
             {
                 errors.Add(V.NegativeValue(GameConfigLoader.EconomyFile, "npc_fish_sale.minimum_price_coins"));
             }
+            else if (economy.NpcFishSale.PriceMultiplier <= 0)
+            {
+                errors.Add(V.NegativeValue(GameConfigLoader.EconomyFile, "npc_fish_sale.price_multiplier"));
+            }
 
             if (economy.Shells == null || economy.Shells.AmountPerDrop == null)
             {
