@@ -13,6 +13,7 @@ using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Market;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
+using FishingIdle.GameService.Ranking;
 using FishingIdle.GameService.Shop;
 using FishingIdle.GameService.Tutorial;
 using FishingIdle.Texts;
@@ -600,6 +601,8 @@ namespace FishingIdle.Game.Bootstrap
         }
 
         public AuctionsView GetAuctions() => IsRunning ? Game.Auctions.GetAuctions() : null;
+
+        public RankingView GetRanking(RankingCategory category) => IsRunning ? Game.Ranking.GetRanking(category) : null;
 
         public bool StartAuction(bool isFish, long sourceId, long startingBid)
         {

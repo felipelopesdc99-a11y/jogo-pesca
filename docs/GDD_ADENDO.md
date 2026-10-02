@@ -1096,3 +1096,17 @@ sem bônus.
 Na simulação, sem comércio: a Vara 1 chega com 2,2 h de pesca, como antes; a Vara 2 com 10,8 h (antes
 8,4 h), e o trecho do nível 30 ao 40 leva 4,9 h (antes 4,0 h). Os Barcos 3, 4 e 5 chegam com 9,9 h,
 20,3 h e 40,8 h. A diferença é o espaço do comércio de Conchas.
+
+### A-100 · Ranking só de jogadores reais
+**Seção do GDD:** 7 · **Situação:** Pedido do proprietário (02/10/2026)
+
+Um menu **Ranking** mostra a posição dos jogadores em quatro listas: **Nível**, **Moedas**, **Conchas**
+e **Peixes pescados**. Só entram jogadores reais: nunca jogadores simulados (nem os da Arena ou do
+Mercado).
+
+Enquanto o jogo é local, o único jogador real é o deste computador, então ele aparece sozinho em 1º,
+com uma nota explicando que, quando o jogo for online, todos os jogadores reais aparecem ali. O
+serviço do ranking já tem o formato da versão online; só a fonte muda.
+
+O botão **Ranking** fica ao lado das Conchas e dos Dólares, logo abaixo da barra do topo: a barra de
+menus principal já está cheia, e um nono item faria todos os menus virarem só ícone.

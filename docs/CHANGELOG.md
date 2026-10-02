@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m17.3] — 02/10/2026
+
+### Adicionado
+
+- Menu **Ranking** (A-100): Nível, Moedas, Conchas e Peixes pescados, só jogadores reais. No jogo
+  local aparece só você; pronto para o online. Botão ao lado das Conchas e dos Dólares.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda.
+
 ## [0.2.0-m17.2] — 02/10/2026
 
 ### Mudado

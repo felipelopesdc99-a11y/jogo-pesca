@@ -107,6 +107,23 @@ namespace FishingIdle.Texts
             public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : Format.Number(count) + " peixes vendidos") + " por " + coins + " moedas.";
         }
 
+        // ------------------------------------------------------------------ Ranking (addendum A-100)
+
+        public static class Ranking
+        {
+            public const string Title = "Ranking";
+            public const string Subtitle = "Só jogadores reais, sem jogadores simulados";
+            public const string Button = "Ranking";
+            public const string TabLevel = "Nível";
+            public const string TabCoins = "Moedas";
+            public const string TabShells = "Conchas";
+            public const string TabFish = "Peixes pescados";
+            public const string ColumnPosition = "Posição";
+            public const string ColumnPlayer = "Jogador";
+            public const string You = "Você";
+            public const string LocalNote = "Por enquanto o jogo roda só neste computador, então o ranking mostra só você. Quando o jogo for online, aqui aparecem todos os jogadores reais.";
+        }
+
         // ------------------------------------------------------------------ Search by fish name (addendum A-084)
 
         public static class Search

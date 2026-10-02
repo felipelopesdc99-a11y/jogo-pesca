@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-02T22:06:10Z",
+  "updated_at": "2026-10-02T22:09:38Z",
   "current_milestone": "M17",
   "statuses": [
     "TODO",
@@ -2516,6 +2516,16 @@
           "dependencies": [],
           "updated_at": "2026-10-02T22:06:10Z",
           "completion_notes": "rods.json: purchase_cost_shells (Vara 1 5, Vara 2 40) e cost_shells em cada melhoria; Vara Inicial gera Conchas. equipment.json: barcos 5/15/25/90/250 e iscas 1/3/12 Conchas. economy.json: chance-base 0,07. Loja e Perfil mostram as Conchas; serviço recusa com NotEnoughShells. Testes novos e ajustados. Simulação: Vara 2 com 10,8 h, 30→40 em 4,9 h. GDD_ADENDO A-099."
+        },
+        {
+          "id": "M17-T04",
+          "title": "Menu Ranking só de jogadores reais",
+          "subsystem": "client",
+          "description": "Pedido do proprietário: ranking de Nível, Moedas, Conchas e Peixes pescados, sem bots. Decisão do proprietário (02/10/2026): preparar já, local, pronto para o online.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-02T22:09:38Z",
+          "completion_notes": "GameService/Ranking (IRankingService, LocalRankingService: só o jogador deste PC, LocalOnly = true), RankingWindow com as quatro abas e a nota do jogo local, botão Ranking ao lado de Conchas e Dólares. Testes RankingTests. GDD_ADENDO A-100. Compila; não aberto no Unity ainda. A versão com todos os jogadores depende do servidor (M12, adiado)."
         }
       ]
     }

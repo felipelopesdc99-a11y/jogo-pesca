@@ -34,6 +34,7 @@ namespace FishingIdle.Game.UI
         private readonly ArrivalTitle _arrival = new ArrivalTitle();
         private ArenaWindow _arena;
         private MarketWindow _market;
+        private RankingWindow _ranking;
         private bool _cardExpanded = true;
         private bool _showNotifications;
         private bool _showSettings;
@@ -68,6 +69,7 @@ namespace FishingIdle.Game.UI
             _expedition = new ExpeditionWindow(_root);
             _arena = new ArenaWindow(_root);
             _market = new MarketWindow(_root);
+            _ranking = new RankingWindow(_root);
             _root.CatchesArrived += OnCatchesArrived;
             _root.MapArrived += OnMapArrived;
         }
@@ -244,6 +246,11 @@ namespace FishingIdle.Game.UI
                     _market.Close();
                     Event.current.Use();
                 }
+                else if (_ranking.IsOpen)
+                {
+                    _ranking.Close();
+                    Event.current.Use();
+                }
                 else if (_map.IsOpen || _shop.IsOpen || _expedition.IsOpen)
                 {
                     _map.Close();
@@ -279,7 +286,7 @@ namespace FishingIdle.Game.UI
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
             var welcomeDialog = _root.Tutorial != null && _root.Tutorial.Active && _root.Tutorial.Step == TutorialSteps.Welcome;
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _root.WelcomeBack != null || welcomeDialog;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _root.WelcomeBack != null || welcomeDialog;
             _root.WindowOpen = windowOpen;
             GUI.enabled = !windowOpen;
             DrawTopBar(skin);
@@ -310,6 +317,7 @@ namespace FishingIdle.Game.UI
             _expedition.Draw(skin, _width, _height);
             _arena.Draw(skin, _width, _height);
             _market.Draw(skin, _width, _height);
+            _ranking.Draw(skin, _width, _height);
             GUI.color = previousColor;
             GUI.enabled = true;
             if (windowOpen)
@@ -410,6 +418,14 @@ namespace FishingIdle.Game.UI
                 skin.DrawIcon(new Rect(chip.x + 10, chip.y + 6, 18, 18), icon, Color.white);
                 GUI.Label(new Rect(chip.x + 34, chip.y + 6, w - 36, 20), text, skin.SmallBold);
                 x = chip.x - 8;
+            }
+
+            // The Ranking menu (A-100) sits with the wallet: the main navigation has no room for a ninth item.
+            var rankingWidth = skin.Chip.CalcSize(new GUIContent(GameTexts.Ranking.Button)).x + 30f;
+            if (skin.IconButton(new Rect(x - rankingWidth, 70, rankingWidth, 30), Icons.Ranking, GameTexts.Ranking.Button, skin.Chip))
+            {
+                CloseAllWindows();
+                _ranking.Open();
             }
         }
 
@@ -542,6 +558,7 @@ namespace FishingIdle.Game.UI
             _expedition.Close();
             while (_arena.IsOpen) _arena.Close();
             while (_market.IsOpen) _market.Close();
+            _ranking.Close();
 
             // A panel left open would sit on top of the window and catch its clicks.
             _showNotifications = false;

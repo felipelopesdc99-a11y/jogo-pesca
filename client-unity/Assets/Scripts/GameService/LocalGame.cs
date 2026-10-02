@@ -10,6 +10,7 @@ using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Market;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
+using FishingIdle.GameService.Ranking;
 using FishingIdle.GameService.Shop;
 using FishingIdle.GameService.Tutorial;
 
@@ -43,6 +44,7 @@ namespace FishingIdle.GameService
             Market = market;
             Auctions = market;
             Tutorial = new LocalTutorialService(session);
+            Ranking = new LocalRankingService(session);
         }
 
         public GameSession Session { get; }
@@ -59,6 +61,7 @@ namespace FishingIdle.GameService
         public IMarketService Market { get; }
         public IAuctionService Auctions { get; }
         public ITutorialService Tutorial { get; }
+        public IRankingService Ranking { get; }
 
         /// <summary>Starts the game service, or explains in PT-BR why it cannot.</summary>
         public static LocalGameStartResult Start(string configDirectory, string saveDirectory, IClock clock, Action<string> log)
