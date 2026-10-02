@@ -29,7 +29,7 @@ public sealed class ProfileTests
 
         Assert.Single(profile.Inventory);
         Assert.True(profile.EquippedRod.IsEquipped);
-        Assert.Equal("Vara Inicial", profile.EquippedRod.Name);
+        Assert.Equal("Caniço Manso", profile.EquippedRod.Name);
         Assert.False(profile.EquippedRod.CanCatchRare);
         Assert.Equal(6, cardume.Slots.Count);
         Assert.Equal(0, cardume.Filled);

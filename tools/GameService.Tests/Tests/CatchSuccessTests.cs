@@ -91,7 +91,7 @@ public sealed class CatchSuccessTests
         Assert.True(game.Gear.BuyBait("bait_01").Succeeded);
         game.Fishing.StartFishing();
 
-        // Closed for 3 hours: 180 offline attempts; the 100 charges run out on the way.
+        // Closed for 3 hours: 180 offline attempts; the bait's charges run out on the way.
         clock.AdvanceSeconds(3 * 3600);
         var (back, _, _) = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock, skipTutorial: false);
         var report = back.Fishing.TakeOfflineReport();
@@ -100,7 +100,7 @@ public sealed class CatchSuccessTests
         var update = report.Update;
         Assert.Equal(180, update.NewCatches.Count + update.Escapes.Count);
         Assert.InRange(update.Escapes.Count, 50, 110);
-        Assert.Equal("Isca Simples", update.BaitRanOut);
+        Assert.Equal("Terra Viva", update.BaitRanOut);
         Assert.Equal(0, back.Session.Save.BaitCharges["bait_01"]);
         Assert.Null(back.Gear.GetGear().BaitId);
     }
@@ -114,20 +114,21 @@ public sealed class CatchSuccessTests
         var bought = game.Gear.BuyBait("bait_01");
         Assert.True(bought.Succeeded);
         Assert.Equal("bait_01", bought.Value.BaitId);
-        Assert.Equal(100, bought.Value.BaitChargesLeft);
+        var pack = bought.Value.Baits.Single(b => b.BaitId == "bait_01").ChargesPerPurchase;
+        Assert.Equal(pack, bought.Value.BaitChargesLeft);
         Assert.Equal(0.5 + bought.Value.BaitBonus, bought.Value.Chances.Single(c => c.RarityId == "common").Chance, 6);
         Assert.True(bought.Value.BaitBonus > 0);
 
         game.Fishing.StartFishing();
         TestSupport.PlayFor(game, clock, 30 * 10);
-        Assert.Equal(90, game.Gear.GetGear().BaitChargesLeft);
+        Assert.Equal(pack - 10, game.Gear.GetGear().BaitChargesLeft);
 
         // A second batch adds up, and the bait can be put away and back without losing charges.
         Assert.True(game.Gear.BuyBait("bait_01").Succeeded);
-        Assert.Equal(190, game.Gear.GetGear().BaitChargesLeft);
+        Assert.Equal(2 * pack - 10, game.Gear.GetGear().BaitChargesLeft);
         Assert.True(game.Gear.UseBait(null).Succeeded);
         TestSupport.PlayFor(game, clock, 30 * 5);
-        Assert.Equal(190, game.Session.Save.BaitCharges["bait_01"]);
+        Assert.Equal(2 * pack - 10, game.Session.Save.BaitCharges["bait_01"]);
         Assert.Equal(ServiceError.BaitNoCharges, game.Gear.UseBait("bait_02").Error);
         Assert.Equal(ServiceError.BaitLocked, game.Gear.BuyBait("bait_02").Error);
     }
@@ -142,9 +143,10 @@ public sealed class CatchSuccessTests
         Assert.True(gear.Boats.First().Owned);
         Assert.Equal(ServiceError.BoatLocked, game.Gear.BuyBoat("boat_01").Error);
 
-        save.FisherLevel = 20;
-        save.Coins = 3000;
-        save.Shells = gear.Boats.Single(b => b.BoatId == "boat_01").CostShells;
+        var boat1 = gear.Boats.Single(b => b.BoatId == "boat_01");
+        save.FisherLevel = 30;
+        save.Coins = boat1.CostCoins;
+        save.Shells = boat1.CostShells;
         var bought = game.Gear.BuyBoat("boat_01");
         Assert.True(bought.Succeeded);
         Assert.Equal(0, save.Coins);
@@ -161,7 +163,7 @@ public sealed class CatchSuccessTests
         save.Shells = boat3Shells;
         Assert.True(game.Gear.BuyBoat("boat_03").Succeeded);
         Assert.Equal(0, save.Shells);
-        Assert.Equal(1_000_000 - 45_000, save.Coins);
+        Assert.Equal(1_000_000 - gear.Boats.Single(b => b.BoatId == "boat_03").CostCoins, save.Coins);
 
         // Going back to an owned boat is free; one never bought is refused.
         Assert.True(game.Gear.UseBoat("boat_00").Succeeded);

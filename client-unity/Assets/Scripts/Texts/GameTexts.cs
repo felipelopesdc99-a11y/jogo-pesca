@@ -283,7 +283,7 @@ namespace FishingIdle.Texts
                 switch (step)
                 {
                     case "welcome": return "Você é um pescador no Lago Sereno. O barco pesca sozinho, até com o jogo fechado. Vamos dar os primeiros passos — leva uns 2 minutos.";
-                    case "claim_rod": return "Abra a " + Navigation.Shop + " (menu de cima) e pegue a Vara Inicial. Ela é grátis.";
+                    case "claim_rod": return "Abra a " + Navigation.Shop + " (menu de cima) e pegue o Caniço Manso, a vara inicial. Ela é grátis.";
                     case "start_fishing": return "Clique em \"" + Fishing.Start + "\", embaixo, no centro.";
                     case "first_catch": return "A cada ciclo o pescador tira um peixe da água. Quando ele aparecer, veja no aviso a espécie, o tamanho e a categoria.";
                     case "open_box": return "Todo peixe pescado vai para a " + Box.Open + " (canto de baixo, à direita). Abra para ver os peixes.";
@@ -774,7 +774,7 @@ namespace FishingIdle.Texts
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
                 case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";
-                case "RodNotSellable": return "A Vara Inicial não pode ser vendida nem destruída.";
+                case "RodNotSellable": return "O Caniço Manso, a vara inicial, não pode ser vendido nem destruído.";
                 case "ExpeditionNotFound": return "Essa Expedição não existe.";
                 case "ExpeditionActive": return "Seu Cardume já está numa Expedição.";
                 case "CardumeEmpty": return "Coloque pelo menos um peixe no Cardume (Perfil → Cardume).";
@@ -795,7 +795,7 @@ namespace FishingIdle.Texts
                 case "AlreadyHighestBidder": return "Você já tem o maior lance neste leilão.";
                 case "AuctionHasNoBids": return "Sem lances, o leilão não pode ser encerrado antes: espere as 6 horas.";
                 case "AuctionEnded": return "Esse leilão já terminou.";
-                case "NoRod": return "Você ainda não tem vara. Pegue a Vara Inicial grátis na Loja.";
+                case "NoRod": return "Você ainda não tem vara. Pegue o Caniço Manso grátis na Loja.";
                 case "TutorialStepMismatch": return "O tutorial já passou desse ponto.";
                 case "SpeciesMissingFromConfig": return "Um dos peixes é de uma espécie que não existe mais no balanceamento, então não pode ser vendido agora.";
                 default: return "Não foi possível fazer isso agora.";
@@ -976,7 +976,7 @@ namespace FishingIdle.Texts
             public const string RodCatchBonus = "Puxar";
             public const string RodUpgradeCost = "Custo p/ este nível";
             public const string RodsNote = "Bônus são o total naquele nível (0,10 = +10%). \"Puxar\" soma pontos na Chance de Sucesso da Captura (0,05 = +5%); ele também aparece na aba Sucesso da pesca.";
-            public const string RodStarterCatchBonus = "Bônus de puxar da Vara Inicial (0,05 = +5%)";
+            public const string RodStarterCatchBonus = "Bônus de puxar da vara inicial, o Caniço Manso (0,05 = +5%)";
 
             // ---- Sucesso da pesca (docs/SISTEMA_SUCESSO_PESCA.md)
             public const string SuccessIntro = "Depois que o peixe morde, o jogo sorteia se o pescador consegue puxá-lo. Chance = chance-base da raridade + vara + barco + isca, entre o mínimo e o máximo abaixo. Se o peixe escapa, nada entra na Caixa: sem XP, sem Conchas, sem descoberta, sem recorde.";

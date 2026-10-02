@@ -189,7 +189,16 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, y, w, 30), rod.Name, skin.Heading);
             y += 32;
             GUI.Label(new Rect(x, y, w, 22), GameTexts.Profile.Tier(rod.Tier) + " · " + GameTexts.Shop.MaxLevelOf(rod.MaxLevel), skin.SmallMuted);
-            y += 28;
+            y += 24;
+            if (!string.IsNullOrEmpty(rod.Description))
+            {
+                GUI.Label(new Rect(x, y, w, 38), rod.Description, skin.SmallMuted);
+                y += 40;
+            }
+            else
+            {
+                y += 4;
+            }
             skin.CoinIcon(new Rect(x, y + 2, 22, 22));
             var price = rod.IsFree ? GameTexts.Shop.Free : GameTexts.Shop.Price(Format.Number(rod.PriceCoins));
             GUI.Label(new Rect(x + 30, y, w - 30, 28), price, skin.Number);
@@ -263,7 +272,7 @@ namespace FishingIdle.Game.UI
 
                 var x = rect.x + 140;
                 GUI.Label(new Rect(x, cy, 220, 28), boat.Name, skin.Heading);
-                GUI.Label(new Rect(x, cy + 30, 220, 22), GameTexts.Profile.Tier(boat.Tier), skin.SmallMuted);
+                GUI.Label(new Rect(x, cy + 28, 220, 36), string.IsNullOrEmpty(boat.Description) ? GameTexts.Profile.Tier(boat.Tier) : boat.Description, skin.SmallMuted);
                 GUI.Label(new Rect(x + 230, cy + 4, 180, 24), GameTexts.Gear.Bonus(Format.Percent(boat.Bonus, 0)), skin.BodyBold);
                 if (!boat.Owned)
                 {
@@ -311,6 +320,10 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(x, rect.y + 16, 240, 28), bait.Name, skin.Heading);
                 GUI.Label(new Rect(x, rect.y + 46, 240, 22), GameTexts.Gear.Bonus(Format.Percent(bait.Bonus, 0)), skin.BodyBold);
                 GUI.Label(new Rect(x, rect.y + 72, 240, 22), GameTexts.Gear.Charges(bait.ChargesPerPurchase), skin.SmallMuted);
+                if (!string.IsNullOrEmpty(bait.Description))
+                {
+                    GUI.Label(new Rect(x, rect.y + 94, rect.width - 140 - 250, 20), bait.Description, skin.SmallMuted);
+                }
                 Cost(skin, new Rect(x + 250, rect.y + 20, 240, 22), bait.CostCoins, bait.CostShells);
                 GUI.Label(new Rect(x + 250, rect.y + 50, 240, 22), bait.ChargesLeft > 0 ? GameTexts.Gear.ChargesLeft(bait.ChargesLeft) : string.Empty, bait.InUse ? skin.SmallGold : skin.Small);
 

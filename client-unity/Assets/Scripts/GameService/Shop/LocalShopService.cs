@@ -12,6 +12,7 @@ namespace FishingIdle.GameService.Shop
     {
         public string RodId { get; internal set; }
         public string Name { get; internal set; }
+        public string Description { get; internal set; }
         public int Tier { get; internal set; }
         public long PriceCoins { get; internal set; }
         public long PriceShells { get; internal set; }
@@ -123,6 +124,7 @@ namespace FishingIdle.GameService.Shop
             {
                 RodId = rod.Id,
                 Name = rod.DisplayName,
+                Description = rod.Description,
                 Tier = rod.Tier,
                 PriceCoins = rod.Acquisition.PurchaseCostCoins,
                 PriceShells = rod.Acquisition.PurchaseCostShells,

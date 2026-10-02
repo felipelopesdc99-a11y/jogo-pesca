@@ -208,6 +208,9 @@ namespace FishingIdle.GameService.Config
         public string Id { get; set; }
         public string DisplayName { get; set; }
         public int Tier { get; set; }
+
+        /// <summary>One short line for the Shop (A-103).</summary>
+        public string Description { get; set; }
         public bool HasInternalLevels { get; set; }
         public List<string> CanCatchRarities { get; set; }
         public bool GeneratesShells { get; set; }
@@ -597,6 +600,9 @@ namespace FishingIdle.GameService.Config
     {
         public string Id { get; set; }
         public string DisplayName { get; set; }
+
+        /// <summary>One short line for the Shop (A-103).</summary>
+        public string Description { get; set; }
         public int Tier { get; set; }
         public double CatchSuccessBonus { get; set; }
         public long CostCoins { get; set; }
@@ -608,6 +614,9 @@ namespace FishingIdle.GameService.Config
     {
         public string Id { get; set; }
         public string DisplayName { get; set; }
+
+        /// <summary>One short line for the Shop (A-103).</summary>
+        public string Description { get; set; }
         public int Tier { get; set; }
         public double CatchSuccessBonus { get; set; }
 

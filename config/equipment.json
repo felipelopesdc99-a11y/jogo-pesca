@@ -6,7 +6,8 @@
   "boats": [
     {
       "id": "boat_00",
-      "display_name": "Barco Inicial",
+      "display_name": "Água Mansa",
+      "description": "Uma canoa simples. Foi aqui que tudo começou.",
       "tier": 0,
       "catch_success_bonus": 0.0,
       "cost_coins": 0,
@@ -16,80 +17,88 @@
     },
     {
       "id": "boat_01",
-      "display_name": "Barco 1",
+      "display_name": "Remo Valente",
+      "description": "Mais firme e confiável para jornadas maiores.",
       "tier": 1,
       "catch_success_bonus": 0.02,
-      "cost_coins": 3000,
+      "cost_coins": 12000,
       "cost_shells": 5,
-      "unlock_fisher_level": 5
+      "unlock_fisher_level": 10
     },
     {
       "id": "boat_02",
-      "display_name": "Barco 2",
+      "display_name": "Rastro Azul",
+      "description": "Seu primeiro motor muda a forma de explorar as águas.",
       "tier": 2,
       "catch_success_bonus": 0.04,
-      "cost_coins": 15000,
-      "cost_shells": 15,
-      "unlock_fisher_level": 12
-    },
-    {
-      "id": "boat_03",
-      "display_name": "Barco 3",
-      "tier": 3,
-      "catch_success_bonus": 0.06,
       "cost_coins": 45000,
-      "cost_shells": 25,
+      "cost_shells": 15,
       "unlock_fisher_level": 20
     },
     {
-      "id": "boat_04",
-      "display_name": "Barco 4",
-      "tier": 4,
-      "catch_success_bonus": 0.08,
-      "cost_coins": 130000,
-      "cost_shells": 90,
+      "id": "boat_03",
+      "display_name": "Proa Selvagem",
+      "description": "Feito para pescadores que já enfrentam peixes de verdade.",
+      "tier": 3,
+      "catch_success_bonus": 0.06,
+      "cost_coins": 160000,
+      "cost_shells": 25,
       "unlock_fisher_level": 30
     },
     {
+      "id": "boat_04",
+      "display_name": "Costa Nobre",
+      "description": "Conforto e estabilidade para águas mais exigentes.",
+      "tier": 4,
+      "catch_success_bonus": 0.08,
+      "cost_coins": 600000,
+      "cost_shells": 120,
+      "unlock_fisher_level": 50
+    },
+    {
       "id": "boat_05",
-      "display_name": "Barco 5",
+      "display_name": "Horizonte Dourado",
+      "description": "O auge da pesca esportiva. Potência, controle e presença.",
       "tier": 5,
       "catch_success_bonus": 0.1,
-      "cost_coins": 350000,
-      "cost_shells": 250,
-      "unlock_fisher_level": 40
+      "cost_coins": 2500000,
+      "cost_shells": 500,
+      "unlock_fisher_level": 80
     }
   ],
   "baits_note": "Cada compra é um pacote de cargas; cada tentativa de pesca (online ou offline) gasta 1 carga da isca em uso, pegando o peixe ou não. Quando as cargas acabam, a pesca continua sem isca.",
   "baits": [
     {
       "id": "bait_01",
-      "display_name": "Isca Simples",
+      "display_name": "Terra Viva",
+      "description": "Simples, barata e eficiente. Um clássico que nunca sai de moda.",
       "tier": 1,
       "catch_success_bonus": 0.03,
-      "charges": 100,
-      "cost_coins": 1000,
+      "charges": 60,
+      "cost_coins": 1500,
       "cost_shells": 1,
       "unlock_fisher_level": 1
     },
     {
       "id": "bait_02",
-      "display_name": "Isca Melhorada",
+      "display_name": "Maré Viva",
+      "description": "Um atrativo melhor para peixes mais exigentes.",
       "tier": 2,
       "catch_success_bonus": 0.07,
-      "charges": 100,
+      "charges": 60,
       "cost_coins": 6000,
       "cost_shells": 3,
       "unlock_fisher_level": 10
     },
     {
       "id": "bait_03",
-      "display_name": "Isca Premium",
+      "display_name": "Ouro de Maré",
+      "description": "Isca artificial de alto nível para maximizar suas chances.",
       "tier": 3,
       "catch_success_bonus": 0.1,
-      "charges": 100,
-      "cost_coins": 4000,
-      "cost_shells": 12,
+      "charges": 60,
+      "cost_coins": 15000,
+      "cost_shells": 5,
       "unlock_fisher_level": 18
     }
   ]

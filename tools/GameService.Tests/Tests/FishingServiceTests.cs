@@ -15,7 +15,7 @@ public sealed class FishingServiceTests
         Assert.Equal(1, player.FisherLevel);
         Assert.Equal(0, player.Coins);
         Assert.Equal("Lago Sereno", player.MapName);
-        Assert.Equal("Vara Inicial", player.RodName);
+        Assert.Equal("Caniço Manso", player.RodName);
         Assert.Empty(game.Fishing.GetFishingBox());
         Assert.False(game.Fishing.GetStatus().IsFishing);
     }

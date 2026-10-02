@@ -62,7 +62,7 @@ public sealed class MapsAndRodsTests
         Assert.True(bought.Succeeded, bought.ErrorMessage);
         Assert.Equal(coins - 2500, game.Player.GetPlayer().Coins);
         var profile = game.Profile.GetProfile();
-        Assert.Equal("Vara 1", profile.EquippedRod.Name);
+        Assert.Equal("Ponta Selvagem", profile.EquippedRod.Name);
         Assert.Equal(2, profile.Inventory.Count);
         Assert.Equal(ServiceError.RodAlreadyOwned, game.Shop.BuyRod("rod_01").Error);
     }

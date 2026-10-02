@@ -12,6 +12,7 @@ namespace FishingIdle.GameService.Shop
     {
         public string BoatId { get; internal set; }
         public string Name { get; internal set; }
+        public string Description { get; internal set; }
         public int Tier { get; internal set; }
         public double Bonus { get; internal set; }
         public long CostCoins { get; internal set; }
@@ -28,6 +29,7 @@ namespace FishingIdle.GameService.Shop
     {
         public string BaitId { get; internal set; }
         public string Name { get; internal set; }
+        public string Description { get; internal set; }
         public int Tier { get; internal set; }
         public double Bonus { get; internal set; }
 
@@ -157,6 +159,7 @@ namespace FishingIdle.GameService.Shop
                 {
                     BoatId = b.Id,
                     Name = b.DisplayName,
+                    Description = b.Description,
                     Tier = b.Tier,
                     Bonus = b.CatchSuccessBonus,
                     CostCoins = b.CostCoins,
@@ -174,6 +177,7 @@ namespace FishingIdle.GameService.Shop
                 {
                     BaitId = b.Id,
                     Name = b.DisplayName,
+                    Description = b.Description,
                     Tier = b.Tier,
                     Bonus = b.CatchSuccessBonus,
                     ChargesPerPurchase = b.Charges,

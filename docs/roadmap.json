@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-02T22:37:01Z",
+  "updated_at": "2026-10-02T23:23:23Z",
   "current_milestone": "M17",
   "statuses": [
     "TODO",
@@ -2558,6 +2558,18 @@
           "dependencies": [],
           "updated_at": "2026-10-02T22:37:01Z",
           "completion_notes": "Editor/FriendsBuild.cs: menu Gerar versão para amigos (Windows) com build, LEIA-ME e zip em /dist. Guia em docs/ENVIAR_PARA_AMIGOS.md (Drive, WeTransfer, itch.io; Steam custa US$ 100 e pode esperar). TD-029. Compila; o build em si só roda no Unity do proprietário."
+        },
+        {
+          "id": "M17-T08",
+          "title": "Nomes próprios, descrições e preços do equipamento",
+          "subsystem": "config",
+          "description": "Documento do proprietário docs/EQUIPAMENTOS_NOMES_PRECOS.md: nomes definitivos de varas, barcos e iscas, descrições, desbloqueios e preços.",
+          "status": "DONE",
+          "dependencies": [
+            "M17-T02"
+          ],
+          "updated_at": "2026-10-02T23:23:23Z",
+          "completion_notes": "display_name e description em rods.json e equipment.json; Loja mostra a descrição (vara, barco, isca); barcos liberam em 10/20/30/50/80 com 12.000 a 2.500.000 Moedas; iscas 60 tentativas por 1.500/6.000/15.000. Bônus e Conchas seguem as decisões mais recentes (A-095, A-099). Textos fixos atualizados para Caniço Manso. Testes leem os valores da config. Simulação refeita. GDD_ADENDO A-103."
         }
       ]
     }

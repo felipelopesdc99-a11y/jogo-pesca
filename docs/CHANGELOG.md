@@ -3,6 +3,20 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m17.7] — 02/10/2026
+
+### Mudado
+
+- Nomes próprios no equipamento (A-103): Caniço Manso, Ponta Selvagem, Maré Dourada; Água Mansa,
+  Remo Valente, Rastro Azul, Proa Selvagem, Costa Nobre, Horizonte Dourado; Terra Viva, Maré Viva,
+  Ouro de Maré. Cada um com uma frase curta na Loja.
+- Barcos liberam nos níveis 10, 20, 30, 50 e 80, com preços novos (12.000 a 2.500.000 Moedas);
+  iscas com 60 tentativas por 1.500, 6.000 e 15.000 Moedas.
+
+### Não verificado
+
+- Não aberto no Editor do Unity ainda.
+
 ## [0.2.0-m17.6] — 02/10/2026
 
 ### Adicionado

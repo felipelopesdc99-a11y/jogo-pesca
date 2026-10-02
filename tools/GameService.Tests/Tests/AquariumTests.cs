@@ -254,7 +254,7 @@ public sealed class AquariumTests
         Assert.Equal(SaveLoadStatus.Loaded, upgraded.Session.LoadStatus);
         Assert.Equal(0, upgraded.Aquarium.GetAquarium(AquariumSort.Size).Count);
         Assert.Contains("\"save_version\": " + FishingIdle.GameService.Persistence.PlayerSave.CurrentVersion, File.ReadAllText(path));
-        Assert.Equal("Vara Inicial", upgraded.Player.GetPlayer().RodName);
+        Assert.Equal("Caniço Manso", upgraded.Player.GetPlayer().RodName);
         Assert.DoesNotContain("\"equipped_rod\"", File.ReadAllText(path));
     }
 }

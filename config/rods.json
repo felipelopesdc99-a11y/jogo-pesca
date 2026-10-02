@@ -44,7 +44,8 @@
   "rods": [
     {
       "id": "rod_00_starter",
-      "display_name": "Vara Inicial",
+      "display_name": "Caniço Manso",
+      "description": "Um equipamento simples e confiável para dar os primeiros passos na pesca.",
       "tier": 0,
       "implemented_in_v0_1": true,
       "acquisition": {
@@ -68,7 +69,8 @@
     },
     {
       "id": "rod_01",
-      "display_name": "Vara 1",
+      "display_name": "Ponta Selvagem",
+      "description": "Fibra resistente para encarar rios fortes, peixes maiores e águas mais exigentes.",
       "tier": 1,
       "implemented_in_v0_1": true,
       "acquisition": {
@@ -192,7 +194,8 @@
     },
     {
       "id": "rod_02",
-      "display_name": "Vara 2",
+      "display_name": "Maré Dourada",
+      "description": "Uma vara profissional, preparada para peixes grandes e águas salobras.",
       "tier": 2,
       "implemented_in_v0_1": false,
       "acquisition": {

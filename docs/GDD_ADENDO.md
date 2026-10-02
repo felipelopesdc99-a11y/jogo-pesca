@@ -1132,3 +1132,43 @@ O jogador pode aproximar um pouco a câmera do pescador: girando a rodinha do mo
 controle **Aproximar** em Configurações. Vai do cenário inteiro até cerca de 20% mais perto, mirando
 o barco, sempre com uma transição suave. Com uma janela ou painel aberto, a rodinha rola as listas e
 não mexe no zoom. A escolha fica guardada neste PC, como o volume. É só visual: não muda nada na pesca.
+
+### A-103 · Nomes próprios, descrições e preços do equipamento
+**Seção do GDD:** 19 · **Situação:** Decidido pelo proprietário (02/10/2026, `docs/EQUIPAMENTOS_NOMES_PRECOS.md`)
+
+Os itens ganham nomes próprios (os ids internos e os saves não mudam):
+
+- **Varas:** Caniço Manso (inicial) → Ponta Selvagem (Vara 1) → Maré Dourada (Vara 2).
+- **Barcos:** Água Mansa → Remo Valente → Rastro Azul → Proa Selvagem → Costa Nobre → Horizonte Dourado.
+- **Iscas:** Terra Viva (minhoca) → Maré Viva (camarão) → Ouro de Maré (artificial dourada).
+
+Cada um tem uma frase curta na Loja. Preços e desbloqueios:
+
+| Barco | Nível | Moedas | Conchas |
+|---|---:|---:|---:|
+| Remo Valente | 10 | 12.000 | 5 |
+| Rastro Azul | 20 | 45.000 | 15 |
+| Proa Selvagem | 30 | 160.000 | 25 |
+| Costa Nobre | 50 | 600.000 | 120 |
+| Horizonte Dourado | 80 | 2.500.000 | 500 |
+
+| Isca | Tentativas | Moedas | Conchas |
+|---|---:|---:|---:|
+| Terra Viva | 60 | 1.500 | 1 |
+| Maré Viva | 60 | 6.000 | 3 |
+| Ouro de Maré | 60 | 15.000 | 5 |
+
+As varas mantêm preços e melhorias. Onde o documento conflitava com decisões mais recentes do
+proprietário, valeu a decisão mais recente, como o próprio documento pede ("a build atual é a fonte de
+verdade"):
+
+- **Bônus de puxar:** continuam um terço menores (A-095): barcos +2% a +10%, iscas +3%, +7% e +10%. O
+  documento sugeria +3% a +18% e +4%, +8% e +12%.
+- **Conchas:** todo item pede Conchas (A-099), então os barcos e iscas baratos também pedem algumas.
+  O Ouro de Maré pede 5 Conchas, e não 10: com 10, gastaria mais Conchas por hora do que o jogador
+  ganha.
+
+Na simulação (sem comércio): o Remo Valente é comprado cerca de 20 minutos depois de liberar e o
+Rastro Azul logo ao liberar (o jogador chega com moedas guardadas); o Proa Selvagem cerca de 3 h
+depois, porque disputa com a Maré Dourada; Costa Nobre e Horizonte Dourado ficam para o longo prazo.
+No Lago Sereno as iscas não se pagam; elas valem a partir do Rio Selvagem.
