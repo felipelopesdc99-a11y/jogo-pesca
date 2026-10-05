@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-05T21:48:39Z",
+  "updated_at": "2026-10-05T22:27:57Z",
   "current_milestone": "M21",
   "statuses": [
     "TODO",
@@ -3504,12 +3504,12 @@
           "id": "M21-T09",
           "title": "Pedidos de arte dos Mapas 5 a 10",
           "subsystem": "docs",
-          "description": "Documento de pedidos para o ChatGPT: para cada mapa, pintura de referência, céu, fundo, faixa média, margens, nuvens, fauna e foto do mapa; os 60 peixes em grade; as Varas 3 a 5 (Loja e cena). Seção 10. Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md.",
-          "status": "TODO",
+          "description": "Documento de pedidos para o ChatGPT: para cada mapa, pintura de referência, céu, fundo, faixa média, margens, nuvens, fauna e foto do mapa; os 60 peixes em grade; as Varas 3 a 5 (Loja e cena). Seção 10. Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Mapas 5 e 6 e Vara 3 pedidos em 05/10/2026 (34 imagens, nomes Coral_XX, Arquipelago_XX, Vara3_XX): https://claude.ai/code/artifact/db4dc0d6-7a6a-4ed6-9b9b-4bfd724c70c8. Faltam os Mapas 7 a 10 e as Varas 4 e 5.",
+          "status": "IN_PROGRESS",
           "dependencies": [
             "M20-T09"
           ],
-          "updated_at": "2026-10-05T21:48:39Z"
+          "updated_at": "2026-10-05T22:27:57Z"
         },
         {
           "id": "M21-T10",

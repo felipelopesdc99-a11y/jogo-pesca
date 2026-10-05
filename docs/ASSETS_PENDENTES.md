@@ -206,6 +206,15 @@ chegaram e estão no jogo:
 Para uma leva nova: `python3 tools/Arte/equipamento_na_cena.py --pescador <Pedido_33> --varas <Pedido_34>
 --iscas <Pedido_35> --previa <saida.png>`. O ícone dos Dólares é recortado como o da moeda (fundo magenta).
 
+## Mapas 5 e 6 e Vara 3 (M21-T09) — pedidos feitos (05/10/2026)
+
+`ASSET_PENDENTE`: Costa de Coral, Arquipélago do Sol (cenário em camadas, 20 peixes, fauna e plantas vivas)
+e a Corrente Mestra (Loja e cena) estão pedidos no documento
+[Fishing Idle — Pedidos de arte: Costa de Coral e Arquipélago do Sol](https://claude.ai/code/artifact/db4dc0d6-7a6a-4ed6-9b9b-4bfd724c70c8),
+com os arquivos `Coral_XX_*.png`, `Arquipelago_XX_*.png` e `Vara3_XX_*.png`. A numeração segue a dos mapas 3 e 4
+(01 foto, 02 céu, 03 fundo, 04 e 04B faixas do meio, 05 e 06 margens, 07 e 08 cantos, 09 nuvens, 10 e 11 peixes,
+12 em diante fauna e plantas). O script de recorte é escrito quando a arte chegar (M21-T10).
+
 ## Prioridade C
 
 Refinamento, skins, equipamentos futuros e mapas posteriores (seção 38) — nada a fazer agora.
