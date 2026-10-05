@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-05T21:28:02Z",
+  "updated_at": "2026-10-05T21:36:22Z",
   "current_milestone": "M17",
   "statuses": [
     "TODO",
@@ -315,7 +315,7 @@
       "id": "OD-035",
       "task_id": "M20-T09",
       "title": "Mapas 5 a 10",
-      "detail": "Novos mapas, peixes e varas (§2, §17). Os mapas 3 e 4 já entraram na V0.2. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "detail": "Novos mapas, peixes e varas (§2, §17). Os mapas 3 e 4 já entraram na V0.2. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas. Proposta completa dos Mapas 5 a 10 em docs/PROGRESSAO_MAPAS_5_A_10.md; o plano está no M21.",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "OPEN",
       "future_version": true
@@ -324,7 +324,7 @@
       "id": "OD-036",
       "task_id": "M20-T10",
       "title": "Varas 3, 4 e 5",
-      "detail": "As próximas varas da progressão (§19). A Vara 2 (Maré Dourada) já existe. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "detail": "As próximas varas da progressão (§19). A Vara 2 (Maré Dourada) já existe. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas. Proposta das Varas 3 a 5 (Corrente Mestra, Atlântico Nobre, Soberana Abissal) em docs/PROGRESSAO_MAPAS_5_A_10.md, seção 6.",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "OPEN",
       "future_version": true
@@ -360,7 +360,7 @@
       "id": "OD-040",
       "task_id": "M20-T14",
       "title": "Novas raridades",
-      "detail": "Raridades além das atuais (§2, §15). Épico e o tamanho Perfeição já entraram na V0.2. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "detail": "Raridades além das atuais (§2, §15). Épico e o tamanho Perfeição já entraram na V0.2. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas. Proposta: Lendário a partir do Mapa 6 e Mítico só no Mapa 10 (docs/PROGRESSAO_MAPAS_5_A_10.md, seção 2).",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "OPEN",
       "future_version": true
@@ -391,6 +391,30 @@
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "OPEN",
       "future_version": true
+    },
+    {
+      "id": "OD-044",
+      "task_id": "M21-T03",
+      "title": "Números do Mapa 5 abaixo do Mapa 4",
+      "detail": "No documento, os peixes do Mapa 5 (Costa de Coral) rendem menos que os do Mapa 4 atual. Exemplos: Raro do Estuário vale 2.635 a 3.410 Moedas, Raro da Costa de Coral 2.000 a 2.300; XP de Pescador de um Comum cai de 81–112 para 70–90. O documento parece ter usado números antigos e pede para adaptar à economia real (seção 18). Proposta: manter as proporções entre as espécies do documento e reescalar tudo para bater as metas da seção 9 (~1,25 a 1,4× o Mapa 4). Aprova ou prefere outro critério?",
+      "raised_at": "2026-10-05T21:36:22Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-045",
+      "task_id": "M21-T05",
+      "title": "Varas 3 a 5 sem Conchas",
+      "detail": "O documento cobra só Moedas na Corrente Mestra (450.000) e nas melhorias das Varas 3 a 5; Atlântico Nobre e Soberana Abissal pedem Conchas só na compra. Hoje a regra do jogo (A-099, 02/10/2026) é que toda compra e melhoria de equipamento pede Conchas. Mantenho a regra atual e acrescento Conchas a esses custos, ou as Varas 3 a 5 ficam como o documento propõe?",
+      "raised_at": "2026-10-05T21:36:22Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-046",
+      "task_id": "M21-T05",
+      "title": "Vara nova mais fraca que a anterior",
+      "detail": "A Corrente Mestra Nv.1 dá +12 p.p. de chance de sucesso, mas a Maré Dourada Nv.10 já dá +13,5 p.p. (rods.json). O próprio documento diz que a vara nova deve começar um pouco acima da anterior no Nv.10. Proposta: subir a tabela de chance das Varas 3 a 5 para começar acima da anterior (por exemplo +14 p.p. na Corrente Mestra Nv.1). Aprova?",
+      "raised_at": "2026-10-05T21:36:22Z",
+      "status": "OPEN"
     }
   ],
   "milestones": [
@@ -3269,7 +3293,7 @@
           "id": "M20-T09",
           "title": "Mapas 5 a 10",
           "subsystem": "docs",
-          "description": "Novos mapas, peixes e varas (§2, §17). Os mapas 3 e 4 já entraram na V0.2. (Levantado do GDD em 05/10/2026.)",
+          "description": "Novos mapas, peixes e varas (§2, §17). Os mapas 3 e 4 já entraram na V0.2. (Levantado do GDD em 05/10/2026.) Proposta completa dos Mapas 5 a 10 em docs/PROGRESSAO_MAPAS_5_A_10.md; o plano está no M21.",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
           "updated_at": "2026-10-05T21:22:41Z",
@@ -3279,7 +3303,7 @@
           "id": "M20-T10",
           "title": "Varas 3, 4 e 5",
           "subsystem": "docs",
-          "description": "As próximas varas da progressão (§19). A Vara 2 (Maré Dourada) já existe. (Levantado do GDD em 05/10/2026.)",
+          "description": "As próximas varas da progressão (§19). A Vara 2 (Maré Dourada) já existe. (Levantado do GDD em 05/10/2026.) Proposta das Varas 3 a 5 (Corrente Mestra, Atlântico Nobre, Soberana Abissal) em docs/PROGRESSAO_MAPAS_5_A_10.md, seção 6.",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
           "updated_at": "2026-10-05T21:22:41Z",
@@ -3319,7 +3343,7 @@
           "id": "M20-T14",
           "title": "Novas raridades",
           "subsystem": "docs",
-          "description": "Raridades além das atuais (§2, §15). Épico e o tamanho Perfeição já entraram na V0.2. (Levantado do GDD em 05/10/2026.)",
+          "description": "Raridades além das atuais (§2, §15). Épico e o tamanho Perfeição já entraram na V0.2. (Levantado do GDD em 05/10/2026.) Proposta: Lendário a partir do Mapa 6 e Mítico só no Mapa 10 (docs/PROGRESSAO_MAPAS_5_A_10.md, seção 2).",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
           "updated_at": "2026-10-05T21:22:41Z",
@@ -3353,6 +3377,155 @@
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
           "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
+        }
+      ]
+    },
+    {
+      "id": "M21",
+      "title": "Progressão até o Nível 100: Mapas 5 a 10 (proposta)",
+      "goal": "Estender os mesmos sistemas até o Nível 100, como propõe docs/PROGRESSAO_MAPAS_5_A_10.md: Mapas 5 a 10, 60 espécies novas (100 no total), raridades Lendário e Mítico, Varas 3 a 5 (Corrente Mestra, Atlântico Nobre, Soberana Abissal). Tudo aqui é proposta para o proprietário analisar; nada começa sem a aprovação dele (M20-T09) e sem resolver as decisões OD-044 a OD-046.",
+      "completion_criteria": [
+        "10 mapas jogáveis e 100 espécies no catálogo.",
+        "Níveis 1 a 100 sem buraco de conteúdo; cada vara nova começa um pouco acima da anterior no Nv.10.",
+        "Lendário a partir do Mapa 6 e Mítico só no Mapa 10, funcionando em coleção, Cardume, Arena e comércio.",
+        "Save atual migra sem perda.",
+        "Cada mapa reconhecível em segundos."
+      ],
+      "tasks": [
+        {
+          "id": "M21-T01",
+          "title": "Raridades Lendário e Mítico",
+          "subsystem": "config",
+          "description": "Adicionar legendary e mythic à hierarquia de raridades (multiplicadores, chance-base 14% e 8%, cores laranja e rosa-framboesa, selos e celebrações \"Captura lendária!\" e \"Captura mítica!\"), sem ativá-las nos Mapas 1 a 4. Sem som novo (seção 11). Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M20-T09"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
+          "from_gdd_review": true
+        },
+        {
+          "id": "M21-T02",
+          "title": "Proteções e filtros por hierarquia",
+          "subsystem": "client",
+          "description": "Trocar as listas fixas de raridade por \"Raro ou acima\": venda em lote (economy.json lista rare e epic), filtros da Caixa, do Aquário e do Mercado, força da fuga na cena. Seção 2 e 14. Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M21-T01"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
+          "from_gdd_review": true
+        },
+        {
+          "id": "M21-T03",
+          "title": "60 espécies novas no catálogo",
+          "subsystem": "config",
+          "description": "Adicionar as 60 espécies dos Mapas 5 a 10 (seção 5) com os números ajustados conforme OD-044. Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M21-T01"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
+          "from_gdd_review": true
+        },
+        {
+          "id": "M21-T04",
+          "title": "Mapas 5 a 10 nos dados",
+          "subsystem": "config",
+          "description": "Costa de Coral (Nv.40), Arquipélago do Sol (50), Corrente Azul (60), Banco das Baleias (70), Talude Noturno (80) e Abismo Atlântico (90): pools, pesos, vara mínima e textos, com cenário provisório (seção 4). Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M21-T03"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
+          "from_gdd_review": true
+        },
+        {
+          "id": "M21-T05",
+          "title": "Varas 3 a 5",
+          "subsystem": "config",
+          "description": "Corrente Mestra (Nv.50), Atlântico Nobre (Nv.70) e Soberana Abissal (Nv.90), com bônus por nível e custos de melhoria (seção 6), ajustados conforme OD-045 e OD-046. Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M20-T09"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
+          "from_gdd_review": true
+        },
+        {
+          "id": "M21-T06",
+          "title": "Integração e migração de save",
+          "subsystem": "server",
+          "description": "Os 60 peixes funcionando em pesca online e offline, Caixa, Aquário, Enciclopédia, Cardume, Arena, Expedições, Mercado e Leilão; saves antigos migram sem perda (seções 12 e 13). Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M21-T02",
+            "M21-T04",
+            "M21-T05"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
+          "from_gdd_review": true
+        },
+        {
+          "id": "M21-T07",
+          "title": "Simulação de cada mapa novo",
+          "subsystem": "ops",
+          "description": "100 mil tentativas por cenário (vara mínima Nv.1, 5 e 10; barco da faixa; sem isca, Maré Viva, Ouro de Maré) medindo capturas, fugas, XP/h, Moedas/h, Conchas/h e tempo até a próxima vara (seção 15). Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M21-T06"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
+          "from_gdd_review": true
+        },
+        {
+          "id": "M21-T08",
+          "title": "Ajuste de economia depois da simulação",
+          "subsystem": "config",
+          "description": "Ajustar custos de varas e valores para bater as metas da seção 9 (cada faixa de 10 níveis rende ~1,25 a 1,5× a anterior em XP e Moedas, contando só peixes puxados). Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M21-T07"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
+          "from_gdd_review": true
+        },
+        {
+          "id": "M21-T09",
+          "title": "Pedidos de arte dos Mapas 5 a 10",
+          "subsystem": "docs",
+          "description": "Documento de pedidos para o ChatGPT: para cada mapa, pintura de referência, céu, fundo, faixa média, margens, nuvens, fauna e foto do mapa; os 60 peixes em grade; as Varas 3 a 5 (Loja e cena). Seção 10. Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M20-T09"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
+          "from_gdd_review": true
+        },
+        {
+          "id": "M21-T10",
+          "title": "Arte final dos Mapas 5 a 10 no jogo",
+          "subsystem": "client",
+          "description": "Recortar e colocar no jogo, mapa a mapa, a arte que o proprietário trouxer (seção 10 e 16). Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M21-T09",
+            "M21-T04"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
+          "from_gdd_review": true
+        },
+        {
+          "id": "M21-T11",
+          "title": "Paisagem viva dos Mapas 5 a 10",
+          "subsystem": "client",
+          "description": "Perfis do diretor de paisagem para cada mapa novo: gaivotas, tartarugas, golfinhos, baleias, plâncton luminoso (seção 4). Proposta em docs/PROGRESSAO_MAPAS_5_A_10.md (enviada pelo proprietário em 05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M21-T04"
+          ],
+          "updated_at": "2026-10-05T21:36:22Z",
           "from_gdd_review": true
         }
       ]

@@ -70,6 +70,7 @@ infraestrutura online que já existia foi preservada no M12, adiada. Em 05/10/20
 | **M18** | Lacunas do GDD que dão para fazer agora (propostas a analisar) | Itens do GDD que ainda faltam e não dependem de servidor: posição na Arena no Perfil, perfil do adversário, nome e avatar, efeitos do replay, avisos guardados, Perfil com barco e isca, partes do Painel |
 | **M19** | Site, distribuição e lançamento da V0.1 | Build oficial para Windows, download com instalador, notas de versão, Steam e a rodada final de bugs com os testes do proprietário |
 | **M20** | Depois da V0.1: sistemas futuros do GDD | O que o GDD deixa para depois (habilidades, temporadas, guildas, mapas 5 a 10, monetização…), cada um começando como decisão do proprietário |
+| **M21** | Progressão até o Nível 100: Mapas 5 a 10 (proposta) | Plano de `docs/PROGRESSAO_MAPAS_5_A_10.md`: Lendário e Mítico, 60 espécies, Mapas 5 a 10, Varas 3 a 5, integração, simulação e arte. Espera a aprovação do proprietário (M20-T09) e as decisões OD-044 a OD-046 |
 
 ## Regras que o roadmap impõe a si mesmo
 
