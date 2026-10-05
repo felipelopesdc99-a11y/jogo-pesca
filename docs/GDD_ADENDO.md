@@ -1172,3 +1172,23 @@ Na simulação (sem comércio): o Remo Valente é comprado cerca de 20 minutos d
 Rastro Azul logo ao liberar (o jogador chega com moedas guardadas); o Proa Selvagem cerca de 3 h
 depois, porque disputa com a Maré Dourada; Costa Nobre e Horizonte Dourado ficam para o longo prazo.
 No Lago Sereno as iscas não se pagam; elas valem a partir do Rio Selvagem.
+
+### A-104 · Progressão dos Mapas 5 a 10, adaptada às regras atuais
+**Seção do GDD:** 2, 15, 16, 17, 19 · **Situação:** Aprovado pelo proprietário (05/10/2026), ainda não está no jogo
+
+O proprietário mandou `docs/PROGRESSAO_MAPAS_5_A_10.md` (Mapas 5 a 10, 60 espécies, Lendário e Mítico,
+Varas 3 a 5) e pediu para manter os mapas e os peixes, adaptando ao jogo de agora. A versão adaptada é
+`docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md`, com os números em `docs/propostas/mapas_5_10.json`. Como na
+A-103, onde o documento conflitava com uma regra mais recente, valeu a regra mais recente:
+
+- **Valores dos peixes:** o Mapa 5 do documento rendia menos que o Mapa 4 atual. Venda e XP de alimento
+  foram reescalados por raridade (Mapa 5 = 1,5× e 1,3× o Mapa 4), mantendo a escada entre os mapas e a
+  proporção entre as espécies.
+- **XP do Pescador:** calibrado para cada faixa de 10 níveis levar o tempo da faixa 30–40 de hoje, sem o
+  XP de um peixe cair de um mapa para o outro; do Nv.60 em diante as faixas ficam mais rápidas (OD-047).
+- **Varas 3 a 5:** chance de puxar um terço menor (A-095), Conchas em toda compra e melhoria (A-099) e
+  preço em Moedas proporcional à renda nova (cerca de 3 h online para cada compra).
+- **Cores:** Lendário vermelho-rubi `#E5484D` (o laranja do documento colide com o tamanho Grande e o
+  dourado com Excepcional); Mítico rosa-framboesa `#EC4899`, como no documento.
+- **Tamanho:** Lendário e Mítico vêm Grandes, Excepcionais e Perfeição um pouco menos, seguindo Raro e Épico.
+- **Capítulos 5 a 10** com uma frase de chegada cada (A-085).

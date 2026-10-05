@@ -1,0 +1,1798 @@
+{
+  "note": "Proposta adaptada (não está em /config). Gerado por tools/Progressao/adaptar_mapas_5_10.py a partir de docs/PROGRESSAO_MAPAS_5_A_10.md.",
+  "factors": {
+    "attack/common": 1.0,
+    "attack/epic": 1.182,
+    "attack/legendary": 1.182,
+    "attack/mythic": 1.182,
+    "attack/rare": 1.217,
+    "defense/common": 1.0,
+    "defense/epic": 1.621,
+    "defense/legendary": 1.621,
+    "defense/mythic": 1.621,
+    "defense/rare": 1.0,
+    "feed_xp/common": 1.627,
+    "feed_xp/epic": 2.015,
+    "feed_xp/legendary": 2.015,
+    "feed_xp/mythic": 2.015,
+    "feed_xp/rare": 2.135,
+    "fisher_xp/common": 1.544,
+    "fisher_xp/epic": 1.753,
+    "fisher_xp/legendary": 1.753,
+    "fisher_xp/mythic": 1.753,
+    "fisher_xp/rare": 1.963,
+    "hp/common": 1.0,
+    "hp/epic": 1.216,
+    "hp/legendary": 1.216,
+    "hp/mythic": 1.216,
+    "hp/rare": 1.0,
+    "sale/common": 1.395,
+    "sale/epic": 2.045,
+    "sale/legendary": 2.045,
+    "sale/mythic": 2.045,
+    "sale/rare": 2.091
+  },
+  "gear_assumed": {
+    "map_04": {
+      "vara": "rod_02",
+      "nivel_vara": 5,
+      "barco_bonus": 0.06
+    },
+    "map_05": {
+      "vara": "rod_02",
+      "nivel_vara": 10,
+      "barco_bonus": 0.06
+    },
+    "map_06": {
+      "vara": "rod_03",
+      "nivel_vara": 3,
+      "barco_bonus": 0.08
+    },
+    "map_07": {
+      "vara": "rod_03",
+      "nivel_vara": 8,
+      "barco_bonus": 0.08
+    },
+    "map_08": {
+      "vara": "rod_04",
+      "nivel_vara": 3,
+      "barco_bonus": 0.08
+    },
+    "map_09": {
+      "vara": "rod_04",
+      "nivel_vara": 8,
+      "barco_bonus": 0.1
+    },
+    "map_10": {
+      "vara": "rod_05",
+      "nivel_vara": 5,
+      "barco_bonus": 0.1
+    }
+  },
+  "target_hours_per_band": 3.74,
+  "chain": {
+    "map_05": {
+      "niveis": "40-50",
+      "moedas_por_tentativa": 1951,
+      "xp_por_tentativa": 114.3,
+      "moedas_x_anterior": 1.94,
+      "xp_x_anterior": 1.54,
+      "horas_online_na_faixa": 3.7
+    },
+    "map_06": {
+      "niveis": "50-60",
+      "moedas_por_tentativa": 3901,
+      "xp_por_tentativa": 161.6,
+      "moedas_x_anterior": 2.0,
+      "xp_x_anterior": 1.41,
+      "horas_online_na_faixa": 3.7
+    },
+    "map_07": {
+      "niveis": "60-70",
+      "moedas_por_tentativa": 8706,
+      "xp_por_tentativa": 235.5,
+      "moedas_x_anterior": 2.23,
+      "xp_x_anterior": 1.46,
+      "horas_online_na_faixa": 3.3
+    },
+    "map_08": {
+      "niveis": "70-80",
+      "moedas_por_tentativa": 17215,
+      "xp_por_tentativa": 315.7,
+      "moedas_x_anterior": 1.98,
+      "xp_x_anterior": 1.34,
+      "horas_online_na_faixa": 3.1
+    },
+    "map_09": {
+      "niveis": "80-90",
+      "moedas_por_tentativa": 37700,
+      "xp_por_tentativa": 477.2,
+      "moedas_x_anterior": 2.19,
+      "xp_x_anterior": 1.51,
+      "horas_online_na_faixa": 2.4
+    },
+    "map_10": {
+      "niveis": "90-100",
+      "moedas_por_tentativa": 79686,
+      "xp_por_tentativa": 685.2,
+      "moedas_x_anterior": 2.11,
+      "xp_x_anterior": 1.44,
+      "horas_online_na_faixa": 2.0
+    }
+  },
+  "income_per_catch_vs_doc": {
+    "map_05": 1.614,
+    "map_06": 1.725,
+    "map_07": 1.821,
+    "map_08": 1.893,
+    "map_09": 1.952,
+    "map_10": 1.994
+  },
+  "expected_sale_per_catch": {
+    "map_05": 2803,
+    "map_06": 6106,
+    "map_07": 12500,
+    "map_08": 25402,
+    "map_09": 50370,
+    "map_10": 108497
+  },
+  "rarities_new": [
+    {
+      "id": "legendary",
+      "display_name": "Lendário",
+      "catch_success_base": 0.14,
+      "stat_multiplier": 1.55,
+      "fisher_xp_multiplier": 9.0,
+      "feed_xp_multiplier": 6.0,
+      "sale_value_multiplier": 8.0,
+      "size_weight_multipliers": {
+        "large": 0.6,
+        "exceptional": 0.35,
+        "perfect": 0.35
+      },
+      "color": "#E5484D"
+    },
+    {
+      "id": "mythic",
+      "display_name": "Mítico",
+      "catch_success_base": 0.08,
+      "stat_multiplier": 1.85,
+      "fisher_xp_multiplier": 15.0,
+      "feed_xp_multiplier": 10.0,
+      "sale_value_multiplier": 14.0,
+      "size_weight_multipliers": {
+        "large": 0.5,
+        "exceptional": 0.25,
+        "perfect": 0.25
+      },
+      "color": "#EC4899"
+    }
+  ],
+  "species": [
+    {
+      "id": "sargo",
+      "display_name": "Sargo",
+      "primary_map_id": "map_05",
+      "rarity": "common",
+      "size_cm": {
+        "min": 20,
+        "max": 55
+      },
+      "base_stats": {
+        "hp": 325,
+        "attack": 43,
+        "defense": 34,
+        "speed": 100
+      },
+      "base_sale_value_coins": 1600,
+      "base_feed_xp": 407,
+      "base_fisher_xp": 106,
+      "catch_weight": 220
+    },
+    {
+      "id": "salema",
+      "display_name": "Salema",
+      "primary_map_id": "map_05",
+      "rarity": "common",
+      "size_cm": {
+        "min": 15,
+        "max": 45
+      },
+      "base_stats": {
+        "hp": 280,
+        "attack": 46,
+        "defense": 26,
+        "speed": 112
+      },
+      "base_sale_value_coins": 1670,
+      "base_feed_xp": 423,
+      "base_fisher_xp": 114,
+      "catch_weight": 200
+    },
+    {
+      "id": "peixe_porco",
+      "display_name": "Peixe-porco",
+      "primary_map_id": "map_05",
+      "rarity": "common",
+      "size_cm": {
+        "min": 20,
+        "max": 60
+      },
+      "base_stats": {
+        "hp": 400,
+        "attack": 40,
+        "defense": 41,
+        "speed": 88
+      },
+      "base_sale_value_coins": 1810,
+      "base_feed_xp": 456,
+      "base_fisher_xp": 122,
+      "catch_weight": 180
+    },
+    {
+      "id": "pampo",
+      "display_name": "Pampo",
+      "primary_map_id": "map_05",
+      "rarity": "common",
+      "size_cm": {
+        "min": 20,
+        "max": 70
+      },
+      "base_stats": {
+        "hp": 295,
+        "attack": 48,
+        "defense": 25,
+        "speed": 112
+      },
+      "base_sale_value_coins": 1950,
+      "base_feed_xp": 488,
+      "base_fisher_xp": 128,
+      "catch_weight": 165
+    },
+    {
+      "id": "sargentinho",
+      "display_name": "Sargentinho",
+      "primary_map_id": "map_05",
+      "rarity": "common",
+      "size_cm": {
+        "min": 10,
+        "max": 25
+      },
+      "base_stats": {
+        "hp": 305,
+        "attack": 50,
+        "defense": 24,
+        "speed": 112
+      },
+      "base_sale_value_coins": 2020,
+      "base_feed_xp": 504,
+      "base_fisher_xp": 136,
+      "catch_weight": 145
+    },
+    {
+      "id": "ariaco",
+      "display_name": "Ariacó",
+      "primary_map_id": "map_05",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 25,
+        "max": 70
+      },
+      "base_stats": {
+        "hp": 325,
+        "attack": 52,
+        "defense": 34,
+        "speed": 100
+      },
+      "base_sale_value_coins": 4180,
+      "base_feed_xp": 790,
+      "base_fisher_xp": 178,
+      "catch_weight": 30
+    },
+    {
+      "id": "cioba",
+      "display_name": "Cioba",
+      "primary_map_id": "map_05",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 30,
+        "max": 100
+      },
+      "base_stats": {
+        "hp": 315,
+        "attack": 66,
+        "defense": 28,
+        "speed": 105
+      },
+      "base_sale_value_coins": 4500,
+      "base_feed_xp": 833,
+      "base_fisher_xp": 190,
+      "catch_weight": 25
+    },
+    {
+      "id": "badejo",
+      "display_name": "Badejo",
+      "primary_map_id": "map_05",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 40,
+        "max": 120
+      },
+      "base_stats": {
+        "hp": 400,
+        "attack": 49,
+        "defense": 41,
+        "speed": 88
+      },
+      "base_sale_value_coins": 4810,
+      "base_feed_xp": 897,
+      "base_fisher_xp": 202,
+      "catch_weight": 20
+    },
+    {
+      "id": "dentao",
+      "display_name": "Dentão",
+      "primary_map_id": "map_05",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 50,
+        "max": 140
+      },
+      "base_stats": {
+        "hp": 401,
+        "attack": 66,
+        "defense": 42,
+        "speed": 105
+      },
+      "base_sale_value_coins": 8280,
+      "base_feed_xp": 1330,
+      "base_fisher_xp": 265,
+      "catch_weight": 8
+    },
+    {
+      "id": "caranha",
+      "display_name": "Caranha",
+      "primary_map_id": "map_05",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 50,
+        "max": 150
+      },
+      "base_stats": {
+        "hp": 553,
+        "attack": 60,
+        "defense": 57,
+        "speed": 84
+      },
+      "base_sale_value_coins": 8690,
+      "base_feed_xp": 1391,
+      "base_fisher_xp": 279,
+      "catch_weight": 7
+    },
+    {
+      "id": "olhete",
+      "display_name": "Olhete",
+      "primary_map_id": "map_06",
+      "rarity": "common",
+      "size_cm": {
+        "min": 30,
+        "max": 100
+      },
+      "base_stats": {
+        "hp": 325,
+        "attack": 52,
+        "defense": 32,
+        "speed": 113
+      },
+      "base_sale_value_coins": 2580,
+      "base_feed_xp": 521,
+      "base_fisher_xp": 128,
+      "catch_weight": 210
+    },
+    {
+      "id": "peixe_galo",
+      "display_name": "Peixe-galo",
+      "primary_map_id": "map_06",
+      "rarity": "common",
+      "size_cm": {
+        "min": 30,
+        "max": 100
+      },
+      "base_stats": {
+        "hp": 330,
+        "attack": 53,
+        "defense": 31,
+        "speed": 113
+      },
+      "base_sale_value_coins": 2720,
+      "base_feed_xp": 553,
+      "base_fisher_xp": 136,
+      "catch_weight": 190
+    },
+    {
+      "id": "beijupira",
+      "display_name": "Beijupirá",
+      "primary_map_id": "map_06",
+      "rarity": "common",
+      "size_cm": {
+        "min": 60,
+        "max": 180
+      },
+      "base_stats": {
+        "hp": 400,
+        "attack": 52,
+        "defense": 38,
+        "speed": 101
+      },
+      "base_sale_value_coins": 2930,
+      "base_feed_xp": 586,
+      "base_fisher_xp": 145,
+      "catch_weight": 175
+    },
+    {
+      "id": "bonito_cachorro",
+      "display_name": "Bonito-cachorro",
+      "primary_map_id": "map_06",
+      "rarity": "common",
+      "size_cm": {
+        "min": 40,
+        "max": 100
+      },
+      "base_stats": {
+        "hp": 350,
+        "attack": 56,
+        "defense": 30,
+        "speed": 113
+      },
+      "base_sale_value_coins": 3140,
+      "base_feed_xp": 618,
+      "base_fisher_xp": 154,
+      "catch_weight": 155
+    },
+    {
+      "id": "serra",
+      "display_name": "Serra",
+      "primary_map_id": "map_06",
+      "rarity": "common",
+      "size_cm": {
+        "min": 40,
+        "max": 140
+      },
+      "base_stats": {
+        "hp": 400,
+        "attack": 67,
+        "defense": 30,
+        "speed": 106
+      },
+      "base_sale_value_coins": 3280,
+      "base_feed_xp": 651,
+      "base_fisher_xp": 163,
+      "catch_weight": 135
+    },
+    {
+      "id": "cavala_verdadeira",
+      "display_name": "Cavala-verdadeira",
+      "primary_map_id": "map_06",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 60,
+        "max": 170
+      },
+      "base_stats": {
+        "hp": 325,
+        "attack": 63,
+        "defense": 32,
+        "speed": 113
+      },
+      "base_sale_value_coins": 6590,
+      "base_feed_xp": 1025,
+      "base_fisher_xp": 220,
+      "catch_weight": 55
+    },
+    {
+      "id": "olho_de_boi",
+      "display_name": "Olho-de-boi",
+      "primary_map_id": "map_06",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 60,
+        "max": 170
+      },
+      "base_stats": {
+        "hp": 370,
+        "attack": 75,
+        "defense": 33,
+        "speed": 106
+      },
+      "base_sale_value_coins": 7110,
+      "base_feed_xp": 1089,
+      "base_fisher_xp": 234,
+      "catch_weight": 45
+    },
+    {
+      "id": "dourado_do_mar",
+      "display_name": "Dourado-do-mar",
+      "primary_map_id": "map_06",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 60,
+        "max": 200
+      },
+      "base_stats": {
+        "hp": 413,
+        "attack": 65,
+        "defense": 49,
+        "speed": 113
+      },
+      "base_sale_value_coins": 11450,
+      "base_feed_xp": 1572,
+      "base_fisher_xp": 305,
+      "catch_weight": 16
+    },
+    {
+      "id": "atum_amarelo",
+      "display_name": "Atum-amarelo",
+      "primary_map_id": "map_06",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 80,
+        "max": 240
+      },
+      "base_stats": {
+        "hp": 638,
+        "attack": 69,
+        "defense": 70,
+        "speed": 85
+      },
+      "base_sale_value_coins": 12170,
+      "base_feed_xp": 1673,
+      "base_fisher_xp": 323,
+      "catch_weight": 14
+    },
+    {
+      "id": "veleiro",
+      "display_name": "Veleiro",
+      "primary_map_id": "map_06",
+      "rarity": "legendary",
+      "size_cm": {
+        "min": 150,
+        "max": 300
+      },
+      "base_stats": {
+        "hp": 432,
+        "attack": 67,
+        "defense": 47,
+        "speed": 113
+      },
+      "base_sale_value_coins": 20650,
+      "base_feed_xp": 2479,
+      "base_fisher_xp": 480,
+      "catch_weight": 5
+    },
+    {
+      "id": "bicuda",
+      "display_name": "Bicuda",
+      "primary_map_id": "map_07",
+      "rarity": "common",
+      "size_cm": {
+        "min": 50,
+        "max": 160
+      },
+      "base_stats": {
+        "hp": 425,
+        "attack": 70,
+        "defense": 39,
+        "speed": 107
+      },
+      "base_sale_value_coins": 3910,
+      "base_feed_xp": 651,
+      "base_fisher_xp": 132,
+      "catch_weight": 230
+    },
+    {
+      "id": "bonito_pintado",
+      "display_name": "Bonito-pintado",
+      "primary_map_id": "map_07",
+      "rarity": "common",
+      "size_cm": {
+        "min": 40,
+        "max": 100
+      },
+      "base_stats": {
+        "hp": 390,
+        "attack": 61,
+        "defense": 36,
+        "speed": 114
+      },
+      "base_sale_value_coins": 4180,
+      "base_feed_xp": 700,
+      "base_fisher_xp": 141,
+      "catch_weight": 210
+    },
+    {
+      "id": "agulha_branca",
+      "display_name": "Agulha-branca",
+      "primary_map_id": "map_07",
+      "rarity": "common",
+      "size_cm": {
+        "min": 60,
+        "max": 160
+      },
+      "base_stats": {
+        "hp": 400,
+        "attack": 63,
+        "defense": 35,
+        "speed": 114
+      },
+      "base_sale_value_coins": 4460,
+      "base_feed_xp": 748,
+      "base_fisher_xp": 150,
+      "catch_weight": 190
+    },
+    {
+      "id": "cavalinha",
+      "display_name": "Cavalinha",
+      "primary_map_id": "map_07",
+      "rarity": "common",
+      "size_cm": {
+        "min": 20,
+        "max": 45
+      },
+      "base_stats": {
+        "hp": 410,
+        "attack": 65,
+        "defense": 34,
+        "speed": 114
+      },
+      "base_sale_value_coins": 4740,
+      "base_feed_xp": 797,
+      "base_fisher_xp": 158,
+      "catch_weight": 170
+    },
+    {
+      "id": "atum_patudo",
+      "display_name": "Atum-patudo",
+      "primary_map_id": "map_07",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 80,
+        "max": 250
+      },
+      "base_stats": {
+        "hp": 630,
+        "attack": 83,
+        "defense": 48,
+        "speed": 86
+      },
+      "base_sale_value_coins": 12130,
+      "base_feed_xp": 1623,
+      "base_fisher_xp": 289,
+      "catch_weight": 50
+    },
+    {
+      "id": "albacora_branca",
+      "display_name": "Albacora-branca",
+      "primary_map_id": "map_07",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 70,
+        "max": 140
+      },
+      "base_stats": {
+        "hp": 380,
+        "attack": 73,
+        "defense": 37,
+        "speed": 114
+      },
+      "base_sale_value_coins": 9620,
+      "base_feed_xp": 1281,
+      "base_fisher_xp": 228,
+      "catch_weight": 45
+    },
+    {
+      "id": "peixe_lua",
+      "display_name": "Peixe-lua",
+      "primary_map_id": "map_07",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 100,
+        "max": 300
+      },
+      "base_stats": {
+        "hp": 540,
+        "attack": 65,
+        "defense": 58,
+        "speed": 90
+      },
+      "base_sale_value_coins": 10240,
+      "base_feed_xp": 1366,
+      "base_fisher_xp": 243,
+      "catch_weight": 40
+    },
+    {
+      "id": "espadarte",
+      "display_name": "Espadarte",
+      "primary_map_id": "map_07",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 150,
+        "max": 450
+      },
+      "base_stats": {
+        "hp": 541,
+        "attack": 86,
+        "defense": 60,
+        "speed": 107
+      },
+      "base_sale_value_coins": 16770,
+      "base_feed_xp": 1975,
+      "base_fisher_xp": 312,
+      "catch_weight": 30
+    },
+    {
+      "id": "marlim_branco",
+      "display_name": "Marlim-branco",
+      "primary_map_id": "map_07",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 180,
+        "max": 350
+      },
+      "base_stats": {
+        "hp": 499,
+        "attack": 77,
+        "defense": 55,
+        "speed": 114
+      },
+      "base_sale_value_coins": 17790,
+      "base_feed_xp": 2096,
+      "base_fisher_xp": 332,
+      "catch_weight": 25
+    },
+    {
+      "id": "marlim_azul",
+      "display_name": "Marlim-azul",
+      "primary_map_id": "map_07",
+      "rarity": "legendary",
+      "size_cm": {
+        "min": 200,
+        "max": 500
+      },
+      "base_stats": {
+        "hp": 766,
+        "attack": 80,
+        "defense": 78,
+        "speed": 86
+      },
+      "base_sale_value_coins": 29750,
+      "base_feed_xp": 3164,
+      "base_fisher_xp": 486,
+      "catch_weight": 10
+    },
+    {
+      "id": "pargo_rosa",
+      "display_name": "Pargo-rosa",
+      "primary_map_id": "map_08",
+      "rarity": "common",
+      "size_cm": {
+        "min": 30,
+        "max": 90
+      },
+      "base_stats": {
+        "hp": 530,
+        "attack": 65,
+        "defense": 52,
+        "speed": 100
+      },
+      "base_sale_value_coins": 5860,
+      "base_feed_xp": 830,
+      "base_fisher_xp": 137,
+      "catch_weight": 200
+    },
+    {
+      "id": "namorado",
+      "display_name": "Namorado",
+      "primary_map_id": "map_08",
+      "rarity": "common",
+      "size_cm": {
+        "min": 40,
+        "max": 120
+      },
+      "base_stats": {
+        "hp": 545,
+        "attack": 66,
+        "defense": 51,
+        "speed": 100
+      },
+      "base_sale_value_coins": 6280,
+      "base_feed_xp": 895,
+      "base_fisher_xp": 147,
+      "catch_weight": 190
+    },
+    {
+      "id": "batata",
+      "display_name": "Batata",
+      "primary_map_id": "map_08",
+      "rarity": "common",
+      "size_cm": {
+        "min": 30,
+        "max": 100
+      },
+      "base_stats": {
+        "hp": 660,
+        "attack": 61,
+        "defense": 64,
+        "speed": 88
+      },
+      "base_sale_value_coins": 6700,
+      "base_feed_xp": 944,
+      "base_fisher_xp": 156,
+      "catch_weight": 175
+    },
+    {
+      "id": "congro_rosa",
+      "display_name": "Congro-rosa",
+      "primary_map_id": "map_08",
+      "rarity": "common",
+      "size_cm": {
+        "min": 60,
+        "max": 180
+      },
+      "base_stats": {
+        "hp": 545,
+        "attack": 85,
+        "defense": 41,
+        "speed": 105
+      },
+      "base_sale_value_coins": 7110,
+      "base_feed_xp": 992,
+      "base_fisher_xp": 165,
+      "catch_weight": 155
+    },
+    {
+      "id": "cherne",
+      "display_name": "Cherne",
+      "primary_map_id": "map_08",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 60,
+        "max": 200
+      },
+      "base_stats": {
+        "hp": 755,
+        "attack": 94,
+        "defense": 55,
+        "speed": 84
+      },
+      "base_sale_value_coins": 17770,
+      "base_feed_xp": 2050,
+      "base_fisher_xp": 301,
+      "catch_weight": 90
+    },
+    {
+      "id": "cacao_anjo",
+      "display_name": "Cação-anjo",
+      "primary_map_id": "map_08",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 80,
+        "max": 180
+      },
+      "base_stats": {
+        "hp": 630,
+        "attack": 71,
+        "defense": 67,
+        "speed": 88
+      },
+      "base_sale_value_coins": 14010,
+      "base_feed_xp": 1623,
+      "base_fisher_xp": 237,
+      "catch_weight": 80
+    },
+    {
+      "id": "tubarao_lixa",
+      "display_name": "Tubarão-lixa",
+      "primary_map_id": "map_08",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 150,
+        "max": 320
+      },
+      "base_stats": {
+        "hp": 851,
+        "attack": 85,
+        "defense": 96,
+        "speed": 84
+      },
+      "base_sale_value_coins": 23110,
+      "base_feed_xp": 2378,
+      "base_fisher_xp": 312,
+      "catch_weight": 48
+    },
+    {
+      "id": "arraia_chita",
+      "display_name": "Arraia-chita",
+      "primary_map_id": "map_08",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 100,
+        "max": 250
+      },
+      "base_stats": {
+        "hp": 578,
+        "attack": 84,
+        "defense": 65,
+        "speed": 112
+      },
+      "base_sale_value_coins": 24540,
+      "base_feed_xp": 2519,
+      "base_fisher_xp": 332,
+      "catch_weight": 42
+    },
+    {
+      "id": "tubarao_martelo",
+      "display_name": "Tubarão-martelo",
+      "primary_map_id": "map_08",
+      "rarity": "legendary",
+      "size_cm": {
+        "min": 180,
+        "max": 450
+      },
+      "base_stats": {
+        "hp": 663,
+        "attack": 100,
+        "defense": 66,
+        "speed": 105
+      },
+      "base_sale_value_coins": 41200,
+      "base_feed_xp": 3850,
+      "base_fisher_xp": 485,
+      "catch_weight": 11
+    },
+    {
+      "id": "raia_manta",
+      "display_name": "Raia-manta",
+      "primary_map_id": "map_08",
+      "rarity": "legendary",
+      "size_cm": {
+        "min": 250,
+        "max": 700
+      },
+      "base_stats": {
+        "hp": 918,
+        "attack": 91,
+        "defense": 89,
+        "speed": 84
+      },
+      "base_sale_value_coins": 43560,
+      "base_feed_xp": 4071,
+      "base_fisher_xp": 513,
+      "catch_weight": 9
+    },
+    {
+      "id": "escolar",
+      "display_name": "Escolar",
+      "primary_map_id": "map_09",
+      "rarity": "common",
+      "size_cm": {
+        "min": 70,
+        "max": 220
+      },
+      "base_stats": {
+        "hp": 605,
+        "attack": 90,
+        "defense": 51,
+        "speed": 103
+      },
+      "base_sale_value_coins": 8580,
+      "base_feed_xp": 1025,
+      "base_fisher_xp": 142,
+      "catch_weight": 230
+    },
+    {
+      "id": "peixe_espada",
+      "display_name": "Peixe-espada",
+      "primary_map_id": "map_09",
+      "rarity": "common",
+      "size_cm": {
+        "min": 80,
+        "max": 250
+      },
+      "base_stats": {
+        "hp": 555,
+        "attack": 80,
+        "defense": 48,
+        "speed": 110
+      },
+      "base_sale_value_coins": 9210,
+      "base_feed_xp": 1106,
+      "base_fisher_xp": 151,
+      "catch_weight": 210
+    },
+    {
+      "id": "abrotea_fundo",
+      "display_name": "Abrótea-de-fundo",
+      "primary_map_id": "map_09",
+      "rarity": "common",
+      "size_cm": {
+        "min": 40,
+        "max": 120
+      },
+      "base_stats": {
+        "hp": 670,
+        "attack": 78,
+        "defense": 58,
+        "speed": 98
+      },
+      "base_sale_value_coins": 9760,
+      "base_feed_xp": 1171,
+      "base_fisher_xp": 161,
+      "catch_weight": 180
+    },
+    {
+      "id": "congro_negro",
+      "display_name": "Congro-negro",
+      "primary_map_id": "map_09",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 100,
+        "max": 250
+      },
+      "base_stats": {
+        "hp": 650,
+        "attack": 119,
+        "defense": 48,
+        "speed": 103
+      },
+      "base_sale_value_coins": 24360,
+      "base_feed_xp": 2370,
+      "base_fisher_xp": 297,
+      "catch_weight": 80
+    },
+    {
+      "id": "peixe_lanceta",
+      "display_name": "Peixe-lanceta",
+      "primary_map_id": "map_09",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 100,
+        "max": 220
+      },
+      "base_stats": {
+        "hp": 600,
+        "attack": 105,
+        "defense": 44,
+        "speed": 110
+      },
+      "base_sale_value_coins": 25720,
+      "base_feed_xp": 2519,
+      "base_fisher_xp": 313,
+      "catch_weight": 75
+    },
+    {
+      "id": "quimera",
+      "display_name": "Quimera",
+      "primary_map_id": "map_09",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 60,
+        "max": 150
+      },
+      "base_stats": {
+        "hp": 685,
+        "attack": 97,
+        "defense": 67,
+        "speed": 90
+      },
+      "base_sale_value_coins": 20280,
+      "base_feed_xp": 1964,
+      "base_fisher_xp": 247,
+      "catch_weight": 65
+    },
+    {
+      "id": "tubarao_lanterna",
+      "display_name": "Tubarão-lanterna",
+      "primary_map_id": "map_09",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 40,
+        "max": 90
+      },
+      "base_stats": {
+        "hp": 857,
+        "attack": 97,
+        "defense": 105,
+        "speed": 90
+      },
+      "base_sale_value_coins": 32720,
+      "base_feed_xp": 2943,
+      "base_fisher_xp": 325,
+      "catch_weight": 65
+    },
+    {
+      "id": "peixe_opah",
+      "display_name": "Peixe-opah",
+      "primary_map_id": "map_09",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 80,
+        "max": 200
+      },
+      "base_stats": {
+        "hp": 961,
+        "attack": 83,
+        "defense": 120,
+        "speed": 86
+      },
+      "base_sale_value_coins": 34760,
+      "base_feed_xp": 3124,
+      "base_fisher_xp": 346,
+      "catch_weight": 60
+    },
+    {
+      "id": "tubarao_duende",
+      "display_name": "Tubarão-duende",
+      "primary_map_id": "map_09",
+      "rarity": "legendary",
+      "size_cm": {
+        "min": 180,
+        "max": 400
+      },
+      "base_stats": {
+        "hp": 790,
+        "attack": 116,
+        "defense": 78,
+        "speed": 103
+      },
+      "base_sale_value_coins": 60730,
+      "base_feed_xp": 4918,
+      "base_fisher_xp": 510,
+      "catch_weight": 18
+    },
+    {
+      "id": "tubarao_seis_guelras",
+      "display_name": "Tubarão-seis-guelras",
+      "primary_map_id": "map_09",
+      "rarity": "legendary",
+      "size_cm": {
+        "min": 250,
+        "max": 550
+      },
+      "base_stats": {
+        "hp": 1094,
+        "attack": 104,
+        "defense": 102,
+        "speed": 82
+      },
+      "base_sale_value_coins": 64110,
+      "base_feed_xp": 5200,
+      "base_fisher_xp": 538,
+      "catch_weight": 17
+    },
+    {
+      "id": "peixe_machado",
+      "display_name": "Peixe-machado",
+      "primary_map_id": "map_10",
+      "rarity": "common",
+      "size_cm": {
+        "min": 8,
+        "max": 18
+      },
+      "base_stats": {
+        "hp": 820,
+        "attack": 92,
+        "defense": 76,
+        "speed": 88
+      },
+      "base_sale_value_coins": 12280,
+      "base_feed_xp": 1285,
+      "base_fisher_xp": 146,
+      "catch_weight": 190
+    },
+    {
+      "id": "peixe_dragao",
+      "display_name": "Peixe-dragão",
+      "primary_map_id": "map_10",
+      "rarity": "common",
+      "size_cm": {
+        "min": 15,
+        "max": 40
+      },
+      "base_stats": {
+        "hp": 740,
+        "attack": 107,
+        "defense": 57,
+        "speed": 101
+      },
+      "base_sale_value_coins": 13110,
+      "base_feed_xp": 1383,
+      "base_fisher_xp": 156,
+      "catch_weight": 175
+    },
+    {
+      "id": "peixe_vibora",
+      "display_name": "Peixe-víbora",
+      "primary_map_id": "map_10",
+      "rarity": "common",
+      "size_cm": {
+        "min": 20,
+        "max": 35
+      },
+      "base_stats": {
+        "hp": 760,
+        "attack": 110,
+        "defense": 55,
+        "speed": 101
+      },
+      "base_sale_value_coins": 13950,
+      "base_feed_xp": 1464,
+      "base_fisher_xp": 166,
+      "catch_weight": 155
+    },
+    {
+      "id": "enguia_pelicano",
+      "display_name": "Enguia-pelicano",
+      "primary_map_id": "map_10",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 60,
+        "max": 180
+      },
+      "base_stats": {
+        "hp": 885,
+        "attack": 122,
+        "defense": 71,
+        "speed": 88
+      },
+      "base_sale_value_coins": 35440,
+      "base_feed_xp": 3053,
+      "base_fisher_xp": 311,
+      "catch_weight": 130
+    },
+    {
+      "id": "peixe_ogro",
+      "display_name": "Peixe-ogro",
+      "primary_map_id": "map_10",
+      "rarity": "rare",
+      "size_cm": {
+        "min": 10,
+        "max": 25
+      },
+      "base_stats": {
+        "hp": 800,
+        "attack": 140,
+        "defense": 53,
+        "speed": 101
+      },
+      "base_sale_value_coins": 37420,
+      "base_feed_xp": 3224,
+      "base_fisher_xp": 329,
+      "catch_weight": 120
+    },
+    {
+      "id": "peixe_pescador_abissal",
+      "display_name": "Peixe-pescador-abissal",
+      "primary_map_id": "map_10",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 20,
+        "max": 100
+      },
+      "base_stats": {
+        "hp": 997,
+        "attack": 109,
+        "defense": 123,
+        "speed": 88
+      },
+      "base_sale_value_coins": 44990,
+      "base_feed_xp": 3547,
+      "base_fisher_xp": 325,
+      "catch_weight": 85
+    },
+    {
+      "id": "quimera_azul",
+      "display_name": "Quimera-azul",
+      "primary_map_id": "map_10",
+      "rarity": "epic",
+      "size_cm": {
+        "min": 70,
+        "max": 180
+      },
+      "base_stats": {
+        "hp": 1021,
+        "attack": 112,
+        "defense": 120,
+        "speed": 88
+      },
+      "base_sale_value_coins": 48050,
+      "base_feed_xp": 3789,
+      "base_fisher_xp": 346,
+      "catch_weight": 75
+    },
+    {
+      "id": "tubarao_cobra",
+      "display_name": "Tubarão-cobra",
+      "primary_map_id": "map_10",
+      "rarity": "legendary",
+      "size_cm": {
+        "min": 150,
+        "max": 220
+      },
+      "base_stats": {
+        "hp": 924,
+        "attack": 130,
+        "defense": 89,
+        "speed": 101
+      },
+      "base_sale_value_coins": 85880,
+      "base_feed_xp": 6046,
+      "base_fisher_xp": 533,
+      "catch_weight": 36
+    },
+    {
+      "id": "peixe_fita_gigante",
+      "display_name": "Peixe-fita-gigante",
+      "primary_map_id": "map_10",
+      "rarity": "legendary",
+      "size_cm": {
+        "min": 250,
+        "max": 900
+      },
+      "base_stats": {
+        "hp": 845,
+        "attack": 115,
+        "defense": 83,
+        "speed": 108
+      },
+      "base_sale_value_coins": 91000,
+      "base_feed_xp": 6409,
+      "base_fisher_xp": 564,
+      "catch_weight": 32
+    },
+    {
+      "id": "tubarao_boca_grande",
+      "display_name": "Tubarão-boca-grande",
+      "primary_map_id": "map_10",
+      "rarity": "mythic",
+      "size_cm": {
+        "min": 300,
+        "max": 550
+      },
+      "base_stats": {
+        "hp": 1307,
+        "attack": 121,
+        "defense": 117,
+        "speed": 81
+      },
+      "base_sale_value_coins": 206120,
+      "base_feed_xp": 10843,
+      "base_fisher_xp": 872,
+      "catch_weight": 2
+    }
+  ],
+  "rods": [
+    {
+      "id": "rod_03",
+      "display_name": "Corrente Mestra",
+      "unlock_fisher_level": 50,
+      "compatible_maps": [
+        "map_06",
+        "map_07"
+      ],
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "purchase_cost_coins": 730000,
+      "purchase_cost_shells": 85,
+      "bonuses_per_level": {
+        "rarity_efficiency": [
+          0.52,
+          0.55,
+          0.58,
+          0.61,
+          0.64,
+          0.67,
+          0.7,
+          0.73,
+          0.76,
+          0.8
+        ],
+        "size_quality": [
+          0.44,
+          0.46,
+          0.48,
+          0.5,
+          0.52,
+          0.54,
+          0.56,
+          0.58,
+          0.6,
+          0.62
+        ],
+        "shell_yield": [
+          1.15,
+          1.22,
+          1.29,
+          1.36,
+          1.43,
+          1.5,
+          1.57,
+          1.64,
+          1.7,
+          1.75
+        ],
+        "catch_success": [
+          0.08,
+          0.087,
+          0.093,
+          0.1,
+          0.107,
+          0.12,
+          0.127,
+          0.14,
+          0.147,
+          0.16
+        ]
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "cost_coins": 110000,
+          "cost_shells": 21
+        },
+        {
+          "to_level": 3,
+          "cost_coins": 160000,
+          "cost_shells": 26
+        },
+        {
+          "to_level": 4,
+          "cost_coins": 240000,
+          "cost_shells": 32
+        },
+        {
+          "to_level": 5,
+          "cost_coins": 350000,
+          "cost_shells": 38
+        },
+        {
+          "to_level": 6,
+          "cost_coins": 530000,
+          "cost_shells": 47
+        },
+        {
+          "to_level": 7,
+          "cost_coins": 800000,
+          "cost_shells": 55
+        },
+        {
+          "to_level": 8,
+          "cost_coins": 1200000,
+          "cost_shells": 64
+        },
+        {
+          "to_level": 9,
+          "cost_coins": 1770000,
+          "cost_shells": 74
+        },
+        {
+          "to_level": 10,
+          "cost_coins": 2660000,
+          "cost_shells": 85
+        }
+      ],
+      "doc_values": {
+        "purchase_cost_coins": 450000,
+        "purchase_cost_shells": null,
+        "catch_success_pp": [
+          12,
+          13,
+          14,
+          15,
+          16,
+          18,
+          19,
+          21,
+          22,
+          24
+        ],
+        "upgrade_costs_coins": [
+          60000,
+          90000,
+          135000,
+          200000,
+          300000,
+          450000,
+          675000,
+          1000000,
+          1500000
+        ]
+      }
+    },
+    {
+      "id": "rod_04",
+      "display_name": "Atlântico Nobre",
+      "unlock_fisher_level": 70,
+      "compatible_maps": [
+        "map_08",
+        "map_09"
+      ],
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "purchase_cost_coins": 3280000,
+      "purchase_cost_shells": 180,
+      "bonuses_per_level": {
+        "rarity_efficiency": [
+          0.82,
+          0.85,
+          0.88,
+          0.92,
+          0.95,
+          0.98,
+          1.02,
+          1.05,
+          1.08,
+          1.12
+        ],
+        "size_quality": [
+          0.64,
+          0.66,
+          0.68,
+          0.7,
+          0.72,
+          0.74,
+          0.76,
+          0.78,
+          0.8,
+          0.82
+        ],
+        "shell_yield": [
+          1.8,
+          1.88,
+          1.96,
+          2.04,
+          2.12,
+          2.2,
+          2.28,
+          2.36,
+          2.43,
+          2.5
+        ],
+        "catch_success": [
+          0.12,
+          0.127,
+          0.14,
+          0.147,
+          0.16,
+          0.167,
+          0.18,
+          0.193,
+          0.2,
+          0.213
+        ]
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "cost_coins": 480000,
+          "cost_shells": 45
+        },
+        {
+          "to_level": 3,
+          "cost_coins": 720000,
+          "cost_shells": 54
+        },
+        {
+          "to_level": 4,
+          "cost_coins": 1080000,
+          "cost_shells": 68
+        },
+        {
+          "to_level": 5,
+          "cost_coins": 1610000,
+          "cost_shells": 81
+        },
+        {
+          "to_level": 6,
+          "cost_coins": 2400000,
+          "cost_shells": 99
+        },
+        {
+          "to_level": 7,
+          "cost_coins": 3650000,
+          "cost_shells": 117
+        },
+        {
+          "to_level": 8,
+          "cost_coins": 5480000,
+          "cost_shells": 135
+        },
+        {
+          "to_level": 9,
+          "cost_coins": 8170000,
+          "cost_shells": 158
+        },
+        {
+          "to_level": 10,
+          "cost_coins": 12300000,
+          "cost_shells": 180
+        }
+      ],
+      "doc_values": {
+        "purchase_cost_coins": 1800000,
+        "purchase_cost_shells": 180,
+        "catch_success_pp": [
+          18,
+          19,
+          21,
+          22,
+          24,
+          25,
+          27,
+          29,
+          30,
+          32
+        ],
+        "upgrade_costs_coins": [
+          250000,
+          375000,
+          560000,
+          840000,
+          1250000,
+          1900000,
+          2850000,
+          4250000,
+          6400000
+        ]
+      }
+    },
+    {
+      "id": "rod_05",
+      "display_name": "Soberana Abissal",
+      "unlock_fisher_level": 90,
+      "compatible_maps": [
+        "map_10"
+      ],
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary",
+        "mythic"
+      ],
+      "purchase_cost_coins": 15610000,
+      "purchase_cost_shells": 650,
+      "bonuses_per_level": {
+        "rarity_efficiency": [
+          1.15,
+          1.19,
+          1.23,
+          1.27,
+          1.31,
+          1.35,
+          1.39,
+          1.43,
+          1.47,
+          1.5
+        ],
+        "size_quality": [
+          0.85,
+          0.87,
+          0.89,
+          0.92,
+          0.94,
+          0.96,
+          0.98,
+          1.0,
+          1.03,
+          1.05
+        ],
+        "shell_yield": [
+          2.6,
+          2.7,
+          2.8,
+          2.9,
+          3.0,
+          3.1,
+          3.2,
+          3.3,
+          3.4,
+          3.5
+        ],
+        "catch_success": [
+          0.167,
+          0.18,
+          0.193,
+          0.207,
+          0.22,
+          0.227,
+          0.24,
+          0.247,
+          0.26,
+          0.267
+        ]
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "cost_coins": 1990000,
+          "cost_shells": 162
+        },
+        {
+          "to_level": 3,
+          "cost_coins": 2990000,
+          "cost_shells": 195
+        },
+        {
+          "to_level": 4,
+          "cost_coins": 4490000,
+          "cost_shells": 244
+        },
+        {
+          "to_level": 5,
+          "cost_coins": 6780000,
+          "cost_shells": 292
+        },
+        {
+          "to_level": 6,
+          "cost_coins": 10170000,
+          "cost_shells": 358
+        },
+        {
+          "to_level": 7,
+          "cost_coins": 15150000,
+          "cost_shells": 422
+        },
+        {
+          "to_level": 8,
+          "cost_coins": 22730000,
+          "cost_shells": 488
+        },
+        {
+          "to_level": 9,
+          "cost_coins": 33900000,
+          "cost_shells": 569
+        },
+        {
+          "to_level": 10,
+          "cost_coins": 49850000,
+          "cost_shells": 650
+        }
+      ],
+      "doc_values": {
+        "purchase_cost_coins": 8000000,
+        "purchase_cost_shells": 650,
+        "catch_success_pp": [
+          25,
+          27,
+          29,
+          31,
+          33,
+          34,
+          36,
+          37,
+          39,
+          40
+        ],
+        "upgrade_costs_coins": [
+          1000000,
+          1500000,
+          2250000,
+          3400000,
+          5100000,
+          7600000,
+          11400000,
+          17000000,
+          25000000
+        ]
+      }
+    }
+  ]
+}
