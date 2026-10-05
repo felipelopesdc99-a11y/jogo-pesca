@@ -108,7 +108,10 @@ o proprietário — nunca inventar a mecânica.
 ### V0.2 em andamento
 
 Desde 29/09/2026, tudo que o proprietário pedir entra na **V0.2** (milestones a partir do M13 no
-`docs/roadmap.json`). Os testes da V0.1 pelo proprietário (OD-010 a OD-014) estão em espera. Continua
+`docs/roadmap.json`). **Todos os testes pelo proprietário ficam para o final do jogo** (decisão dele em
+05/10/2026): as decisões marcadas com `deferred_to_end: true` no roadmap e as tarefas "Testar no Unity".
+Não pedir esses testes nem lembrá-lo deles antes disso; seguir o trabalho sem esperar por eles. As
+decisões de design abertas (por exemplo OD-009, Loja da Arena, e OD-021, Dólares) continuam valendo. Continua
 valendo: não inventar sistemas; fazer o que foi pedido e registrar o resto como decisão pendente.
 
 ### Visual: a Bíblia de Arte
