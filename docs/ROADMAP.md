@@ -45,7 +45,7 @@ A integridade do arquivo é verificada por testes em `tools/GameService.Tests`
 ## Os milestones
 
 A ordem segue `docs/CLAUDE_START_HERE_V0_1_1.md`: **primeiro um MVP local, jogável no PC**. A
-infraestrutura online que já existia foi preservada no M12, adiada.
+infraestrutura online que já existia foi preservada no M12, adiada. Em 05/10/2026 o proprietário decidiu terminar o jogo inteiro: tudo que o GDD pede e ainda falta entrou no roadmap (M11, M12, M18 a M20), e os testes dele ficam para o final (M19).
 
 | # | Título | Entrega |
 |---|---|---|
@@ -61,11 +61,15 @@ infraestrutura online que já existia foi preservada no M12, adiada.
 | **M9** | Leilão local | Leilão de 6h, lances +3%, taxa de 1%, proteção de último minuto, encerramento antecipado |
 | **M10** | Tutorial, UX e polimento | Tutorial, menus completos, modo compacto, áudio provisório, animações melhores |
 | **M11** | Balanceamento do MVP | Simulador e relatório dos números, testes de save e de abuso, correções. As revisões de números (progressão, economia, raridades, combate, Expedições) esperam o proprietário decidir as metas |
-| **M12** | Infraestrutura online (adiada) | Servidor ASP.NET, PostgreSQL, Docker, painel web (já construídos), serviços remotos, contas, site público |
+| **M12** | Jogo online: servidor, contas e jogadores reais | Já construídos: servidor ASP.NET, PostgreSQL, Docker, painel web. A fazer: banco completo, serviços remotos, contas, segurança e auditoria, Arena, Mercado, Leilão, Ranking e comércio entre jogadores reais, perfil público, site público, testes online |
 | **M13** | V0.2 · Áudio e ambiente | Sons de captura, recorde e subir de nível; mar e brisa calmos; sons como arquivos trocáveis |
 | **M14** | V0.2 · Visual Lago Dourado | A Bíblia de Arte (`docs/ART_BIBLE_V0_1.md`) aplicada: tema central, fontes, card de peixe, cena em luz dourada, níveis de intensidade e momentos especiais |
 | **M15** | V0.2 · Sucesso da pesca e equipamentos | O peixe que morde pode escapar; barcos e iscas na Loja, com Moedas e Conchas; chance visível; painel com simulador; rebalanceamento (`docs/SISTEMA_SUCESSO_PESCA.md`) |
 | **M16** | V0.2 · Mapas 3 e 4 | Pantanal Dourado e Estuário das Marés, raridade Épico, Vara 2 e 20 espécies (`docs/PROGRESSAO_MAPAS_3_4.md`) |
+| **M17** | V0.2 · Conchas, Dólares e Ranking | Conchas em todo equipamento, moeda Dólares, comércio de Conchas e Dólares, menu Ranking, versão para amigos |
+| **M18** | Lacunas do GDD que dão para fazer agora | Itens do GDD que ainda faltam e não dependem de servidor: posição na Arena no Perfil, perfil do adversário, nome e avatar, efeitos do replay, avisos guardados, Perfil com barco e isca, partes do Painel |
+| **M19** | Site, distribuição e lançamento da V0.1 | Build oficial para Windows, download com instalador, notas de versão, Steam e a rodada final de bugs com os testes do proprietário |
+| **M20** | Depois da V0.1: sistemas futuros do GDD | O que o GDD deixa para depois (habilidades, temporadas, guildas, mapas 5 a 10, monetização…), cada um começando como decisão do proprietário |
 
 ## Regras que o roadmap impõe a si mesmo
 

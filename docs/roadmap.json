@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-05T21:13:05Z",
-  "current_milestone": "M17",
+  "updated_at": "2026-10-05T21:22:41Z",
+  "current_milestone": "M18",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -11,7 +11,7 @@
     "BLOCKED",
     "NEEDS_OWNER_DECISION"
   ],
-  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR. Desde 29/09/2026 o trabalho novo faz parte da V0.2 (a partir do M13); desde 05/10/2026, todos os testes pelo proprietário (decisões com deferred_to_end: true, e as tarefas \"Testar no Unity\") ficam para o final do jogo, a pedido dele: não pedir esses testes antes disso. As decisões de design abertas (OD-009 e OD-021) continuam valendo.",
+  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR. Desde 29/09/2026 o trabalho novo faz parte da V0.2 (a partir do M13); desde 05/10/2026, todos os testes pelo proprietário (decisões com deferred_to_end: true, e as tarefas \"Testar no Unity\") ficam para o final do jogo, a pedido dele: não pedir esses testes antes disso. As decisões de design abertas (OD-009 e OD-021) continuam valendo. Em 05/10/2026 o proprietário decidiu terminar o jogo inteiro: tudo que o GDD pede e ainda não foi feito entrou no roadmap (M11-T10 a T13, M12 de volta ao plano, M18 a M20). Os sistemas que o GDD deixa para depois da V0.1 estão no M20 como decisões futuras (future_version: true).",
   "owner_decisions": [
     {
       "id": "OD-001",
@@ -198,6 +198,199 @@
       "detail": "A moeda Dólares existe (começa em zero) e aparece na tela, mas não se ganha nem se gasta. Falta decidir: como o jogador consegue Dólares, em que eles são gastos e se podem ser comprados com dinheiro real (isso mudaria o jogo e pede cuidado com regras de loja e de idade). A intenção registrada é negociar Conchas e Dólares entre jogadores.",
       "raised_at": "2026-10-02T22:00:38Z",
       "status": "OPEN"
+    },
+    {
+      "id": "OD-022",
+      "task_id": "M11-T01",
+      "title": "Metas do balanceamento",
+      "detail": "Para balancear eu preciso das suas metas, não de testes: em quanto tempo o jogador chega ao Nível 10, 20 e 40; quanto uma Expedição deve render em relação a pescar; quanto tempo uma batalha deve durar (hoje 8 a 22 s; o GDD sugere uns 60 s); e quanto deve custar a vara de cada mapa.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-023",
+      "task_id": "M12-T13",
+      "title": "Onde hospedar o servidor e quanto custa",
+      "detail": "O jogo online precisa de um servidor e de um banco de dados ligados o tempo todo. Antes de começar eu trago 2 ou 3 opções com custo mensal, o que cada uma exige de você e se há alternativa gratuita para a fase de testes. A decisão é sua; nada pago é contratado sem o seu ok.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-024",
+      "task_id": "M18-T11",
+      "title": "Perder uma defesa na Arena tira Honra?",
+      "detail": "O GDD diz que a derrota tira Honra, mas hoje, quando outro jogador ataca você e vence, você não perde nada (para não punir quem está offline). Mantenho assim ou passa a tirar Honra também na defesa? Se tirar, quanto?",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-025",
+      "task_id": "M18-T12",
+      "title": "A Caixa de Pesca deve ter limite?",
+      "detail": "Hoje a Caixa de Pesca guarda peixes sem limite, inclusive da pesca offline de 24 horas. Um limite obriga o jogador a voltar e vender; sem limite, o jogo é mais relaxado. Prefere sem limite ou com um limite (por exemplo 500 peixes)?",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-026",
+      "task_id": "M19-T05",
+      "title": "Quando entrar na Steam",
+      "detail": "Publicar na Steam exige criar a conta de desenvolvedor e pagar a taxa de US$ 100 por jogo, além de montar a página. Quer preparar isso junto com o lançamento da V0.1 ou deixar para depois?",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-027",
+      "task_id": "M20-T01",
+      "title": "Habilidades dos peixes",
+      "detail": "Peixes com habilidades próprias na batalha (§2). Precisa definir: que tipos de habilidade, como se ganham e como entram no combate. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-028",
+      "task_id": "M20-T02",
+      "title": "Curandeiros e peixes de suporte",
+      "detail": "Classes de peixe que curam ou ajudam o Cardume (§2). Precisa definir se existem e como funcionam. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-029",
+      "task_id": "M20-T03",
+      "title": "Equipamento e armadura de peixe",
+      "detail": "Itens que os peixes vestem para ganhar atributos (§2). Precisa definir os itens, de onde vêm e quanto valem. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-030",
+      "task_id": "M20-T04",
+      "title": "Mais equipamentos do pescador",
+      "detail": "Os outros espaços de equipamento citados no §20 (chapéu, colete, luvas, botas, calça, colar e anel). Barco e isca já entraram na V0.2. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-031",
+      "task_id": "M20-T05",
+      "title": "Refinamento de equipamento",
+      "detail": "Sistema para melhorar equipamentos com Conchas e outros materiais (§2, §21). Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-032",
+      "task_id": "M20-T06",
+      "title": "Temporadas de PvP",
+      "detail": "A Arena dividida em temporadas, com recompensas e reinício de ranking (§2). Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-033",
+      "task_id": "M20-T07",
+      "title": "Passe de batalha",
+      "detail": "Trilha de recompensas por temporada (§2). Liga com a decisão de monetização. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-034",
+      "task_id": "M20-T08",
+      "title": "Guildas e sistema social",
+      "detail": "Grupos de jogadores, amigos e chat (§2). Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-035",
+      "task_id": "M20-T09",
+      "title": "Mapas 5 a 10",
+      "detail": "Novos mapas, peixes e varas (§2, §17). Os mapas 3 e 4 já entraram na V0.2. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-036",
+      "task_id": "M20-T10",
+      "title": "Varas 3, 4 e 5",
+      "detail": "As próximas varas da progressão (§19). A Vara 2 (Maré Dourada) já existe. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-037",
+      "task_id": "M20-T11",
+      "title": "Monetização",
+      "detail": "Como o jogo ganha dinheiro: compras no jogo, passe, cosméticos ou venda do jogo (§2). Liga com a decisão dos Dólares (OD-021). Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-038",
+      "task_id": "M20-T12",
+      "title": "Conteúdo de fim de jogo",
+      "detail": "O que o jogador faz depois de chegar ao topo da progressão (§2). Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-039",
+      "task_id": "M20-T13",
+      "title": "Eventos e torneios",
+      "detail": "Eventos com tempo marcado e torneios entre jogadores (§2). Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-040",
+      "task_id": "M20-T14",
+      "title": "Novas raridades",
+      "detail": "Raridades além das atuais (§2, §15). Épico e o tamanho Perfeição já entraram na V0.2. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-041",
+      "task_id": "M20-T15",
+      "title": "Outras atividades do Cardume",
+      "detail": "Atividades além da Arena e das Expedições para o Cardume (§23). Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-042",
+      "task_id": "M20-T16",
+      "title": "Ataque próprio de cada espécie",
+      "detail": "Animação e efeito de ataque diferentes por espécie no replay da Arena (§27). Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
+    },
+    {
+      "id": "OD-043",
+      "task_id": "M20-T17",
+      "title": "Atualizador automático do jogo",
+      "detail": "Um programa leve que baixa e instala versões novas sozinho (§6, §47). Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas.",
+      "raised_at": "2026-10-05T21:22:41Z",
+      "status": "OPEN",
+      "future_version": true
     }
   ],
   "milestones": [
@@ -1538,16 +1731,59 @@
             "M11-T08"
           ],
           "updated_at": "2026-09-29T01:00:16Z"
+        },
+        {
+          "id": "M11-T10",
+          "title": "Simulação de combate completa",
+          "subsystem": "ops",
+          "description": "O §46 pede que o simulador mostre ataque contra defesa, confirme que Velocidade é secundária e ache espécies ou atributos dominantes. Hoje ele mede só a duração das batalhas. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T08"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M11-T11",
+          "title": "Calibrar a Força do Cardume",
+          "subsystem": "config",
+          "description": "Ajustar os pesos da fórmula de Força (§31) com base na simulação de combate, para ela prever bem quem vence. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T10"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M11-T12",
+          "title": "Simulação de economia com taxas e Honra",
+          "subsystem": "ops",
+          "description": "Medir no simulador os sumidouros que o §46 lista: taxa de 3% do Mercado, taxa de lance e encerramento antecipado do Leilão, melhorias de vara, e a progressão de Honra. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M11-T08"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M11-T13",
+          "title": "Curva de XP até o Nível 100",
+          "subsystem": "config",
+          "description": "Calibrar a meta de cerca de 90 dias até o Nível 100 (§17). Hoje a curva está medida só até o Nível 40. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
         }
       ]
     },
     {
       "id": "M12",
-      "title": "Infraestrutura online (adiada)",
-      "goal": "O que já foi construído para a versão online (servidor ASP.NET, PostgreSQL, Docker, painel web local) fica guardado aqui. Pela prioridade atual (docs/CLAUDE_START_HERE_V0_1_1.md), nada disto é necessário para jogar; volta depois que o MVP local for validado.",
+      "title": "Jogo online: servidor, contas e jogadores reais",
+      "goal": "Tudo que o GDD pede e só funciona com um servidor e outros jogadores: contas, regras no servidor, Arena, Mercado, Leilão e Ranking entre pessoas reais, segurança e auditoria. A base (servidor ASP.NET, PostgreSQL, Docker) já existe e foi guardada aqui. Desde 05/10/2026 o proprietário decidiu terminar o jogo inteiro, então este milestone volta ao plano.",
       "completion_criteria": [
-        "Os serviços locais do jogo ganham versões remotas (Remote...Service) sem reescrever a jogabilidade.",
-        "Nenhum passo pago acontece sem o proprietário aprovar."
+        "O jogo funciona com conta e login, com o servidor como autoridade de todas as regras.",
+        "Arena, Mercado, Leilão, Ranking e comércio de Conchas e Dólares funcionam entre jogadores reais.",
+        "Toda operação econômica é auditada e protegida contra repetição e corrida."
       ],
       "tasks": [
         {
@@ -1708,6 +1944,131 @@
             "M11-T07"
           ],
           "updated_at": "2026-09-28T22:23:54Z"
+        },
+        {
+          "id": "M12-T16",
+          "title": "Banco de dados com o modelo completo",
+          "subsystem": "server",
+          "description": "Criar no PostgreSQL as tabelas do §42: jogador, peixes, Caixa de Pesca, Aquário, Cardume, Arena, Mercado, Leilão, Expedições e avisos. Hoje só existem config_versions e admin_audit_log. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T03"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M12-T17",
+          "title": "Proteções de segurança no servidor",
+          "subsystem": "server",
+          "description": "Limite de pedidos por jogador, chave anti-repetição em toda operação econômica, transações e travas no banco, relógio e sorteio só do servidor (§41). (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T13"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M12-T18",
+          "title": "Auditoria e logs",
+          "subsystem": "server",
+          "description": "Registros imutáveis de economia, Mercado, Leilão e administração, pedidos rejeitados ou suspeitos, e uma aba de Logs no painel (§5, §41). (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T16"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M12-T19",
+          "title": "Publicar balanceamento pelo servidor",
+          "subsystem": "server",
+          "description": "O administrador edita, o servidor valida, grava uma nova versão ativa e registra quem mudou (§5, §43). Hoje o Painel do Unity grava direto em /config. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T16",
+            "M12-T14"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M12-T20",
+          "title": "Arena com jogadores reais",
+          "subsystem": "server",
+          "description": "Adversários, posição no ranking e defesas recebidas vindos de pessoas, com troca de posição sem conflito entre ataques simultâneos (§28, §29). Hoje são 200 adversários simulados. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T13",
+            "M12-T14"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M12-T21",
+          "title": "Mercado e Leilão entre jogadores",
+          "subsystem": "server",
+          "description": "Compra, venda, lances e custódia reais, sem condição de corrida (§33 a §35). Hoje vendedores, compradores e licitantes são simulados. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T13",
+            "M12-T14"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M12-T22",
+          "title": "Comércio de Conchas e Dólares entre jogadores",
+          "subsystem": "server",
+          "description": "Comprar ofertas de outros jogadores e receber pela venda (A-101). Hoje a aba só anuncia e cancela. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T21"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M12-T23",
+          "title": "Perfil público de outros jogadores",
+          "subsystem": "client",
+          "description": "Ver nome, nível, posição na Arena, Cardume, Enciclopédia e recordes de outro jogador, escondendo o que é privado, como a Força (§37). (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T13"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M12-T24",
+          "title": "Ranking com todos os jogadores",
+          "subsystem": "server",
+          "description": "Listas de Nível, Moedas, Conchas e Peixes pescados com jogadores reais (A-100). Hoje mostra só o jogador deste PC. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T13"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M12-T25",
+          "title": "Aviso de nova versão do jogo",
+          "subsystem": "client",
+          "description": "Aviso de \"nova versão disponível\" ou novidade, pedido no §39. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M19-T02"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M12-T26",
+          "title": "Testes de estabilização online",
+          "subsystem": "ops",
+          "description": "Testes de segurança, carga da API, corrida no Mercado e no Leilão, save e reconexão com o servidor (§45, Milestone 12 do GDD). (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T20",
+            "M12-T21"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
         }
       ]
     },
@@ -2583,6 +2944,364 @@
           ],
           "updated_at": "2026-10-02T23:23:23Z",
           "completion_notes": "display_name e description em rods.json e equipment.json; Loja mostra a descrição (vara, barco, isca); barcos liberam em 10/20/30/50/80 com 12.000 a 2.500.000 Moedas; iscas 60 tentativas por 1.500/6.000/15.000. Bônus e Conchas seguem as decisões mais recentes (A-095, A-099). Textos fixos atualizados para Caniço Manso. Testes leem os valores da config. Simulação refeita. GDD_ADENDO A-103."
+        }
+      ]
+    },
+    {
+      "id": "M18",
+      "title": "Lacunas do GDD que dão para fazer agora",
+      "goal": "O que o GDD pede e ainda falta, mas não depende do servidor: telas e detalhes que dá para construir e deixar prontos no jogo local.",
+      "completion_criteria": [
+        "Cada item abaixo existe no jogo e compila.",
+        "Nada que dependa de jogadores reais entra aqui (isso fica no M12)."
+      ],
+      "tasks": [
+        {
+          "id": "M18-T01",
+          "title": "Posição na Arena no Perfil",
+          "subsystem": "client",
+          "description": "O Perfil do próprio jogador deve mostrar a posição atual na Arena (§37). Hoje ela só aparece na janela da Arena. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T02",
+          "title": "Abrir o perfil do adversário na Arena",
+          "subsystem": "client",
+          "description": "Pelo card do adversário, abrir o perfil dele (§28). No jogo local, o perfil do adversário simulado; com o servidor, o de pessoas reais. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T03",
+          "title": "Nome e avatar do jogador",
+          "subsystem": "client",
+          "description": "Permitir escolher o nome e o avatar (§37). Hoje o nome é fixo, \"Pescador\", e o retrato é o mesmo para todos. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T04",
+          "title": "Respingo e impacto no replay da Arena",
+          "subsystem": "client",
+          "description": "Efeito simples de água no ataque e de impacto no acerto (§27). Hoje o replay tem só o avanço do peixe, o dano e a barra de vida. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T05",
+          "title": "Avisos guardados entre sessões",
+          "subsystem": "client",
+          "description": "Guardar no save um conjunto limitado dos avisos mais recentes (§39). Hoje eles somem ao fechar o jogo. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T06",
+          "title": "Barco, isca e escapes no Perfil",
+          "subsystem": "client",
+          "description": "Mostrar barco e isca em Equipamentos e os peixes que escaparam nos Destaques (§20, §37, A-088 a A-090). Hoje o Perfil mostra só a vara. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T07",
+          "title": "Versão do balanceamento nos resultados",
+          "subsystem": "server",
+          "description": "Gravar a versão do balanceamento junto de capturas importantes, batalhas e Expedições (§43), para saber com quais números cada resultado saiu. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T08",
+          "title": "Painel: próximas 5 tarefas",
+          "subsystem": "client",
+          "description": "A visão geral do Painel de Desenvolvimento deve listar as próximas 5 tarefas, não só o próximo passo (§5). (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T09",
+          "title": "Painel: navegador de conteúdo",
+          "subsystem": "client",
+          "description": "Cards visuais de peixes, mapas, varas, barcos, iscas e Expedições no Painel de Desenvolvimento (§5). Hoje há só tabelas de números. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T10",
+          "title": "Painel: página de Build e Versão",
+          "subsystem": "client",
+          "description": "Versões do jogo, servidor e web, data do build, ambiente, histórico de versões e o último build para Windows (§5). (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T11",
+          "title": "Honra ao perder uma defesa",
+          "subsystem": "server",
+          "description": "O §30 diz que a derrota tira Honra; hoje perder uma defesa não tira (A-043). Aplicar o que o proprietário decidir. (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M18-T12",
+          "title": "Limite da Caixa de Pesca",
+          "subsystem": "server",
+          "description": "O GDD não define um limite para a Caixa de Pesca; hoje ela é ilimitada (A-006). Aplicar o que o proprietário decidir. (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        }
+      ]
+    },
+    {
+      "id": "M19",
+      "title": "Site, distribuição e lançamento da V0.1",
+      "goal": "A parte final do GDD (Milestones 11 e 12 do GDD): build oficial para Windows, download direto versionado, notas de versão, preparação para a Steam e a rodada final de estabilização, com os testes do proprietário.",
+      "completion_criteria": [
+        "Existe um build oficial para Windows, com versão, publicado para download.",
+        "A página do jogo tem download e notas de versão.",
+        "A Steam está preparada ou a decisão de adiar está registrada.",
+        "O proprietário jogou tudo e aprovou."
+      ],
+      "tasks": [
+        {
+          "id": "M19-T01",
+          "title": "Build oficial para Windows",
+          "subsystem": "ops",
+          "description": "Build de lançamento com versão e canal definidos (§45). Hoje existe só o build de teste para amigos. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M19-T02",
+          "title": "Download direto com instalador",
+          "subsystem": "ops",
+          "description": "Instalador ou pacote versionado publicado para download (§6). Hoje downloads.windows no version.json está vazio. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M19-T01"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M19-T03",
+          "title": "Versão do jogo consultável",
+          "subsystem": "server",
+          "description": "Um endereço que informa a versão mais nova, pensado para um atualizador no futuro (§6, §47). (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M12-T13"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M19-T04",
+          "title": "Notas de versão para jogadores",
+          "subsystem": "docs",
+          "description": "Notas escritas para o jogador a cada versão publicada (§6). Hoje só existe o CHANGELOG, que é de desenvolvimento. (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M19-T05",
+          "title": "Preparação para a Steam",
+          "subsystem": "ops",
+          "description": "Página na Steam, build Steam e integração, vindo do mesmo código do download direto (§2, §6, §47). (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M19-T01"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M19-T06",
+          "title": "Rodada final de bugs e lançamento",
+          "subsystem": "ops",
+          "description": "Revisão final de bugs, os testes do proprietário (deixados para o final) e a publicação da V0.1 (§45, Milestone 12 do GDD). (Levantado do GDD em 05/10/2026.)",
+          "status": "TODO",
+          "dependencies": [
+            "M19-T01",
+            "M19-T02"
+          ],
+          "updated_at": "2026-10-05T21:22:41Z"
+        }
+      ]
+    },
+    {
+      "id": "M20",
+      "title": "Depois da V0.1: sistemas futuros do GDD",
+      "goal": "Tudo que o GDD deixou de fora da V0.1 ou marcou como \"depois\". Cada item começa como uma decisão do proprietário: o GDD não define as regras, então nada é inventado. Quando ele decidir, o item vira tarefas de desenvolvimento.",
+      "completion_criteria": [
+        "Cada sistema tem a decisão do proprietário registrada antes de ser construído."
+      ],
+      "tasks": [
+        {
+          "id": "M20-T01",
+          "title": "Habilidades dos peixes",
+          "subsystem": "docs",
+          "description": "Peixes com habilidades próprias na batalha (§2). Precisa definir: que tipos de habilidade, como se ganham e como entram no combate. (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T02",
+          "title": "Curandeiros e peixes de suporte",
+          "subsystem": "docs",
+          "description": "Classes de peixe que curam ou ajudam o Cardume (§2). Precisa definir se existem e como funcionam. (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T03",
+          "title": "Equipamento e armadura de peixe",
+          "subsystem": "docs",
+          "description": "Itens que os peixes vestem para ganhar atributos (§2). Precisa definir os itens, de onde vêm e quanto valem. (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T04",
+          "title": "Mais equipamentos do pescador",
+          "subsystem": "docs",
+          "description": "Os outros espaços de equipamento citados no §20 (chapéu, colete, luvas, botas, calça, colar e anel). Barco e isca já entraram na V0.2. (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T05",
+          "title": "Refinamento de equipamento",
+          "subsystem": "docs",
+          "description": "Sistema para melhorar equipamentos com Conchas e outros materiais (§2, §21). (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T06",
+          "title": "Temporadas de PvP",
+          "subsystem": "docs",
+          "description": "A Arena dividida em temporadas, com recompensas e reinício de ranking (§2). (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T07",
+          "title": "Passe de batalha",
+          "subsystem": "docs",
+          "description": "Trilha de recompensas por temporada (§2). Liga com a decisão de monetização. (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T08",
+          "title": "Guildas e sistema social",
+          "subsystem": "docs",
+          "description": "Grupos de jogadores, amigos e chat (§2). (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T09",
+          "title": "Mapas 5 a 10",
+          "subsystem": "docs",
+          "description": "Novos mapas, peixes e varas (§2, §17). Os mapas 3 e 4 já entraram na V0.2. (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T10",
+          "title": "Varas 3, 4 e 5",
+          "subsystem": "docs",
+          "description": "As próximas varas da progressão (§19). A Vara 2 (Maré Dourada) já existe. (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T11",
+          "title": "Monetização",
+          "subsystem": "docs",
+          "description": "Como o jogo ganha dinheiro: compras no jogo, passe, cosméticos ou venda do jogo (§2). Liga com a decisão dos Dólares (OD-021). (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T12",
+          "title": "Conteúdo de fim de jogo",
+          "subsystem": "docs",
+          "description": "O que o jogador faz depois de chegar ao topo da progressão (§2). (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T13",
+          "title": "Eventos e torneios",
+          "subsystem": "docs",
+          "description": "Eventos com tempo marcado e torneios entre jogadores (§2). (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T14",
+          "title": "Novas raridades",
+          "subsystem": "docs",
+          "description": "Raridades além das atuais (§2, §15). Épico e o tamanho Perfeição já entraram na V0.2. (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T15",
+          "title": "Outras atividades do Cardume",
+          "subsystem": "docs",
+          "description": "Atividades além da Arena e das Expedições para o Cardume (§23). (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T16",
+          "title": "Ataque próprio de cada espécie",
+          "subsystem": "docs",
+          "description": "Animação e efeito de ataque diferentes por espécie no replay da Arena (§27). (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
+        },
+        {
+          "id": "M20-T17",
+          "title": "Atualizador automático do jogo",
+          "subsystem": "docs",
+          "description": "Um programa leve que baixa e instala versões novas sozinho (§6, §47). (Levantado do GDD em 05/10/2026.)",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-05T21:22:41Z"
         }
       ]
     }
