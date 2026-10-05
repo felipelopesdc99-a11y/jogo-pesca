@@ -26,7 +26,7 @@
           "detail": { "type": "string" },
           "raised_at": { "type": "string" },
           "status": { "enum": ["OPEN", "RESOLVED"] },
-          "resolution": { "type": "string" }
+          "resolution": { "type": "string" }, "deferred_to_end": { "type": "boolean", "description": "Teste do proprietário deixado para o final do jogo, a pedido dele." }
         }
       }
     },

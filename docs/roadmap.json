@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-02T23:23:23Z",
+  "updated_at": "2026-10-05T21:13:05Z",
   "current_milestone": "M17",
   "statuses": [
     "TODO",
@@ -11,7 +11,7 @@
     "BLOCKED",
     "NEEDS_OWNER_DECISION"
   ],
-  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR. Desde 29/09/2026 o trabalho novo faz parte da V0.2 (a partir do M13); os testes da V0.1 pelo proprietário (OD-010 a OD-014) ficaram em espera, a pedido dele.",
+  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR. Desde 29/09/2026 o trabalho novo faz parte da V0.2 (a partir do M13); desde 05/10/2026, todos os testes pelo proprietário (decisões com deferred_to_end: true, e as tarefas \"Testar no Unity\") ficam para o final do jogo, a pedido dele: não pedir esses testes antes disso. As decisões de design abertas (OD-009 e OD-021) continuam valendo.",
   "owner_decisions": [
     {
       "id": "OD-001",
@@ -36,7 +36,8 @@
       "title": "Pescar de 10 a 20 minutos e dizer o que achou",
       "detail": "É o critério de conclusão do Milestone 1. Aperte Iniciar pesca, deixe rodar, abra a Caixa de Pesca, venda alguns peixes. Diga o que agradou e o que incomodou: ritmo, visual, sons que faltam, tamanho dos textos. Para testar mais rápido, o Painel de Desenvolvimento → Balanceamento → Pesca deixa o tempo por captura em 5 segundos, aplicando com o jogo rodando.",
       "raised_at": "2026-09-28T22:23:54Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-004",
@@ -44,7 +45,8 @@
       "title": "Testar o Aquário",
       "detail": "Junto com o teste de pesca: guarde alguns peixes pela Caixa de Pesca, abra o menu Aquário, clique num peixe para ver a ficha, alimente-o com outros peixes e veja o nível subir. Diga se os números (atributos, XP por nível) e a tela fazem sentido. Não precisa esperar: se não puder testar agora, eu sigo com o Milestone 3.",
       "raised_at": "2026-09-28T22:56:49Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-005",
@@ -52,7 +54,8 @@
       "title": "Testar o Perfil e o Cardume",
       "detail": "Quando puder: abra o menu Perfil, monte o Cardume com peixes do Aquário (clique numa posição e depois num peixe), veja a Força e o bônus com 6 peixes, e olhe a Enciclopédia. Diga se a tela é clara. Não bloqueia: eu sigo com o Milestone 4.",
       "raised_at": "2026-09-28T23:37:38Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-006",
@@ -60,7 +63,8 @@
       "title": "Testar mapas e varas",
       "detail": "Quando chegar ao Nível 10: compre a Vara 1 na Loja, viaje ao Rio Selvagem pelo menu Mapa e veja a cena nova. No Perfil → Inventário, melhore a vara. Para chegar mais rápido, o Painel de Desenvolvimento → Balanceamento → Pesca permite pôr 5 segundos por captura. Não bloqueia: eu sigo com o Milestone 5.",
       "raised_at": "2026-09-28T23:53:13Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-007",
@@ -68,7 +72,8 @@
       "title": "Testar a pesca offline",
       "detail": "Com a pesca ligada, feche o jogo (pare o Play) e volte alguns minutos depois: deve aparecer o Bem-vindo de volta com os peixes pescados (1 a cada 60 segundos). Não bloqueia: eu sigo com o Milestone 6.",
       "raised_at": "2026-09-28T23:58:36Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-008",
@@ -76,7 +81,8 @@
       "title": "Testar as Expedições",
       "detail": "Monte o Cardume no Perfil, abra o menu Expedição e envie a Saída Rápida (30 minutos). Para não esperar, o Painel de Desenvolvimento → Balanceamento → Outros arquivos permite mudar a duração (em minutos) da Expedição. Não bloqueia: eu sigo com o Milestone 7.",
       "raised_at": "2026-09-29T00:03:17Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-009",
@@ -92,7 +98,8 @@
       "title": "Testar a Arena",
       "detail": "Monte o Cardume, abra o menu Arena e ataque um adversário. Veja o replay (1x, 2x, Pular), a troca de posição e a Honra. Não bloqueia: eu sigo com o Milestone 8.",
       "raised_at": "2026-09-29T00:11:52Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-011",
@@ -100,7 +107,8 @@
       "title": "Testar o Mercado",
       "detail": "Abra o menu Mercado: compre um peixe em Comprar e retire em Itens a Retirar; anuncie um peixe em Vender, veja em Meus Anúncios e cancele. Deixe um anúncio perto do preço de referência e espere uns 20 minutos para ver a venda. Não bloqueia: eu sigo com o Milestone 9.",
       "raised_at": "2026-09-29T00:27:36Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-012",
@@ -108,7 +116,8 @@
       "title": "Testar o Leilão",
       "detail": "No Mercado, aba Leilão: dê um lance num leilão aberto e veja o valor reservado; crie um leilão seu e espere lances (a cada ~10 minutos pode chegar um). Experimente Encerrar agora. Não bloqueia: eu sigo com o Milestone 10.",
       "raised_at": "2026-09-29T00:34:32Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-013",
@@ -116,7 +125,8 @@
       "title": "Testar o tutorial, os avisos, o som e o modo compacto",
       "detail": "No Painel de Desenvolvimento → Save, resete o save e aperte Play: siga o tutorial do começo (a Vara Inicial agora é pega na Loja). Depois abra Avisos e Opções (som, volume, modo compacto — este só muda o tamanho da janela num build, não no Editor). Diga se os sons provisórios incomodam. Não bloqueia: eu sigo com o Milestone 11.",
       "raised_at": "2026-09-29T00:43:26Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-014",
@@ -124,7 +134,8 @@
       "title": "Jogar o MVP completo e decidir quando balancear",
       "detail": "Todos os sistemas do MVP local estão no jogo. Jogue do começo (Painel → Save → resetar) e me diga o que achou. Você pediu para não balancear agora, então nenhum número foi mudado; o relatório docs/relatorios/SIMULACAO_BALANCEAMENTO.md mostra os números atuais e alguns pontos de atenção (por exemplo: batalhas de 8 a 22 s contra a meta de ~60 s; Moedas por hora sobem ~8× no segundo mapa; Expedições rendem ~10% da pesca por hora). Quando quiser balancear, diga as metas (quanto tempo até o Nível 10/20, quanto uma Expedição deve render, etc.).",
       "raised_at": "2026-09-29T01:00:16Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-015",
@@ -132,7 +143,8 @@
       "title": "Ouvir e aprovar os sons novos",
       "detail": "Aperte Play e pesque um pouco: ouça o mar e a brisa, o som de peixe pescado, de recorde e de subir de nível (também mandei os arquivos no chat para ouvir fora do Unity). Diga o que ficou bom e o que trocar — por exemplo, mais ou menos ondas, brisa mais alta ou mais baixa, notas diferentes. Se preferir sons gravados, dá para trocar os arquivos em client-unity/Assets/Resources/Sons pelo mesmo nome.",
       "raised_at": "2026-09-29T01:20:56Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-016",
@@ -149,7 +161,8 @@
       "title": "Ver o visual novo no Unity e dizer o que ajustar",
       "detail": "Aperte Play e passeie pelo jogo: a cena do Lago Sereno, a Caixa de Pesca, o Aquário, o Mapa (viaje ao Rio Selvagem), a Loja, as Expedições, a Arena e o Mercado. Pesque até ver uma celebração (espécie nova é a primeira). Tire prints e diga o que ajustar — cores e tempos mudam direto em client-unity/Assets/Resources/Visual/tema_visual.json. Toda arte é provisória e pode ser trocada pela arte final seguindo docs/ASSETS_PENDENTES.md. Se aparecer erro vermelho no Console, mande a mensagem.",
       "raised_at": "2026-09-29T02:49:14Z",
-      "status": "OPEN"
+      "status": "OPEN",
+      "deferred_to_end": true
     },
     {
       "id": "OD-018",
@@ -2295,7 +2308,7 @@
           "id": "M15-T09",
           "title": "Testar no Unity (Play)",
           "subsystem": "client",
-          "description": "O proprietário aperta Play e confere: escape, mensagem, Loja com barcos e iscas, linha de chances, Bem-vindo de volta e a aba Sucesso da pesca do painel. Só então o visual e a jogabilidade contam como verificados.",
+          "description": "O proprietário aperta Play e confere: escape, mensagem, Loja com barcos e iscas, linha de chances, Bem-vindo de volta e a aba Sucesso da pesca do painel. Só então o visual e a jogabilidade contam como verificados. Fica para o final do jogo, junto com os outros testes do proprietário (05/10/2026).",
           "status": "TODO",
           "dependencies": [
             "M15-T03",
@@ -2380,7 +2393,7 @@
           "id": "M16-T06",
           "title": "Testar no Unity (Play)",
           "subsystem": "client",
-          "description": "O proprietário aperta Play e confere os dois mapas, o Épico nos cards e filtros, a Vara 2 na Loja e a viagem.",
+          "description": "O proprietário aperta Play e confere os dois mapas, o Épico nos cards e filtros, a Vara 2 na Loja e a viagem. Fica para o final do jogo, junto com os outros testes do proprietário (05/10/2026).",
           "status": "TODO",
           "dependencies": [
             "M16-T04"
