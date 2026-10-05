@@ -54,7 +54,7 @@
                 "description": { "type": "string" },
                 "status": { "enum": ["TODO", "IN_PROGRESS", "DONE", "BLOCKED", "NEEDS_OWNER_DECISION"] },
                 "dependencies": { "type": "array", "items": { "type": "string" } },
-                "completion_notes": { "type": "string" },
+                "completion_notes": { "type": "string" }, "from_gdd_review": { "type": "boolean", "description": "Proposta tirada do GDD em 05/10/2026, esperando o proprietário decidir se entra no jogo." },
                 "updated_at": { "type": "string" }
               }
             }

@@ -1,6 +1,7 @@
 """Puts the equipped boat, rod and bait in the fishing scene (addendum A-096).
 
-Usage:  python3 tools/Arte/equipamento_na_cena.py [--iscas <imagem.png>] [--previa <saida.png>]
+Usage:  python3 tools/Arte/equipamento_na_cena.py [--iscas <imagem.png>] [--pescador <imagem.png>]
+                                                 [--varas <imagem.png>] [--previa <saida.png>]
 
 What it does:
   - For each Shop boat (Resources/Arte/Barcos/boat_01..05) cuts a "front" layer: the near side of the
@@ -11,6 +12,11 @@ What it does:
   - Writes Resources/Visual/equipamento_cena.json with all of it (plus the placeholder bait colours).
   - With --iscas, cuts the bait picture from the owner (three baits side by side, Simples, Melhorada
     and Premium, on a flat green, magenta or blue background) into Resources/Arte/Iscas/bait_0X.png.
+  - With --pescador, cuts the fisherman holding the rod (Pedido 33: hands closed around an empty grip,
+    magenta background) into Cena/pescador.png, plus Cena/pescador_maos.png: only his fists, drawn over
+    the rod so it sits inside them.
+  - With --varas, cuts the three thin scene rods (Pedido 34: straight and horizontal, one per third, butt
+    on the left, magenta background) into Varas/Cena/<rod id>.png. The Shop keeps Varas/<rod id>.png.
   - With --previa, draws every boat with the fisherman and each rod, to check the fit outside Unity.
 
 The starter boat (boat_00) keeps the scene's own two-layer hull (Cena/barco_fundo + barco_frente).
@@ -49,17 +55,26 @@ BOATS = {
 SEAT_DROP_PX = 34       # his seat (the pivot of pescador.png) this far below the gunwale
 WATERLINE = 0.22        # waterline: this fraction of the hull height above its keel
 
-# Where the hands hold each rod, as a fraction from the butt to the tip.
+# Where the hands hold each rod, as a fraction from the butt to the tip. The thin scene rods
+# (Varas/Cena) are held at the reel seat; the Shop pictures, used when those are missing, further up.
 ROD_GRIP = {'rod_00_starter': 0.2, 'rod_01': 0.22, 'rod_02': 0.24}
+SCENE_ROD_GRIP = 0.12
+SCENE_RODS = ['rod_00_starter', 'rod_01', 'rod_02']  # top to bottom in Pedido 34
+
+# The painted fisherman (Cena/pescador.png), in fractions of the picture from the bottom-left:
+# where he sits (the pivot, placed on the boat's seat) and the point between his fists, where the
+# rod turns. Height in scene units. HAND_BOXES: his two fists in the Pedido 33 cut (pixels).
+FISHERMAN = {'height': 1.66, 'pivot': (0.255, 0.10), 'hands': (0.8855, 0.523)}
+HAND_BOXES = [(772, 486, 896, 612), (742, 612, 866, 742)]
 
 # Bait on the hook: Resources/Arte/Iscas/<id>.png when it exists; until then this colour (ASSET_PENDENTE).
 BAITS = {'bait_01': '#9A6A4A', 'bait_02': '#E0803C', 'bait_03': '#E9BE45'}
 
 # Scene constants mirrored from FishermanRig / FishingScene (for the preview only).
 ROD_LENGTH = 2.7
-FISHERMAN_HEIGHT = 1.7
-FISHERMAN_PIVOT = (0.27, 0.12)
-FISHERMAN_HANDS = (0.97, 0.23)
+FISHERMAN_HEIGHT = FISHERMAN['height']
+FISHERMAN_PIVOT = FISHERMAN['pivot']
+FISHERMAN_HANDS = FISHERMAN['hands']
 
 
 def line_y(points, x):
@@ -111,7 +126,10 @@ def boat_entry(boat_id):
 
 
 def rod_entry(rod_id):
-    a = np.array(Image.open(os.path.join(ARTE, 'Varas', rod_id + '.png')).convert('RGBA'))[..., 3]
+    # The thin scene rod (Varas/Cena) when it exists; otherwise the Shop picture.
+    scene = os.path.exists(os.path.join(ARTE, 'Varas', 'Cena', rod_id + '.png'))
+    art = 'Varas/Cena/' + rod_id if scene else 'Varas/' + rod_id
+    a = np.array(Image.open(os.path.join(ARTE, art + '.png')).convert('RGBA'))[..., 3]
     ys, xs = np.where(a > 128)
     left = xs <= xs.min() + 12
     right = xs >= xs.max() - 6
@@ -120,11 +138,23 @@ def rod_entry(rod_id):
     h, w = a.shape
     return {
         'id': rod_id,
-        'art': 'Varas/' + rod_id,
+        'art': art,
         'butt_u': round(butt[0] / w, 4), 'butt_v': round(1 - butt[1] / h, 4),
         'tip_u': round(tip[0] / w, 4), 'tip_v': round(1 - tip[1] / h, 4),
-        'grip': ROD_GRIP.get(rod_id, 0.2),
+        'grip': SCENE_ROD_GRIP if scene else ROD_GRIP.get(rod_id, 0.2),
     }
+
+
+def fisherman_entry():
+    entry = {
+        'art': 'Cena/pescador',
+        'height': FISHERMAN['height'],
+        'pivot_u': FISHERMAN['pivot'][0], 'pivot_v': FISHERMAN['pivot'][1],
+        'hands_u': FISHERMAN['hands'][0], 'hands_v': FISHERMAN['hands'][1],
+    }
+    if os.path.exists(os.path.join(ARTE, 'Cena', 'pescador_maos.png')):
+        entry['hands_art'] = 'Cena/pescador_maos'
+    return entry
 
 
 def bait_entry(bait_id, color):
@@ -144,6 +174,7 @@ def write_all():
         written.append(os.path.relpath(path, ARTE).replace(os.sep, '/'))
     data = {
         'note': 'Gerado por tools/Arte/equipamento_na_cena.py. Barco, vara e isca equipados na cena (GDD_ADENDO A-096).',
+        'fisherman': fisherman_entry(),
         'boats': [boat_entry(b) for b in GUNWALES],
         'rods': [rod_entry(r) for r in sorted(ROD_GRIP)],
         'baits': [bait_entry(k, v) for k, v in BAITS.items()],
@@ -200,6 +231,7 @@ def scene_tile(boat, rod, bait):
         paste(tile, fisher, fw, FISHERMAN_PIVOT, seat, origin)
         draw_rod(tile, rod, seat, fw, origin, bait)
         paste(tile, front, 3.6, (0.5, 0.3), (0, 0), origin)
+        draw_fists(tile, fw, seat, origin)
     else:
         whole = Image.open(os.path.join(ARTE, 'Barcos', boat['id'] + '.png')).convert('RGBA')
         front = Image.open(os.path.join(ARTE, 'Barcos', 'Cena', boat['id'] + '_frente.png')).convert('RGBA')
@@ -208,7 +240,14 @@ def scene_tile(boat, rod, bait):
         paste(tile, fisher, fw, FISHERMAN_PIVOT, seat, origin)
         draw_rod(tile, rod, seat, fw, origin, bait)
         paste(tile, front, boat['width'], (0.5, boat['pivot_y']), (0, 0), origin)
+        draw_fists(tile, fw, seat, origin)
     return tile
+
+
+def draw_fists(tile, fw, seat, origin):
+    path = os.path.join(ARTE, 'Cena', 'pescador_maos.png')
+    if os.path.exists(path):
+        paste(tile, Image.open(path).convert('RGBA'), fw, FISHERMAN_PIVOT, seat, origin)
 
 
 def draw_rod(tile, rod, seat, fw, origin, bait):
@@ -265,6 +304,45 @@ def preview(data, out):
     print('Prévia:', out)
 
 
+def remember(paths):
+    with open(FINAIS, encoding='utf-8') as f:
+        known = set(l.strip() for l in f if l.strip())
+    with open(FINAIS, 'a', encoding='utf-8') as f:
+        for rel in paths:
+            if rel not in known:
+                f.write(rel + '\n')
+
+
+def cut_fisherman(path):
+    import processar_pedidos as P
+    from scipy import ndimage
+    fisher = P.trim(P.main_piece(P.key_out(Image.open(path).convert('RGBA'), P.MAGENTA)))
+    P.save(fisher, 'Cena/pescador.png')
+    # The fists alone, same size and place as the figure, with a soft 3 px edge.
+    a = np.array(fisher)
+    box = np.zeros(a.shape[:2], dtype=np.float32)
+    for x0, y0, x1, y1 in HAND_BOXES:
+        box[y0:y1, x0:x1] = 1.0
+    box = ndimage.uniform_filter(box, size=7)
+    hands = a.copy()
+    hands[..., 3] = (a[..., 3] * box).astype(np.uint8)
+    P.save(Image.fromarray(hands), 'Cena/pescador_maos.png')
+    remember(['Cena/pescador.png', 'Cena/pescador_maos.png'])
+
+
+def cut_scene_rods(path):
+    import processar_pedidos as P
+    sheet = P.key_out(Image.open(path).convert('RGBA'), P.MAGENTA)
+    third = sheet.height // 3
+    names = []
+    for i, rod_id in enumerate(SCENE_RODS):
+        rod = P.trim(P.main_piece(sheet.crop((0, i * third, sheet.width, (i + 1) * third))))
+        rel = 'Varas/Cena/%s.png' % rod_id
+        P.save(rod, rel)
+        names.append(rel)
+    remember(names)
+
+
 def cut_baits(path):
     import processar_mapas_3_4 as M
     import processar_pedidos as P
@@ -280,6 +358,10 @@ def cut_baits(path):
 if __name__ == '__main__':
     if '--iscas' in sys.argv:
         cut_baits(sys.argv[sys.argv.index('--iscas') + 1])
+    if '--pescador' in sys.argv:
+        cut_fisherman(sys.argv[sys.argv.index('--pescador') + 1])
+    if '--varas' in sys.argv:
+        cut_scene_rods(sys.argv[sys.argv.index('--varas') + 1])
     data = write_all()
     if '--previa' in sys.argv:
         preview(data, sys.argv[sys.argv.index('--previa') + 1])

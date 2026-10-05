@@ -3,6 +3,22 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m17.8] — 05/10/2026
+
+### Adicionado
+
+- Arte final dos pedidos 33 a 36: o pescador agora segura a vara com as duas mãos (os punhos são
+  desenhados por cima da vara), as três varas da cena são finas e retas, as iscas Terra Viva, Maré Viva
+  e Ouro de Maré aparecem penduradas na linha, e os Dólares ganharam o ícone final.
+- `tools/Arte/equipamento_na_cena.py --pescador` e `--varas` para recortar essas imagens.
+- Roadmap: tudo que o GDD pede e ainda não está no jogo entrou como proposta para o proprietário
+  analisar (M11-T10 a T13, M12-T16 a T26, M18 a M20), marcado com `from_gdd_review`.
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) nem aberto no Editor do Unity. Conferido só numa prévia
+  montada fora do Unity.
+
 ## [0.2.0-m17.7] — 02/10/2026
 
 ### Mudado

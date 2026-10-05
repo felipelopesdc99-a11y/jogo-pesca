@@ -190,27 +190,21 @@ as pastas da mais antiga para a mais nova: `python3 tools/Arte/processar_mapas_3
 A água dos dois mapas continua pintada por script, como nos mapas 1 e 2 (os reflexos são desenhados
 pelo jogo a partir das camadas).
 
-## Pescador segurando a vara e varas da cena (V0.2, `M16-T13`)
+## Pescador segurando a vara, varas da cena, iscas e ícone dos Dólares — chegaram (05/10/2026)
 
-`ASSET_PENDENTE`: na cena, a vara usa a pintura da Loja, que é curta e grossa, e fica desproporcional
-ao pescador; e o pescador está com as mãos no joelho, então não parece segurá-la (visto pelo
-proprietário em 02/10/2026). Faltam: o pescador sentado com as mãos fechadas segurando um cabo (sem a
-vara) e as três varas finas e compridas, retas na horizontal. Pedido pronto em
-`docs/PEDIDO_ARTE_PESCADOR_VARAS.md`. Ao chegar, a mão da frente é recortada da figura e desenhada por
-cima da vara, para ela ficar dentro da mão.
+Os pedidos 33 a 36 do documento
+[Pedidos de arte para o ChatGPT — Fishing Idle](https://claude.ai/code/artifact/163db00c-bfd7-418a-be46-26bd4b4109ec)
+chegaram e estão no jogo:
 
-## Ícone dos Dólares (V0.2, `M17-T01`)
+- `Cena/pescador.png` (mãos fechadas em volta do cabo) e `Cena/pescador_maos.png` (só os punhos, desenhados
+  por cima da vara). Tamanho, assento e ponto entre os punhos ficam em `Visual/equipamento_cena.json`.
+- `Varas/Cena/rod_00_starter.png`, `rod_01.png` e `rod_02.png`: as varas finas e retas da cena. A Loja continua
+  com `Varas/<id>.png`.
+- `Iscas/bait_01.png` a `bait_03.png`: Terra Viva, Maré Viva e Ouro de Maré, penduradas abaixo da boia.
+- `Icones/ico_dolar.png`: o ícone final dos Dólares.
 
-`ASSET_PENDENTE`: `Icones/ico_dolar.png` é provisório (nota verde com "$", feita por
-`tools/Arte/gerar_icones.py`). Falta o ícone final no estilo de `ico_moeda` e `ico_concha`.
-
-## Isca no anzol (V0.2, `M16-T12`)
-
-`ASSET_PENDENTE`: as três iscas (Simples, Melhorada e Premium) aparecem na cena como uma forma
-simples, de uma cor para cada uma, pendurada abaixo da boia (A-096). Falta uma pintura pequena de cada
-isca vista de lado, no estilo dos peixes, em fundo chapado — o pedido pronto está em
-`docs/PEDIDO_ARTE_ISCAS.md`. Quando chegar: `python3 tools/Arte/equipamento_na_cena.py --iscas <imagem>`
-(corta as três e o jogo passa a usá-las no lugar da cor).
+Para uma leva nova: `python3 tools/Arte/equipamento_na_cena.py --pescador <Pedido_33> --varas <Pedido_34>
+--iscas <Pedido_35> --previa <saida.png>`. O ícone dos Dólares é recortado como o da moeda (fundo magenta).
 
 ## Prioridade C
 

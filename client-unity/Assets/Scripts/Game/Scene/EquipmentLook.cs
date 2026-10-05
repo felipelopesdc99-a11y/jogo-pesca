@@ -11,9 +11,27 @@ namespace FishingIdle.Game.Scene
     [Serializable]
     public sealed class EquipmentLookFile
     {
+        public EquipmentFisherLook fisherman;
         public EquipmentBoatLook[] boats;
         public EquipmentRodLook[] rods;
         public EquipmentBaitLook[] baits;
+    }
+
+    /// <summary>
+    /// The painted fisherman: his picture, its height in scene units, where he sits (the pivot) and the
+    /// point between his fists where the rod turns (0–1, from the bottom-left), plus the fists alone,
+    /// drawn over the rod. A height of 0 means the entry is missing (JsonUtility fills absent objects).
+    /// </summary>
+    [Serializable]
+    public sealed class EquipmentFisherLook
+    {
+        public string art;
+        public string hands_art;
+        public float height;
+        public float pivot_u;
+        public float pivot_v;
+        public float hands_u;
+        public float hands_v;
     }
 
     /// <summary>A Shop boat in the scene: the whole picture behind the fisherman and its near side in front.</summary>
@@ -57,6 +75,13 @@ namespace FishingIdle.Game.Scene
         private const string ResourcePath = "Visual/equipamento_cena";
         private static EquipmentLookFile _file;
         private static bool _loaded;
+
+        /// <summary>The painted fisherman, or null when the file has no valid entry.</summary>
+        public static EquipmentFisherLook Fisherman()
+        {
+            var look = File?.fisherman;
+            return look != null && look.height > 0f && !string.IsNullOrEmpty(look.art) ? look : null;
+        }
 
         public static EquipmentBoatLook Boat(string id) => Find(File?.boats, b => b.id == id);
 

@@ -280,3 +280,11 @@ Barcos/Cena/boat_02_frente.png
 Barcos/Cena/boat_03_frente.png
 Barcos/Cena/boat_04_frente.png
 Barcos/Cena/boat_05_frente.png
+Iscas/bait_01.png
+Iscas/bait_02.png
+Iscas/bait_03.png
+Icones/ico_dolar.png
+Cena/pescador_maos.png
+Varas/Cena/rod_00_starter.png
+Varas/Cena/rod_01.png
+Varas/Cena/rod_02.png

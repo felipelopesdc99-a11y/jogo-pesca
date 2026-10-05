@@ -111,11 +111,15 @@ namespace FishingIdle.Game.Scene
             var o = FishingScene.OrderFisherman;
 
             // The painted fisherman (Resources/Arte/Cena/pescador.png) sits behind the rim of the hull
-            // with his hands on his knee, and the rod rests in them; without the file, the figure is
-            // built from simple shapes with an arm holding the rod.
-            // Pivot = where he sits (27% across, 12% up the picture); hands at 97% across, 23% up.
-            const float paintedHeight = 1.7f;
-            var painted = Visual.ArtAssets.SpriteByHeight("Cena/pescador", paintedHeight, new Vector2(0.27f, 0.12f));
+            // with his fists closed around the rod; without the file, the figure is built from simple
+            // shapes with an arm holding the rod. His size, seat (pivot) and the point between his
+            // fists come from Visual/equipamento_cena.json (tools/Arte/equipamento_na_cena.py); the
+            // old picture's numbers are the fallback.
+            var fisher = EquipmentLook.Fisherman();
+            var paintedHeight = fisher != null ? fisher.height : 1.7f;
+            var pivot = fisher != null ? new Vector2(fisher.pivot_u, fisher.pivot_v) : new Vector2(0.27f, 0.12f);
+            var grip = fisher != null ? new Vector2(fisher.hands_u, fisher.hands_v) : new Vector2(0.97f, 0.23f);
+            var painted = Visual.ArtAssets.SpriteByHeight(fisher != null ? fisher.art : "Cena/pescador", paintedHeight, pivot);
             Vector3 hands;
             if (painted != null)
             {
@@ -125,7 +129,16 @@ namespace FishingIdle.Game.Scene
                 _body.localPosition = insideHull ? new Vector3(-0.35f, 0.2f, 0f) : _body.localPosition;
                 FishingScene.Sprite(_body, "Pescador", painted, Vector3.zero, Vector3.one, insideHull ? FishingScene.OrderFisherman : FishingScene.OrderBoat - 1);
                 var width = paintedHeight * painted.rect.width / painted.rect.height;
-                hands = new Vector3((0.97f - 0.27f) * width, (0.23f - 0.12f) * paintedHeight, 0f);
+                hands = new Vector3((grip.x - pivot.x) * width, (grip.y - pivot.y) * paintedHeight, 0f);
+
+                // His fists alone, drawn over the rod so it sits inside them.
+                var fists = insideHull && fisher != null && !string.IsNullOrEmpty(fisher.hands_art)
+                    ? Visual.ArtAssets.SpriteByHeight(fisher.hands_art, paintedHeight, pivot)
+                    : null;
+                if (fists != null)
+                {
+                    FishingScene.Sprite(_body, "Mãos", fists, Vector3.zero, Vector3.one, FishingScene.OrderRod + 1);
+                }
             }
             else
             {

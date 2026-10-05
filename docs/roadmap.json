@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-05T21:22:41Z",
-  "current_milestone": "M18",
+  "updated_at": "2026-10-05T21:28:02Z",
+  "current_milestone": "M17",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -11,7 +11,7 @@
     "BLOCKED",
     "NEEDS_OWNER_DECISION"
   ],
-  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR. Desde 29/09/2026 o trabalho novo faz parte da V0.2 (a partir do M13); desde 05/10/2026, todos os testes pelo proprietário (decisões com deferred_to_end: true, e as tarefas \"Testar no Unity\") ficam para o final do jogo, a pedido dele: não pedir esses testes antes disso. As decisões de design abertas (OD-009 e OD-021) continuam valendo. Em 05/10/2026 o proprietário decidiu terminar o jogo inteiro: tudo que o GDD pede e ainda não foi feito entrou no roadmap (M11-T10 a T13, M12 de volta ao plano, M18 a M20). Os sistemas que o GDD deixa para depois da V0.1 estão no M20 como decisões futuras (future_version: true).",
+  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR. Desde 29/09/2026 o trabalho novo faz parte da V0.2 (a partir do M13); desde 05/10/2026, todos os testes pelo proprietário (decisões com deferred_to_end: true, e as tarefas \"Testar no Unity\") ficam para o final do jogo, a pedido dele: não pedir esses testes antes disso. As decisões de design abertas (OD-009 e OD-021) continuam valendo. Em 05/10/2026 o proprietário decidiu terminar o jogo inteiro: tudo que o GDD pede e ainda não foi feito entrou no roadmap (M11-T10 a T13, M12 de volta ao plano, M18 a M20). Os sistemas que o GDD deixa para depois da V0.1 estão no M20 como decisões futuras (future_version: true). As tarefas com from_gdd_review: true são propostas tiradas do GDD para o proprietário analisar se entram no jogo: não começar nenhuma sem a aprovação dele.",
   "owner_decisions": [
     {
       "id": "OD-001",
@@ -1741,7 +1741,8 @@
           "dependencies": [
             "M11-T08"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M11-T11",
@@ -1752,7 +1753,8 @@
           "dependencies": [
             "M11-T10"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M11-T12",
@@ -1763,7 +1765,8 @@
           "dependencies": [
             "M11-T08"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M11-T13",
@@ -1772,7 +1775,8 @@
           "description": "Calibrar a meta de cerca de 90 dias até o Nível 100 (§17). Hoje a curva está medida só até o Nível 40. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         }
       ]
     },
@@ -1954,7 +1958,8 @@
           "dependencies": [
             "M12-T03"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M12-T17",
@@ -1965,7 +1970,8 @@
           "dependencies": [
             "M12-T13"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M12-T18",
@@ -1976,7 +1982,8 @@
           "dependencies": [
             "M12-T16"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M12-T19",
@@ -1988,7 +1995,8 @@
             "M12-T16",
             "M12-T14"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M12-T20",
@@ -2000,7 +2008,8 @@
             "M12-T13",
             "M12-T14"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M12-T21",
@@ -2012,7 +2021,8 @@
             "M12-T13",
             "M12-T14"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M12-T22",
@@ -2023,7 +2033,8 @@
           "dependencies": [
             "M12-T21"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M12-T23",
@@ -2034,7 +2045,8 @@
           "dependencies": [
             "M12-T13"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M12-T24",
@@ -2045,7 +2057,8 @@
           "dependencies": [
             "M12-T13"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M12-T25",
@@ -2056,7 +2069,8 @@
           "dependencies": [
             "M19-T02"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M12-T26",
@@ -2068,7 +2082,8 @@
             "M12-T20",
             "M12-T21"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         }
       ]
     },
@@ -2820,22 +2835,24 @@
           "title": "Pintura das três iscas",
           "subsystem": "client",
           "description": "ASSET_PENDENTE: as iscas Simples, Melhorada e Premium aparecem na cena como uma forma colorida abaixo da boia (A-096). Falta uma pintura pequena de cada. Lista em docs/ASSETS_PENDENTES.md. Pedido pronto em docs/PEDIDO_ARTE_ISCAS.md; o jogo já usa Resources/Arte/Iscas/bait_0X.png quando existir (tools/Arte/equipamento_na_cena.py --iscas).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M16-T11"
           ],
-          "updated_at": "2026-10-01T05:06:15Z"
+          "updated_at": "2026-10-05T21:28:02Z",
+          "completion_notes": "Pedido 35 do proprietário (05/10/2026) recortado por tools/Arte/equipamento_na_cena.py --iscas em Resources/Arte/Iscas/bait_01 a bait_03 (Terra Viva, Maré Viva, Ouro de Maré); equipamento_cena.json aponta para elas e a cena troca a cor provisória pela pintura. Não aberto no Unity ainda."
         },
         {
           "id": "M16-T13",
           "title": "Pescador segurando a vara e varas proporcionais na cena",
           "subsystem": "client",
           "description": "ASSET_PENDENTE: o proprietário viu no Play (02/10/2026) que a vara está desproporcional ao pescador e não parece estar na mão dele. Pedidos para o GPT em docs/PEDIDO_ARTE_PESCADOR_VARAS.md (pescador com as mãos fechadas, sem vara; três varas finas e retas). Ao chegar: recortar a mão da frente para desenhá-la por cima da vara.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M16-T11"
           ],
-          "updated_at": "2026-10-02T21:49:18Z"
+          "updated_at": "2026-10-05T21:28:02Z",
+          "completion_notes": "Pedidos 33 e 34 do proprietário (05/10/2026). equipamento_na_cena.py ganhou --pescador e --varas: Cena/pescador.png com as mãos fechadas, Cena/pescador_maos.png (só os punhos, desenhados por cima da vara) e as três varas finas em Varas/Cena (a Loja continua com Varas/<id>). Tamanho, assento e ponto entre os punhos foram para equipamento_cena.json (bloco fisherman), lidos pelo FishermanRig com os números antigos como reserva; a vara gira entre os punhos, presa na altura do molinete (grip 0,12). Conferido numa prévia montada fora do Unity; ainda não compilado (sem .NET neste ambiente) nem aberto no Unity."
         },
         {
           "id": "M16-T14",
@@ -2869,7 +2886,7 @@
           "status": "DONE",
           "dependencies": [],
           "updated_at": "2026-10-02T22:00:38Z",
-          "completion_notes": "PlayerSave.Dollars (save v11, migração do v10 com 0), PlayerView.Dollars, faixa de Conchas e Dólares no alto à direita (Hud.DrawWallet), Painel de Desenvolvimento mostra o saldo. Ícone provisório ico_dolar (ASSET_PENDENTE). GDD_ADENDO A-098. Compila; não aberto no Unity ainda."
+          "completion_notes": "PlayerSave.Dollars (save v11, migração do v10 com 0), PlayerView.Dollars, faixa de Conchas e Dólares no alto à direita (Hud.DrawWallet), Painel de Desenvolvimento mostra o saldo. Ícone final ico_dolar (Pedido 36, 05/10/2026). GDD_ADENDO A-098. Compila; não aberto no Unity ainda."
         },
         {
           "id": "M17-T02",
@@ -2963,7 +2980,8 @@
           "description": "O Perfil do próprio jogador deve mostrar a posição atual na Arena (§37). Hoje ela só aparece na janela da Arena. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T02",
@@ -2972,7 +2990,8 @@
           "description": "Pelo card do adversário, abrir o perfil dele (§28). No jogo local, o perfil do adversário simulado; com o servidor, o de pessoas reais. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T03",
@@ -2981,7 +3000,8 @@
           "description": "Permitir escolher o nome e o avatar (§37). Hoje o nome é fixo, \"Pescador\", e o retrato é o mesmo para todos. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T04",
@@ -2990,7 +3010,8 @@
           "description": "Efeito simples de água no ataque e de impacto no acerto (§27). Hoje o replay tem só o avanço do peixe, o dano e a barra de vida. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T05",
@@ -2999,7 +3020,8 @@
           "description": "Guardar no save um conjunto limitado dos avisos mais recentes (§39). Hoje eles somem ao fechar o jogo. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T06",
@@ -3008,7 +3030,8 @@
           "description": "Mostrar barco e isca em Equipamentos e os peixes que escaparam nos Destaques (§20, §37, A-088 a A-090). Hoje o Perfil mostra só a vara. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T07",
@@ -3017,7 +3040,8 @@
           "description": "Gravar a versão do balanceamento junto de capturas importantes, batalhas e Expedições (§43), para saber com quais números cada resultado saiu. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T08",
@@ -3026,7 +3050,8 @@
           "description": "A visão geral do Painel de Desenvolvimento deve listar as próximas 5 tarefas, não só o próximo passo (§5). (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T09",
@@ -3035,7 +3060,8 @@
           "description": "Cards visuais de peixes, mapas, varas, barcos, iscas e Expedições no Painel de Desenvolvimento (§5). Hoje há só tabelas de números. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T10",
@@ -3044,7 +3070,8 @@
           "description": "Versões do jogo, servidor e web, data do build, ambiente, histórico de versões e o último build para Windows (§5). (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T11",
@@ -3053,7 +3080,8 @@
           "description": "O §30 diz que a derrota tira Honra; hoje perder uma defesa não tira (A-043). Aplicar o que o proprietário decidir. (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M18-T12",
@@ -3062,7 +3090,8 @@
           "description": "O GDD não define um limite para a Caixa de Pesca; hoje ela é ilimitada (A-006). Aplicar o que o proprietário decidir. (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         }
       ]
     },
@@ -3084,7 +3113,8 @@
           "description": "Build de lançamento com versão e canal definidos (§45). Hoje existe só o build de teste para amigos. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M19-T02",
@@ -3095,7 +3125,8 @@
           "dependencies": [
             "M19-T01"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M19-T03",
@@ -3106,7 +3137,8 @@
           "dependencies": [
             "M12-T13"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M19-T04",
@@ -3115,7 +3147,8 @@
           "description": "Notas escritas para o jogador a cada versão publicada (§6). Hoje só existe o CHANGELOG, que é de desenvolvimento. (Levantado do GDD em 05/10/2026.)",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M19-T05",
@@ -3126,7 +3159,8 @@
           "dependencies": [
             "M19-T01"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M19-T06",
@@ -3138,7 +3172,8 @@
             "M19-T01",
             "M19-T02"
           ],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         }
       ]
     },
@@ -3157,7 +3192,8 @@
           "description": "Peixes com habilidades próprias na batalha (§2). Precisa definir: que tipos de habilidade, como se ganham e como entram no combate. (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T02",
@@ -3166,7 +3202,8 @@
           "description": "Classes de peixe que curam ou ajudam o Cardume (§2). Precisa definir se existem e como funcionam. (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T03",
@@ -3175,7 +3212,8 @@
           "description": "Itens que os peixes vestem para ganhar atributos (§2). Precisa definir os itens, de onde vêm e quanto valem. (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T04",
@@ -3184,7 +3222,8 @@
           "description": "Os outros espaços de equipamento citados no §20 (chapéu, colete, luvas, botas, calça, colar e anel). Barco e isca já entraram na V0.2. (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T05",
@@ -3193,7 +3232,8 @@
           "description": "Sistema para melhorar equipamentos com Conchas e outros materiais (§2, §21). (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T06",
@@ -3202,7 +3242,8 @@
           "description": "A Arena dividida em temporadas, com recompensas e reinício de ranking (§2). (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T07",
@@ -3211,7 +3252,8 @@
           "description": "Trilha de recompensas por temporada (§2). Liga com a decisão de monetização. (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T08",
@@ -3220,7 +3262,8 @@
           "description": "Grupos de jogadores, amigos e chat (§2). (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T09",
@@ -3229,7 +3272,8 @@
           "description": "Novos mapas, peixes e varas (§2, §17). Os mapas 3 e 4 já entraram na V0.2. (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T10",
@@ -3238,7 +3282,8 @@
           "description": "As próximas varas da progressão (§19). A Vara 2 (Maré Dourada) já existe. (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T11",
@@ -3247,7 +3292,8 @@
           "description": "Como o jogo ganha dinheiro: compras no jogo, passe, cosméticos ou venda do jogo (§2). Liga com a decisão dos Dólares (OD-021). (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T12",
@@ -3256,7 +3302,8 @@
           "description": "O que o jogador faz depois de chegar ao topo da progressão (§2). (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T13",
@@ -3265,7 +3312,8 @@
           "description": "Eventos com tempo marcado e torneios entre jogadores (§2). (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T14",
@@ -3274,7 +3322,8 @@
           "description": "Raridades além das atuais (§2, §15). Épico e o tamanho Perfeição já entraram na V0.2. (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T15",
@@ -3283,7 +3332,8 @@
           "description": "Atividades além da Arena e das Expedições para o Cardume (§23). (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T16",
@@ -3292,7 +3342,8 @@
           "description": "Animação e efeito de ataque diferentes por espécie no replay da Arena (§27). (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         },
         {
           "id": "M20-T17",
@@ -3301,7 +3352,8 @@
           "description": "Um programa leve que baixa e instala versões novas sozinho (§6, §47). (Levantado do GDD em 05/10/2026.)",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z"
+          "updated_at": "2026-10-05T21:22:41Z",
+          "from_gdd_review": true
         }
       ]
     }

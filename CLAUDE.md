@@ -111,7 +111,12 @@ Desde 29/09/2026, tudo que o proprietário pedir entra na **V0.2** (milestones a
 `docs/roadmap.json`). **Todos os testes pelo proprietário ficam para o final do jogo** (decisão dele em
 05/10/2026): as decisões marcadas com `deferred_to_end: true` no roadmap e as tarefas "Testar no Unity".
 Não pedir esses testes nem lembrá-lo deles antes disso; seguir o trabalho sem esperar por eles. As
-decisões de design abertas (por exemplo OD-009, Loja da Arena, e OD-021, Dólares) continuam valendo. Continua
+decisões de design abertas (por exemplo OD-009, Loja da Arena, e OD-021, Dólares) continuam valendo.
+
+**Propostas tiradas do GDD.** Em 05/10/2026 tudo que o GDD pede e o jogo ainda não tem entrou no roadmap
+marcado com `from_gdd_review: true` (M11-T10 a T13, M12-T16 a T26, M18, M19, M20). São propostas para o
+proprietário analisar: **não começar nenhuma sem ele aprovar**, e não mudar o que já foi feito e aprovado
+para "seguir o GDD" — o que o jogo já faz diferente do GDD (registrado no `GDD_ADENDO.md`) vale. Continua
 valendo: não inventar sistemas; fazer o que foi pedido e registrar o resto como decisão pendente.
 
 ### Visual: a Bíblia de Arte
