@@ -206,26 +206,15 @@ chegaram e estão no jogo:
 Para uma leva nova: `python3 tools/Arte/equipamento_na_cena.py --pescador <Pedido_33> --varas <Pedido_34>
 --iscas <Pedido_35> --previa <saida.png>`. O ícone dos Dólares é recortado como o da moeda (fundo magenta).
 
-## Mapas 5 a 8 e Varas 3 e 4 — no jogo (06/10/2026)
+## Mapas 5 a 10 e Varas 3 a 5 — no jogo (06/10/2026)
 
-A arte dos Mapas 5 a 8 e das Varas 3 e 4 está no jogo (`tools/Arte/processar_mapas_5_6.py` e
-`processar_mapas_7_8.py`, com as pastas dos pacotes; depois `tools/Arte/otimizar_png.py`). As faixas do
-horizonte que vêm com mar pintado embaixo são limpas pelo script, e os peixes que encostam um no outro
-nas grades são separados pela forma.
+A arte de todos os mapas novos e das Varas 3 a 5 está no jogo (`tools/Arte/processar_mapas_5_6.py`,
+`processar_mapas_7_8.py` e `processar_mapas_9_10.py`, com as pastas dos pacotes; depois
+`tools/Arte/otimizar_png.py`). Os scripts limpam o mar pintado embaixo das faixas, separam os peixes que
+encostam um no outro e continuam os céus noturnos com cópias espelhadas.
 
-`ASSET_PENDENTE` (o provisório fica no lugar):
-
-- `Corrente_02_ceu` — céu da Corrente Azul.
-- `Corrente_11_peixes_2` — Peixe-lua, Espadarte, Marlim-branco e Marlim-azul.
-
-## Mapas 9 e 10 e Vara 5 (M21-T09) — pedidos feitos (06/10/2026)
-
-`ASSET_PENDENTE`: Talude Noturno e Abismo Atlântico (cenário noturno em camadas, 20 peixes, petrel e
-vultos) e a Vara 5 · Soberana Abissal (Loja e cena), mais as duas imagens que faltaram da Corrente Azul,
-estão pedidos no documento
-[Fishing Idle — Pedidos de arte: Talude Noturno e Abismo Atlântico](https://claude.ai/code/artifact/60dc7505-4b4d-4816-88b2-159affc0df38)
-(31 imagens, `Talude_XX_*.png`, `Abismo_XX_*.png` e `Vara5_XX_*.png`). Até lá os dois mapas usam o cenário
-noturno provisório de `gerar_cenarios.py` e os peixes usam o desenho de reserva feito por código.
+`ASSET_PENDENTE`: só o `Abismo_12_vulto_gigante` (vulto gigante do Abismo Atlântico), pedido de novo
+em 06/10/2026 no documento [Pedido de arte: o que faltou (Abismo 12)](https://claude.ai/code/artifact/83775701-39fa-4138-832c-976f525abda9). Até chegar, o jogo usa o vulto do Talude, maior.
 
 ## Som ambiente dos mapas
 

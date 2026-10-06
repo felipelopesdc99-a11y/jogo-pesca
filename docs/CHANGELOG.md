@@ -3,6 +3,19 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.3] — 06/10/2026
+
+### Adicionado
+
+- Arte final do Talude Noturno, do Abismo Atlântico e da Soberana Abissal, e o céu e os 4 peixes que
+  faltavam na Corrente Azul: todos os 100 peixes e as 6 varas com arte final (A-108).
+- Paisagem viva noturna: petréis e vultos de peixes grandes passando sob a água.
+- `tools/Arte/processar_mapas_9_10.py` (fundo verde, céu noturno continuado com cópias espelhadas).
+
+### Não verificado
+
+- Não compilado nem aberto no Editor do Unity; conferido só em prévias montadas fora do Unity.
+
 ## [0.2.0-m21.2] — 06/10/2026
 
 ### Adicionado

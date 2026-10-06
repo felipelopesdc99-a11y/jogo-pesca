@@ -105,6 +105,10 @@ namespace FishingIdle.Game.Scene
                 case "shearwaters": return Has("pardela_1");
                 case "humpback_spout": return Has("jubarte_borrifo_1") && _spots.ContainsKey("whale");
                 case "humpback_breach": return Has("jubarte_salto_1") && _spots.ContainsKey("whale");
+                // Talude Noturno and Abismo Atlântico.
+                case "petrels": return Has("petrel_1");
+                case "deep_shadow": return Has("vulto_1") && _spots.ContainsKey("shadow");
+                case "giant_shadow": return (Has("vulto_gigante_1") || Has("vulto_1")) && _spots.ContainsKey("shadow");
                 default: return false;
             }
         }
@@ -149,6 +153,10 @@ namespace FishingIdle.Game.Scene
                 case "shearwaters": return Flock("pardela", 4, 0.62f, Random.Range(1, 3), 3.0f, 10f, 0.5f, 1.5f);
                 case "humpback_spout": return Spout("jubarte_borrifo", 1.5f, "whale");
                 case "humpback_breach": return Breach("jubarte_salto", 1.3f, "whale");
+                case "petrels": return Flock("petrel", 4, 0.6f, Random.Range(1, 3), 2.8f, 9f, 0.6f, 1.8f);
+                case "deep_shadow": return Shadow("vulto", 1.8f, 0.32f, 14f);
+                // Until its own art arrives, the giant is the same shadow, bigger, deeper and slower.
+                case "giant_shadow": return Shadow(Has("vulto_gigante_1") ? "vulto_gigante" : "vulto", 4.2f, 0.22f, 22f);
                 default: return Nothing();
             }
         }
@@ -950,6 +958,38 @@ namespace FishingIdle.Game.Scene
             {
                 Object.Destroy(r.gameObject);
             }
+        }
+
+        /// <summary>
+        /// A big fish passing under the surface: only its dark shape, see-through, swimming slowly across
+        /// with its tail beating, fading in and out (night maps).
+        /// </summary>
+        private IEnumerator Shadow(string art, float width, float alpha, float seconds)
+        {
+            var frames = Frames(art, 3, width, new Vector2(0.5f, 0.5f));
+            if (frames == null)
+            {
+                yield break;
+            }
+
+            var spot = _spots["shadow"];
+            var dir = Random.value > 0.5f ? 1f : -1f;
+            var y = spot.y + Random.Range(-0.4f, 0.4f);
+            var from = -dir * (_halfWidth + width);
+            var to = dir * (_halfWidth + width);
+            var r = Spawn(_water, "Vulto", frames[1], new Vector3(from, y, 0f), FishingScene.OrderWaterLife - 1, dir < 0);
+            SetAlpha(r, 0f);
+            int[] beat = { 0, 1, 2, 1 };
+            for (var t = 0f; t < seconds; t += Time.deltaTime)
+            {
+                var k = t / seconds;
+                r.sprite = frames[beat[(int)(t * 2.5f) % beat.Length]];
+                r.transform.localPosition = new Vector3(Mathf.Lerp(from, to, k), y + Mathf.Sin(t * 0.7f) * 0.08f, 0f);
+                SetAlpha(r, alpha * Mathf.Clamp01(k * 6f) * Mathf.Clamp01((1f - k) * 6f));
+                yield return null;
+            }
+
+            Object.Destroy(r.gameObject);
         }
 
         /// <summary>A humpback breathing far away: the back comes up with the spout, the spout at full height, the back arches down.</summary>

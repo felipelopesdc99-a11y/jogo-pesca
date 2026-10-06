@@ -128,10 +128,11 @@ def fish_and_rod(folder):
         P.save(rod, 'Varas/Cena/rod_04.png')
 
 
-def soften_inner_edges(base, fraction=0.15):
+def soften_inner_edges(base, fraction=0.15, names=('near_left', 'near_right')):
     """The big waves of the Corrente Azul end in a straight cut where the painting ended: fade the inner
     side (the right of the left wave, the left of the right wave) so they sink into the sea."""
-    for name, inner_right in (('near_left', True), ('near_right', False)):
+    for name in names:
+        inner_right = name.endswith('left')
         rel = base + name + '.png'
         path = os.path.join(P.ART, rel)
         if rel not in P.written or not os.path.exists(path):

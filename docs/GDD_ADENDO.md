@@ -1257,3 +1257,17 @@ Correções de brechas que deixavam o jogador ganhar sem jogar. Nenhuma regra de
 - **Leilão:** um lance maior que o saldo é recusado antes de calcular a taxa.
 - **Save editado:** nível de peixe e de vara volta para dentro do máximo, cargas de isca negativas viram
   zero e um barco que não foi comprado não é usado (vale o barco inicial).
+
+### A-108 · Arte final dos Mapas 9 e 10 e da Soberana Abissal
+**Seção do GDD:** 9, 16, 19 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Chegou a arte do Talude Noturno, do Abismo Atlântico, da Vara 5 e as duas imagens que faltavam da
+Corrente Azul (céu e a grade com o Marlim-azul). Com isso todos os 100 peixes e as 6 varas têm arte final.
+
+- **Céus noturnos:** a pintura continua para os lados com cópias espelhadas dela mesma (as estrelas e a
+  via láctea seguem pela tela toda), com a lua apagada nas cópias para existir uma só.
+- **Ondas e cantos:** as ondas grandes das margens e as cristas dos cantos somem suavemente do lado de
+  dentro, para não aparecer o corte reto da pintura.
+- **Paisagem viva:** no Talude Noturno, petréis voando rente ao mar e, de vez em quando, o vulto escuro de
+  um peixe grande passando sob a superfície. No Abismo Atlântico, um vulto gigante passa bem fundo, mais
+  devagar e mais apagado. Até chegar o desenho próprio dele (Abismo 12), é o mesmo vulto, maior.
