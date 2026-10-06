@@ -129,6 +129,12 @@ namespace FishingIdle.GameService.Market
                 return ServiceResult<BidResult>.Fail(ServiceError.BidTooLow);
             }
 
+            // Checked before adding the fee, so a huge amount can never overflow into a negative cost.
+            if (amountCoins > Save.Coins)
+            {
+                return ServiceResult<BidResult>.Fail(ServiceError.NotEnoughCoins);
+            }
+
             var fee = BidFee(amountCoins);
             if (Save.Coins < amountCoins + fee)
             {
@@ -283,7 +289,7 @@ namespace FishingIdle.GameService.Market
                         continue;
                     }
 
-                    var ceiling = (long)Math.Floor(MarketRules.ReferenceValue(Config, auction.Goods) * bots.MaxBidRatio);
+                    var ceiling = Math.Min(MarketRules.MaxBotPrice(Config, auction.Goods), (long)Math.Floor(MarketRules.ReferenceValue(Config, auction.Goods) * bots.MaxBidRatio));
                     var minimum = MinNextBid(auction);
                     if (minimum > ceiling)
                     {

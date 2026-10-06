@@ -301,7 +301,15 @@ passo está em `SaveMigrations.Upgrade`.
     nomes e tira o mar pintado embaixo das faixas do horizonte (`drop_painted_sea`). `gerar_cenarios.py
     CostaDeCoral ArquipelagoDoSol` pinta o provisório só desses mapas. O cenário de cada mapa novo é um
     `SceneTheme` em `FishingScene.For`; a paisagem viva, uma cena em `paisagem_viva.json`, e os animais
-    novos são comportamentos existentes (`Flock`, `Surfacer`) com outra arte.
+    novos são comportamentos existentes (`Flock`, `Surfacer`) com outra arte, ou rotinas curtas novas
+    (`FlyingFish`, `Spout`, `Breach`). `processar_mapas_7_8.py` separa os peixes da grade pela forma
+    (`grid_by_pieces`), não pela linha da célula. Mapas noturnos: `SceneTheme.Night` e `SunGlow` (luz fria),
+    brilho de plâncton feito no jogo; o provisório é o `open_sea` de `gerar_cenarios.py`.
+  - **Tamanho e desempenho** (TD-031, TD-032): `ArtImportSettings.MaxSizeFor` limita cada tipo de
+    imagem ao que a tela mostra (as fontes continuam grandes); `tools/Arte/otimizar_png.py` recomprime os
+    PNG sem perdas e roda depois de qualquer script de arte; o `GameRoot` baixa para 15 quadros por segundo
+    sem foco.
+  - **Relógio** (TD-030): as regras recebem o `SteadyClock` do `GameSession`, que nunca volta no tempo.
   - **Arte final do proprietário** (`tools/Arte/processar_pedidos.py`): recorta as imagens do ChatGPT
     (fundo verde, magenta ou preto), separa grades de peixes e ícones, estende o céu e as camadas de
     montanha até as 26 unidades (espelhando faixas sem marcos, para a cachoeira aparecer uma vez só) e

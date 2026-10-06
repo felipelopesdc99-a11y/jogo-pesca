@@ -514,6 +514,11 @@ namespace FishingIdle.GameService.Market
                         continue;
                     }
 
+                    if (listing.PriceCoins > MarketRules.MaxBotPrice(Config, listing.Goods))
+                    {
+                        continue;
+                    }
+
                     var rng = Rng.For(Save.RngSeed ^ DemandSalt, t, listing.Id);
                     var chance = MarketRules.PurchaseChance(Config, listing.PriceCoins, MarketRules.ReferenceValue(Config, listing.Goods));
                     if (rng.NextDouble() >= chance)

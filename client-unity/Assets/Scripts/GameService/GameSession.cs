@@ -23,7 +23,19 @@ namespace FishingIdle.GameService
         {
             Config = config ?? throw new ArgumentNullException(nameof(config));
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            Clock = clock ?? throw new ArgumentNullException(nameof(clock));
+            if (clock == null)
+            {
+                throw new ArgumentNullException(nameof(clock));
+            }
+
+            // Rules never see time going backwards (TD-030).
+            Clock = new SteadyClock(clock, () => Save?.ClockHighWaterMs ?? 0, ms =>
+            {
+                if (Save != null)
+                {
+                    Save.ClockHighWaterMs = ms;
+                }
+            });
             _log = log ?? (_ => { });
             LoadOrCreate();
         }
@@ -181,6 +193,37 @@ namespace FishingIdle.GameService
             {
                 Save.FisherLevel = maxLevel;
                 Save.FisherXp = 0;
+            }
+
+            // Levels and charges stay inside what the config allows (an edited save, or a config that
+            // lowered a maximum, cannot leave a fish or a rod above the top level).
+            var fishMax = Config.Progression.FishLevel.MaxLevel;
+            foreach (var fish in Save.Aquarium)
+            {
+                fish.Level = Math.Max(1, Math.Min(fishMax, fish.Level));
+            }
+
+            var market = Save.Market;
+            var rodsOnMarket = market == null
+                ? Enumerable.Empty<InventoryItem>()
+                : market.MyListings.Select(l => l.Goods?.Rod)
+                    .Concat(market.Withdrawals.Select(w => w.Goods?.Rod))
+                    .Concat(market.Auctions.Where(a => a.SellerName == null).Select(a => a.Goods?.Rod))
+                    .Where(r => r != null);
+            foreach (var item in Save.Inventory.Where(i => i.Kind == InventoryItem.KindRod).Concat(rodsOnMarket))
+            {
+                if (Config.TryGetRod(item.RodId, out var rod))
+                {
+                    item.Level = Math.Max(1, Math.Min(Config.RodMaxLevel(rod), item.Level));
+                }
+            }
+
+            if (Save.BaitCharges != null)
+            {
+                foreach (var bait in Save.BaitCharges.Keys.ToList())
+                {
+                    Save.BaitCharges[bait] = Math.Max(0, Save.BaitCharges[bait]);
+                }
             }
 
             var unknown = Save.FishingBox.Count(c => !Config.TryGetSpecies(c.SpeciesId, out _));

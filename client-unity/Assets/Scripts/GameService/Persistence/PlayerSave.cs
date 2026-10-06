@@ -22,6 +22,9 @@ namespace FishingIdle.GameService.Persistence
         public long CreatedAtMs { get; set; }
         public long UpdatedAtMs { get; set; }
 
+        /// <summary>The latest time this save has been seen at (SteadyClock, TD-030). 0 in older saves.</summary>
+        public long ClockHighWaterMs { get; set; }
+
         /// <summary>Base seed for every roll this player gets. Never shown, never changed.</summary>
         public ulong RngSeed { get; set; }
 

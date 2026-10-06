@@ -21,6 +21,45 @@ namespace FishingIdle.GameService.Core
         public long UtcNowMs => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     }
 
+    /// <summary>
+    /// A clock that never goes backwards: "now" is the latest time this player has ever been seen at.
+    /// </summary>
+    /// <remarks>
+    /// Every timer (offline fishing, Arena energy, Expeditions, Market checks) is anchored to "now".
+    /// Turning the PC clock back and then forward again would otherwise open a fresh gap each time
+    /// (TD-030). With this clock, turning it back simply freezes time until the real time catches up;
+    /// turning it forward is still capped by each system's own limits (TD-019).
+    /// </remarks>
+    public sealed class SteadyClock : IClock
+    {
+        private readonly IClock _inner;
+        private readonly Func<long> _read;
+        private readonly Action<long> _write;
+
+        public SteadyClock(IClock inner, Func<long> readHighWater, Action<long> writeHighWater)
+        {
+            _inner = inner ?? throw new ArgumentNullException(nameof(inner));
+            _read = readHighWater;
+            _write = writeHighWater;
+        }
+
+        public long UtcNowMs
+        {
+            get
+            {
+                var now = _inner.UtcNowMs;
+                var highest = _read();
+                if (now > highest)
+                {
+                    _write(now);
+                    return now;
+                }
+
+                return highest;
+            }
+        }
+    }
+
     /// <summary>A clock tests and simulations move by hand.</summary>
     public sealed class ManualClock : IClock
     {

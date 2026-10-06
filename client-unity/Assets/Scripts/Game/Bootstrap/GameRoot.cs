@@ -188,6 +188,32 @@ namespace FishingIdle.Game.Bootstrap
             Travel = Game.Maps.GetTravel();
         }
 
+        // Frames per second when the window is in the back: the game keeps fishing, but the PC (or the
+        // phone's battery) does not need to draw 60 frames nobody is looking at (TD-032).
+        private const int BackgroundFrameRate = 15;
+        private int _vSync = -1;
+
+        private void OnApplicationFocus(bool focused)
+        {
+            if (_vSync < 0)
+            {
+                _vSync = QualitySettings.vSyncCount;
+            }
+
+            // With vSync on, Unity ignores targetFrameRate; it is turned off only while in the back.
+            QualitySettings.vSyncCount = focused ? _vSync : 0;
+            Application.targetFrameRate = focused ? 60 : BackgroundFrameRate;
+        }
+
+        private void OnApplicationPause(bool paused)
+        {
+            // On phones the app may be closed while paused without OnApplicationQuit: note the time now.
+            if (paused && IsRunning)
+            {
+                Guard(() => Game.Fishing.MarkSeen());
+            }
+        }
+
         private void OnApplicationQuit()
         {
             if (IsRunning)

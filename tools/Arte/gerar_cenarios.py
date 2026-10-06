@@ -812,8 +812,133 @@ def arquipelago_do_sol(out):
     thumbnail(out, prefix)
 
 
+# ----------------------------------------------------------------------------- Mapas 7 a 10 (mar aberto)
+
+def open_sea(out, prefix, seed, sun, sky, water, night=False, column=True, islets=None):
+    """Placeholder for the open-sea maps (Corrente Azul, Banco das Baleias, Talude Noturno, Abismo
+    Atlântico): sky (day or night with stars and moon), a low swell line, big swells at the edges and
+    dark swell corners. `sky` = (top, mid, horizon, glow); `water` = (horizon, mid, deep, glint)."""
+    rng = np.random.default_rng(seed)
+    top, midc, low, glow = sky
+    s = Layer(-HALF_W, HALF_W, HORIZON - 0.2, 5.8, 48)
+    t = np.clip((s.Y - HORIZON) / 5.4, 0, 1)
+    col = mix(hexc(low), hexc(midc), smooth(0.0, 0.3, t))
+    col = mix(col, hexc(top), smooth(0.3, 1.0, t))
+    d = np.sqrt((s.X - sun[0]) ** 2 + ((s.Y - sun[1]) * 1.3) ** 2)
+    col = mix(col, hexc(glow), np.exp(-d / (1.4 if night else 2.4)) * (0.45 if night else 0.75))
+    s.over(col, np.ones_like(t))
+    if night:
+        # Stars: more and brighter high up, a faint milky band across.
+        n = rng.random((s.h, s.w))
+        band = np.exp(-((s.Y - 3.8 - (s.X * 0.12)) / 0.9) ** 2)
+        stars = (n > 0.9975 - band * 0.002) * smooth(0.6, 2.0, s.Y)
+        s.rgb = mix(s.rgb, hexc('#EAF0FF'), stars * rng.uniform(0.5, 1.0, (s.h, s.w)))
+        s.rgb = mix(s.rgb, hexc('#8A9AC8'), band * 0.10 * (0.6 + 0.4 * noise2(rng, s.h, s.w, 20, 3)))
+        disc = np.clip((0.30 - np.sqrt((s.X - sun[0]) ** 2 + (s.Y - sun[1]) ** 2)) * s.ppu, 0, 1)
+        s.rgb = mix(s.rgb, hexc('#F2F5FF'), disc)
+    else:
+        n = noise2(rng, s.h, s.w, 80, 5)
+        streak = smooth(0.25, 0.65, n) * smooth(1.0, 2.0, s.Y) * (1 - smooth(4.4, 5.6, s.Y))
+        s.rgb = mix(s.rgb, hexc('#FFE2B8'), streak * 0.35)
+        disc = np.clip((0.42 - np.sqrt((s.X - sun[0]) ** 2 + (s.Y - sun[1]) ** 2)) * s.ppu, 0, 1)
+        s.rgb = mix(s.rgb, hexc('#FFF6DC'), disc)
+    s.save(os.path.join(out, prefix + '_bg_sky.png'))
+
+    w_h, w_mid, w_deep, glint = water
+    # Far: open sea has only a hazy line (or very low islets far away).
+    far = Layer(-HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 2.4, 70)
+    xs = far.col_x()
+    prof = np.full_like(xs, -99.0)
+    for cx, wid, hgt in (islets or []):
+        prof = np.maximum(prof, HORIZON + hgt * np.clip(1 - ((xs - cx) / wid) ** 2, 0, None) ** 0.7 - 0.01)
+    far.ridge(prof, np.broadcast_to(mix(hexc(w_mid), hexc(w_h), 0.55), far.rgb.shape))
+    far.save(os.path.join(out, prefix + '_bg_far.png'))
+
+    # Mid: a low line of swells just under the horizon.
+    mid = Layer(-HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 1.5, 90)
+    xs = mid.col_x()
+    swell = HORIZON + 0.03 + 0.03 * np.abs(np.sin(xs * 2.1 + noise1(rng, mid.w, 5) * 3))
+    mid.ridge(swell, np.broadcast_to(mix(hexc(w_mid), hexc(w_h), 0.25), mid.rgb.shape))
+    mid.save(os.path.join(out, prefix + '_bg_mid.png'))
+
+    # Near: big swells rising at the edges of the view.
+    near = Layer(-HALF_W, HALF_W, HORIZON - 0.15, HORIZON + 3.2, 100)
+    xs = near.col_x()
+    edge = np.maximum(np.clip((-6.5 - xs) / 6.5, 0, 1), np.clip((xs - 7.0) / 6.0, 0, 1))
+    prof = HORIZON - 0.12 + 0.9 * edge ** 1.4 + 0.05 * noise1(rng, near.w, 7)
+    coln = mix(hexc(w_deep), hexc(w_mid), smooth(HORIZON, HORIZON + 0.9, near.Y))
+    near.ridge(prof, coln, 1.2)
+    light_rim(near, prof, sun[0], 0.5, hexc(glint), 0.05)
+    near.save(os.path.join(out, prefix + '_bg_near.png'))
+
+    wl = Layer(-HALF_W, HALF_W, -5.8, HORIZON, 64)
+    depth = np.clip((HORIZON - wl.Y) / 6.0, 0, 1)
+    colw = mix(hexc(w_h), hexc(w_mid), smooth(0.0, 0.10, depth))
+    colw = mix(colw, hexc(w_deep), smooth(0.3, 1.0, depth))
+    ripple = np.clip(noise2(rng, wl.h, wl.w, 7, 3) * 2.4 + 0.2, 0, 1)
+    rows = (np.sin(wl.Y * 30 + noise2(rng, wl.h, wl.w, 30, 2) * 6) * 0.5 + 0.5) ** 3
+    if column:
+        spread = 0.4 + depth * 1.6
+        col_k = np.exp(-((wl.X - sun[0]) / spread) ** 2)
+        colw = mix(colw, hexc(glint), np.clip(col_k * ripple * rows * (0.6 if night else 1.1) * (1 - depth * 0.5), 0, 1))
+    # Long swell bands all over.
+    colw = colw * (1 + (np.sin(wl.Y * 9 + noise2(rng, wl.h, wl.w, 40, 2) * 4) * 0.5 + 0.5)[..., None] * 0.06)
+    if night:
+        # A few faint plankton specks.
+        specks = (rng.random((wl.h, wl.w)) > 0.9993) * smooth(0.1, 0.5, depth)
+        colw = mix(colw, hexc('#7FE6FF'), specks * 0.6)
+    water_layer = colw * (1 + noise2(rng, wl.h, wl.w, 9, 3)[..., None] * 0.05)
+    wl.over(water_layer, np.ones_like(depth))
+    wl.save(os.path.join(out, prefix + '_water.png'))
+
+    # Corners: dark swells rising from the bottom corners.
+    for side, name in ((-1, 'left'), (1, 'right')):
+        W, H, ppu = 5.0, 4.2, 100
+        c = Layer(0, W, 0, H, ppu)
+        xs = c.col_x()
+        u = (xs / W) if side < 0 else (1 - xs / W)
+        prof = 2.2 * np.clip(1 - u, 0, 1) ** 1.6 + 0.12 * noise1(np.random.default_rng(seed + (1 if side < 0 else 2)), c.w, 6)
+        c.ridge(prof, mix(hexc(w_deep), hexc(w_mid), smooth(0.0, 2.0, c.Y)), 1.5)
+        light_rim(c, prof, sun[0] * side, 0.15 if night else 0.6, hexc(glint), 0.06)
+        c.save(os.path.join(out, prefix + '_fg_' + name + '.png'))
+
+    for i in range(3):
+        lit, shade = ('#9AA6C8', '#2A3256') if night else ('#FFE6C0', '#9AA2C0')
+        cl = cloud_sprite(np.random.default_rng(seed + 10 + i), 600, 220, hexc(lit), hexc(shade), 1.0 if sun[0] > 0 else -1.0)
+        if night:
+            a = np.asarray(cl).astype(np.float32)
+            a[..., 3] *= 0.55
+            cl = Image.fromarray(a.astype(np.uint8), 'RGBA')
+        cl.save(os.path.join(out, prefix + '_cloud_%02d.png' % (i + 1)), optimize=True)
+
+    thumbnail(out, prefix)
+
+
+def corrente_azul(out):
+    open_sea(out, 'map_corrente_azul', 47, (4.8, 1.4), ('#2A62B8', '#6E9AD0', '#FFD49A', '#FFC874'),
+             ('#F6C890', '#1A4C9A', '#0A2250', '#FFE0A0'))
+
+
+def banco_das_baleias(out):
+    open_sea(out, 'map_banco_das_baleias', 53, (-4.4, 0.9), ('#38609E', '#8AA0C4', '#FFD0A8', '#FFC890'),
+             ('#E8C0A0', '#1E5058', '#08262E', '#FFD8B0'), islets=((-8.0, 0.7, 0.18), (2.5, 0.5, 0.12), (9.0, 0.9, 0.2)))
+
+
+def talude_noturno(out):
+    open_sea(out, 'map_talude_noturno', 59, (-4.6, 2.6), ('#070B24', '#1A2250', '#3A4274', '#8A9CD8'),
+             ('#323C6E', '#0A1430', '#02060F', '#C8D8FF'), night=True)
+
+
+def abismo_atlantico(out):
+    open_sea(out, 'map_abismo_atlantico', 61, (5.0, 4.0), ('#020412', '#0A1030', '#1A2048', '#6A7AB8'),
+             ('#1A2248', '#040A1E', '#01030A', '#B8C8F0'), night=True, column=False)
+
+
 MAPS = (('LagoSereno', lago_sereno), ('RioSelvagem', rio_selvagem), ('PantanalDourado', pantanal_dourado),
-        ('EstuarioDasMares', estuario_das_mares), ('CostaDeCoral', costa_de_coral), ('ArquipelagoDoSol', arquipelago_do_sol))
+        ('EstuarioDasMares', estuario_das_mares), ('CostaDeCoral', costa_de_coral), ('ArquipelagoDoSol', arquipelago_do_sol),
+        ('CorrenteAzul', corrente_azul), ('BancoDasBaleias', banco_das_baleias), ('TaludeNoturno', talude_noturno),
+        ('AbismoAtlantico', abismo_atlantico))
+
 
 
 def boat_and_fisherman(out):

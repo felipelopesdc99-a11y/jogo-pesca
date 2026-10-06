@@ -71,6 +71,7 @@ infraestrutura online que já existia foi preservada no M12, adiada. Em 05/10/20
 | **M19** | Site, distribuição e lançamento da V0.1 | Build oficial para Windows, download com instalador, notas de versão, Steam e a rodada final de bugs com os testes do proprietário |
 | **M20** | Depois da V0.1: sistemas futuros do GDD | O que o GDD deixa para depois (habilidades, temporadas, guildas, mapas 5 a 10, monetização…), cada um começando como decisão do proprietário |
 | **M21** | Progressão até o Nível 100: Mapas 5 a 10 | Aprovado pelo proprietário em 05/10/2026 e adaptado às regras atuais (`docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md`, números em `docs/propostas/mapas_5_10.json`): Lendário e Mítico, 60 espécies, Mapas 5 a 10, Varas 3 a 5, integração, simulação e arte |
+| **M22** | Revisão de segurança, jogo mais leve e pesquisa sobre jogos idle | Brechas de relógio, Mercado e save fechadas; imagens com teto de tamanho e PNG sem perdas; propostas da pesquisa registradas para o proprietário analisar (OD-048 a OD-050) |
 
 ## Regras que o roadmap impõe a si mesmo
 

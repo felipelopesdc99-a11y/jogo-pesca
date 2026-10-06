@@ -442,6 +442,259 @@
       },
       "tradable_on_market": true,
       "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus."
+    },
+    {
+      "id": "rod_04",
+      "display_name": "Atlântico Nobre",
+      "description": "Uma vara de oceano profundo, forte e precisa para os maiores peixes do Atlântico.",
+      "tier": 4,
+      "implemented_in_v0_1": false,
+      "acquisition": {
+        "method": "coin_purchase",
+        "purchase_cost_coins": 3280000,
+        "purchase_cost_shells": 180,
+        "unlock_fisher_level": 70
+      },
+      "has_internal_levels": true,
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "generates_shells": true,
+      "bonuses_per_level": {
+        "note": "Os valores são o bônus total naquele nível interno, não um acréscimo por nível. Chance de puxar um terço menor que no documento do proprietário (A-095); demais bônus como no documento.",
+        "rarity_efficiency": [
+          0.82,
+          0.85,
+          0.88,
+          0.92,
+          0.95,
+          0.98,
+          1.02,
+          1.05,
+          1.08,
+          1.12
+        ],
+        "size_quality": [
+          0.64,
+          0.66,
+          0.68,
+          0.7,
+          0.72,
+          0.74,
+          0.76,
+          0.78,
+          0.8,
+          0.82
+        ],
+        "shell_yield": [
+          1.8,
+          1.88,
+          1.96,
+          2.04,
+          2.12,
+          2.2,
+          2.28,
+          2.36,
+          2.43,
+          2.5
+        ],
+        "catch_success": [
+          0.12,
+          0.127,
+          0.14,
+          0.147,
+          0.16,
+          0.167,
+          0.18,
+          0.193,
+          0.2,
+          0.213
+        ]
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "cost_coins": 480000,
+          "cost_shells": 45
+        },
+        {
+          "to_level": 3,
+          "cost_coins": 720000,
+          "cost_shells": 54
+        },
+        {
+          "to_level": 4,
+          "cost_coins": 1080000,
+          "cost_shells": 68
+        },
+        {
+          "to_level": 5,
+          "cost_coins": 1610000,
+          "cost_shells": 81
+        },
+        {
+          "to_level": 6,
+          "cost_coins": 2400000,
+          "cost_shells": 99
+        },
+        {
+          "to_level": 7,
+          "cost_coins": 3650000,
+          "cost_shells": 117
+        },
+        {
+          "to_level": 8,
+          "cost_coins": 5480000,
+          "cost_shells": 135
+        },
+        {
+          "to_level": 9,
+          "cost_coins": 8170000,
+          "cost_shells": 158
+        },
+        {
+          "to_level": 10,
+          "cost_coins": 12300000,
+          "cost_shells": 180
+        }
+      ],
+      "npc_resale": {
+        "base_value_ratio": 0.4,
+        "upgrade_investment_ratio": 0.25,
+        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
+      },
+      "tradable_on_market": true,
+      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus."
+    },
+    {
+      "id": "rod_05",
+      "display_name": "Soberana Abissal",
+      "description": "A vara definitiva, feita para o abismo e para os peixes que quase ninguém vê.",
+      "tier": 5,
+      "implemented_in_v0_1": false,
+      "acquisition": {
+        "method": "coin_purchase",
+        "purchase_cost_coins": 15610000,
+        "purchase_cost_shells": 650,
+        "unlock_fisher_level": 90
+      },
+      "has_internal_levels": true,
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary",
+        "mythic"
+      ],
+      "generates_shells": true,
+      "bonuses_per_level": {
+        "note": "Os valores são o bônus total naquele nível interno, não um acréscimo por nível. Chance de puxar um terço menor que no documento do proprietário (A-095); demais bônus como no documento.",
+        "rarity_efficiency": [
+          1.15,
+          1.19,
+          1.23,
+          1.27,
+          1.31,
+          1.35,
+          1.39,
+          1.43,
+          1.47,
+          1.5
+        ],
+        "size_quality": [
+          0.85,
+          0.87,
+          0.89,
+          0.92,
+          0.94,
+          0.96,
+          0.98,
+          1.0,
+          1.03,
+          1.05
+        ],
+        "shell_yield": [
+          2.6,
+          2.7,
+          2.8,
+          2.9,
+          3.0,
+          3.1,
+          3.2,
+          3.3,
+          3.4,
+          3.5
+        ],
+        "catch_success": [
+          0.167,
+          0.18,
+          0.193,
+          0.207,
+          0.22,
+          0.227,
+          0.24,
+          0.247,
+          0.26,
+          0.267
+        ]
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "cost_coins": 1990000,
+          "cost_shells": 162
+        },
+        {
+          "to_level": 3,
+          "cost_coins": 2990000,
+          "cost_shells": 195
+        },
+        {
+          "to_level": 4,
+          "cost_coins": 4490000,
+          "cost_shells": 244
+        },
+        {
+          "to_level": 5,
+          "cost_coins": 6780000,
+          "cost_shells": 292
+        },
+        {
+          "to_level": 6,
+          "cost_coins": 10170000,
+          "cost_shells": 358
+        },
+        {
+          "to_level": 7,
+          "cost_coins": 15150000,
+          "cost_shells": 422
+        },
+        {
+          "to_level": 8,
+          "cost_coins": 22730000,
+          "cost_shells": 488
+        },
+        {
+          "to_level": 9,
+          "cost_coins": 33900000,
+          "cost_shells": 569
+        },
+        {
+          "to_level": 10,
+          "cost_coins": 49850000,
+          "cost_shells": 650
+        }
+      ],
+      "npc_resale": {
+        "base_value_ratio": 0.4,
+        "upgrade_investment_ratio": 0.25,
+        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
+      },
+      "tradable_on_market": true,
+      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus."
     }
   ]
 }

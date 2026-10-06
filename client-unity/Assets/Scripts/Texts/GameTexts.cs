@@ -527,6 +527,10 @@ namespace FishingIdle.Texts
                     case "map_04": return "Cheguei em uma nova fronteira do jogo.";
                     case "map_05": return "Finalmente cheguei ao mar aberto da costa.";
                     case "map_06": return "Longe da costa, os peixes viram troféus.";
+                    case "map_07": return "Só o horizonte e o mar azul em volta.";
+                    case "map_08": return "Aqui o oceano mostra o seu tamanho.";
+                    case "map_09": return "A noite revela o que vive no fundo.";
+                    case "map_10": return "O destino final de todo pescador.";
                     default: return null;
                 }
             }
@@ -646,6 +650,7 @@ namespace FishingIdle.Texts
             public const string CatchesRare = "Pesca peixes Raros";
             public const string CatchesRareAndEpic = "Pesca peixes Raros e Épicos";
             public const string CatchesUpToLegendary = "Pesca peixes Raros, Épicos e Lendários";
+            public const string CatchesUpToMythic = "Pesca peixes Raros, Épicos, Lendários e Míticos";
             public const string NoRare = "Não pesca peixes Raros";
             public const string NoShells = "Não gera Conchas";
             public const string InventoryNote = "Suas varas ficam aqui. Varas novas se compram na Loja.";

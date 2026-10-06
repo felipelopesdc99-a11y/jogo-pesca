@@ -10,10 +10,19 @@ namespace FishingIdle.GameService.Shop
     /// </summary>
     public static class GearRules
     {
-        /// <summary>The boat in use; the starter boat when none was chosen or the id is unknown.</summary>
+        /// <summary>
+        /// The boat in use; the starter boat when none was chosen, the id is unknown or the boat was
+        /// never bought (an edited save cannot sail a boat it does not own).
+        /// </summary>
         public static BoatConfig ActiveBoat(GameConfig config, PlayerSave save)
         {
-            return config.TryGetBoat(save.BoatId, out var boat) ? boat : config.StarterBoat;
+            if (config.TryGetBoat(save.BoatId, out var boat)
+                && (boat.Id == config.StarterBoat.Id || (save.OwnedBoatIds != null && save.OwnedBoatIds.Contains(boat.Id))))
+            {
+                return boat;
+            }
+
+            return config.StarterBoat;
         }
 
         /// <summary>The bait in use while it still has charges, or null.</summary>

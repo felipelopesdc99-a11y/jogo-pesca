@@ -92,6 +92,15 @@
       "tip_u": 0.9968,
       "tip_v": 0.8405,
       "grip": 0.12
+    },
+    {
+      "id": "rod_04",
+      "art": "Varas/Cena/rod_04",
+      "butt_u": 0.0048,
+      "butt_v": 0.8534,
+      "tip_u": 0.997,
+      "tip_v": 0.8138,
+      "grip": 0.12
     }
   ],
   "baits": [

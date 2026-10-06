@@ -100,6 +100,11 @@ namespace FishingIdle.Game.Scene
                 case "frigatebird": return Has("fragata_1");
                 case "spinner_dolphin": return Has("golfinho_1") && _spots.ContainsKey("dolphin");
                 case "sea_turtle": return Has("tartaruga_marinha_1") && _spots.ContainsKey("sea_turtle");
+                // Corrente Azul and Banco das Baleias.
+                case "flying_fish": return Has("peixe_voador_1");
+                case "shearwaters": return Has("pardela_1");
+                case "humpback_spout": return Has("jubarte_borrifo_1") && _spots.ContainsKey("whale");
+                case "humpback_breach": return Has("jubarte_salto_1") && _spots.ContainsKey("whale");
                 default: return false;
             }
         }
@@ -140,6 +145,10 @@ namespace FishingIdle.Game.Scene
                 case "frigatebird": return Flock("fragata", 3, 1.15f, 1, 1.2f, 1.5f, 3.4f, 4.8f);
                 case "spinner_dolphin": return Surfacer("golfinho", 1.0f, "Golfinho", "dolphin", 0.45f);
                 case "sea_turtle": return Surfacer("tartaruga_marinha", 0.75f, "Tartaruga-marinha", "sea_turtle", 0f);
+                case "flying_fish": return FlyingFish();
+                case "shearwaters": return Flock("pardela", 4, 0.62f, Random.Range(1, 3), 3.0f, 10f, 0.5f, 1.5f);
+                case "humpback_spout": return Spout("jubarte_borrifo", 1.5f, "whale");
+                case "humpback_breach": return Breach("jubarte_salto", 1.3f, "whale");
                 default: return Nothing();
             }
         }
@@ -879,6 +888,154 @@ namespace FishingIdle.Game.Scene
                 SetAlpha(r, 0f);
                 x += dir * Random.Range(1.6f, 2.6f);
                 yield return Wait(Random.Range(2.5f, 5f));
+            }
+
+            Object.Destroy(r.gameObject);
+        }
+
+        /// <summary>A few flying fish leap out of the water one after the other, glide low and drop back in.</summary>
+        private IEnumerator FlyingFish()
+        {
+            var frames = Frames("peixe_voador", 3, 0.45f, new Vector2(0.5f, 0.5f));
+            if (frames == null)
+            {
+                yield break;
+            }
+
+            const float glide = 2.2f, distance = 3.6f, gap = 0.35f;
+            var count = Random.Range(1, 4);
+            var dir = Random.value > 0.5f ? 1f : -1f;
+            var y0 = Random.Range(-2.2f, -0.8f);
+            var x0 = dir > 0 ? Random.Range(-_halfWidth + 2f, _halfWidth - 6f) : Random.Range(-_halfWidth + 6f, _halfWidth - 2f);
+            var fish = new List<SpriteRenderer>();
+            var started = new bool[count];
+            var landed = new bool[count];
+            for (var i = 0; i < count; i++)
+            {
+                var r = Spawn(_water, "Peixe-voador", frames[0], new Vector3(x0, y0, 0f), FishingScene.OrderWaterLife + 1, dir < 0);
+                SetAlpha(r, 0f);
+                fish.Add(r);
+            }
+
+            for (var t = 0f; t < glide + gap * count + 0.2f; t += Time.deltaTime)
+            {
+                for (var i = 0; i < count; i++)
+                {
+                    var age = t - i * gap;
+                    var k = age / glide;
+                    var start = new Vector3(x0 - dir * i * 0.3f, y0 + i * 0.12f, 0f);
+                    var at = start + new Vector3(dir * distance * Mathf.Clamp01(k), Mathf.Sin(Mathf.Clamp01(k) * Mathf.PI) * 0.35f, 0f);
+                    if (age >= 0f && !started[i])
+                    {
+                        started[i] = true;
+                        Droplet.Splash(_water, start, FishingScene.OrderWaterLife + 1, 4, 0.35f);
+                    }
+
+                    if (k >= 1f && !landed[i])
+                    {
+                        landed[i] = true;
+                        Droplet.Splash(_water, at, FishingScene.OrderWaterLife + 1, 4, 0.35f);
+                        RippleEffect.Spawn(_water, at, FishingScene.OrderWaterDetail + 1, 0.4f, 0.4f);
+                    }
+
+                    fish[i].sprite = k < 0.2f ? frames[0] : k < 0.8f ? frames[1] : frames[2];
+                    fish[i].transform.localPosition = at;
+                    SetAlpha(fish[i], age < 0f || k > 1f ? 0f : Mathf.Clamp01(k * 8f) * Mathf.Clamp01((1f - k) * 8f));
+                }
+
+                yield return null;
+            }
+
+            foreach (var r in fish)
+            {
+                Object.Destroy(r.gameObject);
+            }
+        }
+
+        /// <summary>A humpback breathing far away: the back comes up with the spout, the spout at full height, the back arches down.</summary>
+        private IEnumerator Spout(string art, float width, string spotId)
+        {
+            var frames = Frames(art, 3, width, new Vector2(0.5f, 0f));
+            if (frames == null)
+            {
+                yield break;
+            }
+
+            var spot = _spots[spotId];
+            var dir = Random.value > 0.5f ? 1f : -1f;
+            var x = Random.Range(-_halfWidth + 2.5f, _halfWidth - 2.5f);
+            var r = Spawn(_water, "Baleia-jubarte", frames[0], new Vector3(x, spot.y, 0f), FishingScene.OrderWaterLife, dir < 0);
+            SetAlpha(r, 0f);
+            var breaths = Random.Range(2, 4);
+            for (var i = 0; i < breaths; i++)
+            {
+                var at = new Vector3(x, spot.y, 0f);
+                RippleEffect.Spawn(_water, at, FishingScene.OrderWaterDetail + 1, 1.0f, 0.4f);
+                for (var f = 0; f < 3; f++)
+                {
+                    r.sprite = frames[f];
+                    var hold = f == 1 ? 1.4f : 1.0f;
+                    for (var t = 0f; t < hold; t += Time.deltaTime)
+                    {
+                        SetAlpha(r, f == 0 ? Mathf.Clamp01(t / 0.5f) : f == 2 ? 1f - Mathf.Clamp01((t - 0.4f) / 0.6f) : 1f);
+                        r.transform.localPosition = at + new Vector3(dir * 0.12f * (f + t / hold), 0f, 0f);
+                        yield return null;
+                    }
+                }
+
+                SetAlpha(r, 0f);
+                x = Mathf.Clamp(x + dir * Random.Range(0.6f, 1.2f), -_halfWidth + 1.5f, _halfWidth - 1.5f);
+                yield return Wait(Random.Range(4f, 8f));
+            }
+
+            Object.Destroy(r.gameObject);
+        }
+
+        /// <summary>A humpback breaching far away: head and fins rising, the body high out of the water, then the tail going down.</summary>
+        private IEnumerator Breach(string art, float width, string spotId)
+        {
+            var frames = Frames(art, 3, width, new Vector2(0.5f, 0f));
+            if (frames == null)
+            {
+                yield break;
+            }
+
+            var spot = _spots[spotId];
+            var dir = Random.value > 0.5f ? 1f : -1f;
+            var at = new Vector3(Random.Range(-_halfWidth + 2.5f, _halfWidth - 2.5f), spot.y, 0f);
+            var r = Spawn(_water, "Baleia-jubarte", frames[0], at + new Vector3(0f, -0.3f, 0f), FishingScene.OrderWaterLife, dir < 0);
+            SetAlpha(r, 0f);
+            RippleEffect.Spawn(_water, at, FishingScene.OrderWaterDetail + 1, 1.2f, 0.5f);
+
+            // Rising.
+            for (var t = 0f; t < 0.8f; t += Time.deltaTime)
+            {
+                var k = t / 0.8f;
+                SetAlpha(r, Mathf.Clamp01(k * 3f));
+                r.transform.localPosition = at + new Vector3(0f, -0.3f * (1f - k), 0f);
+                yield return null;
+            }
+
+            // High in the air, then the big splash.
+            r.sprite = frames[1];
+            for (var t = 0f; t < 1.0f; t += Time.deltaTime)
+            {
+                r.transform.localPosition = at + new Vector3(dir * 0.2f * t, Mathf.Sin(t * Mathf.PI) * 0.25f, 0f);
+                yield return null;
+            }
+
+            Droplet.Splash(_water, at + new Vector3(dir * 0.2f, 0f, 0f), FishingScene.OrderWaterLife + 1, 14, 0.9f);
+            RippleEffect.Spawn(_water, at, FishingScene.OrderWaterDetail + 1, 1.6f, 0.7f);
+            SetAlpha(r, 0f);
+            yield return Wait(Random.Range(3f, 6f));
+
+            // A while later, the tail goes down.
+            r.sprite = frames[2];
+            for (var t = 0f; t < 2.2f; t += Time.deltaTime)
+            {
+                SetAlpha(r, Mathf.Clamp01(t / 0.5f) * Mathf.Clamp01((2.2f - t) / 0.8f));
+                r.transform.localPosition = at + new Vector3(dir * 0.5f, -0.25f * Mathf.Clamp01((t - 1.2f) / 1.0f), 0f);
+                yield return null;
             }
 
             Object.Destroy(r.gameObject);

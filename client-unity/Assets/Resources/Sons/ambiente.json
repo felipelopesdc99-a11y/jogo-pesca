@@ -9,6 +9,10 @@
     { "scene": "PantanalDourado", "tracks": ["pantanal_01", "pantanal_02", "pantanal_03", "pantanal_04"] },
     { "scene": "EstuarioDasMares", "tracks": ["estuario_01", "estuario_02", "estuario_03", "estuario_04"] },
     { "scene": "CostaDeCoral", "tracks": ["coral_01", "coral_02", "coral_03", "coral_04"] },
-    { "scene": "ArquipelagoDoSol", "tracks": ["arquipelago_01", "arquipelago_02", "arquipelago_03", "arquipelago_04"] }
+    { "scene": "ArquipelagoDoSol", "tracks": ["arquipelago_01", "arquipelago_02", "arquipelago_03", "arquipelago_04"] },
+    { "scene": "CorrenteAzul", "tracks": ["corrente_01", "corrente_02", "corrente_03", "corrente_04"] },
+    { "scene": "BancoDasBaleias", "tracks": ["baleias_01", "baleias_02", "baleias_03", "baleias_04"] },
+    { "scene": "TaludeNoturno", "tracks": ["talude_01", "talude_02", "talude_03", "talude_04"] },
+    { "scene": "AbismoAtlantico", "tracks": ["abismo_01", "abismo_02", "abismo_03", "abismo_04"] }
   ]
 }

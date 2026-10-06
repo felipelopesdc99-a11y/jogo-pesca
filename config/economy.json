@@ -85,7 +85,8 @@
       "rarities": [
         "rare",
         "epic",
-        "legendary"
+        "legendary",
+        "mythic"
       ],
       "size_categories": [
         "exceptional",

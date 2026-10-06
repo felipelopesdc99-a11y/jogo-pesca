@@ -64,13 +64,12 @@ public sealed class MapsFiveSixTests
         Assert.True(Config.RarityRank("legendary") > Config.RarityRank("epic"));
         Assert.Contains("legendary", Config.Economy.FishingBox.BulkSaleProtection.Rarities);
         Assert.Equal(0.14, CatchRules.SuccessChance(Config, "legendary", 0), 6);
-        Assert.False(Config.TryGetRarity("mythic", out _));
     }
 
     [Fact]
-    public void The_encyclopedia_lists_sixty_species()
+    public void The_encyclopedia_lists_every_species()
     {
         var game = Player(50, "rod_01");
-        Assert.Equal(60, game.Profile.GetProfile().Encyclopedia.Count);
+        Assert.Equal(100, game.Profile.GetProfile().Encyclopedia.Count);
     }
 }

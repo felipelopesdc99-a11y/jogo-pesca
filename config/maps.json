@@ -404,6 +404,255 @@
           "catch_weight": 5
         }
       ]
+    },
+    {
+      "id": "map_07",
+      "display_name": "Corrente Azul",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 60,
+      "minimum_rod_tier": 3,
+      "visual_theme": {
+        "summary": "Mar aberto sem terra à vista, ondulações longas, água azul intensa e horizonte enorme.",
+        "water": "mar aberto azul intenso",
+        "light": "fim de tarde dourado",
+        "mood": "liberdade e distância"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "bicuda",
+          "catch_weight": 230
+        },
+        {
+          "species_id": "bonito_pintado",
+          "catch_weight": 210
+        },
+        {
+          "species_id": "agulha_branca",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "cavalinha",
+          "catch_weight": 170
+        },
+        {
+          "species_id": "atum_patudo",
+          "catch_weight": 50
+        },
+        {
+          "species_id": "albacora_branca",
+          "catch_weight": 45
+        },
+        {
+          "species_id": "peixe_lua",
+          "catch_weight": 40
+        },
+        {
+          "species_id": "espadarte",
+          "catch_weight": 30
+        },
+        {
+          "species_id": "marlim_branco",
+          "catch_weight": 25
+        },
+        {
+          "species_id": "marlim_azul",
+          "catch_weight": 10
+        }
+      ]
+    },
+    {
+      "id": "map_08",
+      "display_name": "Banco das Baleias",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 70,
+      "minimum_rod_tier": 4,
+      "visual_theme": {
+        "summary": "Banco oceânico com ilhotas rochosas muito distantes, água azul-esverdeada escura e baleias ao longe.",
+        "water": "oceano profundo sobre bancos",
+        "light": "amanhecer frio",
+        "mood": "equipamento profissional"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "pargo_rosa",
+          "catch_weight": 200
+        },
+        {
+          "species_id": "namorado",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "batata",
+          "catch_weight": 175
+        },
+        {
+          "species_id": "congro_rosa",
+          "catch_weight": 155
+        },
+        {
+          "species_id": "cherne",
+          "catch_weight": 90
+        },
+        {
+          "species_id": "cacao_anjo",
+          "catch_weight": 80
+        },
+        {
+          "species_id": "tubarao_lixa",
+          "catch_weight": 48
+        },
+        {
+          "species_id": "arraia_chita",
+          "catch_weight": 42
+        },
+        {
+          "species_id": "tubarao_martelo",
+          "catch_weight": 11
+        },
+        {
+          "species_id": "raia_manta",
+          "catch_weight": 9
+        }
+      ]
+    },
+    {
+      "id": "map_09",
+      "display_name": "Talude Noturno",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 80,
+      "minimum_rod_tier": 4,
+      "visual_theme": {
+        "summary": "Oceano profundo à noite, sem costa, água quase preta e brilho discreto de plâncton.",
+        "water": "mar profundo noturno",
+        "light": "crepúsculo azul e noite limpa",
+        "mood": "mistério sem medo"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "escolar",
+          "catch_weight": 230
+        },
+        {
+          "species_id": "peixe_espada",
+          "catch_weight": 210
+        },
+        {
+          "species_id": "abrotea_fundo",
+          "catch_weight": 180
+        },
+        {
+          "species_id": "congro_negro",
+          "catch_weight": 80
+        },
+        {
+          "species_id": "peixe_lanceta",
+          "catch_weight": 75
+        },
+        {
+          "species_id": "quimera",
+          "catch_weight": 65
+        },
+        {
+          "species_id": "tubarao_lanterna",
+          "catch_weight": 65
+        },
+        {
+          "species_id": "peixe_opah",
+          "catch_weight": 60
+        },
+        {
+          "species_id": "tubarao_duende",
+          "catch_weight": 18
+        },
+        {
+          "species_id": "tubarao_seis_guelras",
+          "catch_weight": 17
+        }
+      ]
+    },
+    {
+      "id": "map_10",
+      "display_name": "Abismo Atlântico",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 90,
+      "minimum_rod_tier": 5,
+      "visual_theme": {
+        "summary": "Mar oceânico extremamente profundo sob céu estrelado, água negro-azulada e fosforescência muito discreta.",
+        "water": "abismo negro-azulado",
+        "light": "noite profunda",
+        "mood": "destino final"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary",
+        "mythic"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "peixe_machado",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "peixe_dragao",
+          "catch_weight": 175
+        },
+        {
+          "species_id": "peixe_vibora",
+          "catch_weight": 155
+        },
+        {
+          "species_id": "enguia_pelicano",
+          "catch_weight": 130
+        },
+        {
+          "species_id": "peixe_ogro",
+          "catch_weight": 120
+        },
+        {
+          "species_id": "peixe_pescador_abissal",
+          "catch_weight": 85
+        },
+        {
+          "species_id": "quimera_azul",
+          "catch_weight": 75
+        },
+        {
+          "species_id": "tubarao_cobra",
+          "catch_weight": 36
+        },
+        {
+          "species_id": "peixe_fita_gigante",
+          "catch_weight": 32
+        },
+        {
+          "species_id": "tubarao_boca_grande",
+          "catch_weight": 2
+        }
+      ]
     }
   ]
 }

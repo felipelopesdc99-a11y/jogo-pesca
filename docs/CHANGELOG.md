@@ -3,6 +3,37 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.2] — 06/10/2026
+
+### Adicionado
+
+- **Mapas 7 a 10** (Corrente Azul, Banco das Baleias, Talude Noturno e Abismo Atlântico), com 40
+  espécies novas (100 no catálogo), a raridade **Mítico** e as varas **Atlântico Nobre** e **Soberana
+  Abissal**. O jogo vai do Nv.1 ao Nv.100 (A-106).
+- Arte final dos Mapas 7 e 8 e da Vara 4, e o céu e as nuvens que faltavam nos Mapas 5 e 6. Paisagem
+  viva nova: peixes-voadores, pardelas, sargaço boiando e a baleia-jubarte respirando e saltando.
+- Mapas 9 e 10 com cenário noturno provisório (céu estrelado, lua, plâncton brilhando) até a arte chegar.
+- Pedido de arte dos Mapas 9 e 10 e da Vara 5 (31 imagens).
+- `tools/Arte/processar_mapas_7_8.py` (separa os peixes pela forma, mesmo quando um encosta no outro),
+  `tools/Arte/otimizar_png.py` e `gerar_cenarios.py` com cenário de mar aberto e noturno.
+
+### Corrigido
+
+- Voltar o relógio do PC não dá mais pesca offline, Energia ou Expedição de graça (TD-030).
+- O Mercado simulado não paga por uma vara mais do que ela custa nova; vara anunciada conta como sua.
+- Save editado não deixa peixe ou vara acima do nível máximo nem usar barco não comprado (A-107).
+
+### Mudado
+
+- Imagens importadas no tamanho que a tela mostra e PNG recomprimidos sem perdas: 20 MB a menos no
+  projeto e build/memória de texturas estimados de ~209 para ~135–140 MB (TD-031).
+- 15 quadros por segundo com a janela em segundo plano (TD-032).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) nem aberto no Editor do Unity. Cenário conferido só em prévias
+  montadas fora do Unity. Conferir no Play se alguma imagem ficou borrada com o teto novo.
+
 ## [0.2.0-m21.1] — 05/10/2026
 
 ### Adicionado

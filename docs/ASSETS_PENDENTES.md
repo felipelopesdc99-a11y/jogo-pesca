@@ -206,26 +206,31 @@ chegaram e estão no jogo:
 Para uma leva nova: `python3 tools/Arte/equipamento_na_cena.py --pescador <Pedido_33> --varas <Pedido_34>
 --iscas <Pedido_35> --previa <saida.png>`. O ícone dos Dólares é recortado como o da moeda (fundo magenta).
 
-## Mapas 5 e 6 e Vara 3 — no jogo (05/10/2026)
+## Mapas 5 a 8 e Varas 3 e 4 — no jogo (06/10/2026)
 
-A arte da Costa de Coral, do Arquipélago do Sol e da Corrente Mestra chegou e está no jogo
-(`python3 tools/Arte/processar_mapas_5_6.py <pasta>`; arquivos `Coral_XX_*.png`, `Arquipelago_XX_*.png` e
-`Vara3_XX_*.png`, mesma numeração dos mapas 3 e 4). As faixas do horizonte vieram com mar pintado embaixo;
-o script tira esse mar sozinho.
+A arte dos Mapas 5 a 8 e das Varas 3 e 4 está no jogo (`tools/Arte/processar_mapas_5_6.py` e
+`processar_mapas_7_8.py`, com as pastas dos pacotes; depois `tools/Arte/otimizar_png.py`). As faixas do
+horizonte que vêm com mar pintado embaixo são limpas pelo script, e os peixes que encostam um no outro
+nas grades são separados pela forma.
 
-`ASSET_PENDENTE` (o provisório do gerador fica no lugar):
+`ASSET_PENDENTE` (o provisório fica no lugar):
 
-- `Coral_02_ceu` — céu da Costa de Coral.
-- `Coral_09_nuvens` e `Arquipelago_09_nuvens` — as três nuvens de cada mapa.
+- `Corrente_02_ceu` — céu da Corrente Azul.
+- `Corrente_11_peixes_2` — Peixe-lua, Espadarte, Marlim-branco e Marlim-azul.
 
-As três foram pedidas de novo no documento dos Mapas 7 e 8.
+## Mapas 9 e 10 e Vara 5 (M21-T09) — pedidos feitos (06/10/2026)
 
-## Mapas 7 e 8 e Vara 4 (M21-T09) — pedidos feitos (05/10/2026)
+`ASSET_PENDENTE`: Talude Noturno e Abismo Atlântico (cenário noturno em camadas, 20 peixes, petrel e
+vultos) e a Vara 5 · Soberana Abissal (Loja e cena), mais as duas imagens que faltaram da Corrente Azul,
+estão pedidos no documento
+[Fishing Idle — Pedidos de arte: Talude Noturno e Abismo Atlântico](https://claude.ai/code/artifact/60dc7505-4b4d-4816-88b2-159affc0df38)
+(31 imagens, `Talude_XX_*.png`, `Abismo_XX_*.png` e `Vara5_XX_*.png`). Até lá os dois mapas usam o cenário
+noturno provisório de `gerar_cenarios.py` e os peixes usam o desenho de reserva feito por código.
 
-`ASSET_PENDENTE`: Corrente Azul e Banco das Baleias (cenário em camadas, 20 peixes, fauna e plantas vivas) e
-a Vara 4 · Atlântico Nobre (Loja e cena), mais as três imagens que faltaram dos Mapas 5 e 6, estão pedidos no
-documento [Fishing Idle — Pedidos de arte: Corrente Azul e Banco das Baleias](https://claude.ai/code/artifact/87a12420-4961-4663-becc-a7c435cc5bc3)
-(34 imagens, arquivos `Corrente_XX_*.png`, `Baleias_XX_*.png` e `Vara4_XX_*.png`).
+## Som ambiente dos mapas
+
+Os 40 arquivos listados em `Resources/Sons/ambiente.json` (4 por mapa) ainda não existem. Quando vierem,
+salvar como `.ogg` (o jogo aceita): em `.wav`, 2 a 3 minutos de som estéreo pesam ~25 MB cada.
 
 ## Prioridade C
 

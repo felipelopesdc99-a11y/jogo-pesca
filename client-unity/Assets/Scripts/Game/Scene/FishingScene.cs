@@ -27,6 +27,12 @@ namespace FishingIdle.Game.Scene
         /// <summary>True when the sun is low enough to draw a column of light on the water.</summary>
         public bool SunColumn = true;
 
+        /// <summary>Colour of the soft glow drawn around the sun (or the moon, on the night maps).</summary>
+        public Color SunGlow = new Color(1f, 0.93f, 0.75f, 0.35f);
+
+        /// <summary>Night maps (Talude Noturno, Abismo Atlântico): the wave glints take the cold moonlight colour.</summary>
+        public bool Night;
+
         /// <summary>Heights in world units of the shore groups and the foreground corners (painted art, Resources/Arte/Mapas).</summary>
         public float NearLeftHeight = 3f, NearRightHeight = 2.6f, CornerHeight = 4.4f;
 
@@ -42,6 +48,10 @@ namespace FishingIdle.Game.Scene
                 case "map_04": return EstuarioDasMares();
                 case "map_05": return CostaDeCoral();
                 case "map_06": return ArquipelagoDoSol();
+                case "map_07": return CorrenteAzul();
+                case "map_08": return BancoDasBaleias();
+                case "map_09": return TaludeNoturno();
+                case "map_10": return AbismoAtlantico();
                 default: return LagoSereno();
             }
         }
@@ -105,6 +115,135 @@ namespace FishingIdle.Game.Scene
                 SunPosition = new Vector2(5.2f, 3.6f),
                 NearLeftHeight = 3.6f,
                 NearRightHeight = 3.4f,
+            };
+        }
+
+        /// <summary>Corrente Azul: open sea with no land in sight, long swells, golden late afternoon, sun low on the right.</summary>
+        public static SceneTheme CorrenteAzul()
+        {
+            return new SceneTheme
+            {
+                SkyTop = new Color(0.16f, 0.40f, 0.78f),
+                SkyHorizon = new Color(1f, 0.84f, 0.60f),
+                Sun = new Color(1f, 0.92f, 0.70f),
+                FarHillTop = new Color(0.86f, 0.86f, 0.90f),
+                FarHillBottom = new Color(0.70f, 0.74f, 0.84f),
+                MidHillTop = new Color(0.10f, 0.30f, 0.62f),
+                MidHillBottom = new Color(0.08f, 0.24f, 0.52f),
+                TreeCrown = new Color(0.10f, 0.30f, 0.62f),
+                TreeShade = new Color(0.06f, 0.20f, 0.46f),
+                WaterHorizon = new Color(0.98f, 0.80f, 0.56f),
+                WaterMid = new Color(0.08f, 0.28f, 0.62f),
+                WaterDeep = new Color(0.03f, 0.12f, 0.36f),
+                Glint = new Color(1f, 0.88f, 0.60f),
+                HillSeed = 31,
+                TreeSeed = 81,
+                HillHeight = 0.4f,
+                TreeHeight = 0.5f,
+                Current = 0.2f,
+                ArtFolder = "CorrenteAzul",
+                ArtPrefix = "map_corrente_azul",
+                SunPosition = new Vector2(4.8f, 1.4f),
+                NearLeftHeight = 2.6f,
+                NearRightHeight = 2.4f,
+            };
+        }
+
+        /// <summary>Banco das Baleias: dark blue-green ocean over a bank, far rocky islets, cold dawn, sun rising on the left.</summary>
+        public static SceneTheme BancoDasBaleias()
+        {
+            return new SceneTheme
+            {
+                SkyTop = new Color(0.22f, 0.40f, 0.70f),
+                SkyHorizon = new Color(1f, 0.80f, 0.62f),
+                Sun = new Color(1f, 0.90f, 0.72f),
+                FarHillTop = new Color(0.42f, 0.48f, 0.60f),
+                FarHillBottom = new Color(0.62f, 0.64f, 0.72f),
+                MidHillTop = new Color(0.26f, 0.28f, 0.32f),
+                MidHillBottom = new Color(0.20f, 0.22f, 0.26f),
+                TreeCrown = new Color(0.26f, 0.28f, 0.32f),
+                TreeShade = new Color(0.16f, 0.18f, 0.22f),
+                WaterHorizon = new Color(0.90f, 0.74f, 0.62f),
+                WaterMid = new Color(0.08f, 0.30f, 0.36f),
+                WaterDeep = new Color(0.03f, 0.14f, 0.20f),
+                Glint = new Color(1f, 0.86f, 0.70f),
+                HillSeed = 37,
+                TreeSeed = 83,
+                HillHeight = 0.6f,
+                TreeHeight = 0.9f,
+                Current = 0.1f,
+                ArtFolder = "BancoDasBaleias",
+                ArtPrefix = "map_banco_das_baleias",
+                SunPosition = new Vector2(-4.4f, 0.9f),
+                NearLeftHeight = 2.4f,
+                NearRightHeight = 2.4f,
+            };
+        }
+
+        /// <summary>Talude Noturno: deep ocean at night, no coast, almost black navy water, low moon on the left.</summary>
+        public static SceneTheme TaludeNoturno()
+        {
+            return new SceneTheme
+            {
+                SkyTop = new Color(0.03f, 0.05f, 0.16f),
+                SkyHorizon = new Color(0.20f, 0.24f, 0.44f),
+                Sun = new Color(0.90f, 0.94f, 1f),
+                FarHillTop = new Color(0.14f, 0.16f, 0.30f),
+                FarHillBottom = new Color(0.10f, 0.12f, 0.24f),
+                MidHillTop = new Color(0.06f, 0.10f, 0.22f),
+                MidHillBottom = new Color(0.05f, 0.08f, 0.18f),
+                TreeCrown = new Color(0.06f, 0.10f, 0.22f),
+                TreeShade = new Color(0.04f, 0.06f, 0.14f),
+                WaterHorizon = new Color(0.22f, 0.28f, 0.48f),
+                WaterMid = new Color(0.04f, 0.08f, 0.20f),
+                WaterDeep = new Color(0.01f, 0.03f, 0.10f),
+                Glint = new Color(0.78f, 0.86f, 1f),
+                SunGlow = new Color(0.75f, 0.85f, 1f, 0.22f),
+                Night = true,
+                HillSeed = 41,
+                TreeSeed = 87,
+                HillHeight = 0.3f,
+                TreeHeight = 0.4f,
+                Current = 0.08f,
+                ArtFolder = "TaludeNoturno",
+                ArtPrefix = "map_talude_noturno",
+                SunPosition = new Vector2(-4.6f, 2.6f),
+                NearLeftHeight = 2.4f,
+                NearRightHeight = 2.4f,
+            };
+        }
+
+        /// <summary>Abismo Atlântico: the final map, extremely deep ocean under a starry sky, blue-black water, small high moon on the right.</summary>
+        public static SceneTheme AbismoAtlantico()
+        {
+            return new SceneTheme
+            {
+                SkyTop = new Color(0.01f, 0.02f, 0.08f),
+                SkyHorizon = new Color(0.10f, 0.12f, 0.26f),
+                Sun = new Color(0.86f, 0.92f, 1f),
+                FarHillTop = new Color(0.08f, 0.10f, 0.20f),
+                FarHillBottom = new Color(0.06f, 0.08f, 0.16f),
+                MidHillTop = new Color(0.04f, 0.06f, 0.14f),
+                MidHillBottom = new Color(0.03f, 0.05f, 0.12f),
+                TreeCrown = new Color(0.04f, 0.06f, 0.14f),
+                TreeShade = new Color(0.02f, 0.03f, 0.08f),
+                WaterHorizon = new Color(0.12f, 0.16f, 0.32f),
+                WaterMid = new Color(0.02f, 0.05f, 0.14f),
+                WaterDeep = new Color(0.005f, 0.015f, 0.06f),
+                Glint = new Color(0.70f, 0.82f, 1f),
+                SunGlow = new Color(0.70f, 0.80f, 1f, 0.16f),
+                Night = true,
+                HillSeed = 43,
+                TreeSeed = 89,
+                HillHeight = 0.2f,
+                TreeHeight = 0.3f,
+                Current = 0.05f,
+                ArtFolder = "AbismoAtlantico",
+                ArtPrefix = "map_abismo_atlantico",
+                SunPosition = new Vector2(5.0f, 4.0f),
+                SunColumn = false,
+                NearLeftHeight = 2.2f,
+                NearRightHeight = 2.2f,
             };
         }
 
@@ -434,7 +573,7 @@ namespace FishingIdle.Game.Scene
             var sky = Layer("Céu", 0.95f);
             Painted(sky, theme.ArtPath("bg_sky"), width, bottom, new Vector3(0f, Horizon - 0.2f, 0f), OrderSky);
             var sunGlow = Sprite(sky, "Brilho do sol", Art.Glow, new Vector3(theme.SunPosition.x, theme.SunPosition.y, 0f), Vector3.one * 3.2f, OrderSun,
-                new Color(1f, 0.93f, 0.75f, 0.35f));
+                theme.SunGlow);
             var breathe = sunGlow.gameObject.AddComponent<Breathe>();
             breathe.MinAlpha = 0.18f;
             breathe.MaxAlpha = 0.38f;
@@ -491,7 +630,7 @@ namespace FishingIdle.Game.Scene
             waves.transform.SetParent(water, false);
             waves.Horizon = Horizon;
             waves.Current = theme.Current;
-            waves.Tint = theme.SunColumn ? new Color(1f, 0.93f, 0.82f) : new Color(0.88f, 0.97f, 1f);
+            waves.Tint = theme.Night ? theme.Glint : theme.SunColumn ? new Color(1f, 0.93f, 0.82f) : new Color(0.88f, 0.97f, 1f);
             waves.SortingOrder = OrderWaterDetail;
 
             if (theme.SunColumn)
@@ -523,6 +662,22 @@ namespace FishingIdle.Game.Scene
                     var drift = streak.gameObject.AddComponent<Drift>();
                     drift.Speed = theme.Current * Mathf.Lerp(0.5f, 1.4f, depth);
                     drift.WrapHalfWidth = 12f;
+                }
+            }
+
+            if (theme.Night)
+            {
+                // Plankton: tiny cold lights that come and go on the dark water of the night maps (A-106).
+                for (var i = 0; i < 40; i++)
+                {
+                    var y = Random.Range(-5.2f, Horizon - 0.6f);
+                    var depth = Mathf.InverseLerp(Horizon, -5.4f, y);
+                    var speck = Sprite(water, "Plâncton", Art.Glow, new Vector3(Random.Range(-11f, 11f), y, 0f),
+                        Vector3.one * Mathf.Lerp(0.05f, 0.14f, depth), OrderWaterDetail, new Color(0.5f, 0.95f, 1f, 0f));
+                    var glow = speck.gameObject.AddComponent<Twinkle>();
+                    glow.MaxAlpha = Random.Range(0.25f, 0.6f);
+                    glow.Period = Random.Range(3f, 7f);
+                    glow.DriftSpeed = 0.01f;
                 }
             }
 

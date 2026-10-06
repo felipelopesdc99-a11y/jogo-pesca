@@ -11,7 +11,7 @@ public sealed class ConfigTests
         var result = GameConfigLoader.LoadFromDirectory(TestSupport.ConfigDirectory);
 
         Assert.True(result.Succeeded, string.Join("\n", result.Errors));
-        Assert.Equal(60, result.Config.FishCatalog.Species.Count);
+        Assert.Equal(100, result.Config.FishCatalog.Species.Count);
         Assert.Equal("map_01", result.Config.StartingMap.Id);
         Assert.Equal(0, result.Config.StarterRod.Tier);
     }

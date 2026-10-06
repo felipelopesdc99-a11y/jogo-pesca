@@ -220,7 +220,7 @@ namespace FishingIdle.Game.UI
             Row(skin, x, ref y, w, GameTexts.Profile.RarityBonus, "+" + Format.Percent(rod.RarityBonus, 0));
             Row(skin, x, ref y, w, GameTexts.Profile.SizeBonus, "+" + Format.Percent(rod.SizeBonus, 0));
             Row(skin, x, ref y, w, GameTexts.Profile.ShellBonus, rod.GeneratesShells ? "+" + Format.Percent(rod.ShellBonus, 0) : GameTexts.Profile.NoShells);
-            GUI.Label(new Rect(x, y + 4, w, 20), rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare, skin.Small);
+            GUI.Label(new Rect(x, y + 4, w, 20), rod.CanCatchMythic ? GameTexts.Profile.CatchesUpToMythic : rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare, skin.Small);
 
             if (!withAction)
             {

@@ -113,7 +113,8 @@ def main():
     M.PLANTS = PLANTS
     M.ANIMALS = ANIMALS
     M.NO_MAGENTA = {'vegetacao'}
-    M.scenery(folder, 'Coral', 'CostaDeCoral', 'map_costa_de_coral', (-5.0, 3.8), 0.55, 0.95, sky_whole_width=True)
+    M.scenery(folder, 'Coral', 'CostaDeCoral', 'map_costa_de_coral', (-5.0, 3.8), 0.55, 0.95, sky_whole_width=True,
+              sun_box=(0, 0, 0.5, 0.5))
     M.scenery(folder, 'Arquipelago', 'ArquipelagoDoSol', 'map_arquipelago_do_sol', (5.2, 3.6), 1.4, 0.9, sky_whole_width=True)
     fish_and_rod(folder)
     M.living(folder)

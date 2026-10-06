@@ -42,6 +42,46 @@ public sealed class AbuseTests
     }
 
     [Fact]
+    public void Turning_the_clock_back_restarting_and_turning_it_forward_gives_nothing()
+    {
+        // TD-030: stopping and starting (or reopening the game) while the clock is turned back used to
+        // re-anchor the run at the earlier time, so turning the clock forward again paid a full day.
+        var (game, clock, _) = TestSupport.NewGame();
+        game.Fishing.StartFishing();
+        TestSupport.PlayFor(game, clock, 300, stepSeconds: 5);
+        var catches = game.Player.GetPlayer().TotalCatches;
+
+        clock.AdvanceSeconds(-24 * 3600);
+        game.Fishing.StopFishing();
+        game.Fishing.StartFishing();
+        clock.AdvanceSeconds(24 * 3600);
+        game.Fishing.Sync();
+
+        Assert.InRange(game.Player.GetPlayer().TotalCatches - catches, 0, 1);
+    }
+
+    [Fact]
+    public void A_rod_on_the_market_still_counts_as_owned_and_bots_never_pay_more_than_a_new_one()
+    {
+        // Buying a rod in the Shop and reselling it to the simulated buyers above the Shop price used to
+        // create coins, and a listed rod could be bought again right away.
+        var (game, _, _) = Player();
+        game.Session.Save.FisherLevel = 10;
+        game.Session.Save.Shells = 1_000;
+        Assert.True(game.Shop.BuyRod("rod_01").Succeeded);
+        var inventory = game.Profile.GetProfile().Inventory;
+        Assert.True(game.Profile.EquipRod(inventory.Single(r => r.RodId != "rod_01").ItemId).Succeeded);
+        var rod = inventory.Single(r => r.RodId == "rod_01");
+
+        var listed = game.Market.ListRod(rod.ItemId, 4_000);
+        Assert.True(listed.Succeeded, listed.ErrorMessage);
+        Assert.Equal(ServiceError.RodAlreadyOwned, game.Shop.BuyRod("rod_01").Error);
+
+        var goods = game.Session.Save.Market.MyListings.Single().Goods;
+        Assert.Equal(2_500, MarketRules.MaxBotPrice(game.Session.Config, goods));
+    }
+
+    [Fact]
     public void Jumping_the_clock_years_ahead_is_capped_everywhere()
     {
         var never = TestSupport.ConfigWith(GameConfigLoader.MarketBotsFile, j => j.Replace("\"chance_at_reference_price\": 0.25", "\"chance_at_reference_price\": 0.0")).Config;

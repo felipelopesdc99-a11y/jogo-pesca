@@ -514,3 +514,46 @@ destino ou o nome do arquivo. Distribuição (Drive, WeTransfer, itch.io) e cust
 
 **Rever se.** O jogo for online (M12), entrar Mac ou celular, ou chegar a hora da Steam (taxa de
 US$ 100, decisão do proprietário).
+
+## TD-030 — O relógio das regras nunca volta
+
+**Decisão.** O `GameSession` entrega às regras um `SteadyClock`: "agora" é o maior horário em que este
+save já foi visto (`ClockHighWaterMs`, novo campo do save, 0 nos saves antigos). Se o relógio do PC
+voltar, o tempo do jogo fica parado até a hora real alcançar o ponto onde estava; se adiantar, continua
+valendo a TD-019 e os limites de cada sistema (24 h de pesca offline, Energia máxima da Arena).
+
+**Por quê.** A revisão de segurança de 06/10/2026 achou um truque grátis e repetível: voltar o relógio
+24 h, parar e recomeçar a pesca (ou reabrir o jogo) e voltar o relógio para a hora certa dava 24 h de
+pesca offline, sem custo. O mesmo valia para a Energia da Arena e as Expedições, porque cada sistema
+reancorava o seu tempo no horário atrasado. Corrigir no relógio fecha os três de uma vez e é o mesmo
+papel que o relógio do servidor fará na versão online.
+
+**Rever se.** O jogo ficar online (o relógio do servidor substitui este) ou aparecer jogador com o
+relógio do PC muito errado por engano (o jogo ficaria parado até a hora real alcançar o salto).
+
+## TD-031 — Tamanho das imagens: cópia menor no build e PNG sem perdas
+
+**Decisão.** `Editor/ArtImportSettings.cs` importa cada tipo de imagem no tamanho que a câmera mostra
+numa tela 1440p (peixes, Expedições e pescador até 512 px; cantos, margens, fotos dos mapas e barcos até
+1024 px; céu até 2048 px; o resto até 4096 px). `GetVersion()` sobe quando a regra muda, para o Unity
+reimportar. Os arquivos continuam na resolução do proprietário. `tools/Arte/otimizar_png.py` recomprime
+todos os PNG sem mudar nenhum pixel (oxipng) e deve rodar depois de qualquer script de arte.
+
+**Por quê.** A auditoria de 06/10/2026 mediu ~127 MB de arte e ~209 MB de texturas no build, a maior
+parte acima do que a tela mostra. O teto por tipo reduz o build e a memória para ~135–140 MB sem tocar
+na arte (a Bíblia de Arte manda guardar os originais grandes e deixar o Unity gerar os menores). A
+recompressão sem perdas tirou 20 MB do repositório.
+
+**Rever se.** Alguma imagem ficar borrada ao apertar Play (subir o teto daquele tipo), ou o jogo for
+para o celular (compressão ASTC e atlas).
+
+## TD-032 — 15 quadros por segundo com a janela em segundo plano
+
+**Decisão.** Com a janela sem foco, o `GameRoot` baixa para 15 quadros por segundo (desligando o vSync
+só nesse período) e volta a 60 ao receber o foco. Ao pausar (celular), anota o horário como no fechar
+do jogo.
+
+**Por quê.** O jogo continua pescando com a janela atrás de outras; desenhar 60 quadros que ninguém vê
+gasta CPU, GPU e bateria. No Android o `OnApplicationQuit` nem sempre é chamado.
+
+**Rever se.** Alguma animação depender de quadros e não de tempo.

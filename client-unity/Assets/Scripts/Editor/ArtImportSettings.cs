@@ -9,15 +9,53 @@ namespace FishingIdle.Editor
     /// a manual step in the Inspector.
     /// </summary>
     /// <remarks>
-    /// Images keep their real size (no power-of-two rescale, up to 4096 px), are clamped, and get
-    /// mipmaps so they stay smooth when drawn small in cards. Small files (icons) stay uncompressed;
-    /// large ones use high-quality compression. Fonts fall back to a system font for the rare
-    /// symbol they lack.
+    /// Images keep their proportions (no power-of-two rescale), are clamped, and get mipmaps so they
+    /// stay smooth when drawn small in cards. Each kind of picture is capped at the size the camera
+    /// can show (TD-031): the files keep the owner's full resolution, the game ships a smaller copy.
+    /// Small files (icons) stay uncompressed; the rest use high-quality compression. Fonts fall back to
+    /// a system font for the rare symbol they lack.
     /// </remarks>
     public sealed class ArtImportSettings : AssetPostprocessor
     {
         private const string ArtFolder = "Assets/Resources/Arte/";
         private const string FontFolder = "Assets/Resources/Fontes/";
+
+        // Raise this when the rules below change, so Unity re-imports the art with them.
+        public override uint GetVersion() => 2;
+
+        /// <summary>
+        /// Largest side, in pixels, each picture is imported at: about what a 1440p screen shows of it
+        /// (the camera is 10,8 units tall). Sprites are built from the texture size, so a smaller import
+        /// keeps the same size on screen.
+        /// </summary>
+        internal static int MaxSizeFor(string path)
+        {
+            var file = System.IO.Path.GetFileNameWithoutExtension(path);
+            if (path.StartsWith(ArtFolder + "Peixes/", System.StringComparison.Ordinal)
+                || path.StartsWith(ArtFolder + "Expedicoes/", System.StringComparison.Ordinal)
+                || (path.StartsWith(ArtFolder + "Cena/", System.StringComparison.Ordinal) && file.StartsWith("pescador", System.StringComparison.Ordinal)))
+            {
+                return 512;
+            }
+
+            if (path.StartsWith(ArtFolder + "Mapas/", System.StringComparison.Ordinal)
+                && (file.Contains("_fg_") || file.Contains("_near_") || file.EndsWith("_thumb", System.StringComparison.Ordinal)))
+            {
+                return 1024;
+            }
+
+            if (path.StartsWith(ArtFolder + "Cena/barco", System.StringComparison.Ordinal) || path.StartsWith(ArtFolder + "Barcos/", System.StringComparison.Ordinal))
+            {
+                return 1024;
+            }
+
+            if (path.StartsWith(ArtFolder + "Mapas/", System.StringComparison.Ordinal) && file.EndsWith("_bg_sky", System.StringComparison.Ordinal))
+            {
+                return 2048;
+            }
+
+            return 4096;
+        }
 
         private void OnPreprocessTexture()
         {
@@ -35,7 +73,7 @@ namespace FishingIdle.Editor
             importer.mipmapEnabled = true;
             importer.wrapMode = TextureWrapMode.Clamp;
             importer.filterMode = FilterMode.Trilinear;
-            importer.maxTextureSize = 4096;
+            importer.maxTextureSize = MaxSizeFor(assetPath);
             importer.isReadable = false;
 
             var small = assetPath.StartsWith(ArtFolder + "Icones/", System.StringComparison.Ordinal);

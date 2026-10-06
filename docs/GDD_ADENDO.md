@@ -1208,9 +1208,8 @@ Corrente Mestra** (Nv.50, 730.000 Moedas + 85 Conchas). Os números vêm de
   Os peixes Lendários puxam a linha com a mesma força dos Épicos.
 - A Corrente Mestra aparece na Loja e no Perfil como **"Pesca peixes Raros, Épicos e Lendários"**.
 - Venda em lote protege Raros, Épicos e Lendários.
-- **Cenário:** arte final do proprietário. Faltaram o céu da Costa de Coral e as nuvens dos dois mapas
-  (Coral 02, Coral 09 e Arquipélago 09): ficam provisórios, pintados pelo gerador, até a arte chegar
-  (pedidos de novo junto com os Mapas 7 e 8). As faixas do horizonte vieram com mar pintado embaixo;
+- **Cenário:** arte final do proprietário, completa desde 06/10/2026 (o céu da Costa de Coral e as nuvens
+  dos dois mapas chegaram com o pacote dos Mapas 7 e 8). As faixas do horizonte vieram com mar pintado embaixo;
   esse mar é retirado no recorte, porque a água é a do jogo.
 - **Paisagem viva:** na Costa de Coral, gaivotas, trinta-réis, tartaruga-marinha e, às vezes, golfinho;
   coqueiros na praia e capim de restinga nos cantos. No Arquipélago do Sol, atobás, fragata, golfinhos
@@ -1219,3 +1218,42 @@ Corrente Mestra** (Nv.50, 730.000 Moedas + 85 Conchas). Os números vêm de
   peixes viram troféus." (Mapa 6).
 - **Som:** os dois mapas já têm a lista de gravações (`coral_01..04`, `arquipelago_01..04`); enquanto os
   arquivos não existem, toca o som antigo de mar e vento.
+
+### A-106 · Mapas 7 a 10 no jogo, com Mítico, Atlântico Nobre e Soberana Abissal
+**Seção do GDD:** 2, 9, 16, 17, 19 · **Situação:** No jogo (não aberto no Unity ainda)
+
+O resto da A-104 entrou: **Mapa 7 · Corrente Azul** (Nv.60, Vara 3), **Mapa 8 · Banco das Baleias**
+(Nv.70, Vara 4), **Mapa 9 · Talude Noturno** (Nv.80, Vara 4) e **Mapa 10 · Abismo Atlântico** (Nv.90,
+Vara 5), com as 40 espécies deles (100 no catálogo), a raridade **Mítico** (só o Tubarão-boca-grande, no
+Mapa 10) e as varas **Atlântico Nobre** (Nv.70, 3.280.000 Moedas + 180 Conchas) e **Soberana Abissal**
+(Nv.90, 15.610.000 Moedas + 650 Conchas). O jogo agora vai do Nv.1 ao Nv.100 sem buraco de conteúdo.
+
+- **Mítico:** chance-base de puxar 8%, cor rosa-framboesa, celebração **"Captura mítica!"**, protegido na
+  venda em lote. A Soberana Abissal aparece como **"Pesca peixes Raros, Épicos, Lendários e Míticos"**.
+- **Corrente Azul:** não tem terra; as margens são ondas grandes (com a ponta de dentro esfumada) e os
+  cantos são sargaço. Paisagem viva: peixes-voadores que saltam e planam, pardelas rente à água, golfinho
+  de vez em quando, fragata e sargaço boiando.
+- **Banco das Baleias:** amanhecer frio, ilhotas e rochedos distantes. Paisagem viva: a baleia-jubarte
+  respira ao longe (dorso e borrifo) e, mais raramente, salta e mostra a cauda; trinta-réis e atobás.
+- **Talude Noturno e Abismo Atlântico:** primeiros mapas à noite. Até a arte chegar, o cenário é
+  provisório, pintado pelo gerador: céu estrelado com lua, água escura, brilho frio e alguns pontos de
+  plâncton. O brilho da água e o halo da lua usam luz fria. Ainda sem animais.
+- **Frases de chegada:** "Só o horizonte e o mar azul em volta." (7), "Aqui o oceano mostra o seu
+  tamanho." (8), "A noite revela o que vive no fundo." (9) e "O destino final de todo pescador." (10).
+- **Ainda provisórios:** céu da Corrente Azul (Corrente 02) e os 4 peixes da Corrente 11 (Peixe-lua,
+  Espadarte, Marlim-branco e Marlim-azul), que não vieram no pacote; todo o visual dos Mapas 9 e 10 e a
+  Vara 5. Pedidos de novo no documento dos Mapas 9 e 10.
+
+### A-107 · Correções da revisão de segurança (06/10/2026)
+**Seção do GDD:** 21, 33, 36, 40 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Correções de brechas que deixavam o jogador ganhar sem jogar. Nenhuma regra de jogo mudou de propósito.
+
+- **Relógio:** voltar o relógio do PC agora só congela o tempo do jogo até a hora real chegar; não abre
+  mais pesca offline, Energia ou Expedição de graça (TD-030).
+- **Mercado e varas:** os compradores simulados nunca pagam por uma vara mais do que ela custa nova na
+  Loja (mais as melhorias já feitas). Uma vara anunciada no Mercado, no Leilão ou esperando em Itens para
+  Retirar conta como sua: não dá para comprar outra igual na Loja enquanto isso.
+- **Leilão:** um lance maior que o saldo é recusado antes de calcular a taxa.
+- **Save editado:** nível de peixe e de vara volta para dentro do máximo, cargas de isca negativas viram
+  zero e um barco que não foi comprado não é usado (vale o barco inicial).

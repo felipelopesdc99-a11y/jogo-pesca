@@ -157,7 +157,7 @@ def cut_at(img, fraction):
     return V.cut_waterline(img, fraction)
 
 
-def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_units, far_cut=None, remix_mid=False, sky_whole_width=False):
+def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_units, far_cut=None, remix_mid=False, sky_whole_width=False, sun_box=None):
     base = 'Mapas/%s/%s_' % (out_folder, file_prefix)
     photo = find(folder, prefix, '01')
     if photo is not None:
@@ -165,7 +165,12 @@ def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_u
     sky = find(folder, prefix, '02')
     if sky is not None:
         a = np.asarray(sky.convert('RGB'), dtype=float).sum(axis=2)
-        ys, xs = np.where(a >= np.percentile(a, 99.7))
+        # The sun is the brightest spot; `sun_box` (fractions x0, y0, x1, y1) limits the search when a
+        # bright horizon would also count.
+        x0, y0, x1, y1 = [int(round(f * n)) for f, n in zip(sun_box or (0, 0, 1, 1), (a.shape[1], a.shape[0]) * 2)]
+        part = a[y0:y1, x0:x1]
+        ys, xs = np.where(part >= np.percentile(part, 99.7))
+        ys, xs = ys + y0, xs + x0
         P.sky(sky, (xs.mean() / a.shape[1], ys.mean() / a.shape[0]), sun_world, 7.5, base + 'bg_sky.png', whole_width=sky_whole_width)
     far = find(folder, prefix, '03')
     if far is not None:
@@ -207,6 +212,8 @@ def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_u
 
 def cloud_sheet(rgba, prefix):
     """Three clouds side by side or one under the other: split where the picture is emptiest."""
+    # Only the drawn area counts: empty margins would look like the gaps between clouds.
+    rgba = P.trim(rgba)
     a = np.asarray(rgba)[..., 3].astype(np.float32)
     cols, rows = a.sum(axis=0), a.sum(axis=1)
 

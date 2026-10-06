@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-05T23:59:00Z",
+  "updated_at": "2026-10-06T18:30:00Z",
   "current_milestone": "M21",
   "statuses": [
     "TODO",
@@ -428,6 +428,30 @@
       "title": "Ritmo de XP do Nível 60 ao 100",
       "detail": "Os mapas finais têm muito mais peixes raros, e Lendário e Mítico dão ×9 e ×15 de XP. Com isso não dá para ter ao mesmo tempo: (A) o XP de um peixe nunca cair de um mapa para o outro e (B) todas as faixas de 10 níveis levarem o mesmo tempo. A adaptação usou A: até o Nv.60 cada faixa leva ~3,7 h online (como a 30–40 hoje) e depois fica mais rápida, até ~2 h no 90–100. A opção B mantém ~3,7 h em todas, mas um Comum do Abismo daria menos XP que um do Estuário. Uma terceira saída é baixar o XP de Lendário e Mítico (por exemplo ×7 e ×11). Fico com A ou prefere outra?",
       "raised_at": "2026-10-05T21:48:39Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-048",
+      "task_id": "M22-T06",
+      "title": "Mercado simulado: generosidade e atalho de nível",
+      "detail": "Os compradores simulados pagam por peixe até ~5,85× o preço do NPC (anunciar caro quase sempre vende em 7 dias), e os vendedores simulados oferecem varas e peixes de qualquer nível: um jogador Nv.1 pode comprar a Soberana Abissal por ~10,6 milhões e usar no Mapa 1, ou pôr um Mítico no Cardume. Opções: (A) limitar o que os bots pagam por peixe (ex.: até 2× o NPC); (B) só equipar vara do seu nível de Pescador; (C) os bots só oferecem varas e peixes dos mapas já liberados; (D) deixar como está. Recomendo B e C, e A um pouco mais apertado. O que prefere?",
+      "raised_at": "2026-10-06T18:30:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-049",
+      "task_id": "M22-T07",
+      "title": "Ritmo da progressão contando a pesca offline",
+      "detail": "As faixas de 10 níveis levam 2 a 3,7 h online, mas a pesca offline rende o equivalente a 12 h online por dia. Quem entra uma vez por dia passa quase 3 faixas por dia; do Nv.40 ao Nv.100 em uns 2 dias. A literatura de jogos idle recomenda que o tempo até a próxima compra cresça até o fim. Opções: (A) alongar as faixas (mais XP por nível), principalmente do Nv.60 em diante (liga com a OD-047); (B) baixar a pesca offline; (C) deixar e medir com os testadores. Primeiro eu simulo três perfis de jogador (M21-T07) e trago os números; quer que eu siga assim?",
+      "raised_at": "2026-10-06T18:30:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-050",
+      "task_id": "M22-T08",
+      "title": "Chance de puxar Lendário e Mítico",
+      "detail": "A chance-base de puxar um Lendário é 14% e um Mítico 8%. Mesmo com vara, barco e isca, a maioria escapa, e \"o peixe raro escapou\" é a maior reclamação em jogos de pesca. Opções: (A) subir os bônus das Varas 3 a 5 para chegar a ~40–50% no mapa certo; (B) criar proteção contra azar (cada fuga aumenta a próxima chance; sistema novo); (C) deixar como está. O que prefere?",
+      "raised_at": "2026-10-06T18:30:00Z",
       "status": "OPEN"
     }
   ],
@@ -3415,11 +3439,12 @@
           "title": "Raridades Lendário e Mítico",
           "subsystem": "config",
           "description": "Adicionar legendary e mythic à hierarquia de raridades (multiplicadores, chance-base 14% e 8%, cores laranja e rosa-framboesa, selos e celebrações \"Captura lendária!\" e \"Captura mítica!\"), sem ativá-las nos Mapas 1 a 4. Sem som novo (seção 11). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 05/10/2026: Lendário (chance-base 14%, cor #E5484D, \"Captura lendária!\", força de fuga dos Épicos) junto com o Mapa 6 (A-105). Falta o Mítico, que entra com o Mapa 10.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M20-T09"
           ],
-          "updated_at": "2026-10-05T23:59:00Z"
+          "updated_at": "2026-10-06T18:30:00Z",
+          "completion_notes": "Lendário (05/10/2026, com o Mapa 6) e Mítico (06/10/2026, com o Mapa 10) na hierarquia de progression.json, protegidos na venda em lote, com cor, celebração \"Captura lendária!\" / \"Captura mítica!\" e rótulo da vara (CanCatchLegendary / CanCatchMythic). Testes em MapsFiveSixTests e MapsSevenToTenTests. A-105, A-106."
         },
         {
           "id": "M21-T02",
@@ -3438,33 +3463,36 @@
           "title": "60 espécies novas no catálogo",
           "subsystem": "config",
           "description": "Adicionar as 60 espécies dos Mapas 5 a 10 (seção 5) com os números adaptados. Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 05/10/2026: as 20 espécies dos Mapas 5 e 6 (catálogo com 60). Faltam as 40 dos Mapas 7 a 10.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M21-T01"
           ],
-          "updated_at": "2026-10-05T23:59:00Z"
+          "updated_at": "2026-10-06T18:30:00Z",
+          "completion_notes": "As 60 espécies dos Mapas 5 a 10 no catálogo (100 no total), aplicadas por tools/Progressao/aplicar_mapas.py com os números de docs/propostas/mapas_5_10.json."
         },
         {
           "id": "M21-T04",
           "title": "Mapas 5 a 10 nos dados",
           "subsystem": "config",
           "description": "Costa de Coral (Nv.40), Arquipélago do Sol (50), Corrente Azul (60), Banco das Baleias (70), Talude Noturno (80) e Abismo Atlântico (90): pools, pesos, vara mínima e textos, com cenário provisório (seção 4). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 05/10/2026: Costa de Coral (Nv.40, Vara 2) e Arquipélago do Sol (Nv.50, Vara 3) nos dados, com cenário, frase de chegada e lista de sons (A-105), por tools/Progressao/aplicar_mapas.py. Faltam os Mapas 7 a 10.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M21-T03"
           ],
-          "updated_at": "2026-10-05T23:59:00Z"
+          "updated_at": "2026-10-06T18:30:00Z",
+          "completion_notes": "Os 6 mapas novos em maps.json (Nv.40 a 90, vara mínima, raridades, pools de 1000), com SceneTheme, frase de chegada, paisagem viva e lista de sons. Talude Noturno e Abismo Atlântico com cenário provisório noturno (gerar_cenarios.py) até a arte chegar. A-105, A-106."
         },
         {
           "id": "M21-T05",
           "title": "Varas 3 a 5",
           "subsystem": "config",
           "description": "Corrente Mestra (Nv.50), Atlântico Nobre (Nv.70) e Soberana Abissal (Nv.90), com bônus por nível e custos de melhoria (seção 6), com Conchas e chance adaptadas. Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 05/10/2026: Vara 3 · Corrente Mestra (Nv.50, 730.000 Moedas + 85 Conchas), com arte de Loja e de cena. Faltam as Varas 4 e 5.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M20-T09"
           ],
-          "updated_at": "2026-10-05T23:59:00Z"
+          "updated_at": "2026-10-06T18:30:00Z",
+          "completion_notes": "Corrente Mestra (Nv.50), Atlântico Nobre (Nv.70) e Soberana Abissal (Nv.90) em rods.json, com Conchas na compra e nas melhorias. Arte final das Varas 3 e 4 (Loja e cena); Vara 5 pedida."
         },
         {
           "id": "M21-T06",
@@ -3505,35 +3533,190 @@
           "id": "M21-T09",
           "title": "Pedidos de arte dos Mapas 5 a 10",
           "subsystem": "docs",
-          "description": "Documento de pedidos para o ChatGPT: para cada mapa, pintura de referência, céu, fundo, faixa média, margens, nuvens, fauna e foto do mapa; os 60 peixes em grade; as Varas 3 a 5 (Loja e cena). Seção 10. Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Mapas 5 e 6 e Vara 3 pedidos em 05/10/2026 (34 imagens, nomes Coral_XX, Arquipelago_XX, Vara3_XX): https://claude.ai/code/artifact/db4dc0d6-7a6a-4ed6-9b9b-4bfd724c70c8. Mapas 7 e 8 e Vara 4 pedidos em 05/10/2026 (34 imagens, nomes Corrente_XX, Baleias_XX, Vara4_XX, mais Coral 02, Coral 09 e Arquipélago 09 que faltaram): https://claude.ai/code/artifact/87a12420-4961-4663-becc-a7c435cc5bc3. Faltam os Mapas 9 e 10 e a Vara 5.",
-          "status": "IN_PROGRESS",
+          "description": "Documento de pedidos para o ChatGPT: para cada mapa, pintura de referência, céu, fundo, faixa média, margens, nuvens, fauna e foto do mapa; os 60 peixes em grade; as Varas 3 a 5 (Loja e cena). Seção 10. Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Mapas 5 e 6 e Vara 3 pedidos em 05/10/2026 (34 imagens, nomes Coral_XX, Arquipelago_XX, Vara3_XX): https://claude.ai/code/artifact/db4dc0d6-7a6a-4ed6-9b9b-4bfd724c70c8. Mapas 7 e 8 e Vara 4 pedidos em 05/10/2026 (34 imagens, nomes Corrente_XX, Baleias_XX, Vara4_XX, mais Coral 02, Coral 09 e Arquipélago 09 que faltaram): https://claude.ai/code/artifact/87a12420-4961-4663-becc-a7c435cc5bc3. Mapas 9 e 10 e Vara 5 pedidos em 06/10/2026 (31 imagens, nomes Talude_XX, Abismo_XX, Vara5_XX, mais Corrente 02 e 11 que faltaram): https://claude.ai/code/artifact/60dc7505-4b4d-4816-88b2-159affc0df38.",
+          "status": "DONE",
           "dependencies": [
             "M20-T09"
           ],
-          "updated_at": "2026-10-05T23:59:00Z"
+          "updated_at": "2026-10-06T18:30:00Z",
+          "completion_notes": "Pedidos de arte de todos os mapas novos feitos: Mapas 5 e 6 (db4dc0d6), 7 e 8 (87a12420) e 9 e 10 (60dc7505), com as Varas 3 a 5 e as imagens que faltaram em cada pacote."
         },
         {
           "id": "M21-T10",
           "title": "Arte final dos Mapas 5 a 10 no jogo",
           "subsystem": "client",
-          "description": "Recortar e colocar no jogo, mapa a mapa, a arte que o proprietário trouxer (seção 10 e 16). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 05/10/2026: arte dos Mapas 5 e 6 e da Vara 3 no jogo (tools/Arte/processar_mapas_5_6.py). ASSET_PENDENTE: Coral_02_ceu, Coral_09_nuvens e Arquipelago_09_nuvens (provisórios do gerador até chegarem).",
+          "description": "Recortar e colocar no jogo, mapa a mapa, a arte que o proprietário trouxer (seção 10 e 16). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 05/10/2026: arte dos Mapas 5 e 6 e da Vara 3 no jogo (tools/Arte/processar_mapas_5_6.py). ASSET_PENDENTE: Coral_02_ceu, Coral_09_nuvens e Arquipelago_09_nuvens (provisórios do gerador até chegarem). Feito em 06/10/2026: arte dos Mapas 7 e 8 e da Vara 4 no jogo (tools/Arte/processar_mapas_7_8.py), e os complementos dos Mapas 5 e 6 (céu da Costa de Coral e nuvens). ASSET_PENDENTE: Corrente 02 (céu) e Corrente 11 (peixe_lua, espadarte, marlim_branco, marlim_azul), todo o visual dos Mapas 9 e 10 e a Vara 5.",
           "status": "IN_PROGRESS",
           "dependencies": [
             "M21-T09",
             "M21-T04"
           ],
-          "updated_at": "2026-10-05T23:59:00Z"
+          "updated_at": "2026-10-06T18:30:00Z"
         },
         {
           "id": "M21-T11",
           "title": "Paisagem viva dos Mapas 5 a 10",
           "subsystem": "client",
-          "description": "Perfis do diretor de paisagem para cada mapa novo: gaivotas, tartarugas, golfinhos, baleias, plâncton luminoso (seção 4). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 05/10/2026: Costa de Coral (gaivotas, trinta-réis, tartaruga-marinha, golfinho, coqueiros, restinga) e Arquipélago do Sol (atobás, fragata, golfinho, vegetação). Faltam os Mapas 7 a 10.",
+          "description": "Perfis do diretor de paisagem para cada mapa novo: gaivotas, tartarugas, golfinhos, baleias, plâncton luminoso (seção 4). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 05/10/2026: Costa de Coral (gaivotas, trinta-réis, tartaruga-marinha, golfinho, coqueiros, restinga) e Arquipélago do Sol (atobás, fragata, golfinho, vegetação). Faltam os Mapas 7 a 10. Feito em 06/10/2026: Corrente Azul (peixe-voador, pardela, golfinho, fragata, sargaço boiando) e Banco das Baleias (baleia-jubarte respirando e saltando, trinta-réis, atobás). Mapas 9 e 10: brilho de plâncton no jogo; animais esperando a arte.",
           "status": "IN_PROGRESS",
           "dependencies": [
             "M21-T04"
           ],
-          "updated_at": "2026-10-05T23:59:00Z"
+          "updated_at": "2026-10-06T18:30:00Z"
+        }
+      ]
+    },
+    {
+      "id": "M22",
+      "title": "Revisão de segurança, jogo mais leve e pesquisa sobre jogos idle",
+      "goal": "Fechar as brechas achadas na revisão de 06/10/2026, deixar o jogo mais leve e registrar as propostas da pesquisa sobre jogos idle para o proprietário analisar. As propostas só entram com aprovação.",
+      "completion_criteria": [
+        "Nenhum truque conhecido de relógio, Mercado ou save dá vantagem.",
+        "Build e memória menores, sem perder qualidade visível.",
+        "Cada proposta da pesquisa aprovada ou descartada pelo proprietário."
+      ],
+      "tasks": [
+        {
+          "id": "M22-T01",
+          "title": "Relógio do jogo que nunca volta",
+          "subsystem": "server",
+          "description": "Revisão de segurança: voltar o relógio do PC, parar e recomeçar a pesca e voltar o relógio dava 24 h de pesca offline grátis e repetível (também Energia da Arena e Expedições).",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "SteadyClock no GameSession (ClockHighWaterMs no save): voltar o relógio congela o tempo do jogo. Teste novo em AbuseTests. TD-030, A-107.",
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T02",
+          "title": "Mercado: vara não cria moedas",
+          "subsystem": "server",
+          "description": "Revisão de segurança: comprar uma vara na Loja e revender aos compradores simulados acima do preço criava moedas, e uma vara anunciada podia ser comprada de novo na Loja.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "MarketRules.MaxBotPrice: compradores e lances simulados nunca passam do preço da vara nova (mais as melhorias). Owns() conta varas anunciadas, em leilão e em Itens para Retirar. Lance maior que o saldo é recusado antes da taxa. Teste em AbuseTests. A-107.",
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T03",
+          "title": "Save editado não dá vantagem",
+          "subsystem": "server",
+          "description": "Revisão de segurança: nível de peixe e de vara acima do máximo, cargas de isca negativas e barco não comprado eram aceitos de um save editado.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "RepairAgainstConfig limita níveis de peixe e de vara e zera cargas negativas; GearRules.ActiveBoat só usa barco comprado. A-107.",
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T04",
+          "title": "Jogo mais leve",
+          "subsystem": "client",
+          "description": "Auditoria de tamanho: ~127 MB de arte e ~209 MB de texturas no build, muitas acima do que a tela mostra.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "ArtImportSettings com teto por tipo de imagem (build e memória de ~209 para ~135–140 MB, estimado) e tools/Arte/otimizar_png.py (PNG sem perdas: 127 → 107 MB no repositório). TD-031. Conferir no Unity se nada ficou borrado (teste para o final).",
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T05",
+          "title": "Menos gasto com a janela em segundo plano",
+          "subsystem": "client",
+          "description": "Pesquisa sobre jogos idle: o jogo desenhava 60 quadros por segundo mesmo sem ninguém olhando, e só anotava o horário ao fechar.",
+          "status": "DONE",
+          "dependencies": [],
+          "completion_notes": "15 quadros por segundo sem foco (vSync desligado só nesse período) e MarkSeen ao pausar (celular). TD-032.",
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T06",
+          "title": "Mercado simulado e atalho de nível",
+          "subsystem": "config",
+          "description": "Revisão de segurança: compradores simulados aceitam peixe a até ~5,85× o preço do NPC (98% de chance em 7 dias) e os vendedores simulados oferecem varas e peixes de qualquer nível, então um jogador Nv.1 pode comprar a Soberana Abissal e usar no Mapa 1.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T07",
+          "title": "Ritmo da progressão em dias de jogo",
+          "subsystem": "config",
+          "description": "Pesquisa sobre jogos idle: as faixas de nível foram medidas em horas online, mas a pesca offline rende 12 h online por dia; quem entra uma vez por dia pode ir do Nv.40 ao Nv.100 em poucos dias. Simular perfis (1 vez ao dia, 4 vezes, sempre aberto) junto com M21-T07.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M21-T07"
+          ],
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T08",
+          "title": "Chance de puxar Lendário e Mítico",
+          "subsystem": "config",
+          "description": "Pesquisa sobre jogos idle: com chance-base de 14% e 8%, a maioria das mordidas mais emocionantes escapa. Ajustar vara, barco e isca para ~40–50% no mapa certo, ou criar proteção contra azar (sistema novo).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [],
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T09",
+          "title": "Tela de retorno e HUD com o próximo objetivo",
+          "subsystem": "client",
+          "description": "Proposta da pesquisa (a analisar): mostrar ao voltar \"Vara 3 em ~2 h de pesca\" ou \"Nv.51 em 40 min\" e avisar quando a pesca bateu o limite de 24 h. Só apresenta dados que já existem.",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T10",
+          "title": "Números grandes em formato curto",
+          "subsystem": "client",
+          "description": "Proposta da pesquisa (a analisar): no fim do jogo a renda passa de 9 milhões de Moedas por hora; mostrar \"12,4 mi\" e \"3,2 bi\" com o valor completo na dica (Format.cs).",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T11",
+          "title": "Enciclopédia por mapa",
+          "subsystem": "client",
+          "description": "Proposta da pesquisa (a analisar): progresso por mapa (\"7/10 espécies\"), mapa e raridade na silhueta da espécie não descoberta e chance aproximada depois de descoberta. Recompensa por coleção seria sistema novo.",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T12",
+          "title": "Raridade não só pela cor",
+          "subsystem": "client",
+          "description": "Proposta da pesquisa (a analisar): com 5 raridades e 5 tamanhos são 10 cores; conferir que o nome da raridade aparece junto da cor em todo card e aviso (acessibilidade).",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T13",
+          "title": "Liberar a memória do mapa anterior",
+          "subsystem": "client",
+          "description": "Auditoria de tamanho: ArtAssets guarda todas as texturas para sempre; cada mapa visitado fica na memória. Descarregar as camadas do mapa anterior ao viajar.",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T14",
+          "title": "Interface para celular",
+          "subsystem": "client",
+          "description": "Pesquisa sobre jogos idle: a interface é IMGUI (OnGUI), que a Unity não recomenda para jogos. Antes do celular, migrar para UI Toolkit ou uGUI, com botões do tamanho de um dedo.",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T15",
+          "title": "Arena e Expedições até o Nível 100",
+          "subsystem": "config",
+          "description": "Revisão de segurança: os bots da Arena usam peixes dos Mapas 1 e 2 até o Nv.10 e as Expedições pagam no máximo 2.000 Moedas por 6 h; no fim do jogo os dois ficam irrelevantes. Liga com M11-T04.",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-06T18:30:00Z"
         }
       ]
     }

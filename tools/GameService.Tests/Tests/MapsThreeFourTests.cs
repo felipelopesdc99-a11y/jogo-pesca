@@ -135,6 +135,6 @@ public sealed class MapsThreeFourTests
         Assert.True(maps.Single(m => m.MapId == "map_03").LevelUnlocked);
         Assert.True(maps.Single(m => m.MapId == "map_04").LevelUnlocked);
         Assert.Equal("map_01", game.Player.GetPlayer().MapId);
-        Assert.Equal(60, game.Profile.GetProfile().Encyclopedia.Count);
+        Assert.Equal(100, game.Profile.GetProfile().Encyclopedia.Count);
     }
 }

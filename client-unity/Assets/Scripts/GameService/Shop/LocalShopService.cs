@@ -31,6 +31,7 @@ namespace FishingIdle.GameService.Shop
         public bool CanCatchRare { get; internal set; }
         public bool CanCatchEpic { get; internal set; }
         public bool CanCatchLegendary { get; internal set; }
+        public bool CanCatchMythic { get; internal set; }
         public bool GeneratesShells { get; internal set; }
         public bool Owned { get; internal set; }
 
@@ -142,6 +143,7 @@ namespace FishingIdle.GameService.Shop
                 CanCatchRare = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 0),
                 CanCatchEpic = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 1),
                 CanCatchLegendary = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 2),
+                CanCatchMythic = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 3),
                 GeneratesShells = rod.GeneratesShells,
                 Owned = Owns(rod),
                 IsFree = IsClaimable(rod),
@@ -151,7 +153,20 @@ namespace FishingIdle.GameService.Shop
 
         private static bool IsClaimable(RodConfig rod) => rod.Acquisition != null && rod.Acquisition.Method == "free_claim_in_shop";
 
-        private bool Owns(RodConfig rod) => Save.Inventory.Any(i => i.Kind == InventoryItem.KindRod && i.RodId == rod.Id);
+        /// <summary>
+        /// Whether the player already has this rod: in the Inventory, but also on the Market, in one of
+        /// their auctions or waiting in Items to Withdraw. Otherwise a listed rod could be bought again
+        /// in the Shop, over and over.
+        /// </summary>
+        private bool Owns(RodConfig rod)
+        {
+            bool Same(MarketGoods g) => g != null && g.Kind == MarketGoods.KindRod && g.Rod != null && g.Rod.RodId == rod.Id;
+            var market = Save.Market;
+            return Save.Inventory.Any(i => i.Kind == InventoryItem.KindRod && i.RodId == rod.Id)
+                || (market != null && (market.MyListings.Any(l => Same(l.Goods))
+                    || market.Withdrawals.Any(w => Same(w.Goods))
+                    || market.Auctions.Any(a => a.SellerName == null && Same(a.Goods))));
+        }
 
         private ServiceError Blocker(RodConfig rod)
         {

@@ -58,6 +58,21 @@ namespace FishingIdle.GameService.Market
         }
 
         /// <summary>
+        /// The most a simulated buyer pays: for a rod, what the same rod costs new in the Shop plus the
+        /// upgrades already done (nobody pays more for a used rod than for a new one; otherwise buying in
+        /// the Shop and reselling would create coins). Fish have no such limit.
+        /// </summary>
+        public static long MaxBotPrice(GameConfig config, MarketGoods goods)
+        {
+            if (goods.Kind == MarketGoods.KindFish || goods.Rod == null || !config.TryGetRod(goods.Rod.RodId, out var rod))
+            {
+                return long.MaxValue;
+            }
+
+            return (rod.Acquisition?.PurchaseCostCoins ?? 0) + RodUpgradeSpend(config, rod, goods.Rod.Level);
+        }
+
+        /// <summary>
         /// Chance a simulated buyer takes a listing in one demand check: the configured chance at the
         /// reference price, up to double for a bargain, down to zero at max_price_ratio × reference.
         /// </summary>

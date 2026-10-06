@@ -57,7 +57,7 @@ WATERLINE = 0.22        # waterline: this fraction of the hull height above its 
 
 # Where the hands hold each rod, as a fraction from the butt to the tip. The thin scene rods
 # (Varas/Cena) are held at the reel seat; the Shop pictures, used when those are missing, further up.
-ROD_GRIP = {'rod_00_starter': 0.2, 'rod_01': 0.22, 'rod_02': 0.24, 'rod_03': 0.24}
+ROD_GRIP = {'rod_00_starter': 0.2, 'rod_01': 0.22, 'rod_02': 0.24, 'rod_03': 0.24, 'rod_04': 0.24}
 SCENE_ROD_GRIP = 0.12
 SCENE_RODS = ['rod_00_starter', 'rod_01', 'rod_02']  # top to bottom in Pedido 34
 
@@ -281,9 +281,9 @@ def preview(data, out):
     rods = {r['id']: r for r in data['rods']}
     rows = [(None, 'rod_00_starter', None, 'Barco Inicial · Vara Inicial · sem isca')]
     names = ['Barco 1', 'Barco 2', 'Barco 3', 'Barco 4', 'Barco 5']
-    rod_for = ['rod_00_starter', 'rod_01', 'rod_01', 'rod_02', 'rod_03']
+    rod_for = ['rod_00_starter', 'rod_01', 'rod_02', 'rod_03', 'rod_04']
     bait_for = ['bait_01', None, 'bait_02', 'bait_03', 'bait_03']
-    rod_names = {'rod_00_starter': 'Vara Inicial', 'rod_01': 'Vara 1', 'rod_02': 'Vara 2', 'rod_03': 'Vara 3'}
+    rod_names = {'rod_00_starter': 'Vara Inicial', 'rod_01': 'Vara 1', 'rod_02': 'Vara 2', 'rod_03': 'Vara 3', 'rod_04': 'Vara 4'}
     bait_names = {None: 'sem isca', 'bait_01': 'Isca Simples', 'bait_02': 'Isca Melhorada', 'bait_03': 'Isca Premium'}
     for i, b in enumerate(data['boats']):
         rows.append((b, rod_for[i], bait_for[i], names[i] + ' · ' + rod_names[rod_for[i]] + ' · ' + bait_names[bait_for[i]]))

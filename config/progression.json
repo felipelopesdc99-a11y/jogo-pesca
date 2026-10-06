@@ -585,10 +585,25 @@
           "exceptional": 0.35,
           "perfect": 0.35
         }
+      },
+      {
+        "id": "mythic",
+        "display_name": "Mítico",
+        "catch_success_base": 0.08,
+        "stat_multiplier": 1.85,
+        "fisher_xp_multiplier": 15.0,
+        "feed_xp_multiplier": 10.0,
+        "sale_value_multiplier": 14.0,
+        "size_weight_multipliers": {
+          "large": 0.5,
+          "exceptional": 0.25,
+          "perfect": 0.25
+        }
       }
     ],
     "epic_note": "Épico (docs/PROGRESSAO_MAPAS_3_4.md): só existe nos mapas 3 e 4. Chance-base de puxar 24% (docs/SISTEMA_SUCESSO_PESCA.md). Tamanho: Grande × 0,7, Excepcional × 0,45 e Perfeição × 0,45, seguindo a regra de que peixe mais raro vem grande um pouco menos (GDD_ADENDO A-083).",
-    "legendary_note": "Lendário (docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md): a partir do Mapa 6. Chance-base de puxar 14%. Tamanho: Grande × 0,6, Excepcional e Perfeição × 0,35, seguindo Raro e Épico (A-083)."
+    "legendary_note": "Lendário (docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md): a partir do Mapa 6. Chance-base de puxar 14%. Tamanho: Grande × 0,6, Excepcional e Perfeição × 0,35, seguindo Raro e Épico (A-083).",
+    "mythic_note": "Mítico (docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md): só no Mapa 10. Chance-base de puxar 8%. Tamanho: Grande × 0,5, Excepcional e Perfeição × 0,25."
   },
   "feeding": {
     "feed_fish_consumed": true,
