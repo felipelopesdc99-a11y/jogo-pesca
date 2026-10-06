@@ -1174,7 +1174,7 @@ depois, porque disputa com a Maré Dourada; Costa Nobre e Horizonte Dourado fica
 No Lago Sereno as iscas não se pagam; elas valem a partir do Rio Selvagem.
 
 ### A-104 · Progressão dos Mapas 5 a 10, adaptada às regras atuais
-**Seção do GDD:** 2, 15, 16, 17, 19 · **Situação:** Aprovado pelo proprietário (05/10/2026), ainda não está no jogo
+**Seção do GDD:** 2, 15, 16, 17, 19 · **Situação:** Aprovado pelo proprietário (05/10/2026); Mapas 5 e 6 no jogo (A-105), Mapas 7 a 10 a seguir
 
 O proprietário mandou `docs/PROGRESSAO_MAPAS_5_A_10.md` (Mapas 5 a 10, 60 espécies, Lendário e Mítico,
 Varas 3 a 5) e pediu para manter os mapas e os peixes, adaptando ao jogo de agora. A versão adaptada é
@@ -1192,3 +1192,30 @@ A-103, onde o documento conflitava com uma regra mais recente, valeu a regra mai
   dourado com Excepcional); Mítico rosa-framboesa `#EC4899`, como no documento.
 - **Tamanho:** Lendário e Mítico vêm Grandes, Excepcionais e Perfeição um pouco menos, seguindo Raro e Épico.
 - **Capítulos 5 a 10** com uma frase de chegada cada (A-085).
+
+### A-105 · Mapas 5 e 6 no jogo, com Lendário e Corrente Mestra
+**Seção do GDD:** 2, 9, 16, 17, 19 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Primeira leva da A-104: o **Mapa 5 · Costa de Coral** (Nv.40, Vara 2 ou melhor) e o **Mapa 6 ·
+Arquipélago do Sol** (Nv.50, Vara 3), com as 20 espécies deles, a raridade **Lendário** e a **Vara 3 ·
+Corrente Mestra** (Nv.50, 730.000 Moedas + 85 Conchas). Os números vêm de
+`docs/propostas/mapas_5_10.json`, aplicados por `tools/Progressao/aplicar_mapas.py`.
+
+- **Lendário** entra agora (o Veleiro é o primeiro). O **Mítico** fica para o Mapa 10, porque os filtros
+  da Caixa, do Aquário e do Mercado mostram todas as raridades que existem, e um filtro Mítico sem
+  nenhum peixe confundiria.
+- A celebração do Lendário diz **"Captura lendária!"**; a do Mítico, quando entrar, **"Captura mítica!"**.
+  Os peixes Lendários puxam a linha com a mesma força dos Épicos.
+- A Corrente Mestra aparece na Loja e no Perfil como **"Pesca peixes Raros, Épicos e Lendários"**.
+- Venda em lote protege Raros, Épicos e Lendários.
+- **Cenário:** arte final do proprietário. Faltaram o céu da Costa de Coral e as nuvens dos dois mapas
+  (Coral 02, Coral 09 e Arquipélago 09): ficam provisórios, pintados pelo gerador, até a arte chegar
+  (pedidos de novo junto com os Mapas 7 e 8). As faixas do horizonte vieram com mar pintado embaixo;
+  esse mar é retirado no recorte, porque a água é a do jogo.
+- **Paisagem viva:** na Costa de Coral, gaivotas, trinta-réis, tartaruga-marinha e, às vezes, golfinho;
+  coqueiros na praia e capim de restinga nos cantos. No Arquipélago do Sol, atobás, fragata, golfinhos
+  que saltam mais que o boto, de vez em quando gaivotas e tartaruga.
+- **Frase de chegada:** "Finalmente cheguei ao mar aberto da costa." (Mapa 5) e "Longe da costa, os
+  peixes viram troféus." (Mapa 6).
+- **Som:** os dois mapas já têm a lista de gravações (`coral_01..04`, `arquipelago_01..04`); enquanto os
+  arquivos não existem, toca o som antigo de mar e vento.

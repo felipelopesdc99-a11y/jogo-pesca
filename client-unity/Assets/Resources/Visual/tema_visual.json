@@ -14,14 +14,14 @@
     "danger": "#EF6B5B",
     "success": "#2CCB7F"
   },
-  "_raridades": "Cor de cada raridade: aparece só como acento (borda, selo, barra, filtro). Comum = branco, Raro = azul, Épico = roxo. Só as raridades que existem nos dados são usadas; as outras ficam reservadas.",
+  "_raridades": "Cor de cada raridade: aparece só como acento (borda, selo, barra, filtro). Comum = branco, Raro = azul, Épico = roxo, Lendário = vermelho-rubi (não laranja nem dourado, que já são do tamanho Grande e do Excepcional), Mítico = rosa-framboesa. Só as raridades que existem nos dados são usadas; as outras ficam reservadas.",
   "rarities": [
     { "id": "common", "color": "#F2F5F8" },
     { "id": "uncommon", "color": "#2CCB7F" },
     { "id": "rare", "color": "#4D8DFF" },
     { "id": "epic", "color": "#A855F7" },
-    { "id": "legendary", "color": "#F6B93B" },
-    { "id": "mythic", "color": "#EF6B5B" }
+    { "id": "legendary", "color": "#E5484D" },
+    { "id": "mythic", "color": "#EC4899" }
   ],
   "_tamanhos": "Cor de cada categoria de tamanho (filtro da Caixa de Pesca e nome do tamanho no card): Pequeno verde, Adulto lilás, Grande laranja, Perfeição azul-diamante. Excepcional não entra aqui: usa sempre o dourado de exceptional_color.",
   "size_categories": [

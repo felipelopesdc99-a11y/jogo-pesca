@@ -143,7 +143,7 @@ public sealed class ProfileTests
         var profile = game.Profile.GetProfile();
         var discovered = profile.Encyclopedia.Where(e => e.Discovered).ToList();
 
-        Assert.Equal(40, profile.Encyclopedia.Count);
+        Assert.Equal(60, profile.Encyclopedia.Count);
         Assert.NotEmpty(discovered);
         Assert.All(profile.Encyclopedia.Where(e => !e.Discovered), e => Assert.Null(e.Name));
         Assert.All(discovered, e => Assert.True(e.LargestCm > 0 && e.TimesCaught > 0));

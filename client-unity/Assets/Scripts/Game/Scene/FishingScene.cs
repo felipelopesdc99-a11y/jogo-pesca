@@ -40,8 +40,72 @@ namespace FishingIdle.Game.Scene
                 case "map_02": return RioSelvagem();
                 case "map_03": return PantanalDourado();
                 case "map_04": return EstuarioDasMares();
+                case "map_05": return CostaDeCoral();
+                case "map_06": return ArquipelagoDoSol();
                 default: return LagoSereno();
             }
+        }
+
+        /// <summary>Costa de Coral: shallow turquoise tropical coast in clear morning light, sun high on the left (docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md).</summary>
+        public static SceneTheme CostaDeCoral()
+        {
+            return new SceneTheme
+            {
+                SkyTop = new Color(0.30f, 0.62f, 0.90f),
+                SkyHorizon = new Color(0.90f, 0.95f, 0.96f),
+                Sun = new Color(1f, 0.98f, 0.90f),
+                FarHillTop = new Color(0.72f, 0.56f, 0.40f),
+                FarHillBottom = new Color(0.62f, 0.74f, 0.80f),
+                MidHillTop = new Color(0.32f, 0.52f, 0.30f),
+                MidHillBottom = new Color(0.92f, 0.84f, 0.66f),
+                TreeCrown = new Color(0.26f, 0.48f, 0.24f),
+                TreeShade = new Color(0.16f, 0.32f, 0.18f),
+                WaterHorizon = new Color(0.36f, 0.70f, 0.86f),
+                WaterMid = new Color(0.16f, 0.66f, 0.70f),
+                WaterDeep = new Color(0.06f, 0.42f, 0.52f),
+                Glint = new Color(0.96f, 1f, 1f),
+                HillSeed = 23,
+                TreeSeed = 71,
+                HillHeight = 0.8f,
+                TreeHeight = 0.9f,
+                ArtFolder = "CostaDeCoral",
+                ArtPrefix = "map_costa_de_coral",
+                SunPosition = new Vector2(-5.0f, 3.8f),
+                SunColumn = false,
+                NearLeftHeight = 3f,
+                NearRightHeight = 2.6f,
+            };
+        }
+
+        /// <summary>Arquipélago do Sol: deep cobalt sea between tall rocky islands, clean early-afternoon gold, sun high on the right.</summary>
+        public static SceneTheme ArquipelagoDoSol()
+        {
+            return new SceneTheme
+            {
+                SkyTop = new Color(0.12f, 0.36f, 0.78f),
+                SkyHorizon = new Color(0.78f, 0.88f, 0.94f),
+                Sun = new Color(1f, 0.95f, 0.78f),
+                FarHillTop = new Color(0.42f, 0.56f, 0.72f),
+                FarHillBottom = new Color(0.66f, 0.76f, 0.86f),
+                MidHillTop = new Color(0.30f, 0.44f, 0.30f),
+                MidHillBottom = new Color(0.46f, 0.48f, 0.50f),
+                TreeCrown = new Color(0.22f, 0.42f, 0.22f),
+                TreeShade = new Color(0.30f, 0.32f, 0.36f),
+                WaterHorizon = new Color(0.40f, 0.58f, 0.82f),
+                WaterMid = new Color(0.08f, 0.26f, 0.60f),
+                WaterDeep = new Color(0.03f, 0.12f, 0.34f),
+                Glint = new Color(1f, 0.92f, 0.68f),
+                HillSeed = 29,
+                TreeSeed = 77,
+                HillHeight = 1.6f,
+                TreeHeight = 1.2f,
+                Current = 0.15f,
+                ArtFolder = "ArquipelagoDoSol",
+                ArtPrefix = "map_arquipelago_do_sol",
+                SunPosition = new Vector2(5.2f, 3.6f),
+                NearLeftHeight = 3.6f,
+                NearRightHeight = 3.4f,
+            };
         }
 
         /// <summary>Pantanal Dourado: wide flooded plain at dawn, calm golden water, palms and capões (docs/PROGRESSAO_MAPAS_3_4.md).</summary>

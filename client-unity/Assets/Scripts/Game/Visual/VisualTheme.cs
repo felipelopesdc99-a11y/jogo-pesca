@@ -51,8 +51,8 @@ namespace FishingIdle.Game.Visual
             new RarityColor { id = "uncommon", color = "#2CCB7F" },
             new RarityColor { id = "rare", color = "#4D8DFF" },
             new RarityColor { id = "epic", color = "#A855F7" },
-            new RarityColor { id = "legendary", color = "#F6B93B" },
-            new RarityColor { id = "mythic", color = "#EF6B5B" },
+            new RarityColor { id = "legendary", color = "#E5484D" },
+            new RarityColor { id = "mythic", color = "#EC4899" },
         };
 
         private RarityColor[] _sizes =

@@ -32,7 +32,7 @@
     }
   },
   "tier_ladder_reference": {
-    "note": "Escada de progressão da seção 19 do GDD. As Varas 3 a 5 ainda não existem e de propósito não são definidas abaixo.",
+    "note": "Escada de progressão da seção 19 do GDD. As Varas 3 a 5 seguem docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md e entram junto com os mapas delas.",
     "purchase_unlock_fisher_level": {
       "rod_01": 10,
       "rod_02": 30,
@@ -307,6 +307,132 @@
           "to_level": 10,
           "cost_coins": 260000,
           "cost_shells": 40
+        }
+      ],
+      "npc_resale": {
+        "base_value_ratio": 0.4,
+        "upgrade_investment_ratio": 0.25,
+        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
+      },
+      "tradable_on_market": true,
+      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus."
+    },
+    {
+      "id": "rod_03",
+      "display_name": "Corrente Mestra",
+      "description": "Uma vara de mar aberto, feita para peixes rápidos e grandes longe da costa.",
+      "tier": 3,
+      "implemented_in_v0_1": false,
+      "acquisition": {
+        "method": "coin_purchase",
+        "purchase_cost_coins": 730000,
+        "purchase_cost_shells": 85,
+        "unlock_fisher_level": 50
+      },
+      "has_internal_levels": true,
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "generates_shells": true,
+      "bonuses_per_level": {
+        "note": "Os valores são o bônus total naquele nível interno, não um acréscimo por nível. Chance de puxar um terço menor que no documento do proprietário (A-095); demais bônus como no documento.",
+        "rarity_efficiency": [
+          0.52,
+          0.55,
+          0.58,
+          0.61,
+          0.64,
+          0.67,
+          0.7,
+          0.73,
+          0.76,
+          0.8
+        ],
+        "size_quality": [
+          0.44,
+          0.46,
+          0.48,
+          0.5,
+          0.52,
+          0.54,
+          0.56,
+          0.58,
+          0.6,
+          0.62
+        ],
+        "shell_yield": [
+          1.15,
+          1.22,
+          1.29,
+          1.36,
+          1.43,
+          1.5,
+          1.57,
+          1.64,
+          1.7,
+          1.75
+        ],
+        "catch_success": [
+          0.08,
+          0.087,
+          0.093,
+          0.1,
+          0.107,
+          0.12,
+          0.127,
+          0.14,
+          0.147,
+          0.16
+        ]
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "cost_coins": 110000,
+          "cost_shells": 21
+        },
+        {
+          "to_level": 3,
+          "cost_coins": 160000,
+          "cost_shells": 26
+        },
+        {
+          "to_level": 4,
+          "cost_coins": 240000,
+          "cost_shells": 32
+        },
+        {
+          "to_level": 5,
+          "cost_coins": 350000,
+          "cost_shells": 38
+        },
+        {
+          "to_level": 6,
+          "cost_coins": 530000,
+          "cost_shells": 47
+        },
+        {
+          "to_level": 7,
+          "cost_coins": 800000,
+          "cost_shells": 55
+        },
+        {
+          "to_level": 8,
+          "cost_coins": 1200000,
+          "cost_shells": 64
+        },
+        {
+          "to_level": 9,
+          "cost_coins": 1770000,
+          "cost_shells": 74
+        },
+        {
+          "to_level": 10,
+          "cost_coins": 2660000,
+          "cost_shells": 85
         }
       ],
       "npc_resale": {

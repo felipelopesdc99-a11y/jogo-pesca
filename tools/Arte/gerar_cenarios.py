@@ -6,7 +6,8 @@ separate sprites so they can drift. Also paints the boat, the fisherman and the 
 
 The layers are painted in world units (the camera shows 10.8 units of height, horizon at y = 0.2)
 so what is painted here lines up with the scene in Unity. Replace any file keeping its name to use
-final art. Usage:  python3 tools/Arte/gerar_cenarios.py   (always the same files; numpy + Pillow)
+final art. Usage:  python3 tools/Arte/gerar_cenarios.py [PastaDoMapa ...]   (always the same files; numpy + Pillow;
+with map folder names, only those maps)
 """
 import math
 import os
@@ -671,6 +672,150 @@ def estuario_das_mares(out):
     thumbnail(out, 'map_estuario_das_mares')
 
 
+# ----------------------------------------------------------------------------- Mapas 5 e 6 (mar)
+
+def day_sea_sky(out, prefix, rng, sun, top, mid, low, glow):
+    """A clear tropical day sky with a high sun (Costa de Coral, Arquipélago do Sol)."""
+    sky = Layer(-HALF_W, HALF_W, HORIZON - 0.2, 5.8, 48)
+    t = np.clip((sky.Y - HORIZON) / 5.4, 0, 1)
+    col = mix(hexc(low), hexc(mid), smooth(0.0, 0.3, t))
+    col = mix(col, hexc(top), smooth(0.3, 1.0, t))
+    d = np.sqrt((sky.X - sun[0]) ** 2 + ((sky.Y - sun[1]) * 1.2) ** 2)
+    col = mix(col, hexc(glow), np.exp(-d / 2.0) * 0.6)
+    col = mix(col, hexc('#FFFDF0'), np.exp(-d / 0.5) * 0.95)
+    sky.over(col, np.ones_like(t))
+    n = noise2(rng, sky.h, sky.w, 80, 5)
+    streak = smooth(0.25, 0.65, n) * smooth(1.2, 2.2, sky.Y) * (1 - smooth(4.4, 5.6, sky.Y))
+    sky.rgb = mix(sky.rgb, hexc('#F4FAFF'), streak * 0.35)
+    disc = np.clip((0.38 - np.sqrt((sky.X - sun[0]) ** 2 + (sky.Y - sun[1]) ** 2)) * sky.ppu, 0, 1)
+    sky.rgb = mix(sky.rgb, hexc('#FFFFF4'), disc)
+    sky.save(os.path.join(out, prefix + '_bg_sky.png'))
+
+
+def day_sea_water(out, prefix, rng, sun, horizon_col, shallow, deep, darkest, glint, column):
+    water = Layer(-HALF_W, HALF_W, -5.8, HORIZON, 64)
+    depth = np.clip((HORIZON - water.Y) / 6.0, 0, 1)
+    colw = mix(hexc(horizon_col), hexc(shallow), smooth(0.0, 0.08, depth))
+    colw = mix(colw, hexc(deep), smooth(0.06, 0.5, depth))
+    colw = mix(colw, hexc(darkest), smooth(0.45, 1.0, depth))
+    ripple = np.clip(noise2(rng, water.h, water.w, 7, 3) * 2.4 + 0.2, 0, 1)
+    rows = (np.sin(water.Y * 34 + noise2(rng, water.h, water.w, 30, 2) * 6) * 0.5 + 0.5) ** 3
+    if column:
+        spread = 0.5 + depth * 1.8
+        col_k = np.exp(-((water.X - sun[0]) / spread) ** 2)
+        colw = mix(colw, hexc(glint), np.clip(col_k * ripple * rows * 1.1 * (1 - depth * 0.5), 0, 1))
+    # Small bright glints all over (midday sea).
+    sparkle = smooth(0.82, 0.95, noise2(rng, water.h, water.w, 4, 2) * 0.5 + 0.5) * rows
+    colw = mix(colw, hexc(glint), np.clip(sparkle * 0.35 * (1 - depth * 0.6), 0, 1))
+    colw = colw * (1 + noise2(rng, water.h, water.w, 9, 3)[..., None] * 0.06)
+    water.over(colw, np.ones_like(depth))
+    water.save(os.path.join(out, prefix + '_water.png'))
+
+
+def costa_de_coral(out):
+    rng = np.random.default_rng(19)
+    prefix = 'map_costa_de_coral'
+    sun = (-5.0, 3.8)
+    day_sea_sky(out, prefix, rng, sun, '#2E7FD0', '#6FB6EA', '#D8F0FA', '#FFF2C0')
+
+    # Far: low cliffs of the coast, hazy blue.
+    far = Layer(-HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 2.4, 70)
+    xs = far.col_x()
+    cliffs = HORIZON + 0.12 + 0.25 * np.exp(-((xs + 8.5) / 3.0) ** 2) + 0.3 * np.exp(-((xs - 9.0) / 2.6) ** 2) + 0.04 * noise1(rng, far.w, 6)
+    far.ridge(cliffs, mix(hexc('#7FA2B8'), hexc('#CFE4EE'), smooth(HORIZON + 0.5, HORIZON, far.Y) * 0.7))
+    far.save(os.path.join(out, prefix + '_bg_far.png'))
+
+    # Mid: a pale beach line with coconut palms.
+    mid = Layer(-HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 1.5, 90)
+    xs = mid.col_x()
+    sand = HORIZON + 0.04 + 0.02 * noise1(rng, mid.w, 6)
+    bush = broadleaf_profile(xs, rng, 30, -HALF_W, HALF_W, HORIZON + 0.02, 0.05, 0.12)
+    prof = np.maximum(sand, bush)
+    colm = mix(hexc('#3F7A3E'), hexc('#6E9C4A'), smooth(HORIZON, HORIZON + 0.4, mid.Y))
+    colm = np.where((mid.Y < HORIZON + 0.06)[..., None], hexc('#EBDDB4'), colm)
+    mid.ridge(prof, colm)
+    img = mid.image()
+    palms(img, mid, [(-10.5, 0.6), (-7.8, 0.75), (-4.0, 0.5), (3.2, 0.55), (7.5, 0.7), (10.8, 0.6)], (110, 88, 60), (60, 110, 60), (150, 190, 90))
+    img.save(os.path.join(out, prefix + '_bg_mid.png'), optimize=True)
+
+    # Shore (placeholder for the painted shore groups): rocks with green on top.
+    near = Layer(-HALF_W, HALF_W, HORIZON - 0.15, HORIZON + 3.2, 100)
+    xs = near.col_x()
+    left = broadleaf_profile(xs, rng, 14, -HALF_W, -5.6, HORIZON - 0.1, 0.25, 0.7)
+    right = broadleaf_profile(xs, rng, 10, 7.0, HALF_W, HORIZON - 0.1, 0.25, 0.6)
+    prof = np.maximum(left, right)
+    near.ridge(prof, mix(hexc('#7A5A3E'), hexc('#5E8A42'), smooth(HORIZON + 0.3, HORIZON + 1.4, near.Y)), 1.2)
+    light_rim(near, prof, sun[0], 0.6, hexc('#FFE2A0'), 0.06)
+    near.save(os.path.join(out, prefix + '_bg_near.png'))
+
+    # Water: shallow turquoise over the reef, deeper blue towards the viewer.
+    day_sea_water(out, prefix, rng, sun, '#BFEFF0', '#3FC8C8', '#1B9AB0', '#0E5C80', '#FFFFFF', False)
+
+    for side, name in ((-1, 'left'), (1, 'right')):
+        fg = foreground_corner(np.random.default_rng(100 if side < 0 else 101), side, '#2F6A3A', '#8AB050', '#F0D080', lily=False, cattails=False)
+        fg.save(os.path.join(out, prefix + '_fg_' + name + '.png'), optimize=True)
+
+    for i in range(3):
+        c = cloud_sprite(np.random.default_rng(105 + i), 560, 260, hexc('#FFFFFF'), hexc('#B8CCE0'), -1.0)
+        c.save(os.path.join(out, prefix + '_cloud_%02d.png' % (i + 1)), optimize=True)
+
+    thumbnail(out, prefix)
+
+
+def arquipelago_do_sol(out):
+    rng = np.random.default_rng(23)
+    prefix = 'map_arquipelago_do_sol'
+    sun = (5.2, 3.6)
+    day_sea_sky(out, prefix, rng, sun, '#1F5FB8', '#4E95DA', '#F4E2B0', '#FFE6A0')
+
+    # Far: rocky islands spaced along the horizon.
+    far = Layer(-HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 2.4, 70)
+    xs = far.col_x()
+    islands = np.full_like(xs, -99.0)
+    for cx, w, hgt in ((-10.0, 1.6, 0.8), (-6.0, 1.0, 0.5), (-1.5, 1.4, 0.65), (2.0, 0.7, 0.3), (8.5, 1.8, 0.9), (11.5, 0.9, 0.4)):
+        islands = np.maximum(islands, HORIZON + hgt * np.clip(1 - ((xs - cx) / w) ** 2, 0, None) ** 0.7 - 0.02)
+    far.ridge(islands + 0.03 * noise1(rng, far.w, 7), mix(hexc('#5E7FA0'), hexc('#C8D8E4'), smooth(HORIZON + 0.6, HORIZON, far.Y) * 0.6))
+    far.save(os.path.join(out, prefix + '_bg_far.png'))
+
+    # Mid: nearer green islets.
+    mid = Layer(-HALF_W, HALF_W, HORIZON - 0.1, HORIZON + 1.5, 90)
+    xs = mid.col_x()
+    islets = np.full_like(xs, -99.0)
+    for cx, w, hgt in ((-8.0, 1.2, 0.55), (-3.5, 0.8, 0.35), (4.0, 1.0, 0.45), (10.0, 1.4, 0.6)):
+        islets = np.maximum(islets, HORIZON + hgt * np.clip(1 - ((xs - cx) / w) ** 2, 0, None) ** 0.6 - 0.02)
+    islets = islets + 0.03 * noise1(rng, mid.w, 7)
+    colm = mix(hexc('#6E6A62'), hexc('#3F7A3E'), smooth(HORIZON + 0.1, HORIZON + 0.4, mid.Y))
+    mid.ridge(islets, colm * (1 + noise2(rng, mid.h, mid.w, 12, 3)[..., None] * 0.1))
+    light_rim(mid, islets, sun[0], 0.6, hexc('#FFD890'), 0.05)
+    mid.save(os.path.join(out, prefix + '_bg_mid.png'))
+
+    near = Layer(-HALF_W, HALF_W, HORIZON - 0.15, HORIZON + 3.2, 100)
+    xs = near.col_x()
+    left = HORIZON - 0.1 + 2.6 * np.clip((-5.5 - xs) / 7.0, 0, 1) ** 0.6
+    right = HORIZON - 0.1 + 2.4 * np.clip((xs - 7.0) / 6.0, 0, 1) ** 0.6
+    prof = np.maximum(left, right) + 0.08 * noise1(rng, near.w, 7)
+    near.ridge(prof, mix(hexc('#6A6460'), hexc('#4E7A44'), smooth(HORIZON + 1.2, HORIZON + 2.4, near.Y)), 1.2)
+    light_rim(near, prof, sun[0], 0.6, hexc('#FFD890'), 0.06)
+    near.save(os.path.join(out, prefix + '_bg_near.png'))
+
+    # Water: deep cobalt open sea with a golden sun column.
+    day_sea_water(out, prefix, rng, sun, '#D8D8C0', '#2F6FB8', '#14408A', '#0A2456', '#FFE6A8', True)
+
+    for side, name in ((-1, 'left'), (1, 'right')):
+        fg = foreground_corner(np.random.default_rng(110 if side < 0 else 111), side, '#3A4A44', '#6E7A60', '#E0C890', lily=False, cattails=False)
+        fg.save(os.path.join(out, prefix + '_fg_' + name + '.png'), optimize=True)
+
+    for i in range(3):
+        c = cloud_sprite(np.random.default_rng(115 + i), 560, 260, hexc('#FFFBEA'), hexc('#A8BCD8'), 1.0)
+        c.save(os.path.join(out, prefix + '_cloud_%02d.png' % (i + 1)), optimize=True)
+
+    thumbnail(out, prefix)
+
+
+MAPS = (('LagoSereno', lago_sereno), ('RioSelvagem', rio_selvagem), ('PantanalDourado', pantanal_dourado),
+        ('EstuarioDasMares', estuario_das_mares), ('CostaDeCoral', costa_de_coral), ('ArquipelagoDoSol', arquipelago_do_sol))
+
+
 def boat_and_fisherman(out):
     """The rowing boat, the seated fisherman (without the arm, which the game animates) and a tackle box."""
     S = 4
@@ -861,24 +1006,31 @@ def expeditions(maps_dir, out):
 
 
 def main():
+    import sys
     finais.proteger_finais()
-    agua = os.path.join(ROOT, 'Agua')
-    os.makedirs(agua, exist_ok=True)
-    waves(agua)
-    varas = os.path.join(ROOT, 'Varas')
-    os.makedirs(varas, exist_ok=True)
-    rods(varas)
-    cena = os.path.join(ROOT, 'Cena')
-    os.makedirs(cena, exist_ok=True)
-    boat_and_fisherman(cena)
-    for folder, fn in (('LagoSereno', lago_sereno), ('RioSelvagem', rio_selvagem), ('PantanalDourado', pantanal_dourado), ('EstuarioDasMares', estuario_das_mares)):
+    # With map folder names (e.g. "CostaDeCoral ArquipelagoDoSol") only those maps are painted.
+    only = set(sys.argv[1:])
+    if not only:
+        agua = os.path.join(ROOT, 'Agua')
+        os.makedirs(agua, exist_ok=True)
+        waves(agua)
+        varas = os.path.join(ROOT, 'Varas')
+        os.makedirs(varas, exist_ok=True)
+        rods(varas)
+        cena = os.path.join(ROOT, 'Cena')
+        os.makedirs(cena, exist_ok=True)
+        boat_and_fisherman(cena)
+    for folder, fn in MAPS:
+        if only and folder not in only:
+            continue
         out = os.path.join(ROOT, 'Mapas', folder)
         os.makedirs(out, exist_ok=True)
         fn(out)
         print('  ', folder)
-    exp = os.path.join(ROOT, 'Expedicoes')
-    os.makedirs(exp, exist_ok=True)
-    expeditions(os.path.join(ROOT, 'Mapas'), exp)
+    if not only:
+        exp = os.path.join(ROOT, 'Expedicoes')
+        os.makedirs(exp, exist_ok=True)
+        expeditions(os.path.join(ROOT, 'Mapas'), exp)
     print('Cenários gerados em', os.path.normpath(os.path.join(ROOT, 'Mapas')))
 
 

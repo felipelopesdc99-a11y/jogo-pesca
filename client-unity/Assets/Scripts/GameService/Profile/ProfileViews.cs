@@ -46,6 +46,7 @@ namespace FishingIdle.GameService.Profile
         public double ShellBonus { get; internal set; }
         public bool CanCatchRare { get; internal set; }
         public bool CanCatchEpic { get; internal set; }
+        public bool CanCatchLegendary { get; internal set; }
         public bool GeneratesShells { get; internal set; }
         public bool IsEquipped { get; internal set; }
 

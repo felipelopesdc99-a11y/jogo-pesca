@@ -219,7 +219,7 @@ namespace FishingIdle.Game.UI
             Row(skin, x, ref y, w, GameTexts.Profile.SizeBonus, rod.SizeBonus, rod.SizeBonusAtMax);
             Row(skin, x, ref y, w, GameTexts.Profile.ShellBonus, rod.ShellBonus, rod.ShellBonusAtMax);
             y += 6;
-            GUI.Label(new Rect(x, y, w, 20), rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare, skin.Small);
+            GUI.Label(new Rect(x, y, w, 20), rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare, skin.Small);
             y += 22;
             GUI.Label(new Rect(x, y, w, 20), GameTexts.Shop.Requires(rod.UnlockFisherLevel), skin.Small);
 

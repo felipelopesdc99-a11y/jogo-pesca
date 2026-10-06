@@ -3,6 +3,25 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.1] — 05/10/2026
+
+### Adicionado
+
+- **Mapa 5 · Costa de Coral** (Nv.40) e **Mapa 6 · Arquipélago do Sol** (Nv.50), com 20 espécies novas
+  (60 no catálogo), a raridade **Lendário** (o Veleiro) e a **Vara 3 · Corrente Mestra** (A-105).
+- Arte final dos dois mapas: cenário, peixes, Corrente Mestra (Loja e cena), gaivota, tartaruga-marinha,
+  atobá, fragata, golfinho, coqueiros, restinga e vegetação das ilhas. Céu da Costa de Coral e nuvens dos
+  dois mapas ainda provisórios.
+- `tools/Progressao/aplicar_mapas.py` (coloca mapas da proposta em `/config`),
+  `tools/Arte/processar_mapas_5_6.py` (recorta o pacote do ChatGPT) e `gerar_cenarios.py <Mapa>`
+  (provisório só dos mapas pedidos).
+- Pedido de arte dos Mapas 7 e 8 e da Vara 4 (com as 3 imagens que faltaram).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) nem aberto no Editor do Unity. Cenário conferido só numa
+  prévia montada fora do Unity.
+
 ## [0.2.0-m17.8] — 05/10/2026
 
 ### Adicionado

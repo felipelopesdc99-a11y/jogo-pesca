@@ -157,7 +157,7 @@ def cut_at(img, fraction):
     return V.cut_waterline(img, fraction)
 
 
-def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_units, far_cut=None, remix_mid=False):
+def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_units, far_cut=None, remix_mid=False, sky_whole_width=False):
     base = 'Mapas/%s/%s_' % (out_folder, file_prefix)
     photo = find(folder, prefix, '01')
     if photo is not None:
@@ -166,7 +166,7 @@ def scenery(folder, prefix, out_folder, file_prefix, sun_world, far_units, mid_u
     if sky is not None:
         a = np.asarray(sky.convert('RGB'), dtype=float).sum(axis=2)
         ys, xs = np.where(a >= np.percentile(a, 99.7))
-        P.sky(sky, (xs.mean() / a.shape[1], ys.mean() / a.shape[0]), sun_world, 7.5, base + 'bg_sky.png')
+        P.sky(sky, (xs.mean() / a.shape[1], ys.mean() / a.shape[0]), sun_world, 7.5, base + 'bg_sky.png', whole_width=sky_whole_width)
     far = find(folder, prefix, '03')
     if far is not None:
         piece = keyed(far)

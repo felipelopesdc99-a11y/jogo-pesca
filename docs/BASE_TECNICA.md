@@ -294,6 +294,14 @@ passo está em `SaveMigrations.Upgrade`.
     do meio montada com duas pinturas diferentes alternadas (`alternate`, pedidos Refazer 01 a 04). Os
     animais novos (`LivingAnimals`: araras-azuis, tuiuiú, colhereiros, guarás, trinta-réis, caranguejo,
     boto) reaproveitam os comportamentos existentes com outra arte.
+  - **Mapas 5 a 10** (A-104, A-105): `tools/Progressao/aplicar_mapas.py map_05 map_06 ...` copia de
+    `docs/propostas/mapas_5_10.json` para `/config` as espécies, os mapas, a vara mínima de cada mapa e a
+    raridade nova que eles usam (sem duplicar nada se rodar de novo). A arte de cada par de mapas tem seu
+    script (`tools/Arte/processar_mapas_5_6.py`), que reaproveita `processar_mapas_3_4.py` trocando só os
+    nomes e tira o mar pintado embaixo das faixas do horizonte (`drop_painted_sea`). `gerar_cenarios.py
+    CostaDeCoral ArquipelagoDoSol` pinta o provisório só desses mapas. O cenário de cada mapa novo é um
+    `SceneTheme` em `FishingScene.For`; a paisagem viva, uma cena em `paisagem_viva.json`, e os animais
+    novos são comportamentos existentes (`Flock`, `Surfacer`) com outra arte.
   - **Arte final do proprietário** (`tools/Arte/processar_pedidos.py`): recorta as imagens do ChatGPT
     (fundo verde, magenta ou preto), separa grades de peixes e ícones, estende o céu e as camadas de
     montanha até as 26 unidades (espelhando faixas sem marcos, para a cachoeira aparecer uma vez só) e

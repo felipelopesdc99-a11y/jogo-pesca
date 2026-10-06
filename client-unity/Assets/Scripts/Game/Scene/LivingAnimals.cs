@@ -94,6 +94,12 @@ namespace FishingIdle.Game.Scene
                 case "fiddler_crab": return Has("caranguejo_1") && _spots.ContainsKey("crab");
                 case "dolphin": return Has("boto_1") && _spots.ContainsKey("dolphin");
                 case "butterflies": return Has("borboleta_limao_1") && Has("borboleta_laranja_1");
+                // Costa de Coral and Arquipélago do Sol (docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md).
+                case "gulls": return Has("gaivota_1");
+                case "boobies": return Has("atoba_1");
+                case "frigatebird": return Has("fragata_1");
+                case "spinner_dolphin": return Has("golfinho_1") && _spots.ContainsKey("dolphin");
+                case "sea_turtle": return Has("tartaruga_marinha_1") && _spots.ContainsKey("sea_turtle");
                 default: return false;
             }
         }
@@ -129,6 +135,11 @@ namespace FishingIdle.Game.Scene
                 case "fiddler_crab": return FiddlerCrab();
                 case "dolphin": return Dolphin();
                 case "butterflies": return Butterflies();
+                case "gulls": return Flock("gaivota", 4, 0.7f, Random.Range(1, 4), 2.4f, 9f, 2.2f, 4.2f);
+                case "boobies": return Flock("atoba", 4, 0.72f, Random.Range(1, 3), 2.6f, 9f, 1.6f, 3.6f);
+                case "frigatebird": return Flock("fragata", 3, 1.15f, 1, 1.2f, 1.5f, 3.4f, 4.8f);
+                case "spinner_dolphin": return Surfacer("golfinho", 1.0f, "Golfinho", "dolphin", 0.45f);
+                case "sea_turtle": return Surfacer("tartaruga_marinha", 0.75f, "Tartaruga-marinha", "sea_turtle", 0f);
                 default: return Nothing();
             }
         }
@@ -812,21 +823,31 @@ namespace FishingIdle.Game.Scene
 
         private IEnumerator Dolphin()
         {
-            var frames = Frames("boto", 3, 0.9f, new Vector2(0.5f, 0f));
+            return Surfacer("boto", 0.9f, "Boto", "dolphin", 0.35f);
+        }
+
+        /// <summary>
+        /// An animal that surfaces a few times as it swims across: back (frame 1) or, sometimes, a leap
+        /// (frame 2), then the tail or the dive (frame 3). The boto, the spinner dolphin and the sea turtle
+        /// (which never leaps) share it.
+        /// </summary>
+        private IEnumerator Surfacer(string art, float width, string label, string spotId, float leapChance)
+        {
+            var frames = Frames(art, 3, width, new Vector2(0.5f, 0f));
             if (frames == null)
             {
                 yield break;
             }
 
-            var spot = _spots["dolphin"];
+            var spot = _spots[spotId];
             var dir = Random.value > 0.5f ? 1f : -1f;
             var x = dir > 0 ? Random.Range(-_halfWidth + 2f, -2f) : Random.Range(2f, _halfWidth - 2f);
-            var r = Spawn(_water, "Boto", frames[0], new Vector3(x, spot.y, 0f), FishingScene.OrderWaterLife, dir < 0);
+            var r = Spawn(_water, label, frames[0], new Vector3(x, spot.y, 0f), FishingScene.OrderWaterLife, dir < 0);
             SetAlpha(r, 0f);
             var surfacings = Random.Range(2, 4);
             for (var i = 0; i < surfacings; i++)
             {
-                var leap = Random.value < 0.35f;
+                var leap = Random.value < leapChance;
                 var at = new Vector3(x, spot.y, 0f);
                 RippleEffect.Spawn(_water, at, FishingScene.OrderWaterDetail + 1, 0.7f, 0.5f);
                 // Back and fin roll through the surface.

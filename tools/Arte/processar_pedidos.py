@@ -174,8 +174,11 @@ def layer_piece(img, key, height_units, ppu):
 
 # ----------------------------------------------------------------------------- scenery
 
-def sky(img, sun_frac, sun_world, height_units, rel, ppu=96):
-    """Places the sky painting so its sun is at `sun_world`, then widens it to 26 x 6 units."""
+def sky(img, sun_frac, sun_world, height_units, rel, ppu=96, whole_width=False):
+    """Places the sky painting so its sun is at `sun_world`, then widens it to 26 x 6 units.
+
+    With `whole_width`, the colour continued sideways is the per-row median of the whole picture (for a
+    sun or clouds close to an edge, which would otherwise be smeared into a band)."""
     W, H = int(2 * HALF_W * ppu), int(6.0 * ppu)
     iw = int(round(img.width * height_units * ppu / img.height))
     ih = int(round(height_units * ppu))
@@ -194,8 +197,8 @@ def sky(img, sun_frac, sun_world, height_units, rel, ppu=96):
         col = np.median(block, axis=1)
         return np.stack([np.convolve(np.pad(col[:, c], len(kernel), mode='edge'), kernel, mode='same')[len(kernel):-len(kernel)] for c in range(3)], axis=1)
 
-    left_col = profile(pic[:, :edge])
-    right_col = profile(pic[:, -edge:])
+    left_col = profile(pic if whole_width else pic[:, :edge])
+    right_col = profile(pic if whole_width else pic[:, -edge:])
     out = np.zeros((H, W, 3), dtype=np.float32)
     for x in range(W):
         sx = x - left

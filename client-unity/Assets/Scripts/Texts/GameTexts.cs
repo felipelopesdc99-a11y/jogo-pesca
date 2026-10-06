@@ -525,6 +525,8 @@ namespace FishingIdle.Texts
                     case "map_02": return "A aventura sai do conforto do lago.";
                     case "map_03": return "Agora o mundo se abriu de verdade.";
                     case "map_04": return "Cheguei em uma nova fronteira do jogo.";
+                    case "map_05": return "Finalmente cheguei ao mar aberto da costa.";
+                    case "map_06": return "Longe da costa, os peixes viram troféus.";
                     default: return null;
                 }
             }
@@ -643,6 +645,7 @@ namespace FishingIdle.Texts
             public const string ShellBonus = "Conchas";
             public const string CatchesRare = "Pesca peixes Raros";
             public const string CatchesRareAndEpic = "Pesca peixes Raros e Épicos";
+            public const string CatchesUpToLegendary = "Pesca peixes Raros, Épicos e Lendários";
             public const string NoRare = "Não pesca peixes Raros";
             public const string NoShells = "Não gera Conchas";
             public const string InventoryNote = "Suas varas ficam aqui. Varas novas se compram na Loja.";
@@ -705,6 +708,20 @@ namespace FishingIdle.Texts
         public static class Celebration
         {
             public const string RareCatch = "Captura rara!";
+            public const string LegendaryCatch = "Captura lendária!";
+            public const string MythicCatch = "Captura mítica!";
+
+            /// <summary>Title of the rarity celebration: Lendário and Mítico have their own (docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md).</summary>
+            public static string RarityCatch(string rarityId)
+            {
+                switch (rarityId)
+                {
+                    case "legendary": return LegendaryCatch;
+                    case "mythic": return MythicCatch;
+                    default: return RareCatch;
+                }
+            }
+
             public const string Exceptional = "Tamanho Excepcional!";
             public const string Perfect = "Perfeição!";
             public const string Record = "Novo recorde!";
