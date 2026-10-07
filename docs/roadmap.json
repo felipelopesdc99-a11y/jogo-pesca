@@ -36,8 +36,9 @@
       "title": "Pescar de 10 a 20 minutos e dizer o que achou",
       "detail": "É o critério de conclusão do Milestone 1. Aperte Iniciar pesca, deixe rodar, abra a Caixa de Pesca, venda alguns peixes. Diga o que agradou e o que incomodou: ritmo, visual, sons que faltam, tamanho dos textos. Para testar mais rápido, o Painel de Desenvolvimento → Balanceamento → Pesca deixa o tempo por captura em 5 segundos, aplicando com o jogo rodando.",
       "raised_at": "2026-09-28T22:23:54Z",
-      "status": "OPEN",
-      "deferred_to_end": true
+      "status": "RESOLVED",
+      "deferred_to_end": true,
+      "resolution": "Proprietário (07/10/2026): jogabilidade perfeita, sem erros (vende, sobe dinheiro, peixe some). Pediu a Caixa de Pesca com cara de jogo e corrigir textos sobrepostos (A-118)."
     },
     {
       "id": "OD-004",
@@ -786,7 +787,7 @@
           "title": "Teste de 10 a 20 minutos pelo proprietário",
           "subsystem": "client",
           "description": "Pescar por 10 a 20 minutos e dizer se o loop já tem gosto de jogo.",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M1-T01",
             "M1-T02",
@@ -794,7 +795,8 @@
             "M1-T08",
             "M1-T09"
           ],
-          "updated_at": "2026-09-28T22:23:54Z"
+          "updated_at": "2026-10-07T18:55:00Z",
+          "completion_notes": "Testado pelo proprietário no Unity (07/10/2026): pesca, venda e Moedas funcionando sem erros. Ajustes visuais pedidos na Caixa entraram no M22-T24."
         }
       ]
     },
@@ -3821,6 +3823,16 @@
           "dependencies": [],
           "updated_at": "2026-10-07T17:55:00Z",
           "completion_notes": "expeditions.json: valores do Mapa 1 ×2,5; maps.json: expedition_reward_multiplier por mapa (1 a 2.000); ExpeditionRules.Coins/MapMultiplier usam o mapa da partida; ExpeditionScalingTests. A-114. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T24",
+          "title": "Caixa de Pesca com cara de jogo",
+          "subsystem": "client",
+          "description": "Pedido do proprietário no teste da pesca (07/10/2026, com print): filtros pareciam gerenciador e dois textos do rodapé se sobrepunham.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T18:55:00Z",
+          "completion_notes": "FishingBoxWindow: abas de raridade com contagem, menus de Tamanho e Ordem, barra de ocupação da Caixa no rodapé e vagas do Aquário à direita, grade alinhada às abas. A-118. Não compilado nem aberto no Unity."
         }
       ]
     }

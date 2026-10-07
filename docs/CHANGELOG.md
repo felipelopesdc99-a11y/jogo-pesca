@@ -3,6 +3,20 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.15] — 07/10/2026
+
+### Mudado
+
+- Caixa de Pesca com abas de raridade, menus de Tamanho e Ordem e barra de ocupação (A-118).
+
+### Corrigido
+
+- Caixa de Pesca: o aviso do limite e as vagas do Aquário não se sobrepõem mais.
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.14] — 07/10/2026
 
 ### Mudado

@@ -23,7 +23,18 @@ namespace FishingIdle.Game.UI
         private const float CardHeight = 196f;
         private const float Gap = 12f;
 
-        private const float FilterHeight = 32f;
+        private const float TabHeight = 44f;
+        private const float MenuWidth = 196f;
+
+        private enum Menu
+        {
+            None,
+            Size,
+            Sort,
+        }
+
+        private Menu _menu;
+        private readonly Dictionary<string, int> _rarityCounts = new Dictionary<string, int>();
 
         private readonly GameRoot _root;
         private readonly HashSet<long> _selected = new HashSet<long>();
@@ -60,6 +71,7 @@ namespace FishingIdle.Game.UI
             _review = false;
             _search = string.Empty;
             _byPrice = false;
+            _menu = Menu.None;
         }
 
         public void Close()
@@ -97,22 +109,6 @@ namespace FishingIdle.Game.UI
                 Close();
             }
 
-            // OD-025: the box has a limit; say so, louder when it is nearly or completely full.
-            if (capacity > 0)
-            {
-                var full = boxCount >= capacity;
-                var almost = !full && boxCount >= capacity * 0.9f;
-                var warning = new Rect(panel.x + 32, panel.yMax - 30, panel.width - 64, 22);
-                if (full || almost)
-                {
-                    skin.DrawIcon(new Rect(warning.x, warning.y + 1, 20, 20), Icons.Warning, UiSkin.Gold);
-                }
-
-                GUI.Label(new Rect(warning.x + (full || almost ? 28 : 0), warning.y, warning.width - 28, 22),
-                    full ? GameTexts.Box.Full : almost ? GameTexts.Box.AlmostFull : GameTexts.Box.LimitNote(capacity),
-                    full || almost ? skin.SmallGold : skin.SmallMuted);
-            }
-
             // Search by name, next to Fechar (the same place in the Aquarium).
             var search = NameSearch.Field(skin, new Rect(panel.xMax - 156 - 16 - 300, panel.y + 24, 300, 38), _search, "busca_caixa");
             if (search != _search)
@@ -121,62 +117,52 @@ namespace FishingIdle.Game.UI
                 FiltersChanged();
             }
 
-            // Filters: rarity and size are two separate groups, side by side when they fit.
+            // A game bag, not a spreadsheet (owner's request, A-118): rarity tabs with counts, and the size
+            // filter and the order folded into two small menus on the right.
             var left = panel.x + 28;
-            var y = panel.y + 92;
-            var rarityWidth = FilterGroupWidth(skin, GameTexts.Box.RarityLabel, _rarityFilters);
-            var sizeWidth = FilterGroupWidth(skin, GameTexts.Box.SizeLabel, _sizeFilters);
-            var oneRow = rarityWidth + 36f + sizeWidth <= panel.width - 56f;
+            var right = panel.xMax - 28;
+            var tabsY = panel.y + 98;
+            var menusWidth = 2 * MenuWidth + 10f;
 
-            var picked = DrawFilterGroup(skin, left, y, GameTexts.Box.RarityLabel, _rarityFilters, _rarityFilter, UiSkin.RarityColor);
-            if (picked != null)
+            // Tabs and menus share a row on a wide window; on a narrow one the menus go to a short row below,
+            // next to how many fish the filter shows.
+            var sameRow = TabsWidth(skin) + 16f + menusWidth <= right - left;
+            DrawRarityTabs(skin, new Rect(left, tabsY, sameRow ? right - left - menusWidth - 16f : right - left, TabHeight));
+            var menusY = sameRow ? tabsY + 4f : tabsY + TabHeight + 8f;
+            if (!sameRow)
             {
-                _rarityFilter = picked.Length == 0 ? null : picked;
-                FiltersChanged();
+                GUI.Label(new Rect(left + 4f, menusY + 9f, right - left - menusWidth - 20f, 20f), GameTexts.Box.Showing(_visible.Count), skin.SmallMuted);
             }
 
-            var sizeX = oneRow ? left + rarityWidth + 36f : left;
-            var sizeY = oneRow ? y : y + FilterHeight + 10f;
-            if (oneRow)
+            var sizeMenu = new Rect(right - menusWidth, menusY, MenuWidth, 36f);
+            var sortMenu = new Rect(right - MenuWidth, menusY, MenuWidth, 36f);
+            if (MenuButton(skin, sizeMenu, GameTexts.Box.SizeMenu(SizeName(_sizeFilter)), _menu == Menu.Size, _sizeFilter != null ? UiSkin.SizeColor(_sizeFilter) : (Color?)null))
             {
-                GUI.DrawTexture(new Rect(sizeX - 18f, y + 4f, 1f, FilterHeight - 8f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.9f), 0, 0);
+                _menu = _menu == Menu.Size ? Menu.None : Menu.Size;
             }
 
-            picked = DrawFilterGroup(skin, sizeX, sizeY, GameTexts.Box.SizeLabel, _sizeFilters, _sizeFilter, UiSkin.SizeColor);
-            if (picked != null)
+            if (MenuButton(skin, sortMenu, GameTexts.Box.SortMenu(_byPrice ? GameTexts.Box.SortPrice : GameTexts.Box.SortNewest), _menu == Menu.Sort, null))
             {
-                _sizeFilter = picked.Length == 0 ? null : picked;
-                FiltersChanged();
+                _menu = _menu == Menu.Sort ? Menu.None : Menu.Sort;
             }
 
-            // Order: newest first (as the box fills) or the most valuable first.
-            var sortY = sizeY + FilterHeight + 10f;
-            skin.DrawIcon(new Rect(left, sortY + 7f, 18, 18), Icons.Sort, UiSkin.Muted);
-            var sortLabel = new GUIContent(GameTexts.Box.SortLabel);
-            var slw = skin.SmallMuted.CalcSize(sortLabel).x;
-            GUI.Label(new Rect(left + 24f, sortY + 7f, slw + 4f, 20f), sortLabel, skin.SmallMuted);
-            var sx = left + 24f + slw + 12f;
-            foreach (var option in new[] { false, true })
-            {
-                var content = new GUIContent(option ? GameTexts.Box.SortPrice : GameTexts.Box.SortNewest);
-                var sw = skin.Chip.CalcSize(content).x + 8f;
-                if (GUI.Button(new Rect(sx, sortY, sw, FilterHeight), content, _byPrice == option ? skin.ChipActive : skin.Chip) && _byPrice != option)
-                {
-                    _byPrice = option;
-                    ApplyFilter();
-                    _scroll = Vector2.zero;
-                }
+            // The open menu sits over the grid: its clicks are handled before the grid so a card under it
+            // is never picked by mistake, and it is drawn after the grid so it shows on top.
+            var sizeRect = new Rect(sizeMenu.x, sizeMenu.yMax + 4f, MenuWidth, _sizeFilters.Count * 34f + 12f);
+            var sortRect = new Rect(sortMenu.x, sortMenu.yMax + 4f, MenuWidth, 2 * 34f + 12f);
+            if (_menu == Menu.Size) DrawSizeMenu(skin, sizeRect, true);
+            else if (_menu == Menu.Sort) DrawSortMenu(skin, sortRect, true);
 
-                sx += sw + 8f;
-            }
-
-            // Grid
-            var gridTop = sortY + FilterHeight + 16f - panel.y;
-            var gridRect = new Rect(panel.x + 20, panel.y + gridTop, panel.width - 40, panel.height - gridTop - 96);
+            // Grid, aligned with the tabs above it.
+            var gridTop = (sameRow ? tabsY + TabHeight : menusY + 36f) + 14f;
+            var gridRect = new Rect(left, gridTop, right - left + 8f, panel.yMax - 112f - gridTop);
             DrawGrid(skin, gridRect);
 
+            if (_menu == Menu.Size) DrawSizeMenu(skin, sizeRect, false);
+            else if (_menu == Menu.Sort) DrawSortMenu(skin, sortRect, false);
+
             // Footer
-            DrawFooter(skin, panel);
+            DrawFooter(skin, panel, boxCount, capacity);
             GUI.enabled = true;
 
             if (_pendingConfirmation != null)
@@ -198,7 +184,7 @@ namespace FishingIdle.Game.UI
             var rows = Mathf.CeilToInt(_visible.Count / (float)columns);
             var content = new Rect(0, 0, area.width - 20, rows * (CardHeight + Gap));
             var used = columns * (CardWidth + Gap) - Gap;
-            var offsetX = Mathf.Max(0f, (content.width - used) / 2f);
+            var offsetX = 0f;
 
             _scroll = GUI.BeginScrollView(area, _scroll, content);
 
@@ -251,7 +237,7 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        private void DrawFooter(UiSkin skin, Rect panel)
+        private void DrawFooter(UiSkin skin, Rect panel, int boxCount, int capacity)
         {
             var y = panel.yMax - 84;
             var x = panel.x + 28;
@@ -307,10 +293,25 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.enabled = _pendingConfirmation == null;
+
+            // Second line: how full the box is (OD-025) on the left, the Aquarium slots on the right.
+            var lineY = y + 52;
+            if (capacity > 0)
+            {
+                var fill = Mathf.Clamp01(boxCount / (float)capacity);
+                var full = boxCount >= capacity;
+                var warn = full || fill >= 0.9f;
+                skin.DrawIcon(new Rect(x, lineY, 18, 18), warn ? Icons.Warning : Icons.Box, warn ? UiSkin.Gold : UiSkin.Muted);
+                skin.Bar(new Rect(x + 26, lineY + 6, 180, 8), fill, warn);
+                GUI.Label(new Rect(x + 216, lineY - 1, panel.width - 600, 22),
+                    full ? GameTexts.Box.Full : warn ? GameTexts.Box.AlmostFull : GameTexts.Box.LimitNote(capacity),
+                    warn ? skin.SmallGold : skin.SmallMuted);
+            }
+
             var player = _root.Player;
             if (player != null)
             {
-                GUI.Label(new Rect(x, y + 50, panel.width - 56, 22), GameTexts.Aquarium.Slots(player.AquariumCount, player.AquariumCapacity), skin.SmallMuted);
+                GUI.Label(new Rect(panel.xMax - 360, lineY - 1, 332, 22), GameTexts.Aquarium.Slots(player.AquariumCount, player.AquariumCapacity), skin.SmallMutedRight);
             }
         }
 
@@ -371,9 +372,18 @@ namespace FishingIdle.Game.UI
             var present = new HashSet<long>(_catches.Select(c => c.CatchId));
             _selected.RemoveWhere(id => !present.Contains(id));
             _preview = null;
+            _rarityCounts.Clear();
+            foreach (var fish in _catches)
+            {
+                var key = fish.RarityId ?? string.Empty;
+                _rarityCounts[key] = (_rarityCounts.TryGetValue(key, out var seen) ? seen : 0) + 1;
+            }
+
             BuildFilters();
             ApplyFilter();
         }
+
+        private int CountOf(string rarityId) => _rarityCounts.TryGetValue(rarityId, out var n) ? n : 0;
 
         private void BuildFilters()
         {
@@ -396,44 +406,195 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        private static float FilterGroupWidth(UiSkin skin, string label, List<KeyValuePair<string, string>> filters)
+        private float TabWidth(UiSkin skin, string label, int count)
         {
-            var w = skin.SmallMuted.CalcSize(new GUIContent(label)).x + 12f;
-            foreach (var f in filters)
+            return skin.BodyBold.CalcSize(new GUIContent(label)).x + skin.SmallMuted.CalcSize(new GUIContent(Format.Number(count))).x + 54f;
+        }
+
+        private float TabsWidth(UiSkin skin)
+        {
+            var total = 0f;
+            foreach (var f in _rarityFilters)
             {
-                w += skin.ColorChipWidth(f.Value) + 8f;
+                total += TabWidth(skin, f.Value, f.Key.Length == 0 ? _catches.Count : CountOf(f.Key)) + 4f;
             }
 
-            return w - 8f;
+            return total;
+        }
+
+        /// <summary>Rarity tabs with how many fish of each are in the box; empty rarities are dimmed.</summary>
+        private void DrawRarityTabs(UiSkin skin, Rect area)
+        {
+            var x = area.x;
+            foreach (var f in _rarityFilters)
+            {
+                var all = f.Key.Length == 0;
+                var count = all ? _catches.Count : CountOf(f.Key);
+                var active = !_review && (all ? _rarityFilter == null : _rarityFilter == f.Key);
+                var color = all ? UiSkin.Accent : UiSkin.RarityColor(f.Key);
+                var label = f.Value;
+                var number = Format.Number(count);
+                var w = TabWidth(skin, label, count);
+                if (x + w > area.xMax)
+                {
+                    break;
+                }
+
+                var tab = new Rect(x, area.y, w, area.height);
+                var hovered = GUI.enabled && tab.Contains(Event.current.mousePosition);
+                if (active || hovered)
+                {
+                    GUI.DrawTexture(tab, skin.White, ScaleMode.StretchToFill, true, 0, new Color(color.r, color.g, color.b, active ? 0.16f : 0.07f), 0, 10);
+                }
+
+                if (active)
+                {
+                    GUI.DrawTexture(new Rect(tab.x + 10, tab.yMax - 3, tab.width - 20, 3), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, 1.5f);
+                }
+
+                // A coloured gem dot, the name, and the count in a small pill.
+                var dim = count == 0 && !all;
+                var dot = 10f;
+                GUI.DrawTexture(new Rect(tab.x + 12, tab.center.y - dot / 2f, dot, dot), skin.White, ScaleMode.StretchToFill, true, 0, dim ? UiSkin.Muted : color, 0, dot / 2f);
+                var previous = GUI.contentColor;
+                GUI.contentColor = active ? Color.Lerp(color, Color.white, 0.6f) : dim ? UiSkin.Muted : UiSkin.Text;
+                var lw = skin.BodyBold.CalcSize(new GUIContent(label)).x;
+                GUI.Label(new Rect(tab.x + 28, tab.y + 11, lw + 4, 22), label, skin.BodyBold);
+                GUI.contentColor = previous;
+                GUI.Label(new Rect(tab.x + 34 + lw, tab.y + 13, w - lw - 34, 20), number, skin.SmallMuted);
+
+                if (GUI.Button(tab, GUIContent.none, GUIStyle.none))
+                {
+                    _rarityFilter = all ? null : f.Key;
+                    _menu = Menu.None;
+                    FiltersChanged();
+                }
+
+                x += w + 4f;
+            }
+        }
+
+        /// <summary>A small "Label: value ▾" button that opens a menu; tinted when a filter is on.</summary>
+        private static bool MenuButton(UiSkin skin, Rect rect, string text, bool open, Color? accent)
+        {
+            var clicked = GUI.Button(rect, GUIContent.none, open ? skin.ChipActive : skin.Chip);
+            if (accent.HasValue && !open)
+            {
+                skin.DrawOutline(rect, new Color(accent.Value.r, accent.Value.g, accent.Value.b, 0.9f));
+            }
+
+            GUI.Label(new Rect(rect.x + 12, rect.y + 8, rect.width - 40, 20), text, open ? skin.SmallBold : skin.Small);
+            GUI.Label(new Rect(rect.xMax - 26, rect.y + 7, 18, 20), "▾", skin.SmallBold);
+            return clicked;
+        }
+
+        private void DrawSizeMenu(UiSkin skin, Rect rect, bool input)
+        {
+            var items = new List<(string Label, Color Color, bool Active, System.Action Pick)>();
+            foreach (var f in _sizeFilters)
+            {
+                var all = f.Key.Length == 0;
+                var key = f.Key;
+                items.Add((f.Value, all ? UiSkin.Accent : UiSkin.SizeColor(key), all ? _sizeFilter == null : _sizeFilter == key, () =>
+                {
+                    _sizeFilter = all ? null : key;
+                    FiltersChanged();
+                }));
+            }
+
+            MenuList(skin, rect, items, input);
+        }
+
+        private void DrawSortMenu(UiSkin skin, Rect rect, bool input)
+        {
+            var items = new List<(string Label, Color Color, bool Active, System.Action Pick)>();
+            foreach (var option in new[] { false, true })
+            {
+                var byPrice = option;
+                items.Add((option ? GameTexts.Box.SortPrice : GameTexts.Box.SortNewest, UiSkin.Accent, _byPrice == option, () =>
+                {
+                    _byPrice = byPrice;
+                    ApplyFilter();
+                    _scroll = Vector2.zero;
+                }));
+            }
+
+            MenuList(skin, rect, items, input);
         }
 
         /// <summary>
-        /// One labelled row of chips. Returns the id clicked (empty = "Todas"/"Todos"), or null when
-        /// nothing was clicked. "Todas"/"Todos" uses the action turquoise; the others their own colour.
+        /// A dropdown list. With <paramref name="input"/> it only handles the click (a pick, or a click
+        /// outside that closes it); otherwise it only draws.
         /// </summary>
-        private string DrawFilterGroup(UiSkin skin, float x, float y, string label, List<KeyValuePair<string, string>> filters,
-            string current, System.Func<string, Color> colorOf)
+        private void MenuList(UiSkin skin, Rect rect, List<(string Label, Color Color, bool Active, System.Action Pick)> items, bool input)
         {
-            var content = new GUIContent(label);
-            var lw = skin.SmallMuted.CalcSize(content).x;
-            GUI.Label(new Rect(x, y + 7f, lw + 4f, 20f), content, skin.SmallMuted);
-            x += lw + 12f;
-
-            string picked = null;
-            foreach (var f in filters)
+            var e = Event.current;
+            if (input)
             {
-                var all = f.Key.Length == 0;
-                var active = !_review && (all ? current == null : current == f.Key);
-                var w = skin.ColorChipWidth(f.Value);
-                if (skin.ColorChip(new Rect(x, y, w, FilterHeight), f.Value, all ? UiSkin.Accent : colorOf(f.Key), active))
+                if (e.type != EventType.MouseDown)
                 {
-                    picked = f.Key;
+                    return;
                 }
 
-                x += w + 8f;
+                if (!rect.Contains(e.mousePosition))
+                {
+                    _menu = Menu.None;
+                    e.Use();
+                    return;
+                }
+
+                for (var i = 0; i < items.Count; i++)
+                {
+                    if (new Rect(rect.x + 6, rect.y + 6 + i * 34f, rect.width - 12, 32).Contains(e.mousePosition))
+                    {
+                        _menu = Menu.None;
+                        items[i].Pick();
+                        break;
+                    }
+                }
+
+                e.Use();
+                return;
             }
 
-            return picked;
+            skin.DrawShadow(rect);
+            GUI.Box(rect, GUIContent.none, skin.PanelSolid);
+            for (var i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                var r = new Rect(rect.x + 6, rect.y + 6 + i * 34f, rect.width - 12, 32);
+                var hovered = r.Contains(e.mousePosition);
+                if (item.Active || hovered)
+                {
+                    GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(item.Color.r, item.Color.g, item.Color.b, item.Active ? 0.18f : 0.08f), 0, 8);
+                }
+
+                var dot = 8f;
+                GUI.DrawTexture(new Rect(r.x + 10, r.center.y - dot / 2f, dot, dot), skin.White, ScaleMode.StretchToFill, true, 0, item.Color, 0, dot / 2f);
+                GUI.Label(new Rect(r.x + 26, r.y + 6, r.width - 54, 20), item.Label, item.Active ? skin.SmallBold : skin.Small);
+                if (item.Active)
+                {
+                    skin.DrawIcon(new Rect(r.xMax - 26, r.y + 7, 18, 18), Icons.Check, item.Color);
+                }
+            }
+        }
+
+        private string SizeName(string id)
+        {
+            if (id == null)
+            {
+                return GameTexts.Box.AllSizes;
+            }
+
+            foreach (var f in _sizeFilters)
+            {
+                if (f.Key == id)
+                {
+                    return f.Value;
+                }
+            }
+
+            return id;
         }
 
         private void FiltersChanged()

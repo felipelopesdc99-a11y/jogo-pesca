@@ -102,6 +102,9 @@ namespace FishingIdle.Texts
             public const string SortLabel = "Ordenar:";
             public const string SortNewest = "Mais recentes";
             public const string SortPrice = "Mais caros";
+            public static string SizeMenu(string size) => "Tamanho: " + size;
+            public static string Showing(int count) => count == 1 ? "1 peixe neste filtro" : Format.Number(count) + " peixes neste filtro";
+            public static string SortMenu(string order) => "Ordem: " + order;
 
             public static string Count(int count) => count == 1 ? "1 peixe" : Format.Number(count) + " peixes";
             public static string CountOf(int count, int capacity) => Format.Number(count) + " de " + Format.Number(capacity) + " peixes";

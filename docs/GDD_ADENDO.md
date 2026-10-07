@@ -1383,3 +1383,17 @@ botão da Caixa e no painel de pesca ("Caixa cheia: venda peixes"), no "Bem-vind
 ficaram sem pescar) e no tutorial (passo de abrir a Caixa). Valor em `config/economy.json` →
 `fishing_box.capacity`.
 
+### A-118 · Caixa de Pesca com cara de jogo
+**Seção do GDD:** 11 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026, no teste da pesca): os filtros pareciam um gerenciador. Inspirado nas
+bolsas de jogos de coleção (abas por categoria com contagem, filtros secundários em menus):
+
+- **Abas de raridade** com bolinha da cor e quantos peixes há de cada (Todos 44 · Comum 40 · Raro 4…); a aba
+  ativa ganha fundo e sublinhado na cor da raridade; raridades sem peixe ficam apagadas.
+- **Tamanho e Ordem viram dois menus** ("Tamanho: Todos ▾", "Ordem: Mais recentes ▾") à direita das abas;
+  em janela estreita, numa linha curta abaixo, com "N peixes neste filtro".
+- **Rodapé:** barra de quanto a Caixa está cheia (dourada a partir de 90%) com o aviso do limite, e as vagas do
+  Aquário à direita (antes os dois textos se sobrepunham).
+- A grade de peixes fica alinhada à esquerda com as abas.
+
