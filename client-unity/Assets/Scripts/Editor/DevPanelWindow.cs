@@ -36,6 +36,8 @@ namespace FishingIdle.Editor
         private string _expandedTask;
         private readonly System.Collections.Generic.HashSet<string> _openMilestones = new System.Collections.Generic.HashSet<string>();
         private readonly BalanceEditor _balance = new BalanceEditor();
+        private readonly CatalogView _catalog = new CatalogView();
+        private GameConfig _config;
         private string _saveMessage;
 
         [MenuItem(T.MenuPath, priority = 0)]
@@ -69,6 +71,7 @@ namespace FishingIdle.Editor
 
             var config = GameConfigLoader.LoadFromDirectory(GamePaths.RepositoryConfigDirectory);
             _configVersion = config.Succeeded ? config.Config.Version : null;
+            _config = config.Succeeded ? config.Config : null;
             _configErrors = config.Errors.ToArray();
 
             if (_roadmap != null && _openMilestones.Count == 0 && _roadmap.CurrentMilestone != null)
@@ -84,7 +87,7 @@ namespace FishingIdle.Editor
         {
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
-                _tab = GUILayout.Toolbar(_tab, new[] { T.TabOverview, T.TabRoadmap, T.TabBalance, T.TabSave }, EditorStyles.toolbarButton);
+                _tab = GUILayout.Toolbar(_tab, new[] { T.TabOverview, T.TabRoadmap, T.TabBalance, T.TabSave, T.TabCatalog }, EditorStyles.toolbarButton);
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(T.Reload, EditorStyles.toolbarButton, GUILayout.Width(90)))
                 {
@@ -93,6 +96,13 @@ namespace FishingIdle.Editor
             }
 
             EditorGUILayout.Space(6);
+
+            if (_tab == 4)
+            {
+                // The content browser manages its own scrolling (M18-T09).
+                _catalog.Draw(_config);
+                return;
+            }
 
             if (_tab == 2)
             {

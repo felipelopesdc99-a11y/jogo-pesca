@@ -3161,11 +3161,12 @@
           "title": "Painel: navegador de conteúdo",
           "subsystem": "client",
           "description": "Cards visuais de peixes, mapas, varas, barcos, iscas e Expedições no Painel de Desenvolvimento (§5). Hoje há só tabelas de números. (Levantado do GDD em 05/10/2026.) Aprovada pelo proprietário (07/10/2026).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-07T20:30:00Z",
+          "updated_at": "2026-10-07T23:00:00Z",
           "from_gdd_review": true,
-          "owner_approved": true
+          "owner_approved": true,
+          "completion_notes": "Painel de Desenvolvimento → aba Catálogo (Editor/CatalogView): cards com arte e números de peixes (com busca), mapas, varas, barcos, iscas e Expedições, lidos de /config. Só leitura. Não compilado nem aberto no Unity."
         },
         {
           "id": "M18-T10",

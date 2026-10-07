@@ -7,6 +7,7 @@ raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
 ### Adicionado
 
+- Painel de Desenvolvimento: aba Catálogo com cards de peixes, mapas, varas, barcos, iscas e Expedições.
 - Nome e avatar do jogador (arte dos avatares pedida) e "Ver perfil" do adversário na Arena (A-128, A-129).
 
 ### Mudado
