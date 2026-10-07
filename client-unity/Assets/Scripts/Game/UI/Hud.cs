@@ -685,7 +685,8 @@ namespace FishingIdle.Game.UI
 
             skin.IconBadge(tile, Icons.Fishing, status.IsFishing ? UiSkin.Accent : UiSkin.Muted);
             var phase = _scene != null && _scene.Fisherman != null ? _scene.Fisherman.PhaseText : string.Empty;
-            GUI.Label(new Rect(tile.xMax + 16, panel.y + 16, 300, 30), status.IsFishing ? phase : GameTexts.Fishing.Idle, skin.Heading);
+            var boxFull = _root.Player != null && _root.Player.FishingBoxFull;
+            GUI.Label(new Rect(tile.xMax + 16, panel.y + 16, 300, 30), status.IsFishing ? (boxFull ? GameTexts.Box.FullShort : phase) : GameTexts.Fishing.Idle, boxFull && status.IsFishing ? skin.SmallGold : skin.Heading);
 
             var info = new Rect(panel.xMax - 250, panel.y + 20, 230, 40);
             GUI.Label(new Rect(info.x, info.y, info.width, 20), GameTexts.Fishing.CycleInfo(Format.Duration(status.CycleSeconds)), skin.SmallMutedRight);
@@ -823,7 +824,14 @@ namespace FishingIdle.Game.UI
 
             skin.DrawIcon(new Rect(rect.x + 16, rect.y + 20, 52, 52), Icons.Box, UiSkin.Gold);
             GUI.Label(new Rect(rect.x + 82, rect.y + 20, rect.width - 120, 26), GameTexts.Box.Open, skin.BodyBold);
-            GUI.Label(new Rect(rect.x + 82, rect.y + 48, rect.width - 120, 24), GameTexts.Box.Count(player.FishingBoxCount), skin.SmallMuted);
+            if (player.FishingBoxFull)
+            {
+                GUI.Label(new Rect(rect.x + 82, rect.y + 48, rect.width - 120, 24), GameTexts.Box.FullShort, skin.SmallGold);
+            }
+            else
+            {
+                GUI.Label(new Rect(rect.x + 82, rect.y + 48, rect.width - 120, 24), player.FishingBoxCapacity > 0 ? GameTexts.Box.CountOf(player.FishingBoxCount, player.FishingBoxCapacity) : GameTexts.Box.Count(player.FishingBoxCount), skin.SmallMuted);
+            }
             skin.DrawIcon(new Rect(rect.xMax - 34, rect.center.y - 9, 18, 18), Icons.Chevron, UiSkin.Muted);
         }
 

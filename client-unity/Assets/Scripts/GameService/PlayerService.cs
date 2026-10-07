@@ -43,6 +43,7 @@ namespace FishingIdle.GameService
                 RodHasLevels = rod != null && rod.HasInternalLevels,
                 TotalCatches = save.Stats.TotalCatches,
                 FishingBoxCount = save.FishingBox.Count,
+                FishingBoxCapacity = config.Economy.FishingBox?.Capacity ?? 0,
                 SpeciesDiscovered = save.SpeciesRecords.Count,
                 AquariumCount = save.Aquarium.Count,
                 AquariumCapacity = config.AquariumCapacity,

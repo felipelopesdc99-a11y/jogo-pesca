@@ -233,7 +233,8 @@
       "title": "A Caixa de Pesca deve ter limite?",
       "detail": "Hoje a Caixa de Pesca guarda peixes sem limite, inclusive da pesca offline de 24 horas. Um limite obriga o jogador a voltar e vender; sem limite, o jogo é mais relaxado. Prefere sem limite ou com um limite (por exemplo 500 peixes)?",
       "raised_at": "2026-10-05T21:22:41Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): limite de 1.500 peixes; cheia, a pesca para até vender. Avisar na Caixa e no tutorial (A-117)."
     },
     {
       "id": "OD-026",
@@ -3160,10 +3161,11 @@
           "title": "Limite da Caixa de Pesca",
           "subsystem": "server",
           "description": "O GDD não define um limite para a Caixa de Pesca; hoje ela é ilimitada (A-006). Aplicar o que o proprietário decidir. (Levantado do GDD em 05/10/2026.)",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T18:30:00Z",
+          "from_gdd_review": true,
+          "completion_notes": "Decisão do proprietário (OD-025): Caixa com 1.500 peixes. economy.json → fishing_box.capacity; LocalFishingService pula a tentativa (sem gastar isca) com a Caixa cheia; PlayerView.FishingBoxCapacity/Full; avisos na Caixa, no botão da Caixa, no painel de pesca, no Bem-vindo de volta e no tutorial; FishingBoxLimitTests. A-117. Não compilado nem aberto no Unity."
         }
       ]
     },

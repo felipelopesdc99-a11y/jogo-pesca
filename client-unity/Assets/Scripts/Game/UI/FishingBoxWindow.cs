@@ -89,9 +89,28 @@ namespace FishingIdle.Game.UI
 
             GUI.enabled = _pendingConfirmation == null;
             var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1240f, 820f);
-            if (WindowFrame.Header(skin, panel, GameTexts.Box.Title, GameTexts.Box.Count(_catches.Count), Icons.Box))
+            var owner = _root.Player;
+            var capacity = owner != null ? owner.FishingBoxCapacity : 0;
+            var boxCount = owner != null ? owner.FishingBoxCount : _catches.Count;
+            if (WindowFrame.Header(skin, panel, GameTexts.Box.Title, capacity > 0 ? GameTexts.Box.CountOf(boxCount, capacity) : GameTexts.Box.Count(_catches.Count), Icons.Box))
             {
                 Close();
+            }
+
+            // OD-025: the box has a limit; say so, louder when it is nearly or completely full.
+            if (capacity > 0)
+            {
+                var full = boxCount >= capacity;
+                var almost = !full && boxCount >= capacity * 0.9f;
+                var warning = new Rect(panel.x + 32, panel.yMax - 30, panel.width - 64, 22);
+                if (full || almost)
+                {
+                    skin.DrawIcon(new Rect(warning.x, warning.y + 1, 20, 20), Icons.Warning, UiSkin.Gold);
+                }
+
+                GUI.Label(new Rect(warning.x + (full || almost ? 28 : 0), warning.y, warning.width - 28, 22),
+                    full ? GameTexts.Box.Full : almost ? GameTexts.Box.AlmostFull : GameTexts.Box.LimitNote(capacity),
+                    full || almost ? skin.SmallGold : skin.SmallMuted);
             }
 
             // Search by name, next to Fechar (the same place in the Aquarium).

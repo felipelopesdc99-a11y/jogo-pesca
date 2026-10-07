@@ -26,6 +26,10 @@ namespace FishingIdle.GameService.Fishing
         public bool RodHasLevels { get; internal set; }
         public long TotalCatches { get; internal set; }
         public int FishingBoxCount { get; internal set; }
+
+        /// <summary>Most catches the box holds (OD-025); 0 = no limit.</summary>
+        public int FishingBoxCapacity { get; internal set; }
+        public bool FishingBoxFull => FishingBoxCapacity > 0 && FishingBoxCount >= FishingBoxCapacity;
         public int SpeciesDiscovered { get; internal set; }
         public int AquariumCount { get; internal set; }
         public int AquariumCapacity { get; internal set; }
@@ -120,6 +124,9 @@ namespace FishingIdle.GameService.Fishing
 
         /// <summary>Fish that bit and escaped (docs/SISTEMA_SUCESSO_PESCA.md): nothing of them was kept.</summary>
         public List<EscapeView> Escapes { get; } = new List<EscapeView>();
+
+        /// <summary>Attempts skipped because the Fishing Box was full (OD-025).</summary>
+        public long SkippedBoxFull { get; internal set; }
 
         /// <summary>The name of the bait whose last charge was used in this update, or null.</summary>
         public string BaitRanOut { get; internal set; }

@@ -104,6 +104,12 @@ namespace FishingIdle.Texts
             public const string SortPrice = "Mais caros";
 
             public static string Count(int count) => count == 1 ? "1 peixe" : Format.Number(count) + " peixes";
+            public static string CountOf(int count, int capacity) => Format.Number(count) + " de " + Format.Number(capacity) + " peixes";
+            public const string Full = "Caixa cheia! A pesca está parada até você vender ou guardar peixes.";
+            public const string AlmostFull = "Caixa quase cheia: quando encher, a pesca para até você vender.";
+            public const string FullShort = "Caixa cheia: venda peixes";
+            public static string LimitNote(int capacity) => "A Caixa guarda até " + Format.Number(capacity) + " peixes. Cheia, a pesca para até você vender ou guardar algum.";
+            public static string SkippedFull(long attempts) => "A Caixa encheu: " + Format.Number(attempts) + (attempts == 1 ? " tentativa ficou" : " tentativas ficaram") + " sem pescar.";
             public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : Format.Number(count) + " selecionados") + " · " + coins + " moedas";
             public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : Format.Number(count) + " peixes vendidos") + " por " + coins + " moedas.";
         }
@@ -302,7 +308,7 @@ namespace FishingIdle.Texts
                     case "claim_rod": return "Abra a " + Navigation.Shop + " (menu de cima) e pegue o Caniço Manso, a vara inicial. Ela é grátis.";
                     case "start_fishing": return "Clique em \"" + Fishing.Start + "\", embaixo, no centro.";
                     case "first_catch": return "A cada ciclo o pescador tira um peixe da água. Quando ele aparecer, veja no aviso a espécie, o tamanho e a categoria.";
-                    case "open_box": return "Todo peixe pescado vai para a " + Box.Open + " (canto de baixo, à direita). Abra para ver os peixes.";
+                    case "open_box": return "Todo peixe pescado vai para a " + Box.Open + " (canto de baixo, à direita). Abra para ver os peixes. Ela tem limite: quando enche, a pesca para até você vender.";
                     case "sell_fish": return "Na Caixa, selecione um peixe e clique em \"" + Box.SellSelected + "\". As Moedas compram varas melhores.";
                     case "keep_fish": return "Selecione outro peixe e clique em \"" + Aquarium.KeepSelected + "\". Peixes guardados sobem de nível e lutam por você.";
                     case "cardume": return "Abra o " + Navigation.Profile + " → " + Profile.TabCardume + " e coloque um peixe numa posição. O Cardume luta na Arena e vai em Expedições.";

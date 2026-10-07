@@ -1371,3 +1371,15 @@ Decisão do proprietário (07/10/2026, OD-024): quando outro jogador ataca e ven
 (metade dos 4 que perde atacando), nunca abaixo do saldo mínimo. Defesa vencida continua dando 8. O aviso
 de defesa perdida mostra a Honra perdida. Valor em `config/arena.json` → `honor.defense_defeat_loss`.
 
+### A-117 · Caixa de Pesca com limite de 1.500 peixes
+**Seção do GDD:** 11 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Decisão do proprietário (07/10/2026, OD-025): a Caixa guarda até **1.500 peixes** (cabe um dia inteiro de pesca
+offline, ~1.440). Cheia, a pesca não puxa mais peixes nem gasta isca até o jogador vender ou guardar algum.
+Peixes achados em Expedição e retirados do Mercado ainda entram.
+
+Avisos, a pedido dele: na Caixa ("X de 1.500 peixes", com aviso dourado a partir de 90% e quando cheia), no
+botão da Caixa e no painel de pesca ("Caixa cheia: venda peixes"), no "Bem-vindo de volta" (quantas tentativas
+ficaram sem pescar) e no tutorial (passo de abrir a Caixa). Valor em `config/economy.json` →
+`fishing_box.capacity`.
+

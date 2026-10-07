@@ -413,6 +413,14 @@ namespace FishingIdle.GameService.Fishing
         /// </summary>
         private void Attempt(MapConfig map, RodConfig rod, int rodLevel, Rng rng, long atMs, FishingUpdate update, bool offline = false)
         {
+            // OD-025: a full Fishing Box pauses the catches (and spends no bait) until the player sells some.
+            var capacity = Config.Economy.FishingBox?.Capacity ?? 0;
+            if (capacity > 0 && Save.FishingBox.Count >= capacity)
+            {
+                update.SkippedBoxFull++;
+                return;
+            }
+
             var gear = Shop.GearRules.SpendAttempt(Config, Save, update);
             var attempt = CatchRules.Attempt(Config, map, rod, rodLevel, gear, rng);
             if (attempt.Caught)

@@ -371,6 +371,8 @@ namespace FishingIdle.GameService.Config
 
     public sealed class FishingBoxConfig
     {
+        /// <summary>Most catches the box holds before fishing pauses (OD-025); 0 = no limit.</summary>
+        public int Capacity { get; set; }
         public BulkSaleProtectionConfig BulkSaleProtection { get; set; }
     }
 

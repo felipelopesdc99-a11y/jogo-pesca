@@ -21,7 +21,7 @@ namespace FishingIdle.Game.UI
 
             var update = report.Update;
             var best = update.NewCatches.Where(c => c.IsImportant).OrderByDescending(c => c.SalePriceCoins).Take(4).ToList();
-            var extra = (update.Escapes.Count > 0 ? 24f : 0f) + (update.BaitRanOut != null ? 24f : 0f);
+            var extra = (update.Escapes.Count > 0 ? 24f : 0f) + (update.BaitRanOut != null ? 24f : 0f) + (update.SkippedBoxFull > 0 ? 24f : 0f);
             var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, 360f + extra + (best.Count > 0 ? 120f : 0f), 720f);
             var x = rect.x + 30;
             var w = rect.width - 60;
@@ -48,6 +48,12 @@ namespace FishingIdle.Game.UI
             if (update.Escapes.Count > 0)
             {
                 GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.Escaped(update.Escapes.Count), skin.SmallMuted);
+                y += 24;
+            }
+
+            if (update.SkippedBoxFull > 0)
+            {
+                GUI.Label(new Rect(x, y, w, 22), GameTexts.Box.SkippedFull(update.SkippedBoxFull), skin.SmallGold);
                 y += 24;
             }
 
