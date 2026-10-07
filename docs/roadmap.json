@@ -446,7 +446,7 @@
       "detail": "As faixas de 10 níveis levam 2 a 3,7 h online, mas a pesca offline rende o equivalente a 12 h online por dia. Quem entra uma vez por dia passa quase 3 faixas por dia; do Nv.40 ao Nv.100 em uns 2 dias. A literatura de jogos idle recomenda que o tempo até a próxima compra cresça até o fim. Opções: (A) alongar as faixas (mais XP por nível), principalmente do Nv.60 em diante (liga com a OD-047); (B) baixar a pesca offline; (C) deixar e medir com os testadores. Primeiro eu simulo três perfis de jogador (M21-T07) e trago os números; quer que eu siga assim?",
       "raised_at": "2026-10-06T18:30:00Z",
       "status": "RESOLVED",
-      "resolution": "Proprietário (07/10/2026): uns 10 dias até o nível máximo. Tabela de XP recalibrada com a simulação: ~10 dias abrindo 4 vezes por dia, ~13 abrindo 1 vez, ~5 deixando aberto (A-109)."
+      "resolution": "Proprietário (07/10/2026): uns 10 dias até o nível máximo. Depois, a referência ficou: ~10 dias deixando o jogo aberto o dia todo; quem joga menos leva mais (~19 dias abrindo 4 vezes por dia, ~24 abrindo 1 vez). Tabela de XP recalibrada com a simulação (A-109)."
     },
     {
       "id": "OD-050",
@@ -3649,7 +3649,7 @@
             "M21-T07"
           ],
           "updated_at": "2026-10-07T16:00:00Z",
-          "completion_notes": "tools/Progressao/simular_progressao.py (perfis: aberto o dia todo, 4, 2 e 1 visita por dia; variações sem isca e vendendo menos) e calibrar_xp.py. Tabela de XP do Pescador recalibrada: Nv.100 em ~10 dias abrindo 4 vezes por dia. Relatório em docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md. A-109, TD-033."
+          "completion_notes": "tools/Progressao/simular_progressao.py (perfis: aberto o dia todo, 4, 2 e 1 visita por dia; variações sem isca e vendendo menos) e calibrar_xp.py. Tabela de XP do Pescador recalibrada: Nv.100 em ~10 dias com o jogo aberto o dia todo (decisão do proprietário); ~19 dias abrindo 4 vezes por dia. Relatório em docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md. A-109, TD-033."
         },
         {
           "id": "M22-T08",

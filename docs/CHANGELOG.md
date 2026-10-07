@@ -3,6 +3,19 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.6] — 07/10/2026
+
+### Mudado
+
+- Tabela de XP do Pescador recalibrada de novo, por decisão do proprietário: quem deixa o jogo aberto o dia
+  todo chega ao Nv.100 em ~10 dias; abrindo 4 vezes por dia, ~19 dias; 1 vez por dia, ~24 dias. Níveis 1 a 9
+  e XP dos peixes iguais (A-109).
+- `tools/Progressao/calibrar_xp.py` ganhou `--perfil` (padrão: jogo aberto o dia todo).
+
+### Não verificado
+
+- Não aberto no Editor do Unity.
+
 ## [0.2.0-m21.5] — 07/10/2026
 
 ### Mudado

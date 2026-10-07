@@ -1,11 +1,12 @@
 """Calibra a tabela de XP do Pescador para o jogador chegar ao Nv.100 em cerca de N dias.
 
-Uso:  python3 tools/Progressao/calibrar_xp.py [--dias 10] [--gravar]
+Uso:  python3 tools/Progressao/calibrar_xp.py [--dias 10] [--perfil sempre_aberto] [--gravar]
 
 Como funciona:
   1. Parte da curva original (18 × nível^1,5, de 5 em 5) e não mexe nos níveis 1 a 9 (Nv.10 em ~2 h online).
-  2. Ajusta um multiplicador por faixa de 10 níveis até cada faixa durar o planejado no ritmo de quem abre
-     o jogo 4 vezes por dia (2 h online + o resto offline), simulado por simular_progressao.py.
+  2. Ajusta um multiplicador por faixa de 10 níveis até cada faixa durar o planejado no ritmo do perfil
+     escolhido (padrão: jogo aberto o dia todo; decisão do proprietário em 07/10/2026), simulado por
+     simular_progressao.py. Quem joga menos que isso leva mais dias.
   3. Troca esses multiplicadores por uma curva suave (parábola no logaritmo) e acerta a escala para o
      total dar N dias. A tabela nunca pede menos XP que o nível anterior.
   4. Com --gravar, escreve a tabela em config/progression.json.
@@ -23,7 +24,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import simular_progressao as S  # noqa: E402
 
-# Duração de cada faixa de 10 níveis, em dias, no ritmo contínuo de 4 visitas por dia (cresce até o fim).
+# Peso relativo da duração de cada faixa de 10 níveis (cresce até o fim).
 BANDS = [0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.3, 1.6, 2.0]
 
 
@@ -44,10 +45,10 @@ def run(table, profile):
     return S.play(r, profile)
 
 
-def calibrate(days):
+def calibrate(days, profile):
     rules = S.Rules()
     base = original_curve(rules.max_level)
-    first = S.bands(run(base, 'continuo'))[0]
+    first = S.bands(run(base, profile))[0]
     scale = (days - first) / sum(BANDS)
     target = [first]
     for b in BANDS:
@@ -64,7 +65,7 @@ def calibrate(days):
 
     best = None
     for _ in range(200):
-        got = S.bands(run(build(base, by_band), 'continuo'))
+        got = S.bands(run(build(base, by_band), profile))
         dur = [(got[i] or 99) - ((got[i - 1] or 0) if i else 0) for i in range(10)]
         want = [target[i] - (target[i - 1] if i else 0) for i in range(10)]
         err = max(abs(dur[i] - want[i]) / want[i] for i in range(1, 10))
@@ -80,7 +81,7 @@ def calibrate(days):
     lo, hi = -1.0, 1.0
     for _ in range(40):
         mid = (lo + hi) / 2
-        total = S.bands(run(build(base, lambda l: math.exp(np.polyval(coef, l) + mid)), 'continuo'))[-1] or 999
+        total = S.bands(run(build(base, lambda l: math.exp(np.polyval(coef, l) + mid)), profile))[-1] or 999
         lo, hi = (mid, hi) if total < target[-1] else (lo, mid)
     shift = (lo + hi) / 2
     return build(base, lambda l: math.exp(np.polyval(coef, l) + shift))
@@ -89,10 +90,14 @@ def calibrate(days):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--dias', type=float, default=10.0)
+    ap.add_argument('--perfil', default='sempre_aberto', help='perfil que deve chegar ao Nv.100 em --dias (sempre_aberto ou quatro_vezes)')
     ap.add_argument('--gravar', action='store_true')
     a = ap.parse_args()
-    # The continuous pace reaches the end a little before the 4-sessions pace (no wait for the first session).
-    table = calibrate(a.dias - 0.33)
+    if a.perfil == 'quatro_vezes':
+        # Calibrated on the smooth equivalent; it reaches the end ~0.33 day before the real sessions.
+        table = calibrate(a.dias - 0.33, 'continuo')
+    else:
+        table = calibrate(a.dias, a.perfil)
     print('Dias até cada nível com a tabela nova:')
     for prof in S.PROFILES:
         p = run(table, prof)
