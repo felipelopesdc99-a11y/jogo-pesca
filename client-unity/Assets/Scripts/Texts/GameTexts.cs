@@ -758,6 +758,9 @@ namespace FishingIdle.Texts
             public const string None = "—";
 
             public const string TabSummary = "Resumo";
+            public static string AllMaps(int found, int total) => "Todos · " + found + "/" + total;
+            public static string MapProgress(string map, int found, int total) => map + " · " + found + "/" + total;
+            public static string BiteShare(string percent) => "morde " + percent + " das vezes";
             public const string LastBattle = "Última batalha";
             public const string Space = "Espaço";
             public const string Expedition = "Expedição";

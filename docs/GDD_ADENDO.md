@@ -1483,3 +1483,12 @@ só como cor, agora o nome vai junto: no Cardume do Perfil (selo da raridade em 
 o mouse num peixe do Cardume: espécie, raridade e nível), nos destaques do Bem-vindo de volta ("Raro · 35,2 cm")
 e no aviso de fuga ("Um peixe Lendário escapou!"). Cards, abas e tabelas já tinham o nome.
 
+### A-126 · Enciclopédia por mapa
+**Seção do GDD:** 38 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Aprovado pelo proprietário (07/10/2026). A Enciclopédia tem um botão por mapa com o progresso ("Lago Sereno ·
+7/10") e "Todos · 23/100". Espécie ainda não descoberta continua silhueta escura com "???", mas mostra o mapa onde
+vive e a raridade, para o jogador saber onde procurar. Depois de descoberta, o card mostra também quanto ela
+morde no mapa ("morde 3% das vezes", pelo peso de captura, sem os bônus da vara). Recompensa por completar um mapa
+não entrou (seria sistema novo).
+

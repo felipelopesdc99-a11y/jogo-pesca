@@ -3729,10 +3729,11 @@
           "title": "Enciclopédia por mapa",
           "subsystem": "client",
           "description": "Proposta da pesquisa (a analisar): progresso por mapa (\"7/10 espécies\"), mapa e raridade na silhueta da espécie não descoberta e chance aproximada depois de descoberta. Recompensa por coleção seria sistema novo. Aprovada pelo proprietário (07/10/2026).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-07T20:30:00Z",
-          "owner_approved": true
+          "updated_at": "2026-10-07T21:45:00Z",
+          "owner_approved": true,
+          "completion_notes": "EncyclopediaEntryView com MapId/MapName/RarityId sempre e BiteShare depois de descoberta; ProfileWindow com botões por mapa e progresso, silhueta com mapa e raridade; EncyclopediaByMapTests. A-126. Não compilado nem aberto no Unity."
         },
         {
           "id": "M22-T12",

@@ -22,6 +22,24 @@ public sealed class ProfileSummaryTests
     }
 }
 
+/// <summary>M22-T11: the Encyclopedia knows every species' map and rarity, and the bite share once found.</summary>
+public sealed class EncyclopediaByMapTests
+{
+    [Fact]
+    public void Map_and_rarity_are_known_before_discovery_and_the_name_is_not()
+    {
+        var (game, clock, _) = TestSupport.NewGame();
+        game.Fishing.StartFishing();
+        TestSupport.PlayFor(game, clock, 600, stepSeconds: 30);
+
+        var entries = game.Profile.GetProfile().Encyclopedia;
+        Assert.All(entries, e => Assert.NotNull(e.MapId));
+        Assert.All(entries, e => Assert.NotNull(e.RarityId));
+        Assert.All(entries.Where(e => !e.Discovered), e => Assert.Null(e.Name));
+        Assert.All(entries.Where(e => e.Discovered), e => Assert.InRange(e.BiteShare, 0.0001, 1.0));
+    }
+}
+
 /// <summary>A-124: big amounts in short form.</summary>
 public sealed class ShortNumberTests
 {

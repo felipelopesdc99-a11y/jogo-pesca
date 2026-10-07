@@ -35,6 +35,7 @@ namespace FishingIdle.Game.UI
         private CardumeView _cardume;
         private AquariumView _aquarium;
         private ArenaView _arena;
+        private string _encMap;
         private ExpeditionsView _expeditions;
         private float _nextRefresh;
         private int _selectedPosition = 1;
@@ -713,11 +714,45 @@ namespace FishingIdle.Game.UI
 
         private void DrawEncyclopedia(UiSkin skin, Rect area)
         {
-            var entries = _profile.Encyclopedia;
-            GUI.Label(new Rect(area.x, area.y, area.width, 22), GameTexts.Profile.Discovery(entries.Count(e => e.Discovered), entries.Count), skin.BodyBold);
+            var all = _profile.Encyclopedia;
+
+            // By map (M22-T11): a chip per map with its progress; "Todos" shows every species.
+            var maps = new List<(string Id, string Name)>();
+            foreach (var e in all)
+            {
+                if (e.MapId != null && !maps.Any(m => m.Id == e.MapId))
+                {
+                    maps.Add((e.MapId, e.MapName));
+                }
+            }
+
+            var cx = area.x;
+            var cy = area.y;
+            var chips = new List<(string Id, string Label)> { (null, GameTexts.Profile.AllMaps(all.Count(e => e.Discovered), all.Count)) };
+            chips.AddRange(maps.Select(m => (m.Id, GameTexts.Profile.MapProgress(m.Name, all.Count(e => e.MapId == m.Id && e.Discovered), all.Count(e => e.MapId == m.Id)))));
+            foreach (var (id, label) in chips)
+            {
+                var cw = skin.Chip.CalcSize(new GUIContent(label)).x + 12f;
+                if (cx + cw > area.xMax)
+                {
+                    cx = area.x;
+                    cy += 38;
+                }
+
+                if (GUI.Button(new Rect(cx, cy, cw, 32), label, _encMap == id ? skin.ChipActive : skin.Chip))
+                {
+                    _encMap = id;
+                    _scroll = Vector2.zero;
+                }
+
+                cx += cw + 6;
+            }
+
+            var entries = _encMap == null ? all : all.Where(e => e.MapId == _encMap).ToList();
+            var top = cy + 44 - area.y;
 
             const float cardW = 236f, cardH = 176f, gap = 12f;
-            var view = new Rect(area.x - 4, area.y + 34, area.width + 8, area.height - 34);
+            var view = new Rect(area.x - 4, area.y + top, area.width + 8, area.height - top);
             var columns = Mathf.Max(1, Mathf.FloorToInt((view.width - 20 + gap) / (cardW + gap)));
             var rows = Mathf.CeilToInt(entries.Count / (float)columns);
             _scroll = GUI.BeginScrollView(view, _scroll, new Rect(0, 0, view.width - 20, rows * (cardH + gap)));
@@ -738,7 +773,16 @@ namespace FishingIdle.Game.UI
 
                 if (!e.Discovered)
                 {
+                    // Still a secret, but you know where to look and how rare it is (M22-T11).
                     GUI.Label(new Rect(rect.x + 14, rect.y + 90, rect.width - 28, 22), GameTexts.Profile.Undiscovered, skin.BodyBold);
+                    var hidden = (e.RarityName ?? string.Empty).ToUpperInvariant();
+                    var hw = skin.PillWidth(hidden, false);
+                    if (hidden.Length > 0)
+                    {
+                        skin.RarityPill(new Rect(rect.xMax - 14 - hw, rect.y + 116, hw, 20), e.RarityId, hidden, false);
+                    }
+
+                    GUI.Label(new Rect(rect.x + 14, rect.y + 116, rect.width - 36 - hw, 20), FishCard.Fit(e.MapName ?? string.Empty, skin.SmallMuted, rect.width - 36 - hw), skin.SmallMuted);
                     continue;
                 }
 
@@ -749,7 +793,8 @@ namespace FishingIdle.Game.UI
                 skin.RarityPill(new Rect(rect.xMax - 14 - pw, rect.y + 110, pw, 20), e.RarityId, rarity, false);
                 GUI.Label(new Rect(rect.x + 14, rect.y + 110, rect.width - 36 - pw, 20), FishCard.Fit(e.MapName, skin.SmallMuted, rect.width - 36 - pw), skin.SmallMuted);
                 GUI.Label(new Rect(rect.x + 14, rect.y + 130, rect.width - 28, 20), GameTexts.Profile.Largest + ": " + Format.SizeCm(e.LargestCm), skin.Small);
-                GUI.Label(new Rect(rect.x + 14, rect.y + 150, rect.width - 28, 20), GameTexts.Profile.TimesCaught + ": " + Format.Number(e.TimesCaught), skin.Small);
+                GUI.Label(new Rect(rect.x + 14, rect.y + 150, rect.width - 28, 20),
+                    FishCard.Fit(GameTexts.Profile.TimesCaught + ": " + Format.Number(e.TimesCaught) + " · " + GameTexts.Profile.BiteShare(Format.Percent(e.BiteShare, e.BiteShare < 0.01 ? 1 : 0)), skin.Small, rect.width - 28), skin.Small);
             }
 
             GUI.EndScrollView();

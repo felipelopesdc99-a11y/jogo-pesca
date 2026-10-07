@@ -72,7 +72,13 @@ namespace FishingIdle.GameService.Profile
         public string SpeciesId { get; internal set; }
         public bool Discovered { get; internal set; }
 
-        // Filled only when discovered: before that the entry is a dark silhouette (GDD section 38).
+        /// <summary>The species' map, known even before it is found (M22-T11): the Encyclopedia is browsed by map.</summary>
+        public string MapId { get; internal set; }
+
+        /// <summary>Share of the map's bites that are this species, before rod bonuses (0–1). Shown once discovered.</summary>
+        public double BiteShare { get; internal set; }
+
+        // Name, sizes and counts only when discovered (a dark silhouette before, GDD section 38); map and rarity always (M22-T11).
         public string Name { get; internal set; }
         public string MapName { get; internal set; }
         public string RarityId { get; internal set; }

@@ -342,19 +342,31 @@ namespace FishingIdle.GameService.Profile
 
         private EncyclopediaEntryView EncyclopediaEntry(SpeciesConfig species)
         {
-            var entry = new EncyclopediaEntryView { SpeciesId = species.Id };
+            // Map and rarity are shown even before discovery (M22-T11); the name, sizes and counts are not.
+            Config.TryGetMap(species.PrimaryMapId, out var map);
+            Config.TryGetRarity(species.Rarity, out var rarity);
+            var entry = new EncyclopediaEntryView
+            {
+                SpeciesId = species.Id,
+                MapId = map?.Id,
+                MapName = map?.DisplayName,
+                RarityId = species.Rarity,
+                RarityName = rarity?.DisplayName ?? species.Rarity,
+            };
             if (!Save.SpeciesRecords.TryGetValue(species.Id, out var record))
             {
                 return entry;
             }
 
-            Config.TryGetMap(species.PrimaryMapId, out var map);
-            Config.TryGetRarity(species.Rarity, out var rarity);
+            if (map != null)
+            {
+                var total = map.FishPool.Sum(p => p.CatchWeight);
+                var own = map.FishPool.Where(p => p.SpeciesId == species.Id).Sum(p => p.CatchWeight);
+                entry.BiteShare = total > 0 ? own / total : 0;
+            }
+
             entry.Discovered = true;
             entry.Name = species.DisplayName;
-            entry.MapName = map?.DisplayName;
-            entry.RarityId = species.Rarity;
-            entry.RarityName = rarity?.DisplayName ?? species.Rarity;
             entry.LargestCm = record.LargestMm / 10.0;
             entry.SpeciesMaxCm = species.SizeCm.Max;
             entry.TimesCaught = record.TimesCaught;
