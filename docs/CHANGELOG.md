@@ -3,6 +3,20 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.9] — 07/10/2026
+
+### Mudado
+
+- Loja: as varas aparecem em lista, como barcos e iscas, com o nome inteiro à vista (M22-T19).
+
+### Corrigido
+
+- Loja: o texto sobre a chance de puxar não se sobrepõe mais às barras em telas baixas.
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.8] — 07/10/2026
 
 ### Adicionado

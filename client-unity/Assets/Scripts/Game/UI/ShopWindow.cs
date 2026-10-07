@@ -28,6 +28,7 @@ namespace FishingIdle.Game.UI
         private ShopView _shop;
         private bool _dirty = true;
         private Tab _tab;
+        private Vector2 _rodScroll;
 
         public ShopWindow(GameRoot root)
         {
@@ -148,7 +149,12 @@ namespace FishingIdle.Game.UI
                 y += 8;
             }
 
-            GUI.Label(new Rect(x, rect.yMax - 104, w, 92), GameTexts.Gear.ChanceNote(Format.Percent(gear.ChanceMin, 0), Format.Percent(gear.ChanceMax, 0)), skin.SmallMuted);
+            // The note goes under the list; on a short window it is left out instead of overlapping the bars.
+            var noteY = Mathf.Max(y + 4, rect.yMax - 104);
+            if (rect.yMax - 12 - noteY >= 56)
+            {
+                GUI.Label(new Rect(x, noteY, w, rect.yMax - 12 - noteY), GameTexts.Gear.ChanceNote(Format.Percent(gear.ChanceMin, 0), Format.Percent(gear.ChanceMax, 0)), skin.SmallMuted);
+            }
         }
 
         private static void GearRow(UiSkin skin, float x, ref float y, float w, string icon, string label, string name, double bonus)
@@ -163,76 +169,88 @@ namespace FishingIdle.Game.UI
 
         private void DrawRods(UiSkin skin, Rect content)
         {
-            var x = content.x;
-            var count = Mathf.Max(2, _shop.Rods.Count);
-            var w = (content.width - 20f * (count - 1)) / count;
+            // A list, like boats and baits: with 6 rods, side-by-side cards got too narrow to read the names.
+            // On a wide window the bonuses sit beside the name; on a narrow one, under it.
+            var width = content.width - 18f;
+            var wide = width >= 900f;
+            var rowHeight = wide ? 132f : 240f;
+            var view = new Rect(0, 0, width, _shop.Rods.Count * (rowHeight + 8f));
+            _rodScroll = GUI.BeginScrollView(content, _rodScroll, view);
+            var y = 0f;
             foreach (var rod in _shop.Rods)
             {
-                DrawRod(skin, new Rect(x, content.y, w, content.height), rod);
-                x += w + 20f;
+                DrawRod(skin, new Rect(0, y, width, rowHeight), rod, wide);
+                y += rowHeight + 8f;
             }
+
+            GUI.EndScrollView();
         }
 
-        private void DrawRod(UiSkin skin, Rect rect, RodOfferView rod)
+        private void DrawRod(UiSkin skin, Rect rect, RodOfferView rod, bool wide)
         {
             GUI.Box(rect, GUIContent.none, rod.Owned ? skin.CardSelected : skin.Card);
-            var x = rect.x + 22;
-            var w = rect.width - 44;
-            var y = rect.y + 14;
 
             // The rod itself first (Art Bible, section 27): an important item, without fantasy excess.
+            var pictureWidth = wide ? 110f : 90f;
             var picture = ArtAssets.Texture("Varas/" + rod.RodId);
             if (picture != null)
             {
-                GUI.DrawTexture(new Rect(x, y, w, 100), picture, ScaleMode.ScaleToFit, true);
-                y += 106;
-            }
-
-            GUI.Label(new Rect(x, y, w, 30), rod.Name, skin.Heading);
-            y += 32;
-            GUI.Label(new Rect(x, y, w, 22), GameTexts.Profile.Tier(rod.Tier) + " · " + GameTexts.Shop.MaxLevelOf(rod.MaxLevel), skin.SmallMuted);
-            y += 24;
-            if (!string.IsNullOrEmpty(rod.Description))
-            {
-                GUI.Label(new Rect(x, y, w, 38), rod.Description, skin.SmallMuted);
-                y += 40;
+                GUI.DrawTexture(new Rect(rect.x + 10, rect.y + 10, pictureWidth, Mathf.Min(rect.height - 20, 110)), picture, ScaleMode.ScaleToFit, true);
             }
             else
             {
-                y += 4;
-            }
-            skin.CoinIcon(new Rect(x, y + 2, 22, 22));
-            var price = rod.IsFree ? GameTexts.Shop.Free : GameTexts.Shop.Price(Format.Number(rod.PriceCoins));
-            GUI.Label(new Rect(x + 30, y, w - 30, 28), price, skin.Number);
-            if (!rod.IsFree && rod.PriceShells > 0)
-            {
-                // Conchas on top of the coins (A-099).
-                var px = x + 30 + skin.Number.CalcSize(new GUIContent(price)).x + 12f;
-                skin.DrawIcon(new Rect(px, y + 2, 22, 22), Icons.Shell, Color.white);
-                GUI.Label(new Rect(px + 28, y, w - (px + 28 - x), 28), Format.Number(rod.PriceShells), skin.Number);
+                skin.IconBadge(new Rect(rect.x + 10 + (pictureWidth - 56) / 2f, rect.y + 30, 56, 56), Icons.Rod, rod.Owned ? UiSkin.Accent : UiSkin.Muted);
             }
 
-            y += 36;
+            var buttonWidth = wide ? 220f : 180f;
+            var x = rect.x + pictureWidth + 24;
+            var bonusWidth = wide ? Mathf.Clamp(rect.width * 0.3f, 220f, 300f) : 0f;
+            var infoWidth = rect.width - (x - rect.x) - buttonWidth - 32 - (wide ? bonusWidth + 20 : 0);
 
-            GUI.Label(new Rect(x, y, w, 20), GameTexts.Shop.AtLevel1 + " → " + GameTexts.Shop.AtMax, skin.SmallMuted);
-            y += 24;
-            Row(skin, x, ref y, w, GameTexts.Shop.CatchBonus, rod.CatchBonus, rod.CatchBonusAtMax);
-            Row(skin, x, ref y, w, GameTexts.Profile.RarityBonus, rod.RarityBonus, rod.RarityBonusAtMax);
-            Row(skin, x, ref y, w, GameTexts.Profile.SizeBonus, rod.SizeBonus, rod.SizeBonusAtMax);
-            Row(skin, x, ref y, w, GameTexts.Profile.ShellBonus, rod.ShellBonus, rod.ShellBonusAtMax);
-            y += 6;
-            GUI.Label(new Rect(x, y, w, 20), rod.CanCatchMythic ? GameTexts.Profile.CatchesUpToMythic : rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare, skin.Small);
+            // Name, tier and what it catches.
+            var y = rect.y + 12;
+            GUI.Label(new Rect(x, y, infoWidth, 28), rod.Name, skin.Heading);
+            y += 30;
+            GUI.Label(new Rect(x, y, infoWidth, 22), GameTexts.Profile.Tier(rod.Tier) + " · " + GameTexts.Shop.MaxLevelOf(rod.MaxLevel), skin.SmallMuted);
             y += 22;
-            GUI.Label(new Rect(x, y, w, 20), GameTexts.Shop.Requires(rod.UnlockFisherLevel), skin.Small);
+            GUI.Label(new Rect(x, y, infoWidth, 22), rod.CanCatchMythic ? GameTexts.Profile.CatchesUpToMythic : rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare, skin.Small);
+            y += 22;
+            GUI.Label(new Rect(x, y, infoWidth, 22), GameTexts.Shop.Requires(rod.UnlockFisherLevel), skin.Small);
+            y += 28;
 
-            var button = new Rect(x, rect.yMax - 58, w, 42);
+            // Bonuses at level 1 → at the maximum level: beside the name, or under it.
+            var bx = wide ? x + infoWidth + 20 : x;
+            var bw = wide ? bonusWidth : rect.xMax - 16 - x;
+            var by = wide ? rect.y + 10 : y;
+            GUI.Label(new Rect(bx, by, bw, 20), GameTexts.Shop.AtLevel1 + " → " + GameTexts.Shop.AtMax, skin.SmallMuted);
+            by += 22;
+            Row(skin, bx, ref by, bw, GameTexts.Shop.CatchBonus, rod.CatchBonus, rod.CatchBonusAtMax);
+            Row(skin, bx, ref by, bw, GameTexts.Profile.RarityBonus, rod.RarityBonus, rod.RarityBonusAtMax);
+            Row(skin, bx, ref by, bw, GameTexts.Profile.SizeBonus, rod.SizeBonus, rod.SizeBonusAtMax);
+            Row(skin, bx, ref by, bw, GameTexts.Profile.ShellBonus, rod.ShellBonus, rod.ShellBonusAtMax);
+
+            // Price and button on the right.
+            var rx = rect.xMax - buttonWidth - 16;
+            if (!rod.Owned)
+            {
+                if (rod.IsFree)
+                {
+                    GUI.Label(new Rect(rx, rect.y + 16, buttonWidth, 24), GameTexts.Shop.Free, skin.BodyBold);
+                }
+                else
+                {
+                    Cost(skin, new Rect(rx, rect.y + 18, buttonWidth, 22), rod.PriceCoins, rod.PriceShells);
+                }
+            }
+
+            var button = new Rect(rx, rect.y + 52, buttonWidth, 42);
             if (rod.Owned)
             {
-                OwnedPill(skin, x, button.y, GameTexts.Shop.Owned);
+                OwnedPill(skin, button.x, button.y, GameTexts.Shop.Owned);
             }
             else if (rod.BuyBlocker != ServiceError.None)
             {
-                Blocked(skin, new Rect(x, button.y, w, 42), rod.BuyBlocker);
+                Blocked(skin, new Rect(button.x, button.y, button.width, 42), rod.BuyBlocker, rod.BuyBlocker == ServiceError.RodLocked ? GameTexts.Shop.Requires(rod.UnlockFisherLevel) : null);
             }
             else if (skin.IconButton(button, Icons.Buy, rod.IsFree ? GameTexts.Shop.ClaimFree : GameTexts.Shop.Buy, skin.ButtonPrimary))
             {
@@ -243,8 +261,8 @@ namespace FishingIdle.Game.UI
 
         private static void Row(UiSkin skin, float x, ref float y, float w, string label, double at1, double atMax)
         {
-            GUI.Label(new Rect(x, y, w * 0.55f, 22), label, skin.SmallMuted);
-            GUI.Label(new Rect(x + w * 0.45f, y, w * 0.55f, 22), "+" + Format.Percent(at1, 0) + " → +" + Format.Percent(atMax, 0), skin.SmallRight);
+            GUI.Label(new Rect(x, y, w - 100, 22), label, skin.SmallMuted);
+            GUI.Label(new Rect(x + w - 110, y, 110, 22), "+" + Format.Percent(at1, 0) + " → +" + Format.Percent(atMax, 0), skin.SmallRight);
             y += 24;
         }
 

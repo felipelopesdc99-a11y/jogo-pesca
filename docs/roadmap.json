@@ -3760,6 +3760,16 @@
           ],
           "updated_at": "2026-10-07T17:05:00Z",
           "completion_notes": "progression.json → fisher.dollars_per_levels (a cada 10 níveis, 10 Dólares); concedido na subida de nível (LocalFishingService.AddFisherXp); FishingUpdate.DollarsGained; aviso na tela e no Bem-vindo de volta; teste em VipTests. A-111. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T19",
+          "title": "Loja: varas em lista, como barcos e iscas",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026, com print): com 6 varas, os cartões lado a lado ficaram estreitos e os nomes não apareciam.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T17:25:00Z",
+          "completion_notes": "ShopWindow.DrawRods virou lista com rolagem: imagem, nome, nível, o que pesca, bônus (Nv.1 → máximo), preço e botão. Em janela larga os bônus ficam ao lado do nome; em janela estreita, embaixo. O texto sobre a chance de puxar, no painel da esquerda, não se sobrepõe mais às barras em telas baixas. Não compilado nem aberto no Unity."
         }
       ]
     }
