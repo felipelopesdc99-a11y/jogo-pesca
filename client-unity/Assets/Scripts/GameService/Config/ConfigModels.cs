@@ -465,6 +465,19 @@ namespace FishingIdle.GameService.Config
         public string Id { get; set; }
         public string DisplayName { get; set; }
         public long PriceHonor { get; set; }
+
+        /// <summary>What the item gives (OD-009): Conchas or Dólares.</summary>
+        public ArenaShopRewardConfig Reward { get; set; }
+
+        /// <summary>Purchases allowed in any 7 days; 0 = no limit.</summary>
+        public int WeeklyLimit { get; set; }
+    }
+
+    public sealed class ArenaShopRewardConfig
+    {
+        /// <summary>"shells" or "dollars".</summary>
+        public string Currency { get; set; }
+        public long Amount { get; set; }
     }
 
     // ---------------------------------------------------------------- arena_bots.json (local MVP)

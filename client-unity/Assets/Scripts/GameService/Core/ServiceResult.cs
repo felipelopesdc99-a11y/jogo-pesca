@@ -64,6 +64,9 @@ namespace FishingIdle.GameService.Core
         NotEnoughShells,
         NotEnoughDollars,
         VipUnavailable,
+        ArenaItemNotFound,
+        NotEnoughHonor,
+        ArenaWeeklyLimit,
         InvalidAmount,
     }
 

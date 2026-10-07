@@ -55,6 +55,15 @@ namespace FishingIdle.GameService.Arena
         public string Id { get; internal set; }
         public string Name { get; internal set; }
         public long PriceHonor { get; internal set; }
+
+        /// <summary>"shells" or "dollars".</summary>
+        public string RewardCurrency { get; internal set; }
+        public long RewardAmount { get; internal set; }
+
+        /// <summary>0 = no limit.</summary>
+        public int WeeklyLimit { get; internal set; }
+        public int BoughtThisWeek { get; internal set; }
+        public ServiceError BuyBlocker { get; internal set; }
     }
 
     public sealed class ArenaView
@@ -108,6 +117,9 @@ namespace FishingIdle.GameService.Arena
 
         /// <summary>Processes attacks other players made against you since the last check (also while closed).</summary>
         List<BattleRecordView> Update();
+
+        /// <summary>Buys an Arena Shop item with Honor (OD-009): Conchas or Dólares, some with a weekly limit.</summary>
+        ServiceResult<ArenaShopItemView> BuyShopItem(string itemId);
     }
 
     public sealed class LocalArenaService : IArenaService
@@ -189,7 +201,7 @@ namespace FishingIdle.GameService.Arena
 
             foreach (var item in Config.Arena.Shop?.Items ?? new List<ArenaShopItemConfig>())
             {
-                view.ShopItems.Add(new ArenaShopItemView { Id = item.Id, Name = item.DisplayName, PriceHonor = item.PriceHonor });
+                view.ShopItems.Add(ShopItem(item));
             }
 
             return view;
@@ -513,6 +525,81 @@ namespace FishingIdle.GameService.Arena
             }
 
             return view;
+        }
+
+        public ServiceResult<ArenaShopItemView> BuyShopItem(string itemId)
+        {
+            var item = (Config.Arena.Shop?.Items ?? new List<ArenaShopItemConfig>()).FirstOrDefault(i => i.Id == itemId);
+            if (item == null || item.Reward == null || item.Reward.Amount <= 0 || item.PriceHonor <= 0)
+            {
+                return ServiceResult<ArenaShopItemView>.Fail(ServiceError.ArenaItemNotFound);
+            }
+
+            var blocker = ShopBlocker(item);
+            if (blocker != ServiceError.None)
+            {
+                return ServiceResult<ArenaShopItemView>.Fail(blocker);
+            }
+
+            State.Honor -= item.PriceHonor;
+            if (item.Reward.Currency == "dollars")
+            {
+                Save.Dollars += item.Reward.Amount;
+            }
+            else
+            {
+                Save.Shells += item.Reward.Amount;
+            }
+
+            State.ShopPurchasesMs = State.ShopPurchasesMs ?? new Dictionary<string, List<long>>();
+            if (!State.ShopPurchasesMs.TryGetValue(item.Id, out var times) || times == null)
+            {
+                times = new List<long>();
+                State.ShopPurchasesMs[item.Id] = times;
+            }
+
+            times.Add(Now);
+            _session.Persist();
+            _session.Log("Arena shop: bought " + item.Id + " for " + item.PriceHonor + " honor.");
+            return ServiceResult<ArenaShopItemView>.Ok(ShopItem(item));
+        }
+
+        private const long WeekMs = 7L * 24 * 3600 * 1000;
+
+        /// <summary>Purchases of the item in the last 7 days; older ones are dropped from the save.</summary>
+        private int BoughtThisWeek(ArenaShopItemConfig item)
+        {
+            State.ShopPurchasesMs = State.ShopPurchasesMs ?? new Dictionary<string, List<long>>();
+            if (!State.ShopPurchasesMs.TryGetValue(item.Id, out var times) || times == null)
+            {
+                return 0;
+            }
+
+            var now = Now;
+            times.RemoveAll(t => t <= now - WeekMs);
+            return times.Count;
+        }
+
+        private ServiceError ShopBlocker(ArenaShopItemConfig item)
+        {
+            if (item.WeeklyLimit > 0 && BoughtThisWeek(item) >= item.WeeklyLimit) return ServiceError.ArenaWeeklyLimit;
+            if (State.Honor < item.PriceHonor) return ServiceError.NotEnoughHonor;
+            return ServiceError.None;
+        }
+
+        private ArenaShopItemView ShopItem(ArenaShopItemConfig item)
+        {
+            return new ArenaShopItemView
+            {
+                Id = item.Id,
+                Name = item.DisplayName,
+                PriceHonor = item.PriceHonor,
+                RewardCurrency = item.Reward?.Currency,
+                RewardAmount = item.Reward?.Amount ?? 0,
+                WeeklyLimit = item.WeeklyLimit,
+                BoughtThisWeek = BoughtThisWeek(item),
+                BuyBlocker = item.Reward == null ? ServiceError.ArenaItemNotFound : ShopBlocker(item),
+            };
         }
 
         private string NameOf(string id) => id == ArenaBots.PlayerId ? Save.PlayerName : Bot(id)?.Name ?? id;

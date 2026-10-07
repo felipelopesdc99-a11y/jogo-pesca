@@ -186,6 +186,9 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Most recent battles first, bounded.</summary>
         public List<BattleRecord> History { get; set; } = new List<BattleRecord>();
+
+        /// <summary>Arena Shop purchases of the last 7 days, per item id (Unix ms), for the weekly limits (OD-009).</summary>
+        public Dictionary<string, List<long>> ShopPurchasesMs { get; set; } = new Dictionary<string, List<long>>();
     }
 
     public sealed class BattleRecord

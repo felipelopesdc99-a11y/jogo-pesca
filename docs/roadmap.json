@@ -90,7 +90,8 @@
       "title": "O que a Loja da Arena vende por Honra?",
       "detail": "O GDD diz que a Honra é gasta na Loja da Arena e pode dar progresso de verdade, mas não define os itens, e pede para não inventar sistemas só para encher a loja. A loja já existe (aba Loja da Arena) e lê os itens de arena.json → shop.items, que está vazio. Quando quiser, diga o que ela deve vender (por exemplo: moedas, uma vara, melhoria de vara…) e por quanta Honra.",
       "raised_at": "2026-09-29T00:11:52Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): a Loja da Arena vende Conchas e Dólares por Honra (A-115). Preços calibrados: 20 Conchas por 100 de Honra; 5 Dólares por 300 de Honra, até 2 por semana."
     },
     {
       "id": "OD-010",
@@ -1391,11 +1392,12 @@
           "title": "Itens da Loja da Arena",
           "subsystem": "config",
           "description": "Decidir o que a Honra compra. A loja existe e lê arena.json → shop.items, que está vazio.",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M7-T06"
           ],
-          "updated_at": "2026-09-29T00:11:52Z"
+          "updated_at": "2026-10-07T18:05:00Z",
+          "completion_notes": "Decisão do proprietário (OD-009): Conchas e Dólares por Honra. arena.json → shop.items (Saco de Conchas, Bolsa de Dólares com limite semanal); LocalArenaService.BuyShopItem; ArenaState.ShopPurchasesMs; aba Loja da Arena com itens e botão de compra; ArenaShopTests. A-115. Não compilado nem aberto no Unity."
         },
         {
           "id": "M7-T10",

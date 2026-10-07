@@ -447,6 +447,22 @@ namespace FishingIdle.Game.Bootstrap
             });
         }
 
+        public void BuyArenaItem(string itemId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Arena.BuyShopItem(itemId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Arena.ShopBought(result.Value.Name), ToastKind.Important);
+                Refresh();
+            });
+        }
+
         /// <summary>Asks for a battle. Returns the resolved report for the replay, or null when refused.</summary>
         public BattleReport Attack(int opponentIndex)
         {

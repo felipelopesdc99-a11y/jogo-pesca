@@ -129,7 +129,7 @@ namespace FishingIdle.Game.UI
             {
                 case Tab.Ranking: DrawRanking(skin, content); break;
                 case Tab.History: DrawHistory(skin, content); break;
-                case Tab.Shop: GUI.Label(new Rect(content.x, content.y, content.width, 60), GameTexts.Arena.ShopEmpty, skin.Body); break;
+                case Tab.Shop: DrawShop(skin, content); break;
                 default: DrawOpponents(skin, content); break;
             }
         }
@@ -347,6 +347,53 @@ namespace FishingIdle.Game.UI
                 {
                     GUI.Label(new Rect(x, nameY + 22, w, 20), GameTexts.Arena.PodiumLead(entry.LeadSpeciesName, entry.LeadLevel), skin.SmallMutedCenter);
                 }
+            }
+        }
+
+        // ------------------------------------------------------------------ Arena Shop (OD-009)
+
+        private void DrawShop(UiSkin skin, Rect area)
+        {
+            if (_arena.ShopItems.Count == 0)
+            {
+                GUI.Label(new Rect(area.x, area.y, area.width, 60), GameTexts.Arena.ShopEmpty, skin.Body);
+                return;
+            }
+
+            GUI.Label(new Rect(area.x, area.y, area.width, 22), GameTexts.Arena.ShopNote, skin.SmallMuted);
+            var y = area.y + 32;
+            foreach (var item in _arena.ShopItems)
+            {
+                var dollars = item.RewardCurrency == "dollars";
+                var rect = new Rect(area.x, y, area.width, 96);
+                GUI.Box(rect, GUIContent.none, skin.Card);
+                skin.IconBadge(new Rect(rect.x + 24, rect.y + 20, 56, 56), dollars ? Icons.Dollar : Icons.Shell, UiSkin.Gold);
+
+                var x = rect.x + 100;
+                GUI.Label(new Rect(x, rect.y + 14, 320, 28), item.Name, skin.Heading);
+                GUI.Label(new Rect(x, rect.y + 44, 320, 22), GameTexts.Arena.ShopReward(Format.Number(item.RewardAmount), dollars), skin.BodyBold);
+                if (item.WeeklyLimit > 0)
+                {
+                    GUI.Label(new Rect(x, rect.y + 68, 320, 20), GameTexts.Arena.ShopWeekly(item.BoughtThisWeek, item.WeeklyLimit), skin.SmallMuted);
+                }
+
+                var px = rect.xMax - 250 - 200;
+                skin.DrawIcon(new Rect(px, rect.y + 37, 22, 22), Icons.Honor, UiSkin.Gold);
+                GUI.Label(new Rect(px + 28, rect.y + 36, 170, 24), GameTexts.Arena.ShopPrice(Format.Number(item.PriceHonor)), skin.SmallGold);
+
+                var button = new Rect(rect.xMax - 236, rect.y + 27, 216, 42);
+                if (item.BuyBlocker != ServiceError.None)
+                {
+                    skin.DrawIcon(new Rect(button.x, button.y + 11, 20, 20), Icons.Lock, UiSkin.Gold);
+                    GUI.Label(new Rect(button.x + 28, button.y + 2, button.width - 28, 42), GameTexts.ServiceErrorMessage(item.BuyBlocker.ToString()), skin.SmallGold);
+                }
+                else if (skin.IconButton(button, Icons.Buy, GameTexts.Shop.Buy, skin.ButtonPrimary))
+                {
+                    _root.BuyArenaItem(item.Id);
+                    _nextRefresh = 0f;
+                }
+
+                y += 106;
             }
         }
 

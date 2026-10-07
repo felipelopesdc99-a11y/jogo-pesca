@@ -147,7 +147,28 @@
   },
   "shop": {
     "currency": "honor",
-    "note": "Cadastrar um estoque mínimo e configurável. Não implementar sistemas de itens futuros só para preencher a loja.",
-    "items": []
+    "note": "OD-009 (decisão do proprietário, 07/10/2026): a Loja da Arena vende Conchas e Dólares por Honra. reward.currency é \"shells\" ou \"dollars\"; weekly_limit 0 = sem limite (conta compras nos últimos 7 dias).",
+    "items": [
+      {
+        "id": "arena_shells_20",
+        "display_name": "Saco de Conchas",
+        "price_honor": 100,
+        "reward": {
+          "currency": "shells",
+          "amount": 20
+        },
+        "weekly_limit": 0
+      },
+      {
+        "id": "arena_dollars_5",
+        "display_name": "Bolsa de Dólares",
+        "price_honor": 300,
+        "reward": {
+          "currency": "dollars",
+          "amount": 5
+        },
+        "weekly_limit": 2
+      }
+    ]
   }
 }

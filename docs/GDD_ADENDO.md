@@ -1354,3 +1354,13 @@ cerca de **metade** do que o mesmo tempo de pesca offline renderia no mapa de on
 
 Na mesma decisão, o proprietário manteve as batalhas da Arena rápidas (~20 s, como estão).
 
+### A-115 · Loja da Arena: Conchas e Dólares por Honra
+**Seção do GDD:** 30 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Decisão do proprietário (07/10/2026, OD-009): a Loja da Arena vende Conchas e Dólares.
+
+- **Saco de Conchas:** 20 Conchas por 100 de Honra, sem limite.
+- **Bolsa de Dólares:** 5 Dólares por 300 de Honra, no máximo 2 a cada 7 dias (10 Dólares por semana: mais um
+  jeito lento de juntar o VIP).
+- Um jogador ativo ganha ~150–250 de Honra por dia. Itens, preços e limites em `config/arena.json` → `shop`.
+

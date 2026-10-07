@@ -226,7 +226,12 @@ namespace FishingIdle.Texts
             public const string Note = "Ataque um dos três adversários. Vencer troca a sua posição com a dele e dá Honra; perder custa um pouco de Honra. Cada ataque gasta 1 de Energia, vencendo ou perdendo. Outros jogadores também podem atacar você, inclusive com o jogo fechado.";
             public const string NoForceNote = "A Força dos adversários não é mostrada. Olhe o Cardume, os níveis e as raridades para decidir.";
             public const string EmptyHistory = "Nenhuma batalha ainda.";
-            public const string ShopEmpty = "A Loja da Arena ainda não tem itens. Eles são cadastrados em arena.json → shop.items quando o proprietário decidir o que vender por Honra.";
+            public const string ShopEmpty = "A Loja da Arena ainda não tem itens.";
+            public const string ShopNote = "Troque a Honra ganha nas batalhas por Conchas e Dólares. Alguns itens têm limite por semana.";
+            public static string ShopReward(string amount, bool dollars) => "+" + amount + (dollars ? " Dólares" : " Conchas");
+            public static string ShopPrice(string honor) => honor + " de Honra";
+            public static string ShopWeekly(int bought, int limit) => "Esta semana: " + bought + " de " + limit;
+            public static string ShopBought(string item) => item + " comprado!";
             public const string Attacked = "Ataque";
             public const string Defended = "Defesa";
             public const string Win = "Vitória";
@@ -823,6 +828,9 @@ namespace FishingIdle.Texts
                 case "NotEnoughShells": return "Conchas insuficientes.";
                 case "NotEnoughDollars": return "Dólares insuficientes.";
                 case "VipUnavailable": return "O VIP não está disponível agora.";
+                case "ArenaItemNotFound": return "Este item não está à venda.";
+                case "NotEnoughHonor": return "Honra insuficiente.";
+                case "ArenaWeeklyLimit": return "Limite desta semana atingido. Volte em alguns dias.";
                 case "InvalidAmount": return "Escolha uma quantidade de pelo menos 1.";
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
