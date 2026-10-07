@@ -1466,3 +1466,12 @@ publicado). Abre com **F2** ou pelo botão "Testes (F2)" no canto de baixo à es
 
 Tudo passa pelo serviço de jogo (TD-034); a tela nunca mexe no save.
 
+### A-124 · Números grandes em formato curto
+**Seção do GDD:** 44 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Aprovado pelo proprietário (07/10/2026). A partir de 1 milhão, os valores aparecem curtos: "12,4 mi", "3,2 bi",
+"1,5 tri" (uma casa decimal, nunca arredondada para cima). Vale nas Moedas, Conchas e Dólares do topo da tela e
+da carteira do Perfil, no preço dos cards de peixe, nos preços da Loja e no total selecionado da Caixa. Passando o
+mouse sobre as moedas do topo ou da carteira aparece o valor completo. Onde o número exato importa (Mercado,
+lances, confirmações) continua completo.
+

@@ -233,7 +233,7 @@ namespace FishingIdle.Game.UI
                 SizeCategoryId = c.SizeCategoryId,
                 SizeCategoryName = c.SizeCategoryName,
                 Bar = (float)c.SizePercentile,
-                Coins = Format.Number(c.SalePriceCoins),
+                Coins = Format.Short(c.SalePriceCoins),
                 Selected = _selected.Contains(c.CatchId),
             };
             FishCard.StatusBadge(model, c.IsNewSpecies, c.IsPersonalRecord);
@@ -277,7 +277,7 @@ namespace FishingIdle.Game.UI
 
             // Recomputed only when the selection or the box changes, not on every GUI event.
             var preview = _preview ?? (_preview = _root.PreviewSale(_selected.ToList()));
-            var info = preview.Count == 0 ? GameTexts.Box.NothingSelected : GameTexts.Box.Selected(preview.Count, Format.Number(preview.TotalCoins));
+            var info = preview.Count == 0 ? GameTexts.Box.NothingSelected : GameTexts.Box.Selected(preview.Count, Format.Short(preview.TotalCoins));
             GUI.Label(new Rect(x + 380, y + 10, panel.width - 950, 24), info, skin.Body);
 
             GUI.enabled = GUI.enabled && preview.Count > 0;

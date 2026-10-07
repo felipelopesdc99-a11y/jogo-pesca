@@ -21,3 +21,19 @@ public sealed class ProfileSummaryTests
         Assert.Equal(records.TotalCatches, records.ByRarity.Sum(t => t.Caught));
     }
 }
+
+/// <summary>A-124: big amounts in short form.</summary>
+public sealed class ShortNumberTests
+{
+    [Theory]
+    [InlineData(845_320L, "845.320")]
+    [InlineData(1_000_000L, "1 mi")]
+    [InlineData(12_400_000L, "12,4 mi")]
+    [InlineData(999_999_999L, "999,9 mi")]
+    [InlineData(3_200_000_000L, "3,2 bi")]
+    [InlineData(1_500_000_000_000L, "1,5 tri")]
+    public void Amounts_are_shortened(long value, string expected)
+    {
+        Assert.Equal(expected, FishingIdle.Texts.Format.Short(value));
+    }
+}

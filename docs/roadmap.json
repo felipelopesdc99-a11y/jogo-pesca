@@ -3718,10 +3718,11 @@
           "title": "Números grandes em formato curto",
           "subsystem": "client",
           "description": "Proposta da pesquisa (a analisar): no fim do jogo a renda passa de 9 milhões de Moedas por hora; mostrar \"12,4 mi\" e \"3,2 bi\" com o valor completo na dica (Format.cs). Aprovada pelo proprietário (07/10/2026).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-07T20:30:00Z",
-          "owner_approved": true
+          "updated_at": "2026-10-07T20:50:00Z",
+          "owner_approved": true,
+          "completion_notes": "Format.Short (\"12,4 mi\"), usado no topo, na carteira do Perfil, nos cards, na Loja e na Caixa; valor completo ao passar o mouse (Hud.ExactOnHover); ShortNumberTests. A-124. Não compilado nem aberto no Unity."
         },
         {
           "id": "M22-T11",

@@ -420,7 +420,7 @@ namespace FishingIdle.Game.UI
 
         private static void Cost(UiSkin skin, Rect rect, long coins, long shells)
         {
-            skin.CoinAmount(new Rect(rect.x, rect.y, 120, rect.height), Format.Number(coins));
+            skin.CoinAmount(new Rect(rect.x, rect.y, 120, rect.height), Format.Short(coins));
             if (shells > 0)
             {
                 skin.DrawIcon(new Rect(rect.x + 124, rect.y, rect.height, rect.height), Icons.Shell, Color.white);

@@ -19,6 +19,35 @@ namespace FishingIdle.Texts
             return value.ToString("#,0", CultureInfo.InvariantCulture).Replace(',', '.');
         }
 
+        /// <summary>
+        /// Big amounts in short form (A-124): below a million the full number ("845.320"); then
+        /// "12,4 mi", "3,2 bi", "1,5 tri" (one decimal, dropped when it is ",0").
+        /// </summary>
+        public static string Short(long value)
+        {
+            var abs = Math.Abs(value);
+            if (abs < 1_000_000L)
+            {
+                return Number(value);
+            }
+
+            double scaled;
+            string unit;
+            if (abs >= 1_000_000_000_000L) { scaled = value / 1e12; unit = " tri"; }
+            else if (abs >= 1_000_000_000L) { scaled = value / 1e9; unit = " bi"; }
+            else { scaled = value / 1e6; unit = " mi"; }
+
+            // Truncated, never rounded up: "999,9 mi" must not read as "1.000 mi".
+            var truncated = Math.Truncate(scaled * 10.0) / 10.0;
+            var text = Decimal(truncated, 1);
+            if (text.EndsWith(",0", StringComparison.Ordinal))
+            {
+                text = text.Substring(0, text.Length - 2);
+            }
+
+            return text + unit;
+        }
+
         /// <summary>35.25 with 1 decimal → "35,3"; 1234.5 → "1.234,5".</summary>
         public static string Decimal(double value, int decimals)
         {

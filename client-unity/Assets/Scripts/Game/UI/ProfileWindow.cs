@@ -206,7 +206,7 @@ namespace FishingIdle.Game.UI
             for (var i = wallet.Length - 1; i >= 0; i--)
             {
                 var (icon, label, amount) = wallet[i];
-                var value = Format.Number(amount);
+                var value = Format.Short(amount);
                 var tw = Mathf.Max(skin.BodyBold.CalcSize(new GUIContent(value)).x, skin.SmallMuted.CalcSize(new GUIContent(label)).x) + 52f;
                 var tile = new Rect(wx - tw, panel.y + 22, tw, 52);
                 GUI.DrawTexture(tile, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.11f, 0.2f, 0.9f), 0, 12);
@@ -214,6 +214,7 @@ namespace FishingIdle.Game.UI
                 skin.DrawIcon(new Rect(tile.x + 10, tile.y + 13, 26, 26), icon, Color.white);
                 GUI.Label(new Rect(tile.x + 42, tile.y + 6, tw - 46, 18), label, skin.SmallMuted);
                 GUI.Label(new Rect(tile.x + 42, tile.y + 22, tw - 46, 24), value, skin.BodyBold);
+                Hud.ExactOnHover(skin, tile, amount);
                 wx = tile.x - 8;
             }
 

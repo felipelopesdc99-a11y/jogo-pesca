@@ -452,17 +452,33 @@ namespace FishingIdle.Game.UI
                          (Icons.Shell, GameTexts.Player.Shells, player.Shells),
                      })
             {
-                var text = Format.Number(value);
+                var text = Format.Short(value);
                 var w = skin.SmallBold.CalcSize(new GUIContent(text)).x + 4f + 40f;
                 var chip = new Rect(x - w, 70, w, 30);
                 GUI.Box(chip, new GUIContent(string.Empty, label), skin.Chip);
                 skin.DrawIcon(new Rect(chip.x + 10, chip.y + 6, 18, 18), icon, Color.white);
                 GUI.Label(new Rect(chip.x + 34, chip.y + 6, w - 36, 20), text, skin.SmallBold);
+                ExactOnHover(skin, chip, value);
                 x = chip.x - 8;
             }
         }
 
         /// <summary>The coin counter: it counts up to the new total, with a "+N" that floats away.</summary>
+        /// <summary>A short amount ("12,4 mi") shows the full number while the mouse is over it (A-124).</summary>
+        internal static void ExactOnHover(UiSkin skin, Rect area, long value)
+        {
+            if (value < 1_000_000L || !area.Contains(Event.current.mousePosition))
+            {
+                return;
+            }
+
+            var text = Format.Number(value);
+            var w = skin.SmallBold.CalcSize(new GUIContent(text)).x + 20f;
+            var tip = new Rect(area.xMax - w, area.yMax + 4, w, 26);
+            GUI.DrawTexture(tip, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.04f, 0.08f, 0.14f, 0.95f), 0, 8);
+            GUI.Label(new Rect(tip.x + 10, tip.y + 4, w - 12, 20), text, skin.SmallBold);
+        }
+
         private void DrawCoins(UiSkin skin, float right, long coins)
         {
             if (_coinsTarget != coins)
@@ -480,7 +496,7 @@ namespace FishingIdle.Game.UI
 
             var k = Mathf.Clamp01((Time.unscaledTime - _coinsChangedAt) / Visual.VisualTheme.Current.CoinCountSeconds);
             _coinsShown = (long)Mathf.Lerp(_coinsFrom, _coinsTarget, 1f - (1f - k) * (1f - k));
-            var text = Format.Number(_coinsShown);
+            var text = Format.Short(_coinsShown);
             var textWidth = skin.Number.CalcSize(new GUIContent(text)).x;
             var box = new Rect(right - textWidth - 58, 12, textWidth + 58, 40);
             _coinsBoxWidth = box.width;
@@ -489,6 +505,7 @@ namespace FishingIdle.Game.UI
             var iconSize = 24f * pulse;
             skin.CoinIcon(new Rect(box.x + 14 + (24f - iconSize) / 2f, box.y + 8 + (24f - iconSize) / 2f, iconSize, iconSize));
             GUI.Label(new Rect(box.x + 46, box.y + 7, textWidth + 4, 30), text, skin.Number);
+            ExactOnHover(skin, box, _coinsShown);
 
             var since = Time.unscaledTime - _coinsGainAt;
             if (_coinsGain > 0 && since < 1.4f)
