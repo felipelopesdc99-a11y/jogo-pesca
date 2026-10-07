@@ -55,3 +55,31 @@ public sealed class DevToolsTests
         Assert.Equal(60, report.Update.NewCatches.Count); // one every 60 s
     }
 }
+
+/// <summary>M18-T07: notable results remember the balance version they came from.</summary>
+public sealed class BalanceVersionTests
+{
+    [Fact]
+    public void Notable_catches_battles_and_expeditions_carry_the_balance_version()
+    {
+        var (game, _, _) = TestSupport.NewGame();
+        game.Session.DevToolsEnabled = true;
+        var version = game.Session.Config.Version;
+
+        game.DevTools.GiveFish("lambari", "small", 1);
+        game.DevTools.GiveFish(RareSpecies(game), null, 1);
+        var box = game.Session.Save.FishingBox;
+        Assert.Null(box[0].BalanceVersion);
+        Assert.Equal(version, box[1].BalanceVersion);
+    }
+
+    private static string RareSpecies(LocalGame game)
+    {
+        foreach (var s in game.Session.Config.FishCatalog.Species)
+        {
+            if (s.Rarity == "rare") return s.Id;
+        }
+
+        return null;
+    }
+}

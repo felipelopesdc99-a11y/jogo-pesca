@@ -3,6 +3,21 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.22] — 07/10/2026
+
+### Adicionado
+
+- Enciclopédia por mapa, com progresso, mapa e raridade das espécies ainda não descobertas (A-126).
+- Avisos importantes guardados entre sessões (A-127); versão do balanceamento nos resultados notáveis.
+
+### Mudado
+
+- Raridade sempre com o nome junto da cor (A-125).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.21] — 07/10/2026
 
 ### Mudado

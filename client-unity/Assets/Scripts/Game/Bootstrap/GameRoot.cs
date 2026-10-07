@@ -1045,6 +1045,7 @@ namespace FishingIdle.Game.Bootstrap
                 }
 
                 Game = result.Game;
+                Toasts.LoadKept();
 
                 // The owner's test tools (A-123): only in the Unity Editor or a development build.
                 Game.Session.DevToolsEnabled = Application.isEditor || Debug.isDebugBuild;

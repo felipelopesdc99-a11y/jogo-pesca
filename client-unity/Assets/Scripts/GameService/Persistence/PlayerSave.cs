@@ -206,6 +206,9 @@ namespace FishingIdle.GameService.Persistence
         public int RankBefore { get; set; }
         public int RankAfter { get; set; }
         public long HonorChange { get; set; }
+
+        /// <summary>Balance version the battle was resolved with (M18-T07).</summary>
+        public string BalanceVersion { get; set; }
     }
 
     public sealed class TutorialState
@@ -369,6 +372,9 @@ namespace FishingIdle.GameService.Persistence
         public long Coins { get; set; }
         public double Efficiency { get; set; }
 
+        /// <summary>Balance version the reward was computed with (M18-T07).</summary>
+        public string BalanceVersion { get; set; }
+
         /// <summary>Fishing Box id of the fish found, or 0.</summary>
         public long FoundCatchId { get; set; }
 
@@ -427,6 +433,9 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Bit flags, see <see cref="BoxCatchFlags"/>.</summary>
         [JsonProperty("f")] public int Flags { get; set; }
+
+        /// <summary>Balance version the catch was made with (M18-T07); only on notable catches, null otherwise.</summary>
+        [JsonProperty("bv", NullValueHandling = NullValueHandling.Ignore)] public string BalanceVersion { get; set; }
     }
 
     /// <summary>
@@ -437,6 +446,9 @@ namespace FishingIdle.GameService.Persistence
     public sealed class FishInstance
     {
         public long Id { get; set; }
+
+        /// <summary>Balance version of the catch it came from, when notable (M18-T07).</summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string BalanceVersion { get; set; }
         public string SpeciesId { get; set; }
         public int SizeMm { get; set; }
         public string SizeCategoryId { get; set; }

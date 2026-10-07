@@ -3111,11 +3111,12 @@
           "title": "Avisos guardados entre sessões",
           "subsystem": "client",
           "description": "Guardar no save um conjunto limitado dos avisos mais recentes (§39). Hoje eles somem ao fechar o jogo. (Levantado do GDD em 05/10/2026.) Aprovada pelo proprietário (07/10/2026) com ajuste: guardar só os avisos mais importantes entre sessões.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-07T20:30:00Z",
+          "updated_at": "2026-10-07T22:00:00Z",
           "from_gdd_review": true,
-          "owner_approved": true
+          "owner_approved": true,
+          "completion_notes": "ToastFeed guarda os 20 avisos importantes mais recentes em PlayerPrefs (fishingidle.avisos) e os carrega ao iniciar; Limpar apaga. A-127. Não compilado nem aberto no Unity."
         },
         {
           "id": "M18-T06",
@@ -3134,11 +3135,12 @@
           "title": "Versão do balanceamento nos resultados",
           "subsystem": "server",
           "description": "Gravar a versão do balanceamento junto de capturas importantes, batalhas e Expedições (§43), para saber com quais números cada resultado saiu. (Levantado do GDD em 05/10/2026.) Aprovada pelo proprietário (07/10/2026).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-07T20:30:00Z",
+          "updated_at": "2026-10-07T22:00:00Z",
           "from_gdd_review": true,
-          "owner_approved": true
+          "owner_approved": true,
+          "completion_notes": "BalanceVersion em BoxCatch (\"bv\", só capturas não comuns ou de tamanho especial), FishInstance, BattleRecord e ExpeditionResult; BalanceVersionTests. Não compilado."
         },
         {
           "id": "M18-T08",

@@ -193,7 +193,7 @@ namespace FishingIdle.GameService.Expeditions
             }
 
             var e = Config.Expeditions.Expeditions.FirstOrDefault(x => x.Id == state.ExpeditionId);
-            var result = new ExpeditionResult { ExpeditionId = state.ExpeditionId, CompletedAtMs = state.EndsAtMs };
+            var result = new ExpeditionResult { ExpeditionId = state.ExpeditionId, CompletedAtMs = state.EndsAtMs, BalanceVersion = Config.Version };
             if (e != null)
             {
                 // Everything is decided from the snapshot taken at departure and a seeded roll.

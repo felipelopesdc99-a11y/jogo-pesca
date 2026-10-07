@@ -482,6 +482,12 @@ namespace FishingIdle.GameService.Fishing
                 CaughtAtMs = caughtAtMs,
                 Flags = flags,
             };
+
+            // M18-T07: notable catches remember which balance numbers produced them.
+            if (!CatchRules.IsCommon(rolled.Species) || rolled.SizeCategory.Special)
+            {
+                entry.BalanceVersion = Config.Version;
+            }
             Save.FishingBox.Add(entry);
             Save.Stats.TotalCatches++;
             if (rolled.SizeCategory.Id == "exceptional") Save.Stats.ExceptionalCatches++;

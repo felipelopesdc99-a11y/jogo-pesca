@@ -276,6 +276,7 @@ namespace FishingIdle.GameService.Arena
             State.Honor += honor;
             var record = new BattleRecord
             {
+                BalanceVersion = Config.Version,
                 AtMs = Now,
                 Kind = "attack",
                 OpponentId = opponentId,
@@ -344,6 +345,7 @@ namespace FishingIdle.GameService.Arena
                 var defended = outcome.Winner == 1;
                 var record = new BattleRecord
                 {
+                    BalanceVersion = Config.Version,
                     AtMs = State.IncomingCheckedAtMs + k * intervalMs,
                     Kind = "defense",
                     OpponentId = attackerId,

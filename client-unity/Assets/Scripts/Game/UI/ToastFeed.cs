@@ -35,7 +35,8 @@ namespace FishingIdle.Game.UI
 
     /// <summary>
     /// Non-blocking notifications (GDD section 39): short-lived toasts, plus a bounded list of the
-    /// relevant ones for the Notification Center. Nothing is persisted. Built from authoritative
+    /// relevant ones for the Notification Center. The important ones (A-127) are kept between sessions,
+    /// on this PC, in the client's own preferences (never in the save). Built from authoritative
     /// results the client already has; no extra request per notification.
     /// </summary>
     public sealed class ToastFeed
@@ -53,6 +54,79 @@ namespace FishingIdle.Game.UI
         public IReadOnlyList<NotificationEntry> History => _history;
 
         public int Unread { get; private set; }
+
+        // A-127: the important notices survive closing the game (the 20 most recent, without icons).
+        private const string PrefsKey = "fishingidle.avisos";
+        private const int KeptLimit = 20;
+        private bool _loaded;
+
+        [Serializable]
+        private sealed class Kept
+        {
+            public List<KeptEntry> entries = new List<KeptEntry>();
+        }
+
+        [Serializable]
+        private sealed class KeptEntry
+        {
+            public string text;
+            public int kind;
+            public long at;
+        }
+
+        private static bool IsImportant(ToastKind kind) => kind == ToastKind.Important || kind == ToastKind.LevelUp;
+
+        /// <summary>Brings back the important notices of earlier sessions. Called once the game has started.</summary>
+        public void LoadKept()
+        {
+            if (_loaded)
+            {
+                return;
+            }
+
+            _loaded = true;
+            try
+            {
+                var json = PlayerPrefs.GetString(PrefsKey, string.Empty);
+                if (string.IsNullOrEmpty(json))
+                {
+                    return;
+                }
+
+                var kept = JsonUtility.FromJson<Kept>(json);
+                foreach (var e in kept?.entries ?? new List<KeptEntry>())
+                {
+                    if (!string.IsNullOrEmpty(e.text))
+                    {
+                        _history.Add(new NotificationEntry { Text = e.text, Kind = (ToastKind)e.kind, At = DateTime.FromBinary(e.at) });
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // A damaged preference only loses old notices; the game goes on.
+                PlayerPrefs.DeleteKey(PrefsKey);
+            }
+        }
+
+        private void SaveKept()
+        {
+            if (!_loaded)
+            {
+                return;
+            }
+
+            var kept = new Kept();
+            foreach (var e in _history)
+            {
+                if (IsImportant(e.Kind) && kept.entries.Count < KeptLimit)
+                {
+                    kept.entries.Add(new KeptEntry { text = e.Text, kind = (int)e.Kind, at = e.At.ToBinary() });
+                }
+            }
+
+            PlayerPrefs.SetString(PrefsKey, JsonUtility.ToJson(kept));
+        }
 
         /// <summary>Raised for every toast shown, with the sound it should make (the audio listens to it).</summary>
         public event Action<SoundCue> Pushed;
@@ -93,6 +167,10 @@ namespace FishingIdle.Game.UI
                 }
 
                 Unread++;
+                if (IsImportant(kind))
+                {
+                    SaveKept();
+                }
             }
 
             Pushed?.Invoke(sound ?? DefaultSound(kind));
@@ -110,6 +188,7 @@ namespace FishingIdle.Game.UI
         {
             _history.Clear();
             Unread = 0;
+            SaveKept();
         }
 
         /// <summary>Drops expired toasts. Called once per frame by the HUD.</summary>

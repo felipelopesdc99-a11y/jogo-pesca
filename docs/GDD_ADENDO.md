@@ -1492,3 +1492,13 @@ vive e a raridade, para o jogador saber onde procurar. Depois de descoberta, o c
 morde no mapa ("morde 3% das vezes", pelo peso de captura, sem os bônus da vara). Recompensa por completar um mapa
 não entrou (seria sistema novo).
 
+### A-127 · Avisos importantes ficam guardados
+**Seção do GDD:** 39 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Aprovado pelo proprietário (07/10/2026), com o ajuste dele: só os avisos **importantes** (subir de nível,
+capturas e acontecimentos importantes) continuam no sino depois de fechar o jogo, os 20 mais recentes. Ficam
+nas preferências do jogo neste PC, não no save. "Limpar" apaga também os guardados.
+
+Também aprovado (técnico, invisível ao jogador): capturas raras ou de tamanho especial, batalhas e Expedições
+gravam a versão do balanceamento com que saíram (M18-T07).
+

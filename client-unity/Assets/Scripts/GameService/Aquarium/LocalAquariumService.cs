@@ -96,6 +96,7 @@ namespace FishingIdle.GameService.Aquarium
                     SpeciesId = entry.SpeciesId,
                     SizeMm = entry.SizeMm,
                     SizeCategoryId = entry.SizeCategoryId,
+                    BalanceVersion = entry.BalanceVersion,
                     Level = 1,
                     CaughtAtMs = entry.CaughtAtMs,
                     KeptAtMs = now,
