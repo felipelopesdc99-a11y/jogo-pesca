@@ -3,6 +3,16 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.24] — 07/10/2026
+
+### Adicionado
+
+- Aquário: selecionar vários peixes e vender de uma vez, com total e confirmação (A-130).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.23] — 07/10/2026
 
 ### Adicionado

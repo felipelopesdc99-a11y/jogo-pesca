@@ -213,6 +213,25 @@ public sealed class AquariumTests
     }
 
     [Fact]
+    public void Several_fish_sell_together_for_the_previewed_total()
+    {
+        var (game, _, _) = GameWithCatches(3600);
+        game.Aquarium.KeepCatches(BoxIds(game, 5));
+        var fish = game.Aquarium.GetAquarium(AquariumSort.Newest).Fish.Take(4).Select(f => f.FishId).ToList();
+        Assert.Equal(4, fish.Count);
+        var preview = game.Aquarium.PreviewSale(fish);
+        var coins = game.Player.GetPlayer().Coins;
+
+        var sale = game.Aquarium.SellFish(fish);
+
+        Assert.True(sale.Succeeded);
+        Assert.Equal(4, sale.Value.Count);
+        Assert.Equal(preview.TotalCoins, sale.Value.CoinsGained);
+        Assert.Equal(coins + preview.TotalCoins, game.Player.GetPlayer().Coins);
+        Assert.Single(game.Aquarium.GetAquarium(AquariumSort.Newest).Fish);
+    }
+
+    [Fact]
     public void Default_order_is_exceptional_large_adult_small()
     {
         var (game, _, _) = GameWithCatches(6 * 3600);

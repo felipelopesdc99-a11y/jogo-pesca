@@ -1524,3 +1524,12 @@ FRENTE e TRÁS têm uma etiqueta vertical; cada posição tem o número num cír
 raridade (canto direito, não sobrepõe mais o número), o peixe grande, nome, nível e uma barra da parte dele na
 Força. Posição vazia: moldura suave com "+". A posição escolhida brilha.
 
+
+### A-130 · Aquário: venda em lote
+
+Pedido do proprietário (07/10/2026). No Aquário, o botão "Selecionar vários" (ao lado da ordenação), ou Ctrl +
+clique num peixe, troca a ficha do peixe por um painel de venda em lote: clicar nos cards marca e desmarca, o painel
+mostra quantos estão marcados, quanto o jogador recebe e a lista dos marcados (com "×" para tirar um). "Selecionar
+todos" marca os que estão visíveis (respeitando a busca). "Vender N" pede confirmação; se houver peixes valiosos ou
+do Cardume, eles aparecem listados no aviso. As regras de venda não mudam (o XP investido não volta; durante uma
+Expedição, peixes do Cardume não podem ser vendidos). Esc ou "Sair da seleção" volta ao modo normal.

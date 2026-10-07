@@ -203,6 +203,20 @@ namespace FishingIdle.Texts
             public static string SellTitle(string species) => "Vender " + species + "?";
             public static string SellBody(string coins) => "Você recebe " + coins + " moedas. O XP investido neste peixe não volta. Esta ação não pode ser desfeita.";
             public static string LeavesCardume(int position) => "Este peixe está no Cardume (posição " + position + ") e sairá dele.";
+
+            // Selling several fish at once (addendum A-130).
+            public const string MultiSelect = "Selecionar vários";
+            public const string MultiSelectTitle = "Venda em lote";
+            public const string MultiSelectHint = "Clique nos peixes para marcar ou desmarcar. Ctrl + clique também começa uma seleção.";
+            public const string MultiSelectNone = "Nenhum peixe selecionado.";
+            public const string MultiSelectExit = "Sair da seleção";
+            public const string SellManyProtected = "Valiosos ou no Cardume (sairão dele):";
+            public static string SelectedCount(int count) => count == 1 ? "1 peixe selecionado" : count + " peixes selecionados";
+            public static string SelectedTotal(string coins) => "Você recebe " + coins + " moedas";
+            public static string SellMany(int count) => "Vender " + count;
+            public static string SellManyTitle(int count) => count == 1 ? "Vender 1 peixe?" : "Vender " + count + " peixes?";
+            public static string SellManyBody(string coins) => "Você recebe " + coins + " moedas. O XP investido nesses peixes não volta. Esta ação não pode ser desfeita.";
+            public static string AndMore(int count) => "e mais " + count;
         }
 
         // ------------------------------------------------------------------ offline return (GDD section 10)

@@ -43,8 +43,16 @@ namespace FishingIdle.Game.UI
         private ServiceResult<FeedPreview> _feedPreview;
         private Vector2 _feedScroll;
 
+        // Selling several fish at once (A-130)
+        private bool _multi;
+        private readonly HashSet<long> _sellSet = new HashSet<long>();
+        private SalePreview _salePreview;
+        private List<FishView> _shown = new List<FishView>();
+        private Vector2 _sellScroll;
+
         // Confirmations
         private bool _confirmSell;
+        private bool _confirmSellMany;
         private bool _confirmFeed;
 
         public AquariumWindow(GameRoot root)
@@ -56,7 +64,7 @@ namespace FishingIdle.Game.UI
 
         public bool IsOpen { get; private set; }
 
-        private bool DialogOpen => _confirmSell || _confirmFeed;
+        private bool DialogOpen => _confirmSell || _confirmSellMany || _confirmFeed;
 
         public void Open()
         {
@@ -71,7 +79,14 @@ namespace FishingIdle.Game.UI
             if (DialogOpen)
             {
                 _confirmSell = false;
+                _confirmSellMany = false;
                 _confirmFeed = false;
+                return;
+            }
+
+            if (_multi)
+            {
+                StopMulti();
                 return;
             }
 
@@ -125,13 +140,24 @@ namespace FishingIdle.Game.UI
             else
             {
                 DrawBrowser(skin, left, panel);
-                DrawSheet(skin, right);
+                if (_multi)
+                {
+                    DrawSelectionPanel(skin, right);
+                }
+                else
+                {
+                    DrawSheet(skin, right);
+                }
             }
 
             GUI.enabled = true;
             if (_confirmSell)
             {
                 DrawSellDialog(skin, screenWidth, screenHeight);
+            }
+            else if (_confirmSellMany)
+            {
+                DrawSellManyDialog(skin, screenWidth, screenHeight);
             }
             else if (_confirmFeed)
             {
@@ -161,6 +187,21 @@ namespace FishingIdle.Game.UI
                 x += w + 8;
             }
 
+            // "Selecionar vários" on the right of the sort row: turns clicks into a selection to sell.
+            var multiLabel = new GUIContent(GameTexts.Aquarium.MultiSelect);
+            var multiWidth = skin.Chip.CalcSize(multiLabel).x + 34;
+            if (_aquarium.Count > 0 && skin.IconButton(new Rect(area.xMax - multiWidth, area.y, multiWidth, 32), Icons.Check, GameTexts.Aquarium.MultiSelect, _multi ? skin.ChipActive : skin.Chip))
+            {
+                if (_multi)
+                {
+                    StopMulti();
+                }
+                else
+                {
+                    StartMulti();
+                }
+            }
+
             var grid = new Rect(area.x - 4, area.y + 46, area.width + 8, area.height - 46);
             if (_aquarium.Count == 0)
             {
@@ -169,6 +210,7 @@ namespace FishingIdle.Game.UI
             }
 
             var shown = _aquarium.Fish.Where(f => NameSearch.Matches(f.SpeciesName, _search)).ToList();
+            _shown = shown;
             if (shown.Count == 0)
             {
                 GUI.Label(new Rect(grid.x, grid.y + grid.height / 2f - 30, grid.width, 60), GameTexts.Search.NoMatch, skin.Center);
@@ -180,8 +222,24 @@ namespace FishingIdle.Game.UI
                 var clicked = FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
                     Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName, (float)fish.SizePercentile,
                     GameTexts.Player.LevelShort + " " + fish.Level + (fish.CardumePosition > 0 ? "  ·  " + GameTexts.Cardume.Badge(fish.CardumePosition) : string.Empty),
-                    fish.RarityId, fish.RarityName, fish.FishId == _selectedId, fish.IsImportant, fish.SizeCategoryId, fish.SizeCategoryName);
-                if (clicked)
+                    fish.RarityId, fish.RarityName, _multi ? _sellSet.Contains(fish.FishId) : fish.FishId == _selectedId,
+                    fish.IsImportant, fish.SizeCategoryId, fish.SizeCategoryName);
+                if (!clicked)
+                {
+                    return;
+                }
+
+                // Ctrl + click starts a selection (with the fish already open, if any).
+                if (!_multi && Event.current != null && (Event.current.control || Event.current.command))
+                {
+                    StartMulti();
+                }
+
+                if (_multi)
+                {
+                    ToggleSell(fish.FishId);
+                }
+                else
                 {
                     _selectedId = fish.FishId;
                     _selected = fish;
@@ -293,6 +351,190 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, y, 170, 20), label, skin.SmallMuted);
             GUI.Label(new Rect(x + 170, y, w - 170, 20), value, skin.SmallRight);
             y += 22;
+        }
+
+        // ------------------------------------------------------------------ selling several
+
+        private void StartMulti()
+        {
+            _multi = true;
+            _sellSet.Clear();
+            if (_selected != null)
+            {
+                _sellSet.Add(_selected.FishId);
+            }
+
+            _salePreview = null;
+            _sellScroll = Vector2.zero;
+        }
+
+        private void StopMulti()
+        {
+            _multi = false;
+            _sellSet.Clear();
+            _salePreview = null;
+        }
+
+        private void ToggleSell(long id)
+        {
+            if (!_sellSet.Remove(id))
+            {
+                _sellSet.Add(id);
+            }
+
+            _salePreview = null;
+        }
+
+        private SalePreview CurrentSale()
+        {
+            return _salePreview ?? (_salePreview = _root.PreviewFishSale(_sellSet.ToList()) ?? new SalePreview());
+        }
+
+        private void DrawSelectionPanel(UiSkin skin, Rect area)
+        {
+            GUI.Box(area, GUIContent.none, skin.Card);
+            skin.DrawOutline(area, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.7f));
+            var x = area.x + 22;
+            var w = area.width - 44;
+            var y = area.y + 18;
+
+            skin.DrawIcon(new Rect(x, y + 4, 24, 24), Icons.Sell, UiSkin.Gold);
+            GUI.Label(new Rect(x + 32, y, w - 32, 32), GameTexts.Aquarium.MultiSelectTitle, skin.Heading);
+            y += 36;
+            GUI.Label(new Rect(x, y, w, 40), GameTexts.Aquarium.MultiSelectHint, skin.SmallMuted);
+            y += 46;
+
+            if (skin.IconButton(new Rect(x, y, w / 2f - 6, 36), Icons.Check, GameTexts.Box.SelectAll, skin.Button))
+            {
+                foreach (var fish in _shown)
+                {
+                    _sellSet.Add(fish.FishId);
+                }
+
+                _salePreview = null;
+            }
+
+            var enabled = GUI.enabled;
+            GUI.enabled = enabled && _sellSet.Count > 0;
+            if (GUI.Button(new Rect(x + w / 2f + 6, y, w / 2f - 6, 36), GameTexts.Box.ClearSelection, skin.Button))
+            {
+                _sellSet.Clear();
+                _salePreview = null;
+            }
+
+            GUI.enabled = enabled;
+            y += 50;
+
+            // Count and total, big: what the player gets.
+            var preview = CurrentSale();
+            GUI.Label(new Rect(x, y, w, 28), _sellSet.Count == 0 ? GameTexts.Aquarium.MultiSelectNone : GameTexts.Aquarium.SelectedCount(_sellSet.Count), skin.BodyBold);
+            y += 30;
+            if (_sellSet.Count > 0)
+            {
+                skin.DrawIcon(new Rect(x, y + 3, 22, 22), Icons.Coin, Color.white);
+                GUI.Label(new Rect(x + 30, y, w - 30, 28), GameTexts.Aquarium.SelectedTotal(Format.Number(preview.TotalCoins)), skin.BodyBold);
+                y += 34;
+            }
+
+            // The selected fish, one row each, newest choice order does not matter: by sale price.
+            var chosen = _aquarium.Fish.Where(f => _sellSet.Contains(f.FishId)).OrderByDescending(f => f.SalePriceCoins).ToList();
+            var listBottom = area.yMax - 74;
+            var listRect = new Rect(x, y + 4, w, Mathf.Max(0, listBottom - y - 8));
+            const float rowHeight = 40f;
+            _sellScroll = GUI.BeginScrollView(listRect, _sellScroll, new Rect(0, 0, w - 18, chosen.Count * rowHeight));
+            var first = Mathf.Max(0, Mathf.FloorToInt(_sellScroll.y / rowHeight));
+            var last = Mathf.Min(chosen.Count - 1, Mathf.CeilToInt((_sellScroll.y + listRect.height) / rowHeight));
+            for (var i = first; i <= last; i++)
+            {
+                var f = chosen[i];
+                var row = new Rect(0, i * rowHeight, w - 18, rowHeight - 4);
+                GUI.Box(row, GUIContent.none, skin.Card);
+                GUI.DrawTexture(new Rect(row.x + 6, row.y + 4, 48, row.height - 8), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
+                var color = UiSkin.RarityColor(f.RarityId);
+                GUI.DrawTexture(new Rect(row.x + 60, row.y + 14, 8, 8), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, 4);
+                var priceText = Format.Number(f.SalePriceCoins);
+                var priceWidth = skin.SmallRight.CalcSize(new GUIContent(priceText)).x + 4;
+                var nameWidth = row.width - 74 - priceWidth - 34;
+                var name = f.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + f.Level + (f.CardumePosition > 0 ? " · " + GameTexts.Cardume.Badge(f.CardumePosition) : string.Empty);
+                GUI.Label(new Rect(row.x + 74, row.y + 8, nameWidth, 20), UI.FishCard.Fit(name, skin.Small, nameWidth), skin.Small);
+                GUI.Label(new Rect(row.xMax - priceWidth - 30, row.y + 8, priceWidth, 20), priceText, skin.SmallRight);
+                if (GUI.Button(new Rect(row.xMax - 26, row.y + 7, 22, 22), "×", skin.Chip))
+                {
+                    ToggleSell(f.FishId);
+                }
+            }
+
+            GUI.EndScrollView();
+
+            var buttons = area.yMax - 60;
+            if (GUI.Button(new Rect(x, buttons, w / 2f - 6, 42), GameTexts.Aquarium.MultiSelectExit, skin.Button))
+            {
+                StopMulti();
+                return;
+            }
+
+            GUI.enabled = enabled && _sellSet.Count > 0;
+            if (skin.IconButton(new Rect(x + w / 2f + 6, buttons, w / 2f - 6, 42), Icons.Sell, GameTexts.Aquarium.SellMany(_sellSet.Count), skin.ButtonPrimary))
+            {
+                _confirmSellMany = true;
+            }
+
+            GUI.enabled = enabled;
+        }
+
+        private void DrawSellManyDialog(UiSkin skin, float screenWidth, float screenHeight)
+        {
+            if (_sellSet.Count == 0)
+            {
+                _confirmSellMany = false;
+                return;
+            }
+
+            var preview = CurrentSale();
+            var lines = preview.ProtectedFishNames.Take(6).ToList();
+            var more = preview.ProtectedFishNames.Count - lines.Count;
+            var extra = lines.Count == 0 ? 0f : 34f + lines.Count * 24f + (more > 0 ? 24f : 0f);
+            var rect = Dialog(skin, screenWidth, screenHeight, 230f + extra);
+            GUI.Label(new Rect(rect.x + 28, rect.y + 24, rect.width - 56, 30), GameTexts.Aquarium.SellManyTitle(_sellSet.Count), skin.Heading);
+            GUI.Label(new Rect(rect.x + 28, rect.y + 64, rect.width - 56, 70), GameTexts.Aquarium.SellManyBody(Format.Number(preview.TotalCoins)), skin.Body);
+            var y = rect.y + 134;
+            if (lines.Count > 0)
+            {
+                GUI.Label(new Rect(rect.x + 28, y, rect.width - 56, 24), GameTexts.Aquarium.SellManyProtected, skin.SmallGold);
+                y += 30;
+                foreach (var line in lines)
+                {
+                    GUI.Label(new Rect(rect.x + 40, y, rect.width - 80, 22), "•  " + line, skin.Small);
+                    y += 24;
+                }
+
+                if (more > 0)
+                {
+                    GUI.Label(new Rect(rect.x + 40, y, rect.width - 80, 22), GameTexts.Aquarium.AndMore(more), skin.SmallMuted);
+                }
+            }
+
+            if (GUI.Button(new Rect(rect.x + 28, rect.yMax - 64, 150, 42), GameTexts.Dialogs.Cancel, skin.Button))
+            {
+                _confirmSellMany = false;
+            }
+
+            if (GUI.Button(new Rect(rect.xMax - 218, rect.yMax - 64, 190, 42), GameTexts.Aquarium.Sell, skin.ButtonPrimary))
+            {
+                _confirmSellMany = false;
+                if (_root.SellFish(_sellSet.ToList()))
+                {
+                    if (_sellSet.Contains(_selectedId))
+                    {
+                        _selectedId = 0;
+                        _selected = null;
+                    }
+
+                    StopMulti();
+                }
+
+                Reload();
+            }
         }
 
         // ------------------------------------------------------------------ feeding
@@ -542,6 +784,13 @@ namespace FishingIdle.Game.UI
         {
             _dirty = false;
             _aquarium = _root.GetAquarium(_sort) ?? new AquariumView();
+            if (_multi)
+            {
+                var present = new HashSet<long>(_aquarium.Fish.Select(f => f.FishId));
+                _sellSet.RemoveWhere(id => !present.Contains(id));
+                _salePreview = null;
+            }
+
             _selected = _aquarium.Fish.FirstOrDefault(f => f.FishId == _selectedId);
             if (_selected == null)
             {

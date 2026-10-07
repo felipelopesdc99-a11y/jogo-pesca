@@ -3946,6 +3946,16 @@
           "dependencies": [],
           "updated_at": "2026-10-07T22:40:00Z",
           "completion_notes": "ProfileWindow.DrawCardume: painel de batalha com Força, 6 posições e bônus no topo, fileiras FRENTE/TRÁS, número da posição em círculo, raridade no canto oposto, barra da parte na Força, vaga vazia convidativa. A-129. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T32",
+          "title": "Aquário: selecionar vários peixes e vender de uma vez",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026): no Aquário, poder escolher mais de um peixe para vender.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T22:30:00Z",
+          "completion_notes": "AquariumWindow: botão \"Selecionar vários\" (ou Ctrl + clique) marca peixes; painel de venda em lote com quantidade, total em moedas (pré-visualização do serviço), lista com remover, Selecionar todos/Limpar e confirmação que lista peixes valiosos ou do Cardume. Usa o SellFish do serviço, que já aceitava vários. Teste Several_fish_sell_together_for_the_previewed_total. A-130. Não compilado nem aberto no Unity."
         }
       ]
     }
