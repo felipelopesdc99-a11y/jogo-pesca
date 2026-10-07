@@ -557,3 +557,17 @@ do jogo.
 gasta CPU, GPU e bateria. No Android o `OnApplicationQuit` nem sempre é chamado.
 
 **Rever se.** Alguma animação depender de quadros e não de tempo.
+
+## TD-033 — Simulador de progressão em Python, por valor esperado
+
+**Decisão.** `tools/Progressao/simular_progressao.py` simula a subida do Nv.1 ao Nv.100 lendo `/config` e
+aplicando as fórmulas do `CatchRules` por valor esperado (sem sorteio), com perfis de jogador (aberto o dia
+todo, 4, 2 ou 1 visita por dia) e um comprador de equipamento simples. `tools/Progressao/calibrar_xp.py`
+usa esse simulador para gerar a tabela de XP do Pescador e gravá-la com `--gravar`.
+
+**Por quê.** O simulador em C# (`tools/Simulador`) precisa do .NET, que não está disponível em todo
+ambiente, e roda as regras completas devagar. Para decidir o ritmo de dias, o valor esperado dá o mesmo
+resultado em segundos e é fácil de rodar de novo depois de mexer no balanceamento.
+
+**Rever se.** As fórmulas do `CatchRules` mudarem (o simulador em Python copia as fórmulas), ou entrarem
+fontes de XP do Pescador fora da pesca.

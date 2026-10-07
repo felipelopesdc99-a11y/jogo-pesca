@@ -1271,3 +1271,20 @@ Corrente Azul (céu e a grade com o Marlim-azul). Com isso todos os 100 peixes e
 - **Paisagem viva:** no Talude Noturno, petréis voando rente ao mar e, de vez em quando, o vulto escuro de
   um peixe grande passando sob a superfície. No Abismo Atlântico, o vulto de um tubarão gigante passa bem fundo,
   mais devagar e mais apagado (Abismo 12, chegou em 07/10/2026).
+
+### A-109 · Do Nv.1 ao Nv.100 em cerca de 10 dias
+**Seção do GDD:** 15, 16 · **Situação:** No jogo (não aberto no Unity ainda)
+
+O proprietário pediu (07/10/2026) que o jogador leve uns 10 dias para chegar ao nível máximo. A simulação
+(`docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md`) mostrou que, com a pesca offline, dava para chegar ao
+Nv.100 em 3 a 6 dias. A tabela de XP do Pescador foi recalibrada:
+
+- **Níveis 1 a 9 iguais** (Nv.10 em ~2 h online, como antes).
+- **Do Nv.10 em diante** cada nível pede mais XP, numa curva suave que cresce com o nível: cada faixa de 10
+  níveis demora um pouco mais que a anterior (de ~½ dia no começo a ~2 dias na última).
+- **Resultado:** quem abre o jogo 4 vezes por dia chega ao Nv.100 em ~10 dias; 2 vezes por dia, ~11 dias; 1 vez
+  por dia, ~13 dias; deixando aberto o dia todo, ~5 dias.
+- **O XP dos peixes não mudou**: continua subindo de mapa para mapa (um peixe do mapa novo sempre vale mais
+  que um do mapa anterior). Isso fecha a OD-047 (opção A) e a OD-049.
+- O dinheiro acompanha: a vara de cada mapa fica paga antes ou logo depois de o nível liberar o mapa, mesmo
+  vendendo só um quarto dos peixes.

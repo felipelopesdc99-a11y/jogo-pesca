@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-07T15:10:00Z",
+  "updated_at": "2026-10-07T16:00:00Z",
   "current_milestone": "M21",
   "statuses": [
     "TODO",
@@ -428,7 +428,8 @@
       "title": "Ritmo de XP do Nível 60 ao 100",
       "detail": "Os mapas finais têm muito mais peixes raros, e Lendário e Mítico dão ×9 e ×15 de XP. Com isso não dá para ter ao mesmo tempo: (A) o XP de um peixe nunca cair de um mapa para o outro e (B) todas as faixas de 10 níveis levarem o mesmo tempo. A adaptação usou A: até o Nv.60 cada faixa leva ~3,7 h online (como a 30–40 hoje) e depois fica mais rápida, até ~2 h no 90–100. A opção B mantém ~3,7 h em todas, mas um Comum do Abismo daria menos XP que um do Estuário. Uma terceira saída é baixar o XP de Lendário e Mítico (por exemplo ×7 e ×11). Fico com A ou prefere outra?",
       "raised_at": "2026-10-05T21:48:39Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): o jogador deve levar uns 10 dias até o Nv.100. Fica a opção A (o XP de um peixe nunca cai de um mapa para o outro); o ritmo passou a ser controlado pela tabela de XP do Pescador (A-109)."
     },
     {
       "id": "OD-048",
@@ -444,7 +445,8 @@
       "title": "Ritmo da progressão contando a pesca offline",
       "detail": "As faixas de 10 níveis levam 2 a 3,7 h online, mas a pesca offline rende o equivalente a 12 h online por dia. Quem entra uma vez por dia passa quase 3 faixas por dia; do Nv.40 ao Nv.100 em uns 2 dias. A literatura de jogos idle recomenda que o tempo até a próxima compra cresça até o fim. Opções: (A) alongar as faixas (mais XP por nível), principalmente do Nv.60 em diante (liga com a OD-047); (B) baixar a pesca offline; (C) deixar e medir com os testadores. Primeiro eu simulo três perfis de jogador (M21-T07) e trago os números; quer que eu siga assim?",
       "raised_at": "2026-10-06T18:30:00Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): uns 10 dias até o nível máximo. Tabela de XP recalibrada com a simulação: ~10 dias abrindo 4 vezes por dia, ~13 abrindo 1 vez, ~5 deixando aberto (A-109)."
     },
     {
       "id": "OD-050",
@@ -3511,12 +3513,12 @@
           "id": "M21-T07",
           "title": "Simulação de cada mapa novo",
           "subsystem": "ops",
-          "description": "100 mil tentativas por cenário (vara mínima Nv.1, 5 e 10; barco da faixa; sem isca, Maré Viva, Ouro de Maré) medindo capturas, fugas, XP/h, Moedas/h, Conchas/h e tempo até a próxima vara (seção 15). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md.",
-          "status": "TODO",
+          "description": "100 mil tentativas por cenário (vara mínima Nv.1, 5 e 10; barco da faixa; sem isca, Maré Viva, Ouro de Maré) medindo capturas, fugas, XP/h, Moedas/h, Conchas/h e tempo até a próxima vara (seção 15). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 07/10/2026: simulação da progressão Nv.1 → Nv.100 por perfil de jogador (docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md). Falta a medição por mapa com 100 mil tentativas e o sorteio de verdade (tools/Simulador, precisa do .NET).",
+          "status": "IN_PROGRESS",
           "dependencies": [
             "M21-T06"
           ],
-          "updated_at": "2026-10-05T21:48:39Z"
+          "updated_at": "2026-10-07T16:00:00Z"
         },
         {
           "id": "M21-T08",
@@ -3642,11 +3644,12 @@
           "title": "Ritmo da progressão em dias de jogo",
           "subsystem": "config",
           "description": "Pesquisa sobre jogos idle: as faixas de nível foram medidas em horas online, mas a pesca offline rende 12 h online por dia; quem entra uma vez por dia pode ir do Nv.40 ao Nv.100 em poucos dias. Simular perfis (1 vez ao dia, 4 vezes, sempre aberto) junto com M21-T07.",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M21-T07"
           ],
-          "updated_at": "2026-10-06T18:30:00Z"
+          "updated_at": "2026-10-07T16:00:00Z",
+          "completion_notes": "tools/Progressao/simular_progressao.py (perfis: aberto o dia todo, 4, 2 e 1 visita por dia; variações sem isca e vendendo menos) e calibrar_xp.py. Tabela de XP do Pescador recalibrada: Nv.100 em ~10 dias abrindo 4 vezes por dia. Relatório em docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md. A-109, TD-033."
         },
         {
           "id": "M22-T08",

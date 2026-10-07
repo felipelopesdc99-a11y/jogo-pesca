@@ -3,6 +3,22 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.5] — 07/10/2026
+
+### Mudado
+
+- Tabela de XP do Pescador recalibrada: do Nv.1 ao Nv.100 em cerca de 10 dias para quem abre o jogo
+  4 vezes por dia (antes, 3 a 6 dias). Níveis 1 a 9 iguais; XP dos peixes igual (A-109).
+
+### Adicionado
+
+- `tools/Progressao/simular_progressao.py` e `calibrar_xp.py`, e o relatório
+  `docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md` (TD-033).
+
+### Não verificado
+
+- Não aberto no Editor do Unity.
+
 ## [0.2.0-m21.4] — 07/10/2026
 
 ### Adicionado
