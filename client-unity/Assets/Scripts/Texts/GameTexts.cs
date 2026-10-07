@@ -761,6 +761,13 @@ namespace FishingIdle.Texts
             public const string None = "—";
 
             public const string TabSummary = "Resumo";
+            public const string Edit = "Editar";
+            public const string EditTitle = "Seu nome e seu avatar";
+            public const string NameLabel = "Nome";
+            public const string NameRule = "De 3 a 16 caracteres: letras, números, espaço, ponto, hífen ou sublinhado.";
+            public const string AvatarLabel = "Avatar";
+            public const string Save = "Salvar";
+            public const string Saved = "Nome e avatar salvos.";
             public static string AllMaps(int found, int total) => "Todos · " + found + "/" + total;
             public static string MapProgress(string map, int found, int total) => map + " · " + found + "/" + total;
             public static string BiteShare(string percent) => "morde " + percent + " das vezes";
@@ -923,6 +930,8 @@ namespace FishingIdle.Texts
                 case "ExpeditionActive": return "Seu Cardume já está numa Expedição.";
                 case "ExpeditionNotActive": return "Não há Expedição em andamento para cancelar.";
                 case "DevToolsDisabled": return "As ferramentas de teste só funcionam no Editor do Unity.";
+                case "InvalidName": return "Use de 3 a 16 caracteres: letras, números, espaço, ponto, hífen ou sublinhado.";
+                case "AvatarNotFound": return "Este avatar não existe.";
                 case "CardumeEmpty": return "Coloque pelo menos um peixe no Cardume (Perfil → Cardume).";
                 case "CardumeLocked": return "Seu Cardume está numa Expedição. Espere ele voltar.";
                 case "NotEnoughEnergy": return "Sem Energia. Ela volta 1 ponto por hora.";

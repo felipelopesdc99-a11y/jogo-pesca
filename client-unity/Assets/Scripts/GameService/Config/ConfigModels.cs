@@ -92,6 +92,22 @@ namespace FishingIdle.GameService.Config
         public FishingConfig Fishing { get; set; }
         public FishLevelConfig FishLevel { get; set; }
         public FeedingConfig Feeding { get; set; }
+
+        /// <summary>Name rules and the avatars the player can pick (M18-T03).</summary>
+        public PlayerIdentityConfig PlayerIdentity { get; set; }
+    }
+
+    public sealed class PlayerIdentityConfig
+    {
+        public int NameMin { get; set; } = 3;
+        public int NameMax { get; set; } = 16;
+        public List<AvatarConfig> Avatars { get; set; } = new List<AvatarConfig>();
+    }
+
+    public sealed class AvatarConfig
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
     }
 
     public sealed class FishLevelConfig

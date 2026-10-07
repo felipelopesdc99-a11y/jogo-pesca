@@ -36,6 +36,11 @@ namespace FishingIdle.Game.UI
         private AquariumView _aquarium;
         private ArenaView _arena;
         private string _encMap;
+
+        // The name and avatar editor (M18-T03).
+        private bool _editing;
+        private string _nameDraft = string.Empty;
+        private string _avatarDraft;
         private ExpeditionsView _expeditions;
         private float _nextRefresh;
         private int _selectedPosition = 1;
@@ -66,6 +71,12 @@ namespace FishingIdle.Game.UI
         /// <summary>Closes the rod confirmation first, then the window.</summary>
         public void Close()
         {
+            if (_editing)
+            {
+                _editing = false;
+                return;
+            }
+
             if (_pendingRod != null)
             {
                 _pendingRod = null;
@@ -99,7 +110,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            GUI.enabled = _pendingRod == null;
+            GUI.enabled = _pendingRod == null && !_editing;
 
             var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f);
 
@@ -147,6 +158,54 @@ namespace FishingIdle.Game.UI
             {
                 DrawRodDialog(skin, screenWidth, screenHeight);
             }
+            else if (_editing)
+            {
+                DrawIdentityDialog(skin, screenWidth, screenHeight);
+            }
+        }
+
+        private void DrawIdentityDialog(UiSkin skin, float screenWidth, float screenHeight)
+        {
+            var avatars = _profile.Avatars;
+            var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, 470f, 700f);
+            var x = rect.x + 28;
+            var w = rect.width - 56;
+            GUI.Label(new Rect(x, rect.y + 22, w, 30), GameTexts.Profile.EditTitle, skin.Heading);
+
+            GUI.Label(new Rect(x, rect.y + 62, w, 20), GameTexts.Profile.NameLabel, skin.SmallMuted);
+            _nameDraft = GUI.TextField(new Rect(x, rect.y + 84, w, 38), _nameDraft ?? string.Empty, 24, skin.SearchField);
+            GUI.Label(new Rect(x, rect.y + 126, w, 20), GameTexts.Profile.NameRule, skin.SmallMuted);
+
+            GUI.Label(new Rect(x, rect.y + 156, w, 20), GameTexts.Profile.AvatarLabel, skin.SmallMuted);
+            var size = Mathf.Min(96f, (w - 5 * 12f) / 6f);
+            for (var i = 0; i < avatars.Count; i++)
+            {
+                var a = avatars[i];
+                var r = new Rect(x + i * (size + 12f), rect.y + 180, size, size);
+                AvatarArt.Draw(skin, r, a.Id, 14);
+                var picked = _avatarDraft == a.Id || (_avatarDraft == null && i == 0);
+                GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, picked ? UiSkin.Accent : UiSkin.Border, picked ? 3f : 1f, 14);
+                if (GUI.Button(r, GUIContent.none, GUIStyle.none))
+                {
+                    _avatarDraft = a.Id;
+                }
+
+                GUI.Label(new Rect(r.x - 6, r.yMax + 4, size + 12, 34), a.Name, skin.SmallMutedCenter);
+            }
+
+            if (GUI.Button(new Rect(x, rect.yMax - 64, 150, 42), GameTexts.Dialogs.Cancel, skin.Button))
+            {
+                _editing = false;
+            }
+
+            if (skin.IconButton(new Rect(rect.xMax - 218, rect.yMax - 64, 190, 42), Icons.Check, GameTexts.Profile.Save, skin.ButtonPrimary))
+            {
+                if (_root.SaveIdentity(_nameDraft, _avatarDraft))
+                {
+                    _editing = false;
+                    _dirty = true;
+                }
+            }
         }
 
         private void DrawRodDialog(UiSkin skin, float screenWidth, float screenHeight)
@@ -183,15 +242,7 @@ namespace FishingIdle.Game.UI
             var player = _root.Player;
             var portrait = new Rect(panel.x + 28, panel.y + 20, 84, 84);
             GUI.DrawTexture(portrait, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.11f, 0.2f, 1f), 0, 18);
-            var face = ArtAssets.Texture("Cena/retrato");
-            if (face != null)
-            {
-                GUI.DrawTexture(new Rect(portrait.x + 3, portrait.y + 3, 78, 78), face, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 15);
-            }
-            else
-            {
-                skin.DrawIcon(new Rect(portrait.x + 22, portrait.y + 22, 40, 40), Icons.Profile, UiSkin.Accent);
-            }
+            AvatarArt.Draw(skin, new Rect(portrait.x + 3, portrait.y + 3, 78, 78), _profile.AvatarId, 15);
 
             GUI.DrawTexture(portrait, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 18);
 
@@ -221,7 +272,18 @@ namespace FishingIdle.Game.UI
 
             var tx = portrait.xMax + 16;
             var tw2 = Mathf.Max(120f, wx - 12 - tx);
-            GUI.Label(new Rect(tx, panel.y + 18, tw2, 36), FishCard.Fit(_profile.PlayerName, skin.Title, tw2), skin.Title);
+            var nameText = FishCard.Fit(_profile.PlayerName, skin.Title, tw2 - 96);
+            GUI.Label(new Rect(tx, panel.y + 18, tw2 - 90, 36), nameText, skin.Title);
+
+            // Name and avatar (M18-T03): a small "Editar" next to the name, or a click on the portrait.
+            var nw = Mathf.Min(tw2 - 96, skin.Title.CalcSize(new GUIContent(nameText)).x);
+            if (GUI.Button(new Rect(tx + nw + 10, panel.y + 24, 80, 26), GameTexts.Profile.Edit, skin.Chip)
+                || GUI.Button(portrait, GUIContent.none, GUIStyle.none))
+            {
+                _editing = true;
+                _nameDraft = _profile.PlayerName;
+                _avatarDraft = _profile.AvatarId;
+            }
 
             // Level badge and XP bar.
             var level = GameTexts.Player.LevelShort + " " + _profile.FisherLevel;

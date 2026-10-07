@@ -19,6 +19,9 @@ namespace FishingIdle.GameService.Persistence
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
         public string PlayerName { get; set; }
+
+        /// <summary>Chosen avatar id (progression.json → player_identity.avatars); null = the default portrait.</summary>
+        public string AvatarId { get; set; }
         public long CreatedAtMs { get; set; }
         public long UpdatedAtMs { get; set; }
 

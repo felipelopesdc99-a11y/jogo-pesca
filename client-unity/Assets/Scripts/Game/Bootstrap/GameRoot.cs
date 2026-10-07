@@ -947,6 +947,36 @@ namespace FishingIdle.Game.Bootstrap
             });
         }
 
+        /// <summary>Renames the player and picks the avatar (M18-T03). Returns false with a warning when refused.</summary>
+        public bool SaveIdentity(string name, string avatarId)
+        {
+            var ok = false;
+            Guard(() =>
+            {
+                var renamed = Game.Profile.Rename(name);
+                if (!renamed.Succeeded)
+                {
+                    Toasts.Push(renamed.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                if (avatarId != null)
+                {
+                    var avatar = Game.Profile.SetAvatar(avatarId);
+                    if (!avatar.Succeeded)
+                    {
+                        Toasts.Push(avatar.ErrorMessage, ToastKind.Warning);
+                        return;
+                    }
+                }
+
+                ok = true;
+                Toasts.Push(GameTexts.Profile.Saved, ToastKind.Info);
+                Refresh();
+            });
+            return ok;
+        }
+
         public void SellRod(long itemId)
         {
             Guard(() =>

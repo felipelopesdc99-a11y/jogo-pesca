@@ -118,9 +118,20 @@ namespace FishingIdle.GameService.Profile
     }
 
     /// <summary>The player's own Profile (GDD section 37, own view).</summary>
+    public sealed class AvatarView
+    {
+        public string Id { get; internal set; }
+        public string Name { get; internal set; }
+        public bool Selected { get; internal set; }
+    }
+
     public sealed class ProfileView
     {
         public string PlayerName { get; internal set; }
+
+        /// <summary>The chosen avatar, or null for the default portrait (M18-T03).</summary>
+        public string AvatarId { get; internal set; }
+        public List<AvatarView> Avatars { get; } = new List<AvatarView>();
         public int FisherLevel { get; internal set; }
         public string MapName { get; internal set; }
 

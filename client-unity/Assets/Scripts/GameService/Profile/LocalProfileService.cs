@@ -37,6 +37,12 @@ namespace FishingIdle.GameService.Profile
 
         /// <summary>Removes a rod from the Inventory for nothing.</summary>
         ServiceResult<RodItemView> DestroyRod(long itemId);
+
+        /// <summary>Renames the player (M18-T03). The name is trimmed and checked against player_identity.</summary>
+        ServiceResult<string> Rename(string name);
+
+        /// <summary>Picks an avatar from player_identity.avatars (M18-T03).</summary>
+        ServiceResult<string> SetAvatar(string avatarId);
     }
 
     public sealed class LocalCardumeService : ICardumeService
@@ -157,17 +163,51 @@ namespace FishingIdle.GameService.Profile
         private PlayerSave Save => _session.Save;
         private GameConfig Config => _session.Config;
 
+        public ServiceResult<string> Rename(string name)
+        {
+            var rules = Config.Progression.PlayerIdentity ?? new PlayerIdentityConfig();
+            var clean = System.Text.RegularExpressions.Regex.Replace((name ?? string.Empty).Trim(), "\\s+", " ");
+            if (clean.Length < rules.NameMin || clean.Length > rules.NameMax || !clean.All(ch => char.IsLetterOrDigit(ch) || ch == ' ' || ch == '.' || ch == '-' || ch == '_'))
+            {
+                return ServiceResult<string>.Fail(ServiceError.InvalidName);
+            }
+
+            Save.PlayerName = clean;
+            _session.Persist();
+            _session.Log("Player renamed.");
+            return ServiceResult<string>.Ok(clean);
+        }
+
+        public ServiceResult<string> SetAvatar(string avatarId)
+        {
+            var avatars = Config.Progression.PlayerIdentity?.Avatars ?? new List<AvatarConfig>();
+            if (!avatars.Any(a => a.Id == avatarId))
+            {
+                return ServiceResult<string>.Fail(ServiceError.AvatarNotFound);
+            }
+
+            Save.AvatarId = avatarId;
+            _session.Persist();
+            return ServiceResult<string>.Ok(avatarId);
+        }
+
         public ProfileView GetProfile()
         {
             Config.TryGetMap(Save.CurrentMapId, out var map);
             var view = new ProfileView
             {
                 PlayerName = Save.PlayerName,
+                AvatarId = Save.AvatarId,
                 FisherLevel = Save.FisherLevel,
                 MapName = map?.DisplayName ?? Save.CurrentMapId,
                 CardumeStrength = _cardume.GetCardume().Strength,
                 Records = Records(),
             };
+
+            foreach (var avatar in Config.Progression.PlayerIdentity?.Avatars ?? new List<AvatarConfig>())
+            {
+                view.Avatars.Add(new AvatarView { Id = avatar.Id, Name = avatar.DisplayName, Selected = avatar.Id == Save.AvatarId });
+            }
 
             foreach (var item in Save.Inventory.Where(i => i.Kind == InventoryItem.KindRod).OrderBy(i => i.Id))
             {

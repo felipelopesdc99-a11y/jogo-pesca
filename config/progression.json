@@ -633,5 +633,36 @@
     "catch_success_min": 0.05,
     "catch_success_max": 0.95,
     "catch_success_note": "Chance de Sucesso da Captura = chance-base da raridade (rarity.tiers → catch_success_base) + vara + barco + isca, limitada entre catch_success_min e catch_success_max. Se o peixe escapa, nada entra na Caixa: sem XP, sem Conchas, sem descoberta, sem recorde."
+  },
+  "player_identity": {
+    "note": "Nome e avatar do jogador (M18-T03, aprovado pelo proprietário em 07/10/2026). O nome tem de name_min a name_max caracteres: letras, números, espaço, ponto, hífen e sublinhado. Os avatares são arquivos em Resources/Arte/Avatares/<id>.png; enquanto a arte não chega, o jogo mostra o retrato do pescador ou um selo com a inicial.",
+    "name_min": 3,
+    "name_max": 16,
+    "avatars": [
+      {
+        "id": "avatar_01",
+        "display_name": "Pescador do Lago"
+      },
+      {
+        "id": "avatar_02",
+        "display_name": "Pescadora do Rio"
+      },
+      {
+        "id": "avatar_03",
+        "display_name": "Velho Lobo do Mar"
+      },
+      {
+        "id": "avatar_04",
+        "display_name": "Jovem Aventureira"
+      },
+      {
+        "id": "avatar_05",
+        "display_name": "Pescador do Pantanal"
+      },
+      {
+        "id": "avatar_06",
+        "display_name": "Capitã do Abismo"
+      }
+    ]
   }
 }

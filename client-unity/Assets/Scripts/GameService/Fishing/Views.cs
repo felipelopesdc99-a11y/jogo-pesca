@@ -9,6 +9,9 @@ namespace FishingIdle.GameService.Fishing
     public sealed class PlayerView
     {
         public string PlayerName { get; internal set; }
+
+        /// <summary>The chosen avatar id, or null for the default portrait (M18-T03).</summary>
+        public string AvatarId { get; internal set; }
         public int FisherLevel { get; internal set; }
         public int FisherMaxLevel { get; internal set; }
         public long FisherXp { get; internal set; }

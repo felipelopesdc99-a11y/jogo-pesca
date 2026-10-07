@@ -29,6 +29,7 @@ namespace FishingIdle.GameService
             return new PlayerView
             {
                 PlayerName = save.PlayerName,
+                AvatarId = save.AvatarId,
                 FisherLevel = save.FisherLevel,
                 FisherMaxLevel = config.Progression.Fisher.MaxLevel,
                 FisherXp = save.FisherXp,
