@@ -1339,3 +1339,18 @@ de 9 partes mais baixa que as próprias bordas, e o Unity a desenhava com uma li
 retângulo arredondado de verdade: fundo na cor da raridade, contorno e texto um pouco maior. Lendário e Mítico
 ganham um brilho suave em volta. Gemas próprias de cada raridade foram pedidas para trocar a estrela.
 
+### A-114 · Expedições crescem com o mapa
+**Seção do GDD:** 26 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Decisão do proprietário (07/10/2026, OD-022): a Expedição acompanha o mapa. Na Força Recomendada, ela rende
+cerca de **metade** do que o mesmo tempo de pesca offline renderia no mapa de onde o Cardume saiu.
+
+- Os valores de `expeditions.json` passaram a ser os do Mapa 1 (Saída Rápida 300, Volta na Margem 650, Águas
+  Profundas 2.250, Viagem Longa 5.000 Moedas; antes 120, 260, 900 e 2.000).
+- Cada mapa tem um multiplicador em `maps.json` → `expedition_reward_multiplier`: Mapa 1 ×1, 2 ×8,5, 3 ×13,5,
+  4 ×29, 5 ×50, 6 ×113, 7 ×215, 8 ×485, 9 ×880, 10 ×2.000 (calculados pela venda esperada por tentativa).
+- Vale o mapa onde o jogador estava ao mandar o Cardume; trocar de mapa durante a Expedição não muda nada.
+- A chance de achar um peixe e a eficiência pela Força não mudaram.
+
+Na mesma decisão, o proprietário manteve as batalhas da Arena rápidas (~20 s, como estão).
+

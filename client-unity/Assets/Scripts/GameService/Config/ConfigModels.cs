@@ -65,6 +65,9 @@ namespace FishingIdle.GameService.Config
         public List<string> AvailableRarities { get; set; }
         public List<FishPoolEntryConfig> FishPool { get; set; }
         public MapThemeConfig VisualTheme { get; set; }
+
+        /// <summary>Expedition reward multiplier for a departure from this map (A-114); 0 or missing = 1.</summary>
+        public double ExpeditionRewardMultiplier { get; set; }
     }
 
     public sealed class MapThemeConfig

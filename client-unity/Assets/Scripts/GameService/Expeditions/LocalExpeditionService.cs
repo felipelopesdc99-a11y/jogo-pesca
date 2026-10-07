@@ -120,7 +120,7 @@ namespace FishingIdle.GameService.Expeditions
                     BaseRewardCoins = e.RewardCoins,
                     FishFindChance = ExpeditionRules.FishChance(e, efficiency),
                     Efficiency = efficiency,
-                    ExpectedCoins = ExpeditionRules.Coins(e, efficiency),
+                    ExpectedCoins = ExpeditionRules.Coins(e, efficiency, ExpeditionRules.MapMultiplier(Config, Save.CurrentMapId)),
                     StartBlocker = Blocker(cardume.Filled),
                 });
             }
@@ -175,7 +175,8 @@ namespace FishingIdle.GameService.Expeditions
                 // Everything is decided from the snapshot taken at departure and a seeded roll.
                 var rng = Rng.For(Save.RngSeed ^ 0x5EED_E4B3UL, state.RunIndex, 1);
                 result.Efficiency = ExpeditionRules.Efficiency(Config, state.Strength, e.RecommendedStrength);
-                result.Coins = ExpeditionRules.Coins(e, result.Efficiency);
+                // A-114: the reward grows with the map the Cardume left from (snapshot at departure).
+                result.Coins = ExpeditionRules.Coins(e, result.Efficiency, ExpeditionRules.MapMultiplier(Config, state.MapId));
                 Save.Coins += result.Coins;
 
                 if (rng.NextDouble() < ExpeditionRules.FishChance(e, result.Efficiency)
@@ -277,9 +278,15 @@ namespace FishingIdle.GameService.Expeditions
             return Math.Min(eff.AboveRecommended.Cap, eff.AtRecommendedMultiplier + eff.AboveRecommended.Slope * (ratio - 1));
         }
 
-        public static long Coins(ExpeditionConfig e, double efficiency)
+        public static long Coins(ExpeditionConfig e, double efficiency, double mapMultiplier = 1.0)
         {
-            return (long)Math.Round(e.RewardCoins * efficiency, MidpointRounding.AwayFromZero);
+            return (long)Math.Round(e.RewardCoins * efficiency * Math.Max(1.0, mapMultiplier), MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>The map's expedition reward multiplier (maps.json, A-114); 1 when the map is unknown or has none.</summary>
+        public static double MapMultiplier(GameConfig config, string mapId)
+        {
+            return mapId != null && config.TryGetMap(mapId, out var map) && map.ExpeditionRewardMultiplier > 0 ? map.ExpeditionRewardMultiplier : 1.0;
         }
 
         /// <summary>Fish-find chance: the configured chance, reduced when under-strength, never raised above it.</summary>

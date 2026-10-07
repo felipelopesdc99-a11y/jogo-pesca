@@ -206,7 +206,8 @@
       "title": "Metas do balanceamento",
       "detail": "Para balancear eu preciso das suas metas, não de testes: em quanto tempo o jogador chega ao Nível 10, 20 e 40; quanto uma Expedição deve render em relação a pescar; quanto tempo uma batalha deve durar (hoje 8 a 22 s; o GDD sugere uns 60 s); e quanto deve custar a vara de cada mapa.",
       "raised_at": "2026-10-05T21:22:41Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): Nv.100 em ~10 dias com o jogo aberto o dia todo (A-109); batalha da Arena fica rápida, ~20 s, como está; Expedição cresce com o mapa, ~metade da pesca offline (A-114). O preço das varas segue a simulação (a vara de cada mapa fica paga quando o nível libera o mapa)."
     },
     {
       "id": "OD-023",
@@ -3802,6 +3803,16 @@
             "M22-T21"
           ],
           "updated_at": "2026-10-07T17:45:00Z"
+        },
+        {
+          "id": "M22-T23",
+          "title": "Expedições crescem com o mapa",
+          "subsystem": "config",
+          "description": "Decisão do proprietário na OD-022: a Expedição rende ~metade da pesca offline do mesmo tempo no mapa de onde o Cardume saiu.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T17:55:00Z",
+          "completion_notes": "expeditions.json: valores do Mapa 1 ×2,5; maps.json: expedition_reward_multiplier por mapa (1 a 2.000); ExpeditionRules.Coins/MapMultiplier usam o mapa da partida; ExpeditionScalingTests. A-114. Não compilado nem aberto no Unity."
         }
       ]
     }

@@ -98,7 +98,8 @@
           "catch_weight": 20
         }
       ],
-      "fish_pool_weight_total": 1000
+      "fish_pool_weight_total": 1000,
+      "expedition_reward_multiplier": 1
     },
     {
       "id": "map_02",
@@ -158,7 +159,8 @@
           "catch_weight": 10
         }
       ],
-      "fish_pool_weight_total": 1000
+      "fish_pool_weight_total": 1000,
+      "expedition_reward_multiplier": 8.5
     },
     {
       "id": "map_03",
@@ -219,7 +221,8 @@
           "species_id": "barbado",
           "catch_weight": 3
         }
-      ]
+      ],
+      "expedition_reward_multiplier": 13.5
     },
     {
       "id": "map_04",
@@ -280,7 +283,8 @@
           "species_id": "mero",
           "catch_weight": 3
         }
-      ]
+      ],
+      "expedition_reward_multiplier": 29
     },
     {
       "id": "map_05",
@@ -341,7 +345,8 @@
           "species_id": "caranha",
           "catch_weight": 7
         }
-      ]
+      ],
+      "expedition_reward_multiplier": 50
     },
     {
       "id": "map_06",
@@ -403,7 +408,8 @@
           "species_id": "veleiro",
           "catch_weight": 5
         }
-      ]
+      ],
+      "expedition_reward_multiplier": 113
     },
     {
       "id": "map_07",
@@ -465,7 +471,8 @@
           "species_id": "marlim_azul",
           "catch_weight": 10
         }
-      ]
+      ],
+      "expedition_reward_multiplier": 215
     },
     {
       "id": "map_08",
@@ -527,7 +534,8 @@
           "species_id": "raia_manta",
           "catch_weight": 9
         }
-      ]
+      ],
+      "expedition_reward_multiplier": 485
     },
     {
       "id": "map_09",
@@ -589,7 +597,8 @@
           "species_id": "tubarao_seis_guelras",
           "catch_weight": 17
         }
-      ]
+      ],
+      "expedition_reward_multiplier": 880
     },
     {
       "id": "map_10",
@@ -652,7 +661,8 @@
           "species_id": "tubarao_boca_grande",
           "catch_weight": 2
         }
-      ]
+      ],
+      "expedition_reward_multiplier": 2000
     }
   ]
 }
