@@ -64,6 +64,43 @@ namespace FishingIdle.Game.Visual
             return tex == null ? null : Sprite(path, unitsTall * tex.width / tex.height, pivot);
         }
 
+        /// <summary>
+        /// Forgets every texture and sprite under <paramref name="prefix"/> (e.g. the previous map's
+        /// layers after a trip) and asks Unity to free what nothing uses any more (M22-T13). Anything
+        /// still needed is simply loaded again on its next use.
+        /// </summary>
+        public static void Release(string prefix)
+        {
+            var removed = false;
+            foreach (var key in new List<string>(Sprites.Keys))
+            {
+                if (key.StartsWith(prefix, System.StringComparison.Ordinal))
+                {
+                    if (Sprites[key] != null)
+                    {
+                        Object.Destroy(Sprites[key]);
+                    }
+
+                    Sprites.Remove(key);
+                    removed = true;
+                }
+            }
+
+            foreach (var key in new List<string>(Textures.Keys))
+            {
+                if (key.StartsWith(prefix, System.StringComparison.Ordinal))
+                {
+                    Textures.Remove(key);
+                    removed = true;
+                }
+            }
+
+            if (removed)
+            {
+                Resources.UnloadUnusedAssets();
+            }
+        }
+
         /// <summary>An interface icon (Resources/Arte/Icones/ico_&lt;name&gt;.png). Use the names in <see cref="Icons"/>.</summary>
         public static Texture2D Icon(string name) => Texture("Icones/ico_" + name);
     }

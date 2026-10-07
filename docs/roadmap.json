@@ -3749,10 +3749,11 @@
           "title": "Liberar a memória do mapa anterior",
           "subsystem": "client",
           "description": "Auditoria de tamanho: ArtAssets guarda todas as texturas para sempre; cada mapa visitado fica na memória. Descarregar as camadas do mapa anterior ao viajar. Aprovada pelo proprietário (07/10/2026).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-07T20:30:00Z",
-          "owner_approved": true
+          "updated_at": "2026-10-07T21:05:00Z",
+          "owner_approved": true,
+          "completion_notes": "ArtAssets.Release + Resources.UnloadUnusedAssets das camadas do mapa anterior um quadro depois da viagem (FishingScene.OnMapChanged). TD-035. Não compilado nem aberto no Unity."
         },
         {
           "id": "M22-T14",
@@ -3918,6 +3919,16 @@
           "dependencies": [],
           "updated_at": "2026-10-07T20:10:00Z",
           "completion_notes": "GameService/Dev/LocalDevToolsService (moedas, Conchas, Dólares, Honra, peixes por espécie e tamanho, nível, Energia, avançar tempo online/offline), OffsetClock e PlayerSave.DevTimeOffsetMs, AdminWindow (F2 / botão \"Testes\"), só no Editor ou build de desenvolvimento; DevToolsTests. A-123, TD-034. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T30",
+          "title": "Jogo menor: crunch na arte de cenário e filtro mais nítido",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026): diminuir o tamanho do jogo sem perder qualidade visual, sem mudar o jogo.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T21:05:00Z",
+          "completion_notes": "ArtImportSettings v3: crunch qualidade 90 em mapas (menos céus), Vivos, barcos e varas; filtro Kaiser nas cópias menores da arte desenhada pequena; texturas do build ~160 → ~75 MB pela conta. PNG já otimizados sem perda (otimizar_png.py: nada a ganhar). Sons já comprimidos na importação (AudioImportSettings). TD-035. Não aberto no Unity: a primeira importação vai demorar mais."
         }
       ]
     }

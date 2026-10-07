@@ -586,3 +586,17 @@ ao reabrir o jogo, o relógio pareça ter voltado (o que congelaria o tempo pelo
 **Rever se.** O jogo ganhar servidor: lá as ferramentas não existem (o servidor nunca liga a chave) e um
 painel de administração próprio, com registro, substitui este.
 
+## TD-035 — Arte compactada com crunch e mapa anterior liberado da memória
+
+**Decisão.** No build, as camadas dos mapas (menos os céus), a paisagem viva, os barcos e as varas usam a
+compressão com crunch (qualidade 90); céus e peixes continuam na compressão de alta qualidade. A arte desenhada
+bem menor que o arquivo (peixes, ícones, varas, barcos, iscas, Expedições) usa o filtro Kaiser nas cópias
+menores, que fica mais nítido. Ao viajar, as camadas do mapa anterior saem da memória (`ArtAssets.Release`).
+
+**Por quê.** A arte é quase todo o tamanho do jogo. Pela conta das texturas, o build cai de ~160 MB para ~75 MB
+sem mudar nenhum arquivo do proprietário (os PNG já estavam otimizados sem perda, TD-031). Os céus ficam fora
+porque degradês formam faixas com o crunch; os peixes, porque aparecem de perto nos cards.
+
+**Rever se.** Alguma camada aparecer com manchas no jogo: basta tirá-la de `ArtImportSettings.Crunched` ou subir a
+qualidade. A primeira importação depois desta mudança demora mais (o crunch é lento só nessa hora).
+

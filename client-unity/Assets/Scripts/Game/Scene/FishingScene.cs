@@ -440,6 +440,7 @@ namespace FishingIdle.Game.Scene
         /// <summary>Arriving on another map swaps the whole scenery; the boat glides in from the left.</summary>
         private void OnMapChanged(string mapId)
         {
+            var previous = _theme;
             _theme = SceneTheme.For(mapId);
             if (_world != null)
             {
@@ -449,6 +450,19 @@ namespace FishingIdle.Game.Scene
             Camera.backgroundColor = _theme.SkyTop;
             BuildWorld(_theme);
             _arrivedAt = Time.time;
+
+            // The previous map's painted layers leave memory once its scenery is gone (M22-T13).
+            if (previous != null && previous.ArtFolder != null && previous.ArtFolder != _theme.ArtFolder)
+            {
+                StartCoroutine(ReleaseLater("Mapas/" + previous.ArtFolder + "/"));
+            }
+        }
+
+        private static System.Collections.IEnumerator ReleaseLater(string prefix)
+        {
+            // Destroy() finishes at the end of the frame; release after it, when nothing points at the layers.
+            yield return null;
+            ArtAssets.Release(prefix);
         }
 
         private void BuildWorld(SceneTheme theme)

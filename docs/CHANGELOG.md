@@ -3,6 +3,18 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.21] — 07/10/2026
+
+### Mudado
+
+- Números grandes em formato curto ("12,4 mi"), com o valor completo ao passar o mouse (A-124).
+- Jogo menor: arte de cenário, paisagem viva, barcos e varas com crunch; peixes, ícones e varas mais nítidos
+  quando pequenos; o mapa anterior sai da memória ao viajar (TD-035). Texturas do build: ~160 → ~75 MB.
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.20] — 07/10/2026
 
 ### Adicionado

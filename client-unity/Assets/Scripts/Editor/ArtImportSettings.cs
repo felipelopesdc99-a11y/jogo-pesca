@@ -21,7 +21,7 @@ namespace FishingIdle.Editor
         private const string FontFolder = "Assets/Resources/Fontes/";
 
         // Raise this when the rules below change, so Unity re-imports the art with them.
-        public override uint GetVersion() => 2;
+        public override uint GetVersion() => 3;
 
         /// <summary>
         /// Largest side, in pixels, each picture is imported at: about what a 1440p screen shows of it
@@ -78,6 +78,51 @@ namespace FishingIdle.Editor
 
             var small = assetPath.StartsWith(ArtFolder + "Icones/", System.StringComparison.Ordinal);
             importer.textureCompression = small ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
+
+            // TD-035: the scenery, living animals, boats and rods ship crunched (much smaller on disk, almost
+            // the same on screen). Skies keep the high-quality format, where gradients would band, and so do
+            // the fish, seen up close in every card.
+            if (Crunched(assetPath))
+            {
+                importer.textureCompression = TextureImporterCompression.Compressed;
+                importer.crunchedCompression = true;
+                importer.compressionQuality = 90;
+            }
+            else
+            {
+                importer.crunchedCompression = false;
+            }
+
+            // Art drawn much smaller than its file (cards, icons, the Shop) stays sharper with the Kaiser
+            // filter for its smaller copies.
+            if (DrawnSmall(assetPath))
+            {
+                importer.mipmapFilter = TextureImporterMipFilter.KaiserFilter;
+            }
+        }
+
+        internal static bool Crunched(string path)
+        {
+            var file = System.IO.Path.GetFileNameWithoutExtension(path);
+            if (path.StartsWith(ArtFolder + "Mapas/", System.StringComparison.Ordinal))
+            {
+                return !file.EndsWith("_bg_sky", System.StringComparison.Ordinal);
+            }
+
+            return path.StartsWith(ArtFolder + "Vivos/", System.StringComparison.Ordinal)
+                || path.StartsWith(ArtFolder + "Barcos/", System.StringComparison.Ordinal)
+                || path.StartsWith(ArtFolder + "Varas/", System.StringComparison.Ordinal)
+                || path.StartsWith(ArtFolder + "Cena/barco", System.StringComparison.Ordinal);
+        }
+
+        internal static bool DrawnSmall(string path)
+        {
+            return path.StartsWith(ArtFolder + "Peixes/", System.StringComparison.Ordinal)
+                || path.StartsWith(ArtFolder + "Icones/", System.StringComparison.Ordinal)
+                || path.StartsWith(ArtFolder + "Varas/", System.StringComparison.Ordinal)
+                || path.StartsWith(ArtFolder + "Barcos/", System.StringComparison.Ordinal)
+                || path.StartsWith(ArtFolder + "Expedicoes/", System.StringComparison.Ordinal)
+                || path.StartsWith(ArtFolder + "Iscas/", System.StringComparison.Ordinal);
         }
 
         private void OnPreprocessAsset()
