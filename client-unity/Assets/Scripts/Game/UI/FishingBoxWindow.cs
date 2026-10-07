@@ -196,7 +196,6 @@ namespace FishingIdle.Game.UI
             var columns = Mathf.Max(1, Mathf.FloorToInt((area.width - 20 + Gap) / (CardWidth + Gap)));
             var rows = Mathf.CeilToInt(_visible.Count / (float)columns);
             var content = new Rect(0, 0, area.width - 20, rows * (CardHeight + Gap));
-            var used = columns * (CardWidth + Gap) - Gap;
             var offsetX = 0f;
 
             _scroll = GUI.BeginScrollView(area, _scroll, content);
