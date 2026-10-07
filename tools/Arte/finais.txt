@@ -384,6 +384,9 @@ Vivos/Animais/tuiuiu_voo_4.png
 Vivos/Animais/vulto_1.png
 Vivos/Animais/vulto_2.png
 Vivos/Animais/vulto_3.png
+Vivos/Animais/vulto_gigante_1.png
+Vivos/Animais/vulto_gigante_2.png
+Vivos/Animais/vulto_gigante_3.png
 Vivos/Plantas/aguape_01.png
 Vivos/Plantas/aguape_02.png
 Vivos/Plantas/aguape_03.png

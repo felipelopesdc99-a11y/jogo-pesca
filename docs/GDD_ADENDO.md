@@ -1269,5 +1269,5 @@ Corrente Azul (céu e a grade com o Marlim-azul). Com isso todos os 100 peixes e
 - **Ondas e cantos:** as ondas grandes das margens e as cristas dos cantos somem suavemente do lado de
   dentro, para não aparecer o corte reto da pintura.
 - **Paisagem viva:** no Talude Noturno, petréis voando rente ao mar e, de vez em quando, o vulto escuro de
-  um peixe grande passando sob a superfície. No Abismo Atlântico, um vulto gigante passa bem fundo, mais
-  devagar e mais apagado. Até chegar o desenho próprio dele (Abismo 12), é o mesmo vulto, maior.
+  um peixe grande passando sob a superfície. No Abismo Atlântico, o vulto de um tubarão gigante passa bem fundo,
+  mais devagar e mais apagado (Abismo 12, chegou em 07/10/2026).

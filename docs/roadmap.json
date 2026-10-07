@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-06T22:30:00Z",
+  "updated_at": "2026-10-07T15:10:00Z",
   "current_milestone": "M21",
   "statuses": [
     "TODO",
@@ -3559,11 +3559,12 @@
           "title": "Paisagem viva dos Mapas 5 a 10",
           "subsystem": "client",
           "description": "Perfis do diretor de paisagem para cada mapa novo: gaivotas, tartarugas, golfinhos, baleias, plâncton luminoso (seção 4). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 05/10/2026: Costa de Coral (gaivotas, trinta-réis, tartaruga-marinha, golfinho, coqueiros, restinga) e Arquipélago do Sol (atobás, fragata, golfinho, vegetação). Faltam os Mapas 7 a 10. Feito em 06/10/2026: Corrente Azul (peixe-voador, pardela, golfinho, fragata, sargaço boiando) e Banco das Baleias (baleia-jubarte respirando e saltando, trinta-réis, atobás). Mapas 9 e 10: brilho de plâncton no jogo; animais esperando a arte. Feito em 06/10/2026: Talude Noturno (petréis e vulto sob a superfície) e Abismo Atlântico (vulto gigante, provisoriamente o mesmo vulto maior). ASSET_PENDENTE: Abismo_12_vulto_gigante.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M21-T04"
           ],
-          "updated_at": "2026-10-06T22:30:00Z"
+          "updated_at": "2026-10-07T15:10:00Z",
+          "completion_notes": "Paisagem viva dos Mapas 5 a 10 com arte final: gaivotas, atobás, fragata, golfinho, tartaruga-marinha, coqueiros e restinga (5 e 6); peixe-voador, pardela, sargaço e baleia-jubarte (7 e 8); petréis, vulto sob a superfície e vulto gigante (9 e 10), mais brilho de plâncton feito no jogo. A-105, A-106, A-108."
         }
       ]
     },

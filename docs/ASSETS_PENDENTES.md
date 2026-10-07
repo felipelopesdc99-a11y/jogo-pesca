@@ -213,8 +213,7 @@ A arte de todos os mapas novos e das Varas 3 a 5 está no jogo (`tools/Arte/proc
 `tools/Arte/otimizar_png.py`). Os scripts limpam o mar pintado embaixo das faixas, separam os peixes que
 encostam um no outro e continuam os céus noturnos com cópias espelhadas.
 
-`ASSET_PENDENTE`: só o `Abismo_12_vulto_gigante` (vulto gigante do Abismo Atlântico), pedido de novo
-em 06/10/2026 no documento [Pedido de arte: o que faltou (Abismo 12)](https://claude.ai/code/artifact/83775701-39fa-4138-832c-976f525abda9). Até chegar, o jogo usa o vulto do Talude, maior.
+Nenhuma imagem pendente desses mapas: o `Abismo_12_vulto_gigante` chegou em 07/10/2026.
 
 ## Som ambiente dos mapas
 
