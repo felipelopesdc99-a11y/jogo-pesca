@@ -26,6 +26,18 @@ namespace FishingIdle.Game.UI
         private const float TabHeight = 44f;
         private const float MenuWidth = 196f;
 
+        /// <summary>The Box orders (A-119): the five the owner chose in the mock-up "Exemplo 2".</summary>
+        private enum SortOrder
+        {
+            Newest,
+            Valuable,
+            Largest,
+            Rarest,
+            Species,
+        }
+
+        private const float SortItemHeight = 52f;
+
         private enum Menu
         {
             None,
@@ -48,7 +60,7 @@ namespace FishingIdle.Game.UI
         private string _sizeFilter;
         private bool _review;
         private string _search = string.Empty;
-        private bool _byPrice;
+        private SortOrder _sort;
         private Vector2 _scroll;
         private bool _dirty = true;
         private SalePreview _pendingConfirmation;
@@ -70,7 +82,7 @@ namespace FishingIdle.Game.UI
             _sizeFilter = null;
             _review = false;
             _search = string.Empty;
-            _byPrice = false;
+            _sort = SortOrder.Newest;
             _menu = Menu.None;
         }
 
@@ -136,12 +148,13 @@ namespace FishingIdle.Game.UI
 
             var sizeMenu = new Rect(right - menusWidth, menusY, MenuWidth, 36f);
             var sortMenu = new Rect(right - MenuWidth, menusY, MenuWidth, 36f);
+            var sortListWidth = 300f;
             if (MenuButton(skin, sizeMenu, GameTexts.Box.SizeMenu(SizeName(_sizeFilter)), _menu == Menu.Size, _sizeFilter != null ? UiSkin.SizeColor(_sizeFilter) : (Color?)null))
             {
                 _menu = _menu == Menu.Size ? Menu.None : Menu.Size;
             }
 
-            if (MenuButton(skin, sortMenu, GameTexts.Box.SortMenu(_byPrice ? GameTexts.Box.SortPrice : GameTexts.Box.SortNewest), _menu == Menu.Sort, null))
+            if (MenuButton(skin, sortMenu, SortName(_sort), _menu == Menu.Sort, null, Icons.Sort))
             {
                 _menu = _menu == Menu.Sort ? Menu.None : Menu.Sort;
             }
@@ -149,7 +162,7 @@ namespace FishingIdle.Game.UI
             // The open menu sits over the grid: its clicks are handled before the grid so a card under it
             // is never picked by mistake, and it is drawn after the grid so it shows on top.
             var sizeRect = new Rect(sizeMenu.x, sizeMenu.yMax + 4f, MenuWidth, _sizeFilters.Count * 34f + 12f);
-            var sortRect = new Rect(sortMenu.x, sortMenu.yMax + 4f, MenuWidth, 2 * 34f + 12f);
+            var sortRect = new Rect(sortMenu.xMax - sortListWidth, sortMenu.yMax + 4f, sortListWidth, 5 * SortItemHeight + 12f);
             if (_menu == Menu.Size) DrawSizeMenu(skin, sizeRect, true);
             else if (_menu == Menu.Sort) DrawSortMenu(skin, sortRect, true);
 
@@ -475,7 +488,7 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>A small "Label: value ▾" button that opens a menu; tinted when a filter is on.</summary>
-        private static bool MenuButton(UiSkin skin, Rect rect, string text, bool open, Color? accent)
+        private static bool MenuButton(UiSkin skin, Rect rect, string text, bool open, Color? accent, string icon = null)
         {
             var clicked = GUI.Button(rect, GUIContent.none, open ? skin.ChipActive : skin.Chip);
             if (accent.HasValue && !open)
@@ -483,50 +496,113 @@ namespace FishingIdle.Game.UI
                 skin.DrawOutline(rect, new Color(accent.Value.r, accent.Value.g, accent.Value.b, 0.9f));
             }
 
-            GUI.Label(new Rect(rect.x + 12, rect.y + 8, rect.width - 40, 20), text, open ? skin.SmallBold : skin.Small);
+            var tx = rect.x + 12;
+            if (icon != null)
+            {
+                skin.DrawIcon(new Rect(tx, rect.y + 9, 18, 18), icon, open ? Color.white : UiSkin.Accent);
+                tx += 26;
+            }
+
+            GUI.Label(new Rect(tx, rect.y + 8, rect.xMax - 28 - tx, 20), text, open ? skin.SmallBold : skin.Small);
             GUI.Label(new Rect(rect.xMax - 26, rect.y + 7, 18, 20), "▾", skin.SmallBold);
             return clicked;
         }
 
         private void DrawSizeMenu(UiSkin skin, Rect rect, bool input)
         {
-            var items = new List<(string Label, Color Color, bool Active, System.Action Pick)>();
+            var items = new List<MenuEntry>();
             foreach (var f in _sizeFilters)
             {
                 var all = f.Key.Length == 0;
                 var key = f.Key;
-                items.Add((f.Value, all ? UiSkin.Accent : UiSkin.SizeColor(key), all ? _sizeFilter == null : _sizeFilter == key, () =>
+                items.Add(new MenuEntry(f.Value, null, null, all ? UiSkin.Accent : UiSkin.SizeColor(key), all ? _sizeFilter == null : _sizeFilter == key, () =>
                 {
                     _sizeFilter = all ? null : key;
                     FiltersChanged();
                 }));
             }
 
-            MenuList(skin, rect, items, input);
+            MenuList(skin, rect, items, input, 32f);
         }
 
         private void DrawSortMenu(UiSkin skin, Rect rect, bool input)
         {
-            var items = new List<(string Label, Color Color, bool Active, System.Action Pick)>();
-            foreach (var option in new[] { false, true })
+            var items = new List<MenuEntry>();
+            foreach (SortOrder order in System.Enum.GetValues(typeof(SortOrder)))
             {
-                var byPrice = option;
-                items.Add((option ? GameTexts.Box.SortPrice : GameTexts.Box.SortNewest, UiSkin.Accent, _byPrice == option, () =>
+                var picked = order;
+                items.Add(new MenuEntry(SortName(order), SortHint(order), SortIcon(order), UiSkin.Accent, _sort == order, () =>
                 {
-                    _byPrice = byPrice;
+                    _sort = picked;
                     ApplyFilter();
                     _scroll = Vector2.zero;
                 }));
             }
 
-            MenuList(skin, rect, items, input);
+            MenuList(skin, rect, items, input, SortItemHeight);
+        }
+
+        private static string SortName(SortOrder order)
+        {
+            switch (order)
+            {
+                case SortOrder.Valuable: return GameTexts.Box.SortValuable;
+                case SortOrder.Largest: return GameTexts.Box.SortLargest;
+                case SortOrder.Rarest: return GameTexts.Box.SortRarest;
+                case SortOrder.Species: return GameTexts.Box.SortSpecies;
+                default: return GameTexts.Box.SortNewest;
+            }
+        }
+
+        private static string SortHint(SortOrder order)
+        {
+            switch (order)
+            {
+                case SortOrder.Valuable: return GameTexts.Box.SortValuableHint;
+                case SortOrder.Largest: return GameTexts.Box.SortLargestHint;
+                case SortOrder.Rarest: return GameTexts.Box.SortRarestHint;
+                case SortOrder.Species: return GameTexts.Box.SortSpeciesHint;
+                default: return GameTexts.Box.SortNewestHint;
+            }
+        }
+
+        private static string SortIcon(SortOrder order)
+        {
+            switch (order)
+            {
+                case SortOrder.Valuable: return Icons.Coin;
+                case SortOrder.Largest: return Icons.Level;
+                case SortOrder.Rarest: return Icons.Star;
+                case SortOrder.Species: return Icons.Fish;
+                default: return Icons.Clock;
+            }
+        }
+
+        private sealed class MenuEntry
+        {
+            public MenuEntry(string label, string hint, string icon, Color color, bool active, System.Action pick)
+            {
+                Label = label;
+                Hint = hint;
+                Icon = icon;
+                Color = color;
+                Active = active;
+                Pick = pick;
+            }
+
+            public string Label { get; }
+            public string Hint { get; }
+            public string Icon { get; }
+            public Color Color { get; }
+            public bool Active { get; }
+            public System.Action Pick { get; }
         }
 
         /// <summary>
         /// A dropdown list. With <paramref name="input"/> it only handles the click (a pick, or a click
         /// outside that closes it); otherwise it only draws.
         /// </summary>
-        private void MenuList(UiSkin skin, Rect rect, List<(string Label, Color Color, bool Active, System.Action Pick)> items, bool input)
+        private void MenuList(UiSkin skin, Rect rect, List<MenuEntry> items, bool input, float itemHeight)
         {
             var e = Event.current;
             if (input)
@@ -545,7 +621,7 @@ namespace FishingIdle.Game.UI
 
                 for (var i = 0; i < items.Count; i++)
                 {
-                    if (new Rect(rect.x + 6, rect.y + 6 + i * 34f, rect.width - 12, 32).Contains(e.mousePosition))
+                    if (new Rect(rect.x + 6, rect.y + 6 + i * itemHeight, rect.width - 12, itemHeight - 2).Contains(e.mousePosition))
                     {
                         _menu = Menu.None;
                         items[i].Pick();
@@ -562,19 +638,37 @@ namespace FishingIdle.Game.UI
             for (var i = 0; i < items.Count; i++)
             {
                 var item = items[i];
-                var r = new Rect(rect.x + 6, rect.y + 6 + i * 34f, rect.width - 12, 32);
+                var r = new Rect(rect.x + 6, rect.y + 6 + i * itemHeight, rect.width - 12, itemHeight - 2);
                 var hovered = r.Contains(e.mousePosition);
                 if (item.Active || hovered)
                 {
                     GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(item.Color.r, item.Color.g, item.Color.b, item.Active ? 0.18f : 0.08f), 0, 8);
                 }
 
-                var dot = 8f;
-                GUI.DrawTexture(new Rect(r.x + 10, r.center.y - dot / 2f, dot, dot), skin.White, ScaleMode.StretchToFill, true, 0, item.Color, 0, dot / 2f);
-                GUI.Label(new Rect(r.x + 26, r.y + 6, r.width - 54, 20), item.Label, item.Active ? skin.SmallBold : skin.Small);
+                var tx = r.x + 26;
+                if (item.Icon != null)
+                {
+                    skin.DrawIcon(new Rect(r.x + 10, r.center.y - 10, 20, 20), item.Icon, item.Active ? item.Color : UiSkin.Text);
+                    tx = r.x + 40;
+                }
+                else
+                {
+                    var dot = 8f;
+                    GUI.DrawTexture(new Rect(r.x + 10, r.center.y - dot / 2f, dot, dot), skin.White, ScaleMode.StretchToFill, true, 0, item.Color, 0, dot / 2f);
+                }
+
+                if (item.Hint != null)
+                {
+                    GUI.Label(new Rect(tx, r.y + 6, r.xMax - 30 - tx, 20), item.Label, skin.BodyBold);
+                    GUI.Label(new Rect(tx, r.y + 27, r.xMax - 30 - tx, 18), item.Hint, skin.SmallMuted);
+                }
+                else
+                {
+                    GUI.Label(new Rect(tx, r.y + 6, r.xMax - 30 - tx, 20), item.Label, item.Active ? skin.SmallBold : skin.Small);
+                }
                 if (item.Active)
                 {
-                    skin.DrawIcon(new Rect(r.xMax - 26, r.y + 7, 18, 18), Icons.Check, item.Color);
+                    skin.DrawIcon(new Rect(r.xMax - 26, r.center.y - 9, 18, 18), Icons.Check, item.Color);
                 }
             }
         }
@@ -630,10 +724,26 @@ namespace FishingIdle.Game.UI
                 }
             }
 
-            if (_byPrice)
+            // The orders of A-119; ties always fall back to the newest first.
+            var config = _root.Game?.Session.Config;
+            switch (_sort)
             {
-                // Most valuable first: the same price the card shows; newest first among equal prices.
-                query = query.OrderByDescending(c => c.SalePriceCoins).ThenByDescending(c => c.CatchId);
+                case SortOrder.Valuable:
+                    query = query.OrderByDescending(c => c.SalePriceCoins).ThenByDescending(c => c.CatchId);
+                    break;
+                case SortOrder.Largest:
+                    // Large for its species, not in centimetres: a big Lambari beats a small Pirarucu.
+                    query = query.OrderByDescending(c => c.SizePercentile).ThenByDescending(c => c.SizeCm).ThenByDescending(c => c.CatchId);
+                    break;
+                case SortOrder.Rarest:
+                    query = query.OrderByDescending(c => config != null ? config.RarityRank(c.RarityId) : 0).ThenByDescending(c => c.SizePercentile).ThenByDescending(c => c.CatchId);
+                    break;
+                case SortOrder.Species:
+                    query = query.OrderBy(c => c.SpeciesName, System.StringComparer.Create(System.Globalization.CultureInfo.GetCultureInfo("pt-BR"), true)).ThenByDescending(c => c.SalePriceCoins);
+                    break;
+                default:
+                    query = query.OrderByDescending(c => c.CatchId);
+                    break;
             }
 
             // The scroll position is kept: new catches arriving must not throw the player back to the top.

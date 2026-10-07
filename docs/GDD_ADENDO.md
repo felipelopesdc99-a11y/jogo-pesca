@@ -1397,3 +1397,17 @@ bolsas de jogos de coleção (abas por categoria com contagem, filtros secundár
   Aquário à direita (antes os dois textos se sobrepunham).
 - A grade de peixes fica alinhada à esquerda com as abas.
 
+### A-119 · Ordens da Caixa de Pesca
+**Seção do GDD:** 11 · **Situação:** No jogo (não aberto no Unity ainda)
+
+O proprietário escolheu o "Exemplo 2" entre três montagens (07/10/2026): um botão com o ícone de ordenar e o
+nome da ordem ("Mais valiosos ▾") abre um menu com ícone e uma frase de explicação em cada opção:
+
+- **Mais recentes** (relógio): o último peixe pescado primeiro. É a ordem ao abrir a Caixa.
+- **Mais valiosos** (moeda): quem vale mais na venda primeiro.
+- **Maiores** (nível): pelo tamanho em relação à espécie (um Lambari grande vem antes de um Pirarucu pequeno).
+- **Mais raros** (estrela): Mítico → Comum, e dentro de cada raridade o maior primeiro.
+- **Por espécie** (peixe): mesmos peixes juntos, de A a Z; dentro da espécie, o mais valioso primeiro.
+
+Empates sempre caem no mais recente primeiro.
+

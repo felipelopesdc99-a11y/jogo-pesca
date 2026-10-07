@@ -102,6 +102,15 @@ namespace FishingIdle.Texts
             public const string SortLabel = "Ordenar:";
             public const string SortNewest = "Mais recentes";
             public const string SortPrice = "Mais caros";
+            public const string SortValuable = "Mais valiosos";
+            public const string SortLargest = "Maiores";
+            public const string SortRarest = "Mais raros";
+            public const string SortSpecies = "Por espécie";
+            public const string SortNewestHint = "O último peixe pescado primeiro";
+            public const string SortValuableHint = "Quem vale mais na venda primeiro";
+            public const string SortLargestHint = "Pelo tamanho em relação à espécie";
+            public const string SortRarestHint = "Mítico → Comum, e o maior de cada";
+            public const string SortSpeciesHint = "Mesmos peixes juntos, de A a Z";
             public static string SizeMenu(string size) => "Tamanho: " + size;
             public static string Showing(int count) => count == 1 ? "1 peixe neste filtro" : Format.Number(count) + " peixes neste filtro";
             public static string SortMenu(string order) => "Ordem: " + order;

@@ -3833,6 +3833,18 @@
           "dependencies": [],
           "updated_at": "2026-10-07T18:55:00Z",
           "completion_notes": "FishingBoxWindow: abas de raridade com contagem, menus de Tamanho e Ordem, barra de ocupação da Caixa no rodapé e vagas do Aquário à direita, grade alinhada às abas. A-118. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T25",
+          "title": "Caixa de Pesca: 5 ordens com menu explicado",
+          "subsystem": "client",
+          "description": "O proprietário pediu para melhorar a ordenação e escolheu o Exemplo 2 entre três montagens (07/10/2026).",
+          "status": "DONE",
+          "dependencies": [
+            "M22-T24"
+          ],
+          "updated_at": "2026-10-07T19:10:00Z",
+          "completion_notes": "FishingBoxWindow: SortOrder com Mais recentes, Mais valiosos, Maiores, Mais raros e Por espécie; botão com ícone e menu com ícone e explicação em cada opção. A-119. Não compilado nem aberto no Unity."
         }
       ]
     }
