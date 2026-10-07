@@ -46,8 +46,9 @@
       "title": "Testar o Aquário",
       "detail": "Junto com o teste de pesca: guarde alguns peixes pela Caixa de Pesca, abra o menu Aquário, clique num peixe para ver a ficha, alimente-o com outros peixes e veja o nível subir. Diga se os números (atributos, XP por nível) e a tela fazem sentido. Não precisa esperar: se não puder testar agora, eu sigo com o Milestone 3.",
       "raised_at": "2026-09-28T22:56:49Z",
-      "status": "OPEN",
-      "deferred_to_end": true
+      "status": "RESOLVED",
+      "deferred_to_end": true,
+      "resolution": "Proprietário (07/10/2026): Aquário testado no Unity e funcionando (guardar, ficha, alimentar, subir nível). XP de alimento por espécie, raridade, tamanho e XP investido fica como está."
     },
     {
       "id": "OD-005",
@@ -912,12 +913,13 @@
           "title": "Teste do Aquário pelo proprietário",
           "subsystem": "client",
           "description": "Guardar peixes, abrir a ficha, alimentar e vender dentro do Unity.",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M2-T06",
             "M2-T07"
           ],
-          "updated_at": "2026-09-28T22:56:49Z"
+          "updated_at": "2026-10-07T19:30:00Z",
+          "completion_notes": "Testado pelo proprietário no Unity (07/10/2026): Aquário funcionando; regras de XP de alimento mantidas."
         }
       ]
     },
