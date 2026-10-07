@@ -110,7 +110,11 @@ o proprietário — nunca inventar a mecânica.
 Desde 29/09/2026, tudo que o proprietário pedir entra na **V0.2** (milestones a partir do M13 no
 `docs/roadmap.json`). **Todos os testes pelo proprietário ficam para o final do jogo** (decisão dele em
 05/10/2026): as decisões marcadas com `deferred_to_end: true` no roadmap e as tarefas "Testar no Unity".
-Não pedir esses testes nem lembrá-lo deles antes disso; seguir o trabalho sem esperar por eles. As
+Não pedir esses testes nem lembrá-lo deles antes disso; seguir o trabalho sem esperar por eles.
+
+**Não pedir permissão para seguir** (pedido do proprietário em 07/10/2026): o que ele pediu ou aprovou é feito
+direto, na ordem que fizer sentido, sem perguntar "posso seguir?". Pergunta só quando a decisão é de design e é
+dele (o que o jogo faz, quanto custa, se algo entra ou não), e aí uma pergunta direta, com opções. As
 decisões de design abertas (por exemplo OD-009, Loja da Arena, e OD-021, Dólares) continuam valendo.
 
 **Propostas tiradas do GDD.** Em 05/10/2026 tudo que o GDD pede e o jogo ainda não tem entrou no roadmap
