@@ -1475,3 +1475,11 @@ da carteira do Perfil, no preço dos cards de peixe, nos preços da Loja e no to
 mouse sobre as moedas do topo ou da carteira aparece o valor completo. Onde o número exato importa (Mercado,
 lances, confirmações) continua completo.
 
+### A-125 · Raridade sempre com o nome, não só a cor
+**Seção do GDD:** 6 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Aprovado pelo proprietário (07/10/2026), para quem tem dificuldade de distinguir cores. Onde a raridade aparecia
+só como cor, agora o nome vai junto: no Cardume do Perfil (selo da raridade em cada posição), no Resumo (ao passar
+o mouse num peixe do Cardume: espécie, raridade e nível), nos destaques do Bem-vindo de volta ("Raro · 35,2 cm")
+e no aviso de fuga ("Um peixe Lendário escapou!"). Cards, abas e tabelas já tinham o nome.
+

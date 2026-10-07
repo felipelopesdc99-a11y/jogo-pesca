@@ -290,6 +290,8 @@ namespace FishingIdle.Game.UI
             y = SectionTitle(skin, x, y, w, Icons.Fish, GameTexts.Profile.TabCardume, _cardume != null ? GameTexts.Profile.StrengthShort(Format.Number(_cardume.Strength)) : null);
             if (_cardume != null)
             {
+                CardumeSlotView hovered = null;
+                var hoveredRect = default(Rect);
                 var n = Mathf.Max(1, _cardume.Slots.Count);
                 var sw = (w - (n - 1) * 6f) / n;
                 for (var i = 0; i < _cardume.Slots.Count; i++)
@@ -303,14 +305,32 @@ namespace FishingIdle.Game.UI
                     {
                         GUI.DrawTexture(new Rect(r.x + 4, r.y + 4, r.width - 8, 32), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
                         GUI.Label(new Rect(r.x, r.y + 34, r.width - 4, 18), GameTexts.Player.LevelShort + slot.Fish.Level, skin.SmallMutedRight);
+                        if (r.Contains(Event.current.mousePosition))
+                        {
+                            hovered = slot;
+                            hoveredRect = r;
+                        }
                     }
+                }
+
+                // Species, rarity and level of the fish under the mouse: the rarity in words, not only the border.
+                if (hovered != null)
+                {
+                    var tip = hovered.Fish.SpeciesName + " · " + hovered.Fish.RarityName + " · " + GameTexts.Player.LevelShort + " " + hovered.Fish.Level;
+                    var tw = skin.SmallBold.CalcSize(new GUIContent(tip)).x + 20f;
+                    var tr = new Rect(Mathf.Min(hoveredRect.x, x + w - tw), hoveredRect.yMax + 4, tw, 26);
+                    GUI.DrawTexture(tr, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.04f, 0.08f, 0.14f, 0.95f), 0, 8);
+                    GUI.Label(new Rect(tr.x + 10, tr.y + 4, tw - 12, 20), tip, skin.SmallBold);
                 }
 
                 y += 62;
                 var note = _cardume.CompleteBonusActive
                     ? GameTexts.Profile.CardumeFull(_cardume.Filled, _cardume.Size, Format.Percent(_cardume.CompleteBonusPercent / 100.0, 0))
                     : GameTexts.Profile.CardumeCount(_cardume.Filled, _cardume.Size);
-                GUI.Label(new Rect(x, y, w, 20), FishCard.Fit(note, skin.SmallMuted, w), skin.SmallMuted);
+                if (hovered == null)
+                {
+                    GUI.Label(new Rect(x, y, w, 20), FishCard.Fit(note, skin.SmallMuted, w), skin.SmallMuted);
+                }
             }
 
             // Middle: gear and space.
@@ -635,6 +655,12 @@ namespace FishingIdle.Game.UI
                     {
                         var accent = UiSkin.RarityColor(slot.Fish.RarityId);
                         skin.DrawOutline(rect, new Color(accent.r, accent.g, accent.b, 0.7f));
+                    }
+
+                    if (!string.IsNullOrEmpty(slot.Fish.RarityName))
+                    {
+                        var rarity = slot.Fish.RarityName.ToUpperInvariant();
+                        skin.RarityPill(new Rect(rect.x + 10, rect.y + 6, skin.PillWidth(rarity, false), 20), slot.Fish.RarityId, rarity, false);
                     }
 
                     GUI.DrawTexture(new Rect(rect.x + 12, rect.y + 30, rect.width - 24, 58), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);

@@ -76,6 +76,9 @@ namespace FishingIdle.Game.Scene
 
         /// <summary>Rarity of the last fish that broke free, and where (world position of the bobber then).</summary>
         public string LastEscapeRarityId { get; private set; }
+
+        /// <summary>The name of that rarity, so the message never relies on the colour alone (M22-T12).</summary>
+        public string LastEscapeRarityName { get; private set; }
         public Vector3 LastEscapePoint { get; private set; }
 
         /// <summary>What the fisherman is doing, in PT-BR, for the HUD.</summary>
@@ -295,6 +298,7 @@ namespace FishingIdle.Game.Scene
                 {
                     var notable = update.Escapes.OrderByDescending(e => Strength(e.RarityId)).First();
                     LastEscapeRarityId = notable.RarityId;
+                    LastEscapeRarityName = notable.RarityName;
                     _escapeStrength = Strength(notable.RarityId);
                     _escapeFrom = _phase == Phase.Idle ? WaterTarget : _bobber.localPosition;
                     Enter(Phase.Escaping);

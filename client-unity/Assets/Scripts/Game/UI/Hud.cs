@@ -834,7 +834,8 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.Label(new Rect(panel.x, panel.y + 6, panel.width, 26), GameTexts.Fishing.EscapeMessage, skin.CenterBold);
-            GUI.Label(new Rect(panel.x, panel.y + 34, panel.width, 22), GameTexts.Fishing.EscapeHint, skin.SmallMutedCenter);
+            GUI.Label(new Rect(panel.x, panel.y + 34, panel.width, 22),
+                rare && !string.IsNullOrEmpty(rig.LastEscapeRarityName) ? GameTexts.Fishing.EscapeRare(rig.LastEscapeRarityName) : GameTexts.Fishing.EscapeHint, skin.SmallMutedCenter);
             GUI.color = previous;
         }
 

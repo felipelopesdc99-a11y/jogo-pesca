@@ -68,6 +68,7 @@ namespace FishingIdle.Texts
             // Catch Success (docs/SISTEMA_SUCESSO_PESCA.md): the owner's approved failure message.
             public const string EscapeMessage = "Você ainda não é bom o suficiente.";
             public const string EscapeHint = "Melhore sua vara, barco ou isca para aumentar suas chances.";
+            public static string EscapeRare(string rarity) => "Um peixe " + rarity + " escapou! Melhore sua vara, barco ou isca para aumentar suas chances.";
 
             public static string NextCatchIn(string countdown) => "Próxima fisgada em " + countdown;
             public static string CycleInfo(string duration) => "1 tentativa a cada " + duration;

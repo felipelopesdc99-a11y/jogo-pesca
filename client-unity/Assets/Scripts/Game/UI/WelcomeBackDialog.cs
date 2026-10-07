@@ -100,7 +100,9 @@ namespace FishingIdle.Game.UI
                     skin.DrawGlow(new Rect(x + i * cw + cw * 0.2f, y + 14, cw * 0.5f, 28), accent, 0.3f);
                     GUI.DrawTexture(new Rect(x + i * cw, y, cw - 10, 56), Art.FishTexture(c.SpeciesId), ScaleMode.ScaleToFit, true);
                     GUI.Label(new Rect(x + i * cw, y + 58, cw - 10, 20), c.SpeciesName, skin.Small);
-                    GUI.Label(new Rect(x + i * cw, y + 76, cw - 10, 20), Format.SizeCm(c.SizeCm), skin.SmallMuted);
+                    // The rarity in words next to the size, not only as the glow colour (M22-T12).
+                    var line = string.IsNullOrEmpty(c.RarityName) ? Format.SizeCm(c.SizeCm) : c.RarityName + " · " + Format.SizeCm(c.SizeCm);
+                    GUI.Label(new Rect(x + i * cw, y + 76, cw - 10, 20), FishCard.Fit(line, skin.SmallMuted, cw - 10), skin.SmallMuted);
                 }
             }
 

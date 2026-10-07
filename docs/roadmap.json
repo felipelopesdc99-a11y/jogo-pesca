@@ -3739,10 +3739,11 @@
           "title": "Raridade não só pela cor",
           "subsystem": "client",
           "description": "Proposta da pesquisa (a analisar): com 5 raridades e 5 tamanhos são 10 cores; conferir que o nome da raridade aparece junto da cor em todo card e aviso (acessibilidade). Aprovada pelo proprietário (07/10/2026).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-07T20:30:00Z",
-          "owner_approved": true
+          "updated_at": "2026-10-07T21:30:00Z",
+          "owner_approved": true,
+          "completion_notes": "Nome da raridade junto da cor no Cardume, no Resumo (dica ao passar o mouse), no Bem-vindo de volta e no aviso de fuga. A-125. Não compilado nem aberto no Unity."
         },
         {
           "id": "M22-T13",
