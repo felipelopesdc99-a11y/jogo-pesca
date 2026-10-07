@@ -216,7 +216,8 @@
       "title": "Onde hospedar o servidor e quanto custa",
       "detail": "O jogo online precisa de um servidor e de um banco de dados ligados o tempo todo. Antes de começar eu trago 2 ou 3 opções com custo mensal, o que cada uma exige de você e se há alternativa gratuita para a fase de testes. A decisão é sua; nada pago é contratado sem o seu ok.",
       "raised_at": "2026-10-05T21:22:41Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): tratar depois que o jogo local estiver pronto. Na hora, trazer 2 ou 3 opções de hospedagem com custo mensal e uma gratuita para testes; nada pago sem o ok dele."
     },
     {
       "id": "OD-024",
@@ -242,7 +243,8 @@
       "title": "Quando entrar na Steam",
       "detail": "Publicar na Steam exige criar a conta de desenvolvedor e pagar a taxa de US$ 100 por jogo, além de montar a página. Quer preparar isso junto com o lançamento da V0.1 ou deixar para depois?",
       "raised_at": "2026-10-05T21:22:41Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): entrar na Steam junto do lançamento. Preparar a página e o passo a passo quando o jogo local estiver pronto; a taxa de US$ 100 é paga por ele só nessa hora."
     },
     {
       "id": "OD-027",
@@ -3228,12 +3230,12 @@
           "id": "M19-T05",
           "title": "Preparação para a Steam",
           "subsystem": "ops",
-          "description": "Página na Steam, build Steam e integração, vindo do mesmo código do download direto (§2, §6, §47). (Levantado do GDD em 05/10/2026.)",
-          "status": "NEEDS_OWNER_DECISION",
+          "description": "Página na Steam, build Steam e integração, vindo do mesmo código do download direto (§2, §6, §47). (Levantado do GDD em 05/10/2026.) Decidido (07/10/2026): junto do lançamento.",
+          "status": "TODO",
           "dependencies": [
             "M19-T01"
           ],
-          "updated_at": "2026-10-05T21:22:41Z",
+          "updated_at": "2026-10-07T18:40:00Z",
           "from_gdd_review": true
         },
         {
