@@ -3845,6 +3845,16 @@
           ],
           "updated_at": "2026-10-07T19:10:00Z",
           "completion_notes": "FishingBoxWindow: SortOrder com Mais recentes, Mais valiosos, Maiores, Mais raros e Por espécie; botão com ícone e menu com ícone e explicação em cada opção. A-119. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T26",
+          "title": "Cards sem textos sobrepostos",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026): revisar os cards para nenhum texto sobrepor outro e melhorar a disposição.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T19:25:00Z",
+          "completion_notes": "FishCard montado de baixo para cima com FishCard.Fit (\"…\"); selos do topo se ajustam à largura; Enciclopédia e cards da Arena sem nome sob o selo. A-120. Não compilado nem aberto no Unity."
         }
       ]
     }

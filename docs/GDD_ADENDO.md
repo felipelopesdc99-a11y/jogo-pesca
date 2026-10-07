@@ -1411,3 +1411,14 @@ nome da ordem ("Mais valiosos ▾") abre um menu com ícone e uma frase de expli
 
 Empates sempre caem no mais recente primeiro.
 
+### A-120 · Card de peixe sem textos sobrepostos
+**Seção do GDD:** 6, 44 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026): nenhum texto do card pode passar por cima de outro. O card agora é montado
+de baixo para cima (Moedas e rodapé, barra, linha do tamanho, nome) e o peixe fica com o espaço que sobra, em
+qualquer altura de card. Nome, linha do tamanho e rodapé que não cabem terminam em "…"; as Moedas nunca são
+cortadas e o rodapé fica com o que sobra ao lado delas. Se o selo de raridade e o selo "NOVA ESPÉCIE"/"RECORDE"
+não cabem juntos, o selo de raridade perde a estrela e, se ainda não couber, o outro selo desce para o canto do
+peixe. Na Enciclopédia o selo de raridade foi para a linha do mapa (não fica mais sob o nome) e, nos cards dos
+adversários da Arena, o nome do peixe para antes do selo.
+

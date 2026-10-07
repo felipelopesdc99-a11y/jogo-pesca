@@ -59,29 +59,61 @@ namespace FishingIdle.Game.UI
             var pad = 12f;
             var x = rect.x + pad;
             var w = rect.width - pad * 2;
-            var compact = rect.height < 170f;
 
-            // Seal of the rarity, top-left; a status badge or the selection check, top-right.
+            // Top row: the rarity seal on the left; a status badge or the selection check on the right.
+            // When both do not fit, the seal drops its star, and then the badge moves onto the art.
             var y = rect.y + 10f;
+            var badgeWidth = !m.Selected && !string.IsNullOrEmpty(m.Badge) ? skin.Badge.CalcSize(new GUIContent(m.Badge)).x + 4f : 0f;
+            var rightWidth = m.Selected ? 22f : badgeWidth;
+            var badgeOnArt = false;
             if (!string.IsNullOrEmpty(m.RarityName))
             {
                 var label = m.RarityName.ToUpperInvariant();
-                skin.RarityPill(new Rect(x, y, skin.PillWidth(label, true), 22), m.RarityId, label);
+                var withStar = skin.PillWidth(label, true);
+                var plain = skin.PillWidth(label, false);
+                var star = withStar + 6f + rightWidth <= w;
+                badgeOnArt = !star && plain + 6f + rightWidth > w;
+                skin.RarityPill(new Rect(x, y, star ? withStar : plain, 22), m.RarityId, label, star);
             }
 
             if (m.Selected)
             {
-                skin.DrawIcon(new Rect(rect.xMax - 32, y, 20, 20), Icons.Check, UiSkin.Accent);
+                skin.DrawIcon(new Rect(rect.xMax - 32, y + 1, 20, 20), Icons.Check, UiSkin.Accent);
             }
-            else if (!string.IsNullOrEmpty(m.Badge))
+            else if (badgeWidth > 0f && !badgeOnArt)
             {
-                var bw = skin.Badge.CalcSize(new GUIContent(m.Badge)).x + 4f;
-                skin.Tag(new Rect(rect.xMax - pad - bw, y + 1, bw, 18), m.Badge, m.BadgeColor);
+                skin.Tag(new Rect(rect.xMax - pad - badgeWidth, y + 2, badgeWidth, 18), m.Badge, m.BadgeColor);
             }
 
+            // Laid out from the bottom up, so the texts never run into each other whatever the card height:
+            // coins / footer row, then the bar, the size line and the name; the fish gets the space left.
+            var hasBottomRow = !string.IsNullOrEmpty(m.Coins) || !string.IsNullOrEmpty(m.Footer);
+            var cursor = rect.yMax - 8f;
+            var bottomRowY = cursor - 20f;
+            if (hasBottomRow)
+            {
+                cursor = bottomRowY - 4f;
+            }
+
+            var barY = cursor - 6f;
+            if (m.Bar >= 0f)
+            {
+                cursor = barY - 6f;
+            }
+
+            var hasLine = !string.IsNullOrEmpty(m.Line) || (exceptional && !string.IsNullOrEmpty(m.SizeCategoryName));
+            var lineY = cursor - 19f;
+            if (hasLine)
+            {
+                cursor = lineY - 1f;
+            }
+
+            var nameY = cursor - 21f;
+            cursor = nameY - 4f;
+
             // Fish art first, numbers second (GDD section 44).
-            var artHeight = compact ? rect.height * 0.34f : rect.height * 0.38f;
-            var art = new Rect(x + 4, y + 24, w - 8, artHeight);
+            var artTop = y + 26f;
+            var art = new Rect(x + 4, artTop, w - 8, Mathf.Max(20f, cursor - artTop));
             var bob = hovered ? Mathf.Sin(Time.unscaledTime * 3f) * 1.5f : 0f;
             if (exceptional && !m.Silhouette)
             {
@@ -92,46 +124,49 @@ namespace FishingIdle.Game.UI
             var tint = m.Silhouette ? new Color(0.02f, 0.05f, 0.09f, 0.85f) : Color.white;
             GUI.DrawTexture(new Rect(art.x, art.y + bob, art.width, art.height), tex, ScaleMode.ScaleToFit, true, 0, tint, 0, 0);
 
-            y = art.yMax + 6f;
-            GUI.Label(new Rect(x, y, w, 22), m.Name, skin.BodyBold);
-            y += 21f;
+            if (badgeOnArt)
+            {
+                skin.Tag(new Rect(rect.xMax - pad - badgeWidth, artTop, badgeWidth, 18), m.Badge, m.BadgeColor);
+            }
+
+            GUI.Label(new Rect(x, nameY, w, 22), Fit(m.Name, skin.BodyBold, w), skin.BodyBold);
+
             if (exceptional && !string.IsNullOrEmpty(m.SizeCategoryName))
             {
                 // The gold seal sits at the right end of the size line, never over the fish.
                 var seal = m.SizeCategoryName.ToUpperInvariant();
                 var sw = skin.Badge.CalcSize(new GUIContent(seal)).x + 10f;
-                ExceptionalSeal(skin, new Rect(x + w - sw, y + 1, sw, 18), seal, sizeColor);
+                ExceptionalSeal(skin, new Rect(x + w - sw, lineY + 1, sw, 18), seal, sizeColor);
                 var rest = WithoutSize(m.Line, m.SizeCategoryName);
                 if (!string.IsNullOrEmpty(rest))
                 {
-                    GUI.Label(new Rect(x, y, w - sw - 6f, 20), rest, skin.SmallMuted);
+                    GUI.Label(new Rect(x, lineY, w - sw - 6f, 20), Fit(rest, skin.SmallMuted, w - sw - 6f), skin.SmallMuted);
                 }
-
-                y += 20f;
             }
             else if (!string.IsNullOrEmpty(m.Line))
             {
-                DrawLine(skin, new Rect(x, y, w, 20), m);
-                y += 20f;
+                DrawLine(skin, new Rect(x, lineY, w, 20), m);
             }
 
-            var bottom = rect.yMax - 26f;
             if (m.Bar >= 0f)
             {
-                skin.Bar(new Rect(x, bottom - 12f, w, 6), m.Bar, accent);
+                skin.Bar(new Rect(x, barY, w, 6), m.Bar, accent);
+            }
+
+            // Bottom row: the coins keep their full width on the right; the footer gets what is left.
+            var coinsWidth = 0f;
+            if (!string.IsNullOrEmpty(m.Coins))
+            {
+                coinsWidth = skin.CoinAmountWidth(m.Coins, 20f);
+                skin.CoinAmount(new Rect(rect.xMax - pad - coinsWidth, bottomRowY - 1, coinsWidth, 20), m.Coins);
             }
 
             if (!string.IsNullOrEmpty(m.Footer))
             {
+                var fw = w - coinsWidth - (coinsWidth > 0f ? 8f : 0f);
                 GUI.contentColor = Color.Lerp(accent, Color.white, 0.35f);
-                GUI.Label(new Rect(x, bottom, w * 0.62f, 20), m.Footer, skin.SmallBold);
+                GUI.Label(new Rect(x, bottomRowY, fw, 20), Fit(m.Footer, skin.SmallBold, fw), skin.SmallBold);
                 GUI.contentColor = Color.white;
-            }
-
-            if (!string.IsNullOrEmpty(m.Coins))
-            {
-                var cw = skin.CoinAmountWidth(m.Coins, 20f);
-                skin.CoinAmount(new Rect(rect.xMax - pad - cw, bottom - 1, cw, 20), m.Coins);
             }
 
             return clicked;
@@ -140,13 +175,34 @@ namespace FishingIdle.Game.UI
         /// <summary>The line under the name, with the size category in its own colour (addendum A-079).</summary>
         private static void DrawLine(UiSkin skin, Rect rect, FishCardModel m)
         {
-            if (m.Silhouette)
+            // A line too long for the card is shortened with "…" (and then drawn in one colour).
+            if (m.Silhouette || skin.SmallMuted.CalcSize(new GUIContent(m.Line)).x > rect.width)
             {
-                GUI.Label(rect, m.Line, skin.SmallMuted);
+                GUI.Label(rect, Fit(m.Line, skin.SmallMuted, rect.width), skin.SmallMuted);
                 return;
             }
 
             skin.SizeLine(rect, m.Line, m.SizeCategoryName, m.SizeCategoryId, skin.SmallMuted);
+        }
+
+        /// <summary>The text as it fits in <paramref name="width"/>: shortened with "…" when it would overflow.</summary>
+        public static string Fit(string text, GUIStyle style, float width)
+        {
+            if (string.IsNullOrEmpty(text) || style.CalcSize(new GUIContent(text)).x <= width)
+            {
+                return text;
+            }
+
+            for (var n = text.Length - 1; n > 0; n--)
+            {
+                var shorter = text.Substring(0, n).TrimEnd() + "…";
+                if (style.CalcSize(new GUIContent(shorter)).x <= width)
+                {
+                    return shorter;
+                }
+            }
+
+            return "…";
         }
 
         /// <summary>The line without the size name, which the Excepcional seal already shows ("98,4 cm · Excepcional · Nv. 3" → "98,4 cm · Nv. 3").</summary>

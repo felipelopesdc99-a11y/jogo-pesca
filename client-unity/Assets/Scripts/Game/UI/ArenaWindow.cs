@@ -169,7 +169,9 @@ namespace FishingIdle.Game.UI
                 foreach (var f in o.Fish)
                 {
                     GUI.DrawTexture(new Rect(rect.x + 18, fy, 70, 34), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
-                    GUI.Label(new Rect(rect.x + 96, fy + 2, rect.width - 170, 20), f.Position + ". " + f.SpeciesName, skin.Small);
+                    var pillWidth = string.IsNullOrEmpty(f.RarityName) ? 0f : skin.PillWidth(f.RarityName.ToUpperInvariant(), false) + 8f;
+                    var nameWidth = rect.width - 96 - 18 - pillWidth;
+                    GUI.Label(new Rect(rect.x + 96, fy + 2, nameWidth, 20), FishCard.Fit(f.Position + ". " + f.SpeciesName, skin.Small, nameWidth), skin.Small);
                     GUI.Label(new Rect(rect.x + 96, fy + 18, rect.width - 170, 18), GameTexts.Player.LevelShort + " " + f.Level, skin.SmallMuted);
                     if (!string.IsNullOrEmpty(f.RarityName))
                     {
