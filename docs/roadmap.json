@@ -3077,11 +3077,12 @@
           "title": "Abrir o perfil do adversário na Arena",
           "subsystem": "client",
           "description": "Pelo card do adversário, abrir o perfil dele (§28). No jogo local, o perfil do adversário simulado; com o servidor, o de pessoas reais. (Levantado do GDD em 05/10/2026.) Aprovada pelo proprietário (07/10/2026).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-07T20:30:00Z",
+          "updated_at": "2026-10-07T22:15:00Z",
           "from_gdd_review": true,
-          "owner_approved": true
+          "owner_approved": true,
+          "completion_notes": "ArenaWindow: botão \"Ver perfil\" no card do adversário e diálogo com nome, posição e Cardume em formação (cards de peixe), sem a Força. A-128. Não compilado nem aberto no Unity."
         },
         {
           "id": "M18-T03",

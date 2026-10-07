@@ -31,6 +31,9 @@ namespace FishingIdle.Game.UI
         private Vector2 _scroll;
         private int _rankPage;
 
+        // The opponent whose profile is open (M18-T02), or null.
+        private OpponentView _viewing;
+
         // Replay state.
         private BattleReport _battle;
         private float _time;
@@ -56,6 +59,12 @@ namespace FishingIdle.Game.UI
 
         public void Close()
         {
+            if (_viewing != null)
+            {
+                _viewing = null;
+                return;
+            }
+
             if (_battle != null)
             {
                 // Leaving the replay jumps to the result; the battle is already decided.
@@ -91,6 +100,9 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
+            // While an opponent's profile is open, the window under it is shown but inert.
+            var wasEnabled = GUI.enabled;
+            GUI.enabled = wasEnabled && _viewing == null;
             var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Arena.Title, GameTexts.Arena.Note, out var closed, icon: Icons.Arena);
             if (closed)
             {
@@ -132,6 +144,12 @@ namespace FishingIdle.Game.UI
                 case Tab.Shop: DrawShop(skin, content); break;
                 default: DrawOpponents(skin, content); break;
             }
+
+            GUI.enabled = wasEnabled;
+            if (_viewing != null)
+            {
+                DrawOpponentProfile(skin, screenWidth, screenHeight);
+            }
         }
 
         private static void Stat(UiSkin skin, float x, float y, string icon, string label, string value)
@@ -161,7 +179,11 @@ namespace FishingIdle.Game.UI
                 var rect = new Rect(area.x + i * (cardW + 16f), top, cardW, bottom - top - 10);
                 GUI.Box(rect, GUIContent.none, skin.Card);
                 skin.IconBadge(new Rect(rect.x + 16, rect.y + 14, 50, 50), Icons.Profile, UiSkin.Accent);
-                GUI.Label(new Rect(rect.x + 78, rect.y + 14, rect.width - 96, 26), o.Name, skin.Heading);
+                GUI.Label(new Rect(rect.x + 78, rect.y + 14, rect.width - 96 - 110, 26), FishCard.Fit(o.Name, skin.Heading, rect.width - 96 - 110), skin.Heading);
+                if (GUI.Button(new Rect(rect.xMax - 120, rect.y + 16, 104, 30), GameTexts.Arena.ViewProfile, skin.Chip))
+                {
+                    _viewing = o;
+                }
                 GUI.Label(new Rect(rect.x + 78, rect.y + 42, rect.width - 96, 22), GameTexts.Arena.RankOf(o.Rank), skin.SmallGold);
 
                 // The Cardume in formation order, with level and rarity — never its Strength.
@@ -183,13 +205,14 @@ namespace FishingIdle.Game.UI
                     fy += 40;
                 }
 
-                GUI.enabled = _arena.AttackBlocker == ServiceError.None;
+                var enabledBefore = GUI.enabled;
+                GUI.enabled = enabledBefore && _arena.AttackBlocker == ServiceError.None;
                 if (skin.IconButton(new Rect(rect.x + 18, rect.yMax - 58, rect.width - 36, 42), Icons.Attack, GameTexts.Arena.Attack, skin.ButtonPrimary))
                 {
                     StartReplay(_root.Attack(i));
                 }
 
-                GUI.enabled = true;
+                GUI.enabled = enabledBefore;
             }
 
             if (_arena.RerollsLeft > 0)
@@ -349,6 +372,51 @@ namespace FishingIdle.Game.UI
                 {
                     GUI.Label(new Rect(x, nameY + 22, w, 20), GameTexts.Arena.PodiumLead(entry.LeadSpeciesName, entry.LeadLevel), skin.SmallMutedCenter);
                 }
+            }
+        }
+
+        // ------------------------------------------------------------------ opponent profile (M18-T02)
+
+        /// <summary>
+        /// The opponent's public profile: name, position and the Cardume in formation, each fish as a card.
+        /// Never its Strength nor a predicted result (GDD section 28).
+        /// </summary>
+        private void DrawOpponentProfile(UiSkin skin, float screenWidth, float screenHeight)
+        {
+            var o = _viewing;
+            var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, 560f, 820f);
+            skin.IconBadge(new Rect(rect.x + 28, rect.y + 24, 58, 58), Icons.Profile, UiSkin.Accent);
+            GUI.Label(new Rect(rect.x + 100, rect.y + 24, rect.width - 260, 32), FishCard.Fit(o.Name, skin.Title, rect.width - 260), skin.Title);
+            GUI.Label(new Rect(rect.x + 101, rect.y + 60, rect.width - 260, 22), GameTexts.Arena.Rank + ": " + GameTexts.Arena.RankOf(o.Rank), skin.SmallGold);
+            if (skin.IconButton(new Rect(rect.xMax - 156, rect.y + 24, 128, 42), Icons.Close, GameTexts.Box.Close, skin.Button))
+            {
+                _viewing = null;
+                return;
+            }
+
+            GUI.Label(new Rect(rect.x + 28, rect.y + 100, rect.width - 56, 24), GameTexts.Arena.Formation, skin.Heading);
+            var cardW = (rect.width - 56 - 2 * 12f) / 3f;
+            var cardH = 190f;
+            for (var i = 0; i < 6; i++)
+            {
+                var slot = new Rect(rect.x + 28 + (i % 3) * (cardW + 12f), rect.y + 134 + (i / 3) * (cardH + 12f), cardW, cardH);
+                var f = o.Fish.Find(x => x.Position == i + 1);
+                if (f == null)
+                {
+                    GUI.Box(slot, GUIContent.none, skin.Card);
+                    GUI.Label(new Rect(slot.x, slot.center.y - 10, slot.width, 20), GameTexts.Cardume.Empty, skin.SmallMutedCenter);
+                    continue;
+                }
+
+                FishCard.Draw(skin, slot, new FishCardModel
+                {
+                    SpeciesId = f.SpeciesId,
+                    Name = f.SpeciesName,
+                    Line = GameTexts.Player.LevelShort + " " + f.Level,
+                    RarityId = f.RarityId,
+                    RarityName = f.RarityName,
+                    Footer = GameTexts.Arena.PositionOf(f.Position),
+                });
             }
         }
 

@@ -246,6 +246,9 @@ namespace FishingIdle.Texts
             public const string NoForceNote = "A Força dos adversários não é mostrada. Olhe o Cardume, os níveis e as raridades para decidir.";
             public const string EmptyHistory = "Nenhuma batalha ainda.";
             public const string ShopEmpty = "A Loja da Arena ainda não tem itens.";
+            public const string ViewProfile = "Ver perfil";
+            public const string Formation = "Cardume em formação";
+            public static string PositionOf(int position) => "Posição " + position + (position <= 3 ? " · frente" : " · trás");
             public const string ShopNote = "Troque a Honra ganha nas batalhas por Conchas e Dólares. Alguns itens têm limite por semana.";
             public static string ShopReward(string amount, bool dollars) => "+" + amount + (dollars ? " Dólares" : " Conchas");
             public static string ShopPrice(string honor) => honor + " de Honra";

@@ -1502,3 +1502,11 @@ nas preferências do jogo neste PC, não no save. "Limpar" apaga também os guar
 Também aprovado (técnico, invisível ao jogador): capturas raras ou de tamanho especial, batalhas e Expedições
 gravam a versão do balanceamento com que saíram (M18-T07).
 
+### A-128 · Ver o perfil do adversário na Arena
+**Seção do GDD:** 28 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Aprovado pelo proprietário (07/10/2026). Cada card de adversário tem o botão "Ver perfil", que abre o perfil
+público dele: nome, posição e o Cardume em formação (frente e trás), cada peixe como um card com nível e
+raridade. Nunca mostra a Força nem prevê o resultado (GDD §28). No jogo local é o adversário simulado; com o
+servidor, a pessoa real.
+
