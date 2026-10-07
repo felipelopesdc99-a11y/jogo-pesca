@@ -440,6 +440,18 @@ namespace FishingIdle.GameService.Fishing
             });
         }
 
+        /// <summary>The owner's test tools (A-123): puts a catch in the Fishing Box without fishing or XP.</summary>
+        internal void GrantCatch(RolledCatch rolled, FishingUpdate update)
+        {
+            ApplyCatch(rolled, Now, update, grantXp: false);
+        }
+
+        /// <summary>The owner's test tools (A-123): the time that just passed counts as time the game was open.</summary>
+        internal void MarkSeenNow()
+        {
+            Save.Fishing.LastSeenAtMs = Math.Max(Save.Fishing.LastSeenAtMs, Now);
+        }
+
         private void ApplyCatch(RolledCatch rolled, long caughtAtMs, FishingUpdate update, bool grantXp = true, bool offline = false)
         {
             var speciesId = rolled.Species.Id;

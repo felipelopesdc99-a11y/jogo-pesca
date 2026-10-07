@@ -757,6 +757,60 @@ namespace FishingIdle.Game.Bootstrap
             });
         }
 
+        // ------------------------------------------------------------------ owner's test tools (A-123)
+
+        public bool DevToolsEnabled => IsRunning && Game.DevTools.Enabled;
+
+        public IReadOnlyList<FishingIdle.GameService.Dev.DevSpeciesView> DevSpecies() =>
+            IsRunning ? Game.DevTools.Species() : new List<FishingIdle.GameService.Dev.DevSpeciesView>();
+
+        public void DevGive(FishingIdle.GameService.Dev.DevCurrency currency, long amount, string label)
+        {
+            DevIntent(() => Game.DevTools.Give(currency, amount).Error, GameTexts.Dev.Gave("+" + Format.Number(amount) + " " + label));
+        }
+
+        public void DevGiveFish(string speciesId, string speciesName, string sizeCategoryId, int count)
+        {
+            DevIntent(() =>
+            {
+                var result = Game.DevTools.GiveFish(speciesId, sizeCategoryId, count);
+                return result.Succeeded && result.Value == 0 ? ServiceError.InvalidAmount : result.Error;
+            }, GameTexts.Dev.GaveFish(count, speciesName));
+        }
+
+        public void DevSetLevel(int level)
+        {
+            DevIntent(() => Game.DevTools.SetFisherLevel(level).Error, GameTexts.Dev.LevelSet(level));
+        }
+
+        public void DevFillEnergy()
+        {
+            DevIntent(() => Game.DevTools.FillArenaEnergy().Error, GameTexts.Dev.EnergyFilled);
+        }
+
+        public void DevAdvance(double hours, bool online)
+        {
+            DevIntent(() => Game.DevTools.AdvanceTime(hours, online).Error, GameTexts.Dev.Advanced(hours, online));
+        }
+
+        private void DevIntent(Func<ServiceError> call, string done)
+        {
+            Guard(() =>
+            {
+                var error = call();
+                if (error != ServiceError.None)
+                {
+                    Toasts.Push(GameTexts.ServiceErrorMessage(error.ToString()), ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(done, ToastKind.Info);
+                Refresh();
+                BoxChanged?.Invoke();
+                AquariumChanged?.Invoke();
+            });
+        }
+
         public void CancelExpedition()
         {
             Guard(() =>
@@ -991,6 +1045,9 @@ namespace FishingIdle.Game.Bootstrap
                 }
 
                 Game = result.Game;
+
+                // The owner's test tools (A-123): only in the Unity Editor or a development build.
+                Game.Session.DevToolsEnabled = Application.isEditor || Debug.isDebugBuild;
                 Debug.Log("[FishingIdle] Game service started. Config " + Game.Session.Config.Version +
                           ", save at " + Game.Session.SaveLocation);
                 AnnounceSaveStatus(Game.Session.LoadStatus);

@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.20] — 07/10/2026
+
+### Adicionado
+
+- Ferramentas de teste do proprietário (F2, só no Editor): dar recursos e peixes, mudar o nível, encher a
+  Energia e avançar o tempo com o jogo aberto ou fechado (A-123, TD-034).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.19] — 07/10/2026
 
 ### Adicionado

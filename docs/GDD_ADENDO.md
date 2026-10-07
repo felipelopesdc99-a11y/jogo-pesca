@@ -1448,3 +1448,21 @@ Expedição" fica na faixa da Expedição em andamento e pede confirmação ("O 
 Cancelada, a Expedição não paga Moedas nem acha peixe, e o Cardume fica livre na hora (formação, alimentar,
 Arena). Uma Expedição cujo tempo já acabou é paga normalmente, nunca cancelada.
 
+### A-123 · Ferramentas de teste do proprietário
+**Seção do GDD:** 5 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026): comandos de administrador para testar tudo sem esperar. Painel flutuante
+"Ferramentas de teste", que só existe no Editor do Unity ou num build de desenvolvimento (nunca no jogo
+publicado). Abre com **F2** ou pelo botão "Testes (F2)" no canto de baixo à esquerda; dá para arrastar.
+
+- **Moedas e recursos:** +Moedas, +Conchas, +Dólares e +Honra em três quantidades.
+- **Avançar o tempo:** com o jogo aberto (+1 h, +6 h: pesca online a cada 30 s) ou fechado (+1 h, +8 h, +24 h:
+  pesca offline e o Bem-vindo de volta). Expedições, Energia e todos os outros tempos andam junto. O tempo
+  adiantado fica guardado no save, para o jogo nunca ver o relógio voltar.
+- **Nível do Pescador:** −10, −1, +1, +10 e atalhos Nv 10, 30, 50, 70, 90 e 100.
+- **Arena:** encher a Energia.
+- **Dar peixes:** busca por nome, tamanho aleatório ou fixo (Pequeno … Perfeição) e +1, +5 ou +20 de qualquer
+  espécie, direto na Caixa (sem XP; respeita o limite de 1.500).
+
+Tudo passa pelo serviço de jogo (TD-034); a tela nunca mexe no save.
+

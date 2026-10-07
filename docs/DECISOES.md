@@ -571,3 +571,18 @@ resultado em segundos e é fácil de rodar de novo depois de mexer no balanceame
 
 **Rever se.** As fórmulas do `CatchRules` mudarem (o simulador em Python copia as fórmulas), ou entrarem
 fontes de XP do Pescador fora da pesca.
+
+## TD-034 — Ferramentas de teste dentro do serviço de jogo
+
+**Decisão.** As ferramentas de teste do proprietário (A-123) são um serviço do jogo (`GameService/Dev`,
+`IDevToolsService`) que recusa tudo enquanto `GameSession.DevToolsEnabled` estiver desligado. O cliente liga
+essa chave só quando `Application.isEditor || Debug.isDebugBuild`. Avançar o tempo soma um deslocamento
+(`PlayerSave.DevTimeOffsetMs`) ao relógio real, por baixo do `SteadyClock` (`OffsetClock`).
+
+**Por quê.** Assim a tela continua só pedindo e mostrando (regra 2 do projeto), os testes usam as mesmas regras
+do jogo de verdade, e o build publicado não tem como dar recursos. Guardar o deslocamento no save evita que,
+ao reabrir o jogo, o relógio pareça ter voltado (o que congelaria o tempo pelo TD-030).
+
+**Rever se.** O jogo ganhar servidor: lá as ferramentas não existem (o servidor nunca liga a chave) e um
+painel de administração próprio, com registro, substitui este.
+

@@ -3880,6 +3880,16 @@
           "dependencies": [],
           "updated_at": "2026-10-07T19:55:00Z",
           "completion_notes": "IExpeditionService.Cancel (não paga, libera o Cardume; tempo esgotado paga em vez de cancelar); botão e confirmação na janela da Expedição; ExpeditionCancelTests. A-122. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T29",
+          "title": "Ferramentas de teste (F2): recursos, peixes, nível e tempo",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026): comandos de administrador e um painel para se dar peixes, acelerar o tempo e testar tudo.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T20:10:00Z",
+          "completion_notes": "GameService/Dev/LocalDevToolsService (moedas, Conchas, Dólares, Honra, peixes por espécie e tamanho, nível, Energia, avançar tempo online/offline), OffsetClock e PlayerSave.DevTimeOffsetMs, AdminWindow (F2 / botão \"Testes\"), só no Editor ou build de desenvolvimento; DevToolsTests. A-123, TD-034. Não compilado nem aberto no Unity."
         }
       ]
     }

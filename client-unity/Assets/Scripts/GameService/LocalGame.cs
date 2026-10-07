@@ -4,6 +4,7 @@ using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Arena;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Dev;
 using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
@@ -48,6 +49,7 @@ namespace FishingIdle.GameService
             Ranking = new LocalRankingService(session);
             CurrencyTrade = new LocalCurrencyTradeService(session);
             Vip = new LocalVipService(session);
+            DevTools = new LocalDevToolsService(session, fishing);
         }
 
         public GameSession Session { get; }
@@ -67,6 +69,9 @@ namespace FishingIdle.GameService
         public IRankingService Ranking { get; }
         public ICurrencyTradeService CurrencyTrade { get; }
         public IVipService Vip { get; }
+
+        /// <summary>The owner's test tools (A-123); they refuse everything unless Session.DevToolsEnabled is on.</summary>
+        public IDevToolsService DevTools { get; }
 
         /// <summary>Starts the game service, or explains in PT-BR why it cannot.</summary>
         public static LocalGameStartResult Start(string configDirectory, string saveDirectory, IClock clock, Action<string> log)

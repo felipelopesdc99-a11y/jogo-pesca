@@ -611,6 +611,34 @@ namespace FishingIdle.Texts
             public const string CatchBonus = "Sucesso da captura";
         }
 
+        // ------------------------------------------------------------------ owner's test tools (A-123)
+
+        public static class Dev
+        {
+            public const string Title = "Ferramentas de teste";
+            public const string Subtitle = "Só no Editor do Unity · F2 abre e fecha";
+            public const string Button = "Testes (F2)";
+            public const string Currencies = "Moedas e recursos";
+            public const string Time = "Avançar o tempo";
+            public const string Open = "Com o jogo aberto";
+            public const string Closed = "Com o jogo fechado";
+            public const string TimeNote = "Aberto: pesca online (a cada 30 s). Fechado: pesca offline e o Bem-vindo de volta. Expedições, Energia e o resto andam junto.";
+            public const string Level = "Nível do Pescador";
+            public const string Fish = "Dar peixes (vão para a Caixa, sem XP)";
+            public const string Search = "Buscar espécie";
+            public const string RandomSize = "Aleatório";
+            public const string Arena = "Arena";
+            public const string FillEnergy = "Encher Energia";
+            public const string Close = "Fechar";
+            public static string Hours(double hours) => "+" + (hours == 1 ? "1 hora" : Format.Number((long)hours) + " horas");
+            public static string Give(int count) => "Dar " + count;
+            public static string Gave(string what) => "Teste: " + what + ".";
+            public static string GaveFish(int count, string species) => "Teste: " + count + " × " + species + " na Caixa de Pesca.";
+            public static string LevelSet(int level) => "Teste: Pescador no Nível " + level + ".";
+            public const string EnergyFilled = "Teste: Energia da Arena cheia.";
+            public static string Advanced(double hours, bool online) => "Teste: +" + (hours == 1 ? "1 hora" : Format.Number((long)hours) + " horas") + (online ? " com o jogo aberto." : " com o jogo fechado.");
+        }
+
         // ------------------------------------------------------------------ VIP (A-110)
 
         public static class Vip
@@ -887,6 +915,7 @@ namespace FishingIdle.Texts
                 case "ExpeditionNotFound": return "Essa Expedição não existe.";
                 case "ExpeditionActive": return "Seu Cardume já está numa Expedição.";
                 case "ExpeditionNotActive": return "Não há Expedição em andamento para cancelar.";
+                case "DevToolsDisabled": return "As ferramentas de teste só funcionam no Editor do Unity.";
                 case "CardumeEmpty": return "Coloque pelo menos um peixe no Cardume (Perfil → Cardume).";
                 case "CardumeLocked": return "Seu Cardume está numa Expedição. Espere ele voltar.";
                 case "NotEnoughEnergy": return "Sem Energia. Ela volta 1 ponto por hora.";

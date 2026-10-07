@@ -30,6 +30,7 @@ namespace FishingIdle.Game.UI
         private ProfileWindow _profile;
         private MapWindow _map;
         private ShopWindow _shop;
+        private AdminWindow _admin;
         private ExpeditionWindow _expedition;
         private readonly ArrivalTitle _arrival = new ArrivalTitle();
         private ArenaWindow _arena;
@@ -71,6 +72,7 @@ namespace FishingIdle.Game.UI
             _profile = new ProfileWindow(_root);
             _map = new MapWindow(_root);
             _shop = new ShopWindow(_root);
+            _admin = new AdminWindow(_root);
             _expedition = new ExpeditionWindow(_root);
             _arena = new ArenaWindow(_root);
             _market = new MarketWindow(_root);
@@ -246,6 +248,13 @@ namespace FishingIdle.Game.UI
                 Event.current.Use();
             }
 
+            // The owner's test tools (A-123): F2 opens and closes them, only in the Editor or a development build.
+            if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.F2 && _root.DevToolsEnabled)
+            {
+                _admin.Toggle();
+                Event.current.Use();
+            }
+
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
             {
                 if (_showNotifications || _showSettings)
@@ -356,6 +365,16 @@ namespace FishingIdle.Game.UI
             {
                 CloseAllWindows();
                 _box.Open();
+            }
+
+            if (_root.DevToolsEnabled)
+            {
+                if (!_admin.IsOpen && GUI.Button(new Rect(12, _height - 42, 130, 30), GameTexts.Dev.Button, skin.Chip))
+                {
+                    _admin.Toggle();
+                }
+
+                _admin.Draw(skin, _width, _height);
             }
         }
 

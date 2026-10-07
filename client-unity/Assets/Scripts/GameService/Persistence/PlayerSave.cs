@@ -25,6 +25,9 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>The latest time this save has been seen at (SteadyClock, TD-030). 0 in older saves.</summary>
         public long ClockHighWaterMs { get; set; }
 
+        /// <summary>Time added by the owner's test tools (A-123), in ms. 0 in normal play and older saves.</summary>
+        public long DevTimeOffsetMs { get; set; }
+
         /// <summary>Base seed for every roll this player gets. Never shown, never changed.</summary>
         public ulong RngSeed { get; set; }
 

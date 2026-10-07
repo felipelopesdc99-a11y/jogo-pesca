@@ -29,7 +29,7 @@ namespace FishingIdle.GameService
             }
 
             // Rules never see time going backwards (TD-030).
-            Clock = new SteadyClock(clock, () => Save?.ClockHighWaterMs ?? 0, ms =>
+            Clock = new SteadyClock(new OffsetClock(clock, () => Save?.DevTimeOffsetMs ?? 0), () => Save?.ClockHighWaterMs ?? 0, ms =>
             {
                 if (Save != null)
                 {
@@ -43,6 +43,12 @@ namespace FishingIdle.GameService
         public GameConfig Config { get; private set; }
 
         public IClock Clock { get; }
+
+        /// <summary>
+        /// The owner's test tools (A-123). Set by the game client only in the Unity Editor or a development
+        /// build; off in a release build and never on a server.
+        /// </summary>
+        public bool DevToolsEnabled { get; set; }
 
         internal PlayerSave Save { get; private set; }
 

@@ -60,6 +60,24 @@ namespace FishingIdle.GameService.Core
         }
     }
 
+    /// <summary>
+    /// The real clock plus an offset the owner's test tools add (A-123, "avançar tempo"). The offset
+    /// lives in the save, so the game never sees time go back when it is reopened.
+    /// </summary>
+    public sealed class OffsetClock : IClock
+    {
+        private readonly IClock _inner;
+        private readonly Func<long> _offset;
+
+        public OffsetClock(IClock inner, Func<long> offsetMs)
+        {
+            _inner = inner ?? throw new ArgumentNullException(nameof(inner));
+            _offset = offsetMs ?? (() => 0L);
+        }
+
+        public long UtcNowMs => _inner.UtcNowMs + Math.Max(0L, _offset());
+    }
+
     /// <summary>A clock tests and simulations move by hand.</summary>
     public sealed class ManualClock : IClock
     {
