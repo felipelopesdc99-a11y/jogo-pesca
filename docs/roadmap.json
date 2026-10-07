@@ -438,7 +438,8 @@
       "title": "Mercado simulado: generosidade e atalho de nível",
       "detail": "Os compradores simulados pagam por peixe até ~5,85× o preço do NPC (anunciar caro quase sempre vende em 7 dias), e os vendedores simulados oferecem varas e peixes de qualquer nível: um jogador Nv.1 pode comprar a Soberana Abissal por ~10,6 milhões e usar no Mapa 1, ou pôr um Mítico no Cardume. Opções: (A) limitar o que os bots pagam por peixe (ex.: até 2× o NPC); (B) só equipar vara do seu nível de Pescador; (C) os bots só oferecem varas e peixes dos mapas já liberados; (D) deixar como está. Recomendo B e C, e A um pouco mais apertado. O que prefere?",
       "raised_at": "2026-10-06T18:30:00Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): o Mercado de verdade vai ser só entre jogadores; os compradores e vendedores simulados existem só para testar o jogo local e não serão ajustados. Quando o jogo for online, os bots saem do Mercado."
     },
     {
       "id": "OD-049",
@@ -3637,9 +3638,10 @@
           "title": "Mercado simulado e atalho de nível",
           "subsystem": "config",
           "description": "Revisão de segurança: compradores simulados aceitam peixe a até ~5,85× o preço do NPC (98% de chance em 7 dias) e os vendedores simulados oferecem varas e peixes de qualquer nível, então um jogador Nv.1 pode comprar a Soberana Abissal e usar no Mapa 1.",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-06T18:30:00Z"
+          "updated_at": "2026-10-07T17:15:00Z",
+          "completion_notes": "Decisão do proprietário (OD-048): o Mercado será só entre jogadores; os bots são apenas a simulação do jogo local e ficam como estão. Nada mudou no jogo."
         },
         {
           "id": "M22-T07",
