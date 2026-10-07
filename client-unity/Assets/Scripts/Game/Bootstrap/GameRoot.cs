@@ -757,6 +757,22 @@ namespace FishingIdle.Game.Bootstrap
             });
         }
 
+        public void CancelExpedition()
+        {
+            Guard(() =>
+            {
+                var result = Game.Expeditions.Cancel();
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Expedition.Cancelled, ToastKind.Info);
+                AquariumChanged?.Invoke();
+            });
+        }
+
         public void AcknowledgeExpedition()
         {
             Guard(() =>

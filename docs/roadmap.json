@@ -3870,6 +3870,16 @@
           "dependencies": [],
           "updated_at": "2026-10-07T19:45:00Z",
           "completion_notes": "ProfileWindow: cabeçalho com carteira, nível e XP, VIP; aba Resumo com Arena, Cardume, equipamento, espaço, Expedição, coleção por raridade e destaques. RecordsView.ByRarity no serviço; ProfileSummaryTests. A-121. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T28",
+          "title": "Cancelar a Expedição sem recompensa",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026): liberar cancelar a Expedição, sem ganhar nada.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T19:55:00Z",
+          "completion_notes": "IExpeditionService.Cancel (não paga, libera o Cardume; tempo esgotado paga em vez de cancelar); botão e confirmação na janela da Expedição; ExpeditionCancelTests. A-122. Não compilado nem aberto no Unity."
         }
       ]
     }

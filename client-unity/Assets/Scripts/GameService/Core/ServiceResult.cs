@@ -34,6 +34,7 @@ namespace FishingIdle.GameService.Core
         RodNotSellable,
         ExpeditionNotFound,
         ExpeditionActive,
+        ExpeditionNotActive,
         CardumeEmpty,
         CardumeLocked,
         NotEnoughEnergy,

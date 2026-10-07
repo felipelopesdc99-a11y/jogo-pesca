@@ -1440,3 +1440,11 @@ como um inventário, diferente do perfil que os outros vão ver. Montagem aprova
     Moedas em vendas.
 - As outras abas (Equipamentos, Inventário, Cardume, Enciclopédia, Destaques) não mudaram.
 
+### A-122 · Cancelar a Expedição
+**Seção do GDD:** 32 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026): o jogador pode chamar o Cardume de volta antes da hora. O botão "Cancelar
+Expedição" fica na faixa da Expedição em andamento e pede confirmação ("O Cardume volta agora e não traz nada").
+Cancelada, a Expedição não paga Moedas nem acha peixe, e o Cardume fica livre na hora (formação, alimentar,
+Arena). Uma Expedição cujo tempo já acabou é paga normalmente, nunca cancelada.
+

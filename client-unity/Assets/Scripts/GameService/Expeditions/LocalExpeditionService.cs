@@ -80,6 +80,9 @@ namespace FishingIdle.GameService.Expeditions
 
         void AcknowledgeResult();
 
+        /// <summary>Calls the Cardume back early (owner's request, A-122): it returns now and brings nothing.</summary>
+        ServiceResult<ExpeditionsView> Cancel();
+
         /// <summary>Whether the Cardume is away, which locks conflicting owner actions.</summary>
         bool CardumeLocked { get; }
     }
@@ -158,6 +161,27 @@ namespace FishingIdle.GameService.Expeditions
             _session.Persist();
             _session.Log("Expedition " + e.Id + " started with strength " + cardume.Strength + ".");
             return ServiceResult<ActiveExpeditionView>.Ok(Active());
+        }
+
+        public ServiceResult<ExpeditionsView> Cancel()
+        {
+            var state = Save.Expedition;
+            if (state == null || !state.Active)
+            {
+                return ServiceResult<ExpeditionsView>.Fail(ServiceError.ExpeditionNotActive);
+            }
+
+            // An Expedition whose time is already up is paid, never cancelled.
+            if (_session.Clock.UtcNowMs >= state.EndsAtMs)
+            {
+                Update();
+                return ServiceResult<ExpeditionsView>.Fail(ServiceError.ExpeditionNotActive);
+            }
+
+            _session.Log("Expedition " + state.ExpeditionId + " cancelled; nothing paid.");
+            Save.Expedition = new ExpeditionState();
+            _session.Persist();
+            return ServiceResult<ExpeditionsView>.Ok(GetExpeditions());
         }
 
         public ExpeditionResultView Update()

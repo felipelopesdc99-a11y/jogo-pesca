@@ -18,6 +18,7 @@ namespace FishingIdle.Game.UI
         private readonly GameRoot _root;
         private ExpeditionsView _view;
         private float _nextRefresh;
+        private bool _confirmCancel;
 
         public ExpeditionWindow(GameRoot root)
         {
@@ -32,7 +33,16 @@ namespace FishingIdle.Game.UI
             _nextRefresh = 0f;
         }
 
-        public void Close() => IsOpen = false;
+        public void Close()
+        {
+            if (_confirmCancel)
+            {
+                _confirmCancel = false;
+                return;
+            }
+
+            IsOpen = false;
+        }
 
         public void Draw(UiSkin skin, float screenWidth, float screenHeight)
         {
@@ -55,7 +65,7 @@ namespace FishingIdle.Game.UI
             // With a report waiting, the menu underneath is shown but inert until it is read.
             var report = _root.ExpeditionResult;
             var wasEnabled = GUI.enabled;
-            GUI.enabled = wasEnabled && report == null;
+            GUI.enabled = wasEnabled && report == null && !_confirmCancel;
             var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Expedition.Title, GameTexts.Expedition.Note, out var closed, 1320f, 760f, Icons.Expedition);
             if (closed)
             {
@@ -74,7 +84,11 @@ namespace FishingIdle.Game.UI
             {
                 var box = new Rect(area.x, top, area.width, 110);
                 GUI.Box(box, GUIContent.none, skin.CardSelected);
-                GUI.Label(new Rect(box.x + 20, box.y + 14, box.width - 40, 26), GameTexts.Expedition.Away + ": " + active.Name, skin.Heading);
+                GUI.Label(new Rect(box.x + 20, box.y + 14, box.width - 260, 26), FishCard.Fit(GameTexts.Expedition.Away + ": " + active.Name, skin.Heading, box.width - 260), skin.Heading);
+                if (GUI.Button(new Rect(box.xMax - 220, box.y + 10, 200, 34), GameTexts.Expedition.Cancel, skin.ButtonDanger))
+                {
+                    _confirmCancel = true;
+                }
                 skin.Bar(new Rect(box.x + 20, box.y + 48, box.width - 40, 12), (float)active.Progress);
                 GUI.Label(new Rect(box.x + 20, box.y + 66, 300, 22), GameTexts.Expedition.ReturnsIn(Format.Countdown(active.SecondsLeft)), skin.Small);
                 GUI.Label(new Rect(box.x + 320, box.y + 66, box.width - 340, 40), GameTexts.Expedition.LockNote, skin.SmallMuted);
@@ -98,6 +112,29 @@ namespace FishingIdle.Game.UI
             if (report != null)
             {
                 DrawReport(skin, area, report);
+            }
+            else if (_confirmCancel)
+            {
+                if (_view.Active == null)
+                {
+                    _confirmCancel = false;
+                    return;
+                }
+
+                var dialog = WindowFrame.Dialog(skin, screenWidth, screenHeight, 220f);
+                GUI.Label(new Rect(dialog.x + 28, dialog.y + 24, dialog.width - 56, 30), GameTexts.Expedition.CancelTitle, skin.Heading);
+                GUI.Label(new Rect(dialog.x + 28, dialog.y + 64, dialog.width - 56, 70), GameTexts.Expedition.CancelBody, skin.Body);
+                if (GUI.Button(new Rect(dialog.x + 28, dialog.yMax - 64, 190, 42), GameTexts.Expedition.KeepGoing, skin.Button))
+                {
+                    _confirmCancel = false;
+                }
+
+                if (GUI.Button(new Rect(dialog.xMax - 238, dialog.yMax - 64, 210, 42), GameTexts.Expedition.Cancel, skin.ButtonDanger))
+                {
+                    _confirmCancel = false;
+                    _root.CancelExpedition();
+                    _nextRefresh = 0f;
+                }
             }
         }
 

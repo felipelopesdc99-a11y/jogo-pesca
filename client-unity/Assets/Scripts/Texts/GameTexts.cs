@@ -521,6 +521,12 @@ namespace FishingIdle.Texts
             public const string ReportNote = "Tudo já está com você: as moedas no saldo e o peixe na Caixa de Pesca.";
             public const string NoCardume = "Monte seu Cardume no Perfil para poder enviar Expedições.";
 
+            public const string Cancel = "Cancelar Expedição";
+            public const string CancelTitle = "Cancelar a Expedição?";
+            public const string CancelBody = "O Cardume volta agora e não traz nada: nem Moedas, nem peixe. Depois você pode enviá-lo de novo.";
+            public const string KeepGoing = "Deixar continuar";
+            public const string Cancelled = "Expedição cancelada. O Cardume voltou sem recompensa.";
+
             public static string Departed(string name) => "Cardume enviado: " + name + ".";
             public static string Duration(string duration) => "Duração: " + duration;
             public static string ReturnsIn(string countdown) => "Volta em " + countdown;
@@ -880,6 +886,7 @@ namespace FishingIdle.Texts
                 case "RodNotSellable": return "O Caniço Manso, a vara inicial, não pode ser vendido nem destruído.";
                 case "ExpeditionNotFound": return "Essa Expedição não existe.";
                 case "ExpeditionActive": return "Seu Cardume já está numa Expedição.";
+                case "ExpeditionNotActive": return "Não há Expedição em andamento para cancelar.";
                 case "CardumeEmpty": return "Coloque pelo menos um peixe no Cardume (Perfil → Cardume).";
                 case "CardumeLocked": return "Seu Cardume está numa Expedição. Espere ele voltar.";
                 case "NotEnoughEnergy": return "Sem Energia. Ela volta 1 ponto por hora.";

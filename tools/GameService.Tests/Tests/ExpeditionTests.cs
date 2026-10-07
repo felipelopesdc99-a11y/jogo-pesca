@@ -7,7 +7,7 @@ namespace FishingIdle.GameService.Tests;
 
 public sealed class ExpeditionTests
 {
-    private static (LocalGame Game, ManualClock Clock, string Dir) GameWithCardume(int fish)
+    internal static (LocalGame Game, ManualClock Clock, string Dir) GameWithCardume(int fish)
     {
         var (game, clock, dir) = TestSupport.NewGame();
         game.Fishing.StartFishing();
