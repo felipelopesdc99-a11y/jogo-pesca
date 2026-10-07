@@ -467,6 +467,14 @@
       "raised_at": "2026-10-06T18:30:00Z",
       "status": "RESOLVED",
       "resolution": "Proprietário (07/10/2026): deixar como está (opção C). Lendário e Mítico continuam difíceis de puxar."
+    },
+    {
+      "id": "OD-051",
+      "task_id": "M22-T15",
+      "title": "Bots da Arena para jogadores iniciantes",
+      "detail": "A Arena de verdade será só entre jogadores. Falta definir como os iniciantes terão adversários no começo (bots só nas posições baixas? só até certo nível? com peixes de quais mapas?). O proprietário vai pensar numa forma.",
+      "raised_at": "2026-10-07T20:30:00Z",
+      "status": "OPEN"
     }
   ],
   "milestones": [
@@ -3068,91 +3076,104 @@
           "id": "M18-T02",
           "title": "Abrir o perfil do adversário na Arena",
           "subsystem": "client",
-          "description": "Pelo card do adversário, abrir o perfil dele (§28). No jogo local, o perfil do adversário simulado; com o servidor, o de pessoas reais. (Levantado do GDD em 05/10/2026.)",
+          "description": "Pelo card do adversário, abrir o perfil dele (§28). No jogo local, o perfil do adversário simulado; com o servidor, o de pessoas reais. (Levantado do GDD em 05/10/2026.) Aprovada pelo proprietário (07/10/2026).",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T20:30:00Z",
+          "from_gdd_review": true,
+          "owner_approved": true
         },
         {
           "id": "M18-T03",
           "title": "Nome e avatar do jogador",
           "subsystem": "client",
-          "description": "Permitir escolher o nome e o avatar (§37). Hoje o nome é fixo, \"Pescador\", e o retrato é o mesmo para todos. (Levantado do GDD em 05/10/2026.)",
+          "description": "Permitir escolher o nome e o avatar (§37). Hoje o nome é fixo, \"Pescador\", e o retrato é o mesmo para todos. (Levantado do GDD em 05/10/2026.) Aprovada pelo proprietário (07/10/2026): nome e avatar (avatares pedem arte ao ChatGPT).",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T20:30:00Z",
+          "from_gdd_review": true,
+          "owner_approved": true
         },
         {
           "id": "M18-T04",
           "title": "Respingo e impacto no replay da Arena",
           "subsystem": "client",
           "description": "Efeito simples de água no ataque e de impacto no acerto (§27). Hoje o replay tem só o avanço do peixe, o dano e a barra de vida. (Levantado do GDD em 05/10/2026.)",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T20:30:00Z",
+          "from_gdd_review": true,
+          "completion_notes": "Descartada pelo proprietário (07/10/2026): replay da Arena fica como está.",
+          "dropped_by_owner": true
         },
         {
           "id": "M18-T05",
           "title": "Avisos guardados entre sessões",
           "subsystem": "client",
-          "description": "Guardar no save um conjunto limitado dos avisos mais recentes (§39). Hoje eles somem ao fechar o jogo. (Levantado do GDD em 05/10/2026.)",
+          "description": "Guardar no save um conjunto limitado dos avisos mais recentes (§39). Hoje eles somem ao fechar o jogo. (Levantado do GDD em 05/10/2026.) Aprovada pelo proprietário (07/10/2026) com ajuste: guardar só os avisos mais importantes entre sessões.",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T20:30:00Z",
+          "from_gdd_review": true,
+          "owner_approved": true
         },
         {
           "id": "M18-T06",
           "title": "Barco, isca e escapes no Perfil",
           "subsystem": "client",
           "description": "Mostrar barco e isca em Equipamentos e os peixes que escaparam nos Destaques (§20, §37, A-088 a A-090). Hoje o Perfil mostra só a vara. (Levantado do GDD em 05/10/2026.)",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T20:30:00Z",
+          "from_gdd_review": true,
+          "completion_notes": "Descartada pelo proprietário (07/10/2026): escapes no Perfil não entram; barco e isca já estão no Resumo (A-121).",
+          "dropped_by_owner": true
         },
         {
           "id": "M18-T07",
           "title": "Versão do balanceamento nos resultados",
           "subsystem": "server",
-          "description": "Gravar a versão do balanceamento junto de capturas importantes, batalhas e Expedições (§43), para saber com quais números cada resultado saiu. (Levantado do GDD em 05/10/2026.)",
+          "description": "Gravar a versão do balanceamento junto de capturas importantes, batalhas e Expedições (§43), para saber com quais números cada resultado saiu. (Levantado do GDD em 05/10/2026.) Aprovada pelo proprietário (07/10/2026).",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T20:30:00Z",
+          "from_gdd_review": true,
+          "owner_approved": true
         },
         {
           "id": "M18-T08",
           "title": "Painel: próximas 5 tarefas",
           "subsystem": "client",
           "description": "A visão geral do Painel de Desenvolvimento deve listar as próximas 5 tarefas, não só o próximo passo (§5). (Levantado do GDD em 05/10/2026.)",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T20:30:00Z",
+          "from_gdd_review": true,
+          "completion_notes": "Descartada pelo proprietário (07/10/2026).",
+          "dropped_by_owner": true
         },
         {
           "id": "M18-T09",
           "title": "Painel: navegador de conteúdo",
           "subsystem": "client",
-          "description": "Cards visuais de peixes, mapas, varas, barcos, iscas e Expedições no Painel de Desenvolvimento (§5). Hoje há só tabelas de números. (Levantado do GDD em 05/10/2026.)",
+          "description": "Cards visuais de peixes, mapas, varas, barcos, iscas e Expedições no Painel de Desenvolvimento (§5). Hoje há só tabelas de números. (Levantado do GDD em 05/10/2026.) Aprovada pelo proprietário (07/10/2026).",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T20:30:00Z",
+          "from_gdd_review": true,
+          "owner_approved": true
         },
         {
           "id": "M18-T10",
           "title": "Painel: página de Build e Versão",
           "subsystem": "client",
           "description": "Versões do jogo, servidor e web, data do build, ambiente, histórico de versões e o último build para Windows (§5). (Levantado do GDD em 05/10/2026.)",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T20:30:00Z",
+          "from_gdd_review": true,
+          "completion_notes": "Descartada pelo proprietário (07/10/2026).",
+          "dropped_by_owner": true
         },
         {
           "id": "M18-T11",
@@ -3686,63 +3707,69 @@
           "title": "Tela de retorno e HUD com o próximo objetivo",
           "subsystem": "client",
           "description": "Proposta da pesquisa (a analisar): mostrar ao voltar \"Vara 3 em ~2 h de pesca\" ou \"Nv.51 em 40 min\" e avisar quando a pesca bateu o limite de 24 h. Só apresenta dados que já existem.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-06T18:30:00Z"
+          "updated_at": "2026-10-07T20:30:00Z",
+          "completion_notes": "Descartada pelo proprietário (07/10/2026): sem \"próximo objetivo\" na tela.",
+          "dropped_by_owner": true
         },
         {
           "id": "M22-T10",
           "title": "Números grandes em formato curto",
           "subsystem": "client",
-          "description": "Proposta da pesquisa (a analisar): no fim do jogo a renda passa de 9 milhões de Moedas por hora; mostrar \"12,4 mi\" e \"3,2 bi\" com o valor completo na dica (Format.cs).",
+          "description": "Proposta da pesquisa (a analisar): no fim do jogo a renda passa de 9 milhões de Moedas por hora; mostrar \"12,4 mi\" e \"3,2 bi\" com o valor completo na dica (Format.cs). Aprovada pelo proprietário (07/10/2026).",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-06T18:30:00Z"
+          "updated_at": "2026-10-07T20:30:00Z",
+          "owner_approved": true
         },
         {
           "id": "M22-T11",
           "title": "Enciclopédia por mapa",
           "subsystem": "client",
-          "description": "Proposta da pesquisa (a analisar): progresso por mapa (\"7/10 espécies\"), mapa e raridade na silhueta da espécie não descoberta e chance aproximada depois de descoberta. Recompensa por coleção seria sistema novo.",
+          "description": "Proposta da pesquisa (a analisar): progresso por mapa (\"7/10 espécies\"), mapa e raridade na silhueta da espécie não descoberta e chance aproximada depois de descoberta. Recompensa por coleção seria sistema novo. Aprovada pelo proprietário (07/10/2026).",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-06T18:30:00Z"
+          "updated_at": "2026-10-07T20:30:00Z",
+          "owner_approved": true
         },
         {
           "id": "M22-T12",
           "title": "Raridade não só pela cor",
           "subsystem": "client",
-          "description": "Proposta da pesquisa (a analisar): com 5 raridades e 5 tamanhos são 10 cores; conferir que o nome da raridade aparece junto da cor em todo card e aviso (acessibilidade).",
+          "description": "Proposta da pesquisa (a analisar): com 5 raridades e 5 tamanhos são 10 cores; conferir que o nome da raridade aparece junto da cor em todo card e aviso (acessibilidade). Aprovada pelo proprietário (07/10/2026).",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-06T18:30:00Z"
+          "updated_at": "2026-10-07T20:30:00Z",
+          "owner_approved": true
         },
         {
           "id": "M22-T13",
           "title": "Liberar a memória do mapa anterior",
           "subsystem": "client",
-          "description": "Auditoria de tamanho: ArtAssets guarda todas as texturas para sempre; cada mapa visitado fica na memória. Descarregar as camadas do mapa anterior ao viajar.",
+          "description": "Auditoria de tamanho: ArtAssets guarda todas as texturas para sempre; cada mapa visitado fica na memória. Descarregar as camadas do mapa anterior ao viajar. Aprovada pelo proprietário (07/10/2026).",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-06T18:30:00Z"
+          "updated_at": "2026-10-07T20:30:00Z",
+          "owner_approved": true
         },
         {
           "id": "M22-T14",
           "title": "Interface para celular",
           "subsystem": "client",
-          "description": "Pesquisa sobre jogos idle: a interface é IMGUI (OnGUI), que a Unity não recomenda para jogos. Antes do celular, migrar para UI Toolkit ou uGUI, com botões do tamanho de um dedo.",
+          "description": "Pesquisa sobre jogos idle: a interface é IMGUI (OnGUI), que a Unity não recomenda para jogos. Antes do celular, migrar para UI Toolkit ou uGUI, com botões do tamanho de um dedo. Proprietário (07/10/2026): fica para mais pra frente.",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-06T18:30:00Z"
+          "updated_at": "2026-10-07T20:30:00Z"
         },
         {
           "id": "M22-T15",
           "title": "Arena e Expedições até o Nível 100",
           "subsystem": "config",
-          "description": "Revisão de segurança: os bots da Arena usam peixes dos Mapas 1 e 2 até o Nv.10 e as Expedições pagam no máximo 2.000 Moedas por 6 h; no fim do jogo os dois ficam irrelevantes. Liga com M11-T04.",
-          "status": "TODO",
+          "description": "Revisão de segurança: os bots da Arena usam peixes dos Mapas 1 e 2 até o Nv.10 e as Expedições pagam no máximo 2.000 Moedas por 6 h; no fim do jogo os dois ficam irrelevantes. Liga com M11-T04. Proprietário (07/10/2026): a Arena vai ter só jogadores; ele vai pensar numa forma de ter bots para os jogadores iniciantes terem quem enfrentar (OD-051). A parte das Expedições já foi feita (A-114).",
+          "status": "NEEDS_OWNER_DECISION",
           "dependencies": [],
-          "updated_at": "2026-10-06T18:30:00Z"
+          "updated_at": "2026-10-07T20:30:00Z"
         },
         {
           "id": "M22-T16",
