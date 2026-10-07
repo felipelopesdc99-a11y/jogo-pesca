@@ -507,6 +507,14 @@ namespace FishingIdle.GameService.Fishing
                 Save.FisherXp -= needed;
                 Save.FisherLevel++;
                 update.LevelsReached.Add(Save.FisherLevel);
+
+                // A-111: a few Dólares at every level milestone, so a VIP can be saved up by playing.
+                var reward = Config.Progression.Fisher.DollarsPerLevels;
+                if (reward != null && reward.EveryLevels > 0 && reward.Dollars > 0 && Save.FisherLevel % reward.EveryLevels == 0)
+                {
+                    Save.Dollars += reward.Dollars;
+                    update.DollarsGained += reward.Dollars;
+                }
             }
 
             if (Save.FisherLevel >= maxLevel)

@@ -137,6 +137,11 @@ namespace FishingIdle.Game.UI
                 _root.Toasts.Push(GameTexts.Toasts.Shells(Format.Number(update.ShellsGained)), ToastKind.Info);
             }
 
+            if (update.DollarsGained > 0)
+            {
+                _root.Toasts.Push(GameTexts.Toasts.Dollars(Format.Number(update.DollarsGained)), ToastKind.Important);
+            }
+
             // Escapes (docs/SISTEMA_SUCESSO_PESCA.md): a common one is told only near the bobber; a
             // rarer one also leaves a toast, so the player notices what was lost. No sound (addendum A-080).
             foreach (var escape in update.Escapes)

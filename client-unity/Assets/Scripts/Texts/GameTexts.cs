@@ -203,6 +203,7 @@ namespace FishingIdle.Texts
             public static string Xp(string xp) => "+" + xp + " XP de Pescador";
             public static string XpWithVip(string xp, string vipXp) => "+" + xp + " XP de Pescador (+" + vipXp + " do VIP)";
             public static string Levels(int level) => "Subiu para o Nível " + level + "!";
+            public static string LevelsWithDollars(int level, string dollars) => "Subiu para o Nível " + level + "! +" + dollars + " Dólares";
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
             public static string Escaped(int count) => count == 1 ? "1 peixe escapou" : Format.Number(count) + " peixes escaparam";
         }
@@ -722,6 +723,7 @@ namespace FishingIdle.Texts
             public static string Perfect(string species) => "Perfeição: " + species + "! O maior possível, com +5% em todos os atributos.";
             public static string LevelUp(int level) => "Você subiu para o Nível " + level + "!";
             public static string Shells(string amount) => "+" + amount + " Conchas";
+            public static string Dollars(string amount) => "+" + amount + " Dólares";
             public const string FishingStarted = "Pesca iniciada.";
             public const string FishingStopped = "Pesca parada.";
             public const string ConfigReloaded = "Balanceamento recarregado.";

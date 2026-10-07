@@ -117,6 +117,16 @@ namespace FishingIdle.GameService.Config
     {
         public int MaxLevel { get; set; }
         public List<XpLevelConfig> XpTable { get; set; }
+
+        /// <summary>Dólares earned by playing (A-111): a few at every level milestone. Null = none.</summary>
+        public DollarsPerLevelsConfig DollarsPerLevels { get; set; }
+    }
+
+    /// <summary>A-111: <see cref="Dollars"/> Dólares each time the Fisher reaches a multiple of <see cref="EveryLevels"/>.</summary>
+    public sealed class DollarsPerLevelsConfig
+    {
+        public int EveryLevels { get; set; }
+        public long Dollars { get; set; }
     }
 
     public sealed class XpLevelConfig

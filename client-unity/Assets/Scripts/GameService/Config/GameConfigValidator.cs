@@ -170,6 +170,12 @@ namespace FishingIdle.GameService.Config
                 {
                     errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fisher.xp_table xp_to_next_level", 1));
                 }
+
+                var dollars = fisher.DollarsPerLevels;
+                if (dollars != null && (dollars.EveryLevels < 1 || dollars.Dollars < 0))
+                {
+                    errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fisher.dollars_per_levels every_levels", 1));
+                }
             }
 
             var fishLevel = progression.FishLevel;

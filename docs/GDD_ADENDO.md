@@ -1307,7 +1307,14 @@ Pedido do proprietário (07/10/2026): um VIP que custa **100 Dólares do jogo** 
   de ~19 para ~15 dias; 1 vez por dia, de ~24 para ~18 dias. Quem deixa o jogo aberto o dia todo não muda
   (~10 dias), então o VIP nunca passa da meta de 10 dias.
 - **Ainda não existe:** comprar Dólares com dinheiro real. Isso precisa de uma loja de verdade (Steam,
-  Google Play) e entra quando o jogo for publicado (M22-T17). Até lá, não há como ganhar Dólares no jogo
-  local, então o VIP fica à venda mas ninguém consegue pagar. Ganhar Dólares jogando continua em aberto
-  (OD-021).
+  Google Play) e entra quando o jogo for publicado (M22-T17). Jogando, dá para juntar Dólares devagar (A-111).
+
+### A-111 · Dólares jogando: 10 a cada 10 níveis
+**Seção do GDD:** 15 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Decisão do proprietário (07/10/2026, OD-021): dá para ganhar Dólares jogando, "bem pouco, dá para juntar,
+mas vai demorar". Cada vez que o Pescador chega a um nível múltiplo de 10 (Nv.10, 20, … 100), ganha
+**10 Dólares**: 100 Dólares, o preço de um VIP, ao chegar ao Nv.100. Aviso na tela e linha no "Bem-vindo de
+volta". Valores em `config/progression.json` → `fisher.dollars_per_levels`. Saves que já passaram desses
+níveis não recebem os Dólares de trás.
 

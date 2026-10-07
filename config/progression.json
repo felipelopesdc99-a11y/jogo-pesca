@@ -20,6 +20,11 @@
     },
     "total_xp_level_1_to_10": 2000,
     "total_xp_level_1_to_100": 11530255,
+    "dollars_per_levels": {
+      "note": "A-111 (decisão do proprietário, 07/10/2026): dá para juntar Dólares jogando, bem devagar. A cada 10 níveis de Pescador o jogador ganha 10 Dólares: 100 Dólares (um VIP) ao chegar no Nv.100.",
+      "every_levels": 10,
+      "dollars": 10
+    },
     "xp_table": [
       {
         "level": 1,

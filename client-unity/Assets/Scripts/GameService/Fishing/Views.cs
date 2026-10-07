@@ -115,6 +115,9 @@ namespace FishingIdle.GameService.Fishing
         public long VipXpGained { get; internal set; }
         public long ShellsGained { get; internal set; }
 
+        /// <summary>Dólares earned on level milestones in this update (A-111).</summary>
+        public long DollarsGained { get; internal set; }
+
         /// <summary>Fish that bit and escaped (docs/SISTEMA_SUCESSO_PESCA.md): nothing of them was kept.</summary>
         public List<EscapeView> Escapes { get; } = new List<EscapeView>();
 

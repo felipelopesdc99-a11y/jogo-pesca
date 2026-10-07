@@ -76,7 +76,7 @@ namespace FishingIdle.Game.UI
 
                 if (update.LevelsReached.Count > 0)
                 {
-                    GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.Levels(update.LevelsReached.Max()), skin.SmallGold);
+                    GUI.Label(new Rect(x, y, w, 22), update.DollarsGained > 0 ? GameTexts.Offline.LevelsWithDollars(update.LevelsReached.Max(), Format.Number(update.DollarsGained)) : GameTexts.Offline.Levels(update.LevelsReached.Max()), skin.SmallGold);
                     y += 24;
                 }
             }

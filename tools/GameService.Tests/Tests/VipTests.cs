@@ -77,6 +77,27 @@ public sealed class VipTests
         Assert.Equal(0, update.VipXpGained);
     }
 
+    [Fact]
+    public void Every_10_fisher_levels_give_10_dollars()
+    {
+        var (game, clock, _) = TestSupport.NewGame();
+        var save = game.Session.Save;
+        save.FisherLevel = 9;
+        save.FisherXp = game.Session.Config.FisherXpToNextLevel(9) - 1;
+        game.Fishing.StartFishing();
+        clock.AdvanceSeconds(60);
+
+        var update = game.Fishing.Sync();
+        Assert.Contains(10, update.LevelsReached);
+        Assert.Equal(10, update.DollarsGained);
+        Assert.Equal(10, save.Dollars);
+
+        save.FisherLevel = 10;
+        save.FisherXp = 0;
+        clock.AdvanceSeconds(60);
+        Assert.Equal(0, game.Fishing.Sync().DollarsGained);
+    }
+
     private static FishingIdle.GameService.Fishing.OfflineReport Offline(double vipHours, double closedHours)
     {
         var saveDir = TestSupport.NewTempDirectory();

@@ -195,9 +195,10 @@
       "id": "OD-021",
       "task_id": "M17-T01",
       "title": "O que os Dólares fazem e como se ganham",
-      "detail": "A moeda Dólares existe (começa em zero) e aparece na tela, mas não se ganha nem se gasta. Falta decidir: como o jogador consegue Dólares, em que eles são gastos e se podem ser comprados com dinheiro real (isso mudaria o jogo e pede cuidado com regras de loja e de idade). A intenção registrada é negociar Conchas e Dólares entre jogadores. Decidido pelo proprietário em 07/10/2026: os Dólares compram o VIP (100 Dólares, 30 dias, +50% de XP na pesca offline, A-110) e podem ser comprados com dinheiro real (100 Dólares = R$ 4,99) quando houver loja (M22-T17). Falta decidir: se dá para ganhar Dólares jogando.",
+      "detail": "A moeda Dólares existe (começa em zero) e aparece na tela, mas não se ganha nem se gasta. Falta decidir: como o jogador consegue Dólares, em que eles são gastos e se podem ser comprados com dinheiro real (isso mudaria o jogo e pede cuidado com regras de loja e de idade). A intenção registrada é negociar Conchas e Dólares entre jogadores. Decidido pelo proprietário em 07/10/2026: os Dólares compram o VIP (100 Dólares, 30 dias, +50% de XP na pesca offline, A-110) e podem ser comprados com dinheiro real (100 Dólares = R$ 4,99) quando houver loja (M22-T17).",
       "raised_at": "2026-10-02T22:00:38Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): Dólares compram o VIP (A-110); compra com dinheiro real (100 = R$ 4,99) quando houver loja (M22-T17); jogando, dá para juntar bem devagar: 10 Dólares a cada 10 níveis de Pescador (A-111)."
     },
     {
       "id": "OD-022",
@@ -3743,6 +3744,18 @@
             "M22-T16"
           ],
           "updated_at": "2026-10-07T16:30:00Z"
+        },
+        {
+          "id": "M22-T18",
+          "title": "Ganhar Dólares jogando: 10 a cada 10 níveis",
+          "subsystem": "client",
+          "description": "Decisão do proprietário na OD-021: dá para juntar Dólares jogando, bem devagar.",
+          "status": "DONE",
+          "dependencies": [
+            "M22-T16"
+          ],
+          "updated_at": "2026-10-07T17:05:00Z",
+          "completion_notes": "progression.json → fisher.dollars_per_levels (a cada 10 níveis, 10 Dólares); concedido na subida de nível (LocalFishingService.AddFisherXp); FishingUpdate.DollarsGained; aviso na tela e no Bem-vindo de volta; teste em VipTests. A-111. Não compilado nem aberto no Unity."
         }
       ]
     }
