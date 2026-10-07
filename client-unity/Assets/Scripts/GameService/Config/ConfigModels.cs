@@ -431,6 +431,9 @@ namespace FishingIdle.GameService.Config
         public long AttackerVictoryGain { get; set; }
         public long SuccessfulDefenseGain { get; set; }
         public long DefeatLoss { get; set; }
+
+        /// <summary>Honor lost when another player attacks you and wins (OD-024).</summary>
+        public long DefenseDefeatLoss { get; set; }
         public long MinimumBalance { get; set; }
     }
 

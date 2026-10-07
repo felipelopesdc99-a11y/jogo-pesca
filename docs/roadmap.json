@@ -224,7 +224,8 @@
       "title": "Perder uma defesa na Arena tira Honra?",
       "detail": "O GDD diz que a derrota tira Honra, mas hoje, quando outro jogador ataca você e vence, você não perde nada (para não punir quem está offline). Mantenho assim ou passa a tirar Honra também na defesa? Se tirar, quanto?",
       "raised_at": "2026-10-05T21:22:41Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): perde pouco — 2 de Honra por defesa perdida (A-116)."
     },
     {
       "id": "OD-025",
@@ -3148,10 +3149,11 @@
           "title": "Honra ao perder uma defesa",
           "subsystem": "server",
           "description": "O §30 diz que a derrota tira Honra; hoje perder uma defesa não tira (A-043). Aplicar o que o proprietário decidir. (Levantado do GDD em 05/10/2026.)",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T18:15:00Z",
+          "from_gdd_review": true,
+          "completion_notes": "Decisão do proprietário (OD-024): defesa perdida tira 2 de Honra. arena.json → honor.defense_defeat_loss; LocalArenaService.Update aplica a perda; aviso mostra a Honra perdida; ArenaTests ajustado. A-116. Não compilado nem aberto no Unity."
         },
         {
           "id": "M18-T12",

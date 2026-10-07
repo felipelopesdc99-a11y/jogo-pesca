@@ -261,6 +261,7 @@ namespace FishingIdle.Texts
             public static string HonorChange(long change) => (change >= 0 ? "+" : "−") + Format.Number(System.Math.Abs(change)) + " de Honra";
             public static string DefenseWon(string attacker, string honor) => attacker + " atacou você e perdeu. +" + honor + " de Honra.";
             public static string DefenseLost(string attacker, int rank) => attacker + " venceu você na Arena. Sua posição agora é #" + rank + ".";
+            public static string DefenseLostHonor(string attacker, int rank, string honor) => attacker + " venceu você na Arena. Sua posição agora é #" + rank + ". −" + honor + " de Honra.";
             public static string Versus(string opponent) => "Você × " + opponent;
             public static string Clock(string time) => "Tempo: " + time;
         }

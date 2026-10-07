@@ -49,8 +49,10 @@
     "attacker_victory_gain": 12,
     "successful_defense_gain": 8,
     "defeat_loss": 4,
+    "defense_defeat_loss": 2,
     "minimum_balance": 0,
-    "cap_on_defense_gains": null
+    "cap_on_defense_gains": null,
+    "note": "defense_defeat_loss (OD-024, decisão do proprietário em 07/10/2026): quem perde uma defesa perde um pouco de Honra, metade do que perde atacando."
   },
   "combat": {
     "stats": [

@@ -161,7 +161,7 @@ namespace FishingIdle.Game.Bootstrap
                     {
                         Toasts.Push(defense.PlayerWon
                             ? GameTexts.Arena.DefenseWon(defense.OpponentName, Format.Number(defense.HonorChange))
-                            : GameTexts.Arena.DefenseLost(defense.OpponentName, defense.RankAfter), defense.PlayerWon ? ToastKind.Info : ToastKind.Warning, notify: true);
+                            : defense.HonorChange < 0 ? GameTexts.Arena.DefenseLostHonor(defense.OpponentName, defense.RankAfter, Format.Number(-defense.HonorChange)) : GameTexts.Arena.DefenseLost(defense.OpponentName, defense.RankAfter), defense.PlayerWon ? ToastKind.Info : ToastKind.Warning, notify: true);
                     }
 
                     RefreshTutorial();

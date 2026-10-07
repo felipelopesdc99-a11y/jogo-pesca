@@ -359,6 +359,11 @@ namespace FishingIdle.GameService.Arena
                 else
                 {
                     Swap(ArenaBots.PlayerId, attackerId);
+
+                    // OD-024: a lost defense costs a little Honor (never below the minimum balance).
+                    var loss = Math.Min(Config.Arena.Honor.DefenseDefeatLoss, Math.Max(0, State.Honor - Config.Arena.Honor.MinimumBalance));
+                    record.HonorChange = -loss;
+                    State.Honor -= loss;
                 }
 
                 record.RankAfter = PlayerRank();

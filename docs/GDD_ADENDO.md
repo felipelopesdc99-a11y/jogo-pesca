@@ -1364,3 +1364,10 @@ Decisão do proprietário (07/10/2026, OD-009): a Loja da Arena vende Conchas e 
   jeito lento de juntar o VIP).
 - Um jogador ativo ganha ~150–250 de Honra por dia. Itens, preços e limites em `config/arena.json` → `shop`.
 
+### A-116 · Defesa perdida tira um pouco de Honra
+**Seção do GDD:** 29 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Decisão do proprietário (07/10/2026, OD-024): quando outro jogador ataca e vence, você perde **2 de Honra**
+(metade dos 4 que perde atacando), nunca abaixo do saldo mínimo. Defesa vencida continua dando 8. O aviso
+de defesa perdida mostra a Honra perdida. Valor em `config/arena.json` → `honor.defense_defeat_loss`.
+

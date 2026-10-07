@@ -179,7 +179,9 @@ public sealed class ArenaTests
 
         Assert.NotEmpty(defenses);
         Assert.All(defenses, d => Assert.True(d.IsDefense));
-        Assert.Equal(defenses.Where(d => d.PlayerWon).Sum(d => d.HonorChange), after.Honor - before.Honor);
+        // OD-024: won defenses give Honor, lost ones take a little (never below the minimum).
+        Assert.Equal(defenses.Sum(d => d.HonorChange), after.Honor - before.Honor);
+        Assert.All(defenses.Where(d => !d.PlayerWon), d => Assert.InRange(d.HonorChange, -2, 0));
         Assert.Empty(game.Arena.Update()); // the same hours are never checked twice
     }
 
