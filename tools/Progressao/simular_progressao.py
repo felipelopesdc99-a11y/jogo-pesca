@@ -126,7 +126,7 @@ class Player:
         return self.boat['catch_success_bonus'] + (self.bait['catch_success_bonus'] if self.bait and self.bait_charges > 0 else 0.0)
 
     # ------------------------------------------------------------- fishing
-    def fish(self, attempts, t_days):
+    def fish(self, attempts, t_days, xp_mult=1.0):
         self.now = t_days
         while attempts > 0 and self.level < self.r.max_level:
             mp = self.map()
@@ -134,6 +134,7 @@ class Player:
             # bait runs out in the middle: split the batch there
             n = attempts if not (self.bait and self.bait_charges > 0) else min(attempts, self.bait_charges)
             xp, coins, shells, _ = self.r.per_attempt(mp, self.rod, lvl, self.gear())
+            xp *= xp_mult
             # level ups inside the batch: stop at the next level
             need = self.r.xp_to_next[self.level] - self.xp
             steps = n if xp <= 0 else min(n, max(1, int(-(-need // xp))))
@@ -259,7 +260,7 @@ def play(rules, profile, max_days=120):
             start = day * 1440 + start_h * 60
             if last_end is not None:
                 away = min(start - last_end, cap_min)
-                p.fish(int(away * offline_per_min), start / 1440)
+                p.fish(int(away * offline_per_min), start / 1440, getattr(rules, 'offline_xp_mult', 1.0))
             p.shop()
             for k in range(0, minutes, 10):
                 p.fish(int(min(10, minutes - k) * online_per_min), (start + k + 10) / 1440)
@@ -289,9 +290,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--escala-xp')
     ap.add_argument('--saida')
+    ap.add_argument('--vip', action='store_true', help='simula o VIP: XP offline multiplicado por 1 + economy.json vip.offline_fisher_xp_bonus (A-110)')
     a = ap.parse_args()
     scale = json.load(open(a.escala_xp)) if a.escala_xp else None
     rules = Rules(scale)
+    if a.vip:
+        econ = json.load(open(os.path.join(CONFIG, 'economy.json'), encoding='utf-8'))
+        rules.offline_xp_mult = 1.0 + econ['vip']['offline_fisher_xp_bonus']
     rows = []
     for name, (desc, _) in PROFILES.items():
         p = play(rules, name)

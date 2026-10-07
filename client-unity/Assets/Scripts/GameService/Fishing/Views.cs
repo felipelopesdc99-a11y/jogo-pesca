@@ -110,6 +110,9 @@ namespace FishingIdle.GameService.Fishing
         public List<CatchView> NewCatches { get; } = new List<CatchView>();
         public List<int> LevelsReached { get; } = new List<int>();
         public long XpGained { get; internal set; }
+
+        /// <summary>The part of <see cref="XpGained"/> that came from the VIP bonus (A-110).</summary>
+        public long VipXpGained { get; internal set; }
         public long ShellsGained { get; internal set; }
 
         /// <summary>Fish that bit and escaped (docs/SISTEMA_SUCESSO_PESCA.md): nothing of them was kept.</summary>

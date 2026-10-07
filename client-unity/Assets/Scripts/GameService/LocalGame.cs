@@ -13,6 +13,7 @@ using FishingIdle.GameService.Profile;
 using FishingIdle.GameService.Ranking;
 using FishingIdle.GameService.Shop;
 using FishingIdle.GameService.Tutorial;
+using FishingIdle.GameService.Vip;
 
 namespace FishingIdle.GameService
 {
@@ -46,6 +47,7 @@ namespace FishingIdle.GameService
             Tutorial = new LocalTutorialService(session);
             Ranking = new LocalRankingService(session);
             CurrencyTrade = new LocalCurrencyTradeService(session);
+            Vip = new LocalVipService(session);
         }
 
         public GameSession Session { get; }
@@ -64,6 +66,7 @@ namespace FishingIdle.GameService
         public ITutorialService Tutorial { get; }
         public IRankingService Ranking { get; }
         public ICurrencyTradeService CurrencyTrade { get; }
+        public IVipService Vip { get; }
 
         /// <summary>Starts the game service, or explains in PT-BR why it cannot.</summary>
         public static LocalGameStartResult Start(string configDirectory, string saveDirectory, IClock clock, Action<string> log)

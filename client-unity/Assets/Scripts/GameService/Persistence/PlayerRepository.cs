@@ -421,6 +421,7 @@ namespace FishingIdle.GameService.Persistence
             if (save.Coins < 0) problems.Add("coins negative");
             if (save.Shells < 0) problems.Add("shells negative");
             if (save.Dollars < 0) problems.Add("dollars negative");
+            if (save.VipUntilMs < 0) problems.Add("vip_until_ms negative");
             if (save.FisherLevel < 1) problems.Add("fisher_level below 1");
             if (save.FisherXp < 0 || save.FisherXpTotal < 0) problems.Add("fisher xp negative");
             if (string.IsNullOrWhiteSpace(save.CurrentMapId)) problems.Add("current_map_id missing");

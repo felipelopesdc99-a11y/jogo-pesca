@@ -34,6 +34,9 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>Dólares (V0.2): a third currency; how it is earned and spent is still the owner's decision.</summary>
         public long Dollars { get; set; }
 
+        /// <summary>When the VIP ends (A-110), in Unix ms; 0 or a past time means no VIP. 0 in older saves.</summary>
+        public long VipUntilMs { get; set; }
+
         public int FisherLevel { get; set; } = 1;
 
         /// <summary>XP accumulated inside the current level.</summary>

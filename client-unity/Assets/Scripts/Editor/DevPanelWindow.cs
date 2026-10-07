@@ -345,6 +345,7 @@ namespace FishingIdle.Editor
                     EditorGUILayout.LabelField(GameTexts.Player.Coins, Format.Number(save.Coins));
                     EditorGUILayout.LabelField(GameTexts.Player.Shells, Format.Number(save.Shells));
                     EditorGUILayout.LabelField(GameTexts.Player.Dollars, Format.Number(save.Dollars));
+                    EditorGUILayout.LabelField(GameTexts.Vip.Tab, save.VipUntilMs > 0 ? Format.DateTimeFromUnixMs(save.VipUntilMs) : GameTexts.Vip.Inactive);
                     EditorGUILayout.LabelField(GameTexts.Box.Title, GameTexts.Box.Count(save.FishingBox?.Count ?? 0));
                     EditorGUILayout.LabelField(GameTexts.Aquarium.Title, GameTexts.Box.Count(save.Aquarium?.Count ?? 0));
                     EditorGUILayout.LabelField(GameTexts.Player.TotalCatches, Format.Number(save.Stats?.TotalCatches ?? 0));

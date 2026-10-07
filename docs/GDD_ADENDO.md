@@ -1290,3 +1290,24 @@ ao Nv.100 em 3 a 6 dias. A tabela de XP do Pescador foi recalibrada:
   que um do mapa anterior). Isso fecha a OD-047 (opção A) e a OD-049.
 - O dinheiro acompanha: a vara de cada mapa fica paga antes ou logo depois de o nível liberar o mapa, mesmo
   vendendo só um quarto dos peixes.
+
+### A-110 · VIP: +50% de XP na pesca offline
+**Seção do GDD:** 10, 15 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026): um VIP que custa **100 Dólares do jogo** (100 Dólares = R$ 4,99) e dá
+**+50% de XP de Pescador na pesca offline**, para quem quiser pagar. Ele escolheu **30 dias** de duração.
+
+- Comprado na **Loja**, aba **VIP**. Comprar com o VIP ativo soma 30 dias ao fim do atual.
+- Vale só para as capturas **offline** (jogo fechado). A pesca com o jogo aberto, as chances, os tamanhos,
+  as vendas e as Conchas não mudam. Cada captura offline confere se o VIP valia na hora dela: se o VIP
+  acaba no meio da ausência, o bônus conta só até ali.
+- A tela de "Bem-vindo de volta" mostra quanto do XP veio do VIP.
+- Valores em `config/economy.json` → `vip`.
+- **Efeito simulado** (`docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md`): abrindo 4 vezes por dia, o Nv.100 passa
+  de ~19 para ~15 dias; 1 vez por dia, de ~24 para ~18 dias. Quem deixa o jogo aberto o dia todo não muda
+  (~10 dias), então o VIP nunca passa da meta de 10 dias.
+- **Ainda não existe:** comprar Dólares com dinheiro real. Isso precisa de uma loja de verdade (Steam,
+  Google Play) e entra quando o jogo for publicado (M22-T17). Até lá, não há como ganhar Dólares no jogo
+  local, então o VIP fica à venda mas ninguém consegue pagar. Ganhar Dólares jogando continua em aberto
+  (OD-021).
+

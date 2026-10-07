@@ -16,6 +16,7 @@ using FishingIdle.GameService.Profile;
 using FishingIdle.GameService.Ranking;
 using FishingIdle.GameService.Shop;
 using FishingIdle.GameService.Tutorial;
+using FishingIdle.GameService.Vip;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -773,6 +774,24 @@ namespace FishingIdle.Game.Bootstrap
             }, gear => GameTexts.Gear.BoughtBait(gear.Baits.Find(b => b.BaitId == baitId).Name, charges), ToastKind.Info);
         }
 
+        public VipView Vip { get; private set; }
+
+        public void BuyVip()
+        {
+            Guard(() =>
+            {
+                var result = Game.Vip.BuyVip();
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Vip.Bought(Format.DateTimeFromUnixMs(result.Value.UntilMs)), ToastKind.Important);
+                Refresh();
+            });
+        }
+
         public void UseBait(string baitId) => GearIntent(() => Game.Gear.UseBait(baitId), gear => gear.BaitName != null ? GameTexts.Gear.UsingBait(gear.BaitName) : GameTexts.Gear.BaitPutAway, ToastKind.Info);
 
         private void GearIntent(Func<ServiceResult<GearView>> call, Func<GearView, string> message, ToastKind kind)
@@ -1000,6 +1019,7 @@ namespace FishingIdle.Game.Bootstrap
             Status = Game.Fishing.GetStatus();
             Travel = Game.Maps.GetTravel();
             Gear = Game.Gear.GetGear();
+            Vip = Game.Vip.GetVip();
         }
 
         /// <summary>

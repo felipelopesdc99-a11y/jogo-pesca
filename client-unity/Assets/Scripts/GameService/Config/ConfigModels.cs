@@ -285,6 +285,19 @@ namespace FishingIdle.GameService.Config
         public MarketFixedPriceConfig MarketFixedPrice { get; set; }
         public CurrencyTradeConfig CurrencyTrade { get; set; }
         public AuctionConfig Auction { get; set; }
+
+        /// <summary>The VIP (A-110): bought with Dólares, boosts offline Fisher XP for a while.</summary>
+        public VipConfig Vip { get; set; }
+    }
+
+    /// <summary>The VIP (A-110).</summary>
+    public sealed class VipConfig
+    {
+        public long PriceDollars { get; set; }
+        public double DurationDays { get; set; }
+
+        /// <summary>Extra share of Fisher XP on offline catches while the VIP is active (0.5 = +50%).</summary>
+        public double OfflineFisherXpBonus { get; set; }
     }
 
     /// <summary>The Auction rules (GDD section 35).</summary>

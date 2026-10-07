@@ -201,6 +201,7 @@ namespace FishingIdle.Texts
             public static string CappedAt(string duration) => "Só as primeiras " + duration + " contam para a pesca offline.";
             public static string Caught(int count) => count == 1 ? "1 peixe pescado" : Format.Number(count) + " peixes pescados";
             public static string Xp(string xp) => "+" + xp + " XP de Pescador";
+            public static string XpWithVip(string xp, string vipXp) => "+" + xp + " XP de Pescador (+" + vipXp + " do VIP)";
             public static string Levels(int level) => "Subiu para o Nível " + level + "!";
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
             public static string Escaped(int count) => count == 1 ? "1 peixe escapou" : Format.Number(count) + " peixes escaparam";
@@ -571,6 +572,25 @@ namespace FishingIdle.Texts
             public const string CatchBonus = "Sucesso da captura";
         }
 
+        // ------------------------------------------------------------------ VIP (A-110)
+
+        public static class Vip
+        {
+            public const string Tab = "VIP";
+            public const string Title = "VIP do Pescador";
+            public const string Active = "VIP ativo";
+            public const string Inactive = "Sem VIP";
+            public const string Buy = "Comprar VIP";
+            public const string Extend = "Renovar VIP";
+            public const string Note = "Comprar com o VIP ativo soma os dias ao fim do atual. O VIP não muda a pesca com o jogo aberto, as chances nem as vendas.";
+            public static string Benefit(string percent) => "+" + percent + " de XP de Pescador na pesca offline";
+            public static string Duration(string days) => "Dura " + days + " dias";
+            public static string Price(string dollars) => dollars + " Dólares";
+            public static string YourDollars(string dollars) => "Você tem " + dollars + " Dólares";
+            public static string Until(string date, string remaining) => "Até " + date + " (faltam " + remaining + ")";
+            public static string Bought(string date) => "VIP ativo até " + date + "!";
+        }
+
         // ------------------------------------------------------------------ gear: boats, baits, Catch Success (docs/SISTEMA_SUCESSO_PESCA.md)
 
         public static class Gear
@@ -792,6 +812,7 @@ namespace FishingIdle.Texts
                 case "BaitNoCharges": return "Essa isca acabou. Compre mais na Loja.";
                 case "NotEnoughShells": return "Conchas insuficientes.";
                 case "NotEnoughDollars": return "Dólares insuficientes.";
+                case "VipUnavailable": return "O VIP não está disponível agora.";
                 case "InvalidAmount": return "Escolha uma quantidade de pelo menos 1.";
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";

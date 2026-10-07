@@ -19,6 +19,7 @@ namespace FishingIdle.Game.UI
             Rods,
             Boats,
             Baits,
+            Vip,
         }
 
         private const float SummaryWidth = 330f;
@@ -75,11 +76,11 @@ namespace FishingIdle.Game.UI
             DrawSummary(skin, new Rect(area.x, area.y, SummaryWidth, area.height), gear);
 
             var right = new Rect(area.x + SummaryWidth + 24, area.y, area.width - SummaryWidth - 24, area.height);
-            var tabs = new[] { (Tab.Rods, GameTexts.Gear.TabRods, Icons.Rod), (Tab.Boats, GameTexts.Gear.TabBoats, Icons.Boat), (Tab.Baits, GameTexts.Gear.TabBaits, Icons.Bait) };
+            var tabs = new[] { (Tab.Rods, GameTexts.Gear.TabRods, Icons.Rod), (Tab.Boats, GameTexts.Gear.TabBoats, Icons.Boat), (Tab.Baits, GameTexts.Gear.TabBaits, Icons.Bait), (Tab.Vip, GameTexts.Vip.Tab, Icons.Dollar) };
             var tx = right.x;
             foreach (var (tab, label, icon) in tabs)
             {
-                var r = new Rect(tx, right.y, 170, 36);
+                var r = new Rect(tx, right.y, 160, 36);
                 if (GUI.Button(r, GUIContent.none, _tab == tab ? skin.ChipActive : skin.Chip))
                 {
                     _tab = tab;
@@ -87,7 +88,7 @@ namespace FishingIdle.Game.UI
 
                 skin.DrawIcon(new Rect(r.x + 16, r.y + 8, 20, 20), icon, _tab == tab ? UiSkin.Accent : UiSkin.Muted);
                 GUI.Label(new Rect(r.x + 44, r.y + 6, r.width - 50, 24), label, skin.BodyBold);
-                tx += 182;
+                tx += 170;
             }
 
             var content = new Rect(right.x, right.y + 52, right.width, right.height - 52);
@@ -95,6 +96,7 @@ namespace FishingIdle.Game.UI
             {
                 case Tab.Boats: DrawBoats(skin, content, gear); break;
                 case Tab.Baits: DrawBaits(skin, content, gear); break;
+                case Tab.Vip: DrawVip(skin, content); break;
                 default: DrawRods(skin, content); break;
             }
         }
@@ -351,6 +353,48 @@ namespace FishingIdle.Game.UI
                 }
 
                 y += 130;
+            }
+        }
+
+        // ------------------------------------------------------------------ VIP (A-110)
+
+        private void DrawVip(UiSkin skin, Rect content)
+        {
+            var vip = _root.Vip;
+            if (vip == null)
+            {
+                return;
+            }
+
+            GUI.Label(new Rect(content.x, content.y, content.width, 40), GameTexts.Vip.Note, skin.SmallMuted);
+            var rect = new Rect(content.x, content.y + 50, content.width, 190);
+            GUI.Box(rect, GUIContent.none, vip.Active ? skin.CardSelected : skin.Card);
+            skin.IconBadge(new Rect(rect.x + 40, rect.y + 30, 56, 56), Icons.Dollar, vip.Active ? UiSkin.Gold : UiSkin.Muted);
+
+            var x = rect.x + 140;
+            var w = rect.width - 140 - 260;
+            GUI.Label(new Rect(x, rect.y + 18, w, 28), GameTexts.Vip.Title, skin.Heading);
+            GUI.Label(new Rect(x, rect.y + 50, w, 22), GameTexts.Vip.Benefit(Format.Percent(vip.OfflineFisherXpBonus, 0)), skin.BodyBold);
+            GUI.Label(new Rect(x, rect.y + 76, w, 22), GameTexts.Vip.Duration(Format.Number((long)System.Math.Round(vip.DurationDays))), skin.Small);
+            GUI.Label(new Rect(x, rect.y + 102, w, 22), GameTexts.Vip.Price(Format.Number(vip.PriceDollars)), skin.SmallGold);
+            GUI.Label(new Rect(x, rect.y + 128, w, 22), GameTexts.Vip.YourDollars(Format.Number(vip.Dollars)), skin.SmallMuted);
+            GUI.Label(new Rect(x, rect.y + 154, w, 22), vip.Active
+                ? GameTexts.Vip.Until(Format.DateTimeFromUnixMs(vip.UntilMs), Format.Duration(vip.RemainingMs / 1000.0))
+                : GameTexts.Vip.Inactive, vip.Active ? skin.SmallGold : skin.SmallMuted);
+
+            var button = new Rect(rect.xMax - 240, rect.y + 20, 220, 42);
+            if (vip.BuyBlocker != ServiceError.None)
+            {
+                Blocked(skin, new Rect(button.x - 20, button.y, button.width + 20, 42), vip.BuyBlocker);
+            }
+            else if (skin.IconButton(button, Icons.Buy, vip.Active ? GameTexts.Vip.Extend : GameTexts.Vip.Buy, skin.ButtonPrimary))
+            {
+                _root.BuyVip();
+            }
+
+            if (vip.Active)
+            {
+                OwnedPill(skin, button.x, button.y + 52, GameTexts.Vip.Active);
             }
         }
 

@@ -570,6 +570,21 @@ namespace FishingIdle.GameService.Config
                 errors.Add(V.NegativeValue(GameConfigLoader.EconomyFile, "currency_trade.completed_sale_fee_ratio"));
             }
 
+            // ---- economy.json → vip (A-110)
+            var vip = economy.Vip;
+            if (vip == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.EconomyFile, "vip"));
+            }
+            else if (vip.PriceDollars < 1 || vip.DurationDays <= 0)
+            {
+                errors.Add(V.AtLeast(GameConfigLoader.EconomyFile, "vip (preço em Dólares, dias)", 1));
+            }
+            else if (vip.OfflineFisherXpBonus < 0 || vip.OfflineFisherXpBonus > 10)
+            {
+                errors.Add(V.NegativeValue(GameConfigLoader.EconomyFile, "vip.offline_fisher_xp_bonus"));
+            }
+
             // ---- economy.json → market_fixed_price (Milestone 8)
             var market = economy.MarketFixedPrice;
             if (market == null)

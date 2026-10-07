@@ -8,7 +8,7 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | `maps.json` | Mapas, pools de peixes por mapa com pesos de captura, nível de desbloqueio, vara mínima, regras de viagem |
 | `progression.json` | Curva de XP do Pescador, curva de XP do peixe, distribuição de tamanho, regras de modificador de raridade/tamanho/nível, regras de alimentação, intervalos de pesca |
 | `rods.json` | Definições das varas, bônus por nível interno, custos de compra e de melhoria (Moedas e Conchas), regras de revenda |
-| `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário |
+| `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário, VIP (preço em Dólares, dias e bônus de XP offline) |
 | `arena.json` | Energia, seleção de oponentes, Honra, constantes de combate, formação, regras de Cardume, métrica de Força, Loja da Arena |
 | `expeditions.json` | Durações, Força Recomendada, curvas de eficiência, recompensas |
 | `arena_bots.json` | Só no jogo local: como os 200 adversários simulados da Arena são montados e com que frequência atacam você |
@@ -36,6 +36,7 @@ Onde fica cada coisa no painel:
 | Níveis do Pescador e do peixe | XP do Pescador | `progression.json` |
 | Varas (bônus e custo) | Varas | `rods.json` |
 | Preço mínimo, multiplicador geral do preço de venda dos peixes, Conchas, Aquário, Mercado | Economia | `economy.json` |
+| Preço, duração e bônus do VIP | Economia → `vip` | `economy.json` |
 | Arena, Cardume, Expedições | Outros arquivos | `arena.json`, `expeditions.json`… |
 
 ## Regras

@@ -39,3 +39,17 @@ quem joga menos leva mais.
 O tempo vem quase todo do XP: com as Moedas da venda, a vara de cada mapa fica paga logo que o nível libera
 o mapa. A pesca offline rende metade da online (um ciclo a cada 60 s contra 30 s), por isso quem joga poucas
 vezes por dia leva cerca do dobro do tempo.
+
+## Com o VIP (+50% de XP na pesca offline, A-110)
+
+Rodado com `python3 tools/Progressao/simular_progressao.py --vip`, supondo o VIP ativo o tempo todo.
+
+| Jeito de jogar | Nv.100 sem VIP | Nv.100 com VIP |
+|---|---:|---:|
+| Deixa o jogo aberto o dia todo | 10,0 d | 10,0 d |
+| Abre 4 vezes por dia | 19,3 d | 14,9 d |
+| Abre 2 vezes por dia | 20,3 d | 15,3 d |
+| Abre 1 vez por dia | 23,8 d | 17,8 d |
+
+O VIP só mexe na pesca offline, então quem deixa o jogo aberto não ganha nada com ele, e ninguém passa da
+meta de 10 dias. As Moedas acompanham: com o VIP, a última vara continua comprada antes do Nv.100.

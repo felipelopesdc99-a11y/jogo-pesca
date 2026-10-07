@@ -55,6 +55,7 @@ client-unity/Assets/
 │   │   ├── Market/        Mercado e Leilão: anúncios, compra, custódia (Itens a Retirar), lances, jogadores simulados
 │   │   ├── Tutorial/      Tutorial curto: passos, avanço automático pelo que o jogador fez, pular
 │   │   ├── Shop/          Loja e regras de preço/revenda de vara (RodRules)
+│   │   ├── Vip/           VIP: compra com Dólares e bônus de XP na pesca offline (VipRules)
 │   │   ├── GameSession.cs Estado vivo de um jogador (config + save + relógio + armazenamento)
 │   │   ├── PlayerService.cs
 │   │   └── LocalGame.cs   Ponto de entrada: monta os serviços locais
@@ -112,6 +113,7 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
 | `IAuctionService` | `LocalMarketService` | Leilão: criar (1 por vez, 6 h), lances com reserva e taxa, último minuto, encerrar antes |
 | `ICurrencyTradeService` | `LocalCurrencyTradeService` | Venda de Conchas e Dólares por Moedas: anunciar (a quantidade sai da carteira) e cancelar; no MVP local não há ofertas nem compradores (`CurrencyTradeView.LocalOnly`) |
+| `IVipService` | `LocalVipService` | VIP (A-110): comprar com Dólares (soma os dias ao fim do atual) e ver até quando vale. O bônus de XP é aplicado pela pesca offline (`VipRules.OfflineBonusXp`), conferido na hora de cada captura |
 | `IRankingService` | `LocalRankingService` | Ranking de jogadores reais por Nível, Moedas, Conchas e Peixes pescados; no MVP local só o jogador deste PC (`RankingView.LocalOnly`) |
 | `ITutorialService` | `LocalTutorialService` | Tutorial: passo atual, avanço automático, "Entendi", pular |
 | `IProfileService` | `LocalProfileService` | Perfil próprio: vara equipada, Inventário, Enciclopédia, Destaques |

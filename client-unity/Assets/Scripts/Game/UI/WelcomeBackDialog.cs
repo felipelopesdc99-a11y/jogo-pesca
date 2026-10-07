@@ -59,7 +59,7 @@ namespace FishingIdle.Game.UI
 
             if (count > 0)
             {
-                GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.Xp(Format.Number(update.XpGained)), skin.Body);
+                GUI.Label(new Rect(x, y, w, 22), update.VipXpGained > 0 ? GameTexts.Offline.XpWithVip(Format.Number(update.XpGained), Format.Number(update.VipXpGained)) : GameTexts.Offline.Xp(Format.Number(update.XpGained)), skin.Body);
                 y += 24;
                 var newSpecies = update.NewCatches.Count(c => c.IsNewSpecies);
                 if (newSpecies > 0)

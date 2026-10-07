@@ -195,7 +195,7 @@
       "id": "OD-021",
       "task_id": "M17-T01",
       "title": "O que os Dólares fazem e como se ganham",
-      "detail": "A moeda Dólares existe (começa em zero) e aparece na tela, mas não se ganha nem se gasta. Falta decidir: como o jogador consegue Dólares, em que eles são gastos e se podem ser comprados com dinheiro real (isso mudaria o jogo e pede cuidado com regras de loja e de idade). A intenção registrada é negociar Conchas e Dólares entre jogadores.",
+      "detail": "A moeda Dólares existe (começa em zero) e aparece na tela, mas não se ganha nem se gasta. Falta decidir: como o jogador consegue Dólares, em que eles são gastos e se podem ser comprados com dinheiro real (isso mudaria o jogo e pede cuidado com regras de loja e de idade). A intenção registrada é negociar Conchas e Dólares entre jogadores. Decidido pelo proprietário em 07/10/2026: os Dólares compram o VIP (100 Dólares, 30 dias, +50% de XP na pesca offline, A-110) e podem ser comprados com dinheiro real (100 Dólares = R$ 4,99) quando houver loja (M22-T17). Falta decidir: se dá para ganhar Dólares jogando.",
       "raised_at": "2026-10-02T22:00:38Z",
       "status": "OPEN"
     },
@@ -3722,6 +3722,27 @@
           "status": "TODO",
           "dependencies": [],
           "updated_at": "2026-10-06T18:30:00Z"
+        },
+        {
+          "id": "M22-T16",
+          "title": "VIP: +50% de XP na pesca offline por 100 Dólares",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026): VIP de 30 dias por 100 Dólares do jogo, com +50% de XP de Pescador nas capturas offline. Comprado na Loja, aba VIP.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T16:30:00Z",
+          "completion_notes": "economy.json → vip; LocalVipService/VipRules (GameService/Vip); bônus aplicado por captura offline em LocalFishingService, conferindo se o VIP valia na hora; PlayerSave.VipUntilMs; aba VIP na Loja; linha \"+X do VIP\" no Bem-vindo de volta; VIP no Painel de Desenvolvimento; VipTests. Simulação: 4 vezes por dia, Nv.100 de ~19 para ~15 dias. A-110. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T17",
+          "title": "Comprar Dólares com dinheiro real (100 Dólares = R$ 4,99)",
+          "subsystem": "client",
+          "description": "Precisa de uma loja de verdade (Steam ou Google Play), que só existe com o jogo publicado; as lojas ficam com uma parte do valor. Até lá não há como conseguir Dólares no jogo local. Referência guardada em economy.json → vip.dollars_real_money_reference.",
+          "status": "TODO",
+          "dependencies": [
+            "M22-T16"
+          ],
+          "updated_at": "2026-10-07T16:30:00Z"
         }
       ]
     }

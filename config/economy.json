@@ -98,5 +98,16 @@
     "hard_capacity": 100,
     "expansion_allowed": false,
     "fishing_box_keeps_receiving_when_full": true
+  },
+  "vip": {
+    "note": "VIP (A-110, decisão do proprietário em 07/10/2026): comprado com Dólares do jogo, dá XP de Pescador a mais na pesca offline por um tempo. Comprar de novo com o VIP ativo soma os dias ao fim do atual.",
+    "price_dollars": 100,
+    "duration_days": 30,
+    "offline_fisher_xp_bonus": 0.5,
+    "dollars_real_money_reference": {
+      "dollars": 100,
+      "price_brl": 4.99,
+      "note": "Referência do proprietário: 100 Dólares = R$ 4,99. A compra com dinheiro real só existe quando o jogo tiver uma loja (Steam, Google Play); o jogo ainda não lê este valor."
+    }
   }
 }

@@ -361,7 +361,7 @@ namespace FishingIdle.GameService.Fishing
                 for (long k = 1; k <= cycles; k++)
                 {
                     var rng = Rng.For(Save.RngSeed, fishing.SessionIndex, fishing.CyclesProcessed + k);
-                    Attempt(map, rod, rodLevel, rng, fromMs + k * cycleMs, update);
+                    Attempt(map, rod, rodLevel, rng, fromMs + k * cycleMs, update, offline: true);
                 }
 
                 fishing.CyclesProcessed += cycles;
@@ -411,13 +411,13 @@ namespace FishingIdle.GameService.Fishing
         /// a charge), the attempt, and either the catch or the escape. An escape gives nothing: no
         /// fish, XP, Shells, discovery or record.
         /// </summary>
-        private void Attempt(MapConfig map, RodConfig rod, int rodLevel, Rng rng, long atMs, FishingUpdate update)
+        private void Attempt(MapConfig map, RodConfig rod, int rodLevel, Rng rng, long atMs, FishingUpdate update, bool offline = false)
         {
             var gear = Shop.GearRules.SpendAttempt(Config, Save, update);
             var attempt = CatchRules.Attempt(Config, map, rod, rodLevel, gear, rng);
             if (attempt.Caught)
             {
-                ApplyCatch(attempt.Catch, atMs, update);
+                ApplyCatch(attempt.Catch, atMs, update, offline: offline);
                 return;
             }
 
@@ -432,7 +432,7 @@ namespace FishingIdle.GameService.Fishing
             });
         }
 
-        private void ApplyCatch(RolledCatch rolled, long caughtAtMs, FishingUpdate update, bool grantXp = true)
+        private void ApplyCatch(RolledCatch rolled, long caughtAtMs, FishingUpdate update, bool grantXp = true, bool offline = false)
         {
             var speciesId = rolled.Species.Id;
             var flags = 0;
@@ -472,7 +472,11 @@ namespace FishingIdle.GameService.Fishing
 
             if (grantXp)
             {
-                AddFisherXp(rolled.FisherXp, update);
+                // VIP (A-110): offline catches made while it was active give extra Fisher XP. Checked
+                // per catch, at its own time, so a VIP that ends during the absence counts only until then.
+                var vipXp = offline ? Vip.VipRules.OfflineBonusXp(Config, Save, rolled.FisherXp, caughtAtMs) : 0;
+                update.VipXpGained += vipXp;
+                AddFisherXp(rolled.FisherXp + vipXp, update);
             }
             var view = CatchViews.Create(Config, entry);
             view.PreviousRecordCm = previousRecordMm / 10.0;
