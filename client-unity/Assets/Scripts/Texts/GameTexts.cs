@@ -704,6 +704,12 @@ namespace FishingIdle.Texts
             public const string Title = "Cardume";
             public const string Front = "Frente";
             public const string Back = "Trás";
+            public const string FrontTag = "FRENTE";
+            public const string BackTag = "TRÁS";
+            public const string OrderShort = "Os adversários atacam na ordem 1 → 6: peixes resistentes na frente protegem os de trás.";
+            public static string BonusShort(string percent) => "Cardume completo · +" + percent;
+            public static string BonusMissingShort(int missing, string percent) => "Faltam " + missing + " para +" + percent;
+            public static string StrengthShort(string strength) => "Força " + strength;
             public const string Empty = "Vazio";
             public const string Strength = "Força do Cardume";
             public const string StrengthPrivate = "Só você vê a Força do Cardume. Ela não decide batalhas; serve para Expedições e para você comparar formações.";

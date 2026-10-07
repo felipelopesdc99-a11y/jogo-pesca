@@ -3089,11 +3089,12 @@
           "title": "Nome e avatar do jogador",
           "subsystem": "client",
           "description": "Permitir escolher o nome e o avatar (§37). Hoje o nome é fixo, \"Pescador\", e o retrato é o mesmo para todos. (Levantado do GDD em 05/10/2026.) Aprovada pelo proprietário (07/10/2026): nome e avatar (avatares pedem arte ao ChatGPT).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-07T20:30:00Z",
+          "updated_at": "2026-10-07T22:40:00Z",
           "from_gdd_review": true,
-          "owner_approved": true
+          "owner_approved": true,
+          "completion_notes": "Rename/SetAvatar no IProfileService (progression.json → player_identity), PlayerSave.AvatarId, AvatarArt (selo enquanto a arte não chega), diálogo \"Seu nome e seu avatar\" no Perfil, avatar no card do jogador; IdentityTests. ASSET_PENDENTE: avatares (pedido feito). A-129. Não compilado nem aberto no Unity."
         },
         {
           "id": "M18-T04",
@@ -3934,6 +3935,16 @@
           "dependencies": [],
           "updated_at": "2026-10-07T21:05:00Z",
           "completion_notes": "ArtImportSettings v3: crunch qualidade 90 em mapas (menos céus), Vivos, barcos e varas; filtro Kaiser nas cópias menores da arte desenhada pequena; texturas do build ~160 → ~75 MB pela conta. PNG já otimizados sem perda (otimizar_png.py: nada a ganhar). Sons já comprimidos na importação (AudioImportSettings). TD-035. Não aberto no Unity: a primeira importação vai demorar mais."
+        },
+        {
+          "id": "M22-T31",
+          "title": "Cardume com cara de jogo",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026, com print): melhorar a disposição do Cardume; o selo de raridade sobrepunha \"Posição 1\".",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T22:40:00Z",
+          "completion_notes": "ProfileWindow.DrawCardume: painel de batalha com Força, 6 posições e bônus no topo, fileiras FRENTE/TRÁS, número da posição em círculo, raridade no canto oposto, barra da parte na Força, vaga vazia convidativa. A-129. Não compilado nem aberto no Unity."
         }
       ]
     }

@@ -226,6 +226,12 @@ limpos com uma faixa na cor da medalha e o ícone de estrela.
   (fundo magenta).
 - `Raridade_01_gemas.png` → uma gema por raridade, para o selo de raridade (fundo magenta).
 
+## Avatares do jogador (pedido em 07/10/2026)
+
+Pedido no doc "Fishing Idle — Pedido de arte: avatares do jogador"
+(https://claude.ai/code/artifact/8936d3b1-4724-4853-8f39-78003d519633). `Avatares_01_retratos.png` (fundo verde,
+3×2) → `Avatares/avatar_01.png` a `avatar_06.png`. Enquanto não chegam, o jogo mostra um selo colorido.
+
 ## Som ambiente dos mapas
 
 Os 40 arquivos listados em `Resources/Sons/ambiente.json` (4 por mapa) ainda não existem. Quando vierem,

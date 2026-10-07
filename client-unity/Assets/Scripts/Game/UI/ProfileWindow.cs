@@ -663,26 +663,51 @@ namespace FishingIdle.Game.UI
             var formation = new Rect(area.x, area.y, area.width - listWidth - 24, area.height);
             var list = new Rect(area.xMax - listWidth, area.y, listWidth, area.height);
 
-            // Two rows of three: front (1–3) and back (4–6), with a small depth offset.
-            var slotW = Mathf.Min(220f, (formation.width - 40) / 3f);
-            const float slotH = 176f;
-            DrawRow(skin, _cardume.Slots.Where(s => s.IsFront).ToList(), GameTexts.Cardume.Front, formation.x, formation.y, slotW, slotH);
-            DrawRow(skin, _cardume.Slots.Where(s => !s.IsFront).ToList(), GameTexts.Cardume.Back, formation.x + 24, formation.y + slotH + 44, slotW, slotH);
+            // A battle line, not a form (owner's request, A-129): one panel like water, a header with the
+            // Strength and the 6 places, then the front row and the back row, slightly shifted for depth.
+            GUI.DrawTexture(formation, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.05f, 0.16f, 0.24f, 0.92f), 0, 16);
+            GUI.DrawTexture(new Rect(formation.x, formation.y + formation.height * 0.45f, formation.width, formation.height * 0.55f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.03f, 0.10f, 0.17f, 0.55f), 0, 16);
+            GUI.DrawTexture(formation, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Border, 1.5f, 16);
 
-            var y = formation.y + 2 * (slotH + 44) + 8;
-            GUI.Label(new Rect(formation.x, y, formation.width, 22), GameTexts.Cardume.Filled(_cardume.Filled, _cardume.Size), skin.BodyBold);
-            y += 26;
+            var x = formation.x + 20;
+            var w = formation.width - 40;
+            var y = formation.y + 14;
+
+            // Header: Strength, the six places as dots, and the full-Cardume bonus.
+            GUI.Label(new Rect(x, y, 260, 18), GameTexts.Cardume.Strength, skin.SmallMuted);
+            GUI.contentColor = UiSkin.Gold;
+            GUI.Label(new Rect(x, y + 16, 260, 40), Format.Number(_cardume.Strength), skin.Display);
+            GUI.contentColor = Color.white;
+            var dotsX = x + 230;
+            for (var i = 0; i < _cardume.Size; i++)
+            {
+                var filled = i < _cardume.Filled;
+                GUI.DrawTexture(new Rect(dotsX + i * 18, y + 26, 12, 12), skin.White, ScaleMode.StretchToFill, true, 0, filled ? UiSkin.Accent : new Color(1f, 1f, 1f, 0.15f), 0, 6);
+            }
+
+            GUI.Label(new Rect(dotsX + _cardume.Size * 18 + 6, y + 22, 120, 20), GameTexts.Cardume.Filled(_cardume.Filled, _cardume.Size), skin.SmallBold);
             var percent = Format.Percent(_cardume.CompleteBonusPercent / 100.0, 0);
-            GUI.Label(new Rect(formation.x, y, formation.width, 22), _cardume.CompleteBonusActive
-                ? GameTexts.Cardume.BonusActive(percent)
-                : GameTexts.Cardume.BonusMissing(_cardume.CompleteBonusSlots - _cardume.Filled, percent), _cardume.CompleteBonusActive ? skin.SmallGold : skin.Small);
-            y += 26;
-            GUI.Label(new Rect(formation.x, y, formation.width, 40), GameTexts.Cardume.OrderNote, skin.SmallMuted);
-            y += 40;
-            GUI.Label(new Rect(formation.x, y, formation.width, 40), GameTexts.Cardume.StrengthPrivate, skin.SmallMuted);
+            var bonus = _cardume.CompleteBonusActive ? GameTexts.Cardume.BonusShort(percent) : GameTexts.Cardume.BonusMissingShort(_cardume.CompleteBonusSlots - _cardume.Filled, percent);
+            var bw = skin.PillWidth(bonus, true) + 8;
+            skin.AccentPill(new Rect(formation.xMax - 20 - bw, y + 20, bw, 24), bonus, _cardume.CompleteBonusActive ? UiSkin.Gold : UiSkin.Muted, Icons.Star);
+            y += 68;
 
-            var selected = _cardume.Slots.FirstOrDefault(s => s.Position == _selectedPosition);
-            if (selected?.Fish != null && skin.IconButton(new Rect(formation.xMax - 220, formation.y + 2 * (slotH + 44) + 4, 220, 36), Icons.Close, GameTexts.Cardume.Remove, skin.Button))
+            // The two rows. Slots are as wide as fits; the back row is shifted a little to the right.
+            var tagWidth = 34f;
+            var slotW = Mathf.Min(210f, (w - tagWidth - 24 - 2 * 12f) / 3f);
+            var slotH = Mathf.Clamp((formation.yMax - y - 90f) / 2f - 12f, 150f, 196f);
+            var maxStrength = Mathf.Max(1f, _cardume.Slots.Where(sl => sl.Fish != null).Select(sl => (float)sl.Strength).DefaultIfEmpty(1f).Max());
+            DrawRow(skin, _cardume.Slots.Where(sl => sl.IsFront).ToList(), GameTexts.Cardume.FrontTag, x, y, tagWidth, slotW, slotH, maxStrength);
+            y += slotH + 14;
+            DrawRow(skin, _cardume.Slots.Where(sl => !sl.IsFront).ToList(), GameTexts.Cardume.BackTag, x + 24, y, tagWidth, slotW, slotH, maxStrength);
+            y += slotH + 14;
+
+            // Footer: the attack order and how Strength is used; "Tirar da posição" on the right.
+            var selected = _cardume.Slots.FirstOrDefault(sl => sl.Position == _selectedPosition);
+            var removeWidth = selected?.Fish != null ? 220f : 0f;
+            GUI.Label(new Rect(x, y, w - removeWidth - 12, 20), FishCard.Fit(GameTexts.Cardume.OrderShort, skin.SmallMuted, w - removeWidth - 12), skin.SmallMuted);
+            GUI.Label(new Rect(x, y + 20, w - removeWidth - 12, 20), FishCard.Fit(GameTexts.Cardume.StrengthPrivate, skin.SmallMuted, w - removeWidth - 12), skin.SmallMuted);
+            if (selected?.Fish != null && skin.IconButton(new Rect(formation.xMax - 20 - removeWidth, y, removeWidth, 36), Icons.Close, GameTexts.Cardume.Remove, skin.Button))
             {
                 _root.ClearCardumeSlot(_selectedPosition);
             }
@@ -690,49 +715,91 @@ namespace FishingIdle.Game.UI
             DrawFishList(skin, list);
         }
 
-        private void DrawRow(UiSkin skin, List<CardumeSlotView> slots, string label, float x, float y, float slotW, float slotH)
+        private void DrawRow(UiSkin skin, List<CardumeSlotView> slots, string tag, float x, float y, float tagWidth, float slotW, float slotH, float maxStrength)
         {
-            GUI.Label(new Rect(x, y, 200, 20), label, skin.SmallMuted);
-            y += 24;
+            // A vertical tag for the row ("FRENTE" / "TRÁS").
+            var tagRect = new Rect(x, y, tagWidth - 8, slotH);
+            GUI.DrawTexture(tagRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.14f), 0, 10);
+            var letters = tag.ToCharArray();
+            var ly = tagRect.center.y - letters.Length * 9f;
+            foreach (var ch in letters)
+            {
+                GUI.Label(new Rect(tagRect.x, ly, tagRect.width, 18), ch.ToString(), skin.SmallMutedCenter);
+                ly += 18;
+            }
+
+            var sx = x + tagWidth;
             foreach (var slot in slots)
             {
-                var rect = new Rect(x, y, slotW - 12, slotH - 24);
+                var rect = new Rect(sx, y, slotW, slotH);
                 var selected = slot.Position == _selectedPosition;
-                if (GUI.Button(rect, GUIContent.none, selected ? skin.CardSelected : slot.Fish != null ? skin.Card : skin.CardHovered))
+                var hovered = GUI.enabled && rect.Contains(Event.current.mousePosition);
+                var accent = slot.Fish != null ? UiSkin.RarityColor(slot.Fish.RarityId) : UiSkin.Accent;
+                if (selected)
+                {
+                    skin.DrawGlow(rect, UiSkin.Accent, 0.45f);
+                }
+
+                if (GUI.Button(rect, GUIContent.none, selected ? skin.CardSelected : hovered ? skin.CardHovered : skin.Card))
                 {
                     _selectedPosition = slot.Position;
                 }
 
-                GUI.Label(new Rect(rect.x + 12, rect.y + 8, 120, 20), GameTexts.Cardume.Position(slot.Position), skin.SmallGold);
+                // Position number in a round badge, top-left; the rarity seal top-right.
+                var badge = new Rect(rect.x + 10, rect.y + 10, 26, 26);
+                GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, selected ? UiSkin.Accent : new Color(0.06f, 0.12f, 0.2f, 0.95f), 0, 13);
+                GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 1.5f, 13);
+                var prev = GUI.contentColor;
+                GUI.contentColor = selected ? new Color(0.03f, 0.12f, 0.16f) : Color.white;
+                GUI.Label(new Rect(badge.x, badge.y + 4, badge.width, 18), slot.Position.ToString(), CenteredBold(skin));
+                GUI.contentColor = prev;
+
                 if (slot.Fish == null)
                 {
-                    // An inviting empty slot: a "+" and the word, never a blank box.
-                    var plus = new Rect(rect.center.x - 18, rect.y + rect.height / 2f - 30, 36, 36);
-                    GUI.DrawTexture(plus, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.18f), 0, 18);
-                    skin.DrawIcon(new Rect(plus.x + 9, plus.y + 9, 18, 18), Icons.Add, UiSkin.Accent);
-                    GUI.Label(new Rect(rect.x, plus.yMax + 6, rect.width, 22), GameTexts.Cardume.Empty, skin.Center);
+                    // An inviting empty place: a soft dashed frame, a "+" and the word.
+                    GUI.DrawTexture(new Rect(rect.x + 6, rect.y + 6, rect.width - 12, rect.height - 12), skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, hovered || selected ? 0.5f : 0.22f), 1.5f, 12);
+                    var plus = new Rect(rect.center.x - 20, rect.center.y - 26, 40, 40);
+                    GUI.DrawTexture(plus, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.18f), 0, 20);
+                    skin.DrawIcon(new Rect(plus.x + 10, plus.y + 10, 20, 20), Icons.Add, UiSkin.Accent);
+                    GUI.Label(new Rect(rect.x, plus.yMax + 6, rect.width, 22), GameTexts.Cardume.Empty, skin.SmallMutedCenter);
+                    sx += slotW + 12f;
+                    continue;
                 }
-                else
+
+                if (!selected)
                 {
-                    if (!selected)
-                    {
-                        var accent = UiSkin.RarityColor(slot.Fish.RarityId);
-                        skin.DrawOutline(rect, new Color(accent.r, accent.g, accent.b, 0.7f));
-                    }
-
-                    if (!string.IsNullOrEmpty(slot.Fish.RarityName))
-                    {
-                        var rarity = slot.Fish.RarityName.ToUpperInvariant();
-                        skin.RarityPill(new Rect(rect.x + 10, rect.y + 6, skin.PillWidth(rarity, false), 20), slot.Fish.RarityId, rarity, false);
-                    }
-
-                    GUI.DrawTexture(new Rect(rect.x + 12, rect.y + 30, rect.width - 24, 58), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
-                    GUI.Label(new Rect(rect.x + 12, rect.y + 92, rect.width - 24, 20), slot.Fish.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + slot.Fish.Level, skin.BodyBold);
-                    GUI.Label(new Rect(rect.x + 12, rect.y + 114, rect.width - 24, 20), GameTexts.Cardume.Strength + ": " + Format.Number(slot.Strength), skin.Small);
+                    skin.DrawOutline(rect, new Color(accent.r, accent.g, accent.b, slot.Fish.RarityId == "common" ? 0.45f : 0.85f));
                 }
 
-                x += slotW;
+                if (!string.IsNullOrEmpty(slot.Fish.RarityName))
+                {
+                    var rarity = slot.Fish.RarityName.ToUpperInvariant();
+                    var pw = skin.PillWidth(rarity, false);
+                    skin.RarityPill(new Rect(rect.xMax - 10 - pw, rect.y + 13, pw, 20), slot.Fish.RarityId, rarity, false);
+                }
+
+                // The fish, big, then name, level and its share of the Strength as a bar.
+                var artH = rect.height - 40 - 78;
+                GUI.DrawTexture(new Rect(rect.x + 10, rect.y + 40, rect.width - 20, artH), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
+                var ty = rect.yMax - 74;
+                GUI.Label(new Rect(rect.x + 12, ty, rect.width - 24, 22), FishCard.Fit(slot.Fish.SpeciesName, skin.BodyBold, rect.width - 24), skin.BodyBold);
+                GUI.Label(new Rect(rect.x + 12, ty + 22, rect.width - 24, 18), GameTexts.Player.LevelShort + " " + slot.Fish.Level, skin.SmallMuted);
+                skin.Bar(new Rect(rect.x + 12, ty + 46, rect.width - 24, 6), Mathf.Clamp01(slot.Strength / maxStrength), accent);
+                GUI.Label(new Rect(rect.x + 12, ty + 52, rect.width - 24, 18), GameTexts.Cardume.StrengthShort(Format.Number(slot.Strength)), skin.SmallMutedRight);
+                sx += slotW + 12f;
             }
+        }
+
+        private static GUIStyle _centeredBold;
+
+        private static GUIStyle CenteredBold(UiSkin skin)
+        {
+            if (_centeredBold == null || _centeredBold.font != skin.SmallBold.font)
+            {
+                _centeredBold = new GUIStyle(skin.SmallBold) { alignment = TextAnchor.UpperCenter };
+            }
+
+            return _centeredBold;
         }
 
         private void DrawFishList(UiSkin skin, Rect area)

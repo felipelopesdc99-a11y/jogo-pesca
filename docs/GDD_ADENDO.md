@@ -1510,3 +1510,17 @@ público dele: nome, posição e o Cardume em formação (frente e trás), cada 
 raridade. Nunca mostra a Força nem prevê o resultado (GDD §28). No jogo local é o adversário simulado; com o
 servidor, a pessoa real.
 
+### A-129 · Nome e avatar; Cardume com cara de jogo
+**Seção do GDD:** 37 · **Situação:** No jogo (não aberto no Unity ainda)
+
+**Nome e avatar** (aprovado em 07/10/2026): no Perfil, "Editar" ao lado do nome (ou clique no retrato) abre a
+escolha do nome (3 a 16 caracteres: letras, números, espaço, ponto, hífen, sublinhado) e de um entre 6 avatares
+(`progression.json` → `player_identity`). O avatar aparece no Perfil e no card do jogador na tela. Arte dos
+avatares pedida (`docs/ASSETS_PENDENTES.md`); até chegar, selo colorido.
+
+**Cardume** (pedido do proprietário com print, 07/10/2026): a aba virou uma linha de batalha. Painel em tons de
+água; no topo a Força em destaque, as 6 posições como bolinhas e o selo do bônus de Cardume completo. As fileiras
+FRENTE e TRÁS têm uma etiqueta vertical; cada posição tem o número num círculo (canto esquerdo), o selo de
+raridade (canto direito, não sobrepõe mais o número), o peixe grande, nome, nível e uma barra da parte dele na
+Força. Posição vazia: moldura suave com "+". A posição escolhida brilha.
+

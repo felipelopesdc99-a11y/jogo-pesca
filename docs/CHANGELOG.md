@@ -3,6 +3,20 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.23] — 07/10/2026
+
+### Adicionado
+
+- Nome e avatar do jogador (arte dos avatares pedida) e "Ver perfil" do adversário na Arena (A-128, A-129).
+
+### Mudado
+
+- Aba Cardume com cara de jogo; o selo de raridade não sobrepõe mais o número da posição (A-129).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.22] — 07/10/2026
 
 ### Adicionado
