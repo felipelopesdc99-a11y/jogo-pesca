@@ -455,7 +455,8 @@
       "title": "Chance de puxar Lendário e Mítico",
       "detail": "A chance-base de puxar um Lendário é 14% e um Mítico 8%. Mesmo com vara, barco e isca, a maioria escapa, e \"o peixe raro escapou\" é a maior reclamação em jogos de pesca. Opções: (A) subir os bônus das Varas 3 a 5 para chegar a ~40–50% no mapa certo; (B) criar proteção contra azar (cada fuga aumenta a próxima chance; sistema novo); (C) deixar como está. O que prefere?",
       "raised_at": "2026-10-06T18:30:00Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário (07/10/2026): deixar como está (opção C). Lendário e Mítico continuam difíceis de puxar."
     }
   ],
   "milestones": [
@@ -3657,9 +3658,10 @@
           "title": "Chance de puxar Lendário e Mítico",
           "subsystem": "config",
           "description": "Pesquisa sobre jogos idle: com chance-base de 14% e 8%, a maioria das mordidas mais emocionantes escapa. Ajustar vara, barco e isca para ~40–50% no mapa certo, ou criar proteção contra azar (sistema novo).",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-06T18:30:00Z"
+          "updated_at": "2026-10-07T17:10:00Z",
+          "completion_notes": "Decisão do proprietário (OD-050): manter as chances atuais de puxar Lendário e Mítico. Nada mudou no jogo."
         },
         {
           "id": "M22-T09",
