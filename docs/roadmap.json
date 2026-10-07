@@ -56,8 +56,9 @@
       "title": "Testar o Perfil e o Cardume",
       "detail": "Quando puder: abra o menu Perfil, monte o Cardume com peixes do Aquário (clique numa posição e depois num peixe), veja a Força e o bônus com 6 peixes, e olhe a Enciclopédia. Diga se a tela é clara. Não bloqueia: eu sigo com o Milestone 4.",
       "raised_at": "2026-09-28T23:37:38Z",
-      "status": "OPEN",
-      "deferred_to_end": true
+      "status": "RESOLVED",
+      "deferred_to_end": true,
+      "resolution": "Proprietário (07/10/2026): Perfil testado; pediu um Perfil com cara de jogo e central de informações (A-121), feito. Cardume e Enciclopédia sem problemas relatados."
     },
     {
       "id": "OD-006",
@@ -1033,12 +1034,13 @@
           "title": "Teste do Perfil e do Cardume pelo proprietário",
           "subsystem": "client",
           "description": "Montar o Cardume, ver a Força e a Enciclopédia dentro do Unity.",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M3-T07",
             "M3-T08"
           ],
-          "updated_at": "2026-09-28T23:37:38Z"
+          "updated_at": "2026-10-07T19:45:00Z",
+          "completion_notes": "Testado pelo proprietário no Unity (07/10/2026). O pedido de melhoria virou o M22-T27 (Perfil como central)."
         }
       ]
     },
@@ -3056,10 +3058,11 @@
           "title": "Posição na Arena no Perfil",
           "subsystem": "client",
           "description": "O Perfil do próprio jogador deve mostrar a posição atual na Arena (§37). Hoje ela só aparece na janela da Arena. (Levantado do GDD em 05/10/2026.)",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-05T21:22:41Z",
-          "from_gdd_review": true
+          "updated_at": "2026-10-07T19:45:00Z",
+          "from_gdd_review": true,
+          "completion_notes": "A posição na Arena aparece no Resumo do Perfil (A-121), a pedido do proprietário."
         },
         {
           "id": "M18-T02",
@@ -3857,6 +3860,16 @@
           "dependencies": [],
           "updated_at": "2026-10-07T19:25:00Z",
           "completion_notes": "FishCard montado de baixo para cima com FishCard.Fit (\"…\"); selos do topo se ajustam à largura; Enciclopédia e cards da Arena sem nome sob o selo. A-120. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T27",
+          "title": "Perfil como central do jogador",
+          "subsystem": "client",
+          "description": "Pedido do proprietário no teste do Perfil (07/10/2026): Perfil com cara de jogo, carteira, posição na Arena e tudo concentrado; montagem aprovada.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T19:45:00Z",
+          "completion_notes": "ProfileWindow: cabeçalho com carteira, nível e XP, VIP; aba Resumo com Arena, Cardume, equipamento, espaço, Expedição, coleção por raridade e destaques. RecordsView.ByRarity no serviço; ProfileSummaryTests. A-121. Não compilado nem aberto no Unity."
         }
       ]
     }

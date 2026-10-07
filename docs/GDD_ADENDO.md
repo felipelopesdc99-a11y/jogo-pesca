@@ -1422,3 +1422,21 @@ não cabem juntos, o selo de raridade perde a estrela e, se ainda não couber, o
 peixe. Na Enciclopédia o selo de raridade foi para a linha do mapa (não fica mais sob o nome) e, nos cards dos
 adversários da Arena, o nome do peixe para antes do selo.
 
+### A-121 · Perfil como central do jogador
+**Seção do GDD:** 37 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026, no teste do Perfil): o Perfil próprio é a central de informações do jogador,
+como um inventário, diferente do perfil que os outros vão ver. Montagem aprovada ("perfil_resumo.png"):
+
+- **Cabeçalho:** retrato com moldura, nome, selo do nível com a barra de XP, "XP x / y · mapa", selo do VIP com a
+  data e a carteira à direita (Moedas, Conchas, Dólares e Honra).
+- **Aba nova "Resumo"**, a primeira e a que abre: três colunas.
+  - **Arena:** posição (#N de N jogadores), Honra, Energia, última batalha; **Cardume:** Força e os 6 peixes com
+    nível e borda da raridade, e o bônus de Cardume completo.
+  - **Seu equipamento:** vara (com nível), barco e isca (tentativas) com o bônus de cada e o total;
+    **Espaço:** Caixa e Aquário com barra, e a Expedição em andamento com o tempo que falta.
+  - **Coleção:** espécies descobertas com barra e, a pedido dele, **todas as raridades com os números** (espécies
+    achadas / total e peixes pescados de cada); destaques: capturas, excepcionais, perfeições, maior peixe e
+    Moedas em vendas.
+- As outras abas (Equipamentos, Inventário, Cardume, Enciclopédia, Destaques) não mudaram.
+

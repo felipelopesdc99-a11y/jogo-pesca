@@ -722,6 +722,29 @@ namespace FishingIdle.Texts
             public const string CoinsFromSales = "Moedas com vendas";
             public const string None = "—";
 
+            public const string TabSummary = "Resumo";
+            public const string LastBattle = "Última batalha";
+            public const string Space = "Espaço";
+            public const string Expedition = "Expedição";
+            public const string NoExpedition = "Nenhuma em andamento";
+            public const string Collection = "Coleção";
+            public const string ColumnSpecies = "Espécies";
+            public const string ColumnCaught = "Pescados";
+            public const string StatCatches = "peixes pescados";
+            public const string StatExceptional = "excepcionais";
+            public const string StatPerfect = "perfeições";
+            public const string StatSales = "moedas em vendas";
+            public static string StatBiggest(string species) => "maior: " + species;
+            public static string OfPlayers(int total) => "de " + Format.Number(total) + " jogadores";
+            public static string BattleLine(bool won, int climbed) => won ? (climbed > 0 ? "Vitória · subiu " + climbed : "Vitória") : (climbed < 0 ? "Derrota · caiu " + (-climbed) : "Derrota");
+            public static string StrengthShort(string strength) => "Força " + strength;
+            public static string CardumeFull(int filled, int size, string bonus) => filled + "/" + size + " · bônus de Cardume completo ativo (+" + bonus + ")";
+            public static string CardumeCount(int filled, int size) => filled + "/" + size + " peixes no Cardume";
+            public static string ChanceBonus(string percent) => "chance +" + percent;
+            public static string RodLevel(int level, int max) => "Vara · Nv. " + level + " de " + max;
+            public static string BaitLeft(int charges) => charges == 1 ? "Isca · resta 1 tentativa" : "Isca · restam " + Format.Number(charges) + " tentativas";
+            public static string VipUntil(string date) => "VIP até " + date;
+
             public static string Tier(int tier) => tier == 0 ? "Vara inicial" : "Tier " + tier;
             public static string Discovery(int found, int total) => found + " de " + total + " espécies";
         }

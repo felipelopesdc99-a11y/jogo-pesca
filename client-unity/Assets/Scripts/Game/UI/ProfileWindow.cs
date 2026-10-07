@@ -4,6 +4,8 @@ using System.Linq;
 using FishingIdle.Game.Bootstrap;
 using FishingIdle.Game.Scene;
 using FishingIdle.GameService.Aquarium;
+using FishingIdle.GameService.Arena;
+using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Profile;
 using FishingIdle.Game.Visual;
 using FishingIdle.Texts;
@@ -19,6 +21,7 @@ namespace FishingIdle.Game.UI
     {
         private enum Tab
         {
+            Summary,
             Equipment,
             Inventory,
             Cardume,
@@ -27,10 +30,13 @@ namespace FishingIdle.Game.UI
         }
 
         private readonly GameRoot _root;
-        private Tab _tab = Tab.Cardume;
+        private Tab _tab = Tab.Summary;
         private ProfileView _profile;
         private CardumeView _cardume;
         private AquariumView _aquarium;
+        private ArenaView _arena;
+        private ExpeditionsView _expeditions;
+        private float _nextRefresh;
         private int _selectedPosition = 1;
         private Vector2 _scroll;
         private Vector2 _listScroll;
@@ -53,6 +59,7 @@ namespace FishingIdle.Game.UI
         {
             IsOpen = true;
             _dirty = true;
+            _tab = Tab.Summary;
         }
 
         /// <summary>Closes the rod confirmation first, then the window.</summary>
@@ -78,6 +85,13 @@ namespace FishingIdle.Game.UI
             {
                 Reload();
             }
+            else if (Time.unscaledTime >= _nextRefresh)
+            {
+                // The Summary shows live numbers (Energy, the Expedition countdown): refresh them once a second.
+                _arena = _root.GetArena();
+                _expeditions = _root.GetExpeditions();
+                _nextRefresh = Time.unscaledTime + 1f;
+            }
 
             if (_profile == null)
             {
@@ -88,23 +102,8 @@ namespace FishingIdle.Game.UI
 
             var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f);
 
-            // Header: portrait and identity on the left, private Strength on the right.
-            var portrait = new Rect(panel.x + 28, panel.y + 18, 60, 60);
-            GUI.Box(portrait, GUIContent.none, skin.IconTile);
-            var face = ArtAssets.Texture("Cena/retrato");
-            if (face != null)
-            {
-                GUI.DrawTexture(new Rect(portrait.x + 3, portrait.y + 3, 54, 54), face, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 10);
-            }
-            else
-            {
-                skin.DrawIcon(new Rect(portrait.x + 14, portrait.y + 14, 32, 32), Icons.Profile, UiSkin.Accent);
-            }
-
-            GUI.Label(new Rect(portrait.xMax + 16, panel.y + 18, 500, 36), _profile.PlayerName, skin.Title);
-            GUI.Label(new Rect(portrait.xMax + 17, panel.y + 56, 500, 22), GameTexts.Player.Level + " " + _profile.FisherLevel + " · " + _profile.MapName, skin.SmallMuted);
-            GUI.Label(new Rect(panel.xMax - 560, panel.y + 22, 240, 22), GameTexts.Cardume.Strength, skin.SmallMutedRight);
-            GUI.Label(new Rect(panel.xMax - 560, panel.y + 44, 240, 30), Format.Number(_profile.CardumeStrength), skin.NumberRight);
+            // Header (A-121): portrait, level with its XP bar, map and VIP on the left; the wallet on the right.
+            DrawHeader(skin, panel);
             if (skin.IconButton(new Rect(panel.xMax - 156, panel.y + 22, 128, 42), Icons.Close, GameTexts.Box.Close, skin.Button))
             {
                 Close();
@@ -113,6 +112,7 @@ namespace FishingIdle.Game.UI
             // Tabs
             var tabs = new[]
             {
+                (Tab.Summary, GameTexts.Profile.TabSummary),
                 (Tab.Equipment, GameTexts.Profile.TabEquipment), (Tab.Inventory, GameTexts.Profile.TabInventory),
                 (Tab.Cardume, GameTexts.Profile.TabCardume), (Tab.Encyclopedia, GameTexts.Profile.TabEncyclopedia),
                 (Tab.Records, GameTexts.Profile.TabRecords),
@@ -121,7 +121,7 @@ namespace FishingIdle.Game.UI
             foreach (var (tab, label) in tabs)
             {
                 var w = skin.Chip.CalcSize(new GUIContent(label)).x + 12;
-                if (GUI.Button(new Rect(x, panel.y + 92, w, 34), label, _tab == tab ? skin.ChipActive : skin.Chip))
+                if (GUI.Button(new Rect(x, panel.y + 116, w, 34), label, _tab == tab ? skin.ChipActive : skin.Chip))
                 {
                     _tab = tab;
                     _scroll = Vector2.zero;
@@ -130,9 +130,10 @@ namespace FishingIdle.Game.UI
                 x += w + 8;
             }
 
-            var content = new Rect(panel.x + 28, panel.y + 146, panel.width - 56, panel.height - 170);
+            var content = new Rect(panel.x + 28, panel.y + 166, panel.width - 56, panel.height - 190);
             switch (_tab)
             {
+                case Tab.Summary: DrawSummary(skin, content); break;
                 case Tab.Equipment: DrawEquipment(skin, content); break;
                 case Tab.Inventory: DrawInventory(skin, content); break;
                 case Tab.Encyclopedia: DrawEncyclopedia(skin, content); break;
@@ -172,6 +173,294 @@ namespace FishingIdle.Game.UI
 
                 _pendingRod = null;
             }
+        }
+
+        // ------------------------------------------------------------------ header and Summary (A-121)
+
+        private void DrawHeader(UiSkin skin, Rect panel)
+        {
+            var player = _root.Player;
+            var portrait = new Rect(panel.x + 28, panel.y + 20, 84, 84);
+            GUI.DrawTexture(portrait, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.11f, 0.2f, 1f), 0, 18);
+            var face = ArtAssets.Texture("Cena/retrato");
+            if (face != null)
+            {
+                GUI.DrawTexture(new Rect(portrait.x + 3, portrait.y + 3, 78, 78), face, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 15);
+            }
+            else
+            {
+                skin.DrawIcon(new Rect(portrait.x + 22, portrait.y + 22, 40, 40), Icons.Profile, UiSkin.Accent);
+            }
+
+            GUI.DrawTexture(portrait, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 18);
+
+            // The wallet, right to left from Fechar; whatever is left goes to the name and the level.
+            var wallet = new[]
+            {
+                (Icons.Coin, GameTexts.Player.Coins, player != null ? player.Coins : 0L),
+                (Icons.Shell, GameTexts.Player.Shells, player != null ? player.Shells : 0L),
+                (Icons.Dollar, GameTexts.Player.Dollars, player != null ? player.Dollars : 0L),
+                (Icons.Honor, GameTexts.Arena.Honor, _arena != null ? _arena.Honor : 0L),
+            };
+            var wx = panel.xMax - 156 - 14;
+            for (var i = wallet.Length - 1; i >= 0; i--)
+            {
+                var (icon, label, amount) = wallet[i];
+                var value = Format.Number(amount);
+                var tw = Mathf.Max(skin.BodyBold.CalcSize(new GUIContent(value)).x, skin.SmallMuted.CalcSize(new GUIContent(label)).x) + 52f;
+                var tile = new Rect(wx - tw, panel.y + 22, tw, 52);
+                GUI.DrawTexture(tile, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.11f, 0.2f, 0.9f), 0, 12);
+                GUI.DrawTexture(tile, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Border, 1f, 12);
+                skin.DrawIcon(new Rect(tile.x + 10, tile.y + 13, 26, 26), icon, Color.white);
+                GUI.Label(new Rect(tile.x + 42, tile.y + 6, tw - 46, 18), label, skin.SmallMuted);
+                GUI.Label(new Rect(tile.x + 42, tile.y + 22, tw - 46, 24), value, skin.BodyBold);
+                wx = tile.x - 8;
+            }
+
+            var tx = portrait.xMax + 16;
+            var tw2 = Mathf.Max(120f, wx - 12 - tx);
+            GUI.Label(new Rect(tx, panel.y + 18, tw2, 36), FishCard.Fit(_profile.PlayerName, skin.Title, tw2), skin.Title);
+
+            // Level badge and XP bar.
+            var level = GameTexts.Player.LevelShort + " " + _profile.FisherLevel;
+            var lw = skin.SmallBold.CalcSize(new GUIContent(level)).x + 16;
+            var badge = new Rect(tx, panel.y + 58, lw, 22);
+            GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 0, 8);
+            var prev = GUI.contentColor;
+            GUI.contentColor = new Color(0.03f, 0.12f, 0.16f);
+            GUI.Label(new Rect(badge.x + 8, badge.y + 2, lw, 18), level, skin.SmallBold);
+            GUI.contentColor = prev;
+            if (player != null && player.FisherXpToNext > 0)
+            {
+                skin.Bar(new Rect(badge.xMax + 10, badge.y + 7, Mathf.Clamp(tw2 - lw - 10, 60f, 300f), 8), player.FisherXp / (float)player.FisherXpToNext);
+            }
+
+            // XP numbers, map and VIP on the third line.
+            var line = player != null && player.FisherXpToNext > 0
+                ? GameTexts.Player.Xp(Format.Number(player.FisherXp), Format.Number(player.FisherXpToNext)) + " · " + _profile.MapName
+                : _profile.MapName;
+            var vip = _root.Vip;
+            var vipText = vip != null && vip.Active ? GameTexts.Profile.VipUntil(Format.Date(System.DateTimeOffset.FromUnixTimeMilliseconds(vip.UntilMs).LocalDateTime)) : null;
+            var vipWidth = vipText != null ? skin.PillWidth(vipText, true) : 0f;
+            var lineWidth = tw2 - (vipWidth > 0 ? vipWidth + 10 : 0);
+            GUI.Label(new Rect(tx, panel.y + 84, lineWidth, 20), FishCard.Fit(line, skin.SmallMuted, lineWidth), skin.SmallMuted);
+            if (vipText != null)
+            {
+                var used = Mathf.Min(lineWidth, skin.SmallMuted.CalcSize(new GUIContent(line)).x);
+                skin.AccentPill(new Rect(tx + used + 10, panel.y + 83, vipWidth, 20), vipText, UiSkin.Gold, Icons.Star);
+            }
+        }
+
+        /// <summary>The player's own hub: Arena, Cardume, gear, space and collection in one screen.</summary>
+        private void DrawSummary(UiSkin skin, Rect area)
+        {
+            var gap = 14f;
+            var colW = (area.width - gap * 2) / 3f;
+            var left = new Rect(area.x, area.y, colW, area.height);
+            var mid = new Rect(area.x + colW + gap, area.y, colW, area.height);
+            var right = new Rect(area.x + 2 * (colW + gap), area.y, colW, area.height);
+            foreach (var r in new[] { left, mid, right })
+            {
+                GUI.Box(r, GUIContent.none, skin.Card);
+            }
+
+            // Left: Arena and Cardume.
+            var x = left.x + 18;
+            var w = left.width - 36;
+            var y = left.y + 14;
+            y = SectionTitle(skin, x, y, w, Icons.Arena, GameTexts.Arena.Title, null);
+            if (_arena != null)
+            {
+                var rank = GameTexts.Arena.RankOf(_arena.Rank);
+                var rw = skin.Display.CalcSize(new GUIContent(rank)).x;
+                GUI.contentColor = UiSkin.Gold;
+                GUI.Label(new Rect(x, y - 4, rw + 4, 44), rank, skin.Display);
+                GUI.contentColor = Color.white;
+                GUI.Label(new Rect(x + rw + 12, y + 14, w - rw - 12, 20), FishCard.Fit(GameTexts.Profile.OfPlayers(_arena.Participants), skin.SmallMuted, w - rw - 12), skin.SmallMuted);
+                y += 46;
+                y = InfoRow(skin, x, y, w, GameTexts.Arena.Honor, Format.Number(_arena.Honor), null);
+                y = InfoRow(skin, x, y, w, GameTexts.Arena.Energy, GameTexts.Arena.EnergyOf(_arena.Energy, _arena.EnergyMax), null);
+                var last = _arena.History.Count > 0 ? _arena.History[0] : null;
+                y = InfoRow(skin, x, y, w, GameTexts.Profile.LastBattle, last == null ? GameTexts.Profile.None : GameTexts.Profile.BattleLine(last.PlayerWon, last.RankBefore - last.RankAfter),
+                    last == null ? (Color?)null : last.PlayerWon ? UiSkin.Success : UiSkin.Danger);
+            }
+
+            y += 10;
+            y = SectionTitle(skin, x, y, w, Icons.Fish, GameTexts.Profile.TabCardume, _cardume != null ? GameTexts.Profile.StrengthShort(Format.Number(_cardume.Strength)) : null);
+            if (_cardume != null)
+            {
+                var n = Mathf.Max(1, _cardume.Slots.Count);
+                var sw = (w - (n - 1) * 6f) / n;
+                for (var i = 0; i < _cardume.Slots.Count; i++)
+                {
+                    var slot = _cardume.Slots[i];
+                    var r = new Rect(x + i * (sw + 6f), y, sw, 54);
+                    GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.11f, 0.2f, 0.9f), 0, 10);
+                    var c = slot.Fish != null ? UiSkin.RarityColor(slot.Fish.RarityId) : UiSkin.Border;
+                    GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(c.r, c.g, c.b, slot.Fish != null ? 0.8f : 0.5f), 1.5f, 10);
+                    if (slot.Fish != null)
+                    {
+                        GUI.DrawTexture(new Rect(r.x + 4, r.y + 4, r.width - 8, 32), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
+                        GUI.Label(new Rect(r.x, r.y + 34, r.width - 4, 18), GameTexts.Player.LevelShort + slot.Fish.Level, skin.SmallMutedRight);
+                    }
+                }
+
+                y += 62;
+                var note = _cardume.CompleteBonusActive
+                    ? GameTexts.Profile.CardumeFull(_cardume.Filled, _cardume.Size, Format.Percent(_cardume.CompleteBonusPercent / 100.0, 0))
+                    : GameTexts.Profile.CardumeCount(_cardume.Filled, _cardume.Size);
+                GUI.Label(new Rect(x, y, w, 20), FishCard.Fit(note, skin.SmallMuted, w), skin.SmallMuted);
+            }
+
+            // Middle: gear and space.
+            x = mid.x + 18;
+            w = mid.width - 36;
+            y = mid.y + 14;
+            var gear = _root.Gear;
+            y = SectionTitle(skin, x, y, w, Icons.Rod, GameTexts.Gear.Yours, gear != null ? GameTexts.Profile.ChanceBonus(Format.Percent(gear.TotalBonus, 0)) : null);
+            if (gear != null)
+            {
+                var rod = _profile.EquippedRod;
+                y = GearLine(skin, x, y, w, Icons.Rod, gear.RodName, rod != null && rod.HasLevels ? GameTexts.Profile.RodLevel(rod.Level, rod.MaxLevel) : GameTexts.Gear.Rod, gear.RodBonus);
+                y = GearLine(skin, x, y, w, Icons.Boat, gear.BoatName, GameTexts.Gear.Boat, gear.BoatBonus);
+                y = GearLine(skin, x, y, w, Icons.Bait, gear.BaitName ?? GameTexts.Gear.NoBait,
+                    gear.BaitName != null ? GameTexts.Profile.BaitLeft(gear.BaitChargesLeft) : GameTexts.Gear.Bait, gear.BaitBonus);
+            }
+
+            y += 8;
+            y = SectionTitle(skin, x, y, w, Icons.Box, GameTexts.Profile.Space, null);
+            var player = _root.Player;
+            if (player != null)
+            {
+                y = MeterRow(skin, x, y, w, GameTexts.Box.Title, player.FishingBoxCount, player.FishingBoxCapacity);
+                y = MeterRow(skin, x, y, w, GameTexts.Aquarium.Title, player.AquariumCount, player.AquariumCapacity);
+            }
+
+            var expedition = _expeditions?.Active;
+            y = InfoRow(skin, x, y, w, GameTexts.Profile.Expedition,
+                expedition == null ? GameTexts.Profile.NoExpedition : expedition.Name + " · " + Format.Countdown(expedition.SecondsLeft),
+                expedition == null ? (Color?)null : UiSkin.Gold);
+
+            // Right: collection and highlights.
+            x = right.x + 18;
+            w = right.width - 36;
+            y = right.y + 14;
+            var records = _profile.Records;
+            y = SectionTitle(skin, x, y, w, Icons.Book, GameTexts.Profile.Collection, null);
+            y = MeterRow(skin, x, y, w, GameTexts.Profile.Discovered, records.SpeciesDiscovered, records.SpeciesTotal, UiSkin.Rare);
+
+            // Every rarity with its numbers (owner's request): species found / total and fish caught.
+            var colSpecies = x + w * 0.42f;
+            var colCaught = x + w * 0.70f;
+            GUI.Label(new Rect(colSpecies, y, w * 0.28f, 18), GameTexts.Profile.ColumnSpecies, skin.SmallMuted);
+            GUI.Label(new Rect(colCaught, y, x + w - colCaught, 18), GameTexts.Profile.ColumnCaught, skin.SmallMutedRight);
+            y += 22;
+            foreach (var t in records.ByRarity)
+            {
+                var color = UiSkin.RarityColor(t.RarityId);
+                GUI.DrawTexture(new Rect(x, y + 6, 10, 10), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, 5);
+                GUI.contentColor = Color.Lerp(color, Color.white, 0.25f);
+                GUI.Label(new Rect(x + 16, y, colSpecies - x - 20, 22), FishCard.Fit(t.RarityName, skin.SmallBold, colSpecies - x - 20), skin.SmallBold);
+                GUI.contentColor = Color.white;
+                GUI.Label(new Rect(colSpecies, y, colCaught - colSpecies, 22), t.SpeciesFound + " / " + t.SpeciesTotal, skin.Small);
+                GUI.Label(new Rect(colCaught, y, x + w - colCaught, 22), Format.Number(t.Caught), skin.SmallRight);
+                y += 24;
+            }
+
+            y += 10;
+            var tiles = new[]
+            {
+                (Format.Number(records.TotalCatches), GameTexts.Profile.StatCatches, UiSkin.Text),
+                (Format.Number(records.ExceptionalCatches), GameTexts.Profile.StatExceptional, UiSkin.Gold),
+                (Format.Number(records.PerfectCatches), GameTexts.Profile.StatPerfect, UiSkin.SizeColor("perfect")),
+                (records.BiggestSpeciesName == null ? GameTexts.Profile.None : Format.SizeCm(records.BiggestCm), records.BiggestSpeciesName == null ? GameTexts.Profile.Biggest : GameTexts.Profile.StatBiggest(records.BiggestSpeciesName), UiSkin.Text),
+                (Format.Number(records.CoinsFromSales), GameTexts.Profile.StatSales, UiSkin.Text),
+            };
+            var tileW = (w - 8f) / 2f;
+            var tileH = Mathf.Clamp((right.yMax - 14 - y - 16f) / 3f, 54f, 70f);
+            for (var i = 0; i < tiles.Length; i++)
+            {
+                var (value, label, color) = tiles[i];
+                var r = new Rect(x + (i % 2) * (tileW + 8f), y + (i / 2) * (tileH + 8f), tileW, tileH);
+                GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.11f, 0.2f, 0.9f), 0, 10);
+                GUI.contentColor = color;
+                GUI.Label(new Rect(r.x + 10, r.y + 6, r.width - 16, 28), FishCard.Fit(value, skin.Heading, r.width - 16), skin.Heading);
+                GUI.contentColor = Color.white;
+                GUI.Label(new Rect(r.x + 10, r.y + 34, r.width - 16, 18), FishCard.Fit(label, skin.SmallMuted, r.width - 16), skin.SmallMuted);
+            }
+        }
+
+        private static GUIStyle _rightBold;
+
+        private static GUIStyle RightBold(UiSkin skin)
+        {
+            if (_rightBold == null || _rightBold.font != skin.SmallBold.font)
+            {
+                _rightBold = new GUIStyle(skin.SmallBold) { alignment = TextAnchor.UpperRight };
+            }
+
+            return _rightBold;
+        }
+
+        private static float SectionTitle(UiSkin skin, float x, float y, float w, string icon, string title, string right)
+        {
+            skin.DrawIcon(new Rect(x, y + 3, 20, 20), icon, UiSkin.Accent);
+            GUI.Label(new Rect(x + 28, y, w - 28, 26), title, skin.Heading);
+            if (right != null)
+            {
+                GUI.Label(new Rect(x + w * 0.4f, y + 4, w * 0.6f, 20), right, skin.SmallMutedRight);
+            }
+
+            return y + 34;
+        }
+
+        private static float InfoRow(UiSkin skin, float x, float y, float w, string label, string value, Color? color)
+        {
+            var lw = skin.SmallMuted.CalcSize(new GUIContent(label)).x + 12f;
+            GUI.Label(new Rect(x, y, lw, 22), label, skin.SmallMuted);
+            if (color.HasValue) GUI.contentColor = color.Value;
+            GUI.Label(new Rect(x + lw, y, w - lw, 22), FishCard.Fit(value, skin.SmallBold, w - lw), RightBold(skin));
+            GUI.contentColor = Color.white;
+            skin.Divider(new Rect(x, y + 27, w, 1));
+            return y + 34;
+        }
+
+        private static float GearLine(UiSkin skin, float x, float y, float w, string icon, string name, string detail, double bonus)
+        {
+            var tile = new Rect(x, y, 42, 42);
+            GUI.DrawTexture(tile, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.11f, 0.2f, 0.9f), 0, 10);
+            skin.DrawIcon(new Rect(tile.x + 10, tile.y + 10, 22, 22), icon, Color.white);
+            var bonusText = "+" + Format.Percent(bonus, 0);
+            var bw = skin.SmallBold.CalcSize(new GUIContent(bonusText)).x + 6f;
+            var tw = w - 54 - bw - 6;
+            GUI.Label(new Rect(x + 54, y + 2, tw, 22), FishCard.Fit(name, skin.BodyBold, tw), skin.BodyBold);
+            GUI.Label(new Rect(x + 54, y + 22, tw, 18), FishCard.Fit(detail, skin.SmallMuted, tw), skin.SmallMuted);
+            GUI.contentColor = UiSkin.Accent;
+            GUI.Label(new Rect(x + w - bw, y + 12, bw, 20), bonusText, skin.SmallBold);
+            GUI.contentColor = Color.white;
+            return y + 50;
+        }
+
+        private static float MeterRow(UiSkin skin, float x, float y, float w, string label, int count, int capacity, Color? color = null)
+        {
+            var value = capacity > 0 ? Format.Number(count) + " / " + Format.Number(capacity) : Format.Number(count);
+            var vw = skin.SmallBold.CalcSize(new GUIContent(value)).x + 4f;
+            GUI.Label(new Rect(x, y, w - vw - 8, 20), FishCard.Fit(label, skin.SmallMuted, w - vw - 8), skin.SmallMuted);
+            GUI.Label(new Rect(x + w - vw, y, vw, 20), value, skin.SmallBold);
+            if (capacity > 0)
+            {
+                var fill = Mathf.Clamp01(count / (float)capacity);
+                if (color.HasValue)
+                {
+                    skin.Bar(new Rect(x, y + 24, w, 8), fill, color.Value);
+                }
+                else
+                {
+                    skin.Bar(new Rect(x, y + 24, w, 8), fill, fill >= 0.9f);
+                }
+            }
+
+            return y + 42;
         }
 
         // ------------------------------------------------------------------ Equipment and Inventory
@@ -469,6 +758,8 @@ namespace FishingIdle.Game.UI
             _profile = _root.GetProfile();
             _cardume = _root.GetCardume();
             _aquarium = _root.GetAquarium(AquariumSort.Size);
+            _arena = _root.GetArena();
+            _expeditions = _root.GetExpeditions();
         }
     }
 }

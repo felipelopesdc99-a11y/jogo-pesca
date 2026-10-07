@@ -97,6 +97,18 @@ namespace FishingIdle.GameService.Profile
         public long RareCatches { get; internal set; }
         public long FishSold { get; internal set; }
         public long CoinsFromSales { get; internal set; }
+
+        /// <summary>Per rarity, lowest first: species found / total and fish caught (owner's own Profile, A-121).</summary>
+        public List<RarityTallyView> ByRarity { get; } = new List<RarityTallyView>();
+    }
+
+    public sealed class RarityTallyView
+    {
+        public string RarityId { get; internal set; }
+        public string RarityName { get; internal set; }
+        public int SpeciesFound { get; internal set; }
+        public int SpeciesTotal { get; internal set; }
+        public long Caught { get; internal set; }
     }
 
     /// <summary>The player's own Profile (GDD section 37, own view).</summary>

@@ -377,6 +377,28 @@ namespace FishingIdle.GameService.Profile
                 CoinsFromSales = Save.Stats.CoinsFromSales,
             };
 
+            // Per rarity: how many species exist, how many were found, and how many fish were caught.
+            foreach (var tier in Config.Progression.Rarity.Tiers)
+            {
+                var species = Config.FishCatalog.Species.Where(sp => sp.Rarity == tier.Id).ToList();
+                if (species.Count == 0)
+                {
+                    continue;
+                }
+
+                var tally = new RarityTallyView { RarityId = tier.Id, RarityName = tier.DisplayName, SpeciesTotal = species.Count };
+                foreach (var sp in species)
+                {
+                    if (Save.SpeciesRecords.TryGetValue(sp.Id, out var rec))
+                    {
+                        tally.SpeciesFound++;
+                        tally.Caught += rec.TimesCaught;
+                    }
+                }
+
+                records.ByRarity.Add(tally);
+            }
+
             var biggest = Save.SpeciesRecords.OrderByDescending(r => r.Value.LargestMm).FirstOrDefault();
             if (biggest.Key != null)
             {
