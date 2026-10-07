@@ -66,7 +66,7 @@ namespace FishingIdle.Game.UI
             if (!string.IsNullOrEmpty(m.RarityName))
             {
                 var label = m.RarityName.ToUpperInvariant();
-                skin.AccentPill(new Rect(x, y, skin.PillWidth(label, true), 20), label, accent, Icons.Star);
+                skin.RarityPill(new Rect(x, y, skin.PillWidth(label, true), 22), m.RarityId, label);
             }
 
             if (m.Selected)

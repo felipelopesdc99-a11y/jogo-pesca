@@ -3,6 +3,20 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.10] — 07/10/2026
+
+### Adicionado
+
+- Ranking da Arena com pódio dos 3 primeiros e páginas de 10 até o top 100 (A-112).
+
+### Corrigido
+
+- Selos de raridade: sem o risco no meio do nome; Lendário e Mítico com brilho suave (A-113).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.9] — 07/10/2026
 
 ### Mudado

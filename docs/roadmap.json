@@ -3770,6 +3770,38 @@
           "dependencies": [],
           "updated_at": "2026-10-07T17:25:00Z",
           "completion_notes": "ShopWindow.DrawRods virou lista com rolagem: imagem, nome, nível, o que pesca, bônus (Nv.1 → máximo), preço e botão. Em janela larga os bônus ficam ao lado do nome; em janela estreita, embaixo. O texto sobre a chance de puxar, no painel da esquerda, não se sobrepõe mais às barras em telas baixas. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T20",
+          "title": "Ranking da Arena: pódio e páginas até o top 100",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026): pódio com os 3 primeiros, páginas de 10 jogadores, até o top 100. ASSET_PENDENTE: pódio e medalhas.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T17:45:00Z",
+          "completion_notes": "arena.json → ranking.top_shown/page_size; ArenaView traz o top 100 e o peixe mais forte dos 3 primeiros; ArenaWindow.DrawRanking com pódio, páginas, \"Minha posição\" e aviso para quem está fora do top 100; ArenaRankingViewTests. Arte pedida (doc de pedido de arte do Ranking). A-112. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T21",
+          "title": "Selos de raridade sem o risco no meio",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026, com print): um risco atravessava o nome da raridade. ASSET_PENDENTE: gemas das raridades.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T17:45:00Z",
+          "completion_notes": "UiSkin.AccentPill desenhado com retângulo arredondado do Unity (o 9-slice mais baixo que as bordas fazia a linha); UiSkin.RarityPill com brilho para Lendário e Mítico, usado na Caixa, no Aquário, na Enciclopédia e na Arena; texto do selo de 11 para 12. A-113. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T22",
+          "title": "Encaixar a arte do Ranking e das raridades",
+          "subsystem": "client",
+          "description": "Quando chegarem Arena_01_podio, Arena_02_medalhas e Raridade_01_gemas (docs/ASSETS_PENDENTES.md): recortar, otimizar e trocar os blocos e a estrela.",
+          "status": "TODO",
+          "dependencies": [
+            "M22-T20",
+            "M22-T21"
+          ],
+          "updated_at": "2026-10-07T17:45:00Z"
         }
       ]
     }

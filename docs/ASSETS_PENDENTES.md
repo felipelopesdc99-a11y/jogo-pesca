@@ -215,6 +215,17 @@ encostam um no outro e continuam os céus noturnos com cópias espelhadas.
 
 Nenhuma imagem pendente desses mapas: o `Abismo_12_vulto_gigante` chegou em 07/10/2026.
 
+## Ranking da Arena e raridades (pedido em 07/10/2026)
+
+Pedido no doc "Fishing Idle — Pedido de arte: Ranking da Arena e raridades"
+(https://claude.ai/code/artifact/52c78f1e-1d5f-4c42-820e-cd4e0c14a9b1). Enquanto não chegam, o jogo usa blocos
+limpos com uma faixa na cor da medalha e o ícone de estrela.
+
+- `Arena_01_podio.png` → `Arena/podio_1.png`, `podio_2.png`, `podio_3.png` (fundo verde).
+- `Arena_02_medalhas.png` → `Icones/ico_medalha_ouro.png`, `ico_medalha_prata.png`, `ico_medalha_bronze.png`
+  (fundo magenta).
+- `Raridade_01_gemas.png` → uma gema por raridade, para o selo de raridade (fundo magenta).
+
 ## Som ambiente dos mapas
 
 Os 40 arquivos listados em `Resources/Sons/ambiente.json` (4 por mapa) ainda não existem. Quando vierem,

@@ -1318,3 +1318,24 @@ mas vai demorar". Cada vez que o Pescador chega a um nível múltiplo de 10 (Nv.
 volta". Valores em `config/progression.json` → `fisher.dollars_per_levels`. Saves que já passaram desses
 níveis não recebem os Dólares de trás.
 
+### A-112 · Ranking da Arena: pódio e páginas até o top 100
+**Seção do GDD:** 29 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026). A aba Ranking da Arena mostra:
+
+- **Pódio** com os 3 primeiros na primeira página: 2º à esquerda, 1º no centro (mais alto) e 3º à direita, com
+  medalha, nome, e o peixe mais forte do Cardume de cada um.
+- **Lista em páginas de 10** (Anterior / Página X de 10 / Próxima), do 4º ao 100º. Nunca mais que o top 100.
+- **Minha posição** leva à página do jogador quando ele está no top 100; quem está abaixo vê "Sua posição: #N
+  (fora do top 100)".
+- Tamanho da página e do top em `config/arena.json` → `ranking`. Arte do pódio e das medalhas pedida
+  (`docs/ASSETS_PENDENTES.md`); até chegar, blocos limpos.
+
+### A-113 · Selos de raridade mais limpos
+**Seção do GDD:** 6 · **Situação:** No jogo (não aberto no Unity ainda)
+
+O proprietário viu um risco atravessando o nome da raridade (COMUM, RARO, LENDÁRIO…). O selo era uma caixa
+de 9 partes mais baixa que as próprias bordas, e o Unity a desenhava com uma linha no meio. Agora o selo é um
+retângulo arredondado de verdade: fundo na cor da raridade, contorno e texto um pouco maior. Lendário e Mítico
+ganham um brilho suave em volta. Gemas próprias de cada raridade foram pedidas para trocar a estrela.
+

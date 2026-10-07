@@ -220,7 +220,7 @@ namespace FishingIdle.Game.UI
             y += 32;
             var rarityLabel = fish.RarityName.ToUpperInvariant();
             var pillWidth = skin.PillWidth(rarityLabel, true);
-            skin.AccentPill(new Rect(x, y, pillWidth, 22), rarityLabel, accent, Icons.Star);
+            skin.RarityPill(new Rect(x, y, pillWidth, 22), fish.RarityId, rarityLabel);
             if (exceptional)
             {
                 UI.FishCard.ExceptionalSeal(skin, new Rect(x + pillWidth + 8, y + 1, 110, 20), fish.SizeCategoryName.ToUpperInvariant(), UiSkin.SizeColor(fish.SizeCategoryId));

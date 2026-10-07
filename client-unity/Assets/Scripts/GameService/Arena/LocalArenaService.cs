@@ -43,6 +43,11 @@ namespace FishingIdle.GameService.Arena
         public int Rank { get; internal set; }
         public string Name { get; internal set; }
         public bool IsPlayer { get; internal set; }
+
+        /// <summary>The strongest fish of the team, shown on the podium (top 3 only; null otherwise).</summary>
+        public string LeadSpeciesId { get; internal set; }
+        public string LeadSpeciesName { get; internal set; }
+        public int LeadLevel { get; internal set; }
     }
 
     public sealed class ArenaShopItemView
@@ -71,7 +76,9 @@ namespace FishingIdle.GameService.Arena
 
         public List<OpponentView> Opponents { get; } = new List<OpponentView>();
         public List<BattleRecordView> History { get; } = new List<BattleRecordView>();
+        /// <summary>The top of the ranking (A-112): positions 1 to <see cref="RankingPageSize"/> × pages, at most the top 100.</summary>
         public List<RankingEntryView> Ranking { get; } = new List<RankingEntryView>();
+        public int RankingPageSize { get; internal set; }
         public List<ArenaShopItemView> ShopItems { get; } = new List<ArenaShopItemView>();
     }
 
@@ -159,15 +166,25 @@ namespace FishingIdle.GameService.Arena
                 view.History.Add(ToView(record));
             }
 
-            // Top 10 plus the neighbourhood around the player.
-            var rank = view.Rank;
-            for (var i = 0; i < State.Ranking.Count; i++)
+            // The top of the ranking (A-112): a podium for the first 3, then pages, down to the top 100.
+            var top = Math.Min(State.Ranking.Count, Math.Max(3, Config.Arena.Ranking?.TopShown ?? 100));
+            view.RankingPageSize = Math.Max(1, Config.Arena.Ranking?.PageSize ?? 10);
+            for (var i = 0; i < top; i++)
             {
-                var r = i + 1;
-                if (r <= 10 || Math.Abs(r - rank) <= 3)
+                var id = State.Ranking[i];
+                var entry = new RankingEntryView { Rank = i + 1, Name = NameOf(id), IsPlayer = id == ArenaBots.PlayerId };
+                if (i < 3)
                 {
-                    view.Ranking.Add(new RankingEntryView { Rank = r, Name = NameOf(State.Ranking[i]), IsPlayer = State.Ranking[i] == ArenaBots.PlayerId });
+                    var lead = TeamOf(id).Where(f => f != null).OrderByDescending(f => f.Level).FirstOrDefault();
+                    if (lead != null)
+                    {
+                        entry.LeadSpeciesId = lead.SpeciesId;
+                        entry.LeadSpeciesName = lead.SpeciesName;
+                        entry.LeadLevel = lead.Level;
+                    }
                 }
+
+                view.Ranking.Add(entry);
             }
 
             foreach (var item in Config.Arena.Shop?.Items ?? new List<ArenaShopItemConfig>())

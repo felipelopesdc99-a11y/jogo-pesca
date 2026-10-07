@@ -29,6 +29,7 @@ namespace FishingIdle.Game.UI
         private ArenaView _arena;
         private float _nextRefresh;
         private Vector2 _scroll;
+        private int _rankPage;
 
         // Replay state.
         private BattleReport _battle;
@@ -117,6 +118,7 @@ namespace FishingIdle.Game.UI
                 {
                     _tab = tab;
                     _scroll = Vector2.zero;
+                    _rankPage = 0;
                 }
 
                 x += w + 8;
@@ -173,7 +175,7 @@ namespace FishingIdle.Game.UI
                     {
                         var rarity = f.RarityName.ToUpperInvariant();
                         var pw = skin.PillWidth(rarity, false);
-                        skin.AccentPill(new Rect(rect.xMax - 18 - pw, fy + 8, pw, 18), rarity, UiSkin.RarityColor(f.RarityId));
+                        skin.RarityPill(new Rect(rect.xMax - 18 - pw, fy + 7, pw, 20), f.RarityId, rarity, false);
                     }
 
                     fy += 40;
@@ -202,24 +204,150 @@ namespace FishingIdle.Game.UI
             }
         }
 
+        // ------------------------------------------------------------------ ranking (A-112): podium + pages up to the top 100
+
+        private static readonly Color Silver = new Color(0.78f, 0.82f, 0.88f);
+        private static readonly Color Bronze = new Color(0.80f, 0.52f, 0.30f);
+
+        private static Color MedalColor(int rank) => rank == 1 ? UiSkin.Gold : rank == 2 ? Silver : Bronze;
+
         private void DrawRanking(UiSkin skin, Rect area)
         {
             var rows = _arena.Ranking;
-            _scroll = GUI.BeginScrollView(area, _scroll, new Rect(0, 0, area.width - 20, rows.Count * 34f));
-            for (var i = 0; i < rows.Count; i++)
+            if (rows.Count == 0)
             {
-                var r = rows[i];
-                var rect = new Rect(0, i * 34f, area.width - 20, 30);
-                if (r.IsPlayer)
-                {
-                    GUI.Box(rect, GUIContent.none, skin.CardSelected);
-                }
-
-                GUI.Label(new Rect(rect.x + 16, rect.y + 6, 90, 20), GameTexts.Arena.RankOf(r.Rank), skin.SmallGold);
-                GUI.Label(new Rect(rect.x + 110, rect.y + 6, rect.width - 130, 20), r.IsPlayer ? r.Name + " (" + GameTexts.Arena.You + ")" : r.Name, r.IsPlayer ? skin.BodyBold : skin.Small);
+                GUI.Label(new Rect(area.x, area.y, area.width, 22), GameTexts.Arena.RankingEmpty, skin.SmallMuted);
+                return;
             }
 
-            GUI.EndScrollView();
+            var size = Mathf.Max(1, _arena.RankingPageSize);
+            var pages = (rows.Count + size - 1) / size;
+            _rankPage = Mathf.Clamp(_rankPage, 0, pages - 1);
+
+            // Pager at the bottom.
+            var pager = new Rect(area.x, area.yMax - 44, area.width, 40);
+            var listBottom = pager.y - 8;
+
+            var y = area.y;
+            if (_rankPage == 0)
+            {
+                var podiumHeight = Mathf.Min(230f, (listBottom - area.y) * 0.5f);
+                DrawPodium(skin, new Rect(area.x, y, area.width, podiumHeight), rows);
+                y += podiumHeight + 10;
+            }
+
+            // The page's rows (on the first page, the podium already shows 1 to 3).
+            var first = _rankPage * size;
+            var last = Mathf.Min(rows.Count, first + size);
+            if (_rankPage == 0)
+            {
+                first = Mathf.Min(3, rows.Count);
+            }
+
+            var count = last - first;
+            var rowHeight = count > 0 ? Mathf.Min(38f, (listBottom - y) / count) : 38f;
+            for (var i = first; i < last; i++)
+            {
+                var r = rows[i];
+                var rect = new Rect(area.x, y, area.width, rowHeight - 4);
+                GUI.Box(rect, GUIContent.none, r.IsPlayer ? skin.CardSelected : skin.Card);
+                var ty = rect.y + (rect.height - 20) / 2f;
+                GUI.Label(new Rect(rect.x + 16, ty, 90, 20), GameTexts.Arena.RankOf(r.Rank), skin.SmallGold);
+                GUI.Label(new Rect(rect.x + 110, ty, rect.width - 130, 20), r.IsPlayer ? r.Name + " (" + GameTexts.Arena.You + ")" : r.Name, r.IsPlayer ? skin.BodyBold : skin.Small);
+                y += rowHeight;
+            }
+
+            // Previous / page / next, and a jump to the player's page.
+            if (_rankPage > 0 && GUI.Button(new Rect(pager.x, pager.y, 150, 40), "‹  " + GameTexts.Arena.Previous, skin.Button))
+            {
+                _rankPage--;
+            }
+
+            GUI.Label(new Rect(pager.x + 160, pager.y + 10, 160, 22), GameTexts.Arena.PageOf(_rankPage + 1, pages), skin.BodyBold);
+            if (_rankPage < pages - 1 && GUI.Button(new Rect(pager.x + 330, pager.y, 150, 40), GameTexts.Arena.Next + "  ›", skin.Button))
+            {
+                _rankPage++;
+            }
+
+            var mine = rows.FindIndex(r => r.IsPlayer);
+            if (mine >= 0)
+            {
+                if (mine / size != _rankPage && skin.IconButton(new Rect(pager.xMax - 220, pager.y, 220, 40), Icons.Arena, GameTexts.Arena.MyPosition, skin.Button))
+                {
+                    _rankPage = mine / size;
+                }
+            }
+            else
+            {
+                GUI.Label(new Rect(pager.xMax - 360, pager.y + 10, 360, 22), GameTexts.Arena.OutsideTop(_arena.Rank, rows.Count), skin.SmallGoldRight);
+            }
+        }
+
+        /// <summary>Second, first and third side by side, the first one taller (A-112).</summary>
+        private static void DrawPodium(UiSkin skin, Rect area, List<RankingEntryView> rows)
+        {
+            // ASSET_PENDENTE: podium and medal art (docs/ASSETS_PENDENTES.md); clean blocks meanwhile.
+            var gap = 16f;
+            var w = Mathf.Min(260f, (area.width - gap * 2) / 3f);
+            var x0 = area.x + (area.width - (w * 3 + gap * 2)) / 2f;
+            var order = new[] { 2, 1, 3 };
+            for (var k = 0; k < 3; k++)
+            {
+                var rank = order[k];
+                if (rank > rows.Count)
+                {
+                    continue;
+                }
+
+                var entry = rows[rank - 1];
+                var color = MedalColor(rank);
+                var blockHeight = area.height * (rank == 1 ? 0.42f : rank == 2 ? 0.32f : 0.25f);
+                var x = x0 + k * (w + gap);
+                var block = new Rect(x, area.yMax - blockHeight, w, blockHeight);
+
+                var pedestal = ArtAssets.Texture("Arena/podio_" + rank);
+                if (pedestal != null)
+                {
+                    GUI.DrawTexture(block, pedestal, ScaleMode.StretchToFill, true);
+                }
+                else
+                {
+                    GUI.Box(block, GUIContent.none, entry.IsPlayer ? skin.CardSelected : skin.Card);
+                    var previous = GUI.color;
+                    GUI.color = color;
+                    GUI.DrawTexture(new Rect(block.x, block.y, block.width, 4), Texture2D.whiteTexture);
+                    GUI.color = previous;
+                }
+
+                GUI.contentColor = color;
+                GUI.Label(new Rect(block.x, block.y + 8, block.width, 26), GameTexts.Arena.Place(rank), skin.CenterBold);
+                GUI.contentColor = Color.white;
+
+                // Above the pedestal: medal, best fish, name.
+                var top = area.y;
+                var medal = ArtAssets.Icon(rank == 1 ? "medalha_ouro" : rank == 2 ? "medalha_prata" : "medalha_bronze");
+                var nameY = block.y - 46;
+                if (entry.LeadSpeciesId != null)
+                {
+                    var fishHeight = Mathf.Max(24f, nameY - top - 34);
+                    GUI.DrawTexture(new Rect(x + 16, top + 30, w - 32, fishHeight), Art.FishTexture(entry.LeadSpeciesId), ScaleMode.ScaleToFit, true);
+                }
+
+                if (medal != null)
+                {
+                    GUI.DrawTexture(new Rect(x + w / 2f - 14, top, 28, 28), medal, ScaleMode.ScaleToFit, true);
+                }
+                else
+                {
+                    skin.DrawIcon(new Rect(x + w / 2f - 12, top + 2, 24, 24), Icons.Honor, color);
+                }
+
+                GUI.Label(new Rect(x, nameY, w, 24), entry.IsPlayer ? entry.Name + " (" + GameTexts.Arena.You + ")" : entry.Name, skin.CenterBold);
+                if (entry.LeadSpeciesName != null)
+                {
+                    GUI.Label(new Rect(x, nameY + 22, w, 20), GameTexts.Arena.PodiumLead(entry.LeadSpeciesName, entry.LeadLevel), skin.SmallMutedCenter);
+                }
+            }
         }
 
         private void DrawHistory(UiSkin skin, Rect area)

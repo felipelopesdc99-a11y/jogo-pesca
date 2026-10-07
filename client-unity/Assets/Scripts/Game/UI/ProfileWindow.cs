@@ -429,7 +429,7 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(rect.x + 14, rect.y + 88, rect.width - 28, 22), e.Name, skin.BodyBold);
                 var rarity = (e.RarityName ?? string.Empty).ToUpperInvariant();
                 var pw = skin.PillWidth(rarity, false);
-                skin.AccentPill(new Rect(rect.xMax - 14 - pw, rect.y + 90, pw, 20), rarity, UiSkin.RarityColor(e.RarityId));
+                skin.RarityPill(new Rect(rect.xMax - 14 - pw, rect.y + 89, pw, 22), e.RarityId, rarity, false);
                 GUI.Label(new Rect(rect.x + 14, rect.y + 110, rect.width - 28, 20), e.MapName, skin.SmallMuted);
                 GUI.Label(new Rect(rect.x + 14, rect.y + 130, rect.width - 28, 20), GameTexts.Profile.Largest + ": " + Format.SizeCm(e.LargestCm), skin.Small);
                 GUI.Label(new Rect(rect.x + 14, rect.y + 150, rect.width - 28, 20), GameTexts.Profile.TimesCaught + ": " + Format.Number(e.TimesCaught), skin.Small);

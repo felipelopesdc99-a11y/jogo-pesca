@@ -40,7 +40,10 @@
     "attacker_victory_swaps_positions": true,
     "intermediate_ranks_shift": false,
     "attacker_defeat_changes_rank": false,
-    "defender_can_move_while_offline": true
+    "defender_can_move_while_offline": true,
+    "top_shown": 100,
+    "page_size": 10,
+    "view_note": "Tela do Ranking (A-112, pedido do proprietário em 07/10/2026): pódio com os 3 primeiros e lista em páginas de page_size jogadores, até o top top_shown. Quem está abaixo vê só a própria posição."
   },
   "honor": {
     "attacker_victory_gain": 12,

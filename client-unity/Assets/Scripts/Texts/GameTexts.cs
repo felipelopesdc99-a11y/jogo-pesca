@@ -240,6 +240,14 @@ namespace FishingIdle.Texts
             public const string Defeat = "Derrota";
 
             public static string RankOf(int rank) => "#" + rank;
+            public const string Previous = "Anterior";
+            public const string Next = "Próxima";
+            public const string MyPosition = "Minha posição";
+            public const string RankingEmpty = "Ninguém no ranking ainda.";
+            public static string PageOf(int page, int pages) => "Página " + page + " de " + pages;
+            public static string Place(int rank) => rank + "º lugar";
+            public static string PodiumLead(string species, int level) => species + " · Nv. " + level;
+            public static string OutsideTop(int rank, int top) => "Sua posição: #" + rank + " (fora do top " + top + ")";
             public static string RankOfTotal(int rank, int total) => "#" + rank + " de " + total;
             public static string EnergyOf(int energy, int max) => energy + " / " + max;
             public static string NextEnergy(string countdown) => "+1 em " + countdown;

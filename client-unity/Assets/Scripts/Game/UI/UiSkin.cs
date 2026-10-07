@@ -160,7 +160,7 @@ namespace FishingIdle.Game.UI
             Display = Label(TitleBoldFont, 44, Text);
             Display.wordWrap = false;
             DisplaySub = Label(BodyBoldFont, 18, Text);
-            PillText = Label(BodyBoldFont, 11, Text);
+            PillText = Label(BodyBoldFont, 12, Text);
             PillText.alignment = TextAnchor.MiddleCenter;
             PillText.wordWrap = false;
 
@@ -268,10 +268,11 @@ namespace FishingIdle.Game.UI
         /// <summary>An outlined pill in an accent colour, e.g. the rarity seal "RARO", with an optional icon.</summary>
         public void AccentPill(Rect rect, string text, Color color, string icon = null)
         {
-            var previous = GUI.backgroundColor;
-            GUI.backgroundColor = color;
-            GUI.Box(rect, GUIContent.none, Pill);
-            GUI.backgroundColor = previous;
+            // Drawn with Unity's rounded rectangles instead of the 9-slice Pill box: the pills are shorter
+            // than the box's borders, and the squeezed 9-slice drew a line across the text.
+            var radius = rect.height / 2f;
+            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, new Color(color.r, color.g, color.b, 0.20f), 0, radius);
+            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, new Color(color.r, color.g, color.b, 0.85f), 1.5f, radius);
 
             var textRect = rect;
             if (icon != null)
@@ -285,6 +286,21 @@ namespace FishingIdle.Game.UI
             GUI.contentColor = Color.Lerp(color, Color.white, 0.45f);
             GUI.Label(textRect, text, PillText);
             GUI.contentColor = prevContent;
+        }
+
+        /// <summary>
+        /// The rarity seal (e.g. "LENDÁRIO"): a pill in the rarity colour with a star; Lendário and Mítico
+        /// also get a soft glow, so the rare ones stand out at a glance.
+        /// </summary>
+        public void RarityPill(Rect rect, string rarityId, string text, bool icon = true)
+        {
+            var color = RarityColor(rarityId);
+            if (rarityId == "legendary" || rarityId == "mythic")
+            {
+                DrawGlow(rect, color, rarityId == "mythic" ? 0.55f : 0.4f);
+            }
+
+            AccentPill(rect, text, color, icon ? Icons.Star : null);
         }
 
         /// <summary>

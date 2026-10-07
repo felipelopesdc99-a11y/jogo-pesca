@@ -391,6 +391,15 @@ namespace FishingIdle.GameService.Config
         public FormationConfig Formation { get; set; }
         public CardumeConfig Cardume { get; set; }
         public CardumeStrengthConfig CardumeStrength { get; set; }
+
+        /// <summary>How much of the ranking is shown, and in pages of how many (A-112).</summary>
+        public ArenaRankingConfig Ranking { get; set; }
+    }
+
+    public sealed class ArenaRankingConfig
+    {
+        public int TopShown { get; set; }
+        public int PageSize { get; set; }
     }
 
     public sealed class FormationConfig
