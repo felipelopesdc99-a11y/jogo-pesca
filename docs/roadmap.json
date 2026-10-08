@@ -3996,6 +3996,26 @@
           "dependencies": [],
           "updated_at": "2026-10-08T02:40:00Z",
           "completion_notes": "ArenaWindow: cabeçalho com avatar, nome, medalha da posição (de N), Energia em segmentos com o tempo do próximo ponto e Honra. Aba Adversários: 3 pedestais que sobem da esquerda para a direita (avatar, nome, posição), o Cardume do jogador e o do adversário escolhido frente a frente (FRENTE/TRÁS, espelhado, sem Força), VS ao centro, botão Atacar · N Energia. Tela VS de ~1,2 s antes do replay, pulável com clique, Espaço ou Esc. Bots usam o retrato padrão até existir arte. A-134. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T37",
+          "title": "Inventário estilo mochila",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026): Inventário com cara de jogo, itens em cards e o nome com o mouse por cima. Ele viu 3 exemplos e escolheu a Mochila.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T03:10:00Z",
+          "completion_notes": "ProfileWindow: as abas Equipamentos e Inventário viraram uma só. À esquerda, EQUIPADO com as vagas de vara, barco e isca e os bônus que o jogo já informa; à direita, a mochila em quadrados com moldura pela categoria, nível, marca de equipada e vagas vazias (só visual, sem limite novo). Ficha ao passar o mouse; clique abre as ações de sempre (Equipar, Melhorar, Vender, Destruir). A-135. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T38",
+          "title": "Barra superior maior e cartão do jogador à direita com as moedas",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026, com prints): cartão do perfil do lado direito, Moedas, Conchas e Dólares dentro dele; barra superior 20 a 30% maior e com cara de jogo; arte pedida ao ChatGPT.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T03:10:00Z",
+          "completion_notes": "Hud: barra de 64 para 80 px, botões de 40 para 52 px com borda 3D e o ativo turquesa com brilho, ícones de 22 para 28 px, fonte 14 para 17; logo com o mapa embaixo. O cartão do jogador foi para a direita com as três moedas (contagem e +N mantidos); as moedas saíram da barra. Avisos abaixo do cartão. Pedido de arte (ícones do menu, molduras, logo, moedas) no documento de arte e em ASSETS_PENDENTES. A-136. Não compilado nem aberto no Unity."
         }
       ]
     }

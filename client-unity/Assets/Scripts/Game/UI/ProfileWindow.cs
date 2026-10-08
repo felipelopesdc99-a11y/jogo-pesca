@@ -7,6 +7,7 @@ using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Arena;
 using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Profile;
+using FishingIdle.GameService.Shop;
 using FishingIdle.Game.Visual;
 using FishingIdle.Texts;
 using UnityEngine;
@@ -51,6 +52,12 @@ namespace FishingIdle.Game.UI
         // Rod sell/destroy confirmation.
         private RodItemView _pendingRod;
         private bool _pendingDestroy;
+
+        // The backpack inventory: the rod whose actions are shown, and the tooltip of the slot under the mouse.
+        private long _selectedRodId = -1;
+        private string _tipTitle;
+        private Color _tipColor;
+        private readonly List<(TipKind Kind, string Text, string Value)> _tipLines = new List<(TipKind Kind, string Text, string Value)>();
 
         public ProfileWindow(GameRoot root)
         {
@@ -128,7 +135,7 @@ namespace FishingIdle.Game.UI
             var tabs = new[]
             {
                 (Tab.Summary, GameTexts.Profile.TabSummary),
-                (Tab.Equipment, GameTexts.Profile.TabEquipment), (Tab.Inventory, GameTexts.Profile.TabInventory),
+                (Tab.Inventory, GameTexts.Profile.TabInventory),
                 (Tab.Cardume, GameTexts.Profile.TabCardume), (Tab.Encyclopedia, GameTexts.Profile.TabEncyclopedia),
                 (Tab.Records, GameTexts.Profile.TabRecords),
             };
@@ -149,7 +156,7 @@ namespace FishingIdle.Game.UI
             switch (_tab)
             {
                 case Tab.Summary: DrawSummary(skin, content); break;
-                case Tab.Equipment: DrawEquipment(skin, content); break;
+                case Tab.Equipment:
                 case Tab.Inventory: DrawInventory(skin, content); break;
                 case Tab.Encyclopedia: DrawEncyclopedia(skin, content); break;
                 case Tab.Records: DrawRecords(skin, content); break;
@@ -587,93 +594,267 @@ namespace FishingIdle.Game.UI
             return y + 42;
         }
 
-        // ------------------------------------------------------------------ Equipment and Inventory
+        // ------------------------------------------------------------------ Inventory (the backpack)
 
-        private void DrawEquipment(UiSkin skin, Rect area)
+        private enum TipKind
         {
-            var rod = _profile.EquippedRod;
-            GUI.Label(new Rect(area.x, area.y, 400, 26), GameTexts.Profile.RodSlot, skin.Heading);
-            if (rod != null)
+            Line,
+            Row,
+            Text,
+            Warning,
+            Divider,
+            Hint,
+        }
+
+        private const float SlotGap = 10f;
+        private const float ActionPanelHeight = 110f;
+        private const float TipWidth = 330f;
+
+        /// <summary>
+        /// The Inventory as a game backpack: the equipped rod, boat and bait as big slots on the left with
+        /// the bonuses they give, every rod as an item slot on the right, and the actions of the chosen rod.
+        /// </summary>
+        private void DrawInventory(UiSkin skin, Rect area)
+        {
+            var mouse = Event.current.mousePosition;
+            _tipTitle = null;
+            _tipLines.Clear();
+
+            var rods = _profile.Inventory;
+            var selected = rods.FirstOrDefault(r => r.ItemId == _selectedRodId) ?? _profile.EquippedRod ?? (rods.Count > 0 ? rods[0] : null);
+
+            var leftWidth = Mathf.Clamp(area.width * 0.3f, 300f, 400f);
+            DrawEquipped(skin, new Rect(area.x, area.y, leftWidth, area.height), mouse);
+
+            var right = new Rect(area.x + leftWidth + 20f, area.y, area.width - leftWidth - 20f, area.height);
+            DrawBackpack(skin, new Rect(right.x, right.y, right.width, right.height - ActionPanelHeight - 12f), rods, selected, mouse);
+            if (selected != null)
             {
-                RodCard(skin, new Rect(area.x, area.y + 40, 460, 250), rod, false);
+                DrawRodActions(skin, new Rect(right.x, right.yMax - ActionPanelHeight, right.width, ActionPanelHeight), selected);
+            }
+
+            // Last, so no slot, button or panel is drawn over it.
+            if (_tipTitle != null)
+            {
+                DrawTip(skin, mouse, new Rect(area.x - 16f, area.y - 16f, area.width + 32f, area.height + 32f));
             }
         }
 
-        private void DrawInventory(UiSkin skin, Rect area)
+        /// <summary>The left column: rod, boat and bait slots, then the bonuses they add up to.</summary>
+        private void DrawEquipped(UiSkin skin, Rect rect, Vector2 mouse)
         {
-            GUI.Label(new Rect(area.x, area.y, area.width, 22), GameTexts.Profile.InventoryNote, skin.SmallMuted);
+            GUI.Box(rect, GUIContent.none, skin.Card);
+            var x = rect.x + 14f;
+            var w = rect.width - 28f;
+            var y = rect.y + 12f;
+            GUI.Label(new Rect(x, y, w, 20), GameTexts.Profile.EquippedHeader, skin.SmallBold);
+            y += 28f;
 
-            // A scrolling grid: with many rods the rows go on below, never off the panel.
-            const float cardW = 400f, cardH = InventoryCardHeight, gap = 16f;
-            var rods = _profile.Inventory;
-            var view = new Rect(area.x, area.y + 36, area.width, area.height - 36);
-            var columns = Mathf.Max(1, Mathf.FloorToInt((view.width - 20 + gap) / (cardW + gap)));
-            var rows = Mathf.CeilToInt(rods.Count / (float)columns);
-            _scroll = GUI.BeginScrollView(view, _scroll, new Rect(0, 0, view.width - 20, Mathf.Max(0f, rows * (cardH + gap) - gap)));
-            for (var i = 0; i < rods.Count; i++)
+            // Three big slots, as large as the column allows once the bonus panel has its room.
+            var size = Mathf.Clamp((rect.yMax - y - 2 * SlotGap - 12f - 130f) / 3f, 56f, 120f);
+            var textX = x + size + 14f;
+            var textW = rect.xMax - 14f - textX;
+            var gear = _root.Gear;
+            var rod = _profile.EquippedRod;
+
+            var slot = new Rect(x, y, size, size);
+            if (rod != null)
             {
-                RodCard(skin, new Rect((i % columns) * (cardW + gap), (i / columns) * (cardH + gap), cardW, cardH), rods[i], true);
+                var hovered = Hover(slot, mouse);
+                ItemSlot(skin, slot, RodArt(rod.RodId), Icons.Rod, UiSkin.TierColor(rod.Tier), false, hovered);
+                if (rod.HasLevels)
+                {
+                    SlotBadge(skin, slot, GameTexts.Player.LevelShort + " " + rod.Level);
+                }
+
+                SlotText(skin, textX, slot, textW, rod.Name, GameTexts.Profile.RodLine(rod.Tier));
+                if (hovered)
+                {
+                    RodTip(rod, gear);
+                }
+
+                if (GUI.Button(slot, GUIContent.none, GUIStyle.none))
+                {
+                    _selectedRodId = rod.ItemId;
+                }
+            }
+            else
+            {
+                EmptySlot(skin, slot, Icons.Rod);
+            }
+
+            y += size + SlotGap;
+            slot = new Rect(x, y, size, size);
+            if (gear != null)
+            {
+                var boat = gear.Boats.FirstOrDefault(b => b.BoatId == gear.BoatId);
+                var hovered = Hover(slot, mouse);
+                ItemSlot(skin, slot, ArtAssets.Texture("Barcos/" + gear.BoatId), Icons.Boat, UiSkin.TierColor(boat?.Tier ?? 0), false, hovered);
+                SlotText(skin, textX, slot, textW, gear.BoatName, GameTexts.Profile.BoatLine(Format.Percent(gear.BoatBonus, 0)));
+                if (hovered)
+                {
+                    BoatTip(gear, boat);
+                }
+            }
+            else
+            {
+                EmptySlot(skin, slot, Icons.Boat);
+            }
+
+            y += size + SlotGap;
+            slot = new Rect(x, y, size, size);
+            if (gear != null && gear.BaitName != null)
+            {
+                var bait = gear.Baits.FirstOrDefault(b => b.BaitId == gear.BaitId);
+                var hovered = Hover(slot, mouse);
+                ItemSlot(skin, slot, ArtAssets.Texture("Iscas/" + gear.BaitId), Icons.Bait, UiSkin.TierColor(bait?.Tier ?? 0), false, hovered);
+                SlotBadge(skin, slot, GameTexts.Profile.ChargesBadge(gear.BaitChargesLeft));
+                SlotText(skin, textX, slot, textW, gear.BaitName, GameTexts.Profile.BaitLine(gear.BaitChargesLeft));
+                if (hovered)
+                {
+                    BaitTip(gear, bait);
+                }
+            }
+            else
+            {
+                EmptySlot(skin, slot, Icons.Bait);
+                SlotText(skin, textX, slot, textW, GameTexts.Profile.NoBaitSlot, GameTexts.Profile.NoBaitLine);
+            }
+
+            y += size + 12f;
+
+            // The bonuses as the service gives them: the Catch Success total of rod + boat + bait, and the rod's own.
+            skin.Divider(new Rect(x, y, w, 1));
+            y += 10f;
+            var bottom = rect.yMax - 10f;
+            if (bottom - y < 26f)
+            {
+                return;
+            }
+
+            GUI.Label(new Rect(x, y, w, 24), GameTexts.Profile.BonusTotals, skin.BodyBold);
+            y += 28f;
+            if (gear != null)
+            {
+                y = BonusRow(skin, x, y, w, bottom, GameTexts.Shop.CatchBonus, "+" + Format.Percent(gear.TotalBonus, 0), true);
+                if (bottom - y >= 20f + 3 * 24f)
+                {
+                    var split = GameTexts.Profile.SuccessSplit(Format.Percent(gear.RodBonus, 0), Format.Percent(gear.BoatBonus, 0), Format.Percent(gear.BaitBonus, 0));
+                    GUI.Label(new Rect(x, y - 4f, w, 20), FishCard.Fit(split, skin.SmallMuted, w), skin.SmallMuted);
+                    y += 20f;
+                }
+            }
+
+            if (rod != null)
+            {
+                y = BonusRow(skin, x, y, w, bottom, GameTexts.Profile.RarityBonus, "+" + Format.Percent(rod.RarityBonus, 0), false);
+                y = BonusRow(skin, x, y, w, bottom, GameTexts.Profile.SizeBonus, "+" + Format.Percent(rod.SizeBonus, 0), false);
+                BonusRow(skin, x, y, w, bottom, GameTexts.Profile.ShellBonus, rod.GeneratesShells ? "+" + Format.Percent(rod.ShellBonus, 0) : GameTexts.Profile.NoShells, false);
+            }
+        }
+
+        /// <summary>One "label ... value" line of the bonus panel; left out when it would pass the bottom.</summary>
+        private static float BonusRow(UiSkin skin, float x, float y, float w, float bottom, string label, string value, bool gold)
+        {
+            if (y + 22f > bottom)
+            {
+                return y;
+            }
+
+            var style = gold ? skin.SmallGoldRight : RightBold(skin);
+            var vw = Mathf.Min(w * 0.5f, style.CalcSize(new GUIContent(value)).x + 4f);
+            GUI.Label(new Rect(x, y, w - vw - 8f, 22), FishCard.Fit(label, skin.SmallMuted, w - vw - 8f), skin.SmallMuted);
+            GUI.Label(new Rect(x + w - vw, y, vw, 22), value, style);
+            return y + 24f;
+        }
+
+        /// <summary>The right area: every rod as an item slot, then empty slots to fill the visible grid.</summary>
+        private void DrawBackpack(UiSkin skin, Rect rect, List<RodItemView> rods, RodItemView selected, Vector2 mouse)
+        {
+            var title = GameTexts.Profile.RodsCount(rods.Count);
+            var titleW = skin.Heading.CalcSize(new GUIContent(title)).x + 8f;
+            GUI.Label(new Rect(rect.x, rect.y, titleW, 28), title, skin.Heading);
+            var noteW = rect.width - titleW - 16f;
+            if (noteW > 80f)
+            {
+                GUI.Label(new Rect(rect.xMax - noteW, rect.y + 6, noteW, 20), FishCard.Fit(GameTexts.Profile.InventoryNote, skin.SmallMuted, noteW), skin.SmallMutedRight);
+            }
+
+            // Slots of about 100 px: as many columns as fit, then the size stretches to fill the row.
+            const float pad = 4f;
+            var view = new Rect(rect.x - pad, rect.y + 36f, rect.width + pad, rect.height - 36f);
+            var inner = view.width - 20f - pad * 2;
+            var columns = Mathf.Max(3, Mathf.FloorToInt((inner + SlotGap) / (100f + SlotGap)));
+            var size = (inner - (columns - 1) * SlotGap) / columns;
+            var visibleRows = Mathf.Max(1, Mathf.FloorToInt((view.height - pad * 2 + SlotGap) / (size + SlotGap)));
+            var rows = Mathf.Max(visibleRows, Mathf.CeilToInt(rods.Count / (float)columns));
+            var mouseInView = view.Contains(mouse);
+
+            _scroll = GUI.BeginScrollView(view, _scroll, new Rect(0, 0, view.width - 20f, rows * (size + SlotGap) - SlotGap + pad * 2));
+            for (var i = 0; i < rows * columns; i++)
+            {
+                var r = new Rect(pad + (i % columns) * (size + SlotGap), pad + (i / columns) * (size + SlotGap), size, size);
+                if (i >= rods.Count)
+                {
+                    EmptySlot(skin, r, null);
+                    continue;
+                }
+
+                var rod = rods[i];
+                var hovered = mouseInView && Hover(r, Event.current.mousePosition);
+                ItemSlot(skin, r, RodArt(rod.RodId), Icons.Rod, UiSkin.TierColor(rod.Tier), selected != null && rod.ItemId == selected.ItemId, hovered);
+                if (rod.HasLevels)
+                {
+                    SlotBadge(skin, r, GameTexts.Player.LevelShort + " " + rod.Level);
+                }
+
+                if (rod.IsEquipped)
+                {
+                    CheckBadge(skin, r);
+                }
+
+                if (hovered)
+                {
+                    RodTip(rod, _root.Gear);
+                }
+
+                if (GUI.Button(r, GUIContent.none, GUIStyle.none))
+                {
+                    _selectedRodId = rod.ItemId;
+                }
             }
 
             GUI.EndScrollView();
         }
 
-        /// <summary>An Inventory rod card: the stats, then equip, upgrade and sell/destroy, each on its own row.</summary>
-        private const float InventoryCardHeight = 340f;
-
-        private void RodCard(UiSkin skin, Rect rect, RodItemView rod, bool withAction)
+        /// <summary>The chosen rod's actions: equip, upgrade, sell or destroy (with the same confirmations as before).</summary>
+        private void DrawRodActions(UiSkin skin, Rect rect, RodItemView rod)
         {
-            GUI.Box(rect, GUIContent.none, rod.IsEquipped ? skin.CardSelected : skin.Card);
-            var x = rect.x + 20;
-            var w = rect.width - 40;
-            var y = rect.y + 16;
-
-            GUI.Label(new Rect(x, y, w, 26), rod.Name, skin.Heading);
-            y += 28;
-            var level = rod.HasLevels ? " · " + GameTexts.Aquarium.LevelOf(rod.Level, rod.MaxLevel) : string.Empty;
-            GUI.Label(new Rect(x, y, w, 20), GameTexts.Profile.Tier(rod.Tier) + level, skin.SmallMuted);
-            y += 32;
-
-            Row(skin, x, ref y, w, GameTexts.Profile.RarityBonus, "+" + Format.Percent(rod.RarityBonus, 0));
-            Row(skin, x, ref y, w, GameTexts.Profile.SizeBonus, "+" + Format.Percent(rod.SizeBonus, 0));
-            Row(skin, x, ref y, w, GameTexts.Profile.ShellBonus, rod.GeneratesShells ? "+" + Format.Percent(rod.ShellBonus, 0) : GameTexts.Profile.NoShells);
-            GUI.Label(new Rect(x, y + 4, w, 20), rod.CanCatchMythic ? GameTexts.Profile.CatchesUpToMythic : rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare, skin.Small);
-
-            if (!withAction)
-            {
-                return;
-            }
-
-            // Rows from the bottom: sell / destroy (half and half), the upgrade on its own full row, then
-            // the equip state above them, so every label has the room it needs.
-            var rowY = rect.yMax - 54;
-            var disposeY = rowY;
-            if (rod.CanDispose)
-            {
-                rowY -= 46;
-            }
-
-            var upgradeY = rowY;
-            if (rod.HasLevels)
-            {
-                rowY -= 46;
-            }
-
-            var button = new Rect(x, rowY, w, 38);
+            GUI.Box(rect, GUIContent.none, skin.CardSelected);
+            var tier = UiSkin.TierColor(rod.Tier);
+            var thumb = new Rect(rect.x + 12f, rect.y + 12f, rect.height - 24f, rect.height - 24f);
+            ItemSlot(skin, thumb, RodArt(rod.RodId), Icons.Rod, tier, false, false);
             if (rod.IsEquipped)
             {
-                var equipped = GameTexts.Profile.Equipped.ToUpperInvariant();
-                skin.AccentPill(new Rect(x, button.y + 7, skin.PillWidth(equipped, true) + 6, 24), equipped, UiSkin.Accent, Icons.Check);
-            }
-            else if (!rod.AllowedOnCurrentMap)
-            {
-                GUI.Label(button, GameTexts.Profile.NotAllowedHere, skin.SmallGold);
-            }
-            else if (GUI.Button(button, GameTexts.Profile.Equip, skin.ButtonPrimary))
-            {
-                _root.EquipRod(rod.ItemId);
+                CheckBadge(skin, thumb);
             }
 
+            var bw = Mathf.Clamp(rect.width * 0.55f, 300f, 520f);
+            var bx = rect.xMax - 14f - bw;
+            var tx = thumb.xMax + 14f;
+            var tw = bx - 14f - tx;
+
+            var prev = GUI.contentColor;
+            GUI.contentColor = Color.Lerp(tier, Color.white, 0.35f);
+            GUI.Label(new Rect(tx, rect.y + 12f, tw, 28), FishCard.Fit(rod.Name, skin.Heading, tw), skin.Heading);
+            GUI.contentColor = prev;
+            var level = rod.HasLevels ? " · " + GameTexts.Aquarium.LevelOf(rod.Level, rod.MaxLevel) : string.Empty;
+            GUI.Label(new Rect(tx, rect.y + 42f, tw, 20), FishCard.Fit(GameTexts.Profile.Tier(rod.Tier) + level, skin.SmallMuted, tw), skin.SmallMuted);
+            GUI.Label(new Rect(tx, rect.y + 64f, tw, 20), FishCard.Fit(CatchesText(rod), skin.Small, tw), skin.Small);
+
+            // The upgrade on its own full row (its label is the longest), then equip state, sell and destroy.
+            var row1 = rect.y + 12f;
+            var row2 = row1 + 46f;
             if (rod.HasLevels)
             {
                 if (rod.NextUpgradeCost > 0)
@@ -681,31 +862,275 @@ namespace FishingIdle.Game.UI
                     var upgrade = rod.NextUpgradeShells > 0
                         ? GameTexts.Shop.UpgradeForWithShells(rod.Level + 1, Format.Number(rod.NextUpgradeCost), Format.Number(rod.NextUpgradeShells))
                         : GameTexts.Shop.UpgradeFor(rod.Level + 1, Format.Number(rod.NextUpgradeCost));
-                    if (GUI.Button(new Rect(x, upgradeY, w, 38), FishCard.Fit(upgrade, skin.Button, w - 24), skin.Button))
+                    if (GUI.Button(new Rect(bx, row1, bw, 38), FishCard.Fit(upgrade, skin.Button, bw - 28f), skin.Button))
                     {
                         _root.UpgradeRod(rod.ItemId);
                     }
                 }
                 else
                 {
-                    GUI.Label(new Rect(x, upgradeY + 8, w, 22), GameTexts.Shop.MaxLevel, skin.SmallGold);
+                    GUI.Label(new Rect(bx, row1 + 10f, bw, 22), GameTexts.Shop.MaxLevel, skin.SmallGold);
                 }
+            }
+
+            // Equip and destroy are short words; the sale shows its value, so it gets the widest place.
+            var side = (bw - 16f) * 0.3f;
+            var sell = bw - 16f - side * 2f;
+            if (rod.IsEquipped)
+            {
+                var equipped = GameTexts.Profile.Equipped.ToUpperInvariant();
+                skin.AccentPill(new Rect(bx, row2 + 7f, Mathf.Min(bw, skin.PillWidth(equipped, true) + 6f), 24), equipped, UiSkin.Accent, Icons.Check);
+            }
+            else if (!rod.AllowedOnCurrentMap)
+            {
+                GUI.Label(new Rect(bx, row2, side, 38), GameTexts.Profile.NotAllowedHere, skin.SmallGold);
+            }
+            else if (GUI.Button(new Rect(bx, row2, side, 38), FishCard.Fit(GameTexts.Profile.Equip, skin.ButtonPrimary, side - 24f), skin.ButtonPrimary))
+            {
+                _root.EquipRod(rod.ItemId);
             }
 
             if (rod.CanDispose)
             {
-                var half = (w - 8f) / 2f;
-                if (GUI.Button(new Rect(x, disposeY, half, 38), FishCard.Fit(GameTexts.Shop.SellFor(Format.Number(rod.ResaleValue)), skin.Button, half - 16), skin.Button))
+                if (GUI.Button(new Rect(bx + side + 8f, row2, sell, 38), FishCard.Fit(GameTexts.Shop.SellFor(Format.Number(rod.ResaleValue)), skin.Button, sell - 24f), skin.Button))
                 {
                     _pendingRod = rod;
                     _pendingDestroy = false;
                 }
 
-                if (GUI.Button(new Rect(x + half + 8f, disposeY, half, 38), FishCard.Fit(GameTexts.Shop.DestroyRod, skin.Button, half - 16), skin.Button))
+                if (GUI.Button(new Rect(bx + side + sell + 16f, row2, side, 38), FishCard.Fit(GameTexts.Shop.DestroyRod, skin.Button, side - 24f), skin.Button))
                 {
                     _pendingRod = rod;
                     _pendingDestroy = true;
                 }
+            }
+        }
+
+        private static Texture2D RodArt(string rodId) => ArtAssets.Texture("Varas/" + rodId);
+
+        private static bool Hover(Rect rect, Vector2 mouse) => GUI.enabled && rect.Contains(mouse);
+
+        private static string CatchesText(RodItemView rod)
+        {
+            return rod.CanCatchMythic ? GameTexts.Profile.CatchesUpToMythic
+                : rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary
+                : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic
+                : rod.CanCatchRare ? GameTexts.Profile.CatchesRare
+                : GameTexts.Profile.NoRare;
+        }
+
+        /// <summary>An item slot: dark tile tinted and framed in the tier colour, the art fitted inside (or the icon).</summary>
+        private static void ItemSlot(UiSkin skin, Rect r, Texture2D art, string icon, Color tier, bool selected, bool hovered)
+        {
+            if (selected)
+            {
+                skin.DrawGlow(r, UiSkin.Accent, 0.35f);
+            }
+
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.05f, 0.09f, 0.16f, 0.95f), 0, 12);
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(tier.r, tier.g, tier.b, hovered ? 0.22f : 0.13f), 0, 12);
+            GUI.DrawTexture(new Rect(r.x + 3f, r.y + 3f, r.width - 6f, r.height * 0.4f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.04f), 0, 10);
+
+            var pad = Mathf.Max(6f, r.width * 0.1f);
+            if (art != null)
+            {
+                GUI.DrawTexture(new Rect(r.x + pad, r.y + pad, r.width - pad * 2f, r.height - pad * 2f), art, ScaleMode.ScaleToFit, true);
+            }
+            else
+            {
+                skin.DrawIcon(new Rect(r.center.x - r.width * 0.25f, r.center.y - r.height * 0.25f, r.width * 0.5f, r.height * 0.5f), icon, Color.Lerp(tier, Color.white, 0.2f));
+            }
+
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(tier.r, tier.g, tier.b, hovered ? 1f : 0.8f), hovered ? 2.5f : 2f, 12);
+            if (selected)
+            {
+                GUI.DrawTexture(new Rect(r.x - 4f, r.y - 4f, r.width + 8f, r.height + 8f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2.5f, 15);
+            }
+        }
+
+        /// <summary>An empty place: a dashed frame (and a faint icon of what goes there, when given).</summary>
+        private static void EmptySlot(UiSkin skin, Rect r, string icon)
+        {
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.05f, 0.09f, 0.16f, 0.45f), 0, 12);
+            skin.DashedFrame(new Rect(r.x + 3f, r.y + 3f, r.width - 6f, r.height - 6f), new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.9f));
+            if (icon != null)
+            {
+                skin.DrawIcon(new Rect(r.center.x - r.width * 0.2f, r.center.y - r.height * 0.2f, r.width * 0.4f, r.height * 0.4f), icon, new Color(1f, 1f, 1f, 0.14f));
+            }
+        }
+
+        /// <summary>A small dark tag in the slot's bottom-left corner ("Nv. 3", "×84").</summary>
+        private static void SlotBadge(UiSkin skin, Rect slot, string text)
+        {
+            var w = Mathf.Min(slot.width - 12f, skin.SmallBold.CalcSize(new GUIContent(text)).x + 12f);
+            var badge = new Rect(slot.x + 6f, slot.yMax - 26f, w, 20);
+            GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.02f, 0.05f, 0.1f, 0.88f), 0, 8);
+            GUI.Label(new Rect(badge.x + 6f, badge.y + 2f, w - 6f, 18), text, skin.SmallBold);
+        }
+
+        /// <summary>The teal check in the top-right corner of the equipped rod.</summary>
+        private static void CheckBadge(UiSkin skin, Rect slot)
+        {
+            var c = new Rect(slot.xMax - 27f, slot.y + 5f, 22, 22);
+            GUI.DrawTexture(c, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 0, 11);
+            skin.DrawIcon(new Rect(c.x + 4f, c.y + 4f, 14, 14), Icons.Check, new Color(0.03f, 0.12f, 0.16f));
+        }
+
+        /// <summary>Name and a short muted line beside an equipped slot, centred on it.</summary>
+        private static void SlotText(UiSkin skin, float x, Rect slot, float w, string name, string line)
+        {
+            var y = slot.center.y - 22f;
+            GUI.Label(new Rect(x, y, w, 24), FishCard.Fit(name, skin.BodyBold, w), skin.BodyBold);
+            GUI.Label(new Rect(x, y + 24f, w, 20), FishCard.Fit(line, skin.SmallMuted, w), skin.SmallMuted);
+        }
+
+        // ------------------------------------------------------------------ Inventory tooltips
+
+        private void BeginTip(string title, Color color)
+        {
+            _tipTitle = title ?? string.Empty;
+            _tipColor = color;
+            _tipLines.Clear();
+        }
+
+        private void TipAdd(TipKind kind, string text = null, string value = null) => _tipLines.Add((kind, text, value));
+
+        private void RodTip(RodItemView rod, GearView gear)
+        {
+            BeginTip(rod.Name, UiSkin.TierColor(rod.Tier));
+            TipAdd(TipKind.Line, GameTexts.Profile.Tier(rod.Tier) + (rod.HasLevels ? " · " + GameTexts.Aquarium.LevelOf(rod.Level, rod.MaxLevel) : string.Empty));
+            TipAdd(TipKind.Divider);
+            if (rod.IsEquipped && gear != null && gear.RodId == rod.RodId)
+            {
+                TipAdd(TipKind.Row, GameTexts.Shop.CatchBonus, "+" + Format.Percent(gear.RodBonus, 0));
+            }
+
+            TipAdd(TipKind.Row, GameTexts.Profile.RarityBonus, "+" + Format.Percent(rod.RarityBonus, 0));
+            TipAdd(TipKind.Row, GameTexts.Profile.SizeBonus, "+" + Format.Percent(rod.SizeBonus, 0));
+            TipAdd(TipKind.Row, GameTexts.Profile.ShellBonus, rod.GeneratesShells ? "+" + Format.Percent(rod.ShellBonus, 0) : GameTexts.Profile.NoShells);
+            TipAdd(TipKind.Text, CatchesText(rod));
+            if (!rod.AllowedOnCurrentMap)
+            {
+                TipAdd(TipKind.Warning, GameTexts.Profile.NotAllowedHere);
+            }
+
+            TipAdd(TipKind.Hint, GameTexts.Profile.ClickForActions);
+        }
+
+        private void BoatTip(GearView gear, BoatOfferView boat)
+        {
+            var tier = boat?.Tier ?? 0;
+            BeginTip(gear.BoatName, UiSkin.TierColor(tier));
+            TipAdd(TipKind.Line, GameTexts.Profile.BoatTier(tier));
+            TipAdd(TipKind.Divider);
+            TipAdd(TipKind.Row, GameTexts.Shop.CatchBonus, "+" + Format.Percent(gear.BoatBonus, 0));
+            if (!string.IsNullOrEmpty(boat?.Description))
+            {
+                TipAdd(TipKind.Text, boat.Description);
+            }
+
+            TipAdd(TipKind.Hint, GameTexts.Profile.GearInShop);
+        }
+
+        private void BaitTip(GearView gear, BaitOfferView bait)
+        {
+            BeginTip(gear.BaitName, UiSkin.TierColor(bait?.Tier ?? 0));
+            TipAdd(TipKind.Line, bait != null ? GameTexts.Profile.BaitTier(bait.Tier) : GameTexts.Gear.Bait);
+            TipAdd(TipKind.Divider);
+            TipAdd(TipKind.Row, GameTexts.Shop.CatchBonus, "+" + Format.Percent(gear.BaitBonus, 0));
+            TipAdd(TipKind.Text, GameTexts.Gear.ChargesLeft(gear.BaitChargesLeft));
+            if (!string.IsNullOrEmpty(bait?.Description))
+            {
+                TipAdd(TipKind.Text, bait.Description);
+            }
+
+            TipAdd(TipKind.Hint, GameTexts.Profile.GearInShop);
+        }
+
+        private static GUIStyle TipStyle(UiSkin skin, TipKind kind)
+        {
+            switch (kind)
+            {
+                case TipKind.Text: return skin.Small;
+                case TipKind.Warning: return skin.SmallGold;
+                case TipKind.Hint: return skin.SmallBold;
+                default: return skin.SmallMuted;
+            }
+        }
+
+        private static float TipLineHeight(UiSkin skin, TipKind kind, string text, float width)
+        {
+            switch (kind)
+            {
+                case TipKind.Divider: return 9f;
+                case TipKind.Row: return 22f;
+                case TipKind.Line: return 20f;
+                case TipKind.Hint: return 26f;
+                default: return Mathf.Max(20f, TipStyle(skin, kind).CalcHeight(new GUIContent(text), width) + 2f);
+            }
+        }
+
+        /// <summary>The tooltip of the slot under the mouse, beside the cursor and kept inside <paramref name="bounds"/>.</summary>
+        private void DrawTip(UiSkin skin, Vector2 mouse, Rect bounds)
+        {
+            var innerW = TipWidth - 28f;
+            var height = 14f + 26f + 10f;
+            foreach (var (kind, text, _) in _tipLines)
+            {
+                height += TipLineHeight(skin, kind, text, innerW);
+            }
+
+            var x = mouse.x + 18f;
+            if (x + TipWidth > bounds.xMax)
+            {
+                x = mouse.x - 18f - TipWidth;
+            }
+
+            var y = mouse.y + 18f;
+            if (y + height > bounds.yMax)
+            {
+                y = bounds.yMax - height;
+            }
+
+            var rect = new Rect(Mathf.Max(bounds.x, x), Mathf.Max(bounds.y, y), TipWidth, height);
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.03f, 0.07f, 0.13f, 0.97f), 0, 10);
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(_tipColor.r, _tipColor.g, _tipColor.b, 0.85f), 1.5f, 10);
+
+            var tx = rect.x + 14f;
+            var ty = rect.y + 14f;
+            var prev = GUI.contentColor;
+            GUI.contentColor = Color.Lerp(_tipColor, Color.white, 0.2f);
+            GUI.Label(new Rect(tx, ty, innerW, 24), FishCard.Fit(_tipTitle, skin.BodyBold, innerW), skin.BodyBold);
+            GUI.contentColor = prev;
+            ty += 26f;
+
+            foreach (var (kind, text, value) in _tipLines)
+            {
+                var h = TipLineHeight(skin, kind, text, innerW);
+                switch (kind)
+                {
+                    case TipKind.Divider:
+                        skin.Divider(new Rect(tx, ty + 4f, innerW, 1));
+                        break;
+                    case TipKind.Row:
+                        var vw = Mathf.Min(innerW * 0.5f, RightBold(skin).CalcSize(new GUIContent(value)).x + 4f);
+                        GUI.Label(new Rect(tx, ty + 1f, innerW - vw - 8f, 20), FishCard.Fit(text, skin.SmallMuted, innerW - vw - 8f), skin.SmallMuted);
+                        GUI.Label(new Rect(tx + innerW - vw, ty + 1f, vw, 20), value, RightBold(skin));
+                        break;
+                    case TipKind.Line:
+                        GUI.Label(new Rect(tx, ty, innerW, 20), FishCard.Fit(text, skin.SmallMuted, innerW), skin.SmallMuted);
+                        break;
+                    case TipKind.Hint:
+                        GUI.contentColor = UiSkin.Accent;
+                        GUI.Label(new Rect(tx, ty + 6f, innerW, 20), FishCard.Fit(text, skin.SmallBold, innerW), skin.SmallBold);
+                        GUI.contentColor = prev;
+                        break;
+                    default:
+                        GUI.Label(new Rect(tx, ty, innerW, h), text, TipStyle(skin, kind));
+                        break;
+                }
+
+                ty += h;
             }
         }
 

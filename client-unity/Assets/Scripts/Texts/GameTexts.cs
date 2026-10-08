@@ -824,6 +824,22 @@ namespace FishingIdle.Texts
 
             public static string Tier(int tier) => tier == 0 ? "Vara inicial" : "Categoria " + tier;
             public static string Discovery(int found, int total) => found + " de " + total + " espécies";
+
+            // The backpack inventory: equipped gear on the left, the rods in a grid of slots.
+            public const string EquippedHeader = "EQUIPADO";
+            public const string BonusTotals = "Bônus somados";
+            public const string NoBaitSlot = "Nenhuma isca";
+            public const string NoBaitLine = "Isca · compre na Loja";
+            public const string ClickForActions = "Clique para ver as ações";
+            public const string GearInShop = "Barcos e iscas se trocam na Loja";
+            public static string RodsCount(int count) => "Varas · " + count;
+            public static string RodLine(int tier) => tier == 0 ? "Vara inicial" : "Vara · Categoria " + tier;
+            public static string BoatLine(string percent) => "Barco · +" + percent + " de sucesso";
+            public static string BaitLine(int charges) => charges == 1 ? "Isca · 1 tentativa" : "Isca · " + Format.Number(charges) + " tentativas";
+            public static string BoatTier(int tier) => tier == 0 ? "Barco inicial" : "Barco · Categoria " + tier;
+            public static string BaitTier(int tier) => "Isca · Categoria " + tier;
+            public static string ChargesBadge(int charges) => "×" + Format.Number(charges);
+            public static string SuccessSplit(string rod, string boat, string bait) => "Vara +" + rod + " · Barco +" + boat + " · Isca +" + bait;
         }
 
         // ------------------------------------------------------------------ confirmation (GDD section 11)

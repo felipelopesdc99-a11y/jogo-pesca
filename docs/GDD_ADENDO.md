@@ -1566,3 +1566,18 @@ sobem da esquerda (pior posição) para a direita (melhor), mostrando só avatar
 com o Cardume dele de frente para o seu (FRENTE/TRÁS, espelhado, nunca a Força) e um "VS" no meio; o botão diz quanto
 de Energia o ataque gasta. Antes do replay, uma tela "VS" de cerca de 1,2 s com os dois lados; clique, Espaço ou Esc
 pulam. Adversários usam o retrato padrão enquanto não houver arte de avatar para eles.
+
+### A-135 · Inventário estilo mochila
+
+Escolha do proprietário entre 3 exemplos (07/10/2026). O Perfil tem uma aba Inventário só (Equipamentos entrou
+nela). À esquerda, EQUIPADO: vara, barco e isca em quadrados grandes, com nome e uma linha curta, e os bônus que o
+jogo já informa. À direita, a mochila: cada vara num quadrado com a moldura na cor da categoria, o nível e a marca de
+equipada; vagas vazias completam a grade só como visual (não existe limite de espaço). Passar o mouse mostra a
+ficha do item; clicar seleciona e mostra as ações de sempre. Barco e isca continuam sendo trocados na Loja.
+
+### A-136 · Barra superior e cartão do jogador
+
+Pedido do proprietário (07/10/2026). A barra de cima ficou cerca de 25% maior, com botões em relevo e o ativo em
+turquesa com brilho. O cartão do jogador saiu da esquerda e foi para a direita, e Moedas, Conchas e Dólares
+passaram a ficar dentro dele (saíram da barra). Os avisos aparecem abaixo do cartão. Arte definitiva pedida ao
+ChatGPT (docs/ASSETS_PENDENTES.md).

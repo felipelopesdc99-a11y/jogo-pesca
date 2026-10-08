@@ -3,6 +3,21 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.29] — 07/10/2026
+
+### Mudado
+
+- Inventário estilo mochila, com ficha do item ao passar o mouse (A-135).
+- Barra superior maior e com cara de jogo; cartão do jogador à direita com Moedas, Conchas e Dólares (A-136).
+
+### Adicionado
+
+- Agentes do projeto em `.claude/agents/`: código, visual e ideias.
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.28] — 07/10/2026
 
 ### Mudado

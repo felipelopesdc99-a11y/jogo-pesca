@@ -560,6 +560,45 @@ namespace FishingIdle.Game.UI
             GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 1f), White, ScaleMode.StretchToFill, true, 0, new Color(Border.r, Border.g, Border.b, 0.7f), 0, 0);
         }
 
+        private static readonly Color[] TierColors =
+        {
+            new Color(0.62f, 0.67f, 0.74f), // 0 · grey (starter gear)
+            new Color(0.38f, 0.80f, 0.47f), // 1 · green
+            new Color(0.34f, 0.62f, 0.96f), // 2 · blue
+            new Color(0.70f, 0.47f, 0.96f), // 3 · purple
+            new Color(0.98f, 0.76f, 0.28f), // 4 · gold
+            new Color(0.94f, 0.38f, 0.35f), // 5+ · red
+        };
+
+        /// <summary>
+        /// The frame colour of a gear tier (rods, boats, baits) in the Profile's backpack: grey, green, blue,
+        /// purple, gold, red. Interface only; tiers above the last colour keep the last one.
+        /// </summary>
+        public static Color TierColor(int tier) => TierColors[Mathf.Clamp(tier, 0, TierColors.Length - 1)];
+
+        /// <summary>A dashed rectangular frame: the look of an empty inventory slot.</summary>
+        public void DashedFrame(Rect rect, Color color, float dash = 8f, float gap = 6f, float thickness = 1.5f)
+        {
+            if (Event.current.type != EventType.Repaint)
+            {
+                return;
+            }
+
+            for (var x = rect.x; x < rect.xMax; x += dash + gap)
+            {
+                var w = Mathf.Min(dash, rect.xMax - x);
+                GUI.DrawTexture(new Rect(x, rect.y, w, thickness), White, ScaleMode.StretchToFill, true, 0, color, 0, 0);
+                GUI.DrawTexture(new Rect(x, rect.yMax - thickness, w, thickness), White, ScaleMode.StretchToFill, true, 0, color, 0, 0);
+            }
+
+            for (var y = rect.y; y < rect.yMax - thickness; y += dash + gap)
+            {
+                var h = Mathf.Min(dash, rect.yMax - thickness - y);
+                GUI.DrawTexture(new Rect(rect.x, y, thickness, h), White, ScaleMode.StretchToFill, true, 0, color, 0, 0);
+                GUI.DrawTexture(new Rect(rect.xMax - thickness, y, thickness, h), White, ScaleMode.StretchToFill, true, 0, color, 0, 0);
+            }
+        }
+
         // Single-line variants (never wrap; text that does not fit is clipped). Made on first use.
         private GUIStyle _smallMutedRightLine, _smallGoldLine;
 
@@ -650,6 +689,136 @@ namespace FishingIdle.Game.UI
                 _diagonal = tex;
                 return _diagonal;
             }
+        }
+
+        // ------------------------------------------------------------------ main bar and player card (owner request 07/10/2026)
+
+        /// <summary>Icon size of a main-menu button (the old menu used 22).</summary>
+        public const float NavGameIconSize = 28f;
+
+        /// <summary>Width of a main-menu button showing only its icon (narrow screens).</summary>
+        public const float NavGameIconWidth = 60f;
+
+        private const float NavGameGap = 8f;
+        private const float NavGamePadding = 16f;
+
+        private GUIStyle _navGame, _navGameActive;
+        private Texture2D _topBarGradient, _topBarShade;
+
+        /// <summary>The chunky main-menu button face, neutral (font 17; the old menu used 14).</summary>
+        public GUIStyle NavGame => _navGame ?? (_navGame = ButtonStyle(
+            Art.PanelTexture(Alpha(Color.Lerp(Theme.PanelElevated, Color.white, 0.10f), 0.98f), Alpha(Theme.Panel, 0.98f), Alpha(Color.Lerp(Theme.Border, Color.white, 0.10f), 1f), 10, 1.5f, 56, 0.10f),
+            Art.PanelTexture(Alpha(Color.Lerp(Theme.PanelElevated, Color.white, 0.20f), 1f), Alpha(Color.Lerp(Theme.Panel, Color.white, 0.06f), 1f), Alpha(Color.Lerp(Theme.Border, Color.white, 0.35f), 1f), 10, 1.5f, 56, 0.12f),
+            Art.PanelTexture(Alpha(Theme.Panel, 1f), Alpha(Theme.Panel, 1f), Alpha(Theme.Border, 1f), 10, 1.5f, 56, 0f),
+            Theme.Text, 17));
+
+        /// <summary>The main-menu button face of the open menu: turquoise (Art Bible: turquesa = menu ativo).</summary>
+        public GUIStyle NavGameActive => _navGameActive ?? (_navGameActive = ButtonStyle(
+            Art.PanelTexture(Alpha(Color.Lerp(Theme.ActionHover, Color.white, 0.10f), 1f), Alpha(Theme.Action * 0.85f, 1f), Alpha(Color.Lerp(Theme.Action, Color.white, 0.45f), 1f), 10, 1.5f, 56, 0.14f),
+            Art.PanelTexture(Alpha(Color.Lerp(Theme.ActionHover, Color.white, 0.20f), 1f), Alpha(Theme.Action * 0.92f, 1f), Alpha(Color.Lerp(Theme.Action, Color.white, 0.55f), 1f), 10, 1.5f, 56, 0.16f),
+            Art.PanelTexture(Alpha(Theme.Action * 0.85f, 1f), Alpha(Theme.Action * 0.75f, 1f), Alpha(Theme.Action, 1f), 10, 1.5f, 56, 0f),
+            Color.white, 17));
+
+        /// <summary>Width a main-menu button needs for its label (icon, gap, label and side padding).</summary>
+        public float NavGameWidth(string label)
+        {
+            if (string.IsNullOrEmpty(label))
+            {
+                return NavGameIconWidth;
+            }
+
+            return LabelOf(NavGame).CalcSize(new GUIContent(label)).x + NavGameIconSize + NavGameGap + NavGamePadding * 2f;
+        }
+
+        /// <summary>
+        /// A main-menu button with a game feel: a darker 3D lip 4 px under the face, a turquoise face and
+        /// glow when it is the open menu, and the icon left of the label (or alone when
+        /// <paramref name="label"/> is null). Returns true when clicked.
+        /// </summary>
+        public bool NavGameButton(Rect rect, string icon, string label, bool active)
+        {
+            // ASSET_PENDENTE: ui_nav_button_base.png / ui_nav_button_active.png (9-slice) replace the generated face and lip.
+            var enabled = GUI.enabled;
+            if (active)
+            {
+                DrawGlow(rect, Accent, 0.45f);
+            }
+
+            var lip = active ? Color.Lerp(Accent, Night, 0.55f) : Color.Lerp(Night, Color.black, 0.35f);
+            lip.a = enabled ? 0.95f : 0.5f;
+            GUI.DrawTexture(new Rect(rect.x, rect.y + 4f, rect.width, rect.height), White, ScaleMode.StretchToFill, true, 0, lip, 0, 11);
+
+            var style = active ? NavGameActive : NavGame;
+            var clicked = GUI.Button(rect, GUIContent.none, style);
+            var hover = enabled && rect.Contains(Event.current.mousePosition);
+            var color = active || hover ? Color.white : Text;
+            if (!enabled)
+            {
+                color.a *= 0.5f;
+            }
+
+            var content = new GUIContent(label ?? string.Empty);
+            var labelStyle = LabelOf(style);
+            var textWidth = string.IsNullOrEmpty(label) ? 0f : labelStyle.CalcSize(content).x;
+            var iconSize = Mathf.Min(rect.height - 20f, NavGameIconSize);
+            var gap = textWidth > 0f ? NavGameGap : 0f;
+            var total = Mathf.Min(rect.width - 12f, iconSize + gap + textWidth);
+            var x = rect.center.x - total / 2f;
+            DrawIcon(new Rect(x, rect.center.y - iconSize / 2f, iconSize, iconSize), icon, color);
+            if (textWidth > 0f)
+            {
+                var previous = GUI.contentColor;
+                GUI.contentColor = color;
+                GUI.Label(new Rect(x + iconSize + gap, rect.y, rect.xMax - (x + iconSize + gap) - 4f, rect.height), content, labelStyle);
+                GUI.contentColor = previous;
+            }
+
+            return clicked;
+        }
+
+        /// <summary>
+        /// The main bar background: a vertical gradient, a border-and-turquoise rim along the bottom and
+        /// a soft shade under it, so the bar reads as a solid piece over the scene.
+        /// </summary>
+        public void TopBarBackground(Rect bar)
+        {
+            // ASSET_PENDENTE: ui_topbar_frame.png (moldura 9-slice da barra) replaces the generated gradient and rim.
+            if (_topBarGradient == null)
+            {
+                var top = Color.Lerp(Theme.Night, Theme.PanelElevated, 0.55f);
+                _topBarGradient = VerticalGradient(Alpha(top, 0.95f), Alpha(Theme.Night, 0.90f), 64);
+                _topBarShade = VerticalGradient(Alpha(Theme.Night, 0.45f), Alpha(Theme.Night, 0f), 16);
+            }
+
+            GUI.DrawTexture(bar, _topBarGradient, ScaleMode.StretchToFill, true);
+            GUI.DrawTexture(new Rect(bar.x, bar.yMax, bar.width, 12f), _topBarShade, ScaleMode.StretchToFill, true);
+            GUI.DrawTexture(new Rect(bar.x, bar.yMax - 2f, bar.width, 2f), White, ScaleMode.StretchToFill, true, 0, Alpha(Border, 1f), 0, 0);
+            GUI.DrawTexture(new Rect(bar.x, bar.yMax - 2f, bar.width, 1f), White, ScaleMode.StretchToFill, true, 0, Alpha(Accent, 0.35f), 0, 0);
+        }
+
+        /// <summary>A sunken rounded area inside a panel (the wallet of the player card).</summary>
+        public void Inset(Rect rect)
+        {
+            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, Alpha(Night, 0.55f), 0, 10);
+            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, Alpha(Border, 0.6f), 1f, 10);
+        }
+
+        /// <summary>A 1-pixel-wide vertical gradient texture (row 0 is the bottom), stretched over a rect.</summary>
+        private static Texture2D VerticalGradient(Color top, Color bottom, int height)
+        {
+            var tex = new Texture2D(1, height, TextureFormat.RGBA32, false)
+            {
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+            for (var y = 0; y < height; y++)
+            {
+                tex.SetPixel(0, y, Color.Lerp(bottom, top, y / (float)(height - 1)));
+            }
+
+            tex.Apply();
+            return tex;
         }
     }
 }
