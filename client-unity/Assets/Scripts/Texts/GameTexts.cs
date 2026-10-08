@@ -217,6 +217,12 @@ namespace FishingIdle.Texts
             public static string SellManyTitle(int count) => count == 1 ? "Vender 1 peixe?" : "Vender " + count + " peixes?";
             public static string SellManyBody(string coins) => "Você recebe " + coins + " Moedas. O XP investido nesses peixes não volta. Esta ação não pode ser desfeita.";
             public static string AndMore(int count) => "e mais " + count;
+
+            // The living tank and its drawer (addendum A-144).
+            public const string DrawerHide = "Recolher";
+            public const string DrawerShow = "Mostrar todos";
+            public static string DrawerTitle(int count) => "Todos os peixes (" + Format.Number(count) + ")";
+            public static string SwimmingNote(int swimming, int total) => "Nadando no tanque: " + Format.Number(swimming) + " de " + Format.Number(total);
         }
 
         // ------------------------------------------------------------------ offline return (GDD section 10)

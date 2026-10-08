@@ -13,17 +13,64 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// The Aquarium (GDD sections 12, 13, 22): card grid of kept fish, the fish sheet with its
-    /// attributes, feeding and selling. Everything shown comes from the game service's views;
-    /// feeding and selling are requests the service validates.
+    /// The Aquarium (GDD sections 12, 13, 22) as a living tank (addendum A-144): the kept fish swim in
+    /// the water, a drawer below holds the miniatures of every fish, and the fish sheet (or the
+    /// several-fish sale) sits on a glass panel on the right. Feeding and selling are requests the
+    /// service validates; everything shown comes from the game service's views. The swimming is only
+    /// drawing: positions follow the clock and a path fixed by each fish's id.
     /// </summary>
     public sealed class AquariumWindow
     {
+        // Food picker grid (feeding keeps the card grid).
         private const float CardWidth = 196f;
         private const float CardHeight = 196f;
         private const float Gap = 12f;
 
+        // The tank and its drawer.
+        private const int MaxSwimming = 24;
+        private const float TankRadius = 14f;
+        private const float MinSwimHeight = 220f;
+        private const float DrawerHeader = 38f;
+        private const float TileWidth = 92f;
+        private const float TileHeight = 104f;
+        private const float TileGap = 8f;
+
+        // Final art, when it exists (Resources/Arte/UI). ASSET_PENDENTE: until then the tank, the sand,
+        // the bubbles and the glass are drawn here (docs/ASSETS_PENDENTES.md, A-144).
+        private const string TankBackgroundArt = "UI/ui_aquarium_bg";
+        private const string TankSandArt = "UI/ui_aquarium_sand";
+        private const string BubbleArt = "UI/ui_aquarium_bubble";
+        private const string GlassArt = "UI/ui_aquarium_glass";
+        private const float GlassArtBorder = 32f;
+
         private static readonly AquariumSort[] Sorts = { AquariumSort.Size, AquariumSort.Level, AquariumSort.Species, AquariumSort.Newest };
+
+        // Plants that already exist (Arte/Vivos/Plantas): x across the tank, height as a share of the water.
+        private static readonly (string Path, float X, float Height)[] Plants =
+        {
+            ("Vivos/Plantas/junco_01", 0.02f, 0.50f),
+            ("Vivos/Plantas/junco_03", 0.09f, 0.34f),
+            ("Vivos/Plantas/sargaco_02", 0.33f, 0.15f),
+            ("Vivos/Plantas/junco_02", 0.60f, 0.42f),
+            ("Vivos/Plantas/sargaco_04", 0.74f, 0.12f),
+            ("Vivos/Plantas/junco_04", 0.93f, 0.56f),
+            ("Vivos/Plantas/junco_06", 0.99f, 0.36f),
+        };
+
+        // Provisional pebbles on the sand: x across the tank, width, height, shade.
+        private static readonly Vector4[] Pebbles =
+        {
+            new Vector4(0.06f, 30f, 13f, 0.2f), new Vector4(0.15f, 18f, 9f, 0.6f), new Vector4(0.27f, 24f, 11f, 0.4f),
+            new Vector4(0.44f, 34f, 14f, 0.1f), new Vector4(0.52f, 16f, 8f, 0.7f), new Vector4(0.68f, 26f, 12f, 0.3f),
+            new Vector4(0.81f, 20f, 10f, 0.5f), new Vector4(0.90f, 32f, 14f, 0.25f),
+        };
+
+        // Bubble columns: x across the water, rise speed (px/s).
+        private static readonly Vector2[] BubbleColumns = { new Vector2(0.17f, 38f), new Vector2(0.55f, 30f), new Vector2(0.84f, 44f) };
+
+        private static Texture2D _waterTexture;
+        private static Texture2D _raysTexture;
+        private static Texture2D _sandTexture;
 
         private readonly GameRoot _root;
         private AquariumView _aquarium;
@@ -32,6 +79,23 @@ namespace FishingIdle.Game.UI
         private FishView _selected;
         private Vector2 _scroll;
         private bool _dirty = true;
+
+        // The living tank (A-144)
+        private bool _drawerOpen = true;
+        private readonly Dictionary<long, float> _swimPhase = new Dictionary<long, float>();
+        private readonly List<SwimSlot> _slots = new List<SwimSlot>();
+        private readonly Dictionary<long, (string Name, string Line)> _tileText = new Dictionary<long, (string Name, string Line)>();
+        private float _lastSwimTime = -1f;
+        private float _logMinCm;
+        private float _logMaxCm;
+
+        private struct SwimSlot
+        {
+            public FishView Fish;
+            public Rect Rect;
+            public bool Flip;
+            public float Tilt;
+        }
 
         // Feeding
         private bool _feeding;
@@ -129,6 +193,7 @@ namespace FishingIdle.Game.UI
                 _search = search;
                 _scroll = Vector2.zero;
                 _feedScroll = Vector2.zero;
+                RefreshShown();
             }
 
             var detailWidth = 420f;
@@ -142,15 +207,7 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                DrawBrowser(skin, left, panel);
-                if (_multi)
-                {
-                    DrawSelectionPanel(skin, right);
-                }
-                else
-                {
-                    DrawSheet(skin, right);
-                }
+                DrawBrowser(skin, left, right);
             }
 
             GUI.enabled = true;
@@ -170,7 +227,7 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ browsing
 
-        private void DrawBrowser(UiSkin skin, Rect area, Rect panel)
+        private void DrawBrowser(UiSkin skin, Rect area, Rect right)
         {
             // "Selecionar vários" sits on the right of the sort row. Measured first: on a narrow panel it
             // becomes icon-only, and if even that would touch the sort chips it goes to the next line.
@@ -190,7 +247,7 @@ namespace FishingIdle.Game.UI
 
             var multiOwnLine = chipsEnd > area.xMax - multiWidth - 8;
             var multiRect = new Rect(area.xMax - multiWidth, multiOwnLine ? area.y + 40 : area.y, multiWidth, 32);
-            var gridTop = multiOwnLine ? 86f : 46f;
+            var tankTop = multiOwnLine ? 86f : 46f;
 
             // Sort chips
             var x = area.x;
@@ -223,60 +280,591 @@ namespace FishingIdle.Game.UI
                 }
             }
 
-            var grid = new Rect(area.x - 4, area.y + gridTop, area.width + 8, area.height - gridTop);
+            // The tank fills the rest of the window; the sheet is a glass panel inside it, on the right.
+            var tank = new Rect(area.x, area.y + tankTop, right.xMax - area.x, area.height - tankTop);
+            var glass = new Rect(right.x, tank.y + 10f, right.width - 10f, tank.height - 20f);
+            DrawTank(skin, tank, glass.x);
+
+            if (_multi)
+            {
+                DrawSelectionPanel(skin, glass);
+            }
+            else
+            {
+                DrawSheet(skin, glass);
+            }
+        }
+
+        // ------------------------------------------------------------------ the living tank (A-144)
+
+        private void DrawTank(UiSkin skin, Rect tank, float glassX)
+        {
+            var lx = tank.x + 12f;
+            var lw = glassX - 12f - lx;
+            var drawerHeight = DrawerHeight(tank.height);
+            var drawer = new Rect(lx, tank.yMax - 12f - drawerHeight, lw, drawerHeight);
+            var floorY = drawer.y - 6f;
+            var swim = new Rect(lx, tank.y + 14f, lw, Mathf.Max(40f, floorY - 24f - tank.y));
+            var t = Time.unscaledTime;
+
+            DrawWater(skin, tank, floorY, t);
+            DrawPlants(swim, floorY, t);
+            DrawBubbles(skin, swim, floorY, t);
+
             if (_aquarium.Count == 0)
             {
-                GUI.Label(new Rect(grid.x, grid.y + grid.height / 2f - 30, grid.width, 60), GameTexts.Aquarium.Empty, skin.Center);
+                TankMessage(skin, swim, GameTexts.Aquarium.Empty);
+            }
+            else if (_shown.Count == 0)
+            {
+                TankMessage(skin, swim, GameTexts.Search.NoMatch);
+            }
+            else
+            {
+                DrawSwimmers(skin, swim, t);
+            }
+
+            // The glass rim of the tank.
+            GUI.DrawTexture(tank, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.95f), 1.5f, TankRadius);
+            GUI.DrawTexture(new Rect(tank.x + TankRadius, tank.y + 2f, tank.width - TankRadius * 2f, 1f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.16f), 0, 0);
+
+            DrawDrawer(skin, drawer);
+        }
+
+        /// <summary>The drawer: only its bar when closed; one row of miniatures, or up to three while selecting several.</summary>
+        private float DrawerHeight(float tankHeight)
+        {
+            if (!_drawerOpen)
+            {
+                return DrawerHeader;
+            }
+
+            var rowHeight = TileHeight + TileGap;
+            var room = tankHeight - 24f - MinSwimHeight - DrawerHeader - 8f;
+            var rows = Mathf.Clamp(Mathf.FloorToInt(room / rowHeight), 1, _multi ? 3 : 1);
+            return DrawerHeader + rows * rowHeight + 4f;
+        }
+
+        private static void DrawWater(UiSkin skin, Rect tank, float floorY, float t)
+        {
+            var background = ArtAssets.Texture(TankBackgroundArt);
+            if (background != null)
+            {
+                GUI.DrawTexture(tank, background, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, TankRadius);
+            }
+            else
+            {
+                // ASSET_PENDENTE: ui_aquarium_bg.png (water and light rays, 1920×1080) replaces this gradient and the rays.
+                GUI.DrawTexture(tank, WaterTexture, ScaleMode.StretchToFill, true, 0, Color.white, 0, TankRadius);
+                var pulse = 0.55f + 0.15f * Mathf.Sin(t * 0.35f);
+                GUI.DrawTexture(new Rect(tank.x, tank.y, tank.width, (floorY - tank.y) * 0.9f), RaysTexture, ScaleMode.StretchToFill, true, 0,
+                    new Color(0.82f, 0.96f, 1f, pulse), 0, TankRadius);
+            }
+
+            var bottom = new Vector4(0f, 0f, TankRadius, TankRadius);
+            var sandArt = ArtAssets.Texture(TankSandArt);
+            if (sandArt != null)
+            {
+                GUI.DrawTexture(new Rect(tank.x, floorY - 48f, tank.width, tank.yMax - floorY + 48f), sandArt, ScaleMode.StretchToFill, true, 0, Color.white, Vector4.zero, bottom);
                 return;
             }
 
-            var shown = _aquarium.Fish.Where(f => NameSearch.Matches(f.SpeciesName, _search)).ToList();
-            _shown = shown;
-            if (shown.Count == 0)
+            // ASSET_PENDENTE: ui_aquarium_sand.png (sand strip with stones) replaces the drawn sand, dunes and pebbles.
+            var top = SandTop;
+            for (var i = 0; i < 5; i++)
             {
-                GUI.Label(new Rect(grid.x, grid.y + grid.height / 2f - 30, grid.width, 60), GameTexts.Search.NoMatch, skin.Center);
+                var dx = Mathf.Max(tank.x, tank.x + i * tank.width / 5f - 40f);
+                var dw = Mathf.Min(tank.xMax, tank.x + (i + 1) * tank.width / 5f + 40f) - dx;
+                GUI.DrawTexture(new Rect(dx, floorY - 36f + (i % 2) * 7f, dw, 30f), skin.White, ScaleMode.StretchToFill, true, 0, top, 0, 15f);
+            }
+
+            GUI.DrawTexture(new Rect(tank.x, floorY - 26f, tank.width, tank.yMax - floorY + 26f), SandTexture, ScaleMode.StretchToFill, true, 0, Color.white, Vector4.zero, bottom);
+            foreach (var p in Pebbles)
+            {
+                var px = Mathf.Clamp(tank.x + p.x * tank.width, tank.x + 8f, tank.xMax - 8f - p.y);
+                var colour = Color.Lerp(new Color(0.36f, 0.40f, 0.44f), new Color(0.55f, 0.50f, 0.42f), p.w);
+                GUI.DrawTexture(new Rect(px, floorY - p.z * 0.5f - 6f, p.y, p.z), skin.White, ScaleMode.StretchToFill, true, 0, colour, 0, p.z * 0.5f);
+            }
+        }
+
+        private static void DrawPlants(Rect swim, float floorY, float t)
+        {
+            for (var i = 0; i < Plants.Length; i++)
+            {
+                var plant = Plants[i];
+                var tex = ArtAssets.Texture(plant.Path);
+                if (tex == null)
+                {
+                    continue;
+                }
+
+                var h = swim.height * plant.Height;
+                var w = h * tex.width / tex.height;
+                var px = Mathf.Clamp(swim.x + plant.X * swim.width - w / 2f, swim.x, swim.xMax - w);
+                var rect = new Rect(px, floorY + 4f - h, w, h);
+                var sway = Mathf.Sin(t * 0.6f + i * 1.7f) * 2f;
+                DrawTransformed(rect, tex, new Vector2(rect.center.x, rect.yMax), sway, false, Color.white);
+            }
+        }
+
+        private static void DrawBubbles(UiSkin skin, Rect swim, float floorY, float t)
+        {
+            const int perColumn = 6;
+            var bubble = ArtAssets.Texture(BubbleArt);
+            var start = floorY - 8f;
+            var rise = start - swim.y;
+            if (rise <= 20f)
+            {
                 return;
             }
 
-            DrawGrid(grid, shown, ref _scroll, (rect, fish) =>
+            for (var c = 0; c < BubbleColumns.Length; c++)
             {
-                var clicked = FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
-                    Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName, (float)fish.SizePercentile,
-                    GameTexts.Player.LevelShort + " " + fish.Level + (fish.CardumePosition > 0 ? "  ·  " + GameTexts.Cardume.Badge(fish.CardumePosition) : string.Empty),
-                    fish.RarityId, fish.RarityName, _multi ? _sellSet.Contains(fish.FishId) : fish.FishId == _selectedId,
-                    fish.IsImportant, fish.SizeCategoryId, fish.SizeCategoryName);
-                if (!clicked)
+                var column = BubbleColumns[c];
+                var cx = swim.x + column.x * swim.width;
+                for (var k = 0; k < perColumn; k++)
                 {
-                    return;
-                }
-
-                // Ctrl + click starts a selection (with the fish already open, if any). Ctrl + click on the
-                // open fish itself starts the selection with it, instead of adding and removing it at once.
-                var started = false;
-                if (!_multi && Event.current != null && (Event.current.control || Event.current.command))
-                {
-                    StartMulti();
-                    started = true;
-                }
-
-                if (_multi)
-                {
-                    if (!(started && _sellSet.Contains(fish.FishId)))
+                    var p = Mathf.Repeat(t * column.y / rise + k / (float)perColumn + c * 0.37f, 1f);
+                    var fade = Mathf.Clamp01(p * 8f) * Mathf.Clamp01((1f - p) * 6f);
+                    var size = (5f + 4f * Mathf.Repeat(k * 0.618f + c * 0.3f, 1f)) * (0.7f + 0.3f * p);
+                    var bx = cx + Mathf.Sin(t * 1.6f + k * 1.3f + c) * 5f;
+                    var r = new Rect(bx - size / 2f, start - p * rise - size / 2f, size, size);
+                    if (bubble != null)
                     {
-                        ToggleSell(fish.FishId);
+                        GUI.DrawTexture(r, bubble, ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, 0.8f * fade), 0, 0);
+                        continue;
+                    }
+
+                    // ASSET_PENDENTE: ui_aquarium_bubble.png replaces this drawn ring.
+                    GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.85f, 0.97f, 1f, 0.45f * fade), 1.2f, size / 2f);
+                    GUI.DrawTexture(new Rect(r.x + size * 0.25f, r.y + size * 0.2f, size * 0.25f, size * 0.25f), skin.White, ScaleMode.StretchToFill, true, 0,
+                        new Color(1f, 1f, 1f, 0.55f * fade), 0, size * 0.125f);
+                }
+            }
+        }
+
+        private static void TankMessage(UiSkin skin, Rect swim, string text)
+        {
+            var w = Mathf.Min(swim.width - 40f, 520f);
+            var box = new Rect(swim.center.x - w / 2f, swim.center.y - 44f, w, 88f);
+            Glass(skin, box);
+            GUI.Label(new Rect(box.x + 20f, box.y + 8f, box.width - 40f, box.height - 16f), text, skin.Center);
+        }
+
+        /// <summary>
+        /// The first fish of the current order and search swim (at most <see cref="MaxSwimming"/>). Each one
+        /// goes back and forth on a path fixed by its id; the clock only moves it along that path.
+        /// </summary>
+        private void DrawSwimmers(UiSkin skin, Rect swim, float t)
+        {
+            var count = Mathf.Min(MaxSwimming, _shown.Count);
+            var e = Event.current;
+
+            // Advance along the path once per frame (the repaint); the selected fish goes slower.
+            if (e.type == EventType.Repaint)
+            {
+                var dt = _lastSwimTime < 0f ? 0f : Mathf.Clamp(t - _lastSwimTime, 0f, 0.1f);
+                _lastSwimTime = t;
+                for (var i = 0; i < count; i++)
+                {
+                    var id = _shown[i].FishId;
+                    var rate = 1f / Mathf.Lerp(22f, 40f, Hash01(id, 2));
+                    if (id == _selectedId && !_multi)
+                    {
+                        rate *= 0.3f;
+                    }
+
+                    _swimPhase[id] = Mathf.Repeat(Phase(id) + dt * rate, 1f);
+                }
+            }
+
+            _slots.Clear();
+            var scale = Mathf.Clamp(swim.height / 460f, 0.65f, 1.05f);
+            var selectedIndex = -1;
+            for (var i = 0; i < count; i++)
+            {
+                var f = _shown[i];
+                var id = f.FishId;
+                var sizeT = _logMaxCm > _logMinCm ? Mathf.InverseLerp(_logMinCm, _logMaxCm, LogCm(f)) : 0.5f;
+                var w = Mathf.Min(Mathf.Lerp(74f, 170f, sizeT) * scale, swim.width * 0.3f);
+                var h = w * 0.5f;
+                var span = Mathf.Max(0f, swim.width - w);
+                var own = span * Mathf.Lerp(0.55f, 1f, Hash01(id, 4));
+                var x0 = swim.x + (span - own) * Hash01(id, 5);
+                var angle = Phase(id) * Mathf.PI * 2f;
+                var x = x0 + (0.5f - 0.5f * Mathf.Cos(angle)) * own;
+                var laneRoom = Mathf.Max(0f, swim.height - h - 20f);
+                var wave = t * Mathf.Lerp(0.5f, 0.9f, Hash01(id, 6)) + Hash01(id, 7) * 6.283f;
+                var drift = Mathf.Sin(angle * 2f + Hash01(id, 8) * 6.283f) * Mathf.Min(14f, laneRoom * 0.1f);
+                var y = Mathf.Clamp(swim.y + 10f + Hash01(id, 1) * laneRoom + Mathf.Sin(wave) * 7f + drift, swim.y, swim.yMax - h);
+                if (id == _selectedId)
+                {
+                    selectedIndex = _slots.Count;
+                }
+
+                _slots.Add(new SwimSlot { Fish = f, Rect = new Rect(x, y, w, h), Flip = Mathf.Sin(angle) < 0f, Tilt = Mathf.Cos(wave) * 3f });
+            }
+
+            // A click picks the fish on top (the selected one is drawn last, so it is on top).
+            if (e.type == EventType.MouseDown && e.button == 0 && GUI.enabled && swim.Contains(e.mousePosition))
+            {
+                var hit = -1;
+                if (selectedIndex >= 0 && HitArea(_slots[selectedIndex].Rect).Contains(e.mousePosition))
+                {
+                    hit = selectedIndex;
+                }
+
+                for (var i = _slots.Count - 1; i >= 0 && hit < 0; i--)
+                {
+                    if (i != selectedIndex && HitArea(_slots[i].Rect).Contains(e.mousePosition))
+                    {
+                        hit = i;
                     }
                 }
-                else
+
+                if (hit >= 0)
                 {
-                    _selectedId = fish.FishId;
-                    _selected = fish;
+                    OnFishClicked(_slots[hit].Fish, e.control || e.command);
+                    e.Use();
                 }
-            });
+            }
+
+            for (var i = 0; i < _slots.Count; i++)
+            {
+                if (i != selectedIndex)
+                {
+                    DrawSwimmer(skin, _slots[i], swim, t, false);
+                }
+            }
+
+            if (selectedIndex >= 0)
+            {
+                DrawSwimmer(skin, _slots[selectedIndex], swim, t, !_multi);
+            }
         }
+
+        private void DrawSwimmer(UiSkin skin, SwimSlot slot, Rect swim, float t, bool selected)
+        {
+            var f = slot.Fish;
+            var r = slot.Rect;
+            var core = new Rect(r.x + r.width * 0.25f, r.y + r.height * 0.25f, r.width * 0.5f, r.height * 0.5f);
+
+            // Discreet glow (Art Bible): the slow gold one for Excepcional/Perfeição, a faint one in the rarity colour otherwise.
+            var breath = Mathf.Sin(t * 0.9f + (f.FishId % 7));
+            if (VisualTheme.IsSpecialSize(f.SizeCategoryId))
+            {
+                skin.DrawGlow(core, UiSkin.SizeColor(f.SizeCategoryId), 0.24f + 0.08f * breath);
+            }
+            else if (f.IsImportant)
+            {
+                skin.DrawGlow(core, UiSkin.RarityColor(f.RarityId), 0.12f + 0.04f * breath);
+            }
+
+            if (selected)
+            {
+                var ring = new Rect(r.x - 8f, r.y - 4f, r.width + 16f, r.height + 8f);
+                GUI.DrawTexture(ring, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.10f), 0, ring.height / 2f);
+                GUI.DrawTexture(ring, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.9f), 2f, ring.height / 2f);
+            }
+
+            DrawTransformed(r, Art.FishTexture(f.SpeciesId), r.center, slot.Tilt, slot.Flip, Color.white);
+
+            if (_multi && _sellSet.Contains(f.FishId))
+            {
+                CheckBadge(skin, new Rect(r.xMax - 14f, r.y - 6f, 22f, 22f));
+            }
+
+            if (!selected)
+            {
+                return;
+            }
+
+            // The name tag that swims with the selected fish (above it, or below near the surface).
+            var tag = TileText(skin, f).Name + " · " + GameTexts.Player.LevelShort + " " + f.Level;
+            var tw = Mathf.Min(260f, skin.ChipText.CalcSize(new GUIContent(tag)).x + 20f);
+            var ty = r.y - 34f < swim.y ? r.yMax + 8f : r.y - 34f;
+            var tagRect = new Rect(Mathf.Clamp(r.center.x - tw / 2f, swim.x, swim.xMax - tw), ty, tw, 24f);
+            GUI.DrawTexture(tagRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.86f), 0, 12f);
+            GUI.DrawTexture(tagRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.6f), 1f, 12f);
+            GUI.Label(tagRect, UI.FishCard.Fit(tag, skin.ChipText, tw - 14f), skin.ChipText);
+        }
+
+        private static Rect HitArea(Rect r) => new Rect(r.x + r.width * 0.1f, r.y + r.height * 0.15f, r.width * 0.8f, r.height * 0.7f);
+
+        private void DrawDrawer(UiSkin skin, Rect drawer)
+        {
+            Glass(skin, drawer);
+
+            // Bar: title, how many swim, and Recolher / Mostrar todos.
+            var toggle = new GUIContent(_drawerOpen ? GameTexts.Aquarium.DrawerHide : GameTexts.Aquarium.DrawerShow);
+            var bw = skin.Chip.CalcSize(toggle).x + 12f;
+            var toggleRect = new Rect(drawer.xMax - 10f - bw, drawer.y + 5f, bw, 28f);
+            if (GUI.Button(toggleRect, toggle, skin.Chip))
+            {
+                _drawerOpen = !_drawerOpen;
+            }
+
+            var tx = drawer.x + 16f;
+            var room = toggleRect.x - 12f - tx;
+            var title = GameTexts.Aquarium.DrawerTitle(_shown.Count);
+            var titleWidth = Mathf.Min(room, skin.BodyBold.CalcSize(new GUIContent(title)).x + 4f);
+            GUI.Label(new Rect(tx, drawer.y + 9f, titleWidth, 22f), UI.FishCard.Fit(title, skin.BodyBold, titleWidth), skin.BodyBold);
+            if (_shown.Count > MaxSwimming)
+            {
+                var noteX = tx + titleWidth + 14f;
+                var noteWidth = toggleRect.x - 12f - noteX;
+                if (noteWidth > 40f)
+                {
+                    GUI.Label(new Rect(noteX, drawer.y + 11f, noteWidth, 20f),
+                        UI.FishCard.Fit(GameTexts.Aquarium.SwimmingNote(MaxSwimming, _shown.Count), skin.SmallMuted, noteWidth), skin.SmallMuted);
+                }
+            }
+
+            if (!_drawerOpen || _shown.Count == 0)
+            {
+                return;
+            }
+
+            var grid = new Rect(drawer.x + 10f, drawer.y + DrawerHeader, drawer.width - 14f, drawer.height - DrawerHeader - 4f);
+            var contentWidth = grid.width - 18f;
+            var columns = Mathf.Max(1, Mathf.FloorToInt((contentWidth + TileGap) / (TileWidth + TileGap)));
+            var rows = (_shown.Count + columns - 1) / columns;
+            var rowHeight = TileHeight + TileGap;
+
+            _scroll = GUI.BeginScrollView(grid, _scroll, new Rect(0, 0, contentWidth, rows * rowHeight));
+            var firstRow = Mathf.Max(0, Mathf.FloorToInt(_scroll.y / rowHeight));
+            var lastRow = Mathf.Min(rows - 1, Mathf.CeilToInt((_scroll.y + grid.height) / rowHeight));
+            for (var row = firstRow; row <= lastRow; row++)
+            {
+                for (var col = 0; col < columns; col++)
+                {
+                    var index = row * columns + col;
+                    if (index >= _shown.Count)
+                    {
+                        break;
+                    }
+
+                    DrawTile(skin, new Rect(col * (TileWidth + TileGap), row * rowHeight, TileWidth, TileHeight), _shown[index]);
+                }
+            }
+
+            GUI.EndScrollView();
+        }
+
+        /// <summary>A round miniature in the drawer: rarity ring, the fish, name, level and Cardume position.</summary>
+        private void DrawTile(UiSkin skin, Rect tile, FishView f)
+        {
+            var marked = _multi && _sellSet.Contains(f.FishId);
+            var selected = !_multi && f.FishId == _selectedId;
+            var hover = GUI.enabled && tile.Contains(Event.current.mousePosition);
+            var night = UiSkin.Night;
+            GUI.DrawTexture(tile, skin.White, ScaleMode.StretchToFill, true, 0, new Color(night.r, night.g, night.b, hover ? 0.78f : 0.5f), 0, 12f);
+            if (selected || marked)
+            {
+                GUI.DrawTexture(tile, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 12f);
+            }
+
+            const float d = 56f;
+            var disc = new Rect(tile.center.x - d / 2f, tile.y + 6f, d, d);
+            var panel = VisualTheme.Current.Panel;
+            GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, new Color(panel.r, panel.g, panel.b, 0.95f), 0, d / 2f);
+            GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.RarityColor(f.RarityId), 2f, d / 2f);
+            if (VisualTheme.IsSpecialSize(f.SizeCategoryId))
+            {
+                var outer = new Rect(disc.x - 3f, disc.y - 3f, d + 6f, d + 6f);
+                GUI.DrawTexture(outer, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.SizeColor(f.SizeCategoryId), 1.5f, outer.width / 2f);
+            }
+
+            GUI.DrawTexture(new Rect(disc.x + 5f, disc.y + 13f, d - 10f, d - 26f), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
+
+            var text = TileText(skin, f);
+            GUI.Label(new Rect(tile.x + 4f, tile.y + 64f, tile.width - 8f, 18f), text.Name, skin.ChipText);
+            GUI.Label(new Rect(tile.x + 4f, tile.y + 83f, tile.width - 8f, 18f), text.Line, skin.SmallMutedCenter);
+
+            if (marked)
+            {
+                CheckBadge(skin, new Rect(tile.xMax - 24f, tile.y + 4f, 20f, 20f));
+            }
+
+            if (GUI.Button(tile, GUIContent.none, GUIStyle.none))
+            {
+                OnFishClicked(f, Event.current != null && (Event.current.control || Event.current.command));
+            }
+        }
+
+        /// <summary>The tile's name (shortened to fit) and "Nv. X · C1" line, built once per fish.</summary>
+        private (string Name, string Line) TileText(UiSkin skin, FishView f)
+        {
+            if (!_tileText.TryGetValue(f.FishId, out var text))
+            {
+                var line = GameTexts.Player.LevelShort + " " + f.Level + (f.CardumePosition > 0 ? " · " + GameTexts.Cardume.Badge(f.CardumePosition) : string.Empty);
+                text = (UI.FishCard.Fit(f.SpeciesName, skin.ChipText, TileWidth - 8f), line);
+                _tileText[f.FishId] = text;
+            }
+
+            return text;
+        }
+
+        private static void CheckBadge(UiSkin skin, Rect badge)
+        {
+            GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 0, badge.width / 2f);
+            skin.DrawIcon(new Rect(badge.x + 4f, badge.y + 4f, badge.width - 8f, badge.height - 8f), Icons.Check, UiSkin.Night);
+        }
+
+        /// <summary>A click on a fish (tank or drawer): opens its sheet, or marks it while selecting several.</summary>
+        private void OnFishClicked(FishView fish, bool ctrl)
+        {
+            // Ctrl + click starts a selection (with the fish already open, if any). Ctrl + click on the
+            // open fish itself starts the selection with it, instead of adding and removing it at once.
+            var started = false;
+            if (!_multi && ctrl)
+            {
+                StartMulti();
+                started = true;
+            }
+
+            if (_multi)
+            {
+                if (!(started && _sellSet.Contains(fish.FishId)))
+                {
+                    ToggleSell(fish.FishId);
+                }
+            }
+            else
+            {
+                _selectedId = fish.FishId;
+                _selected = fish;
+            }
+        }
+
+        /// <summary>A translucent glass panel over the water (the sheet, the sale, the drawer).</summary>
+        private static void Glass(UiSkin skin, Rect r)
+        {
+            var art = ArtAssets.Texture(GlassArt);
+            if (art != null)
+            {
+                UiSkin.NineSlice(r, art, GlassArtBorder, GlassArtBorder, GlassArtBorder, GlassArtBorder, 1f);
+                return;
+            }
+
+            // ASSET_PENDENTE: ui_aquarium_glass.png (9-slice glass panel) replaces this drawn glass.
+            var night = UiSkin.Night;
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(night.r, night.g, night.b, 0.86f), 0, 14f);
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.75f, 0.92f, 1f, 0.22f), 1f, 14f);
+            GUI.DrawTexture(new Rect(r.x + 16f, r.y + 1f, r.width - 32f, 1f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.18f), 0, 0);
+        }
+
+        /// <summary>
+        /// Draws a texture turned by <paramref name="angle"/> degrees around <paramref name="pivot"/> and, when
+        /// flipped, mirrored; composed with the HUD's GUI.matrix in the virtual canvas (as ArenaWindow.DrawFish).
+        /// </summary>
+        private static void DrawTransformed(Rect rect, Texture tex, Vector2 pivot, float angle, bool flip, Color color)
+        {
+            var matrix = GUI.matrix;
+            var p = new Vector3(pivot.x, pivot.y, 0f);
+            GUI.matrix = matrix * Matrix4x4.TRS(p, Quaternion.Euler(0f, 0f, angle), new Vector3(flip ? -1f : 1f, 1f, 1f)) * Matrix4x4.TRS(-p, Quaternion.identity, Vector3.one);
+            GUI.DrawTexture(rect, tex, ScaleMode.ScaleToFit, true, 0, color, 0, 0);
+            GUI.matrix = matrix;
+        }
+
+        private float Phase(long id)
+        {
+            if (!_swimPhase.TryGetValue(id, out var phase))
+            {
+                phase = Hash01(id, 3);
+                _swimPhase[id] = phase;
+            }
+
+            return phase;
+        }
+
+        /// <summary>A fixed number in [0, 1) from a fish id (its path never changes; no random draw per frame).</summary>
+        private static float Hash01(long id, int salt)
+        {
+            unchecked
+            {
+                var x = (ulong)id * 0x9E3779B97F4A7C15UL + (ulong)salt * 0xBF58476D1CE4E5B9UL;
+                x ^= x >> 31;
+                x *= 0x94D049BB133111EBUL;
+                x ^= x >> 29;
+                return (x >> 40) / 16777216f;
+            }
+        }
+
+        private static float LogCm(FishView f) => Mathf.Log((float)Math.Max(f.SizeCm, 0.1));
+
+        // Provisional tank textures, made once (ASSET_PENDENTE: replaced by the files above when they exist).
+        private static Color SandTop => new Color(0.66f, 0.58f, 0.43f);
+
+        private static Texture2D WaterTexture => _waterTexture != null ? _waterTexture
+            : (_waterTexture = GradientTexture(64, new Color(0.20f, 0.54f, 0.62f), new Color(0.08f, 0.31f, 0.44f), new Color(0.05f, 0.16f, 0.27f)));
+
+        private static Texture2D SandTexture => _sandTexture != null ? _sandTexture
+            : (_sandTexture = GradientTexture(32, SandTop, new Color(0.40f, 0.35f, 0.27f)));
+
+        private static Texture2D RaysTexture
+        {
+            get
+            {
+                if (_raysTexture != null)
+                {
+                    return _raysTexture;
+                }
+
+                const int size = 128;
+                var tex = NewTexture(size, size);
+                for (var y = 0; y < size; y++)
+                {
+                    var v = (y + 0.5f) / size; // 1 at the top
+                    for (var x = 0; x < size; x++)
+                    {
+                        var s = (x + 0.5f) / size + (1f - v) * 0.3f;
+                        var beam = Ray(s, 0.22f, 0.05f) + Ray(s, 0.52f, 0.08f) * 0.8f + Ray(s, 0.80f, 0.04f);
+                        tex.SetPixel(x, y, new Color(1f, 1f, 1f, Mathf.Clamp01(beam) * Mathf.Pow(v, 1.6f) * 0.16f));
+                    }
+                }
+
+                tex.Apply();
+                _raysTexture = tex;
+                return tex;
+            }
+        }
+
+        private static float Ray(float s, float centre, float width)
+        {
+            var d = (s - centre) / width;
+            return Mathf.Exp(-d * d);
+        }
+
+        private static Texture2D GradientTexture(int height, params Color[] topToBottom)
+        {
+            var tex = NewTexture(1, height);
+            for (var y = 0; y < height; y++)
+            {
+                var s = (1f - y / (float)(height - 1)) * (topToBottom.Length - 1); // 0 at the top
+                var i = Mathf.Min(Mathf.FloorToInt(s), topToBottom.Length - 2);
+                tex.SetPixel(0, y, Color.Lerp(topToBottom[i], topToBottom[i + 1], s - i));
+            }
+
+            tex.Apply();
+            return tex;
+        }
+
+        private static Texture2D NewTexture(int w, int h)
+        {
+            return new Texture2D(w, h, TextureFormat.RGBA32, false)
+            {
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+        }
+
+        // ------------------------------------------------------------------ the sheet
 
         private void DrawSheet(UiSkin skin, Rect area)
         {
-            GUI.Box(area, GUIContent.none, skin.Card);
+            Glass(skin, area);
             var fish = _selected;
             if (fish == null)
             {
@@ -422,6 +1010,7 @@ namespace FishingIdle.Game.UI
 
             _salePreview = null;
             _sellScroll = Vector2.zero;
+            _drawerOpen = true;
         }
 
         private void StopMulti()
@@ -448,7 +1037,7 @@ namespace FishingIdle.Game.UI
 
         private void DrawSelectionPanel(UiSkin skin, Rect area)
         {
-            GUI.Box(area, GUIContent.none, skin.Card);
+            Glass(skin, area);
             skin.DrawOutline(area, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.7f));
             var x = area.x + 22;
             var w = area.width - 44;
@@ -844,12 +1433,21 @@ namespace FishingIdle.Game.UI
         {
             _dirty = false;
             _aquarium = _root.GetAquarium(_sort) ?? new AquariumView();
+            var kept = new HashSet<long>(_aquarium.Fish.Select(f => f.FishId));
             if (_multi)
             {
-                var present = new HashSet<long>(_aquarium.Fish.Select(f => f.FishId));
-                _sellSet.RemoveWhere(id => !present.Contains(id));
+                _sellSet.RemoveWhere(id => !kept.Contains(id));
                 _salePreview = null;
             }
+
+            // Fish that left stop swimming; names and levels may have changed (feeding).
+            foreach (var gone in _swimPhase.Keys.Where(id => !kept.Contains(id)).ToList())
+            {
+                _swimPhase.Remove(gone);
+            }
+
+            _tileText.Clear();
+            RefreshShown();
 
             _selected = _aquarium.Fish.FirstOrDefault(f => f.FishId == _selectedId);
             if (_selected == null)
@@ -869,6 +1467,20 @@ namespace FishingIdle.Game.UI
                 var fish = new HashSet<long>(_aquarium.Fish.Select(f => f.FishId));
                 _foodFish.RemoveWhere(id => !fish.Contains(id));
                 _feedPreview = null;
+            }
+        }
+
+        /// <summary>The fish that match the search, in the current order; the first ones swim.</summary>
+        private void RefreshShown()
+        {
+            _shown = _aquarium == null ? new List<FishView>() : _aquarium.Fish.Where(f => NameSearch.Matches(f.SpeciesName, _search)).ToList();
+            _logMinCm = float.MaxValue;
+            _logMaxCm = float.MinValue;
+            for (var i = 0; i < _shown.Count && i < MaxSwimming; i++)
+            {
+                var cm = LogCm(_shown[i]);
+                _logMinCm = Mathf.Min(_logMinCm, cm);
+                _logMaxCm = Mathf.Max(_logMaxCm, cm);
             }
         }
 

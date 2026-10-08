@@ -1661,3 +1661,31 @@ não há pacotes, raridade de carta, cartas repetidas nem carta como item.
   descobrir esta espécie."
 - Moldura da carta, verso, aba do fichário, página, pedestal e aura são desenhos provisórios
   (`docs/ASSETS_PENDENTES.md`).
+
+### A-144 · Aquário vivo
+
+Decisão do proprietário (08/10/2026): o Aquário passa a ser o "Exemplo 1 — Tanque vivo". O álbum de cartas foi para
+a Enciclopédia (A-143), então não há alternância de visual: o Aquário é só o tanque. Muda apenas a forma de mostrar;
+ficha, Alimentar, Vender, venda em lote (A-130), busca, ordenação e capacidade continuam iguais.
+
+- **O tanque** ocupa a janela abaixo da ordenação: água em degradê com raios de luz suaves vindos de cima, areia com
+  pedrinhas no fundo, plantas que já existem no jogo (junco e sargaço) balançando de leve e bolhas subindo.
+- **Os peixes nadam** de um lado para o outro e viram na volta. Cada peixe tem um caminho fixo (tirado do número do
+  peixe), então nada muda ao reabrir a janela; o relógio só o move ao longo do caminho. O tamanho na tela acompanha o
+  tamanho real (em escala logarítmica, entre um mínimo e um máximo), então um peixe grande parece maior que um
+  pequeno. Peixes Excepcional/Perfeição têm o brilho dourado lento; os de raridade acima de Comum, um brilho fraco na
+  cor da raridade (discreto, como pede a Bíblia).
+- **No máximo 24 peixes nadam**: os primeiros da ordenação e da busca atuais (buscar "pacu" enche o tanque de pacus).
+  Os outros ficam só na gaveta; a gaveta avisa "Nadando no tanque: 24 de N". Os peixes no tanque são só desenho: não
+  soltam moedas e não pedem comida.
+- **Clique num peixe** (no tanque ou na gaveta) abre a ficha num painel de vidro à direita, com os mesmos dados e
+  botões de antes. O peixe escolhido ganha um anel turquesa, uma etiqueta com nome e nível que nada com ele, e nada
+  mais devagar.
+- **A gaveta** fica embaixo, sobre a areia: "Todos os peixes (N)" e o botão Recolher / Mostrar todos. Aberta, mostra
+  uma fileira de miniaturas redondas (anel na cor da raridade, anel dourado extra em Excepcional/Perfeição, nome,
+  "Nv. X" e a posição no Cardume, C1–C6) com rolagem; recolhida, só a barra.
+- **Selecionar vários**: a gaveta abre e sobe para até 3 fileiras; o visto turquesa aparece na miniatura e no peixe
+  do tanque (nada junto com ele). Ctrl + clique continua começando a seleção, no tanque e na gaveta. O painel de
+  venda em lote fica no lugar da ficha, no mesmo vidro.
+- **Alimentar** continua com a grade de cartas atual para escolher a comida (é uma etapa à parte e sai do tanque).
+- Fundo do tanque, areia, bolha e vidro são desenhos provisórios (`docs/ASSETS_PENDENTES.md`).

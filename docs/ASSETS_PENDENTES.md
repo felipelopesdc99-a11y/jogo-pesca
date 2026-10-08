@@ -314,6 +314,41 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > Brilho radial suave para jogo mobile, 512×512 em PNG com fundo transparente: branco no centro sumindo até
 > transparente nas bordas, círculo perfeito, sem raios, sem texto. Arquivo: ui_enc_aura.png
 
+## Aquário vivo (A-144, decisão do proprietário em 08/10/2026)
+
+A tela já funciona com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/AquariumWindow.cs`): água em
+degradê com raios, areia com pedrinhas, bolhas em anel e painéis de vidro. As plantas e os peixes usam a arte que já
+existe (`Arte/Vivos/Plantas` e `Arte/Peixes`); os peixes não precisam de quadros de nadar. Arquivos esperados, em
+`Resources/Arte/UI/` (PNG):
+- `ui_aquarium_bg.png` — 1920×1080, só água do tanque com raios de luz vindos de cima, **sem areia**, sem peixes,
+  sem plantas, sem textos e sem moldura (a areia é uma faixa à parte porque a gaveta muda de altura).
+- `ui_aquarium_sand.png` — 1920×200, fundo transparente na parte de cima: faixa de areia com algumas pedras
+  arredondadas, borda superior ondulada suave; esticada na largura do tanque.
+- `ui_aquarium_bubble.png` — 64×64, fundo transparente, uma bolha.
+- `ui_aquarium_glass.png` — 512×512, painel de vidro escuro translúcido, esticável pelas bordas (9-slice, bordas de
+  32 px).
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Fundo de jogo 1920×1080: interior de um aquário visto de frente, só água, sem areia, sem peixes, sem plantas, sem
+> textos e sem moldura. Água azul-esverdeada clara em cima (#338A9E) escurecendo para azul profundo embaixo (#0D2945),
+> com 3 raios de luz suaves e diagonais vindos da superfície e partículas bem discretas. Estilo "Lago Dourado — Clean
+> Premium": pintura digital limpa, cores vivas mas suaves, sem ruído, sem cara de foto. Arquivo: ui_aquarium_bg.png
+
+> Faixa de areia de fundo de aquário para jogo, 1920×200 em PNG com fundo transparente acima da areia: areia clara
+> e quente (#A8946E em cima, #665A45 embaixo) com borda superior em ondulações suaves e 8 a 10 pedras arredondadas
+> cinza-azuladas de tamanhos variados, luz vinda de cima, sem plantas, sem conchas grandes, sem texto. Estilo "Lago
+> Dourado — Clean Premium". Arquivo: ui_aquarium_sand.png
+
+> Bolha de ar debaixo d'água para jogo, 64×64 em PNG com fundo transparente: círculo de contorno fino branco-azulado
+> (#D9F7FF), miolo quase transparente e um pequeno reflexo branco no canto superior esquerdo, sem sombra, sem texto.
+> Arquivo: ui_aquarium_bubble.png
+
+> Painel de vidro para interface de jogo, 512×512 em PNG: retângulo de cantos arredondados (raio 14 px) em
+> azul-noite translúcido (#0A1422 com 86% de opacidade), borda fina azul-clara (#BFEBFF com 25% de opacidade) e um
+> filete de brilho branco suave na borda de cima, miolo liso, sem texto, sem ícones. Estilo "Lago Dourado — Clean
+> Premium". Arquivo: ui_aquarium_glass.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

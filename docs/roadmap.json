@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-08T21:00:00Z",
+  "updated_at": "2026-10-08T22:00:00Z",
   "current_milestone": "M21",
   "statuses": [
     "TODO",
@@ -4086,6 +4086,16 @@
           "dependencies": [],
           "updated_at": "2026-10-08T21:00:00Z",
           "completion_notes": "ProfileWindow: abas de fichário na lateral (Todas + uma por mapa, com descobertas/total), página de cartas com grade pelo espaço (8 na janela grande, ~6 numa baixa), setas, 'Página n de m' e rodinha; carta com moldura fina na cor da raridade, Nº, arte, nome, mapa, recorde e quantas pescou; não descoberta é o verso com silhueta, '?', raridade e mapa; recorde Excepcional/Perfeição com selo e brilho dourado discreto. Ficha ao lado (ou por cima com Voltar/Esc numa janela baixa): peixe no pedestal com aura da raridade, ‹ › e setas do teclado, quantas pescou, maior exemplar com categoria, faixa de tamanho, chance de mordida, data da descoberta e atributos base em barras. Serviço: EncyclopediaEntryView ganhou SpeciesMinCm, LargestSizeCategoryId/Name, LargestIsSpecial e BaseStats (FishRules.Stats no Nv. 1, tamanho do meio); ProfileView.EncyclopediaStatsMax. 2 testes novos em ProfileSummaryTests. A-143; arte pedida em docs/ASSETS_PENDENTES.md. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T46",
+          "title": "Aquário vivo (tanque com os peixes nadando)",
+          "subsystem": "client",
+          "description": "Decisão do proprietário (08/10/2026): o Aquário vira o Exemplo 1 — Tanque vivo (o álbum de cartas foi para a Enciclopédia, sem alternância). Só apresentação: ficha, Alimentar, Vender e venda em lote continuam iguais. Arte provisória marcada ASSET_PENDENTE.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T22:00:00Z",
+          "completion_notes": "AquariumWindow: a área principal virou um tanque (água em degradê com raios de luz, areia com pedrinhas, junco e sargaço de Arte/Vivos/Plantas balançando, bolhas subindo). Até 24 peixes nadam (os primeiros da ordenação e da busca), em caminhos fixos pelo número do peixe e movidos pelo relógio, virando na volta, com tamanho proporcional ao tamanho real e brilho discreto para raridade alta e Excepcional/Perfeição. Clique no peixe abre a ficha num painel de vidro à direita (mesmos dados, Alimentar e Vender); o escolhido ganha anel turquesa, etiqueta e nada mais devagar. Gaveta embaixo, recolhível, com miniaturas redondas de todos os peixes filtrados e rolagem; em Selecionar vários sobe para até 3 fileiras e o visto aparece na gaveta e no tanque; Ctrl + clique e o painel de venda em lote continuam. Alimentar mantém a grade de cartas. Textos novos em GameTexts.Aquarium. A-144; arte pedida em docs/ASSETS_PENDENTES.md. Não compilado nem aberto no Unity."
         }
       ]
     }
