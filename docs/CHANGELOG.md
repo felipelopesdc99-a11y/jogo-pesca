@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.38] — 08/10/2026
+
+### Mudado
+
+- Menu Ranking com a arte do proprietário: abas com emblemas, pódio no píer com coroa, placar com escudos e
+  "Sua posição" fixa no rodapé (A-146).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.37] — 08/10/2026
 
 ### Adicionado

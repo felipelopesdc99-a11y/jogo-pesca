@@ -137,10 +137,17 @@ namespace FishingIdle.Texts
             public const string TabCoins = "Moedas";
             public const string TabShells = "Conchas";
             public const string TabFish = "Peixes pescados";
-            public const string ColumnPosition = "Posição";
-            public const string ColumnPlayer = "Jogador";
             public const string You = "Você";
             public const string LocalNote = "Por enquanto o jogo roda só neste computador, então o ranking mostra só você. Quando o jogo for online, aqui aparecem todos os jogadores reais.";
+
+            // Stage and scoreboard (addendum A-146).
+            public const string Vacant = "Vago";
+            public const string VacantMark = "—";
+            public const string NotListed = "Você fora da lista";
+            public const string YourPositionNotListed = "Sua posição: fora da lista";
+            public static string YouAt(int position) => "Você #" + Format.Number(position);
+            public static string YourPosition(int position) => "Sua posição #" + Format.Number(position);
+            public static string PlaceShort(int position) => position + "º";
         }
 
         // ------------------------------------------------------------------ Search by fish name (addendum A-084)

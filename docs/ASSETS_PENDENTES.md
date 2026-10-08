@@ -352,6 +352,23 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > filete de brilho branco suave na borda de cima, miolo liso, sem texto, sem ícones. Estilo "Lago Dourado — Clean
 > Premium". Arquivo: ui_aquarium_glass.png
 
+## Menu Ranking: palco e placar (A-146, arte recebida em 08/10/2026)
+
+Recebido e colocado no jogo em 08/10/2026 (pacote `FISHING_IDLE_RANKING_20_ASSETS`, feito no ChatGPT pelo
+proprietário). `tools/Arte/processar_ranking.py` recorta e redimensiona, em `Resources/Arte/UI/`:
+- `ui_rk_coroa.png` (128), `ui_rk_emblema_nivel.png`, `ui_rk_emblema_moedas.png`, `ui_rk_emblema_conchas.png`,
+  `ui_rk_emblema_peixes.png` (128 cada);
+- `ui_rk_palco.png` (píer à noite com lanternas, 1200×245);
+- `ui_rk_escudo_ouro.png`, `ui_rk_escudo_prata.png`, `ui_rk_escudo_bronze.png`, `ui_rk_escudo_azul.png` (96×108,
+  o jogo escreve o número);
+- `ui_rk_trofeu.png` (192, enfeite do cabeçalho).
+
+Os pedestais do palco são desenhados pelo código (bloco escuro com borda na cor da medalha). Nada pendente nesta seção.
+
+Não usados (ficam fora do jogo): as setas `12A_ico_subiu` e `12B_ico_desceu` (o proprietário decidiu não ter
+Subiu/Desceu), a parede de madeira, a moldura e as placas `13` a `19` e a placa de troféu (item 20) — são a arte do
+"Exemplo 3 — Quadro de recordes", que não foi o escolhido.
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

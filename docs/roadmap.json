@@ -4108,6 +4108,16 @@
           ],
           "updated_at": "2026-10-08T23:00:00Z",
           "completion_notes": "AquariumWindow: botão Tanque | Cartas no cabeçalho, à esquerda da busca, guardado em PlayerPrefs (fishingidle.aquario.visual; padrão Tanque); trocar mantém o peixe escolhido. Modo cartas: lista de cartas compactas à esquerda com rolagem (miniatura, nome, Nv. e tamanho, moldura e faixa na cor da raridade, anel de tamanho em Excepcional/Perfeição, C1–C6), na ordem e busca atuais; ao lado a ficha de herói com o peixe num pedestal com aura da raridade, posição na lista, setas ‹ › e ← → do teclado, nome, selos de raridade e tamanho, tamanho na faixa da espécie, nível em disco com barra de XP, atributos em barras (escala: o maior valor entre os peixes do Aquário), valor de venda, alimento, data, posição no Cardume e botões grandes Alimentar e Vender com os mesmos diálogos. Selecionar vários marca cartas da lista e o painel de venda em lote fica no lugar da ficha. Pedestal, aura, fundo e setas extraídos para Game/UI/HeroSheet.cs e usados também pela Enciclopédia. Textos novos em GameTexts.Aquarium. A-145; sem arte nova. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T48",
+          "title": "Menu Ranking: palco e placar com a arte do proprietário",
+          "subsystem": "client",
+          "description": "Escolha do proprietário (08/10/2026): o menu Ranking da barra de cima (não a aba da Arena) vira uma mistura do Exemplo 1 — Palco com o Exemplo 2 — Placar de campeonato, com a arte que ele mandou. Sem setas de Subiu/Desceu (decisão dele). Só apresentação: os dados vêm do serviço de ranking (A-100).",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T23:30:00Z",
+          "completion_notes": "tools/Arte/processar_ranking.py gera em Resources/Arte/UI: ui_rk_coroa, ui_rk_emblema_nivel/moedas/conchas/peixes (128), ui_rk_palco (1200×245), ui_rk_escudo_ouro/prata/bronze/azul (96×108) e ui_rk_trofeu (192); setas e placas 12 a 19 não usadas. RankingWindow: abas grandes com emblema, nome e 'Você #N'; palco com o píer e 3 pedestais (2º, 1º mais alto, 3º) com avatar (o seu do Perfil; outros, retrato padrão), escudo com o número, nome e valor com emblema, coroa e luz dourada no 1º, subida curta ao abrir; pedestal vago com '—' e 'Vago'; placar do 4º em diante com escudo azul numerado, avatar, nome, Nv. e valor, faixas alternadas, sua linha turquesa, rolagem; sem ninguém além do pódio, a nota local no lugar da lista; barra fixa 'Sua posição #N' com o seu valor; taça ao lado do título. Cada arte tem desenho simples de reserva. Textos novos em GameTexts.Ranking. A-146; docs/ASSETS_PENDENTES.md atualizado. Não compilado nem aberto no Unity."
         }
       ]
     }

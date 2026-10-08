@@ -1718,3 +1718,34 @@ busca, ordenação e capacidade são os mesmos.
 - Atributos em barras, não em losango (mais limpo e mais simples de ler em IMGUI); nível em disco + barra, não em anel.
 - Pedestal, aura e setas são os mesmos da ficha da Enciclopédia (A-143), agora num desenho compartilhado; continuam
   provisórios (`ui_enc_pedestal.png`, `ui_enc_aura.png` em `docs/ASSETS_PENDENTES.md`). Nenhuma arte nova.
+
+### A-146 · Ranking: palco e placar
+
+Escolha do proprietário (08/10/2026), com a arte dele (pacote `FISHING_IDLE_RANKING_20_ASSETS`): o menu Ranking da
+barra de cima (não a aba Ranking da Arena) vira uma **mistura** do "Exemplo 1 — Palco" com o "Exemplo 2 — Placar de
+campeonato". Muda só a forma de mostrar: as 4 listas, os valores e as posições vêm do serviço de ranking, e continua
+valendo o A-100 (só jogadores reais).
+
+- **Abas grandes** para Nível, Moedas, Conchas e Peixes pescados, cada uma com o emblema da categoria, o nome e
+  "Você #N" (a sua posição naquela lista); a aba ativa fica turquesa com brilho.
+- **Palco**: o píer à noite com lanternas e três pedestais por cima (2º à esquerda, 1º no meio e mais alto, 3º à
+  direita). Cada um tem o avatar com anel na cor da medalha (turquesa quando é você), o escudo de ouro, prata ou
+  bronze com o número, e o nome e o valor (com o emblema da categoria) na frente do pedestal. O 1º ganha a coroa e uma
+  luz dourada suave atrás. Ao abrir, os três sobem e aparecem em 0,45 s, uma vez. Sem confete (mais limpo).
+- **Pedestal vago**: bloco escuro com contorno tracejado, círculo vazio com "—", a posição ("2º") e "Vago". É o que
+  aparece hoje no jogo local, em que só você está no ranking, em 1º.
+- **Placar** do 4º em diante: escudo azul com o número, avatar pequeno, nome, "Nv. X" e o valor com o emblema, em
+  faixas alternadas; a sua linha fica em destaque turquesa. A lista rola quando o serviço devolver mais linhas do que
+  cabem.
+- **Sem jogadores além do pódio** (o jogo local de hoje), a nota "Por enquanto o jogo roda só neste computador…"
+  ocupa o lugar da lista.
+- **Barra "Sua posição #N"** fixa embaixo, em turquesa, com o seu escudo, o seu avatar e o seu valor na lista ativa;
+  fora da lista, "Sua posição: fora da lista".
+- **Avatares**: você aparece com o seu avatar do Perfil; os outros jogadores, com o retrato padrão (a linha do ranking
+  não traz o avatar de cada um).
+- **Taça** ao lado do título da janela, só como enfeite.
+- **Sem setas de Subiu/Desceu**, por decisão do proprietário (o jogo não guarda a posição anterior). Também ficam de
+  fora o "quanto falta para passar fulano" e o trecho em volta de você do Exemplo 2, que dependem do serviço online
+  devolver vizinhos.
+- Sem a arte, cada peça volta a um desenho simples (escudo em bloco colorido, emblema pelo ícone da categoria, linha
+  no lugar do píer, estrela no lugar da coroa).
