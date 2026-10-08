@@ -17,7 +17,8 @@ namespace FishingIdle.Game.UI
     /// the water, a drawer below holds the miniatures of every fish, and the fish sheet (or the
     /// several-fish sale) sits on a glass panel on the right. Feeding and selling are requests the
     /// service validates; everything shown comes from the game service's views. The swimming is only
-    /// drawing: positions follow the clock and a path fixed by each fish's id.
+    /// drawing: positions follow the clock and a path fixed by each fish's id. A switch in the header turns
+    /// it into the card mode (addendum A-145): a list of compact cards and the hero sheet of one fish.
     /// </summary>
     public sealed class AquariumWindow
     {
@@ -114,6 +115,21 @@ namespace FishingIdle.Game.UI
         private List<FishView> _shown = new List<FishView>();
         private Vector2 _sellScroll;
 
+        // Card mode, the hero sheet (A-145): the choice is kept on this PC (pure presentation).
+        private const string VisualPrefsKey = "fishingidle.aquario.visual";
+        private const float CardRowHeight = 66f;
+        private const float CardRowGap = 6f;
+        private bool _cardsMode;
+        private Vector2 _cardsScroll;
+        private bool _cardsFollow;
+        private long _heroShownId;
+        private float _heroChangedAt = -10f;
+        private readonly Dictionary<long, (float Width, string Name, string Line)> _cardText = new Dictionary<long, (float Width, string Name, string Line)>();
+
+        // The strongest value of each attribute among the kept fish (Vida, Ataque, Defesa, Velocidade): only the scale
+        // of the hero sheet's bars; the numbers shown are the service's.
+        private readonly double[] _statMax = new double[4];
+
         // Confirmations
         private bool _confirmSell;
         private bool _confirmSellMany;
@@ -124,6 +140,7 @@ namespace FishingIdle.Game.UI
             _root = root;
             _root.AquariumChanged += () => _dirty = true;
             _root.BoxChanged += () => _dirty = true;
+            _cardsMode = PlayerPrefs.GetInt(VisualPrefsKey, 0) == 1;
         }
 
         public bool IsOpen { get; private set; }
@@ -192,8 +209,15 @@ namespace FishingIdle.Game.UI
             {
                 _search = search;
                 _scroll = Vector2.zero;
+                _cardsScroll = Vector2.zero;
                 _feedScroll = Vector2.zero;
                 RefreshShown();
+            }
+
+            // Tanque | Cartas, just left of the search (A-145).
+            if (!_feeding)
+            {
+                DrawVisualToggle(skin, panel.xMax - 156 - 16 - 300 - 12, panel.y + 24);
             }
 
             var detailWidth = 420f;
@@ -282,6 +306,12 @@ namespace FishingIdle.Game.UI
 
             // The tank fills the rest of the window; the sheet is a glass panel inside it, on the right.
             var tank = new Rect(area.x, area.y + tankTop, right.xMax - area.x, area.height - tankTop);
+            if (_cardsMode)
+            {
+                DrawCards(skin, tank);
+                return;
+            }
+
             var glass = new Rect(right.x, tank.y + 10f, right.width - 10f, tank.height - 20f);
             DrawTank(skin, tank, glass.x);
 
@@ -997,6 +1027,417 @@ namespace FishingIdle.Game.UI
             y += 22;
         }
 
+        // ------------------------------------------------------------------ card mode, the hero sheet (A-145)
+
+        /// <summary>The two-way "Tanque | Cartas" switch, ending at <paramref name="right"/>. The choice is kept in PlayerPrefs.</summary>
+        private void DrawVisualToggle(UiSkin skin, float right, float y)
+        {
+            var tankWidth = skin.Chip.CalcSize(new GUIContent(GameTexts.Aquarium.ViewTank)).x + 34f;
+            var cardsWidth = skin.Chip.CalcSize(new GUIContent(GameTexts.Aquarium.ViewCards)).x + 34f;
+            var x = right - tankWidth - cardsWidth - 6f;
+            if (skin.IconButton(new Rect(x, y, tankWidth, 38), Icons.Waves, GameTexts.Aquarium.ViewTank, _cardsMode ? skin.Chip : skin.ChipActive) && _cardsMode)
+            {
+                SetCardsMode(false);
+            }
+
+            if (skin.IconButton(new Rect(x + tankWidth + 6f, y, cardsWidth, 38), Icons.Book, GameTexts.Aquarium.ViewCards, _cardsMode ? skin.ChipActive : skin.Chip) && !_cardsMode)
+            {
+                SetCardsMode(true);
+            }
+        }
+
+        /// <summary>Switches the view; the selected fish (and a selection to sell) stay as they are.</summary>
+        private void SetCardsMode(bool cards)
+        {
+            _cardsMode = cards;
+            _cardsFollow = true;
+            PlayerPrefs.SetInt(VisualPrefsKey, cards ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+
+        /// <summary>
+        /// Card mode: a compact list of cards on the left (filtered and ordered like the tank) and, beside it, the hero
+        /// sheet of the selected fish; while selecting several, the several-fish sale takes the sheet's place.
+        /// </summary>
+        private void DrawCards(UiSkin skin, Rect body)
+        {
+            if (_aquarium.Count == 0 || _shown.Count == 0)
+            {
+                GUI.Box(body, GUIContent.none, skin.Card);
+                GUI.Label(new Rect(body.x + 40f, body.center.y - 30f, body.width - 80f, 60f),
+                    _aquarium.Count == 0 ? GameTexts.Aquarium.Empty : GameTexts.Search.NoMatch, skin.Center);
+                return;
+            }
+
+            const float gap = 14f;
+            var listWidth = Mathf.Clamp(body.width * 0.25f, 240f, 310f);
+            var list = new Rect(body.x, body.y, listWidth, body.height);
+            var rest = new Rect(list.xMax + gap, body.y, body.xMax - list.xMax - gap, body.height);
+
+            if (!_multi)
+            {
+                // The sheet always shows a fish of the list: the first one when the chosen fish is not in it.
+                var index = IndexOfSelected();
+                if (index < 0)
+                {
+                    _selected = _shown[0];
+                    _selectedId = _selected.FishId;
+                    index = 0;
+                    _cardsFollow = true;
+                }
+
+                // ← → walk the list like ‹ › (not while a dialog is open; a focused search field uses them first).
+                var ev = Event.current;
+                if (GUI.enabled && _shown.Count > 1 && ev.type == EventType.KeyDown && (ev.keyCode == KeyCode.LeftArrow || ev.keyCode == KeyCode.RightArrow))
+                {
+                    StepHero(index, ev.keyCode == KeyCode.LeftArrow ? -1 : 1);
+                    ev.Use();
+                }
+            }
+
+            DrawCardList(skin, list);
+
+            if (_multi)
+            {
+                var w = Mathf.Min(rest.width, 560f);
+                DrawSelectionPanel(skin, new Rect(rest.center.x - w / 2f, rest.y, w, rest.height));
+                return;
+            }
+
+            if (_selected != null)
+            {
+                DrawHero(skin, rest);
+            }
+        }
+
+        private int IndexOfSelected()
+        {
+            for (var i = 0; i < _shown.Count; i++)
+            {
+                if (_shown[i].FishId == _selectedId)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>Moves to the previous or next fish of the list, wrapping around; the list scrolls to it.</summary>
+        private void StepHero(int index, int delta)
+        {
+            var next = ((index + delta) % _shown.Count + _shown.Count) % _shown.Count;
+            _selected = _shown[next];
+            _selectedId = _selected.FishId;
+            _cardsFollow = true;
+        }
+
+        /// <summary>The scrolling list of compact cards (only the rows on screen are drawn).</summary>
+        private void DrawCardList(UiSkin skin, Rect list)
+        {
+            GUI.Box(list, GUIContent.none, skin.Card);
+            var inner = new Rect(list.x + 8f, list.y + 8f, list.width - 16f, list.height - 16f);
+            var contentWidth = inner.width - 18f;
+            var rowHeight = CardRowHeight + CardRowGap;
+
+            if (_cardsFollow)
+            {
+                _cardsFollow = false;
+                var index = _multi ? -1 : IndexOfSelected();
+                if (index >= 0)
+                {
+                    var top = index * rowHeight;
+                    if (top < _cardsScroll.y)
+                    {
+                        _cardsScroll.y = top;
+                    }
+                    else if (top + CardRowHeight > _cardsScroll.y + inner.height)
+                    {
+                        _cardsScroll.y = top + CardRowHeight - inner.height;
+                    }
+                }
+            }
+
+            _cardsScroll = GUI.BeginScrollView(inner, _cardsScroll, new Rect(0, 0, contentWidth, Mathf.Max(0f, _shown.Count * rowHeight - CardRowGap)));
+            var first = Mathf.Max(0, Mathf.FloorToInt(_cardsScroll.y / rowHeight));
+            var last = Mathf.Min(_shown.Count - 1, Mathf.CeilToInt((_cardsScroll.y + inner.height) / rowHeight));
+            for (var i = first; i <= last; i++)
+            {
+                DrawListCard(skin, new Rect(0, i * rowHeight, contentWidth, CardRowHeight), _shown[i]);
+            }
+
+            GUI.EndScrollView();
+        }
+
+        /// <summary>One compact card: frame and stripe in the rarity colour, the miniature, name, level and size, C1–C6.</summary>
+        private void DrawListCard(UiSkin skin, Rect r, FishView f)
+        {
+            var marked = _multi && _sellSet.Contains(f.FishId);
+            var selected = !_multi && f.FishId == _selectedId;
+            var hover = GUI.enabled && r.Contains(Event.current.mousePosition);
+            var theme = VisualTheme.Current;
+            var rarity = UiSkin.RarityColor(f.RarityId);
+            var low = f.RarityId == "common" || f.RarityId == "rare";
+
+            var fill = selected ? theme.PanelElevated : Color.Lerp(theme.Panel, theme.PanelElevated, hover ? 0.6f : 0.2f);
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 10f);
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(rarity.r, rarity.g, rarity.b, (low ? 0.45f : 0.85f) + (hover ? 0.15f : 0f)), 1.5f, 10f);
+            GUI.DrawTexture(new Rect(r.x + 5f, r.y + 10f, 3f, r.height - 20f), skin.White, ScaleMode.StretchToFill, true, 0, rarity, 0, 1.5f);
+            if (selected || marked)
+            {
+                GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 10f);
+            }
+
+            // The miniature, ringed in the size colour for Excepcional / Perfeição.
+            var art = new Rect(r.x + 14f, r.y + 8f, 70f, r.height - 16f);
+            GUI.DrawTexture(art, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.17f, 0.26f, 0.9f), 0, 8f);
+            if (VisualTheme.IsSpecialSize(f.SizeCategoryId))
+            {
+                GUI.DrawTexture(art, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.SizeColor(f.SizeCategoryId), 1.5f, 8f);
+            }
+
+            GUI.DrawTexture(new Rect(art.x + 4f, art.y + 4f, art.width - 8f, art.height - 8f), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
+
+            // Right column: the Cardume position on top, the check below while selecting several.
+            var badge = f.CardumePosition > 0 ? GameTexts.Cardume.Badge(f.CardumePosition) : null;
+            var badgeWidth = badge != null ? skin.Badge.CalcSize(new GUIContent(badge)).x + 8f : 0f;
+            var rightWidth = Mathf.Max(badgeWidth, marked ? 20f : 0f);
+            if (badge != null)
+            {
+                skin.Tag(new Rect(r.xMax - 10f - badgeWidth, r.y + 10f, badgeWidth, 18f), badge, UiSkin.Accent);
+            }
+
+            if (marked)
+            {
+                CheckBadge(skin, new Rect(r.xMax - 30f, r.yMax - 28f, 20f, 20f));
+            }
+
+            var tx = art.xMax + 10f;
+            var tw = r.xMax - 10f - (rightWidth > 0f ? rightWidth + 6f : 0f) - tx;
+            var text = CardText(skin, f, tw);
+            GUI.Label(new Rect(tx, r.y + 10f, tw, 22f), text.Name, skin.BodyBold);
+            GUI.Label(new Rect(tx, r.y + 34f, tw, 20f), text.Line, skin.SmallMuted);
+
+            if (GUI.Button(r, GUIContent.none, GUIStyle.none))
+            {
+                OnFishClicked(f, Event.current != null && (Event.current.control || Event.current.command));
+            }
+        }
+
+        /// <summary>The card's name and "Nv. X · 48,6 cm" line, shortened to fit and kept until the width changes.</summary>
+        private (string Name, string Line) CardText(UiSkin skin, FishView f, float width)
+        {
+            if (!_cardText.TryGetValue(f.FishId, out var text) || !Mathf.Approximately(text.Width, width))
+            {
+                var line = GameTexts.Aquarium.CardsLine(f.Level, Format.SizeCm(f.SizeCm));
+                text = (width, UI.FishCard.Fit(f.SpeciesName, skin.BodyBold, width), UI.FishCard.Fit(line, skin.SmallMuted, width));
+                _cardText[f.FishId] = text;
+            }
+
+            return (text.Name, text.Line);
+        }
+
+        /// <summary>The hero sheet: the fish on its pedestal with ‹ › on the left, the numbers and Alimentar / Vender on the right.</summary>
+        private void DrawHero(UiSkin skin, Rect rest)
+        {
+            var fish = _selected;
+            if (fish.FishId != _heroShownId)
+            {
+                _heroShownId = fish.FishId;
+                _heroChangedAt = Time.unscaledTime;
+            }
+
+            const float gap = 14f;
+            var infoWidth = Mathf.Clamp(rest.width * 0.44f, 300f, 400f);
+            var stage = new Rect(rest.x, rest.y, rest.width - infoWidth - gap, rest.height);
+            var info = new Rect(stage.xMax + gap, rest.y, infoWidth, rest.height);
+            DrawHeroStage(skin, stage, fish);
+            DrawHeroInfo(skin, info, fish);
+        }
+
+        private void DrawHeroStage(UiSkin skin, Rect rect, FishView fish)
+        {
+            var rarity = UiSkin.RarityColor(fish.RarityId);
+            HeroSheet.Backdrop(skin, rect);
+            var index = IndexOfSelected();
+            GUI.Label(new Rect(rect.x + 12f, rect.y + 10f, rect.width - 24f, 20f), GameTexts.Aquarium.CardsPosition(index + 1, _shown.Count), skin.SmallMutedCenter);
+
+            // The fish and its pedestal, centred in the stage.
+            const float pedestalH = 34f;
+            var artW = Mathf.Max(60f, rect.width - 130f);
+            var artH = Mathf.Clamp(Mathf.Min(rect.height - 38f - 14f - pedestalH - 16f, artW * 0.6f), 40f, 320f);
+            var groupBottom = Mathf.Min(rect.yMax - 14f, rect.center.y + 16f + (artH + 6f + pedestalH) / 2f);
+            var zoneBottom = groupBottom - pedestalH;
+            var centre = new Vector2(rect.center.x, zoneBottom - artH / 2f - 6f);
+
+            var aura = Mathf.Max(0f, Mathf.Min(artW + 20f, 2f * (centre.y - rect.y - 8f)));
+            HeroSheet.Aura(skin, centre, aura, rarity, HeroSheet.AuraStrength(fish.RarityId));
+            if (VisualTheme.IsSpecialSize(fish.SizeCategoryId))
+            {
+                // Excepcional / Perfeição: the slow glow in the size colour (Art Bible 2.4).
+                skin.DrawGlow(new Rect(centre.x - artW * 0.25f, centre.y - artH * 0.2f, artW * 0.5f, artH * 0.4f), UiSkin.SizeColor(fish.SizeCategoryId),
+                    0.3f + 0.08f * Mathf.Sin(Time.unscaledTime * 0.9f));
+            }
+
+            HeroSheet.Pedestal(skin, rect.center.x, zoneBottom + 4f, Mathf.Min(artW * 0.8f, 340f), rarity, 0.7f);
+
+            // The fish fades in when it changes and floats a little.
+            var t = Mathf.Clamp01((Time.unscaledTime - _heroChangedAt) / 0.25f);
+            var bob = Mathf.Sin(Time.unscaledTime * 1.6f) * 3f;
+            var art = new Rect(centre.x - artW / 2f, centre.y - artH / 2f + bob + (1f - t) * 10f, artW, artH);
+            GUI.DrawTexture(art, Art.FishTexture(fish.SpeciesId), ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, t), 0, 0);
+
+            // ‹ › walk the current list.
+            if (index >= 0 && _shown.Count > 1)
+            {
+                if (HeroSheet.Arrow(skin, new Rect(rect.x + 12f, centre.y - 24f, 48f, 48f), true))
+                {
+                    StepHero(index, -1);
+                }
+
+                if (HeroSheet.Arrow(skin, new Rect(rect.xMax - 60f, centre.y - 24f, 48f, 48f), false))
+                {
+                    StepHero(index, 1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Name, rarity and size seals, the size, the level with its XP, the four attributes as bars, the sale and food
+        /// values, the date and the Cardume position, then Alimentar and Vender (the same flows as the tank's sheet).
+        /// </summary>
+        private void DrawHeroInfo(UiSkin skin, Rect rect, FishView fish)
+        {
+            GUI.Box(rect, GUIContent.none, skin.Card);
+            var accent = UiSkin.RarityColor(fish.RarityId);
+            var low = fish.RarityId == "common" || fish.RarityId == "rare";
+            skin.DrawOutline(rect, new Color(accent.r, accent.g, accent.b, low ? 0.45f : 0.8f));
+            var x = rect.x + 20f;
+            var w = rect.width - 40f;
+            var y = rect.y + 16f;
+            const float buttonH = 48f;
+            var buttons = rect.yMax - 16f - buttonH;
+            var exceptional = VisualTheme.IsSpecialSize(fish.SizeCategoryId);
+            var sizeColor = UiSkin.SizeColor(fish.SizeCategoryId);
+
+            // Eight rows (attributes and info) share what the fixed parts leave; the size bar goes first on a short sheet.
+            const float fixedHeight = 36f + 30f + 22f + 62f + 26f + 4f + 12f;
+            var withSizeBar = (buttons - y - fixedHeight - 16f) / 8f >= 20f;
+            var rowH = Mathf.Clamp((buttons - y - fixedHeight - (withSizeBar ? 16f : 0f)) / 8f, 20f, 28f);
+
+            GUI.Label(new Rect(x, y, w, 34f), UI.FishCard.Fit(fish.SpeciesName, skin.Title, w), skin.Title);
+            y += 36f;
+
+            // Rarity seal, then the size seal (gold Excepcional / diamond Perfeição, or the size pill).
+            var rarityLabel = fish.RarityName.ToUpperInvariant();
+            var pillWidth = Mathf.Min(skin.PillWidth(rarityLabel, true), w * 0.55f);
+            skin.RarityPill(new Rect(x, y, pillWidth, 22f), fish.RarityId, rarityLabel);
+            var sizeLabel = fish.SizeCategoryName.ToUpperInvariant();
+            var sizeRoom = w - pillWidth - 8f;
+            if (exceptional)
+            {
+                var sealWidth = Mathf.Min(skin.Badge.CalcSize(new GUIContent(sizeLabel)).x + 10f, sizeRoom);
+                UI.FishCard.ExceptionalSeal(skin, new Rect(x + pillWidth + 8f, y + 1f, sealWidth, 20f), sizeLabel, sizeColor);
+            }
+            else
+            {
+                skin.AccentPill(new Rect(x + pillWidth + 8f, y, Mathf.Min(skin.PillWidth(sizeLabel, false), sizeRoom), 22f), sizeLabel, sizeColor);
+            }
+
+            y += 30f;
+
+            // Size inside the species range (GDD section 14).
+            var sizeText = GameTexts.Aquarium.Size + ": " + Format.SizeCm(fish.SizeCm) + "  (" + Format.SizeCm(fish.SpeciesMinCm) + " – " + Format.SizeCm(fish.SpeciesMaxCm) + ")";
+            GUI.Label(new Rect(x, y, w, 20f), UI.FishCard.Fit(sizeText, skin.Small, w), skin.Small);
+            y += 22f;
+            if (withSizeBar)
+            {
+                skin.Bar(new Rect(x, y, w, 6f), (float)fish.SizePercentile, exceptional ? sizeColor : accent);
+                y += 16f;
+            }
+
+            // The level, big: a disc with the number, "Nível X de 10" and the XP bar.
+            const float disc = 52f;
+            var discRect = new Rect(x, y + 2f, disc, disc);
+            var night = UiSkin.Night;
+            GUI.DrawTexture(discRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(night.r, night.g, night.b, 0.85f), 0, disc / 2f);
+            GUI.DrawTexture(discRect, skin.White, ScaleMode.StretchToFill, true, 0, accent, 2.5f, disc / 2f);
+            GUI.Label(discRect, fish.Level.ToString(), skin.TitleCenter);
+            var lx = x + disc + 12f;
+            var lw = w - disc - 12f;
+            GUI.Label(new Rect(lx, y + 2f, lw, 22f), UI.FishCard.Fit(GameTexts.Aquarium.LevelOf(fish.Level, fish.MaxLevel), skin.BodyBold, lw), skin.BodyBold);
+            if (fish.XpToNext > 0)
+            {
+                skin.Bar(new Rect(lx, y + 27f, lw, 10f), fish.Xp / (float)fish.XpToNext, accent);
+                GUI.Label(new Rect(lx, y + 39f, lw, 20f), UI.FishCard.Fit(GameTexts.Aquarium.Xp(Format.Number(fish.Xp), Format.Number(fish.XpToNext)), skin.SmallMuted, lw), skin.SmallMuted);
+            }
+            else
+            {
+                skin.Bar(new Rect(lx, y + 27f, lw, 10f), 1f, true);
+                GUI.Label(new Rect(lx, y + 39f, lw, 20f), GameTexts.Aquarium.MaxLevelReached, skin.SmallMuted);
+            }
+
+            y += 62f;
+
+            // The four attributes as bars, on the scale of the strongest kept fish.
+            var noteWidth = Mathf.Min(w * 0.5f, skin.SmallMutedRightLine.CalcSize(new GUIContent(GameTexts.Aquarium.CardsStatsNote)).x + 4f);
+            GUI.Label(new Rect(x, y, w - noteWidth - 8f, 24f), UI.FishCard.Fit(GameTexts.Aquarium.Stats, skin.BodyBold, w - noteWidth - 8f), skin.BodyBold);
+            GUI.Label(new Rect(x + w - noteWidth, y + 3f, noteWidth, 20f), UI.FishCard.Fit(GameTexts.Aquarium.CardsStatsNote, skin.SmallMutedRightLine, noteWidth), skin.SmallMutedRightLine);
+            y += 26f;
+            var stats = fish.Stats;
+            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Hp, stats?.Hp ?? 0d, _statMax[0], accent);
+            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Attack, stats?.Attack ?? 0d, _statMax[1], accent);
+            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Defense, stats?.Defense ?? 0d, _statMax[2], accent);
+            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Speed, stats?.Speed ?? 0d, _statMax[3], accent);
+            y += 4f;
+
+            // Sale value (with the coin), food value, date and the Cardume position.
+            var ty = y + (rowH - 20f) / 2f;
+            var coins = Format.Number(fish.SalePriceCoins);
+            var coinsWidth = Mathf.Min(skin.CoinAmountWidth(coins, 20f), w * 0.5f);
+            GUI.Label(new Rect(x, ty, w - coinsWidth - 8f, 20f), UI.FishCard.Fit(GameTexts.Aquarium.SaleValue, skin.SmallMuted, w - coinsWidth - 8f), skin.SmallMuted);
+            skin.CoinAmount(new Rect(x + w - coinsWidth, ty, coinsWidth, 20f), coins);
+            y += rowH;
+            HeroInfoRow(skin, x, ref y, w, rowH, GameTexts.Aquarium.FeedValue, GameTexts.Aquarium.FeedXp(Format.Number(fish.FeedXp)));
+            HeroInfoRow(skin, x, ref y, w, rowH, GameTexts.Aquarium.CaughtAt, Format.DateTimeFromUnixMs(fish.CaughtAtMs));
+            HeroInfoRow(skin, x, ref y, w, rowH, GameTexts.Aquarium.CardumeLabel,
+                fish.CardumePosition > 0 ? GameTexts.Aquarium.CardumeSlot(fish.CardumePosition) : GameTexts.Aquarium.CardumeOut);
+
+            // Alimentar / Vender: the same flows as the tank's sheet (food picker, then the same dialogs).
+            var enabled = GUI.enabled;
+            GUI.enabled = enabled && fish.XpToNext > 0;
+            if (skin.IconButton(new Rect(x, buttons, w / 2f - 6f, buttonH), Icons.Feed, GameTexts.Aquarium.Feed, skin.ButtonPrimary))
+            {
+                StartFeeding();
+            }
+
+            GUI.enabled = enabled;
+            if (skin.IconButton(new Rect(x + w / 2f + 6f, buttons, w / 2f - 6f, buttonH), Icons.Sell, GameTexts.Aquarium.Sell, skin.Button))
+            {
+                _confirmSell = true;
+            }
+        }
+
+        private static void HeroStat(UiSkin skin, float x, ref float y, float w, float rowH, string label, double value, double max, Color color)
+        {
+            var labelWidth = Mathf.Min(100f, w * 0.32f);
+            const float valueWidth = 60f;
+            var ty = y + (rowH - 20f) / 2f;
+            GUI.Label(new Rect(x, ty, labelWidth, 20f), UI.FishCard.Fit(label, skin.SmallMuted, labelWidth), skin.SmallMuted);
+            skin.Bar(new Rect(x + labelWidth + 6f, ty + 6f, w - labelWidth - valueWidth - 12f, 8f), max > 0d ? (float)(value / max) : 0f, color);
+            GUI.Label(new Rect(x + w - valueWidth, ty, valueWidth, 20f), Format.Number((long)Math.Round(value)), skin.SmallRight);
+            y += rowH;
+        }
+
+        private static void HeroInfoRow(UiSkin skin, float x, ref float y, float w, float rowH, string label, string value)
+        {
+            var ty = y + (rowH - 20f) / 2f;
+            var labelWidth = Mathf.Min(skin.SmallMuted.CalcSize(new GUIContent(label)).x + 12f, w * 0.55f);
+            GUI.Label(new Rect(x, ty, labelWidth, 20f), UI.FishCard.Fit(label, skin.SmallMuted, labelWidth), skin.SmallMuted);
+            GUI.Label(new Rect(x + labelWidth, ty, w - labelWidth, 20f), UI.FishCard.Fit(value, skin.SmallRight, w - labelWidth), skin.SmallRight);
+            y += rowH;
+        }
+
         // ------------------------------------------------------------------ selling several
 
         private void StartMulti()
@@ -1447,6 +1888,25 @@ namespace FishingIdle.Game.UI
             }
 
             _tileText.Clear();
+            _cardText.Clear();
+            for (var k = 0; k < _statMax.Length; k++)
+            {
+                _statMax[k] = 0d;
+            }
+
+            foreach (var f in _aquarium.Fish)
+            {
+                if (f.Stats == null)
+                {
+                    continue;
+                }
+
+                _statMax[0] = Math.Max(_statMax[0], f.Stats.Hp);
+                _statMax[1] = Math.Max(_statMax[1], f.Stats.Attack);
+                _statMax[2] = Math.Max(_statMax[2], f.Stats.Defense);
+                _statMax[3] = Math.Max(_statMax[3], f.Stats.Speed);
+            }
+
             RefreshShown();
 
             _selected = _aquarium.Fish.FirstOrDefault(f => f.FishId == _selectedId);

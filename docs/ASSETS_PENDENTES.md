@@ -288,6 +288,9 @@ esperados, em `Resources/Arte/UI/` (PNG, fundo transparente):
 - `ui_enc_pedestal.png` — 480×96, pedestal de pedra/coral visto de frente, sem peixe.
 - `ui_enc_aura.png` — 512×512, brilho radial branco e suave (o jogo pinta na cor da raridade).
 
+O pedestal e a aura ficam em `Game/UI/HeroSheet.cs` e servem também à ficha de herói do Aquário (modo cartas, A-145):
+os mesmos dois arquivos atendem as duas telas.
+
 Pedidos prontos para colar no ChatGPT (um por imagem):
 
 > Moldura fina de carta colecionável para jogo mobile, 256×384 em PNG com fundo transparente: só a borda, branca,

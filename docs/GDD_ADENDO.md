@@ -1689,3 +1689,32 @@ ficha, Alimentar, Vender, venda em lote (A-130), busca, ordenação e capacidade
   venda em lote fica no lugar da ficha, no mesmo vidro.
 - **Alimentar** continua com a grade de cartas atual para escolher a comida (é uma etapa à parte e sai do tanque).
 - Fundo do tanque, areia, bolha e vidro são desenhos provisórios (`docs/ASSETS_PENDENTES.md`).
+
+### A-145 · Aquário: modo cartas (ficha de herói)
+
+Decisão do proprietário (08/10/2026): o Aquário ganha um botão para mudar entre o "Tanque vivo" (A-144) e o "Modo
+cartas", com o visual do "Exemplo 3 — Ficha de herói". Isto substitui a frase do A-144 que dizia que não haveria
+alternância de visual. Muda só a forma de mostrar: os dados vêm do serviço e Alimentar, Vender, venda em lote (A-130),
+busca, ordenação e capacidade são os mesmos.
+
+- **Alternância** "Tanque | Cartas" no cabeçalho, à esquerda da busca (some enquanto se escolhe a comida). A escolha
+  fica guardada neste PC (preferência de tela, fora do save); o padrão é o Tanque. Trocar mantém o peixe escolhido e
+  uma seleção de venda em andamento.
+- **Lista de cartas** à esquerda, com rolagem, na ordem e na busca atuais: miniatura, nome, "Nv. X · tamanho",
+  moldura e faixa na cor da raridade (mais fracas em Comum e Raro), anel na cor do tamanho em Excepcional/Perfeição e
+  a posição no Cardume (C1–C6). A carta escolhida ganha o contorno turquesa.
+- **Ficha de herói** ao lado: o peixe grande flutuando num pedestal com aura da cor da raridade (bem fraca em Comum e
+  Raro; brilho lento na cor do tamanho em Excepcional/Perfeição), a posição na lista ("3 de 24") e setas ‹ › (e ← →
+  do teclado) para o anterior e o próximo da lista atual, com a lista rolando junto. À direita: nome, selo de
+  raridade, selo de tamanho, tamanho dentro da faixa da espécie, nível num disco com "Nível X de 10" e a barra de XP,
+  os atributos Vida/Ataque/Defesa/Velocidade em barras, valor de venda, valor como alimento, data da pesca e posição
+  no Cardume, e os botões grandes Alimentar e Vender (os mesmos fluxos e diálogos do tanque).
+- **Barras dos atributos**: o número é o do serviço; a barra vai até o maior valor daquele atributo entre os peixes
+  do Aquário ("comparado aos seus peixes"). É só a escala do desenho, não uma regra.
+- A ficha sempre mostra um peixe da lista: se a busca esconde o peixe escolhido, a ficha passa para o primeiro da
+  lista.
+- **Selecionar vários**: as cartas da lista são marcadas com o visto; o painel de venda em lote aparece no lugar da
+  ficha. Ctrl + clique numa carta também começa a seleção.
+- Atributos em barras, não em losango (mais limpo e mais simples de ler em IMGUI); nível em disco + barra, não em anel.
+- Pedestal, aura e setas são os mesmos da ficha da Enciclopédia (A-143), agora num desenho compartilhado; continuam
+  provisórios (`ui_enc_pedestal.png`, `ui_enc_aura.png` em `docs/ASSETS_PENDENTES.md`). Nenhuma arte nova.

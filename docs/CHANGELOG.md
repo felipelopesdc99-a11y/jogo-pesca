@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.37] — 08/10/2026
+
+### Adicionado
+
+- Aquário: botão "Tanque | Cartas"; o modo cartas mostra cada peixe numa ficha de herói (pedestal, aura, nível,
+  atributos em barras, Alimentar e Vender) com a lista de cartas ao lado (A-145).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.36] — 08/10/2026
 
 ### Mudado

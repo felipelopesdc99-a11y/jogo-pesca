@@ -223,6 +223,16 @@ namespace FishingIdle.Texts
             public const string DrawerShow = "Mostrar todos";
             public static string DrawerTitle(int count) => "Todos os peixes (" + Format.Number(count) + ")";
             public static string SwimmingNote(int swimming, int total) => "Nadando no tanque: " + Format.Number(swimming) + " de " + Format.Number(total);
+
+            // Card mode, the hero sheet (addendum A-145).
+            public const string ViewTank = "Tanque";
+            public const string ViewCards = "Cartas";
+            public const string CardsStatsNote = "comparado aos seus peixes";
+            public const string CardumeLabel = "Cardume";
+            public const string CardumeOut = "Fora do Cardume";
+            public static string CardumeSlot(int position) => "Posição " + position;
+            public static string CardsPosition(int index, int total) => Format.Number(index) + " de " + Format.Number(total);
+            public static string CardsLine(int level, string size) => Player.LevelShort + " " + level + " · " + size;
         }
 
         // ------------------------------------------------------------------ offline return (GDD section 10)

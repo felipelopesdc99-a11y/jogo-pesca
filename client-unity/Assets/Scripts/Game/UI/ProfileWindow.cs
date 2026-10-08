@@ -1576,12 +1576,12 @@ namespace FishingIdle.Game.UI
             const float labelW = 150f;
             var cx = page.center.x;
             GUI.Label(new Rect(cx - labelW / 2f, fy + 10f, labelW, 20f), GameTexts.Profile.EncPage(_encPage + 1, pages), skin.SmallMutedCenter);
-            if (EncArrow(skin, new Rect(cx - labelW / 2f - 44f, fy, 40f, 40f), true, _encPage > 0))
+            if (HeroSheet.Arrow(skin, new Rect(cx - labelW / 2f - 44f, fy, 40f, 40f), true, _encPage > 0))
             {
                 _encPage--;
             }
 
-            if (EncArrow(skin, new Rect(cx + labelW / 2f + 4f, fy, 40f, 40f), false, _encPage < pages - 1))
+            if (HeroSheet.Arrow(skin, new Rect(cx + labelW / 2f + 4f, fy, 40f, 40f), false, _encPage < pages - 1))
             {
                 _encPage++;
             }
@@ -1780,10 +1780,8 @@ namespace FishingIdle.Game.UI
             var e = entries[index];
             var rarity = UiSkin.RarityColor(e.RarityId);
 
-            // Water backdrop, like the Cardume formation.
-            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.05f, 0.16f, 0.24f, 0.92f), 0, 14f);
-            GUI.DrawTexture(new Rect(rect.x, rect.y + rect.height * 0.55f, rect.width, rect.height * 0.45f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.03f, 0.10f, 0.17f, 0.55f), 0, 14f);
-            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Border, 1.5f, 14f);
+            // Water backdrop, like the Cardume formation (shared with the Aquarium's card mode, A-145).
+            HeroSheet.Backdrop(skin, rect);
 
             var position = GameTexts.Profile.EncPosition(index + 1, entries.Count);
             if (overlay)
@@ -1807,24 +1805,11 @@ namespace FishingIdle.Game.UI
             var artH = Mathf.Clamp(Mathf.Min(zoneBottom - zoneTop - 10f, artW * 0.6f), 40f, 300f);
             var centre = new Vector2(rect.center.x, zoneBottom - artH / 2f - 6f);
 
-            // ASSET_PENDENTE: ui_enc_aura.png (soft radial white glow, tinted at runtime) replaces these soft discs.
-            var strength = EncAura(e.RarityId) * (e.Discovered ? 1f : 0.5f);
+            // The aura and the pedestal (HeroSheet, shared with the Aquarium's card mode).
+            var strength = HeroSheet.AuraStrength(e.RarityId) * (e.Discovered ? 1f : 0.5f);
             var aura = Mathf.Max(0f, Mathf.Min(artW + 20f, 2f * (centre.y - rect.y - 8f)));
-            for (var i = 0; i < 4; i++)
-            {
-                var d = aura * (1f - i * 0.18f);
-                GUI.DrawTexture(new Rect(centre.x - d / 2f, centre.y - d / 2f, d, d), skin.White, ScaleMode.StretchToFill, true, 0,
-                    new Color(rarity.r, rarity.g, rarity.b, strength), 0, d / 2f);
-            }
-
-            // ASSET_PENDENTE: ui_enc_pedestal.png (stone/coral disc seen from the front, 480×96) replaces the drawn pedestal.
-            var pw = Mathf.Min(artW * 0.8f, 340f);
-            var top = zoneBottom + 4f;
-            GUI.DrawTexture(new Rect(rect.center.x - pw / 2f - 10f, top + 18f, pw + 20f, 20f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.28f), 0, 10f);
-            GUI.DrawTexture(new Rect(rect.center.x - pw / 2f, top + 10f, pw, 22f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.07f, 0.13f, 0.21f, 1f), 0, 11f);
-            var face = new Rect(rect.center.x - pw / 2f, top, pw, 22f);
-            GUI.DrawTexture(face, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.16f, 0.27f, 0.38f, 1f), 0, 11f);
-            GUI.DrawTexture(face, skin.White, ScaleMode.StretchToFill, true, 0, new Color(rarity.r, rarity.g, rarity.b, e.Discovered ? 0.7f : 0.3f), 1.5f, 11f);
+            HeroSheet.Aura(skin, centre, aura, rarity, strength);
+            HeroSheet.Pedestal(skin, rect.center.x, zoneBottom + 4f, Mathf.Min(artW * 0.8f, 340f), rarity, e.Discovered ? 0.7f : 0.3f);
 
             // The fish fades in when it changes and floats a little.
             var t = Mathf.Clamp01((Time.unscaledTime - _encChangedAt) / 0.25f);
@@ -1843,67 +1828,18 @@ namespace FishingIdle.Game.UI
             // ‹ › walk the current tab.
             if (entries.Count > 1)
             {
-                if (EncArrow(skin, new Rect(rect.x + 12f, centre.y - 24f, 48f, 48f), true))
+                if (HeroSheet.Arrow(skin, new Rect(rect.x + 12f, centre.y - 24f, 48f, 48f), true))
                 {
                     index = EncStep(entries, index, -1);
                 }
 
-                if (EncArrow(skin, new Rect(rect.xMax - 60f, centre.y - 24f, 48f, 48f), false))
+                if (HeroSheet.Arrow(skin, new Rect(rect.xMax - 60f, centre.y - 24f, 48f, 48f), false))
                 {
                     index = EncStep(entries, index, 1);
                 }
             }
 
             return index;
-        }
-
-        /// <summary>How strong the aura is per rarity: barely there for Comum and Raro, a little more for the high tiers.</summary>
-        private static float EncAura(string rarityId)
-        {
-            switch (rarityId)
-            {
-                case "common": return 0.035f;
-                case "rare": return 0.05f;
-                case "epic": return 0.09f;
-                case "legendary": return 0.12f;
-                case "mythic": return 0.14f;
-                default: return 0.04f;
-            }
-        }
-
-        /// <summary>A round arrow button; the chevron icon points right and is mirrored for "previous". Dimmed when it cannot be used.</summary>
-        private static bool EncArrow(UiSkin skin, Rect r, bool left, bool usable = true)
-        {
-            var wasEnabled = GUI.enabled;
-            GUI.enabled = wasEnabled && usable;
-            var live = GUI.enabled;
-            var hovered = live && r.Contains(Event.current.mousePosition);
-            var clicked = GUI.Button(r, GUIContent.none, GUIStyle.none);
-            var alpha = live ? 1f : 0.35f;
-            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.04f, 0.09f, 0.15f, (hovered ? 0.95f : 0.75f) * alpha), 0, r.width / 2f);
-            var ring = hovered ? UiSkin.Accent : UiSkin.Border;
-            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(ring.r, ring.g, ring.b, alpha), 1.5f, r.width / 2f);
-            var tint = hovered ? UiSkin.Accent : new Color(1f, 1f, 1f, alpha);
-            var icon = ArtAssets.Icon(Icons.Chevron);
-            if (icon != null)
-            {
-                var prevColor = GUI.color;
-                GUI.color = tint;
-                var pad = r.width * 0.3f;
-                GUI.DrawTextureWithTexCoords(new Rect(r.x + pad, r.y + pad, r.width - pad * 2f, r.height - pad * 2f), icon,
-                    left ? new Rect(1f, 0f, -1f, 1f) : new Rect(0f, 0f, 1f, 1f), true);
-                GUI.color = prevColor;
-            }
-            else
-            {
-                var prevContent = GUI.contentColor;
-                GUI.contentColor = tint;
-                GUI.Label(r, left ? GameTexts.Profile.EncPrevGlyph : GameTexts.Profile.EncNextGlyph, skin.TitleCenter);
-                GUI.contentColor = prevContent;
-            }
-
-            GUI.enabled = wasEnabled;
-            return clicked && live;
         }
 
         /// <summary>
