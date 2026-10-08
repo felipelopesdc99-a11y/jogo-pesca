@@ -67,7 +67,7 @@ namespace FishingIdle.Game.UI
 
             White = Art.SolidTexture(Color.white);
             Overlay = Art.SolidTexture(new Color(t.Night.r, t.Night.g, t.Night.b, t.OverlayOpacity));
-            Coin = ArtAssets.Icon(Icons.Coin) ?? Art.Circle.texture;
+            Coin = ArtAssets.Texture(CoinArt) ?? ArtAssets.Icon(Icons.Coin) ?? Art.Circle.texture;
             Rays = Art.RaysTexture(14);
 
             var panelTop = Alpha(Color.Lerp(t.Panel, t.PanelElevated, 0.45f), t.PanelOpacity);
@@ -705,6 +705,98 @@ namespace FishingIdle.Game.UI
         private GUIStyle _navGame, _navGameActive;
         private Texture2D _topBarGradient, _topBarShade;
 
+        // The owner's interface art (Resources/Arte/UI, made by tools/Arte/processar_ui_barra.py). Each piece
+        // falls back to the generated look when its file is missing. Sizes below are texture pixels and must
+        // match the script.
+        public const string NavButtonArt = "UI/ui_nav_button_base", NavButtonActiveArt = "UI/ui_nav_button_active",
+            TopBarArt = "UI/ui_topbar_frame", LogoArt = "UI/ui_logo_fishing_idle", AvatarFrameArt = "UI/ui_avatar_frame",
+            CoinArt = "UI/ui_currency_coin", ShellArt = "UI/ui_currency_shell", DollarArt = "UI/ui_currency_dollar",
+            WalletArt = "UI/ui_wallet_inset";
+
+        /// <summary>Height of the menu button face plus its lip in both button files.</summary>
+        private const float NavArtBody = 112f;
+
+        /// <summary>Glow kept around the active button body.</summary>
+        private const float NavArtGlow = 12f;
+
+        /// <summary>Rounded ends kept whole when a button stretches (normal file; the active one adds its glow).</summary>
+        private const float NavArtSide = 32f, NavArtActiveSide = 46f;
+
+        /// <summary>Where the face's centre sits in the drawn body (the lip takes the bottom of the art).</summary>
+        private const float NavArtFaceCentre = 0.43f;
+
+        /// <summary>Rounded ends of the top bar frame, and how far they go past the screen sides.</summary>
+        private const float TopBarArtSide = 90f, TopBarOverhang = 10f;
+
+        /// <summary>Border of the wallet inset, drawn at its own size.</summary>
+        private const float WalletArtBorder = 16f;
+
+        private static readonly float[] SliceX = new float[4], SliceY = new float[4], SliceU = new float[4], SliceV = new float[4];
+
+        /// <summary>
+        /// Draws <paramref name="tex"/> as a 9-slice: the borders (texture pixels) keep their shape, scaled by
+        /// <paramref name="scale"/>; the middle stretches. Respects GUI.color.
+        /// </summary>
+        public static void NineSlice(Rect rect, Texture2D tex, float left, float right, float top, float bottom, float scale)
+        {
+            if (Event.current.type != EventType.Repaint || rect.width <= 0f || rect.height <= 0f)
+            {
+                return;
+            }
+
+            float w = tex.width, h = tex.height;
+            SliceX[0] = rect.x;
+            SliceX[1] = rect.x + Mathf.Min(left * scale, rect.width / 2f);
+            SliceX[2] = rect.xMax - Mathf.Min(right * scale, rect.width / 2f);
+            SliceX[3] = rect.xMax;
+            SliceY[0] = rect.y;
+            SliceY[1] = rect.y + Mathf.Min(top * scale, rect.height / 2f);
+            SliceY[2] = rect.yMax - Mathf.Min(bottom * scale, rect.height / 2f);
+            SliceY[3] = rect.yMax;
+            SliceU[0] = 0f;
+            SliceU[1] = left / w;
+            SliceU[2] = 1f - right / w;
+            SliceU[3] = 1f;
+            // Texture v grows upwards: the top row of the rect is v = 1.
+            SliceV[0] = 1f;
+            SliceV[1] = 1f - top / h;
+            SliceV[2] = bottom / h;
+            SliceV[3] = 0f;
+            for (var i = 0; i < 3; i++)
+            {
+                for (var j = 0; j < 3; j++)
+                {
+                    var piece = new Rect(SliceX[i], SliceY[j], SliceX[i + 1] - SliceX[i], SliceY[j + 1] - SliceY[j]);
+                    if (piece.width <= 0f || piece.height <= 0f)
+                    {
+                        continue;
+                    }
+
+                    var uv = new Rect(SliceU[i], SliceV[j + 1], SliceU[i + 1] - SliceU[i], SliceV[j] - SliceV[j + 1]);
+                    GUI.DrawTextureWithTexCoords(piece, tex, uv, true);
+                }
+            }
+        }
+
+        /// <summary>The coloured icon of a currency (Conchas, Dólares, Moedas), or the tinted icon when its art is missing.</summary>
+        public void CurrencyIcon(Rect rect, string icon)
+        {
+            if (icon == Icons.Coin)
+            {
+                CoinIcon(rect);
+                return;
+            }
+
+            var art = icon == Icons.Shell ? ArtAssets.Texture(ShellArt) : icon == Icons.Dollar ? ArtAssets.Texture(DollarArt) : null;
+            if (art != null)
+            {
+                GUI.DrawTexture(rect, art, ScaleMode.ScaleToFit, true);
+                return;
+            }
+
+            DrawIcon(rect, icon, Color.white);
+        }
+
         /// <summary>The chunky main-menu button face, neutral (font 17; the old menu used 14).</summary>
         public GUIStyle NavGame => _navGame ?? (_navGame = ButtonStyle(
             Art.PanelTexture(Alpha(Color.Lerp(Theme.PanelElevated, Color.white, 0.10f), 0.98f), Alpha(Theme.Panel, 0.98f), Alpha(Color.Lerp(Theme.Border, Color.white, 0.10f), 1f), 10, 1.5f, 56, 0.10f),
@@ -737,21 +829,61 @@ namespace FishingIdle.Game.UI
         /// </summary>
         public bool NavGameButton(Rect rect, string icon, string label, bool active)
         {
-            // ASSET_PENDENTE: ui_nav_button_base.png / ui_nav_button_active.png (9-slice) replace the generated face and lip.
             var enabled = GUI.enabled;
-            if (active)
+            var hover = enabled && rect.Contains(Event.current.mousePosition);
+            var style = active ? NavGameActive : NavGame;
+            var art = ArtAssets.Texture(active ? NavButtonActiveArt : NavButtonArt);
+            bool clicked;
+            Color color;
+            var centreY = rect.center.y;
+            if (art != null)
             {
-                DrawGlow(rect, Accent, 0.45f);
+                // The owner's button: face and lip are in the art, which covers the face rect plus the
+                // 4 px lip under it; the active one also carries its glow around that body.
+                var body = new Rect(rect.x, rect.y, rect.width, rect.height + 4f);
+                var k = body.height / NavArtBody;
+                var previousColor = GUI.color;
+                if (!enabled)
+                {
+                    GUI.color = previousColor * new Color(1f, 1f, 1f, 0.5f);
+                }
+
+                if (active)
+                {
+                    var glow = NavArtGlow * k;
+                    NineSlice(new Rect(body.x - glow, body.y - glow, body.width + glow * 2f, body.height + glow * 2f), art, NavArtActiveSide, NavArtActiveSide, 0f, 0f, k);
+                }
+                else
+                {
+                    NineSlice(body, art, NavArtSide, NavArtSide, 0f, 0f, k);
+                }
+
+                GUI.color = previousColor;
+                centreY = body.y + body.height * NavArtFaceCentre;
+                if (hover && !active)
+                {
+                    // A light veil over the face: the art has no hover state.
+                    GUI.DrawTexture(new Rect(rect.x + 2f, rect.y + 2f, rect.width - 4f, (centreY - rect.y - 2f) * 2f), White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.07f), 0, 10);
+                }
+
+                clicked = GUI.Button(rect, GUIContent.none, GUIStyle.none);
+                // Dark text on the bright turquoise face, white on the navy one.
+                color = active ? Night : hover ? Color.white : Text;
+            }
+            else
+            {
+                if (active)
+                {
+                    DrawGlow(rect, Accent, 0.45f);
+                }
+
+                var lip = active ? Color.Lerp(Accent, Night, 0.55f) : Color.Lerp(Night, Color.black, 0.35f);
+                lip.a = enabled ? 0.95f : 0.5f;
+                GUI.DrawTexture(new Rect(rect.x, rect.y + 4f, rect.width, rect.height), White, ScaleMode.StretchToFill, true, 0, lip, 0, 11);
+                clicked = GUI.Button(rect, GUIContent.none, style);
+                color = active || hover ? Color.white : Text;
             }
 
-            var lip = active ? Color.Lerp(Accent, Night, 0.55f) : Color.Lerp(Night, Color.black, 0.35f);
-            lip.a = enabled ? 0.95f : 0.5f;
-            GUI.DrawTexture(new Rect(rect.x, rect.y + 4f, rect.width, rect.height), White, ScaleMode.StretchToFill, true, 0, lip, 0, 11);
-
-            var style = active ? NavGameActive : NavGame;
-            var clicked = GUI.Button(rect, GUIContent.none, style);
-            var hover = enabled && rect.Contains(Event.current.mousePosition);
-            var color = active || hover ? Color.white : Text;
             if (!enabled)
             {
                 color.a *= 0.5f;
@@ -764,12 +896,12 @@ namespace FishingIdle.Game.UI
             var gap = textWidth > 0f ? NavGameGap : 0f;
             var total = Mathf.Min(rect.width - 12f, iconSize + gap + textWidth);
             var x = rect.center.x - total / 2f;
-            DrawIcon(new Rect(x, rect.center.y - iconSize / 2f, iconSize, iconSize), icon, color);
+            DrawIcon(new Rect(x, centreY - iconSize / 2f, iconSize, iconSize), icon, color);
             if (textWidth > 0f)
             {
                 var previous = GUI.contentColor;
                 GUI.contentColor = color;
-                GUI.Label(new Rect(x + iconSize + gap, rect.y, rect.xMax - (x + iconSize + gap) - 4f, rect.height), content, labelStyle);
+                GUI.Label(new Rect(x + iconSize + gap, centreY - rect.height / 2f, rect.xMax - (x + iconSize + gap) - 4f, rect.height), content, labelStyle);
                 GUI.contentColor = previous;
             }
 
@@ -782,12 +914,22 @@ namespace FishingIdle.Game.UI
         /// </summary>
         public void TopBarBackground(Rect bar)
         {
-            // ASSET_PENDENTE: ui_topbar_frame.png (moldura 9-slice da barra) replaces the generated gradient and rim.
             if (_topBarGradient == null)
             {
                 var top = Color.Lerp(Theme.Night, Theme.PanelElevated, 0.55f);
                 _topBarGradient = VerticalGradient(Alpha(top, 0.95f), Alpha(Theme.Night, 0.90f), 64);
                 _topBarShade = VerticalGradient(Alpha(Theme.Night, 0.45f), Alpha(Theme.Night, 0f), 16);
+            }
+
+            var art = ArtAssets.Texture(TopBarArt);
+            if (art != null)
+            {
+                // The owner's frame, 4 px taller than the bar for its turquoise rim, its rounded ends a little past
+                // the screen sides so the bell and settings never sit on the curve.
+                var frame = new Rect(bar.x - TopBarOverhang, bar.y, bar.width + TopBarOverhang * 2f, bar.height + 4f);
+                GUI.DrawTexture(new Rect(bar.x, frame.yMax - 3f, bar.width, 12f), _topBarShade, ScaleMode.StretchToFill, true);
+                NineSlice(frame, art, TopBarArtSide, TopBarArtSide, 0f, 0f, frame.height / art.height);
+                return;
             }
 
             GUI.DrawTexture(bar, _topBarGradient, ScaleMode.StretchToFill, true);
@@ -799,6 +941,13 @@ namespace FishingIdle.Game.UI
         /// <summary>A sunken rounded area inside a panel (the wallet of the player card).</summary>
         public void Inset(Rect rect)
         {
+            var art = ArtAssets.Texture(WalletArt);
+            if (art != null)
+            {
+                NineSlice(rect, art, WalletArtBorder, WalletArtBorder, WalletArtBorder, WalletArtBorder, 1f);
+                return;
+            }
+
             GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, Alpha(Night, 0.55f), 0, 10);
             GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, Alpha(Border, 0.6f), 1f, 10);
         }

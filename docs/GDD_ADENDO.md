@@ -1622,3 +1622,10 @@ painel mostra a descrição do mapa. Durante a viagem o barquinho anda pela rota
 acompanhando o progresso da viagem. A tela cabe inteira, sem rolagem. Enquanto a arte própria não chega, o fundo é
 um degradê e as ilhas são as miniaturas dos mapas recortadas em círculo (docs/ASSETS_PENDENTES.md). Não há estrelas
 por mapa, fases, prêmio por completar mapa nem caminhos alternativos.
+
+### A-142 · Arte definitiva da barra superior e do cartão
+
+Arte do proprietário (08/10/2026). Botões do menu, barra, logo "Fishing Idle", moldura do avatar e as moedas são os
+desenhos dele. Detalhes decididos na implementação: no botão ativo (turquesa claro) texto e ícone ficam escuros para
+ler bem; a barra passa 10 px das laterais da tela para as pontas arredondadas não ficarem sob o sino e as Opções; a
+moeda pintada nova aparece em todo o jogo (preços, Mercado, Expedição), não só no cartão.

@@ -234,15 +234,9 @@ Pedido no doc "Fishing Idle — Pedido de arte: avatares do jogador"
 
 ## Barra superior e cartão do jogador (pedido ao ChatGPT em 07/10/2026)
 
-Pedido completo, com os textos para colar, no documento "Pedido de arte: barra superior e cartão do jogador".
-Arquivos esperados (PNG com fundo transparente):
-- ~~Ícones do menu (11)~~: recebidos e colocados em 08/10/2026 (`tools/Arte/processar_icones_menu.py`).
-- `UI/ui_nav_button_base.png` e `ui_nav_button_active.png` (64×64, 9-slice, cantos de 12 px).
-- `UI/ui_topbar_frame.png` (256×80, 9-slice), `UI/ui_logo_fishing_idle.png` (720×144).
-- `UI/ui_avatar_frame.png` (96×96), `UI/ui_currency_coin.png`, `ui_currency_shell.png`, `ui_currency_dollar.png`
-  (64×64, coloridos), `UI/ui_wallet_inset.png` (64×64, 9-slice, opcional).
-Os pontos do código que trocam o desenho provisório pela arte estão marcados com `ASSET_PENDENTE` em `Hud.cs` e
-`UiSkin.cs`.
+Recebido e colocado no jogo em 08/10/2026: ícones do menu (`tools/Arte/processar_icones_menu.py`) e botões, barra,
+logo, moldura do avatar, ícones de Moedas/Conchas/Dólares e área das moedas (`tools/Arte/processar_ui_barra.py`,
+em `Resources/Arte/UI/`). Nada pendente nesta seção.
 
 ## Tela de Mapa: arquipélago (A-141, escolha do proprietário em 08/10/2026)
 

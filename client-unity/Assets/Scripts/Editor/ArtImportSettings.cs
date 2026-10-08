@@ -99,6 +99,27 @@ namespace FishingIdle.Editor
             {
                 importer.mipmapFilter = TextureImporterMipFilter.KaiserFilter;
             }
+
+            // Interface pieces (Arte/UI): uncompressed and bilinear, so edges and 9-slice borders stay crisp. The
+            // 9-slice frames are drawn near their own size and skip mipmaps (a stretched middle would pick a blurry
+            // level); the logo, the avatar frame and the currencies are drawn much smaller and keep them.
+            if (assetPath.StartsWith(ArtFolder + "UI/", System.StringComparison.Ordinal))
+            {
+                importer.textureCompression = TextureImporterCompression.Uncompressed;
+                importer.crunchedCompression = false;
+                importer.filterMode = FilterMode.Bilinear;
+                importer.mipmapEnabled = !NineSlice(assetPath);
+                importer.mipmapFilter = TextureImporterMipFilter.KaiserFilter;
+            }
+        }
+
+        /// <summary>The interface frames drawn as 9-slice (UiSkin.NineSlice).</summary>
+        internal static bool NineSlice(string path)
+        {
+            var file = System.IO.Path.GetFileNameWithoutExtension(path);
+            return file.StartsWith("ui_nav_button", System.StringComparison.Ordinal)
+                || file == "ui_topbar_frame"
+                || file == "ui_wallet_inset";
         }
 
         internal static bool Crunched(string path)

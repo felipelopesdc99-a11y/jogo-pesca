@@ -436,22 +436,34 @@ namespace FishingIdle.Game.UI
             skin.TopBarBackground(new Rect(0, 0, _width, BarHeight));
 
             // Logo block on two lines (title, then the map), so the bigger menu keeps its names at 16:9.
-            // ASSET_PENDENTE: logo "Fishing Idle" (ui_logo_fishing_idle.png) replaces the fish icon and the title text.
+            // With the owner's logo (fish and "Fishing Idle" in one picture), the map goes under its lettering.
             var player = _root.Player;
-            var titleWidth = skin.Title.CalcSize(new GUIContent(GameTexts.GameTitle)).x;
-            skin.DrawIcon(new Rect(22, 21, 40, 38), Icons.Fish, UiSkin.Accent);
-            _topLeftExtent = 72f + titleWidth;
-            if (player != null)
+            var logo = ArtAssets.Texture(UiSkin.LogoArt);
+            var textX = 72f;
+            if (logo != null)
             {
-                GUI.Label(new Rect(72, 8, titleWidth + 8, 36), GameTexts.GameTitle, skin.Title);
-                var mapLabel = FishCard.Fit(player.MapName, skin.SmallMuted, 200f);
-                skin.DrawIcon(new Rect(73, 49, 14, 14), Icons.Pin, UiSkin.Muted);
-                GUI.Label(new Rect(91, 47, 204, 20), mapLabel, skin.SmallMuted);
-                _topLeftExtent = Mathf.Max(_topLeftExtent, 91f + Mathf.Min(200f, skin.SmallMuted.CalcSize(new GUIContent(mapLabel)).x));
+                var logoHeight = player != null ? 44f : 58f;
+                var logoRect = new Rect(24f, player != null ? 4f : 11f, logoHeight * logo.width / logo.height, logoHeight);
+                GUI.DrawTexture(logoRect, logo, ScaleMode.ScaleToFit, true);
+                // The lettering starts about a quarter into the logo, after the fish.
+                textX = logoRect.x + logoRect.width * 0.26f;
+                _topLeftExtent = logoRect.xMax;
             }
             else
             {
-                GUI.Label(new Rect(72, 22, titleWidth + 8, 36), GameTexts.GameTitle, skin.Title);
+                var titleWidth = skin.Title.CalcSize(new GUIContent(GameTexts.GameTitle)).x;
+                skin.DrawIcon(new Rect(22, 21, 40, 38), Icons.Fish, UiSkin.Accent);
+                _topLeftExtent = 72f + titleWidth;
+                GUI.Label(new Rect(72, player != null ? 8 : 22, titleWidth + 8, 36), GameTexts.GameTitle, skin.Title);
+            }
+
+            if (player != null)
+            {
+                var mapLabel = FishCard.Fit(player.MapName, skin.SmallMuted, 200f);
+                var mapY = logo != null ? 50f : 47f;
+                skin.DrawIcon(new Rect(textX + 1f, mapY + 2f, 14, 14), Icons.Pin, UiSkin.Muted);
+                GUI.Label(new Rect(textX + 19f, mapY, 204, 20), mapLabel, skin.SmallMuted);
+                _topLeftExtent = Mathf.Max(_topLeftExtent, textX + 19f + Mathf.Min(200f, skin.SmallMuted.CalcSize(new GUIContent(mapLabel)).x));
             }
 
             // Primary navigation (GDD section 7).
@@ -511,10 +523,10 @@ namespace FishingIdle.Game.UI
         /// </summary>
         private float DrawCurrency(UiSkin skin, float x, float centreY, string icon, string name, long value, bool showName)
         {
-            // ASSET_PENDENTE: ui_currency_shell.png / ui_currency_dollar.png (coloured, 64 px) replace the tinted icons.
             var text = Format.Short(value);
             var textWidth = skin.SmallBold.CalcSize(new GUIContent(text)).x + 2f;
-            skin.DrawIcon(new Rect(x, centreY - 9f, 18, 18), icon, Color.white);
+            // Coloured art (ui_currency_shell / ui_currency_dollar), never tinted; the white icon when it is missing.
+            skin.CurrencyIcon(new Rect(x - 1f, centreY - 10f, 20, 20), icon);
             GUI.Label(new Rect(x + 24f, centreY - 9f, textWidth + 2f, 20), text, skin.SmallBold);
             var end = x + 24f + textWidth;
             if (showName)
@@ -592,7 +604,7 @@ namespace FishingIdle.Game.UI
             var textWidth = skin.Number.CalcSize(new GUIContent(text)).x;
             var pulse = k < 1f ? 1f + 0.12f * Mathf.Sin(k * Mathf.PI) : 1f;
             var size = iconSize * pulse;
-            // ASSET_PENDENTE: ui_currency_coin.png (moeda pintada, 64 px) in the final style replaces ico_moeda.
+            // The painted coin (ui_currency_coin, or ico_moeda when it is missing).
             skin.CoinIcon(new Rect(x + (iconSize - size) / 2f, centreY - size / 2f, size, size));
             GUI.Label(new Rect(x + iconSize + 8f, centreY - 13f, textWidth + 4f, 30f), text, skin.Number);
             var line = new Rect(x - 4f, centreY - 16f, iconSize + 8f + textWidth + 8f, 32f);
@@ -760,10 +772,21 @@ namespace FishingIdle.Game.UI
             }
 
             // Avatar: the painted fisherman's head in a tile (or the profile icon).
-            // ASSET_PENDENTE: ui_avatar_frame.png (moldura do avatar, 96 px) replaces the plain tile.
             var avatar = new Rect(card.x + 16, card.y + 16, 64, 64);
-            GUI.Box(avatar, GUIContent.none, skin.IconTile);
-            AvatarArt.Draw(skin, new Rect(avatar.x + 3, avatar.y + 3, avatar.width - 6, avatar.height - 6), player.AvatarId);
+            var avatarFrame = ArtAssets.Texture(UiSkin.AvatarFrameArt);
+            if (avatarFrame != null)
+            {
+                // The owner's ring (its hole is 0,866 of the picture: 76 px around the 64 px portrait), the
+                // portrait cut round inside it on a dark disc.
+                GUI.DrawTexture(new Rect(avatar.x - 1f, avatar.y - 1f, avatar.width + 2f, avatar.height + 2f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Night, 0, avatar.width / 2f + 1f);
+                AvatarArt.Draw(skin, new Rect(avatar.x + 1, avatar.y + 1, avatar.width - 2, avatar.height - 2), player.AvatarId, avatar.width / 2f - 1f);
+                GUI.DrawTexture(new Rect(avatar.x - 6f, avatar.y - 6f, avatar.width + 12f, avatar.height + 12f), avatarFrame, ScaleMode.ScaleToFit, true);
+            }
+            else
+            {
+                GUI.Box(avatar, GUIContent.none, skin.IconTile);
+                AvatarArt.Draw(skin, new Rect(avatar.x + 3, avatar.y + 3, avatar.width - 6, avatar.height - 6), player.AvatarId);
+            }
 
             GUI.Label(new Rect(avatar.xMax + 14, card.y + 16, 200, 28), FishCard.Fit(player.PlayerName, skin.Heading, 200), skin.Heading);
             GUI.enabled = buttonEnabled;
