@@ -3,6 +3,16 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.32] — 08/10/2026
+
+### Mudado
+
+- Viagem entre mapas em 10 segundos (antes 30), com o barco acompanhando (A-140).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.31] — 08/10/2026
 
 ### Mudado

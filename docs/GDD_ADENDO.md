@@ -242,7 +242,7 @@ meio da pesca vale a partir do próximo ciclo.
 ### A-029 · Viagem
 **Seção do GDD:** 18 · **Situação:** Em vigor
 
-Menu Mapa → Viajar. A viagem leva 30 segundos (`maps.json → travel`). Ao partir, o que já estava
+Menu Mapa → Viajar. A viagem leva 10 segundos desde 08/10/2026, antes 30 (`maps.json → travel`, A-140). Ao partir, o que já estava
 pescado é entregue e a pesca pausa; na chegada, ela volta sozinha se estava ligada. Durante a
 viagem não dá para pescar nem viajar para outro lugar. Se o jogo for fechado no meio, a viagem é
 concluída ao abrir. Nunca há viagem automática ao subir de nível.
@@ -1601,3 +1601,8 @@ noite), com um brilho azul no horizonte e o reflexo da lua na água.
 Arte do proprietário (08/10/2026). Os ícones de Pesca, Mapa, Aquário, Arena, Ranking, Expedição, Mercado, Loja,
 Perfil, Avisos e Opções são os desenhos dele: formas cheias e arredondadas, brancas, que o jogo pinta conforme o
 estado (turquesa no menu ativo). Eles aparecem em todo lugar que usava os ícones antigos com o mesmo nome.
+
+### A-140 · Viagem em 10 segundos
+
+Pedido do proprietário (08/10/2026). Mudar de mapa leva 10 segundos (antes 30). O barquinho cruza a tela no mesmo
+tempo, então anda 3 vezes mais rápido; a chegada no mapa novo continua igual.

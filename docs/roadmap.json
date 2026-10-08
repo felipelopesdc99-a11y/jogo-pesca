@@ -4046,6 +4046,25 @@
           "dependencies": [],
           "updated_at": "2026-10-08T03:55:00Z",
           "completion_notes": "tools/Arte/processar_icones_menu.py: os 11 ícones (Pesca, Mapa, Aquário, Arena, Ranking, Expedição, Mercado, Loja, Perfil, Avisos, Opções) recortados e centralizados em 96×96, brancos sobre transparente, com os mesmos nomes de antes (ico_*.png); o jogo colore como sempre. A-139. Não aberto no Unity."
+        },
+        {
+          "id": "M22-T42",
+          "title": "Viagem entre mapas em 10 segundos",
+          "subsystem": "config",
+          "description": "Pedido do proprietário (08/10/2026): 10 segundos para mudar de mapa, com o barquinho andando mais rápido para acompanhar.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T18:40:00Z",
+          "completion_notes": "maps.json → travel.duration_seconds de 30 para 10. A animação do barco já segue o progresso da viagem, então ele cruza a tela em 10 s (3× mais rápido). Teste da viagem ajustado. A-140. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T43",
+          "title": "Tela de Mapa estilo mapa-mundi: 3 exemplos",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (08/10/2026, com referência de mapa de ilha com bandeiras numeradas): pesquisar outros jogos e mostrar 3 exemplos antes de implementar.",
+          "status": "IN_PROGRESS",
+          "dependencies": [],
+          "updated_at": "2026-10-08T18:40:00Z"
         }
       ]
     }

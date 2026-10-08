@@ -68,7 +68,7 @@ public sealed class MapsAndRodsTests
     }
 
     [Fact]
-    public void Travel_takes_30_seconds_pauses_fishing_and_resumes_on_the_new_map()
+    public void Travel_takes_10_seconds_pauses_fishing_and_resumes_on_the_new_map()
     {
         var (game, clock, _) = VeteranPlayer();
         game.Shop.BuyRod("rod_01");
@@ -81,7 +81,7 @@ public sealed class MapsAndRodsTests
         Assert.Equal(ServiceError.Traveling, game.Fishing.StartFishing().Error);
         Assert.Equal(ServiceError.Traveling, game.Maps.TravelTo("map_01").Error);
 
-        clock.AdvanceSeconds(29);
+        clock.AdvanceSeconds(9);
         Assert.False(game.Maps.Update().Arrived);
         Assert.Empty(game.Fishing.Sync().NewCatches);
 
