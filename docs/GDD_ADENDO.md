@@ -1595,3 +1595,9 @@ de baleia ao longe no Banco das Baleias e no Abismo Atlântico. O liga/desliga e
 Pedido do proprietário (08/10/2026). O céu não repete mais a Via Láctea em "V" nem tem listras no topo: a Via Láctea
 aparece uma vez, perto da lua, e o resto é céu estrelado. Céu, água e ondas ficaram mais claros (continua sendo
 noite), com um brilho azul no horizonte e o reflexo da lua na água.
+
+### A-139 · Ícones definitivos do menu
+
+Arte do proprietário (08/10/2026). Os ícones de Pesca, Mapa, Aquário, Arena, Ranking, Expedição, Mercado, Loja,
+Perfil, Avisos e Opções são os desenhos dele: formas cheias e arredondadas, brancas, que o jogo pinta conforme o
+estado (turquesa no menu ativo). Eles aparecem em todo lugar que usava os ícones antigos com o mesmo nome.

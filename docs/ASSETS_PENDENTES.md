@@ -236,7 +236,7 @@ Pedido no doc "Fishing Idle — Pedido de arte: avatares do jogador"
 
 Pedido completo, com os textos para colar, no documento "Pedido de arte: barra superior e cartão do jogador".
 Arquivos esperados (PNG com fundo transparente):
-- `Icones/ico_pesca.png` … `ico_perfil.png`, `ico_avisos.png`, `ico_opcoes.png` (96×96, brancos; o jogo colore).
+- ~~Ícones do menu (11)~~: recebidos e colocados em 08/10/2026 (`tools/Arte/processar_icones_menu.py`).
 - `UI/ui_nav_button_base.png` e `ui_nav_button_active.png` (64×64, 9-slice, cantos de 12 px).
 - `UI/ui_topbar_frame.png` (256×80, 9-slice), `UI/ui_logo_fishing_idle.png` (720×144).
 - `UI/ui_avatar_frame.png` (96×96), `UI/ui_currency_coin.png`, `ui_currency_shell.png`, `ui_currency_dollar.png`

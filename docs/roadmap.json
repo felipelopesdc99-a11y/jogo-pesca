@@ -4036,6 +4036,16 @@
           "dependencies": [],
           "updated_at": "2026-10-08T03:40:00Z",
           "completion_notes": "tools/Arte/melhorar_abismo.py: o céu tinha a Via Láctea espelhada formando um V e listras verticais no topo; agora a Via Láctea aparece uma vez e some suave nas bordas, o resto vira céu estrelado com estrelas tiradas da própria pintura, e o topo foi refeito. Céu, água, nuvens, ondas e a miniatura do mapa ficaram mais claros, mantendo a noite. SceneTheme: cores mais claras e o reflexo da lua na água ligado. A-138. Conferido numa montagem da cena fora do Unity; falta ver no jogo."
+        },
+        {
+          "id": "M22-T41",
+          "title": "Ícones novos do menu (arte do proprietário)",
+          "subsystem": "client",
+          "description": "O proprietário mandou os 11 ícones do menu pedidos ao ChatGPT (08/10/2026).",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T03:55:00Z",
+          "completion_notes": "tools/Arte/processar_icones_menu.py: os 11 ícones (Pesca, Mapa, Aquário, Arena, Ranking, Expedição, Mercado, Loja, Perfil, Avisos, Opções) recortados e centralizados em 96×96, brancos sobre transparente, com os mesmos nomes de antes (ico_*.png); o jogo colore como sempre. A-139. Não aberto no Unity."
         }
       ]
     }

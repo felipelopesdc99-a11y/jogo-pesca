@@ -660,7 +660,7 @@ namespace FishingIdle.Game.UI
 
             for (var i = 0; i < labels.Length; i++)
             {
-                // ASSET_PENDENTE: ico_nav_* (conjunto de 9 ícones do menu, 96 px) in the final style.
+                // Menu icons: the owner's final set (tools/Arte/processar_icones_menu.py, A-139).
                 var clicked = skin.NavGameButton(rects[i], NavIcons[i], iconsOnly ? null : labels[i], i == active) && i != active;
                 if (i == 5 && _root.ExpeditionResult != null && !_expedition.IsOpen)
                 {
