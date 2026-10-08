@@ -1606,3 +1606,19 @@ estado (turquesa no menu ativo). Eles aparecem em todo lugar que usava os ícone
 
 Pedido do proprietário (08/10/2026). Mudar de mapa leva 10 segundos (antes 30). O barquinho cruza a tela no mesmo
 tempo, então anda 3 vezes mais rápido; a chegada no mapa novo continua igual.
+
+### A-141 · Tela de Mapa: arquipélago
+
+Escolha do proprietário entre 3 exemplos (08/10/2026, "Exemplo 2 — Arquipélago"). A tela do Mapa deixou de ser uma
+lista de cards: é um mar que vai do turquesa (água doce, primeiros mapas) até o azul-noite com estrelas (últimos
+mapas). Cada mapa é uma ilha-medalhão redonda, na ordem do jogo (nível de desbloqueio), em zigue-zague, ligadas por
+uma rota pontilhada; o trecho já percorrido (até o mapa atual) fica claro e o resto apagado. Cada medalhão mostra a
+miniatura do mapa num círculo, o número numa medalha e o nome embaixo (cortado com "…" e o nome completo ao passar o
+mouse). Estados: mapa atual com moldura e brilho dourados, o barquinho ao lado e "Você está aqui"; liberado com
+moldura turquesa; bloqueado escurecido, com cadeado e "Nv. X". Clicar num medalhão seleciona (anel turquesa) e o
+painel de baixo mostra capítulo, nome, a frase do mapa, nível e vara necessários, espécies descobertas e o botão
+"Viajar · 10 s", ou o aviso de por que não dá para viajar, ou "Você está aqui". Passar o mouse no lado esquerdo do
+painel mostra a descrição do mapa. Durante a viagem o barquinho anda pela rota do mapa de origem até o destino,
+acompanhando o progresso da viagem. A tela cabe inteira, sem rolagem. Enquanto a arte própria não chega, o fundo é
+um degradê e as ilhas são as miniaturas dos mapas recortadas em círculo (docs/ASSETS_PENDENTES.md). Não há estrelas
+por mapa, fases, prêmio por completar mapa nem caminhos alternativos.

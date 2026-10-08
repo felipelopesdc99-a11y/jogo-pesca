@@ -244,6 +244,42 @@ Arquivos esperados (PNG com fundo transparente):
 Os pontos do código que trocam o desenho provisório pela arte estão marcados com `ASSET_PENDENTE` em `Hud.cs` e
 `UiSkin.cs`.
 
+## Tela de Mapa: arquipélago (A-141, escolha do proprietário em 08/10/2026)
+
+A tela já funciona com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/MapWindow.cs`): fundo em
+degradê, miniaturas dos mapas recortadas em círculo e o ícone do barco. Arquivos esperados, em
+`Resources/Arte/UI/` (PNG):
+- `ui_map_sea_bg.png` — 1920×1080, só mar, sem textos, rota, ilhas nem molduras.
+- `ui_map_island_01.png` a `ui_map_island_10.png` — 512×512, fundo transparente, uma ilha redonda por mapa, todas
+  no mesmo tamanho e ângulo, sem moldura nem número (o jogo desenha a moldura, o número e o cadeado).
+- `ui_map_boat.png` — 128×128, fundo transparente, barquinho visto de cima, proa para a direita.
+- Opcional: `ui_map_medal_frame.png` — 512×512, moldura redonda branca (o jogo pinta de turquesa, dourado ou
+  cinza), miolo transparente.
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Fundo de jogo mobile 1920×1080, visto de cima, só mar: à esquerda água rasa turquesa clara (#7FD8E4), passando
+> por azul (#2F93C4) e azul-cobalto (#174D86) até azul-noite quase preto (#050C1D) à direita, com estrelas suaves
+> refletidas só na parte escura. Ondulações leves, sem ilhas, sem barcos, sem textos, sem molduras, sem linhas.
+> Estilo "Lago Dourado — Clean Premium": pintura digital limpa, cores vivas mas suaves, sem ruído, sem cara de foto.
+> Arquivo: ui_map_sea_bg.png
+
+> Ilha redonda vista de cima, para jogo mobile, 512×512 em PNG com fundo transparente, ocupando o círculo inteiro
+> (diâmetro 480 px, centralizada), sem moldura, sem número e sem texto. Tema: [Lago Sereno: lago calmo de água doce
+> com vegetação e um pequeno píer]. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, formas
+> arredondadas, luz quente, sombra suave por baixo. Todas as 10 ilhas devem ter o mesmo tamanho, ângulo e luz.
+> Arquivo: ui_map_island_01.png
+> (Trocar o tema e o número para cada mapa: 02 Rio Selvagem — rio com correnteza, pedras e cachoeira; 03 Pantanal
+> Dourado — área alagada com reflexos dourados e gramíneas; 04 Estuário das Marés — canal de maré com mangue; 05
+> Costa de Coral — praia clara com coqueiros e recife turquesa; 06 Arquipélago do Sol — ilhas rochosas altas em mar
+> cobalto; 07 Corrente Azul — mar aberto com ondulações longas; 08 Banco das Baleias — mar escuro com cauda de
+> baleia; 09 Talude Noturno — oceano à noite com lua e plâncton brilhando; 10 Abismo Atlântico — mar negro-azulado
+> sob céu estrelado com brilho discreto.)
+
+> Barquinho de pesca visto de cima, para jogo mobile, 128×128 em PNG com fundo transparente, proa apontando para a
+> direita, casco branco com detalhe turquesa (#25C4C1), pequena esteira de espuma atrás. Estilo "Lago Dourado —
+> Clean Premium": limpo, arredondado, sem texto. Arquivo: ui_map_boat.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

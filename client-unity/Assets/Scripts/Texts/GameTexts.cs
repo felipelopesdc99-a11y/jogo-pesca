@@ -573,6 +573,7 @@ namespace FishingIdle.Texts
             public const string NeedsLevel = "Nível necessário";
             public const string NeedsRod = "Vara necessária";
             public const string AnyRod = "Qualquer vara";
+            public const string Locked = "Bloqueado";
 
             public static string Departing(string map) => "Partindo para " + map + ".";
             public static string Traveling(string map) => "Viajando para " + map + "…";
@@ -581,6 +582,8 @@ namespace FishingIdle.Texts
             public static string Discovered(int found, int total) => found + " de " + total + " descobertas";
             public static string LevelRequirement(int level) => "Nível " + level;
             public static string Chapter(int number) => "CAPÍTULO " + number;
+            public static string LevelShort(int level) => "Nv. " + level;
+            public static string TravelWithTime(string duration) => Travel + " · " + duration;
 
             /// <summary>The one-line feeling of each map on arrival (docs/IDENTIDADE_POR_MAPA.md).</summary>
             public static string Feeling(string mapId)

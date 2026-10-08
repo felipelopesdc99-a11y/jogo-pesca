@@ -4059,12 +4059,13 @@
         },
         {
           "id": "M22-T43",
-          "title": "Tela de Mapa estilo mapa-mundi: 3 exemplos",
+          "title": "Tela de Mapa estilo arquipélago (Exemplo 2)",
           "subsystem": "client",
           "description": "Pedido do proprietário (08/10/2026, com referência de mapa de ilha com bandeiras numeradas): pesquisar outros jogos e mostrar 3 exemplos antes de implementar.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-08T18:40:00Z"
+          "updated_at": "2026-10-08T20:00:00Z",
+          "completion_notes": "Exemplo 2 escolhido pelo proprietário (08/10/2026). MapWindow.cs refeito: mar em degradê do turquesa ao azul-noite com estrelas; os 10 mapas como ilhas-medalhão redondas (miniatura do mapa recortada em círculo) em zigue-zague, na ordem do nível de desbloqueio, ligadas por rota pontilhada (trecho percorrido até o mapa atual em destaque). Estados: atual com moldura dourada, brilho lento, barquinho e \"Você está aqui\"; liberado com moldura turquesa; bloqueado escurecido com cadeado e \"Nv. X\". Clique seleciona (anel turquesa); painel embaixo com capítulo, nome, frase, nível e vara necessários, espécies descobertas e o botão \"Viajar · 10 s\", o aviso do bloqueio ou \"Você está aqui\". Durante a viagem o barquinho anda pela rota conforme o progresso da viagem. Cabe sem rolagem; nomes cortados mostram o nome completo ao passar o mouse. Textos novos em GameTexts.Map. A-141; arte pendente em docs/ASSETS_PENDENTES.md. Não compilado nem aberto no Unity."
         }
       ]
     }
