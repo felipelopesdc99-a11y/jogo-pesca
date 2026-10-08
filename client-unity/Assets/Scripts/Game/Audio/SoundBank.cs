@@ -10,9 +10,6 @@ namespace FishingIdle.Game.Audio
     /// </summary>
     public static class SoundBank
     {
-        public const string Sea = "ambiente_mar";
-        public const string Wind = "ambiente_vento";
-
         private static readonly Dictionary<string, AudioClip> Clips = new Dictionary<string, AudioClip>();
 
         public static AudioClip For(SoundCue cue)

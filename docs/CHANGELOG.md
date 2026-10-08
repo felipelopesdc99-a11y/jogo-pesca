@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.30] — 08/10/2026
+
+### Mudado
+
+- Som ambiente com gravações reais de natureza em cada mapa; sai o loop sintetizado do mar (A-137, TD-036).
+- Abismo Atlântico mais claro, sem a Via Láctea em "V" e sem as listras no topo do céu, com reflexo da lua (A-138).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity; o som não foi ouvido no jogo.
+
 ## [0.2.0-m21.29] — 07/10/2026
 
 ### Mudado

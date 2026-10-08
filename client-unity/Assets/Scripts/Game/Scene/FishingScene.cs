@@ -213,13 +213,13 @@ namespace FishingIdle.Game.Scene
             };
         }
 
-        /// <summary>Abismo Atlântico: the final map, extremely deep ocean under a starry sky, blue-black water, small high moon on the right.</summary>
+        /// <summary>Abismo Atlântico: the final map, extremely deep ocean under a starry sky, deep blue water lit by a small high moon on the right, with its reflection (A-138).</summary>
         public static SceneTheme AbismoAtlantico()
         {
             return new SceneTheme
             {
-                SkyTop = new Color(0.01f, 0.02f, 0.08f),
-                SkyHorizon = new Color(0.10f, 0.12f, 0.26f),
+                SkyTop = new Color(0.03f, 0.06f, 0.16f),
+                SkyHorizon = new Color(0.16f, 0.22f, 0.42f),
                 Sun = new Color(0.86f, 0.92f, 1f),
                 FarHillTop = new Color(0.08f, 0.10f, 0.20f),
                 FarHillBottom = new Color(0.06f, 0.08f, 0.16f),
@@ -227,11 +227,11 @@ namespace FishingIdle.Game.Scene
                 MidHillBottom = new Color(0.03f, 0.05f, 0.12f),
                 TreeCrown = new Color(0.04f, 0.06f, 0.14f),
                 TreeShade = new Color(0.02f, 0.03f, 0.08f),
-                WaterHorizon = new Color(0.12f, 0.16f, 0.32f),
-                WaterMid = new Color(0.02f, 0.05f, 0.14f),
-                WaterDeep = new Color(0.005f, 0.015f, 0.06f),
+                WaterHorizon = new Color(0.20f, 0.27f, 0.50f),
+                WaterMid = new Color(0.06f, 0.11f, 0.26f),
+                WaterDeep = new Color(0.02f, 0.05f, 0.14f),
                 Glint = new Color(0.70f, 0.82f, 1f),
-                SunGlow = new Color(0.70f, 0.80f, 1f, 0.16f),
+                SunGlow = new Color(0.70f, 0.80f, 1f, 0.24f),
                 Night = true,
                 HillSeed = 43,
                 TreeSeed = 89,
@@ -241,7 +241,7 @@ namespace FishingIdle.Game.Scene
                 ArtFolder = "AbismoAtlantico",
                 ArtPrefix = "map_abismo_atlantico",
                 SunPosition = new Vector2(5.0f, 4.0f),
-                SunColumn = false,
+                SunColumn = true,
                 NearLeftHeight = 2.2f,
                 NearRightHeight = 2.2f,
             };

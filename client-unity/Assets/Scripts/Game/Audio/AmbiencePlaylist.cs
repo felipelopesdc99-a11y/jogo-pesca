@@ -29,7 +29,7 @@ namespace FishingIdle.Game.Audio
     /// </summary>
     /// <remarks>
     /// Two AudioSources take turns. The tracks are files in Resources/Sons/Ambiente listed in
-    /// ambiente.json; a map with no file falls back to the old synthesized loops (see <see cref="GameAudio"/>).
+    /// ambiente.json; a map with no file has no ambience.
     /// </remarks>
     public sealed class AmbiencePlaylist
     {
@@ -59,7 +59,7 @@ namespace FishingIdle.Game.Audio
             _file = Load();
         }
 
-        /// <summary>True when the current map has at least one recording (the old loops then stay silent).</summary>
+        /// <summary>True when the current map has at least one recording.</summary>
         public bool HasTracks => _tracks.Count > 0;
 
         private float Crossfade => _file != null ? Mathf.Clamp(_file.crossfade, 0.5f, 30f) : 8f;
@@ -192,7 +192,7 @@ namespace FishingIdle.Game.Audio
             }
             catch (Exception e)
             {
-                Debug.LogWarning("[FishingIdle] Ambience list could not be read; using the old loops. " + e.Message);
+                Debug.LogWarning("[FishingIdle] Ambience list could not be read; the map stays without ambience. " + e.Message);
                 return null;
             }
         }

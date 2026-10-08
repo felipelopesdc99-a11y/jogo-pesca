@@ -311,8 +311,6 @@ def click():
 def main():
     os.makedirs(OUT, exist_ok=True)
     sounds = [
-        ("ambiente_mar", sea(), AMBIENT_RATE),
-        ("ambiente_vento", wind(), AMBIENT_RATE),
         ("captura", catch_common(), EFFECT_RATE),
         ("captura_rara", catch_rare(), EFFECT_RATE),
         ("recorde", record(), EFFECT_RATE),

@@ -1581,3 +1581,17 @@ Pedido do proprietário (07/10/2026). A barra de cima ficou cerca de 25% maior, 
 turquesa com brilho. O cartão do jogador saiu da esquerda e foi para a direita, e Moedas, Conchas e Dólares
 passaram a ficar dentro dele (saíram da barra). Os avisos aparecem abaixo do cartão. Arte definitiva pedida ao
 ChatGPT (docs/ASSETS_PENDENTES.md).
+
+### A-137 · Som ambiente com gravações reais
+
+Pedido do proprietário (08/10/2026). O loop sintetizado do mar e do vento saiu. Cada mapa toca uma gravação de
+2,5 minutos montada com sons reais de natureza, baixa e calma, combinando com o lugar: pássaros e um riacho no Lago
+Sereno; rio e pássaros no Rio Selvagem; sapos, pássaros e mata no Pantanal Dourado; ondas suaves e gaivotas no
+Estuário, na Costa de Coral e no Arquipélago; mar aberto e vento na Corrente Azul e no Talude Noturno; mar e cantos
+de baleia ao longe no Banco das Baleias e no Abismo Atlântico. O liga/desliga e o volume continuam em Opções.
+
+### A-138 · Abismo Atlântico mais claro
+
+Pedido do proprietário (08/10/2026). O céu não repete mais a Via Láctea em "V" nem tem listras no topo: a Via Láctea
+aparece uma vez, perto da lua, e o resto é céu estrelado. Céu, água e ondas ficaram mais claros (continua sendo
+noite), com um brilho azul no horizonte e o reflexo da lua na água.

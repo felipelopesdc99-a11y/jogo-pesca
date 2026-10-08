@@ -1,18 +1,18 @@
 {
-  "_leia_me": "Som ambiente de cada mapa: gravações longas (2 a 3 minutos cada) tocadas uma depois da outra, em ordem sorteada, com uma passagem suave entre elas; a mesma gravação nunca toca duas vezes seguidas. Com umas 4 gravações por mapa, o que você ouviu só volta depois de uns 10 minutos. Os arquivos ficam em Resources/Sons/Ambiente (.ogg, .wav ou .mp3), com o nome listado aqui, sem a extensão. Enquanto não houver nenhum arquivo de um mapa, o jogo usa o som antigo (ambiente_mar e ambiente_vento). Os nomes dos campos são chaves técnicas e não devem ser traduzidos.",
+  "_leia_me": "Som ambiente de cada mapa: gravações longas (2 a 3 minutos cada) tocadas uma depois da outra, em ordem sorteada, com uma passagem suave entre elas; a mesma gravação nunca toca duas vezes seguidas. Hoje cada mapa tem 1 gravação de 2,5 minutos feita com sons reais da natureza (tools/Audio/mixar_ambiente.py); dá para acrescentar mais gravações à lista de um mapa. Os arquivos ficam em Resources/Sons/Ambiente (.ogg, .wav ou .mp3), com o nome listado aqui, sem a extensão. Mapa sem nenhum arquivo fica sem som ambiente. Os nomes dos campos são chaves técnicas e não devem ser traduzidos.",
   "_tempos": "crossfade = segundos da passagem de uma gravação para a outra. gain = volume do ambiente em relação ao volume geral (0 a 1).",
   "crossfade": 8,
   "gain": 0.6,
   "scenes": [
-    { "scene": "LagoSereno", "tracks": ["lago_01", "lago_02", "lago_03", "lago_04"] },
-    { "scene": "RioSelvagem", "tracks": ["rio_01", "rio_02", "rio_03", "rio_04"] },
-    { "scene": "PantanalDourado", "tracks": ["pantanal_01", "pantanal_02", "pantanal_03", "pantanal_04"] },
-    { "scene": "EstuarioDasMares", "tracks": ["estuario_01", "estuario_02", "estuario_03", "estuario_04"] },
-    { "scene": "CostaDeCoral", "tracks": ["coral_01", "coral_02", "coral_03", "coral_04"] },
-    { "scene": "ArquipelagoDoSol", "tracks": ["arquipelago_01", "arquipelago_02", "arquipelago_03", "arquipelago_04"] },
-    { "scene": "CorrenteAzul", "tracks": ["corrente_01", "corrente_02", "corrente_03", "corrente_04"] },
-    { "scene": "BancoDasBaleias", "tracks": ["baleias_01", "baleias_02", "baleias_03", "baleias_04"] },
-    { "scene": "TaludeNoturno", "tracks": ["talude_01", "talude_02", "talude_03", "talude_04"] },
-    { "scene": "AbismoAtlantico", "tracks": ["abismo_01", "abismo_02", "abismo_03", "abismo_04"] }
+    { "scene": "LagoSereno", "tracks": ["lago_01"] },
+    { "scene": "RioSelvagem", "tracks": ["rio_01"] },
+    { "scene": "PantanalDourado", "tracks": ["pantanal_01"] },
+    { "scene": "EstuarioDasMares", "tracks": ["estuario_01"] },
+    { "scene": "CostaDeCoral", "tracks": ["coral_01"] },
+    { "scene": "ArquipelagoDoSol", "tracks": ["arquipelago_01"] },
+    { "scene": "CorrenteAzul", "tracks": ["corrente_01"] },
+    { "scene": "BancoDasBaleias", "tracks": ["baleias_01"] },
+    { "scene": "TaludeNoturno", "tracks": ["talude_01"] },
+    { "scene": "AbismoAtlantico", "tracks": ["abismo_01"] }
   ]
 }

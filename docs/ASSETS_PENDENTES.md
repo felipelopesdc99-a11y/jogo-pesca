@@ -246,8 +246,9 @@ Os pontos do código que trocam o desenho provisório pela arte estão marcados 
 
 ## Som ambiente dos mapas
 
-Os 40 arquivos listados em `Resources/Sons/ambiente.json` (4 por mapa) ainda não existem. Quando vierem,
-salvar como `.ogg` (o jogo aceita): em `.wav`, 2 a 3 minutos de som estéreo pesam ~25 MB cada.
+Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).
+Pendente antes do lançamento: conferir a licença de cada som de origem ou trocar pelas gravações definitivas, e,
+se quiser mais variedade, até 4 gravações por mapa (`.ogg`, 2 a 3 minutos; listar em `Resources/Sons/ambiente.json`).
 
 ## Prioridade C
 

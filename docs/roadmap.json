@@ -4016,6 +4016,26 @@
           "dependencies": [],
           "updated_at": "2026-10-08T03:10:00Z",
           "completion_notes": "Hud: barra de 64 para 80 px, botões de 40 para 52 px com borda 3D e o ativo turquesa com brilho, ícones de 22 para 28 px, fonte 14 para 17; logo com o mapa embaixo. O cartão do jogador foi para a direita com as três moedas (contagem e +N mantidos); as moedas saíram da barra. Avisos abaixo do cartão. Pedido de arte (ícones do menu, molduras, logo, moedas) no documento de arte e em ASSETS_PENDENTES. A-136. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T39",
+          "title": "Som ambiente com gravações reais (sai o loop do mar)",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (08/10/2026): tirar o som de loop do mar, que está horrível, e usar um som ambiente normal de escutar.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T03:40:00Z",
+          "completion_notes": "Os loops sintetizados ambiente_mar e ambiente_vento saíram (arquivos, SoundBank e GameAudio). Cada mapa ganhou 1 gravação de 2,5 min feita com sons reais de natureza (rio, ondas suaves, vento, pássaros, sapos, gaivotas, baleias) por tools/Audio/mixar_ambiente.py; 16 MB no total. Licença: CC0/Pixabay via projeto Moodist, a conferir antes da Steam (TD-036). A-137. Não ouvido no Unity."
+        },
+        {
+          "id": "M22-T40",
+          "title": "Abismo Atlântico mais claro e sem defeitos no céu",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (08/10/2026): o Abismo Atlântico tem bugs visuais e está muito escuro.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T03:40:00Z",
+          "completion_notes": "tools/Arte/melhorar_abismo.py: o céu tinha a Via Láctea espelhada formando um V e listras verticais no topo; agora a Via Láctea aparece uma vez e some suave nas bordas, o resto vira céu estrelado com estrelas tiradas da própria pintura, e o topo foi refeito. Céu, água, nuvens, ondas e a miniatura do mapa ficaram mais claros, mantendo a noite. SceneTheme: cores mais claras e o reflexo da lua na água ligado. A-138. Conferido numa montagem da cena fora do Unity; falta ver no jogo."
         }
       ]
     }

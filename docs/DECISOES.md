@@ -600,3 +600,17 @@ porque degradês formam faixas com o crunch; os peixes, porque aparecem de perto
 **Rever se.** Alguma camada aparecer com manchas no jogo: basta tirá-la de `ArtImportSettings.Crunched` ou subir a
 qualidade. A primeira importação depois desta mudança demora mais (o crunch é lento só nessa hora).
 
+
+## TD-036 — Som ambiente montado com gravações reais de terceiros (CC0 / Pixabay)
+
+**Decisão.** O som ambiente sintetizado (`ambiente_mar` e `ambiente_vento`) saiu do jogo. Cada mapa tem uma
+gravação de 2,5 minutos (`Resources/Sons/Ambiente/<mapa>_01.ogg`) montada por `tools/Audio/mixar_ambiente.py` com
+gravações reais de natureza (rio, ondas, vento, pássaros, sapos, gaivotas, baleias) do projeto de código aberto
+Moodist (github.com/remvze/moodist), que declara seus sons como CC0 ou Licença de Conteúdo Pixabay.
+
+**Por quê.** O proprietário achou o loop do mar horrível e pediu um som ambiente normal de escutar. O ambiente de
+trabalho não acessa sites de áudio (freesound, Pixabay), mas acessa o GitHub. As duas licenças permitem usar o som
+dentro de um jogo comercial sem crédito (não permitem revender o arquivo de áudio sozinho).
+
+**Rever se.** Antes do lançamento na Steam: conferir a origem de cada arquivo usado (o Moodist não lista a fonte
+de cada som) ou trocar pelas gravações definitivas; o sistema já aceita até 4 gravações por mapa.
