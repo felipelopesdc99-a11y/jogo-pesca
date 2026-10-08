@@ -3956,6 +3956,16 @@
           "dependencies": [],
           "updated_at": "2026-10-07T22:30:00Z",
           "completion_notes": "AquariumWindow: botão \"Selecionar vários\" (ou Ctrl + clique) marca peixes; painel de venda em lote com quantidade, total em moedas (pré-visualização do serviço), lista com remover, Selecionar todos/Limpar e confirmação que lista peixes valiosos ou do Cardume. Usa o SellFish do serviço, que já aceitava vários. Teste Several_fish_sell_together_for_the_previewed_total. A-130. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T33",
+          "title": "Revisão geral: textos, sobreposições e erros",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026): revisar o código procurando erros de digitação, coisas que sobrepõem outras e erros em geral.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-07T23:59:00Z",
+          "completion_notes": "Textos: concordância (vara/barco/isca/anúncio), plurais, Moedas/Conchas/Dólares com maiúscula, números com Format.Number, termos em inglês trocados (Tier → Categoria, top → primeiros, Escapes → Fugas). Telas: batalha da Arena e comemorações corrigidas fora de 1080p (escala da tela virtual); cadeado da Loja não cobre mais o preço; selo Ganhando pelo próprio card; linha de chances do HUD sem invadir o cronômetro; avisos não cobrem mais o Fechar das janelas; balões de valor exato por cima de tudo; navegação travada com diálogo aberto; Inventário com rolagem e botões de vara que cabem; Cardume, ficha do Aquário, cards de Expedição e Bem-vindo de volta cabem em telas baixas; ✕ da busca funciona; painel de Testes com chips que cabem. Bugs: avatar padrão salvo como mostrado, peixe aberto + Ctrl, aviso certo ao dar peixe com a Caixa cheia, nome só muda se o avatar for válido. A-131. Não compilado nem aberto no Unity."
         }
       ]
     }

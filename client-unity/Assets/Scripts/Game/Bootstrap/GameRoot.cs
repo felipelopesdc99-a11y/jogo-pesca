@@ -771,11 +771,27 @@ namespace FishingIdle.Game.Bootstrap
 
         public void DevGiveFish(string speciesId, string speciesName, string sizeCategoryId, int count)
         {
-            DevIntent(() =>
+            Guard(() =>
             {
                 var result = Game.DevTools.GiveFish(speciesId, sizeCategoryId, count);
-                return result.Succeeded && result.Value == 0 ? ServiceError.InvalidAmount : result.Error;
-            }, GameTexts.Dev.GaveFish(count, speciesName));
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(GameTexts.ServiceErrorMessage(result.Error.ToString()), ToastKind.Warning);
+                    return;
+                }
+
+                // Nothing delivered means the Box is full; otherwise say how many actually went in.
+                if (result.Value == 0)
+                {
+                    Toasts.Push(GameTexts.Box.Full, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Dev.GaveFish(result.Value, speciesName), ToastKind.Info);
+                Refresh();
+                BoxChanged?.Invoke();
+                AquariumChanged?.Invoke();
+            });
         }
 
         public void DevSetLevel(int level)
@@ -953,6 +969,27 @@ namespace FishingIdle.Game.Bootstrap
             var ok = false;
             Guard(() =>
             {
+                // The avatar is checked before anything is saved: an unknown avatar must not leave a
+                // half-saved identity (the new name kept, the avatar refused).
+                if (avatarId != null)
+                {
+                    var known = false;
+                    var profile = Game.Profile.GetProfile();
+                    if (profile != null)
+                    {
+                        foreach (var a in profile.Avatars)
+                        {
+                            known |= a.Id == avatarId;
+                        }
+                    }
+
+                    if (!known)
+                    {
+                        Toasts.Push(GameTexts.ServiceErrorMessage(ServiceError.AvatarNotFound.ToString()), ToastKind.Warning);
+                        return;
+                    }
+                }
+
                 var renamed = Game.Profile.Rename(name);
                 if (!renamed.Succeeded)
                 {

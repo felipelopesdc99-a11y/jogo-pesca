@@ -76,14 +76,17 @@ namespace FishingIdle.Game.UI
 
             var previousMatrix = GUI.matrix;
             var previousColor = GUI.color;
-            GUIUtility.ScaleAroundPivot(new Vector2(pop, pop), rect.center);
+            // Composed in the virtual canvas (the HUD's GUI.matrix already scales it), not in screen pixels.
+            var popPivot = new Vector3(rect.center.x, rect.center.y, 0f);
+            GUI.matrix = previousMatrix * Matrix4x4.TRS(popPivot, Quaternion.identity, new Vector3(pop, pop, 1f)) * Matrix4x4.TRS(-popPivot, Quaternion.identity, Vector3.one);
             GUI.color = new Color(1f, 1f, 1f, alpha);
 
             // Soft rays turning slowly behind the banner.
             var raysSize = rect.height * 3.2f;
             var raysCentre = new Vector2(rect.xMax - rect.height * 0.55f, rect.center.y);
             var beforeRotation = GUI.matrix;
-            GUIUtility.RotateAroundPivot(age * 14f, raysCentre);
+            var raysPivot = new Vector3(raysCentre.x, raysCentre.y, 0f);
+            GUI.matrix = beforeRotation * Matrix4x4.TRS(raysPivot, Quaternion.Euler(0f, 0f, age * 14f), Vector3.one) * Matrix4x4.TRS(-raysPivot, Quaternion.identity, Vector3.one);
             GUI.DrawTexture(new Rect(raysCentre.x - raysSize / 2f, raysCentre.y - raysSize / 2f, raysSize, raysSize), skin.Rays, ScaleMode.StretchToFill, true, 0,
                 new Color(item.Color.r, item.Color.g, item.Color.b, 0.55f * theme.GlowIntensity), 0, 0);
             GUI.matrix = beforeRotation;

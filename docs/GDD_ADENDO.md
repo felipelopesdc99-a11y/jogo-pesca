@@ -1533,3 +1533,14 @@ mostra quantos estão marcados, quanto o jogador recebe e a lista dos marcados (
 todos" marca os que estão visíveis (respeitando a busca). "Vender N" pede confirmação; se houver peixes valiosos ou
 do Cardume, eles aparecem listados no aviso. As regras de venda não mudam (o XP investido não volta; durante uma
 Expedição, peixes do Cardume não podem ser vendidos). Esc ou "Sair da seleção" volta ao modo normal.
+
+### A-131 · Revisão geral de textos e telas
+
+Pedido do proprietário (07/10/2026). Decisões visíveis tomadas na revisão:
+- "Tier" das varas aparece como "Categoria" (sem termos em inglês na tela). Moedas, Conchas e Dólares sempre com
+  maiúscula. Mensagens depois de um nome evitam particípio com gênero ("Compra feita: X", "A vara X foi destruída").
+- Com uma janela aberta, só o aviso mais recente aparece, no canto de baixo, para não cobrir o "Fechar".
+- Com um diálogo aberto dentro de uma janela, a barra de navegação fica desativada até ele fechar.
+- O resultado da batalha na Arena é uma faixa abaixo das formações, sem cobrir os peixes.
+- Um card selecionado mantém o selo de status (ex.: "Ganhando" no leilão), que desce para cima da arte.
+- No editor de nome, a regra de tamanho vem do config (`player_identity`).

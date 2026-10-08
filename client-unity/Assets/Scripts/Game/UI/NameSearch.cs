@@ -25,18 +25,22 @@ namespace FishingIdle.Game.UI
             }
 
             text = text ?? string.Empty;
+
+            // The ✕ is handled before the field: IMGUI gives a click to the first control that takes it,
+            // and the field (drawn over the same place) would otherwise swallow it.
+            var clearRect = new Rect(rect.xMax - 28, rect.y + (rect.height - 22f) / 2f, 22, 22);
+            if (text.Length > 0 && GUI.Button(clearRect, GUIContent.none, GUIStyle.none))
+            {
+                text = string.Empty;
+                GUI.FocusControl(null);
+            }
+
             GUI.SetNextControlName(controlName);
             var edited = GUI.TextField(rect, text, 40, skin.SearchField);
             skin.DrawIcon(new Rect(rect.x + 12, rect.y + (rect.height - 18f) / 2f, 18, 18), Icons.Search, UiSkin.Accent);
             if (edited.Length == 0 && GUI.GetNameOfFocusedControl() != controlName)
             {
                 GUI.Label(new Rect(rect.x + 38, rect.y, rect.width - 44, rect.height), GameTexts.Search.Placeholder, _placeholder);
-            }
-
-            if (edited.Length > 0 && GUI.Button(new Rect(rect.xMax - 28, rect.y + (rect.height - 22f) / 2f, 22, 22), GUIContent.none, GUIStyle.none))
-            {
-                edited = string.Empty;
-                GUI.FocusControl(null);
             }
 
             if (edited.Length > 0)

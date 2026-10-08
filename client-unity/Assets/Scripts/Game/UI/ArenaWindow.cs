@@ -51,6 +51,9 @@ namespace FishingIdle.Game.UI
 
         public bool IsOpen { get; private set; }
 
+        /// <summary>True while the opponent's profile dialog is open over the window.</summary>
+        public bool HasDialog => IsOpen && _viewing != null;
+
         public void Open()
         {
             IsOpen = true;
@@ -339,7 +342,7 @@ namespace FishingIdle.Game.UI
                 {
                     GUI.Box(block, GUIContent.none, entry.IsPlayer ? skin.CardSelected : skin.Card);
                     var previous = GUI.color;
-                    GUI.color = color;
+                    GUI.color = previous * color;
                     GUI.DrawTexture(new Rect(block.x, block.y, block.width, 4), Texture2D.whiteTexture);
                     GUI.color = previous;
                 }
@@ -564,15 +567,20 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // Result panel.
-            var panel = new Rect(cx - 260, by - 150, 520, 190);
+            // Result panel: a wide strip under the formations, so it never covers the bottom row's
+            // HP bars and names (the back row's name ends at cy + 150 + 18 + 70, see DrawSide).
+            var formationBottom = cy + 150f + 18f + 70f;
+            var panelTop = Mathf.Max(formationBottom + 8f, area.yMax - 190f);
+            var panel = new Rect(cx - 380, panelTop, 760, Mathf.Clamp(area.yMax - panelTop, 120f, 190f));
             var won = _battle.PlayerWon;
             if (won)
             {
                 // Arena victory: a moderate celebration (Art Bible, section 16.12).
                 var rays = panel.height * 2.6f;
                 var before = GUI.matrix;
-                GUIUtility.RotateAroundPivot(Time.unscaledTime * 12f, panel.center);
+                // Composed in the virtual canvas (the HUD's GUI.matrix already scales it), not in screen pixels.
+                var pivot = new Vector3(panel.center.x, panel.center.y, 0f);
+                GUI.matrix = before * Matrix4x4.TRS(pivot, Quaternion.Euler(0f, 0f, Time.unscaledTime * 12f), Vector3.one) * Matrix4x4.TRS(-pivot, Quaternion.identity, Vector3.one);
                 GUI.DrawTexture(new Rect(panel.center.x - rays / 2f, panel.center.y - rays / 2f, rays, rays), skin.Rays, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Gold.r, UiSkin.Gold.g, UiSkin.Gold.b, 0.35f), 0, 0);
                 GUI.matrix = before;
                 skin.DrawGlow(panel, UiSkin.Gold, 0.45f);
@@ -581,13 +589,15 @@ namespace FishingIdle.Game.UI
             skin.DrawShadow(panel);
             GUI.Box(panel, GUIContent.none, skin.PanelSolid);
             skin.DrawOutline(panel, won ? UiSkin.Gold : UiSkin.Border);
-            skin.DrawIcon(new Rect(panel.xMax - 70, panel.y + 18, 44, 44), won ? Icons.Arena : Icons.Swap, won ? UiSkin.Gold : UiSkin.Muted);
+            skin.DrawIcon(new Rect(panel.x + 24, panel.y + 18, 44, 44), won ? Icons.Arena : Icons.Swap, won ? UiSkin.Gold : UiSkin.Muted);
+            var textX = panel.x + 84;
+            var textW = panel.width - 84 - 268;
             GUI.contentColor = won ? UiSkin.GoldLight : Color.white;
-            GUI.Label(new Rect(panel.x + 24, panel.y + 18, panel.width - 48, 34), won ? GameTexts.Arena.Victory : GameTexts.Arena.Defeat, skin.Title);
+            GUI.Label(new Rect(textX, panel.y + 16, textW, 34), won ? GameTexts.Arena.Victory : GameTexts.Arena.Defeat, skin.Title);
             GUI.contentColor = Color.white;
-            GUI.Label(new Rect(panel.x + 24, panel.y + 60, panel.width - 48, 22), GameTexts.Arena.RankChange(_battle.RankBefore, _battle.RankAfter), skin.Body);
-            GUI.Label(new Rect(panel.x + 24, panel.y + 86, panel.width - 48, 22), GameTexts.Arena.HonorChange(_battle.HonorChange), skin.Body);
-            if (skin.IconButton(new Rect(panel.xMax - 244, panel.yMax - 58, 220, 42), Icons.Arena, GameTexts.Arena.BackToArena, skin.ButtonPrimary))
+            GUI.Label(new Rect(textX, panel.y + 56, textW, 22), GameTexts.Arena.RankChange(_battle.RankBefore, _battle.RankAfter), skin.Body);
+            GUI.Label(new Rect(textX, panel.y + 80, textW, 22), GameTexts.Arena.HonorChange(_battle.HonorChange), skin.Body);
+            if (skin.IconButton(new Rect(panel.xMax - 244, panel.center.y - 21, 220, 42), Icons.Arena, GameTexts.Arena.BackToArena, skin.ButtonPrimary))
             {
                 _battle = null;
                 _nextRefresh = 0f;
@@ -619,7 +629,7 @@ namespace FishingIdle.Game.UI
                 var hp = _hp[side][i];
                 var alive = hp > 0;
                 var previous = GUI.color;
-                GUI.color = alive ? Color.white : new Color(1f, 1f, 1f, 0.15f);
+                GUI.color = previous * (alive ? Color.white : new Color(1f, 1f, 1f, 0.15f));
                 var art = new Rect(x - 70, y - 34, 140, 68);
                 var matrix = GUI.matrix;
                 if (direction < 0f)
@@ -629,7 +639,9 @@ namespace FishingIdle.Game.UI
                 }
                 else
                 {
-                    GUIUtility.ScaleAroundPivot(new Vector2(-1f, 1f), art.center);
+                    // Mirrored around the fish's centre in the virtual canvas (not in screen pixels).
+                    var pivot = new Vector3(art.center.x, art.center.y, 0f);
+                    GUI.matrix = matrix * Matrix4x4.TRS(pivot, Quaternion.identity, new Vector3(-1f, 1f, 1f)) * Matrix4x4.TRS(-pivot, Quaternion.identity, Vector3.one);
                     GUI.DrawTexture(art, Art.FishTexture(fighter.SpeciesId), ScaleMode.ScaleToFit, true);
                     GUI.matrix = matrix;
                 }
@@ -637,14 +649,15 @@ namespace FishingIdle.Game.UI
                 GUI.color = previous;
                 var max = _maxHp[side][i];
                 skin.Bar(new Rect(x - 60, y + 38, 120, 8), max > 0 ? (float)(hp / max) : 0f, false);
-                GUI.Label(new Rect(x - 70, y + 50, 140, 20), fighter.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + fighter.Level, skin.Small);
+                var fighterLabel = fighter.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + fighter.Level;
+                GUI.Label(new Rect(x - 70, y + 50, 140, 20), FishCard.Fit(fighterLabel, skin.SmallMutedCenter, 140f), skin.SmallMutedCenter);
 
                 // Damage numbers float up and fade.
                 foreach (var hit in _hits.Where(h => h.side == side && h.pos == i + 1))
                 {
                     var t = Time.unscaledTime - hit.at;
                     var c = GUI.color;
-                    GUI.color = new Color(1f, 1f, 1f, 1f - t / 0.9f);
+                    GUI.color = c * new Color(1f, 1f, 1f, 1f - t / 0.9f);
                     GUI.Label(new Rect(x - 40, y - 60 - t * 40f, 80, 24), "-" + Format.Number((long)System.Math.Round(hit.dmg)), skin.SmallGold);
                     GUI.color = c;
                 }

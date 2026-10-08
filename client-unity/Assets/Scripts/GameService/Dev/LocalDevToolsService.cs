@@ -132,6 +132,9 @@ namespace FishingIdle.GameService.Dev
             if (!Config.TryGetSpecies(speciesId, out var species)) return ServiceResult<int>.Fail(ServiceError.SpeciesMissingFromConfig);
 
             var fixedCategory = sizeCategoryId == null ? null : Config.SizeCategories.FirstOrDefault(c => c.Id == sizeCategoryId);
+
+            // A size category that does not exist is a bad request, not a silent "random size".
+            if (sizeCategoryId != null && fixedCategory == null) return ServiceResult<int>.Fail(ServiceError.InvalidAmount);
             var capacity = Config.Economy.FishingBox?.Capacity ?? 0;
             var update = new FishingUpdate();
             var given = 0;

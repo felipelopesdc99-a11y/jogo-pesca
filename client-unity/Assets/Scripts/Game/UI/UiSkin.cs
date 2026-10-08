@@ -559,5 +559,14 @@ namespace FishingIdle.Game.UI
         {
             GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 1f), White, ScaleMode.StretchToFill, true, 0, new Color(Border.r, Border.g, Border.b, 0.7f), 0, 0);
         }
+
+        // Single-line variants (never wrap; text that does not fit is clipped). Made on first use.
+        private GUIStyle _smallMutedRightLine, _smallGoldLine;
+
+        /// <summary><see cref="SmallMutedRight"/> on one line, never wrapping.</summary>
+        public GUIStyle SmallMutedRightLine => _smallMutedRightLine ?? (_smallMutedRightLine = new GUIStyle(SmallMutedRight) { wordWrap = false, clipping = TextClipping.Clip });
+
+        /// <summary><see cref="SmallGold"/> on one line, never wrapping.</summary>
+        public GUIStyle SmallGoldLine => _smallGoldLine ?? (_smallGoldLine = new GUIStyle(SmallGold) { wordWrap = false, clipping = TextClipping.Clip });
     }
 }

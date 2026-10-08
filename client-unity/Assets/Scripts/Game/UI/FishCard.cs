@@ -63,16 +63,17 @@ namespace FishingIdle.Game.UI
             // Top row: the rarity seal on the left; a status badge or the selection check on the right.
             // When both do not fit, the seal drops its star, and then the badge moves onto the art.
             var y = rect.y + 10f;
-            var badgeWidth = !m.Selected && !string.IsNullOrEmpty(m.Badge) ? skin.Badge.CalcSize(new GUIContent(m.Badge)).x + 4f : 0f;
+            var badgeWidth = !string.IsNullOrEmpty(m.Badge) ? skin.Badge.CalcSize(new GUIContent(m.Badge)).x + 4f : 0f;
             var rightWidth = m.Selected ? 22f : badgeWidth;
-            var badgeOnArt = false;
+            // A selected card keeps its status badge (e.g. "Ganhando" in an auction): it moves onto the art.
+            var badgeOnArt = m.Selected && badgeWidth > 0f;
             if (!string.IsNullOrEmpty(m.RarityName))
             {
                 var label = m.RarityName.ToUpperInvariant();
                 var withStar = skin.PillWidth(label, true);
                 var plain = skin.PillWidth(label, false);
                 var star = withStar + 6f + rightWidth <= w;
-                badgeOnArt = !star && plain + 6f + rightWidth > w;
+                badgeOnArt = badgeOnArt || (!star && plain + 6f + rightWidth > w);
                 skin.RarityPill(new Rect(x, y, star ? withStar : plain, 22), m.RarityId, label, star);
             }
 

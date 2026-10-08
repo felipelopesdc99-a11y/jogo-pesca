@@ -117,7 +117,7 @@ namespace FishingIdle.GameService.Profile
         public long Caught { get; internal set; }
     }
 
-    /// <summary>The player's own Profile (GDD section 37, own view).</summary>
+    /// <summary>One avatar the player can pick in the name and avatar editor (M18-T03).</summary>
     public sealed class AvatarView
     {
         public string Id { get; internal set; }
@@ -125,6 +125,7 @@ namespace FishingIdle.GameService.Profile
         public bool Selected { get; internal set; }
     }
 
+    /// <summary>The player's own Profile (GDD section 37, own view).</summary>
     public sealed class ProfileView
     {
         public string PlayerName { get; internal set; }

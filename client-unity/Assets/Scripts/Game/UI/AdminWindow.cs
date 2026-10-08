@@ -95,16 +95,25 @@ namespace FishingIdle.Game.UI
 
             GUI.Label(new Rect(x + 6, y + 6, inner - x - 6, 22), GameTexts.Player.LevelShort + " " + current, skin.BodyBold);
             y += 40;
+            // Level chips as wide as their label ("Nv. 100"), wrapping to a new line when the row is full.
             x = 0f;
             foreach (var level in new[] { 10, 30, 50, 70, 90, 100 })
             {
-                if (GUI.Button(new Rect(x, y, 66, 32), GameTexts.Player.LevelShort + " " + level, _level == level ? skin.ChipActive : skin.Chip))
+                var label = GameTexts.Player.LevelShort + " " + level;
+                var lw = skin.Chip.CalcSize(new GUIContent(label)).x + 10f;
+                if (x > 0f && x + lw > inner)
+                {
+                    x = 0f;
+                    y += 38;
+                }
+
+                if (GUI.Button(new Rect(x, y, lw, 32), label, _level == level ? skin.ChipActive : skin.Chip))
                 {
                     _level = level;
                     _root.DevSetLevel(level);
                 }
 
-                x += 70;
+                x += lw + 6f;
             }
 
             y += 44;
@@ -189,11 +198,14 @@ namespace FishingIdle.Game.UI
         {
             skin.DrawIcon(new Rect(0, y + 6, 22, 22), icon, Color.white);
             GUI.Label(new Rect(30, y + 7, 110, 22), label, skin.Small);
+            // Short labels ("+100 mi"), and never narrower than the label itself.
             var x = 140f;
-            var bw = (width - x - 2 * 6f) / amounts.Length;
+            var share = (width - x - (amounts.Length - 1) * 6f) / amounts.Length;
             foreach (var amount in amounts)
             {
-                if (GUI.Button(new Rect(x, y, bw, 32), "+" + Format.Number(amount), skin.Chip))
+                var text = "+" + Format.Short(amount);
+                var bw = Mathf.Max(share, skin.Chip.CalcSize(new GUIContent(text)).x + 10f);
+                if (GUI.Button(new Rect(x, y, bw, 32), text, skin.Chip))
                 {
                     _root.DevGive(currency, amount, label);
                 }

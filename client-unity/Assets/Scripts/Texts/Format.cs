@@ -127,7 +127,7 @@ namespace FishingIdle.Texts
             return Countdown(total);
         }
 
-        /// <summary>A human duration: "30 segundos", "2 minutos", "1 h 05 min".</summary>
+        /// <summary>A human duration: "30 segundos", "2 minutos", "1 min 30 s", "1 h 05 min".</summary>
         public static string Duration(double seconds)
         {
             var total = (long)Math.Round(Math.Max(0, seconds));
@@ -140,8 +140,13 @@ namespace FishingIdle.Texts
             {
                 var minutes = total / 60;
                 var secs = total % 60;
-                var head = minutes == 1 ? "1 minuto" : minutes + " minutos";
-                return secs == 0 ? head : head + " e " + secs + " s";
+                if (secs == 0)
+                {
+                    return minutes == 1 ? "1 minuto" : minutes + " minutos";
+                }
+
+                // Mixed values stay all-abbreviated, like the hour form: "1 min 30 s".
+                return minutes + " min " + secs + " s";
             }
 
             var hours = total / 3600;

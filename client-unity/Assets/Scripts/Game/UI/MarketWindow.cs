@@ -78,6 +78,9 @@ namespace FishingIdle.Game.UI
 
         public bool IsOpen { get; private set; }
 
+        /// <summary>The Market has no confirmation dialog of its own (selections live in its side panel).</summary>
+        public bool HasDialog => false;
+
         public void Open()
         {
             IsOpen = true;
@@ -357,12 +360,12 @@ namespace FishingIdle.Game.UI
                 GUI.DrawTexture(new Rect(x + 40, y, w - 80, 30), skin.White, ScaleMode.StretchToFill, true, 0, new Color(c.r, c.g, c.b, 0.18f), 0, 8);
                 var previous = GUI.contentColor;
                 GUI.contentColor = Color.Lerp(c, Color.white, 0.4f);
-                GUI.Label(new Rect(x + 40, y + 6, w - 80, 22), options[index - 1].Name, skin.Center);
+                GUI.Label(new Rect(x + 40, y + 6, w - 80, 22), FishCard.Fit(options[index - 1].Name, skin.Center, w - 80), skin.Center);
                 GUI.contentColor = previous;
             }
             else
             {
-                GUI.Label(new Rect(x + 40, y + 6, w - 80, 22), index == 0 ? any : options[index - 1].Name, skin.Center);
+                GUI.Label(new Rect(x + 40, y + 6, w - 80, 22), FishCard.Fit(index == 0 ? any : options[index - 1].Name, skin.Center, w - 80), skin.Center);
             }
             if (GUI.Button(new Rect(x + w - 34, y, 34, 30), "»", skin.Chip))
             {
@@ -537,7 +540,7 @@ namespace FishingIdle.Game.UI
                     var previous = GUI.color;
                     if (c.Blocker != ServiceError.None)
                     {
-                        GUI.color = new Color(1f, 1f, 1f, 0.55f);
+                        GUI.color = previous * new Color(1f, 1f, 1f, 0.55f);
                     }
 
                     if (GoodsCard(skin, rect, c.Goods, GameTexts.Market.NpcValue + " " + Format.Number(c.Goods.NpcValueCoins), selected))
@@ -611,10 +614,15 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(list.x, list.y + 8, list.width, 40), GameTexts.Market.NoListings, skin.Body);
             }
 
-            var y = list.y;
+            // Scrolls when the listings do not fit (rows are laid out inside the scroll view).
+            var listHeight = _market.MyListings.Count * 102f;
+            var listScrolls = listHeight > list.height;
+            var rowWidth = list.width - (listScrolls ? 20f : 0f);
+            _scroll = GUI.BeginScrollView(list, _scroll, new Rect(0, 0, rowWidth, listHeight), false, listScrolls);
+            var y = 0f;
             foreach (var l in _market.MyListings)
             {
-                var row = new Rect(list.x, y, list.width, 92);
+                var row = new Rect(0, y, rowWidth, 92);
                 GUI.Box(row, GUIContent.none, skin.Card);
                 GoodsIcon(skin, new Rect(row.x + 14, row.y + 12, 110, 60), l.Goods);
                 GUI.Label(new Rect(row.x + 140, row.y + 14, 320, 24), l.Goods.Name, skin.BodyBold);
@@ -633,6 +641,8 @@ namespace FishingIdle.Game.UI
 
                 y += 102;
             }
+
+            GUI.EndScrollView();
 
             var side = new Rect(area.xMax - SidePanelWidth, area.y, SidePanelWidth, area.height);
             GUI.Box(side, GUIContent.none, skin.Card);
@@ -732,15 +742,11 @@ namespace FishingIdle.Game.UI
                 {
                     var corner = (a.BidCount == 0 ? GameTexts.Market.StartingAt(Format.Number(a.StartingBidCoins)) : GameTexts.Market.BidAt(Format.Number(a.HighestBidCoins)))
                                  + " · " + Format.TimeLeft(a.RemainingSeconds);
-                    if (GoodsCard(skin, rect, a.Goods, corner, a.AuctionId == _selectedAuction))
+                    // "Ganhando" is the card's own top-right badge, so it never covers the rarity seal or the check.
+                    if (GoodsCard(skin, rect, a.Goods, corner, a.AuctionId == _selectedAuction, null, a.PlayerIsHighest ? GameTexts.Market.Winning : null, UiSkin.Accent))
                     {
                         _selectedAuction = a.AuctionId;
                         _bidText = a.MinNextBidCoins.ToString(CultureInfo.InvariantCulture);
-                    }
-
-                    if (a.PlayerIsHighest)
-                    {
-                        skin.AccentPill(new Rect(rect.xMax - 14 - skin.PillWidth(GameTexts.Market.Winning, false), rect.y + 11, skin.PillWidth(GameTexts.Market.Winning, false), 18), GameTexts.Market.Winning, UiSkin.Accent);
                     }
                 });
             }
@@ -808,7 +814,7 @@ namespace FishingIdle.Game.UI
                 var previous = GUI.color;
                 if (c.Blocker != ServiceError.None)
                 {
-                    GUI.color = new Color(1f, 1f, 1f, 0.55f);
+                    GUI.color = previous * new Color(1f, 1f, 1f, 0.55f);
                 }
 
                 if (GoodsCard(skin, rect, c.Goods, GameTexts.Market.NpcValue + " " + Format.Number(c.Goods.NpcValueCoins), c.SourceId == _selectedCandidate && c.IsFish == _selectedCandidateIsFish))
@@ -983,7 +989,7 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>One Market card (the official card: picture first, essentials after). Returns true when clicked.</summary>
-        private static bool GoodsCard(UiSkin skin, Rect rect, GoodsView goods, string corner, bool selected, string coins = null)
+        private static bool GoodsCard(UiSkin skin, Rect rect, GoodsView goods, string corner, bool selected, string coins = null, string badge = null, Color? badgeColor = null)
         {
             var fish = goods.IsFish ? goods.Fish : null;
             return FishCard.Draw(skin, rect, new FishCardModel
@@ -998,14 +1004,17 @@ namespace FishingIdle.Game.UI
                 Footer = corner,
                 Coins = coins,
                 Selected = selected,
+                Badge = badge,
+                BadgeColor = badgeColor ?? Color.white,
                 Art = fish == null ? GoodsArt(goods) ?? skin.White : null,
             });
         }
 
         private static void InfoRow(UiSkin skin, float x, ref float y, float w, string label, string value)
         {
-            GUI.Label(new Rect(x, y, w * 0.6f, 20), label, skin.SmallMuted);
-            GUI.Label(new Rect(x + w * 0.4f, y, w * 0.6f, 20), value, skin.SmallRight);
+            // Label and value side by side, never overlapping; a long value is shortened with "…".
+            GUI.Label(new Rect(x, y, w * 0.45f, 20), FishCard.Fit(label, skin.SmallMuted, w * 0.45f), skin.SmallMuted);
+            GUI.Label(new Rect(x + w * 0.45f, y, w * 0.55f, 20), FishCard.Fit(value, skin.SmallRight, w * 0.55f), skin.SmallRight);
             y += 24;
         }
 

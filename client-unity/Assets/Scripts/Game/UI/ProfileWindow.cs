@@ -61,6 +61,9 @@ namespace FishingIdle.Game.UI
 
         public bool IsOpen { get; private set; }
 
+        /// <summary>True while an internal dialog (rod sell/destroy, name and avatar editor) is open.</summary>
+        public bool HasDialog => _pendingRod != null || _editing;
+
         public void Open()
         {
             IsOpen = true;
@@ -173,8 +176,11 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, rect.y + 22, w, 30), GameTexts.Profile.EditTitle, skin.Heading);
 
             GUI.Label(new Rect(x, rect.y + 62, w, 20), GameTexts.Profile.NameLabel, skin.SmallMuted);
-            _nameDraft = GUI.TextField(new Rect(x, rect.y + 84, w, 38), _nameDraft ?? string.Empty, 24, skin.SearchField);
-            GUI.Label(new Rect(x, rect.y + 126, w, 20), GameTexts.Profile.NameRule, skin.SmallMuted);
+            var identity = _root.Game?.Session.Config.Progression.PlayerIdentity;
+            var nameMin = identity?.NameMin ?? 3;
+            var nameMax = identity?.NameMax ?? 16;
+            _nameDraft = GUI.TextField(new Rect(x, rect.y + 84, w, 38), _nameDraft ?? string.Empty, nameMax, NameField(skin));
+            GUI.Label(new Rect(x, rect.y + 126, w, 20), GameTexts.Profile.NameRuleFor(nameMin, nameMax), skin.SmallMuted);
 
             GUI.Label(new Rect(x, rect.y + 156, w, 20), GameTexts.Profile.AvatarLabel, skin.SmallMuted);
             var size = Mathf.Min(96f, (w - 5 * 12f) / 6f);
@@ -206,6 +212,22 @@ namespace FishingIdle.Game.UI
                     _dirty = true;
                 }
             }
+        }
+
+        private static GUIStyle _nameField;
+        private static GUIStyle _nameFieldBase;
+
+        /// <summary>The search field look without the room for a magnifier: this field has no icon.</summary>
+        private static GUIStyle NameField(UiSkin skin)
+        {
+            if (_nameField == null || _nameFieldBase != skin.SearchField)
+            {
+                _nameFieldBase = skin.SearchField;
+                _nameField = new GUIStyle(skin.SearchField);
+                _nameField.padding = new RectOffset(12, skin.SearchField.padding.right, skin.SearchField.padding.top, skin.SearchField.padding.bottom);
+            }
+
+            return _nameField;
         }
 
         private void DrawRodDialog(UiSkin skin, float screenWidth, float screenHeight)
@@ -282,7 +304,9 @@ namespace FishingIdle.Game.UI
             {
                 _editing = true;
                 _nameDraft = _profile.PlayerName;
-                _avatarDraft = _profile.AvatarId;
+
+                // With no avatar chosen yet, the editor shows the first one as picked: draft it, so what is shown is what is saved.
+                _avatarDraft = _profile.AvatarId ?? (_profile.Avatars != null && _profile.Avatars.Count > 0 ? _profile.Avatars[0].Id : null);
             }
 
             // Level badge and XP bar.
@@ -367,7 +391,7 @@ namespace FishingIdle.Game.UI
                     if (slot.Fish != null)
                     {
                         GUI.DrawTexture(new Rect(r.x + 4, r.y + 4, r.width - 8, 32), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
-                        GUI.Label(new Rect(r.x, r.y + 34, r.width - 4, 18), GameTexts.Player.LevelShort + slot.Fish.Level, skin.SmallMutedRight);
+                        GUI.Label(new Rect(r.x, r.y + 34, r.width - 4, 18), GameTexts.Player.LevelShort + " " + slot.Fish.Level, skin.SmallMutedRight);
                         if (r.Contains(Event.current.mousePosition))
                         {
                             hovered = slot;
@@ -452,25 +476,41 @@ namespace FishingIdle.Game.UI
             }
 
             y += 10;
+            // Big amounts in short form ("12,4 mi"), the exact number under the mouse (A-124).
             var tiles = new[]
             {
-                (Format.Number(records.TotalCatches), GameTexts.Profile.StatCatches, UiSkin.Text),
-                (Format.Number(records.ExceptionalCatches), GameTexts.Profile.StatExceptional, UiSkin.Gold),
-                (Format.Number(records.PerfectCatches), GameTexts.Profile.StatPerfect, UiSkin.SizeColor("perfect")),
-                (records.BiggestSpeciesName == null ? GameTexts.Profile.None : Format.SizeCm(records.BiggestCm), records.BiggestSpeciesName == null ? GameTexts.Profile.Biggest : GameTexts.Profile.StatBiggest(records.BiggestSpeciesName), UiSkin.Text),
-                (Format.Number(records.CoinsFromSales), GameTexts.Profile.StatSales, UiSkin.Text),
+                (Format.Short(records.TotalCatches), GameTexts.Profile.StatCatches, UiSkin.Text, (long)records.TotalCatches),
+                (Format.Short(records.ExceptionalCatches), GameTexts.Profile.StatExceptional, UiSkin.Gold, (long)records.ExceptionalCatches),
+                (Format.Short(records.PerfectCatches), GameTexts.Profile.StatPerfect, UiSkin.SizeColor("perfect"), (long)records.PerfectCatches),
+                (records.BiggestSpeciesName == null ? GameTexts.Profile.None : Format.SizeCm(records.BiggestCm), records.BiggestSpeciesName == null ? GameTexts.Profile.Biggest : GameTexts.Profile.StatBiggest(records.BiggestSpeciesName), UiSkin.Text, 0L),
+                (Format.Short(records.CoinsFromSales), GameTexts.Profile.StatSales, UiSkin.Text, (long)records.CoinsFromSales),
             };
             var tileW = (w - 8f) / 2f;
-            var tileH = Mathf.Clamp((right.yMax - 14 - y - 16f) / 3f, 54f, 70f);
+
+            // Small panels: the tiles shrink (label pinned to the bottom) so the grid ends inside the card.
+            var tileH = Mathf.Clamp((right.yMax - 14 - y - 16f) / 3f, 46f, 70f);
+            var hoverTile = default(Rect);
+            var hoverExact = 0L;
             for (var i = 0; i < tiles.Length; i++)
             {
-                var (value, label, color) = tiles[i];
+                var (value, label, color, exact) = tiles[i];
                 var r = new Rect(x + (i % 2) * (tileW + 8f), y + (i / 2) * (tileH + 8f), tileW, tileH);
                 GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.11f, 0.2f, 0.9f), 0, 10);
                 GUI.contentColor = color;
-                GUI.Label(new Rect(r.x + 10, r.y + 6, r.width - 16, 28), FishCard.Fit(value, skin.Heading, r.width - 16), skin.Heading);
+                GUI.Label(new Rect(r.x + 10, r.y + (tileH < 54f ? 2 : 6), r.width - 16, 28), FishCard.Fit(value, skin.Heading, r.width - 16), skin.Heading);
                 GUI.contentColor = Color.white;
-                GUI.Label(new Rect(r.x + 10, r.y + 34, r.width - 16, 18), FishCard.Fit(label, skin.SmallMuted, r.width - 16), skin.SmallMuted);
+                GUI.Label(new Rect(r.x + 10, r.yMax - 20, r.width - 16, 18), FishCard.Fit(label, skin.SmallMuted, r.width - 16), skin.SmallMuted);
+                if (exact > 0 && r.Contains(Event.current.mousePosition))
+                {
+                    hoverTile = r;
+                    hoverExact = exact;
+                }
+            }
+
+            // After every tile, so the exact number is drawn on top of the tile below.
+            if (hoverExact > 0)
+            {
+                Hud.ExactOnHover(skin, hoverTile, hoverExact);
             }
         }
 
@@ -562,20 +602,24 @@ namespace FishingIdle.Game.UI
         private void DrawInventory(UiSkin skin, Rect area)
         {
             GUI.Label(new Rect(area.x, area.y, area.width, 22), GameTexts.Profile.InventoryNote, skin.SmallMuted);
-            var x = area.x;
-            var y = area.y + 36;
-            foreach (var rod in _profile.Inventory)
-            {
-                if (x + 400 > area.xMax)
-                {
-                    x = area.x;
-                    y += 316;
-                }
 
-                RodCard(skin, new Rect(x, y, 400, 300), rod, true);
-                x += 416;
+            // A scrolling grid: with many rods the rows go on below, never off the panel.
+            const float cardW = 400f, cardH = InventoryCardHeight, gap = 16f;
+            var rods = _profile.Inventory;
+            var view = new Rect(area.x, area.y + 36, area.width, area.height - 36);
+            var columns = Mathf.Max(1, Mathf.FloorToInt((view.width - 20 + gap) / (cardW + gap)));
+            var rows = Mathf.CeilToInt(rods.Count / (float)columns);
+            _scroll = GUI.BeginScrollView(view, _scroll, new Rect(0, 0, view.width - 20, Mathf.Max(0f, rows * (cardH + gap) - gap)));
+            for (var i = 0; i < rods.Count; i++)
+            {
+                RodCard(skin, new Rect((i % columns) * (cardW + gap), (i / columns) * (cardH + gap), cardW, cardH), rods[i], true);
             }
+
+            GUI.EndScrollView();
         }
+
+        /// <summary>An Inventory rod card: the stats, then equip, upgrade and sell/destroy, each on its own row.</summary>
+        private const float InventoryCardHeight = 340f;
 
         private void RodCard(UiSkin skin, Rect rect, RodItemView rod, bool withAction)
         {
@@ -600,8 +644,22 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // Row 1: equip state. Row 2: upgrade / sell / destroy.
-            var button = new Rect(x, rect.yMax - 100, w, 38);
+            // Rows from the bottom: sell / destroy (half and half), the upgrade on its own full row, then
+            // the equip state above them, so every label has the room it needs.
+            var rowY = rect.yMax - 54;
+            var disposeY = rowY;
+            if (rod.CanDispose)
+            {
+                rowY -= 46;
+            }
+
+            var upgradeY = rowY;
+            if (rod.HasLevels)
+            {
+                rowY -= 46;
+            }
+
+            var button = new Rect(x, rowY, w, 38);
             if (rod.IsEquipped)
             {
                 var equipped = GameTexts.Profile.Equipped.ToUpperInvariant();
@@ -616,38 +674,34 @@ namespace FishingIdle.Game.UI
                 _root.EquipRod(rod.ItemId);
             }
 
-            var actions = new Rect(x, rect.yMax - 54, w, 38);
             if (rod.HasLevels)
             {
-                var upgradeWidth = rod.CanDispose ? w * 0.5f : w;
                 if (rod.NextUpgradeCost > 0)
                 {
-                    if (GUI.Button(new Rect(actions.x, actions.y, upgradeWidth - 6, 38), (rod.NextUpgradeShells > 0
-                            ? GameTexts.Shop.UpgradeForWithShells(rod.Level + 1, Format.Number(rod.NextUpgradeCost), Format.Number(rod.NextUpgradeShells))
-                            : GameTexts.Shop.UpgradeFor(rod.Level + 1, Format.Number(rod.NextUpgradeCost))), skin.Button))
+                    var upgrade = rod.NextUpgradeShells > 0
+                        ? GameTexts.Shop.UpgradeForWithShells(rod.Level + 1, Format.Number(rod.NextUpgradeCost), Format.Number(rod.NextUpgradeShells))
+                        : GameTexts.Shop.UpgradeFor(rod.Level + 1, Format.Number(rod.NextUpgradeCost));
+                    if (GUI.Button(new Rect(x, upgradeY, w, 38), FishCard.Fit(upgrade, skin.Button, w - 24), skin.Button))
                     {
                         _root.UpgradeRod(rod.ItemId);
                     }
                 }
                 else
                 {
-                    GUI.Label(new Rect(actions.x, actions.y + 8, upgradeWidth, 22), GameTexts.Shop.MaxLevel, skin.SmallGold);
+                    GUI.Label(new Rect(x, upgradeY + 8, w, 22), GameTexts.Shop.MaxLevel, skin.SmallGold);
                 }
-
-                actions.x += upgradeWidth;
-                actions.width -= upgradeWidth;
             }
 
             if (rod.CanDispose)
             {
-                var half = actions.width / 2f;
-                if (GUI.Button(new Rect(actions.x, actions.y, half - 6, 38), GameTexts.Shop.SellFor(Format.Number(rod.ResaleValue)), skin.Button))
+                var half = (w - 8f) / 2f;
+                if (GUI.Button(new Rect(x, disposeY, half, 38), FishCard.Fit(GameTexts.Shop.SellFor(Format.Number(rod.ResaleValue)), skin.Button, half - 16), skin.Button))
                 {
                     _pendingRod = rod;
                     _pendingDestroy = false;
                 }
 
-                if (GUI.Button(new Rect(actions.x + half, actions.y, half, 38), GameTexts.Shop.DestroyRod, skin.Button))
+                if (GUI.Button(new Rect(x + half + 8f, disposeY, half, 38), FishCard.Fit(GameTexts.Shop.DestroyRod, skin.Button, half - 16), skin.Button))
                 {
                     _pendingRod = rod;
                     _pendingDestroy = true;
@@ -675,10 +729,14 @@ namespace FishingIdle.Game.UI
 
             // Header: Strength, the six places as dots, and the full-Cardume bonus.
             GUI.Label(new Rect(x, y, 260, 18), GameTexts.Cardume.Strength, skin.SmallMuted);
+            var strengthText = Format.Number(_cardume.Strength);
+            var strengthWidth = skin.Display.CalcSize(new GUIContent(strengthText)).x;
             GUI.contentColor = UiSkin.Gold;
-            GUI.Label(new Rect(x, y + 16, 260, 40), Format.Number(_cardume.Strength), skin.Display);
+            GUI.Label(new Rect(x, y + 16, Mathf.Max(260f, strengthWidth + 8f), 40), strengthText, skin.Display);
             GUI.contentColor = Color.white;
-            var dotsX = x + 230;
+
+            // The dots start after the number as drawn, so a big Strength never touches them.
+            var dotsX = x + Mathf.Max(230f, strengthWidth + 18f);
             for (var i = 0; i < _cardume.Size; i++)
             {
                 var filled = i < _cardume.Filled;
@@ -695,7 +753,11 @@ namespace FishingIdle.Game.UI
             // The two rows. Slots are as wide as fits; the back row is shifted a little to the right.
             var tagWidth = 34f;
             var slotW = Mathf.Min(210f, (w - tagWidth - 24 - 2 * 12f) / 3f);
-            var slotH = Mathf.Clamp((formation.yMax - y - 90f) / 2f - 12f, 150f, 196f);
+            // The slot height comes from the room left once the footer is reserved, so the footer always
+            // fits; when space is short the footer becomes one line with a lower button.
+            var compact = (formation.yMax - y - 28f - 54f) / 2f < 150f;
+            var footerH = compact ? 30f : 40f;
+            var slotH = Mathf.Clamp((formation.yMax - y - 28f - footerH - 12f) / 2f, 120f, 196f);
             var maxStrength = Mathf.Max(1f, _cardume.Slots.Where(sl => sl.Fish != null).Select(sl => (float)sl.Strength).DefaultIfEmpty(1f).Max());
             DrawRow(skin, _cardume.Slots.Where(sl => sl.IsFront).ToList(), GameTexts.Cardume.FrontTag, x, y, tagWidth, slotW, slotH, maxStrength);
             y += slotH + 14;
@@ -705,9 +767,19 @@ namespace FishingIdle.Game.UI
             // Footer: the attack order and how Strength is used; "Tirar da posição" on the right.
             var selected = _cardume.Slots.FirstOrDefault(sl => sl.Position == _selectedPosition);
             var removeWidth = selected?.Fish != null ? 220f : 0f;
-            GUI.Label(new Rect(x, y, w - removeWidth - 12, 20), FishCard.Fit(GameTexts.Cardume.OrderShort, skin.SmallMuted, w - removeWidth - 12), skin.SmallMuted);
-            GUI.Label(new Rect(x, y + 20, w - removeWidth - 12, 20), FishCard.Fit(GameTexts.Cardume.StrengthPrivate, skin.SmallMuted, w - removeWidth - 12), skin.SmallMuted);
-            if (selected?.Fish != null && skin.IconButton(new Rect(formation.xMax - 20 - removeWidth, y, removeWidth, 36), Icons.Close, GameTexts.Cardume.Remove, skin.Button))
+            var textWidth = w - removeWidth - 12;
+            if (compact)
+            {
+                var oneLine = GameTexts.Cardume.OrderShort + " · " + GameTexts.Cardume.StrengthPrivate;
+                GUI.Label(new Rect(x, y + 5, textWidth, 20), FishCard.Fit(oneLine, skin.SmallMuted, textWidth), skin.SmallMuted);
+            }
+            else
+            {
+                GUI.Label(new Rect(x, y, textWidth, 20), FishCard.Fit(GameTexts.Cardume.OrderShort, skin.SmallMuted, textWidth), skin.SmallMuted);
+                GUI.Label(new Rect(x, y + 20, textWidth, 20), FishCard.Fit(GameTexts.Cardume.StrengthPrivate, skin.SmallMuted, textWidth), skin.SmallMuted);
+            }
+
+            if (selected?.Fish != null && skin.IconButton(new Rect(formation.xMax - 20 - removeWidth, y, removeWidth, compact ? 30f : 36f), Icons.Close, GameTexts.Cardume.Remove, skin.Button))
             {
                 _root.ClearCardumeSlot(_selectedPosition);
             }
@@ -779,6 +851,26 @@ namespace FishingIdle.Game.UI
                 }
 
                 // The fish, big, then name, level and its share of the Strength as a bar.
+                if (rect.height < 160f)
+                {
+                    // Short slots (small panels): level and Strength share one line, the bar goes under it.
+                    var shortArt = rect.height - 40 - 54;
+                    if (shortArt > 8f)
+                    {
+                        GUI.DrawTexture(new Rect(rect.x + 10, rect.y + 40, rect.width - 20, shortArt), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
+                    }
+
+                    var sy = rect.yMax - 52;
+                    GUI.Label(new Rect(rect.x + 12, sy, rect.width - 24, 22), FishCard.Fit(slot.Fish.SpeciesName, skin.BodyBold, rect.width - 24), skin.BodyBold);
+                    var strength = GameTexts.Cardume.StrengthShort(Format.Number(slot.Strength));
+                    var stw = Mathf.Min(rect.width - 24, skin.SmallMuted.CalcSize(new GUIContent(strength)).x + 4f);
+                    GUI.Label(new Rect(rect.x + 12, sy + 22, rect.width - 24 - stw - 6, 18), GameTexts.Player.LevelShort + " " + slot.Fish.Level, skin.SmallMuted);
+                    GUI.Label(new Rect(rect.xMax - 12 - stw, sy + 22, stw, 18), strength, skin.SmallMutedRight);
+                    skin.Bar(new Rect(rect.x + 12, sy + 42, rect.width - 24, 5), Mathf.Clamp01(slot.Strength / maxStrength), accent);
+                    sx += slotW + 12f;
+                    continue;
+                }
+
                 var artH = rect.height - 40 - 78;
                 GUI.DrawTexture(new Rect(rect.x + 10, rect.y + 40, rect.width - 20, artH), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
                 var ty = rect.yMax - 74;
@@ -828,7 +920,7 @@ namespace FishingIdle.Game.UI
                 }
 
                 GUI.DrawTexture(new Rect(row.x + 8, row.y + 6, 80, 46), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
-                GUI.Label(new Rect(row.x + 96, row.y + 8, row.width - 150, 20), f.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + f.Level, skin.BodyBold);
+                GUI.Label(new Rect(row.x + 96, row.y + 8, row.width - 150, 20), FishCard.Fit(f.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + f.Level, skin.BodyBold, row.width - 150), skin.BodyBold);
                 skin.SizeLine(new Rect(row.x + 96, row.y + 30, row.width - 150, 20), Format.SizeCm(f.SizeCm) + " · " + f.SizeCategoryName, f.SizeCategoryName, f.SizeCategoryId, skin.Small);
                 if (f.CardumePosition > 0)
                 {

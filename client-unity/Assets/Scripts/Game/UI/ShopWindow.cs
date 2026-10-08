@@ -48,6 +48,9 @@ namespace FishingIdle.Game.UI
 
         public void Close() => IsOpen = false;
 
+        /// <summary>The Shop has no confirmation dialog of its own.</summary>
+        public bool HasDialog => false;
+
         public void Draw(UiSkin skin, float screenWidth, float screenHeight)
         {
             if (!IsOpen)
@@ -87,7 +90,7 @@ namespace FishingIdle.Game.UI
                     _tab = tab;
                 }
 
-                skin.DrawIcon(new Rect(r.x + 16, r.y + 8, 20, 20), icon, _tab == tab ? UiSkin.Accent : UiSkin.Muted);
+                skin.DrawIcon(new Rect(r.x + 16, r.y + 8, 20, 20), icon, _tab == tab ? Color.white : UiSkin.Muted);
                 GUI.Label(new Rect(r.x + 44, r.y + 6, r.width - 50, 24), label, skin.BodyBold);
                 tx += 170;
             }
@@ -313,7 +316,8 @@ namespace FishingIdle.Game.UI
                 }
                 else if (boat.BuyBlocker != ServiceError.None)
                 {
-                    Blocked(skin, new Rect(button.x - 40, button.y, button.width + 40, 42), boat.BuyBlocker, boat.BuyBlocker == ServiceError.BoatLocked ? GameTexts.Shop.Requires(boat.UnlockFisherLevel) : null);
+                    // Inside the button's place, like the rods: never over the Conchas price beside it.
+                    Blocked(skin, new Rect(button.x, button.y, button.width, 42), boat.BuyBlocker, boat.BuyBlocker == ServiceError.BoatLocked ? GameTexts.Shop.Requires(boat.UnlockFisherLevel) : null);
                 }
                 else if (skin.IconButton(button, Icons.Buy, GameTexts.Shop.Buy, skin.ButtonPrimary))
                 {
@@ -350,7 +354,8 @@ namespace FishingIdle.Game.UI
                 var buy = new Rect(rect.xMax - 230, rect.y + 14, 210, 42);
                 if (bait.BuyBlocker != ServiceError.None)
                 {
-                    Blocked(skin, new Rect(buy.x - 40, buy.y, buy.width + 40, 42), bait.BuyBlocker, bait.BuyBlocker == ServiceError.BaitLocked ? GameTexts.Shop.Requires(bait.UnlockFisherLevel) : null);
+                    // Inside the button's place, like the rods: never over the Conchas price beside it.
+                    Blocked(skin, new Rect(buy.x, buy.y, buy.width, 42), bait.BuyBlocker, bait.BuyBlocker == ServiceError.BaitLocked ? GameTexts.Shop.Requires(bait.UnlockFisherLevel) : null);
                 }
                 else if (skin.IconButton(buy, Icons.Buy, GameTexts.Shop.Buy, skin.ButtonPrimary))
                 {
@@ -420,11 +425,17 @@ namespace FishingIdle.Game.UI
 
         private static void Cost(UiSkin skin, Rect rect, long coins, long shells)
         {
-            skin.CoinAmount(new Rect(rect.x, rect.y, 120, rect.height), Format.Short(coins));
+            // The Conchas price sits right after the coins (not at a fixed 120 px), so it stays clear
+            // of the button column on the right.
+            var coinsText = Format.Short(coins);
+            var coinsWidth = skin.CoinAmountWidth(coinsText, rect.height);
+            skin.CoinAmount(new Rect(rect.x, rect.y, coinsWidth, rect.height), coinsText);
             if (shells > 0)
             {
-                skin.DrawIcon(new Rect(rect.x + 124, rect.y, rect.height, rect.height), Icons.Shell, Color.white);
-                GUI.Label(new Rect(rect.x + 128 + rect.height, rect.y, 90, rect.height), Format.Number(shells), skin.SmallGold);
+                var sx = rect.x + coinsWidth + 10f;
+                var shellsText = Format.Number(shells);
+                skin.DrawIcon(new Rect(sx, rect.y, rect.height, rect.height), Icons.Shell, Color.white);
+                GUI.Label(new Rect(sx + 4 + rect.height, rect.y, skin.SmallGoldLine.CalcSize(new GUIContent(shellsText)).x + 4f, rect.height), shellsText, skin.SmallGoldLine);
             }
         }
 

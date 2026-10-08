@@ -85,7 +85,7 @@ namespace FishingIdle.Editor
                 case 2:
                     foreach (var rod in config.Rods.Rods.OrderBy(r => r.Tier))
                     {
-                        var card = new Card { Title = rod.DisplayName, Subtitle = rod.Id + " · Tier " + rod.Tier, Art = ArtAssets.Texture("Varas/" + rod.Id) };
+                        var card = new Card { Title = rod.DisplayName, Subtitle = rod.Id + " · " + GameTexts.Profile.Tier(rod.Tier), Art = ArtAssets.Texture("Varas/" + rod.Id) };
                         card.Lines.Add(T.CatalogPrice(Format.Short(rod.Acquisition?.PurchaseCostCoins ?? 0), Format.Number(rod.Acquisition?.PurchaseCostShells ?? 0)));
                         card.Lines.Add(T.CatalogUnlock(rod.Acquisition?.UnlockFisherLevel ?? 1));
                         card.Lines.Add(T.CatalogMaxLevel(config.RodMaxLevel(rod)));

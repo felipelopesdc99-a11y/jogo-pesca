@@ -37,6 +37,7 @@ namespace FishingIdle.Game.UI
         }
 
         private const float SortItemHeight = 52f;
+        private const float SizeItemHeight = 32f;
 
         private enum Menu
         {
@@ -73,6 +74,9 @@ namespace FishingIdle.Game.UI
         }
 
         public bool IsOpen { get; private set; }
+
+        /// <summary>True while the "Revisar peixes / Confirmar" check of a sale is open.</summary>
+        public bool HasDialog => _pendingConfirmation != null;
 
         public void Open()
         {
@@ -148,7 +152,7 @@ namespace FishingIdle.Game.UI
 
             var sizeMenu = new Rect(right - menusWidth, menusY, MenuWidth, 36f);
             var sortMenu = new Rect(right - MenuWidth, menusY, MenuWidth, 36f);
-            var sortListWidth = 300f;
+            var sortListWidth = 320f;
             if (MenuButton(skin, sizeMenu, GameTexts.Box.SizeMenu(SizeName(_sizeFilter)), _menu == Menu.Size, _sizeFilter != null ? UiSkin.SizeColor(_sizeFilter) : (Color?)null))
             {
                 _menu = _menu == Menu.Size ? Menu.None : Menu.Size;
@@ -161,7 +165,7 @@ namespace FishingIdle.Game.UI
 
             // The open menu sits over the grid: its clicks are handled before the grid so a card under it
             // is never picked by mistake, and it is drawn after the grid so it shows on top.
-            var sizeRect = new Rect(sizeMenu.x, sizeMenu.yMax + 4f, MenuWidth, _sizeFilters.Count * 34f + 12f);
+            var sizeRect = new Rect(sizeMenu.x, sizeMenu.yMax + 4f, MenuWidth, _sizeFilters.Count * SizeItemHeight + 12f);
             var sortRect = new Rect(sortMenu.xMax - sortListWidth, sortMenu.yMax + 4f, sortListWidth, 5 * SortItemHeight + 12f);
             if (_menu == Menu.Size) DrawSizeMenu(skin, sizeRect, true);
             else if (_menu == Menu.Sort) DrawSortMenu(skin, sortRect, true);
@@ -278,7 +282,10 @@ namespace FishingIdle.Game.UI
             // Recomputed only when the selection or the box changes, not on every GUI event.
             var preview = _preview ?? (_preview = _root.PreviewSale(_selected.ToList()));
             var info = preview.Count == 0 ? GameTexts.Box.NothingSelected : GameTexts.Box.Selected(preview.Count, Format.Short(preview.TotalCoins));
-            GUI.Label(new Rect(x + 380, y + 10, panel.width - 950, 24), info, skin.Body);
+            // The status gets the room actually free between "Limpar seleção" and "Guardar no Aquário".
+            var infoX = x + 372;
+            var infoWidth = Mathf.Max(0f, panel.xMax - 528 - 12 - infoX);
+            GUI.Label(new Rect(infoX, y + 10, infoWidth, 24), FishCard.Fit(info, skin.Body, infoWidth), skin.Body);
 
             GUI.enabled = GUI.enabled && preview.Count > 0;
             if (skin.IconButton(new Rect(panel.xMax - 528, y, 250, 40), Icons.Aquarium, GameTexts.Aquarium.KeepSelected, skin.Button))
@@ -308,6 +315,9 @@ namespace FishingIdle.Game.UI
 
             // Second line: how full the box is (OD-025) on the left, the Aquarium slots on the right.
             var lineY = y + 52;
+            var player = _root.Player;
+            var slotsText = player != null ? GameTexts.Aquarium.Slots(player.AquariumCount, player.AquariumCapacity) : null;
+            var slotsWidth = slotsText != null ? Mathf.Min(332f, skin.SmallMutedRight.CalcSize(new GUIContent(slotsText)).x + 4f) : 0f;
             if (capacity > 0)
             {
                 var fill = Mathf.Clamp01(boxCount / (float)capacity);
@@ -315,15 +325,15 @@ namespace FishingIdle.Game.UI
                 var warn = full || fill >= 0.9f;
                 skin.DrawIcon(new Rect(x, lineY, 18, 18), warn ? Icons.Warning : Icons.Box, warn ? UiSkin.Gold : UiSkin.Muted);
                 skin.Bar(new Rect(x + 26, lineY + 6, 180, 8), fill, warn);
-                GUI.Label(new Rect(x + 216, lineY - 1, panel.width - 600, 22),
-                    full ? GameTexts.Box.Full : warn ? GameTexts.Box.AlmostFull : GameTexts.Box.LimitNote(capacity),
-                    warn ? skin.SmallGold : skin.SmallMuted);
+                var noteStyle = warn ? skin.SmallGold : skin.SmallMuted;
+                var noteWidth = Mathf.Max(0f, panel.xMax - 28 - slotsWidth - 16 - (x + 216));
+                var note = full ? GameTexts.Box.Full : warn ? GameTexts.Box.AlmostFull : GameTexts.Box.LimitNote(capacity);
+                GUI.Label(new Rect(x + 216, lineY - 1, noteWidth, 22), FishCard.Fit(note, noteStyle, noteWidth), noteStyle);
             }
 
-            var player = _root.Player;
-            if (player != null)
+            if (slotsText != null)
             {
-                GUI.Label(new Rect(panel.xMax - 360, lineY - 1, 332, 22), GameTexts.Aquarium.Slots(player.AquariumCount, player.AquariumCapacity), skin.SmallMutedRight);
+                GUI.Label(new Rect(panel.xMax - 360, lineY - 1, 332, 22), slotsText, skin.SmallMutedRight);
             }
         }
 
@@ -521,7 +531,7 @@ namespace FishingIdle.Game.UI
                 }));
             }
 
-            MenuList(skin, rect, items, input, 32f);
+            MenuList(skin, rect, items, input, SizeItemHeight);
         }
 
         private void DrawSortMenu(UiSkin skin, Rect rect, bool input)
@@ -659,7 +669,7 @@ namespace FishingIdle.Game.UI
                 if (item.Hint != null)
                 {
                     GUI.Label(new Rect(tx, r.y + 6, r.xMax - 30 - tx, 20), item.Label, skin.BodyBold);
-                    GUI.Label(new Rect(tx, r.y + 27, r.xMax - 30 - tx, 18), item.Hint, skin.SmallMuted);
+                    GUI.Label(new Rect(tx, r.y + 27, r.xMax - 30 - tx, 18), FishCard.Fit(item.Hint, skin.SmallMuted, r.xMax - 30 - tx), skin.SmallMuted);
                 }
                 else
                 {

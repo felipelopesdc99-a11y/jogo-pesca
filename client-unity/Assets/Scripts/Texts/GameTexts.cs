@@ -74,7 +74,7 @@ namespace FishingIdle.Texts
             public static string CycleInfo(string duration) => "1 tentativa a cada " + duration;
             public static string ChanceShort(string rarity, string percent) => rarity + " " + percent;
             public static string RareEscaped(string rarity, string percent) => "Um peixe " + rarity + " escapou! Sua chance de puxar era " + percent + ".";
-            public static string BaitRanOut(string bait) => "Sua " + bait + " acabou. Compre mais na Loja → Iscas.";
+            public static string BaitRanOut(string bait) => "A isca " + bait + " acabou. Compre mais na Loja → Iscas.";
             public static string BaitLeft(int charges) => charges == 1 ? "1 tentativa" : Format.Number(charges) + " tentativas";
         }
 
@@ -123,8 +123,8 @@ namespace FishingIdle.Texts
             public const string FullShort = "Caixa cheia: venda peixes";
             public static string LimitNote(int capacity) => "A Caixa guarda até " + Format.Number(capacity) + " peixes. Cheia, a pesca para até você vender ou guardar algum.";
             public static string SkippedFull(long attempts) => "A Caixa encheu: " + Format.Number(attempts) + (attempts == 1 ? " tentativa ficou" : " tentativas ficaram") + " sem pescar.";
-            public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : Format.Number(count) + " selecionados") + " · " + coins + " moedas";
-            public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : Format.Number(count) + " peixes vendidos") + " por " + coins + " moedas.";
+            public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : Format.Number(count) + " selecionados") + " · " + coins + " Moedas";
+            public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : Format.Number(count) + " peixes vendidos") + " por " + coins + " Moedas.";
         }
 
         // ------------------------------------------------------------------ Ranking (addendum A-100)
@@ -190,18 +190,18 @@ namespace FishingIdle.Texts
             public const string FeedValuableBody = "Estes peixes valiosos serão consumidos:";
             public const string FeedCardumeBody = "Estes peixes estão no Cardume e sairão dele:";
 
-            public static string Count(int count, int capacity) => count + " / " + capacity + " peixes";
-            public static string Slots(int count, int capacity) => "Aquário: " + count + " / " + capacity;
-            public static string Kept(int kept, int count, int capacity) => (kept == 1 ? "1 peixe guardado" : kept + " peixes guardados") + " no Aquário (" + count + " / " + capacity + ").";
+            public static string Count(int count, int capacity) => Format.Number(count) + " / " + Format.Number(capacity) + " peixes";
+            public static string Slots(int count, int capacity) => "Aquário: " + Format.Number(count) + " / " + Format.Number(capacity);
+            public static string Kept(int kept, int count, int capacity) => (kept == 1 ? "1 peixe guardado" : Format.Number(kept) + " peixes guardados") + " no Aquário (" + Format.Number(count) + " / " + Format.Number(capacity) + ").";
             public static string Fed(string xp, int level) => "Alimentado: +" + xp + " XP. Agora no Nível " + level + ".";
             public static string LevelOf(int level, int max) => "Nível " + level + " de " + max;
             public static string Xp(string current, string needed) => "XP " + current + " / " + needed;
             public static string FeedXp(string xp) => "+" + xp + " XP";
-            public static string FeedSummary(int count, string xp) => (count == 1 ? "1 alimento" : count + " alimentos") + " · +" + xp + " XP";
+            public static string FeedSummary(int count, string xp) => (count == 1 ? "1 alimento" : Format.Number(count) + " alimentos") + " · +" + xp + " XP";
             public static string FeedResult(int levelBefore, int levelAfter) => levelAfter > levelBefore ? "Nível " + levelBefore + " → Nível " + levelAfter : "Continua no Nível " + levelBefore;
             public static string Wasted(string xp) => xp + " XP passam do nível máximo e serão perdidos.";
             public static string SellTitle(string species) => "Vender " + species + "?";
-            public static string SellBody(string coins) => "Você recebe " + coins + " moedas. O XP investido neste peixe não volta. Esta ação não pode ser desfeita.";
+            public static string SellBody(string coins) => "Você recebe " + coins + " Moedas. O XP investido neste peixe não volta. Esta ação não pode ser desfeita.";
             public static string LeavesCardume(int position) => "Este peixe está no Cardume (posição " + position + ") e sairá dele.";
 
             // Selling several fish at once (addendum A-130).
@@ -212,10 +212,10 @@ namespace FishingIdle.Texts
             public const string MultiSelectExit = "Sair da seleção";
             public const string SellManyProtected = "Valiosos ou no Cardume (sairão dele):";
             public static string SelectedCount(int count) => count == 1 ? "1 peixe selecionado" : count + " peixes selecionados";
-            public static string SelectedTotal(string coins) => "Você recebe " + coins + " moedas";
+            public static string SelectedTotal(string coins) => "Você recebe " + coins + " Moedas";
             public static string SellMany(int count) => "Vender " + count;
             public static string SellManyTitle(int count) => count == 1 ? "Vender 1 peixe?" : "Vender " + count + " peixes?";
-            public static string SellManyBody(string coins) => "Você recebe " + coins + " moedas. O XP investido nesses peixes não volta. Esta ação não pode ser desfeita.";
+            public static string SellManyBody(string coins) => "Você recebe " + coins + " Moedas. O XP investido nesses peixes não volta. Esta ação não pode ser desfeita.";
             public static string AndMore(int count) => "e mais " + count;
         }
 
@@ -231,12 +231,13 @@ namespace FishingIdle.Texts
             public static string Note(string cycle, string cap) => "Enquanto o jogo fica fechado, o pescador continua: 1 tentativa a cada " + cycle + ", por até " + cap + ", com a mesma chance de puxar. Os peixes esperam na Caixa de Pesca.";
 
             public static string Away(string duration) => "Você ficou fora por " + duration + ".";
-            public static string CappedAt(string duration) => "Só as primeiras " + duration + " contam para a pesca offline.";
+            public static string Hours(double hours) => hours == 1 ? "1 hora" : Format.Decimal(hours, 0) + " horas";
+            public static string CappedAt(string duration) => "Só contam as primeiras " + duration + " de pesca offline.";
             public static string Caught(int count) => count == 1 ? "1 peixe pescado" : Format.Number(count) + " peixes pescados";
             public static string Xp(string xp) => "+" + xp + " XP de Pescador";
             public static string XpWithVip(string xp, string vipXp) => "+" + xp + " XP de Pescador (+" + vipXp + " do VIP)";
             public static string Levels(int level) => "Subiu para o Nível " + level + "!";
-            public static string LevelsWithDollars(int level, string dollars) => "Subiu para o Nível " + level + "! +" + dollars + " Dólares";
+            public static string LevelsWithDollars(int level, string dollars) => "Subiu para o Nível " + level + "! +" + dollars + (dollars == "1" ? " Dólar" : " Dólares");
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
             public static string Escaped(int count) => count == 1 ? "1 peixe escapou" : Format.Number(count) + " peixes escaparam";
         }
@@ -264,10 +265,10 @@ namespace FishingIdle.Texts
             public const string Formation = "Cardume em formação";
             public static string PositionOf(int position) => "Posição " + position + (position <= 3 ? " · frente" : " · trás");
             public const string ShopNote = "Troque a Honra ganha nas batalhas por Conchas e Dólares. Alguns itens têm limite por semana.";
-            public static string ShopReward(string amount, bool dollars) => "+" + amount + (dollars ? " Dólares" : " Conchas");
+            public static string ShopReward(string amount, bool dollars) => "+" + amount + (dollars ? (amount == "1" ? " Dólar" : " Dólares") : (amount == "1" ? " Concha" : " Conchas"));
             public static string ShopPrice(string honor) => honor + " de Honra";
             public static string ShopWeekly(int bought, int limit) => "Esta semana: " + bought + " de " + limit;
-            public static string ShopBought(string item) => item + " comprado!";
+            public static string ShopBought(string item) => "Compra feita: " + item + "!";
             public const string Attacked = "Ataque";
             public const string Defended = "Defesa";
             public const string Win = "Vitória";
@@ -288,7 +289,7 @@ namespace FishingIdle.Texts
             public static string PageOf(int page, int pages) => "Página " + page + " de " + pages;
             public static string Place(int rank) => rank + "º lugar";
             public static string PodiumLead(string species, int level) => species + " · Nv. " + level;
-            public static string OutsideTop(int rank, int top) => "Sua posição: #" + rank + " (fora do top " + top + ")";
+            public static string OutsideTop(int rank, int top) => "Sua posição: #" + rank + " (fora dos " + top + " primeiros)";
             public static string RankOfTotal(int rank, int total) => "#" + rank + " de " + total;
             public static string EnergyOf(int energy, int max) => energy + " / " + max;
             public static string NextEnergy(string countdown) => "+1 em " + countdown;
@@ -397,7 +398,7 @@ namespace FishingIdle.Texts
             public const string CurrencyCancelled = "Anúncio cancelado. A quantidade voltou para a sua carteira.";
             public static string CurrencyPerUnit(string coins) => "Por unidade: " + coins + " Moedas";
             public static string CurrencyLine(string amount, string currency, string price) => amount + " " + currency + " por " + price + " Moedas";
-            public static string CurrencyListed(string amount, string currency, string price) => amount + " " + currency + " anunciadas por " + price + " Moedas.";
+            public static string CurrencyListed(string amount, string currency, string price) => "Anúncio criado: " + amount + " " + currency + " por " + price + " Moedas.";
             public static string CurrencyMineCount(int count, int max) => CurrencyMineTitle + " (" + count + "/" + max + ")";
             public const string Coins = "Suas Moedas";
 
@@ -421,7 +422,7 @@ namespace FishingIdle.Texts
             public const string SortNewest = "Mais recentes";
             public const string ClearFilters = "Limpar filtros";
             public const string NoResults = "Nenhum anúncio com esses filtros.";
-            public const string SelectHint = "Clique num card para ver os detalhes.";
+            public const string SelectHint = "Clique num anúncio para ver os detalhes.";
 
             public const string Seller = "Vendedor";
             public const string EndsLabel = "Termina em";
@@ -431,7 +432,7 @@ namespace FishingIdle.Texts
 
             public const string SellHint = "Escolha um peixe do Aquário ou uma vara do Inventário para anunciar.";
             public const string NothingToSell = "Você não tem peixes no Aquário nem varas para anunciar.";
-            public const string NpcValue = "O jogo (NPC) paga";
+            public const string NpcValue = "O jogo paga";
             public const string Reference = "Referência do mercado simulado";
             public const string YourPrice = "Seu preço (Moedas)";
             public const string YouReceive = "Você recebe se vender";
@@ -490,15 +491,16 @@ namespace FishingIdle.Texts
             public static string FishLine(string size, string category) => size + " · " + category;
             public static string RodLine(string tier, int level, bool hasLevels) => hasLevels ? tier + " · Nível " + level : tier;
 
-            public static string Bought(string name) => name + " comprado. Está em Itens a Retirar.";
-            public static string Listed(string name, string price) => name + " anunciado por " + price + " Moedas.";
+            public static string Bought(string name) => "Compra feita: " + name + ". Está em Itens a Retirar.";
+            public static string Listed(string name, string price) => "Anúncio criado: " + name + " por " + price + " Moedas.";
             public static string Cancelled(string name) => "Anúncio cancelado. " + name + " está em Itens a Retirar.";
             public static string Sold(string buyer, string name, string net) => buyer + " comprou " + name + ". +" + net + " Moedas (já sem a taxa).";
             public static string Expired(string name) => "O anúncio de " + name + " venceu. Ele está em Itens a Retirar.";
-            public static string Withdrawn(string name) => name + " retirado.";
+            public static string Withdrawn(string name) => "Item retirado: " + name + ".";
             public static string WithdrewAll(int count, int left) => left > 0
-                ? count + " retirado(s). " + left + " peixe(s) ficaram porque o Aquário está cheio."
-                : count + " item(ns) retirado(s).";
+                ? (count == 1 ? "1 item retirado. " : Format.Number(count) + " itens retirados. ")
+                  + (left == 1 ? "1 peixe ficou porque o Aquário está cheio." : Format.Number(left) + " peixes ficaram porque o Aquário está cheio.")
+                : (count == 1 ? "1 item retirado." : Format.Number(count) + " itens retirados.");
             public static string SaleLine(string name, string buyer, string price, string fee) => name + " → " + buyer + " · " + price + " Moedas (taxa " + fee + ")";
 
             public static string Reason(string reasonKey)
@@ -536,7 +538,7 @@ namespace FishingIdle.Texts
             public const string FoundFish = "Seu Cardume encontrou um peixe!";
             public const string NoFish = "Nenhum peixe desta vez.";
             public const string Collect = "Ótimo!";
-            public const string ReportNote = "Tudo já está com você: as moedas no saldo e o peixe na Caixa de Pesca.";
+            public const string ReportNote = "Tudo já está com você: as Moedas no saldo e o peixe na Caixa de Pesca.";
             public const string NoCardume = "Monte seu Cardume no Perfil para poder enviar Expedições.";
 
             public const string Cancel = "Cancelar Expedição";
@@ -548,7 +550,7 @@ namespace FishingIdle.Texts
             public static string Departed(string name) => "Cardume enviado: " + name + ".";
             public static string Duration(string duration) => "Duração: " + duration;
             public static string ReturnsIn(string countdown) => "Volta em " + countdown;
-            public static string Coins(string coins) => "+" + coins + " moedas";
+            public static string Coins(string coins) => "+" + coins + " Moedas";
             public static string ReturnedAt(string name, string when) => name + " · voltou em " + when;
             public static string InBox(string species, string size) => species + " · " + size + " — já está na Caixa de Pesca.";
         }
@@ -582,7 +584,7 @@ namespace FishingIdle.Texts
                     case "map_01": return "Um começo tranquilo e bonito.";
                     case "map_02": return "A aventura sai do conforto do lago.";
                     case "map_03": return "Agora o mundo se abriu de verdade.";
-                    case "map_04": return "Cheguei em uma nova fronteira do jogo.";
+                    case "map_04": return "Cheguei a uma nova fronteira do jogo.";
                     case "map_05": return "Finalmente cheguei ao mar aberto da costa.";
                     case "map_06": return "Longe da costa, os peixes viram troféus.";
                     case "map_07": return "Só o horizonte e o mar azul em volta.";
@@ -604,7 +606,7 @@ namespace FishingIdle.Texts
             public const string Rods = "Varas";
             public const string Buy = "Comprar";
             public const string Owned = "Já é sua";
-            public const string AtLevel1 = "No nível 1";
+            public const string AtLevel1 = "No Nível 1";
             public const string AtMax = "No nível máximo";
             public const string Note = "Varas compradas ficam no Inventário (Perfil) e são equipadas na hora. Lá você também melhora, vende ou destrói varas.";
             public const string Upgrade = "Melhorar";
@@ -612,18 +614,18 @@ namespace FishingIdle.Texts
             public const string DestroyRod = "Destruir";
             public const string MaxLevel = "Nível máximo";
 
-            public static string Price(string coins) => coins + " moedas";
+            public static string Price(string coins) => coins + " Moedas";
             public static string Requires(int level) => "Disponível no Nível " + level;
-            public static string Bought(string rod) => rod + " comprada e equipada!";
+            public static string Bought(string rod) => "Vara " + rod + " comprada e equipada!";
             public static string Upgraded(string rod, int level) => rod + " agora está no Nível " + level + ".";
-            public static string RodSold(string coins) => "Vara vendida por " + coins + " moedas.";
-            public static string RodDestroyed(string rod) => rod + " foi destruída.";
-            public static string UpgradeFor(int level, string coins) => "Melhorar p/ Nv. " + level + " (" + coins + ")";
+            public static string RodSold(string coins) => "Vara vendida por " + coins + " Moedas.";
+            public static string RodDestroyed(string rod) => "A vara " + rod + " foi destruída.";
+            public static string UpgradeFor(int level, string coins) => "Melhorar → Nv. " + level + " (" + coins + ")";
             public static string UpgradeForWithShells(int level, string coins, string shells) => "Nv. " + level + ": " + coins + " + " + shells + " Conchas";
             public static string SellFor(string coins) => "Vender (" + coins + ")";
             public static string MaxLevelOf(int max) => "Até o Nível " + max;
             public static string SellTitle(string rod) => "Vender " + rod + "?";
-            public static string SellBody(string coins) => "O jogo paga " + coins + " moedas por ela. A vara sai do seu Inventário.";
+            public static string SellBody(string coins) => "O jogo paga " + coins + " Moedas por ela. A vara sai do seu Inventário.";
             public static string DestroyTitle(string rod) => "Destruir " + rod + "?";
             public const string DestroyBody = "A vara some do Inventário e você não recebe nada. Esta ação não pode ser desfeita.";
             public const string CatchBonus = "Sucesso da captura";
@@ -703,10 +705,10 @@ namespace FishingIdle.Texts
             public static string Bonus(string percent) => "+" + percent + " de chance";
             public static string Charges(int charges) => charges == 1 ? "1 tentativa por compra" : Format.Number(charges) + " tentativas por compra";
             public static string ChargesLeft(int charges) => charges == 1 ? "Resta 1 tentativa" : "Restam " + Format.Number(charges) + " tentativas";
-            public static string CostCoinsAndShells(string coins, string shells) => coins + " moedas + " + shells + " conchas";
-            public static string BoughtBoat(string boat) => boat + " comprado! Ele já está em uso.";
+            public static string CostCoinsAndShells(string coins, string shells) => coins + " Moedas + " + shells + " Conchas";
+            public static string BoughtBoat(string boat) => "Barco " + boat + " comprado! Ele já está em uso.";
             public static string UsingBoat(string boat) => "Agora você pesca com o " + boat + ".";
-            public static string BoughtBait(string bait, int charges) => bait + ": +" + charges + " tentativas.";
+            public static string BoughtBait(string bait, int charges) => bait + ": +" + (charges == 1 ? "1 tentativa." : Format.Number(charges) + " tentativas.");
             public static string UsingBait(string bait) => "Isca em uso: " + bait + ".";
             public const string BaitPutAway = "Isca guardada. As tentativas que sobraram ficam para depois.";
         }
@@ -774,7 +776,7 @@ namespace FishingIdle.Texts
             public const string Biggest = "Maior peixe já pescado";
             public const string HighestLevel = "Peixe de nível mais alto";
             public const string Exceptional = "Capturas Excepcionais";
-            public const string Perfect = "Capturas Perfeição";
+            public const string Perfect = "Capturas Perfeitas";
             public const string Rare = "Capturas Raras";
             public const string Sold = "Peixes vendidos";
             public const string CoinsFromSales = "Moedas com vendas";
@@ -785,6 +787,7 @@ namespace FishingIdle.Texts
             public const string EditTitle = "Seu nome e seu avatar";
             public const string NameLabel = "Nome";
             public const string NameRule = "De 3 a 16 caracteres: letras, números, espaço, ponto, hífen ou sublinhado.";
+            public static string NameRuleFor(int min, int max) => "De " + min + " a " + max + " caracteres: letras, números, espaço, ponto, hífen ou sublinhado.";
             public const string AvatarLabel = "Avatar";
             public const string Save = "Salvar";
             public const string Saved = "Nome e avatar salvos.";
@@ -801,7 +804,7 @@ namespace FishingIdle.Texts
             public const string StatCatches = "peixes pescados";
             public const string StatExceptional = "excepcionais";
             public const string StatPerfect = "perfeições";
-            public const string StatSales = "moedas em vendas";
+            public const string StatSales = "Moedas em vendas";
             public static string StatBiggest(string species) => "maior: " + species;
             public static string OfPlayers(int total) => "de " + Format.Number(total) + " jogadores";
             public static string BattleLine(bool won, int climbed) => won ? (climbed > 0 ? "Vitória · subiu " + climbed : "Vitória") : (climbed < 0 ? "Derrota · caiu " + (-climbed) : "Derrota");
@@ -813,7 +816,7 @@ namespace FishingIdle.Texts
             public static string BaitLeft(int charges) => charges == 1 ? "Isca · resta 1 tentativa" : "Isca · restam " + Format.Number(charges) + " tentativas";
             public static string VipUntil(string date) => "VIP até " + date;
 
-            public static string Tier(int tier) => tier == 0 ? "Vara inicial" : "Tier " + tier;
+            public static string Tier(int tier) => tier == 0 ? "Vara inicial" : "Categoria " + tier;
             public static string Discovery(int found, int total) => found + " de " + total + " espécies";
         }
 
@@ -844,9 +847,10 @@ namespace FishingIdle.Texts
             public static string PersonalRecord(string species, string size) => "Novo recorde de " + species + ": " + size + "!";
             public static string Exceptional(string species) => "Captura Excepcional: " + species + "!";
             public static string Perfect(string species) => "Perfeição: " + species + "! O maior possível, com +5% em todos os atributos.";
+            public static string PerfectWithSize(string species, string size) => "Perfeição: " + species + ", " + size + "! O maior possível, com +5% em todos os atributos.";
             public static string LevelUp(int level) => "Você subiu para o Nível " + level + "!";
-            public static string Shells(string amount) => "+" + amount + " Conchas";
-            public static string Dollars(string amount) => "+" + amount + " Dólares";
+            public static string Shells(string amount) => "+" + amount + (amount == "1" ? " Concha" : " Conchas");
+            public static string Dollars(string amount) => "+" + amount + (amount == "1" ? " Dólar" : " Dólares");
             public const string FishingStarted = "Pesca iniciada.";
             public const string FishingStopped = "Pesca parada.";
             public const string ConfigReloaded = "Balanceamento recarregado.";
@@ -1015,7 +1019,7 @@ namespace FishingIdle.Texts
             public static string FishXpTableGap(int level) => "progression.json: a tabela de XP do peixe (fish_level.xp_table) não tem o nível " + level + ".";
             public static string BadBaseStats(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de base_stats com Vida e Velocidade maiores que zero e Ataque e Defesa não negativos.";
             public static string XpTableGap(int level) => "progression.json: a tabela de XP do Pescador não tem o nível " + level + ".";
-            public static string StarterBoatNotFree(string boat) => "equipment.json: o barco inicial \"" + boat + "\" (o de menor tier) precisa custar 0 moedas e 0 conchas.";
+            public static string StarterBoatNotFree(string boat) => "equipment.json: o barco inicial \"" + boat + "\" (o de menor categoria) precisa custar 0 Moedas e 0 Conchas.";
             public static string UnknownSizeInRarity(string rarity, string size) => "progression.json: a raridade \"" + rarity + "\" cita o tamanho \"" + (size ?? "") + "\" em size_weight_multipliers, que não existe em size.categories.";
             public static string UnknownRarity(string species, string rarity) => "fish_catalog.json: a espécie \"" + species + "\" usa a raridade \"" + (rarity ?? "") + "\", que não existe em progression.json.";
             public static string BadSizeRange(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de size_cm com mínimo maior que zero e máximo maior que o mínimo.";
@@ -1052,7 +1056,7 @@ namespace FishingIdle.Texts
             public static string CatalogRarities(string list) => "Raridades: " + list;
             public static string CatalogCatches(string list) => "Pesca: " + list;
             public static string CatalogExpedition(string multiplier) => "Expedição ×" + multiplier;
-            public static string CatalogPrice(string coins, string shells) => shells == "0" ? coins + " moedas" : coins + " moedas + " + shells + " Conchas";
+            public static string CatalogPrice(string coins, string shells) => shells == "0" ? coins + " Moedas" : coins + " Moedas + " + shells + " Conchas";
             public static string CatalogMaxLevel(int level) => "Até o Nv. " + level;
             public static string CatalogBonus(string percent) => "+" + percent + " de chance de puxar";
             public static string CatalogCharges(int charges) => charges + " tentativas por compra";
@@ -1061,11 +1065,11 @@ namespace FishingIdle.Texts
             public static string CatalogReward(string coins) => "Moedas no Mapa 1: " + coins;
             public static string CatalogFindChance(string percent) => "Acha peixe: " + percent;
             public static string CatalogSize(string min, string max) => "Tamanho: " + min + " a " + max;
-            public static string CatalogValue(string coins) => "Valor base: " + coins + " moedas";
+            public static string CatalogValue(string coins) => "Valor base: " + coins + " Moedas";
             public static string CatalogXp(string fisher, string feed) => "XP: " + fisher + " · alimento: " + feed;
 
             public const string Reload = "Recarregar";
-            public const string CurrentMilestone = "Milestone atual";
+            public const string CurrentMilestone = "Marco atual";
             public const string GameVersion = "Versão do jogo";
             public const string ConfigVersion = "Versão do balanceamento";
             public const string RoadmapUpdatedAt = "Última atualização do roadmap";
@@ -1110,7 +1114,7 @@ namespace FishingIdle.Texts
             public const string SpeciesRarity = "Raridade";
             public const string SpeciesSizeMin = "Tam. mín. (cm)";
             public const string SpeciesSizeMax = "Tam. máx. (cm)";
-            public const string SpeciesSale = "Venda (moedas)";
+            public const string SpeciesSale = "Venda (Moedas)";
             public const string SpeciesFisherXp = "XP Pescador";
             public const string SpeciesFeedXp = "XP alimento";
             public const string CatchWeight = "Peso";
@@ -1136,7 +1140,7 @@ namespace FishingIdle.Texts
             public const string XpLevel = "Nível";
             public const string XpToNext = "XP para o próximo";
             public const string ShellChance = "Chance de Concha por captura (0 a 1)";
-            public const string MinimumPrice = "Preço mínimo de venda (moedas)";
+            public const string MinimumPrice = "Preço mínimo de venda (Moedas)";
             public const string SalePriceMultiplier = "Multiplicador do preço de venda dos peixes (1 = valores do catálogo; 0,5 = metade)";
 
             public const string SaveLocation = "Pasta do save";
@@ -1168,12 +1172,12 @@ namespace FishingIdle.Texts
             public const string AquariumCapacity = "Capacidade do Aquário";
             public const string FishLevelBonus = "Bônus de atributo por nível do peixe (%)";
             public const string FeedRecovery = "Recuperação do XP investido ao alimentar (0 a 1)";
-            public const string RodPrice = "Preço de compra (moedas)";
+            public const string RodPrice = "Preço de compra (Moedas)";
             public const string RodRarityBonus = "Raridade";
             public const string RodSizeBonus = "Tamanho";
             public const string RodShellBonus = "Conchas";
             public const string RodCatchBonus = "Puxar";
-            public const string RodUpgradeCost = "Custo p/ este nível";
+            public const string RodUpgradeCost = "Custo para este nível";
             public const string RodsNote = "Bônus são o total naquele nível (0,10 = +10%). \"Puxar\" soma pontos na Chance de Sucesso da Captura (0,05 = +5%); ele também aparece na aba Sucesso da pesca.";
             public const string RodStarterCatchBonus = "Bônus de puxar da vara inicial, o Caniço Manso (0,05 = +5%)";
 
@@ -1191,7 +1195,7 @@ namespace FishingIdle.Texts
             public const string GearShells = "Conchas";
             public const string GearLevel = "Nível";
             public const string GearCharges = "Tentativas";
-            public const string GearNote = "Bônus em pontos (0,05 = +5%). O barco de menor tier é o inicial: todo jogador já tem e ele precisa custar 0. A isca gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline.";
+            public const string GearNote = "Bônus em pontos (0,05 = +5%). O barco de menor categoria é o inicial: todo jogador já tem e ele precisa custar 0. A isca gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline.";
             public const string SimulatorTitle = "Simulador de sucesso";
             public const string SimulatorNote = "Roda as regras do jogo com os números desta tela, mesmo os que ainda não foram salvos. A isca fica sempre ligada; o custo dela por hora é descontado das Moedas.";
             public const string SimMap = "Mapa";
@@ -1203,16 +1207,16 @@ namespace FishingIdle.Texts
             public const string SimAttempts = "Tentativas";
             public const string SimRun = "Simular";
             public const string SimInvalid = "O balanceamento desta tela tem problemas; corrija antes de simular:";
-            public const string SimRodCannotFish = "Esta vara não pesca neste mapa (tier mínimo do mapa ou raridades).";
+            public const string SimRodCannotFish = "Esta vara não pesca neste mapa (categoria mínima do mapa ou raridades).";
             public const string SimResultAttempts = "Tentativas";
             public const string SimResultCatches = "Capturas";
-            public const string SimResultEscapes = "Escapes";
+            public const string SimResultEscapes = "Fugas";
             public const string SimResultRate = "Taxa real de sucesso";
             public const string SimPerHour = "Por hora de pesca online";
             public const string SimCatchesHour = "Capturas por hora";
-            public const string SimEscapesHour = "Escapes por hora";
+            public const string SimEscapesHour = "Fugas por hora";
             public const string SimXpHour = "XP por hora";
-            public const string SimCoinsHour = "Moedas por hora (venda ao NPC)";
+            public const string SimCoinsHour = "Moedas por hora (venda ao jogo)";
             public const string SimBaitHour = "Custo da isca por hora";
             public const string SimNetCoinsHour = "Moedas por hora, descontada a isca";
             public const string SimShellsHour = "Conchas por hora, descontada a isca";
@@ -1220,9 +1224,9 @@ namespace FishingIdle.Texts
             public const string SimBites = "Mordidas";
             public const string SimCaught = "Puxadas";
             public const string SimChance = "Chance";
-            public static string SimBaitCost(string coins, string shells) => coins + " moedas + " + shells + " conchas";
-            public const string ShellMin = "Conchas por drop (mínimo)";
-            public const string ShellMax = "Conchas por drop (máximo)";
+            public static string SimBaitCost(string coins, string shells) => coins + " Moedas + " + shells + " Conchas";
+            public const string ShellMin = "Conchas por captura (mínimo)";
+            public const string ShellMax = "Conchas por captura (máximo)";
             public const string ExpeditionsTable = "Expedições";
             public const string ExpDuration = "Minutos";
             public const string ExpStrength = "Força rec.";
@@ -1241,7 +1245,7 @@ namespace FishingIdle.Texts
                 new BalanceFieldGroup("Arena — Adversários", new[]
                 {
                     new BalanceField("arena.json", "opponent_selection.opponents_per_set", "Adversários oferecidos"),
-                    new BalanceField("arena.json", "opponent_selection.rank_window_percent_above", "Janela acima do seu rank (%)"),
+                    new BalanceField("arena.json", "opponent_selection.rank_window_percent_above", "Janela acima da sua posição (%)"),
                     new BalanceField("arena.json", "opponent_selection.rerolls_per_set", "Trocas de adversários por ciclo"),
                 }),
                 new BalanceFieldGroup("Arena — Honra", new[]
@@ -1300,7 +1304,7 @@ namespace FishingIdle.Texts
                     new BalanceField("market_bots.json", "supply.listing_duration_hours", "Duração dos anúncios deles (horas)"),
                     new BalanceField("market_bots.json", "demand.check_interval_minutes", "Minutos entre compradores (verificação)"),
                     new BalanceField("market_bots.json", "demand.chance_at_reference_price", "Chance de vender no preço de referência (0 a 1)"),
-                    new BalanceField("market_bots.json", "valuation.fish_reference_ratio", "Referência do peixe (× venda ao NPC)"),
+                    new BalanceField("market_bots.json", "valuation.fish_reference_ratio", "Referência do peixe (× venda ao jogo)"),
                 }),
                 new BalanceFieldGroup("Leilão", new[]
                 {

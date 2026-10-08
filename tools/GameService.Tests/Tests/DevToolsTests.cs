@@ -37,6 +37,16 @@ public sealed class DevToolsTests
     }
 
     [Fact]
+    public void An_unknown_size_category_is_refused_instead_of_falling_back_to_random()
+    {
+        var (game, _, _) = TestSupport.NewGame();
+        game.Session.DevToolsEnabled = true;
+
+        Assert.Equal(ServiceError.InvalidAmount, game.DevTools.GiveFish("lambari", "no_such_size", 1).Error);
+        Assert.Empty(game.Fishing.GetFishingBox());
+    }
+
+    [Fact]
     public void One_hour_open_is_online_fishing_and_one_hour_closed_is_offline()
     {
         var (game, _, _) = TestSupport.NewGame();
@@ -60,7 +70,7 @@ public sealed class DevToolsTests
 public sealed class BalanceVersionTests
 {
     [Fact]
-    public void Notable_catches_battles_and_expeditions_carry_the_balance_version()
+    public void Notable_catches_carry_the_balance_version()
     {
         var (game, _, _) = TestSupport.NewGame();
         game.Session.DevToolsEnabled = true;

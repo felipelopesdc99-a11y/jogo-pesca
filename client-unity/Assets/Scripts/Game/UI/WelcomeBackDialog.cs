@@ -21,8 +21,19 @@ namespace FishingIdle.Game.UI
 
             var update = report.Update;
             var best = update.NewCatches.Where(c => c.IsImportant).OrderByDescending(c => c.SalePriceCoins).Take(4).ToList();
-            var extra = (update.Escapes.Count > 0 ? 24f : 0f) + (update.BaitRanOut != null ? 24f : 0f) + (update.SkippedBoxFull > 0 ? 24f : 0f);
-            var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, 360f + extra + (best.Count > 0 ? 120f : 0f), 720f);
+            var count = update.NewCatches.Count;
+            var newSpecies = update.NewCatches.Count(c => c.IsNewSpecies);
+
+            // The height follows the lines actually drawn below (24 px each), so none runs into the note.
+            var lines = (report.Capped ? 1 : 0) + (update.Escapes.Count > 0 ? 1 : 0) + (update.SkippedBoxFull > 0 ? 1 : 0) + (update.BaitRanOut != null ? 1 : 0);
+            if (count > 0)
+            {
+                lines += 1 + (newSpecies > 0 ? 1 : 0) + (update.ShellsGained > 0 ? 1 : 0) + (update.LevelsReached.Count > 0 ? 1 : 0);
+            }
+
+            // Title and the fixed lines (132), each optional line, the best catches (124), the note and buttons (124).
+            var height = 132f + lines * 24f + (best.Count > 0 ? 124f : 0f) + 124f;
+            var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, Mathf.Max(360f, height), 720f);
             var x = rect.x + 30;
             var w = rect.width - 60;
             var y = rect.y + 24;
@@ -40,7 +51,6 @@ namespace FishingIdle.Game.UI
             }
 
             y += 8;
-            var count = update.NewCatches.Count;
             GUI.contentColor = count > 0 ? UiSkin.GoldLight : Color.white;
             GUI.Label(new Rect(x, y, w, 28), count == 0 ? GameTexts.Offline.NothingCaught : GameTexts.Offline.Caught(count), skin.Heading);
             GUI.contentColor = Color.white;
@@ -67,7 +77,6 @@ namespace FishingIdle.Game.UI
             {
                 GUI.Label(new Rect(x, y, w, 22), update.VipXpGained > 0 ? GameTexts.Offline.XpWithVip(Format.Number(update.XpGained), Format.Number(update.VipXpGained)) : GameTexts.Offline.Xp(Format.Number(update.XpGained)), skin.Body);
                 y += 24;
-                var newSpecies = update.NewCatches.Count(c => c.IsNewSpecies);
                 if (newSpecies > 0)
                 {
                     GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.NewSpecies(newSpecies), skin.Body);
@@ -99,14 +108,14 @@ namespace FishingIdle.Game.UI
                     var accent = VisualTheme.IsSpecialSize(c.SizeCategoryId) ? UiSkin.SizeColor(c.SizeCategoryId) : UiSkin.RarityColor(c.RarityId);
                     skin.DrawGlow(new Rect(x + i * cw + cw * 0.2f, y + 14, cw * 0.5f, 28), accent, 0.3f);
                     GUI.DrawTexture(new Rect(x + i * cw, y, cw - 10, 56), Art.FishTexture(c.SpeciesId), ScaleMode.ScaleToFit, true);
-                    GUI.Label(new Rect(x + i * cw, y + 58, cw - 10, 20), c.SpeciesName, skin.Small);
+                    GUI.Label(new Rect(x + i * cw, y + 58, cw - 10, 20), FishCard.Fit(c.SpeciesName, skin.Small, cw - 10), skin.Small);
                     // The rarity in words next to the size, not only as the glow colour (M22-T12).
                     var line = string.IsNullOrEmpty(c.RarityName) ? Format.SizeCm(c.SizeCm) : c.RarityName + " · " + Format.SizeCm(c.SizeCm);
                     GUI.Label(new Rect(x + i * cw, y + 76, cw - 10, 20), FishCard.Fit(line, skin.SmallMuted, cw - 10), skin.SmallMuted);
                 }
             }
 
-            GUI.Label(new Rect(x, rect.yMax - 112, w, 40), GameTexts.Offline.Note(Format.Duration(report.CycleSeconds), report.CapHours == 1 ? "1 hora" : Format.Decimal(report.CapHours, 0) + " horas"), skin.SmallMuted);
+            GUI.Label(new Rect(x, rect.yMax - 112, w, 40), GameTexts.Offline.Note(Format.Duration(report.CycleSeconds), GameTexts.Offline.Hours(report.CapHours)), skin.SmallMuted);
             var openBox = false;
             if (count > 0 && skin.IconButton(new Rect(x, rect.yMax - 62, 280, 42), Icons.Box, GameTexts.Offline.OpenBox, skin.Button))
             {

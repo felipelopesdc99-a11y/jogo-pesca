@@ -27,6 +27,9 @@ namespace FishingIdle.Game.UI
 
         public bool IsOpen { get; private set; }
 
+        /// <summary>True while the cancel confirmation or the report of a returned Expedition is open.</summary>
+        public bool HasDialog => _confirmCancel || (IsOpen && _root.ExpeditionResult != null);
+
         public void Open()
         {
             IsOpen = true;
@@ -111,7 +114,7 @@ namespace FishingIdle.Game.UI
             GUI.enabled = wasEnabled;
             if (report != null)
             {
-                DrawReport(skin, area, report);
+                DrawReport(skin, screenWidth, screenHeight, report);
             }
             else if (_confirmCancel)
             {
@@ -146,15 +149,18 @@ namespace FishingIdle.Game.UI
             var y = rect.y + 16;
 
             // Each expedition has its own landscape (Art Bible, section 23).
+            // The picture gives way to the text: it is only as tall as the room left once the rows and the
+            // "Enviar" button are counted (~254 px), and is left out when that would be under 60 px.
             var picture = ArtAssets.Texture("Expedicoes/" + e.ExpeditionId);
-            if (picture != null)
+            var pictureHeight = Mathf.Min(180f, (rect.width - 20) / 1.54f, rect.height - 254f);
+            if (picture != null && pictureHeight >= 60f)
             {
-                var pr = new Rect(rect.x + 10, rect.y + 10, rect.width - 20, Mathf.Min(180f, (rect.width - 20) / 1.54f));
+                var pr = new Rect(rect.x + 10, rect.y + 10, rect.width - 20, pictureHeight);
                 GUI.DrawTexture(pr, picture, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 10);
                 y = pr.yMax + 12;
             }
 
-            GUI.Label(new Rect(x, y, w, 28), e.Name, skin.Heading);
+            GUI.Label(new Rect(x, y, w, 28), FishCard.Fit(e.Name, skin.Heading, w), skin.Heading);
             y += 30;
             skin.DrawIcon(new Rect(x, y + 1, 18, 18), Icons.Clock, UiSkin.Muted);
             GUI.Label(new Rect(x + 24, y, w - 24, 20), GameTexts.Expedition.Duration(Format.Duration(e.DurationMinutes * 60)), skin.SmallMuted);
@@ -184,8 +190,11 @@ namespace FishingIdle.Game.UI
 
         private static void Row(UiSkin skin, float x, ref float y, float w, string label, string value)
         {
-            GUI.Label(new Rect(x, y, w * 0.6f, 20), label, skin.SmallMuted);
-            GUI.Label(new Rect(x + w * 0.4f, y, w * 0.6f, 20), value, skin.SmallRight);
+            // The label takes what the value leaves, on one line ("Chance de achar um peixe" must not wrap).
+            var vw = Mathf.Min(w, skin.SmallRight.CalcSize(new GUIContent(value)).x + 4f);
+            var lw = Mathf.Max(0f, w - vw - 8f);
+            GUI.Label(new Rect(x, y, lw, 20), FishCard.Fit(label, skin.SmallMuted, lw), skin.SmallMuted);
+            GUI.Label(new Rect(x + w - vw, y, vw, 20), value, skin.SmallRight);
             y += 24;
         }
 
@@ -193,19 +202,28 @@ namespace FishingIdle.Game.UI
         /// The report of the Expedition that came back: where it went and when it returned, the coins
         /// and the fish it found, shown prominently (GDD section 32). "Ótimo!" marks it as read.
         /// </summary>
-        private void DrawReport(UiSkin skin, Rect area, ExpeditionResultView report)
+        private void DrawReport(UiSkin skin, float screenWidth, float screenHeight, ExpeditionResultView report)
         {
             var fish = report.FoundFish;
             var height = fish != null ? 590f : 400f;
-            var width = 660f;
-            GUI.DrawTexture(new Rect(area.x - 20, area.y - 20, area.width + 40, area.height + 40), skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.6f), 0, 14);
-            var rect = new Rect(area.center.x - width / 2f, area.center.y - height / 2f, width, height);
-            skin.DrawShadow(rect);
-            GUI.Box(rect, GUIContent.none, skin.PanelSolid);
+            var width = Mathf.Min(660f, screenWidth - 40f);
 
-            // The landscape of the Expedition across the top.
-            var y = rect.y + 14;
+            // The landscape of the Expedition across the top; left out when the screen is too short for it.
             var picture = !string.IsNullOrEmpty(report.ExpeditionId) ? ArtAssets.Texture("Expedicoes/" + report.ExpeditionId) : null;
+            if (picture == null)
+            {
+                height -= 108f;
+            }
+            else if (height > screenHeight - 40f)
+            {
+                picture = null;
+                height -= 108f;
+            }
+
+            // Centred on the whole screen over a full-screen overlay, like the other dialogs.
+            var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, height, width);
+
+            var y = rect.y + 14;
             if (picture != null)
             {
                 GUI.DrawTexture(new Rect(rect.x + 14, y, rect.width - 28, 96), picture, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 10);

@@ -66,6 +66,9 @@ namespace FishingIdle.Game.UI
 
         private bool DialogOpen => _confirmSell || _confirmSellMany || _confirmFeed;
 
+        /// <summary>True while a confirmation (sell one, sell several, feed) is open over the window.</summary>
+        public bool HasDialog => DialogOpen;
+
         public void Open()
         {
             IsOpen = true;
@@ -169,6 +172,26 @@ namespace FishingIdle.Game.UI
 
         private void DrawBrowser(UiSkin skin, Rect area, Rect panel)
         {
+            // "Selecionar vários" sits on the right of the sort row. Measured first: on a narrow panel it
+            // becomes icon-only, and if even that would touch the sort chips it goes to the next line.
+            var multiLabel = new GUIContent(GameTexts.Aquarium.MultiSelect);
+            var multiWidth = skin.Chip.CalcSize(multiLabel).x + 34;
+            var chipsEnd = area.x + 100;
+            foreach (var sort in Sorts)
+            {
+                chipsEnd += skin.Chip.CalcSize(new GUIContent(SortName(sort))).x + 8 + 8;
+            }
+
+            var multiIconOnly = chipsEnd > area.xMax - multiWidth - 8;
+            if (multiIconOnly)
+            {
+                multiWidth = 40f;
+            }
+
+            var multiOwnLine = chipsEnd > area.xMax - multiWidth - 8;
+            var multiRect = new Rect(area.xMax - multiWidth, multiOwnLine ? area.y + 40 : area.y, multiWidth, 32);
+            var gridTop = multiOwnLine ? 86f : 46f;
+
             // Sort chips
             var x = area.x;
             skin.DrawIcon(new Rect(x, area.y + 7, 18, 18), Icons.Sort, UiSkin.Muted);
@@ -187,10 +210,8 @@ namespace FishingIdle.Game.UI
                 x += w + 8;
             }
 
-            // "Selecionar vários" on the right of the sort row: turns clicks into a selection to sell.
-            var multiLabel = new GUIContent(GameTexts.Aquarium.MultiSelect);
-            var multiWidth = skin.Chip.CalcSize(multiLabel).x + 34;
-            if (_aquarium.Count > 0 && skin.IconButton(new Rect(area.xMax - multiWidth, area.y, multiWidth, 32), Icons.Check, GameTexts.Aquarium.MultiSelect, _multi ? skin.ChipActive : skin.Chip))
+            // "Selecionar vários": turns clicks into a selection to sell.
+            if (_aquarium.Count > 0 && skin.IconButton(multiRect, Icons.Check, multiIconOnly ? null : GameTexts.Aquarium.MultiSelect, _multi ? skin.ChipActive : skin.Chip))
             {
                 if (_multi)
                 {
@@ -202,7 +223,7 @@ namespace FishingIdle.Game.UI
                 }
             }
 
-            var grid = new Rect(area.x - 4, area.y + 46, area.width + 8, area.height - 46);
+            var grid = new Rect(area.x - 4, area.y + gridTop, area.width + 8, area.height - gridTop);
             if (_aquarium.Count == 0)
             {
                 GUI.Label(new Rect(grid.x, grid.y + grid.height / 2f - 30, grid.width, 60), GameTexts.Aquarium.Empty, skin.Center);
@@ -229,15 +250,21 @@ namespace FishingIdle.Game.UI
                     return;
                 }
 
-                // Ctrl + click starts a selection (with the fish already open, if any).
+                // Ctrl + click starts a selection (with the fish already open, if any). Ctrl + click on the
+                // open fish itself starts the selection with it, instead of adding and removing it at once.
+                var started = false;
                 if (!_multi && Event.current != null && (Event.current.control || Event.current.command))
                 {
                     StartMulti();
+                    started = true;
                 }
 
                 if (_multi)
                 {
-                    ToggleSell(fish.FishId);
+                    if (!(started && _sellSet.Contains(fish.FishId)))
+                    {
+                        ToggleSell(fish.FishId);
+                    }
                 }
                 else
                 {
@@ -261,9 +288,22 @@ namespace FishingIdle.Game.UI
             var w = area.width - 44;
             var y = area.y + 18;
 
+            // On a short panel the art shrinks and the four stats go in two columns, so the sheet always
+            // ends above Alimentar / Vender (the content under the art is ~354 px, ~310 px in two columns;
+            // the numbers below keep ~18 px of margin).
+            const float bottomRoom = 66f + 18f + 16f;
+            var fixedHeight = bottomRoom + 372f;
+            var twoColumns = area.height - fixedHeight < 124f;
+            if (twoColumns)
+            {
+                fixedHeight -= 44f;
+            }
+
+            var artHeight = Mathf.Clamp(area.height - fixedHeight, 48f, 124f);
+
             var accent = UiSkin.RarityColor(fish.RarityId);
             skin.DrawOutline(area, new Color(accent.r, accent.g, accent.b, 0.8f));
-            var art = new Rect(x, y + 6, w, 124);
+            var art = new Rect(x, y + 6, w, artHeight);
             var exceptional = VisualTheme.IsSpecialSize(fish.SizeCategoryId);
             if (fish.IsImportant)
             {
@@ -272,9 +312,9 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.DrawTexture(art, Art.FishTexture(fish.SpeciesId), ScaleMode.ScaleToFit, true);
-            y += 140;
+            y += artHeight + 16;
 
-            GUI.Label(new Rect(x, y, w, 30), fish.SpeciesName, skin.Heading);
+            GUI.Label(new Rect(x, y, w, 30), UI.FishCard.Fit(fish.SpeciesName, skin.Heading, w), skin.Heading);
             y += 32;
             var rarityLabel = fish.RarityName.ToUpperInvariant();
             var pillWidth = skin.PillWidth(rarityLabel, true);
@@ -314,10 +354,23 @@ namespace FishingIdle.Game.UI
             y += 38;
             GUI.Label(new Rect(x, y, w, 22), GameTexts.Aquarium.Stats, skin.BodyBold);
             y += 26;
-            StatRow(skin, x, ref y, w, GameTexts.Aquarium.Hp, fish.Stats.Hp);
-            StatRow(skin, x, ref y, w, GameTexts.Aquarium.Attack, fish.Stats.Attack);
-            StatRow(skin, x, ref y, w, GameTexts.Aquarium.Defense, fish.Stats.Defense);
-            StatRow(skin, x, ref y, w, GameTexts.Aquarium.Speed, fish.Stats.Speed);
+            if (twoColumns)
+            {
+                var colW = (w - 20f) / 2f;
+                var y2 = y;
+                StatRow(skin, x, ref y, colW, GameTexts.Aquarium.Hp, fish.Stats.Hp);
+                StatRow(skin, x, ref y, colW, GameTexts.Aquarium.Defense, fish.Stats.Defense);
+                StatRow(skin, x + colW + 20f, ref y2, colW, GameTexts.Aquarium.Attack, fish.Stats.Attack);
+                StatRow(skin, x + colW + 20f, ref y2, colW, GameTexts.Aquarium.Speed, fish.Stats.Speed);
+            }
+            else
+            {
+                StatRow(skin, x, ref y, w, GameTexts.Aquarium.Hp, fish.Stats.Hp);
+                StatRow(skin, x, ref y, w, GameTexts.Aquarium.Attack, fish.Stats.Attack);
+                StatRow(skin, x, ref y, w, GameTexts.Aquarium.Defense, fish.Stats.Defense);
+                StatRow(skin, x, ref y, w, GameTexts.Aquarium.Speed, fish.Stats.Speed);
+            }
+
             y += 6;
 
             InfoRow(skin, x, ref y, w, GameTexts.Aquarium.SaleValue, Format.Number(fish.SalePriceCoins));
@@ -341,8 +394,11 @@ namespace FishingIdle.Game.UI
 
         private static void StatRow(UiSkin skin, float x, ref float y, float w, string label, double value)
         {
-            GUI.Label(new Rect(x, y, 140, 20), label, skin.SmallMuted);
-            GUI.Label(new Rect(x + 140, y, w - 140, 20), Format.Number((long)Math.Round(value)), skin.SmallRight);
+            var text = Format.Number((long)Math.Round(value));
+            var vw = Mathf.Min(w, skin.SmallRight.CalcSize(new GUIContent(text)).x + 4f);
+            var lw = Mathf.Max(0f, w - vw - 6f);
+            GUI.Label(new Rect(x, y, lw, 20), UI.FishCard.Fit(label, skin.SmallMuted, lw), skin.SmallMuted);
+            GUI.Label(new Rect(x + w - vw, y, vw, 20), text, skin.SmallRight);
             y += 22;
         }
 
@@ -458,10 +514,14 @@ namespace FishingIdle.Game.UI
                 var name = f.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + f.Level + (f.CardumePosition > 0 ? " · " + GameTexts.Cardume.Badge(f.CardumePosition) : string.Empty);
                 GUI.Label(new Rect(row.x + 74, row.y + 8, nameWidth, 20), UI.FishCard.Fit(name, skin.Small, nameWidth), skin.Small);
                 GUI.Label(new Rect(row.xMax - priceWidth - 30, row.y + 8, priceWidth, 20), priceText, skin.SmallRight);
-                if (GUI.Button(new Rect(row.xMax - 26, row.y + 7, 22, 22), "×", skin.Chip))
+                // The remove button: an icon drawn over an empty chip (the chip's padding would hide a text "×").
+                var remove = new Rect(row.xMax - 26, row.y + 7, 22, 22);
+                if (GUI.Button(remove, GUIContent.none, skin.Chip))
                 {
                     ToggleSell(f.FishId);
                 }
+
+                skin.DrawIcon(new Rect(remove.x + 5, remove.y + 5, 12, 12), Icons.Close, UiSkin.Muted);
             }
 
             GUI.EndScrollView();

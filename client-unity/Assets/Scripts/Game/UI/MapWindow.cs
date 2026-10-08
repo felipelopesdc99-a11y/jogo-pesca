@@ -36,6 +36,9 @@ namespace FishingIdle.Game.UI
 
         public void Close() => IsOpen = false;
 
+        /// <summary>The Map has no confirmation dialog of its own.</summary>
+        public bool HasDialog => false;
+
         public void Draw(UiSkin skin, float screenWidth, float screenHeight)
         {
             if (!IsOpen)
@@ -123,8 +126,9 @@ namespace FishingIdle.Game.UI
                 y += 22;
             }
 
-            GUI.Label(new Rect(x, y, w, 50), map.Summary ?? string.Empty, skin.Small);
-            y += 56;
+            // Room for three lines of summary (the card has spare height below the rows).
+            GUI.Label(new Rect(x, y, w, 56), map.Summary ?? string.Empty, skin.Small);
+            y += 62;
 
             Row(skin, x, ref y, w, GameTexts.Map.NeedsLevel, GameTexts.Map.LevelRequirement(map.UnlockFisherLevel), map.LevelUnlocked);
             Row(skin, x, ref y, w, GameTexts.Map.NeedsRod, map.MinimumRodTier == 0 ? GameTexts.Map.AnyRod : map.MinimumRodName, map.RodAllowed);

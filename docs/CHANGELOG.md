@@ -3,6 +3,20 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.25] — 07/10/2026
+
+### Corrigido
+
+- Textos: concordância, plurais, maiúsculas das moedas, números formatados e termos em inglês (A-131).
+- Sobreposições: Arena e comemorações fora de 1080p, preço da Loja, HUD (chances, avisos, valor exato),
+  Mercado, Perfil (Inventário, Cardume, Resumo), Aquário, Expedição, Caixa, Bem-vindo de volta e painel de Testes.
+- Busca: o ✕ agora limpa o campo. Navegação travada com diálogo aberto.
+- Avatar padrão, Ctrl + clique no Aquário, aviso de Caixa cheia no painel de Testes e validação do avatar ao salvar.
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.24] — 07/10/2026
 
 ### Adicionado
