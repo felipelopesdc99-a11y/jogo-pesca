@@ -224,11 +224,18 @@ namespace FishingIdle.GameService.Profile
                 }
             }
 
+            var statsMax = new FishStats();
             foreach (var species in Config.FishCatalog.Species)
             {
                 view.Encyclopedia.Add(EncyclopediaEntry(species));
+                var stats = MiddleStats(species);
+                statsMax.Hp = Math.Max(statsMax.Hp, stats.Hp);
+                statsMax.Attack = Math.Max(statsMax.Attack, stats.Attack);
+                statsMax.Defense = Math.Max(statsMax.Defense, stats.Defense);
+                statsMax.Speed = Math.Max(statsMax.Speed, stats.Speed);
             }
 
+            view.EncyclopediaStatsMax = statsMax;
             return view;
         }
 
@@ -409,9 +416,54 @@ namespace FishingIdle.GameService.Profile
             entry.Name = species.DisplayName;
             entry.LargestCm = record.LargestMm / 10.0;
             entry.SpeciesMaxCm = species.SizeCm.Max;
+            entry.SpeciesMinCm = species.SizeCm.Min;
             entry.TimesCaught = record.TimesCaught;
             entry.FirstCaughtAtMs = record.FirstCaughtAtMs;
+            entry.BaseStats = MiddleStats(species);
+            var category = RecordCategory(species, record.LargestMm);
+            if (category != null)
+            {
+                entry.LargestSizeCategoryId = category.Id;
+                entry.LargestSizeCategoryName = category.DisplayName ?? category.Id;
+                entry.LargestIsSpecial = category.Special;
+            }
+
             return entry;
+        }
+
+        /// <summary>Attributes at level 1 and the middle of the species' size range (the size factor is 1 there).</summary>
+        private FishStats MiddleStats(SpeciesConfig species)
+        {
+            var middleMm = (int)Math.Round((species.SizeCm.Min + species.SizeCm.Max) / 2.0 * 10.0, MidpointRounding.AwayFromZero);
+            return FishRules.Stats(Config, species, Math.Max(1, middleMm), 1);
+        }
+
+        /// <summary>
+        /// The size category a recorded size came from. A catch's size is drawn inside its category's percentile
+        /// band and rounded to the millimetre, so the lowest band that could give this size (±0,5 mm) is taken.
+        /// </summary>
+        private SizeCategoryConfig RecordCategory(SpeciesConfig species, int sizeMm)
+        {
+            var categories = Config.SizeCategories;
+            if (categories == null || categories.Count == 0)
+            {
+                return null;
+            }
+
+            var span = species.SizeCm.Max - species.SizeCm.Min;
+            var cm = sizeMm / 10.0;
+            var ordered = categories.OrderBy(c => c.PercentileMin).ToList();
+            foreach (var c in ordered)
+            {
+                var low = species.SizeCm.Min + c.PercentileMin * span - 0.05;
+                var high = species.SizeCm.Min + c.PercentileMax * span + 0.05;
+                if (cm >= low && cm <= high)
+                {
+                    return c;
+                }
+            }
+
+            return CatchRules.Percentile(species, sizeMm) < 0.5 ? ordered[0] : ordered[ordered.Count - 1];
         }
 
         private RecordsView Records()

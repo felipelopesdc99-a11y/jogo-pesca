@@ -38,6 +38,14 @@ namespace FishingIdle.Game.UI
         private ArenaView _arena;
         private string _encMap;
 
+        // The Encyclopedia album (A-143): the chosen card, the page, the sheet over the page in a short window,
+        // and when the chosen species changed (the sheet fades it in).
+        private string _encSelected;
+        private int _encPage;
+        private bool _encOpen;
+        private bool _encOverlay;
+        private float _encChangedAt = -10f;
+
         // The name and avatar editor (M18-T03).
         private bool _editing;
         private string _nameDraft = string.Empty;
@@ -90,6 +98,13 @@ namespace FishingIdle.Game.UI
             if (_pendingRod != null)
             {
                 _pendingRod = null;
+                return;
+            }
+
+            // In a short window the species sheet covers the album page: Esc goes back to the page first.
+            if (_tab == Tab.Encyclopedia && _encOverlay && _encOpen)
+            {
+                _encOpen = false;
                 return;
             }
 
@@ -147,6 +162,7 @@ namespace FishingIdle.Game.UI
                 {
                     _tab = tab;
                     _scroll = Vector2.zero;
+                    _encOpen = false;
                 }
 
                 x += w + 8;
@@ -1358,11 +1374,14 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ Encyclopedia and Records
 
+        /// <summary>
+        /// The Encyclopedia as a card album (A-143, owner's decision on 08/10/2026): binder tabs per map on the left
+        /// ("Todas" first, each with its x/y), a page of cards sized by the room, and the species sheet (the fish on a
+        /// pedestal) beside the page, or over it in a short window. Only what the service reports; nothing to feed or sell.
+        /// </summary>
         private void DrawEncyclopedia(UiSkin skin, Rect area)
         {
             var all = _profile.Encyclopedia;
-
-            // By map (M22-T11): a chip per map with its progress; "Todos" shows every species.
             var maps = new List<(string Id, string Name)>();
             foreach (var e in all)
             {
@@ -1372,78 +1391,617 @@ namespace FishingIdle.Game.UI
                 }
             }
 
-            var cx = area.x;
-            var cy = area.y;
-            var chips = new List<(string Id, string Label)> { (null, GameTexts.Profile.AllMaps(all.Count(e => e.Discovered), all.Count)) };
-            chips.AddRange(maps.Select(m => (m.Id, GameTexts.Profile.MapProgress(m.Name, all.Count(e => e.MapId == m.Id && e.Discovered), all.Count(e => e.MapId == m.Id)))));
-            foreach (var (id, label) in chips)
-            {
-                var cw = skin.Chip.CalcSize(new GUIContent(label)).x + 12f;
-                if (cx + cw > area.xMax)
-                {
-                    cx = area.x;
-                    cy += 38;
-                }
+            const float gap = 14f;
+            var tabsW = Mathf.Clamp(area.width * 0.16f, 168f, 200f);
+            DrawEncTabs(skin, new Rect(area.x, area.y, tabsW, area.height), all, maps);
 
-                if (GUI.Button(new Rect(cx, cy, cw, 32), label, _encMap == id ? skin.ChipActive : skin.Chip))
-                {
-                    _encMap = id;
-                    _scroll = Vector2.zero;
-                }
-
-                cx += cw + 6;
-            }
+            // The sheet sits beside the page when there is room for it; otherwise it covers the page, with Voltar.
+            var rest = new Rect(area.x + tabsW, area.y, area.width - tabsW, area.height);
+            var sheetW = Mathf.Clamp(rest.width * 0.38f, 340f, 400f);
+            var docked = area.height >= 500f && rest.width - sheetW - gap >= 2f * EncCardMinW + 60f;
+            _encOverlay = !docked;
+            var page = docked ? new Rect(rest.x, rest.y, rest.width - sheetW - gap, rest.height) : rest;
+            var sheet = docked ? new Rect(page.xMax + gap, rest.y, sheetW, rest.height) : rest;
 
             var entries = _encMap == null ? all : all.Where(e => e.MapId == _encMap).ToList();
-            var top = cy + 44 - area.y;
-
-            const float cardW = 236f, cardH = 176f, gap = 12f;
-            var view = new Rect(area.x - 4, area.y + top, area.width + 8, area.height - top);
-            var columns = Mathf.Max(1, Mathf.FloorToInt((view.width - 20 + gap) / (cardW + gap)));
-            var rows = Mathf.CeilToInt(entries.Count / (float)columns);
-            _scroll = GUI.BeginScrollView(view, _scroll, new Rect(0, 0, view.width - 20, rows * (cardH + gap)));
-            for (var i = 0; i < entries.Count; i++)
+            var title = _encMap == null ? GameTexts.Profile.EncAllTitle : maps.FirstOrDefault(m => m.Id == _encMap).Name ?? GameTexts.Profile.EncAllTitle;
+            if (entries.Count == 0)
             {
-                var e = entries[i];
-                var rect = new Rect((i % columns) * (cardW + gap), (i / columns) * (cardH + gap), cardW, cardH);
-                GUI.Box(rect, GUIContent.none, skin.Card);
-                if (e.Discovered)
+                GUI.Box(page, GUIContent.none, skin.Card);
+                GUI.Label(new Rect(page.x + 20, page.y + 20, page.width - 40, 24), GameTexts.Profile.EncEmpty, skin.SmallMuted);
+                return;
+            }
+
+            var grid = EncGridLayout(page);
+            var perPage = grid.Cols * grid.Rows;
+            var pages = (entries.Count + perPage - 1) / perPage;
+            _encPage = Mathf.Clamp(_encPage, 0, pages - 1);
+
+            // The chosen card stays while it is in this tab; otherwise the first card of the page.
+            var index = entries.FindIndex(e => e.SpeciesId == _encSelected);
+            if (index < 0)
+            {
+                index = Mathf.Min(_encPage * perPage, entries.Count - 1);
+                EncSelect(entries[index].SpeciesId);
+            }
+
+            // The keyboard arrows walk the species like ‹ › (not while a dialog is open); the page follows.
+            var ev = Event.current;
+            if (GUI.enabled && entries.Count > 1 && ev.type == EventType.KeyDown && (ev.keyCode == KeyCode.LeftArrow || ev.keyCode == KeyCode.RightArrow))
+            {
+                index = EncStep(entries, index, ev.keyCode == KeyCode.LeftArrow ? -1 : 1);
+                _encPage = index / perPage;
+                ev.Use();
+            }
+
+            if (docked || !_encOpen)
+            {
+                var clicked = DrawEncPage(skin, page, grid, entries, all, index, title, pages);
+                if (clicked >= 0)
                 {
-                    var accent = UiSkin.RarityColor(e.RarityId);
-                    skin.DrawOutline(rect, new Color(accent.r, accent.g, accent.b, e.RarityId == "common" ? 0.35f : 0.85f));
+                    index = clicked;
+                    EncSelect(entries[index].SpeciesId);
+                    _encOpen = !docked;
+                }
+            }
+
+            if (docked || _encOpen)
+            {
+                var after = DrawEncSheet(skin, sheet, entries, index, !docked);
+                if (after != index)
+                {
+                    _encPage = after / perPage;
+                }
+            }
+        }
+
+        private const float EncCardMinW = 142f, EncCardMinH = 196f, EncCardGap = 12f;
+
+        /// <summary>How many cards fit on the page (by the room: about 8 in the big window, 6 in the short one) and their size.</summary>
+        private static (Rect Area, int Cols, int Rows, float W, float H) EncGridLayout(Rect page)
+        {
+            var area = new Rect(page.x + 16f, page.y + 62f, page.width - 32f, page.height - 62f - 58f);
+            var cols = Mathf.Max(1, Mathf.FloorToInt((area.width + EncCardGap) / (EncCardMinW + EncCardGap)));
+            var rows = Mathf.Max(1, Mathf.FloorToInt((area.height + EncCardGap) / (EncCardMinH + EncCardGap)));
+            var w = (area.width - (cols - 1) * EncCardGap) / cols;
+            var h = (area.height - (rows - 1) * EncCardGap) / rows;
+
+            // Card proportions: never a stretched strip, however the room is shaped.
+            h = Mathf.Min(h, w * 1.5f);
+            w = Mathf.Min(w, h * 0.85f);
+            return (area, cols, rows, w, h);
+        }
+
+        /// <summary>The binder tabs: "Todas" and one per map, each with its found/total (gold when the map is complete).</summary>
+        private void DrawEncTabs(UiSkin skin, Rect rect, List<EncyclopediaEntryView> all, List<(string Id, string Name)> maps)
+        {
+            var tabs = new List<(string Id, string Name, int Found, int Total)>
+            {
+                (null, GameTexts.Profile.EncAllTab, all.Count(e => e.Discovered), all.Count),
+            };
+            tabs.AddRange(maps.Select(m => (m.Id, m.Name, all.Count(e => e.MapId == m.Id && e.Discovered), all.Count(e => e.MapId == m.Id))));
+
+            var theme = VisualTheme.Current;
+            const float tabGap = 4f;
+            var h = Mathf.Clamp((rect.height - (tabs.Count - 1) * tabGap) / tabs.Count, 26f, 44f);
+            var y = rect.y;
+            foreach (var (id, name, found, total) in tabs)
+            {
+                if (y + h > rect.yMax)
+                {
+                    break;
                 }
 
-                // Undiscovered species are a dark silhouette with no name (GDD section 38).
-                GUI.DrawTexture(new Rect(rect.x + 16, rect.y + 12, rect.width - 32, 70), Art.FishTexture(e.SpeciesId), ScaleMode.ScaleToFit, true, 0,
-                    e.Discovered ? Color.white : new Color(0.02f, 0.05f, 0.09f, 0.85f), 0, 0);
-
-                if (!e.Discovered)
+                var active = _encMap == id;
+                var r = new Rect(rect.x, y, rect.width - (active ? 0f : 8f), h);
+                var hovered = GUI.enabled && r.Contains(Event.current.mousePosition);
+                if (GUI.Button(r, GUIContent.none, GUIStyle.none) && !active)
                 {
-                    // Still a secret, but you know where to look and how rare it is (M22-T11).
-                    GUI.Label(new Rect(rect.x + 14, rect.y + 90, rect.width - 28, 22), GameTexts.Profile.Undiscovered, skin.BodyBold);
-                    var hidden = (e.RarityName ?? string.Empty).ToUpperInvariant();
-                    var hw = skin.PillWidth(hidden, false);
-                    if (hidden.Length > 0)
-                    {
-                        skin.RarityPill(new Rect(rect.xMax - 14 - hw, rect.y + 116, hw, 20), e.RarityId, hidden, false);
-                    }
+                    _encMap = id;
+                    _encPage = 0;
+                    _encOpen = false;
+                }
 
-                    GUI.Label(new Rect(rect.x + 14, rect.y + 116, rect.width - 36 - hw, 20), FishCard.Fit(e.MapName ?? string.Empty, skin.SmallMuted, rect.width - 36 - hw), skin.SmallMuted);
+                // ASSET_PENDENTE: ui_enc_binder_tab.png (binder tab, 9-slice, tinted at runtime) replaces this drawn tab.
+                var fill = active ? theme.PanelElevated : Color.Lerp(theme.Night, theme.Panel, hovered ? 0.85f : 0.55f);
+                GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 8f);
+                GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, active ? UiSkin.Border : new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.5f), 1f, 8f);
+                if (active)
+                {
+                    GUI.DrawTexture(new Rect(r.x + 4f, r.y + 7f, 3f, r.height - 14f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 0, 1.5f);
+                }
+
+                var progress = GameTexts.Profile.EncTabProgress(found, total);
+                var complete = total > 0 && found == total;
+                var progressStyle = complete ? skin.SmallGoldLine : skin.SmallMutedRightLine;
+                var pw = progressStyle.CalcSize(new GUIContent(progress)).x + 4f;
+                var ty = r.y + (r.height - 20f) / 2f;
+                var nameStyle = active ? skin.SmallBold : skin.SmallMuted;
+                var nw = r.width - 14f - pw - 16f;
+                GUI.Label(new Rect(r.x + 14f, ty, nw, 20f), FishCard.Fit(name ?? string.Empty, nameStyle, nw), nameStyle);
+                GUI.Label(new Rect(r.xMax - 10f - pw, ty, pw, 20f), progress, progressStyle);
+                y += h + tabGap;
+            }
+        }
+
+        /// <summary>The album page: title and progress, the cards, empty pockets and the page arrows. Returns the clicked card or -1.</summary>
+        private int DrawEncPage(UiSkin skin, Rect page, (Rect Area, int Cols, int Rows, float W, float H) grid, List<EncyclopediaEntryView> entries,
+            List<EncyclopediaEntryView> all, int selected, string title, int pages)
+        {
+            // ASSET_PENDENTE: ui_enc_album_page.png (album page, 9-slice) replaces the plain panel.
+            GUI.Box(page, GUIContent.none, skin.Card);
+
+            var found = entries.Count(e => e.Discovered);
+            var x = page.x + 18f;
+            var w = page.width - 36f;
+            var progress = GameTexts.Profile.Discovery(found, entries.Count);
+            var pw = Mathf.Min(w * 0.45f, skin.SmallMutedRightLine.CalcSize(new GUIContent(progress)).x + 4f);
+            GUI.Label(new Rect(x, page.y + 14f, w - pw - 10f, 28f), FishCard.Fit(title, skin.Heading, w - pw - 10f), skin.Heading);
+            GUI.Label(new Rect(x + w - pw, page.y + 20f, pw, 20f), FishCard.Fit(progress, skin.SmallMutedRightLine, pw), skin.SmallMutedRightLine);
+            skin.Bar(new Rect(x, page.y + 46f, w, 6f), found / (float)entries.Count, UiSkin.Accent);
+
+            // The mouse wheel over the cards turns the page.
+            var ev = Event.current;
+            if (GUI.enabled && pages > 1 && ev.type == EventType.ScrollWheel && grid.Area.Contains(ev.mousePosition))
+            {
+                _encPage = Mathf.Clamp(_encPage + (ev.delta.y > 0 ? 1 : -1), 0, pages - 1);
+                ev.Use();
+            }
+
+            var per = grid.Cols * grid.Rows;
+            var blockW = grid.Cols * grid.W + (grid.Cols - 1) * EncCardGap;
+            var blockH = grid.Rows * grid.H + (grid.Rows - 1) * EncCardGap;
+            var ox = grid.Area.x + (grid.Area.width - blockW) / 2f;
+            var oy = grid.Area.y + (grid.Area.height - blockH) / 2f;
+            var clicked = -1;
+            for (var slot = 0; slot < per; slot++)
+            {
+                var r = new Rect(ox + (slot % grid.Cols) * (grid.W + EncCardGap), oy + (slot / grid.Cols) * (grid.H + EncCardGap), grid.W, grid.H);
+                var i = _encPage * per + slot;
+                if (i >= entries.Count)
+                {
+                    // An empty pocket on the last page.
+                    skin.DashedFrame(r, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.35f), 8f, 6f, 1f);
                     continue;
                 }
 
-                // The rarity seal goes on the map line, so a long name never runs under it.
-                GUI.Label(new Rect(rect.x + 14, rect.y + 88, rect.width - 28, 22), FishCard.Fit(e.Name, skin.BodyBold, rect.width - 28), skin.BodyBold);
-                var rarity = (e.RarityName ?? string.Empty).ToUpperInvariant();
-                var pw = skin.PillWidth(rarity, false);
-                skin.RarityPill(new Rect(rect.xMax - 14 - pw, rect.y + 110, pw, 20), e.RarityId, rarity, false);
-                GUI.Label(new Rect(rect.x + 14, rect.y + 110, rect.width - 36 - pw, 20), FishCard.Fit(e.MapName, skin.SmallMuted, rect.width - 36 - pw), skin.SmallMuted);
-                GUI.Label(new Rect(rect.x + 14, rect.y + 130, rect.width - 28, 20), GameTexts.Profile.Largest + ": " + Format.SizeCm(e.LargestCm), skin.Small);
-                GUI.Label(new Rect(rect.x + 14, rect.y + 150, rect.width - 28, 20),
-                    FishCard.Fit(GameTexts.Profile.TimesCaught + ": " + Format.Number(e.TimesCaught) + " · " + GameTexts.Profile.BiteShare(Format.Percent(e.BiteShare, e.BiteShare < 0.01 ? 1 : 0)), skin.Small, rect.width - 28), skin.Small);
+                if (DrawEncCard(skin, r, entries[i], all.IndexOf(entries[i]) + 1, i == selected))
+                {
+                    clicked = i;
+                }
             }
 
-            GUI.EndScrollView();
+            // ‹ Página n de m ›
+            var fy = page.yMax - 50f;
+            const float labelW = 150f;
+            var cx = page.center.x;
+            GUI.Label(new Rect(cx - labelW / 2f, fy + 10f, labelW, 20f), GameTexts.Profile.EncPage(_encPage + 1, pages), skin.SmallMutedCenter);
+            if (EncArrow(skin, new Rect(cx - labelW / 2f - 44f, fy, 40f, 40f), true, _encPage > 0))
+            {
+                _encPage--;
+            }
+
+            if (EncArrow(skin, new Rect(cx + labelW / 2f + 4f, fy, 40f, 40f), false, _encPage < pages - 1))
+            {
+                _encPage++;
+            }
+
+            return clicked;
+        }
+
+        /// <summary>
+        /// One album card: thin frame in the rarity colour, rarity seal and number on top, the fish, name, map, record and
+        /// catches. Not found yet: the card back with the silhouette, "?", rarity and map (where to look). Returns true on click.
+        /// </summary>
+        private static bool DrawEncCard(UiSkin skin, Rect r, EncyclopediaEntryView e, int number, bool selected)
+        {
+            var theme = VisualTheme.Current;
+            var hovered = GUI.enabled && r.Contains(Event.current.mousePosition);
+            var clicked = GUI.Button(r, GUIContent.none, GUIStyle.none);
+            var c = hovered && !selected ? new Rect(r.x, r.y - 2f, r.width, r.height) : r;
+            var rarity = UiSkin.RarityColor(e.RarityId);
+            var low = e.RarityId == "common" || e.RarityId == "rare";
+
+            // ASSET_PENDENTE: ui_enc_card_frame.png (thin card frame, 9-slice, tinted per rarity) and ui_enc_card_back.png
+            // (card back) replace the drawn frame and back.
+            GUI.DrawTexture(new Rect(c.x + 1f, c.y + 4f, c.width, c.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, hovered ? 0.34f : 0.22f), 0, 12f);
+            var fill = e.Discovered
+                ? (selected ? theme.PanelElevated : Color.Lerp(theme.Panel, theme.PanelElevated, hovered ? 0.6f : 0.25f))
+                : Color.Lerp(theme.Night, theme.Panel, hovered ? 0.55f : 0.3f);
+            GUI.DrawTexture(c, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 12f);
+            var frameA = e.Discovered ? (low ? 0.55f : 0.9f) : 0.3f;
+            if (hovered)
+            {
+                frameA = Mathf.Min(1f, frameA + 0.2f);
+            }
+
+            GUI.DrawTexture(c, skin.White, ScaleMode.StretchToFill, true, 0, new Color(rarity.r, rarity.g, rarity.b, frameA), 1.5f, 12f);
+            var inner = new Rect(c.x + 5f, c.y + 5f, c.width - 10f, c.height - 10f);
+            if (e.Discovered)
+            {
+                GUI.DrawTexture(inner, skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.06f), 1f, 9f);
+            }
+            else
+            {
+                skin.DashedFrame(inner, new Color(rarity.r, rarity.g, rarity.b, 0.22f), 6f, 5f, 1f);
+            }
+
+            if (selected)
+            {
+                GUI.DrawTexture(new Rect(c.x - 3f, c.y - 3f, c.width + 6f, c.height + 6f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 14f);
+            }
+
+            // Top: rarity seal on the left, the album number on the right when it fits.
+            const float pad = 10f;
+            var x = c.x + pad;
+            var w = c.width - pad * 2f;
+            var seal = (e.RarityName ?? string.Empty).ToUpperInvariant();
+            var sealW = seal.Length > 0 ? Mathf.Min(skin.PillWidth(seal, false), w) : 0f;
+            if (sealW > 0)
+            {
+                skin.RarityPill(new Rect(x, c.y + pad, sealW, 20f), e.RarityId, seal, false);
+            }
+
+            var num = GameTexts.Profile.EncNumber(number);
+            var numW = skin.SmallMutedRightLine.CalcSize(new GUIContent(num)).x + 2f;
+            if (sealW + 6f + numW <= w)
+            {
+                GUI.Label(new Rect(x + w - numW, c.y + pad + 1f, numW, 18f), num, skin.SmallMutedRightLine);
+            }
+
+            // The fish (a dark silhouette with "?" until found, Art Bible section 8).
+            const float bottomH = 84f;
+            var artTop = c.y + pad + 26f;
+            var art = new Rect(x, artTop, w, Mathf.Max(30f, c.yMax - pad - bottomH - artTop));
+            GUI.DrawTexture(art, skin.White, ScaleMode.StretchToFill, true, 0, e.Discovered ? new Color(0.06f, 0.17f, 0.26f, 0.9f) : new Color(0.03f, 0.07f, 0.12f, 0.9f), 0, 8f);
+            GUI.DrawTexture(new Rect(art.x + 6f, art.y + 6f, art.width - 12f, art.height - 12f), Art.FishTexture(e.SpeciesId), ScaleMode.ScaleToFit, true, 0,
+                e.Discovered ? Color.white : new Color(0.02f, 0.05f, 0.09f, 0.9f), 0, 0);
+            if (!e.Discovered)
+            {
+                var prevContent = GUI.contentColor;
+                GUI.contentColor = new Color(UiSkin.Muted.r, UiSkin.Muted.g, UiSkin.Muted.b, 0.85f);
+                GUI.Label(art, GameTexts.Profile.EncUnknownValue, skin.TitleCenter);
+                GUI.contentColor = prevContent;
+            }
+
+            // Name, map, record and catches.
+            var ty = art.yMax + 4f;
+            var name = e.Discovered ? e.Name : GameTexts.Profile.Undiscovered;
+            GUI.Label(new Rect(c.x + 6f, ty, c.width - 12f, 22f), FishCard.Fit(name ?? string.Empty, skin.CenterBold, c.width - 12f), skin.CenterBold);
+            GUI.Label(new Rect(x, ty + 22f, w, 18f), FishCard.Fit(e.MapName ?? string.Empty, skin.SmallMutedCenter, w), skin.SmallMutedCenter);
+            if (e.Discovered)
+            {
+                var record = GameTexts.Profile.EncRecordShort(Format.SizeCm(e.LargestCm));
+                GUI.Label(new Rect(x, ty + 40f, w, 18f), FishCard.Fit(record, SmallBoldCenter(skin), w), SmallBoldCenter(skin));
+                var caught = GameTexts.Profile.EncCaughtShort(Format.Short(e.TimesCaught));
+                GUI.Label(new Rect(x, ty + 58f, w, 18f), FishCard.Fit(caught, skin.SmallMutedCenter, w), skin.SmallMutedCenter);
+            }
+            else
+            {
+                GUI.Label(new Rect(x, ty + 49f, w, 18f), FishCard.Fit(GameTexts.Profile.EncNotYet, skin.SmallMutedCenter, w), skin.SmallMutedCenter);
+            }
+
+            // A record in a special size (Excepcional, Perfeição): its seal on the art and a faint gold light crossing the card.
+            if (e.Discovered && e.LargestIsSpecial && !string.IsNullOrEmpty(e.LargestSizeCategoryName))
+            {
+                var sizeSeal = e.LargestSizeCategoryName.ToUpperInvariant();
+                var sw = Mathf.Min(skin.Badge.CalcSize(new GUIContent(sizeSeal)).x + 10f, art.width - 8f);
+                FishCard.ExceptionalSeal(skin, new Rect(art.xMax - 4f - sw, art.yMax - 22f, sw, 18f), sizeSeal, UiSkin.SizeColor(e.LargestSizeCategoryId));
+                EncGleam(skin, c, number);
+            }
+
+            return clicked;
+        }
+
+        /// <summary>A slow, faint gold light crossing the card now and then (Art Bible 2.4: a short glow, never a permanent one).</summary>
+        private static void EncGleam(UiSkin skin, Rect card, int seed)
+        {
+            const float period = 4.5f;
+            var phase = Mathf.Repeat(Time.unscaledTime + seed * 0.37f, period) / period;
+            if (phase >= 0.35f)
+            {
+                return;
+            }
+
+            var k = phase / 0.35f;
+            var bandW = card.width * 0.22f;
+            var band = new Rect(card.x + (card.width + bandW) * k - bandW, card.y + 3f, bandW, card.height - 6f);
+            band.xMin = Mathf.Max(band.xMin, card.x + 3f);
+            band.xMax = Mathf.Min(band.xMax, card.xMax - 3f);
+            if (band.width > 1f)
+            {
+                var gold = UiSkin.GoldLight;
+                GUI.DrawTexture(band, skin.White, ScaleMode.StretchToFill, true, 0, new Color(gold.r, gold.g, gold.b, 0.10f * Mathf.Sin(k * Mathf.PI)), 0, 6f);
+            }
+        }
+
+        private static GUIStyle _smallBoldCenter;
+
+        private static GUIStyle SmallBoldCenter(UiSkin skin)
+        {
+            if (_smallBoldCenter == null || _smallBoldCenter.font != skin.SmallBold.font)
+            {
+                _smallBoldCenter = new GUIStyle(skin.SmallBold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
+            }
+
+            return _smallBoldCenter;
+        }
+
+        private void EncSelect(string speciesId)
+        {
+            if (_encSelected != speciesId)
+            {
+                _encSelected = speciesId;
+                _encChangedAt = Time.unscaledTime;
+            }
+        }
+
+        /// <summary>Moves to the previous or next species of the tab, wrapping around.</summary>
+        private int EncStep(List<EncyclopediaEntryView> entries, int index, int delta)
+        {
+            var next = ((index + delta) % entries.Count + entries.Count) % entries.Count;
+            EncSelect(entries[next].SpeciesId);
+            return next;
+        }
+
+        /// <summary>
+        /// The species sheet: the fish on its pedestal with ‹ ›, then the name, rarity, map and the numbers. Stacked in a
+        /// narrow column; side by side when it covers the page. Returns the index after the arrows.
+        /// </summary>
+        private int DrawEncSheet(UiSkin skin, Rect rect, List<EncyclopediaEntryView> entries, int index, bool overlay)
+        {
+            GUI.Box(rect, GUIContent.none, skin.Card);
+            var inner = new Rect(rect.x + 16f, rect.y + 14f, rect.width - 32f, rect.height - 28f);
+            Rect stage, info;
+            if (inner.width >= 620f)
+            {
+                var sw = Mathf.Floor(inner.width * 0.46f);
+                stage = new Rect(inner.x, inner.y, sw, inner.height);
+                info = new Rect(stage.xMax + 20f, inner.y, inner.xMax - stage.xMax - 20f, inner.height);
+            }
+            else
+            {
+                var sh = Mathf.Clamp(inner.height * 0.36f, 160f, 250f);
+                stage = new Rect(inner.x, inner.y, inner.width, sh);
+                info = new Rect(inner.x, stage.yMax + 10f, inner.width, inner.yMax - stage.yMax - 10f);
+            }
+
+            index = DrawEncStage(skin, stage, entries, index, overlay);
+            DrawEncInfo(skin, info, entries[index]);
+            return index;
+        }
+
+        /// <summary>
+        /// The chosen species big on a pedestal with an aura in its rarity colour (faint for Comum and Raro, Art Bible
+        /// 2.4), ‹ › on the sides and its place in the tab on top. Returns the index after the arrows.
+        /// </summary>
+        private int DrawEncStage(UiSkin skin, Rect rect, List<EncyclopediaEntryView> entries, int index, bool overlay)
+        {
+            var e = entries[index];
+            var rarity = UiSkin.RarityColor(e.RarityId);
+
+            // Water backdrop, like the Cardume formation.
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.05f, 0.16f, 0.24f, 0.92f), 0, 14f);
+            GUI.DrawTexture(new Rect(rect.x, rect.y + rect.height * 0.55f, rect.width, rect.height * 0.45f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.03f, 0.10f, 0.17f, 0.55f), 0, 14f);
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Border, 1.5f, 14f);
+
+            var position = GameTexts.Profile.EncPosition(index + 1, entries.Count);
+            if (overlay)
+            {
+                if (GUI.Button(new Rect(rect.x + 12f, rect.y + 12f, 110f, 34f), GameTexts.Profile.EncBack, skin.Button))
+                {
+                    _encOpen = false;
+                }
+
+                GUI.Label(new Rect(rect.x + 132f, rect.y + 19f, rect.width - 144f, 20f), position, skin.SmallMutedRightLine);
+            }
+            else
+            {
+                GUI.Label(new Rect(rect.x + 12f, rect.y + 10f, rect.width - 24f, 20f), position, skin.SmallMutedCenter);
+            }
+
+            var zoneTop = rect.y + (overlay ? 54f : 38f);
+            const float pedestalH = 34f;
+            var zoneBottom = rect.yMax - 14f - pedestalH;
+            var artW = Mathf.Max(60f, rect.width - 130f);
+            var artH = Mathf.Clamp(Mathf.Min(zoneBottom - zoneTop - 10f, artW * 0.6f), 40f, 300f);
+            var centre = new Vector2(rect.center.x, zoneBottom - artH / 2f - 6f);
+
+            // ASSET_PENDENTE: ui_enc_aura.png (soft radial white glow, tinted at runtime) replaces these soft discs.
+            var strength = EncAura(e.RarityId) * (e.Discovered ? 1f : 0.5f);
+            var aura = Mathf.Max(0f, Mathf.Min(artW + 20f, 2f * (centre.y - rect.y - 8f)));
+            for (var i = 0; i < 4; i++)
+            {
+                var d = aura * (1f - i * 0.18f);
+                GUI.DrawTexture(new Rect(centre.x - d / 2f, centre.y - d / 2f, d, d), skin.White, ScaleMode.StretchToFill, true, 0,
+                    new Color(rarity.r, rarity.g, rarity.b, strength), 0, d / 2f);
+            }
+
+            // ASSET_PENDENTE: ui_enc_pedestal.png (stone/coral disc seen from the front, 480×96) replaces the drawn pedestal.
+            var pw = Mathf.Min(artW * 0.8f, 340f);
+            var top = zoneBottom + 4f;
+            GUI.DrawTexture(new Rect(rect.center.x - pw / 2f - 10f, top + 18f, pw + 20f, 20f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.28f), 0, 10f);
+            GUI.DrawTexture(new Rect(rect.center.x - pw / 2f, top + 10f, pw, 22f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.07f, 0.13f, 0.21f, 1f), 0, 11f);
+            var face = new Rect(rect.center.x - pw / 2f, top, pw, 22f);
+            GUI.DrawTexture(face, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.16f, 0.27f, 0.38f, 1f), 0, 11f);
+            GUI.DrawTexture(face, skin.White, ScaleMode.StretchToFill, true, 0, new Color(rarity.r, rarity.g, rarity.b, e.Discovered ? 0.7f : 0.3f), 1.5f, 11f);
+
+            // The fish fades in when it changes and floats a little.
+            var t = Mathf.Clamp01((Time.unscaledTime - _encChangedAt) / 0.25f);
+            var bob = Mathf.Sin(Time.unscaledTime * 1.6f) * 3f;
+            var art = new Rect(centre.x - artW / 2f, centre.y - artH / 2f + bob + (1f - t) * 10f, artW, artH);
+            var tint = e.Discovered ? new Color(1f, 1f, 1f, t) : new Color(0.02f, 0.05f, 0.09f, 0.85f * t);
+            GUI.DrawTexture(art, Art.FishTexture(e.SpeciesId), ScaleMode.ScaleToFit, true, 0, tint, 0, 0);
+            if (!e.Discovered)
+            {
+                var prevContent = GUI.contentColor;
+                GUI.contentColor = new Color(UiSkin.Muted.r, UiSkin.Muted.g, UiSkin.Muted.b, t);
+                GUI.Label(new Rect(art.x, art.center.y - 30f, art.width, 60f), GameTexts.Profile.EncUnknownValue, skin.TitleCenter);
+                GUI.contentColor = prevContent;
+            }
+
+            // ‹ › walk the current tab.
+            if (entries.Count > 1)
+            {
+                if (EncArrow(skin, new Rect(rect.x + 12f, centre.y - 24f, 48f, 48f), true))
+                {
+                    index = EncStep(entries, index, -1);
+                }
+
+                if (EncArrow(skin, new Rect(rect.xMax - 60f, centre.y - 24f, 48f, 48f), false))
+                {
+                    index = EncStep(entries, index, 1);
+                }
+            }
+
+            return index;
+        }
+
+        /// <summary>How strong the aura is per rarity: barely there for Comum and Raro, a little more for the high tiers.</summary>
+        private static float EncAura(string rarityId)
+        {
+            switch (rarityId)
+            {
+                case "common": return 0.035f;
+                case "rare": return 0.05f;
+                case "epic": return 0.09f;
+                case "legendary": return 0.12f;
+                case "mythic": return 0.14f;
+                default: return 0.04f;
+            }
+        }
+
+        /// <summary>A round arrow button; the chevron icon points right and is mirrored for "previous". Dimmed when it cannot be used.</summary>
+        private static bool EncArrow(UiSkin skin, Rect r, bool left, bool usable = true)
+        {
+            var wasEnabled = GUI.enabled;
+            GUI.enabled = wasEnabled && usable;
+            var live = GUI.enabled;
+            var hovered = live && r.Contains(Event.current.mousePosition);
+            var clicked = GUI.Button(r, GUIContent.none, GUIStyle.none);
+            var alpha = live ? 1f : 0.35f;
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.04f, 0.09f, 0.15f, (hovered ? 0.95f : 0.75f) * alpha), 0, r.width / 2f);
+            var ring = hovered ? UiSkin.Accent : UiSkin.Border;
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(ring.r, ring.g, ring.b, alpha), 1.5f, r.width / 2f);
+            var tint = hovered ? UiSkin.Accent : new Color(1f, 1f, 1f, alpha);
+            var icon = ArtAssets.Icon(Icons.Chevron);
+            if (icon != null)
+            {
+                var prevColor = GUI.color;
+                GUI.color = tint;
+                var pad = r.width * 0.3f;
+                GUI.DrawTextureWithTexCoords(new Rect(r.x + pad, r.y + pad, r.width - pad * 2f, r.height - pad * 2f), icon,
+                    left ? new Rect(1f, 0f, -1f, 1f) : new Rect(0f, 0f, 1f, 1f), true);
+                GUI.color = prevColor;
+            }
+            else
+            {
+                var prevContent = GUI.contentColor;
+                GUI.contentColor = tint;
+                GUI.Label(r, left ? GameTexts.Profile.EncPrevGlyph : GameTexts.Profile.EncNextGlyph, skin.TitleCenter);
+                GUI.contentColor = prevContent;
+            }
+
+            GUI.enabled = wasEnabled;
+            return clicked && live;
+        }
+
+        /// <summary>
+        /// Name, rarity seal and map, then the numbers the service reports: catches, the record with its size category,
+        /// the species' size range, the bite share, the discovery date and the base attributes as bars.
+        /// </summary>
+        private void DrawEncInfo(UiSkin skin, Rect rect, EncyclopediaEntryView e)
+        {
+            var x = rect.x;
+            var w = rect.width;
+            var y = rect.y;
+            var found = e.Discovered;
+            var unknown = GameTexts.Profile.EncUnknownValue;
+
+            GUI.Label(new Rect(x, y, w, 34f), FishCard.Fit(found ? e.Name ?? string.Empty : GameTexts.Profile.Undiscovered, skin.TitleCenter, w), skin.TitleCenter);
+            y += 36f;
+
+            var seal = (e.RarityName ?? string.Empty).ToUpperInvariant();
+            var sealW = seal.Length > 0 ? Mathf.Min(skin.PillWidth(seal, true), w * 0.5f) : 0f;
+            var mapText = e.MapName == null ? string.Empty : found ? e.MapName : GameTexts.Profile.EncLivesIn(e.MapName);
+            var mapW = Mathf.Max(0f, Mathf.Min(skin.SmallMuted.CalcSize(new GUIContent(mapText)).x + 4f, w - sealW - 10f));
+            var lineX = x + (w - (sealW + 10f + mapW)) / 2f;
+            if (sealW > 0)
+            {
+                skin.RarityPill(new Rect(lineX, y, sealW, 22f), e.RarityId, seal, true);
+            }
+
+            GUI.Label(new Rect(lineX + sealW + 10f, y + 1f, mapW, 20f), FishCard.Fit(mapText, skin.SmallMuted, mapW), skin.SmallMuted);
+            y += 30f;
+            if (!found && e.MapName != null)
+            {
+                GUI.Label(new Rect(x, y, w, 20f), FishCard.Fit(GameTexts.Profile.EncHint(e.MapName), skin.SmallMutedCenter, w), skin.SmallMutedCenter);
+                y += 24f;
+            }
+
+            // Five lines and four bars share the room left, with the bars' title.
+            var rowH = Mathf.Clamp((rect.yMax - y - 30f) / 9.2f, 22f, 32f);
+            y = EncRow(skin, x, y, w, rowH, GameTexts.Profile.EncCaught, found ? Format.Number(e.TimesCaught) : unknown, null);
+            var largest = !found ? unknown
+                : e.LargestSizeCategoryName == null ? Format.SizeCm(e.LargestCm)
+                : GameTexts.Profile.EncLargestLine(Format.SizeCm(e.LargestCm), e.LargestSizeCategoryName);
+            y = EncRow(skin, x, y, w, rowH, GameTexts.Profile.EncLargest, largest, found && e.LargestSizeCategoryId != null ? UiSkin.SizeColor(e.LargestSizeCategoryId) : (Color?)null);
+            y = EncRow(skin, x, y, w, rowH, GameTexts.Profile.EncSizeRange, found ? GameTexts.Profile.EncRange(Format.SizeCm(e.SpeciesMinCm), Format.SizeCm(e.SpeciesMaxCm)) : unknown, null);
+            y = EncRow(skin, x, y, w, rowH, GameTexts.Profile.EncBite, found ? Format.Percent(e.BiteShare, e.BiteShare < 0.01 ? 1 : 0) : unknown, null);
+            var date = !found ? unknown
+                : e.FirstCaughtAtMs > 0 ? Format.Date(DateTimeOffset.FromUnixTimeMilliseconds(e.FirstCaughtAtMs).LocalDateTime)
+                : GameTexts.Profile.None;
+            y = EncRow(skin, x, y, w, rowH, GameTexts.Profile.FirstCaught, date, null);
+
+            // Base attributes as bars on the scale of the whole catalog (the service gives both).
+            y += 4f;
+            var noteW = Mathf.Min(w * 0.5f, skin.SmallMutedRightLine.CalcSize(new GUIContent(GameTexts.Profile.EncStatsNote)).x + 4f);
+            GUI.Label(new Rect(x, y, w - noteW - 8f, 24f), FishCard.Fit(GameTexts.Profile.EncStats, skin.BodyBold, w - noteW - 8f), skin.BodyBold);
+            GUI.Label(new Rect(x + w - noteW, y + 3f, noteW, 20f), FishCard.Fit(GameTexts.Profile.EncStatsNote, skin.SmallMutedRightLine, noteW), skin.SmallMutedRightLine);
+            y += 26f;
+
+            var stats = found ? e.BaseStats : null;
+            var max = _profile.EncyclopediaStatsMax;
+            var rows = new[]
+            {
+                (GameTexts.Aquarium.Hp, stats?.Hp ?? 0d, max?.Hp ?? 0d),
+                (GameTexts.Aquarium.Attack, stats?.Attack ?? 0d, max?.Attack ?? 0d),
+                (GameTexts.Aquarium.Defense, stats?.Defense ?? 0d, max?.Defense ?? 0d),
+                (GameTexts.Aquarium.Speed, stats?.Speed ?? 0d, max?.Speed ?? 0d),
+            };
+            var labelW = Mathf.Min(110f, w * 0.34f);
+            const float valueW = 52f;
+            var barColor = UiSkin.RarityColor(e.RarityId);
+            foreach (var (label, value, scale) in rows)
+            {
+                if (y + 22f > rect.yMax)
+                {
+                    break;
+                }
+
+                var ty = y + (rowH - 22f) / 2f;
+                GUI.Label(new Rect(x, ty, labelW, 22f), FishCard.Fit(label, skin.SmallMuted, labelW), skin.SmallMuted);
+                skin.Bar(new Rect(x + labelW + 6f, ty + 7f, w - labelW - valueW - 12f, 8f), stats != null && scale > 0 ? (float)(value / scale) : 0f, barColor);
+                GUI.Label(new Rect(x + w - valueW, ty, valueW, 22f), stats != null ? Format.Decimal(value, 0) : unknown, RightBold(skin));
+                y += rowH;
+            }
+        }
+
+        private static float EncRow(UiSkin skin, float x, float y, float w, float h, string label, string value, Color? color)
+        {
+            var ty = y + (h - 22f) / 2f - 2f;
+            var lw = Mathf.Min(skin.SmallMuted.CalcSize(new GUIContent(label)).x + 12f, w * 0.55f);
+            GUI.Label(new Rect(x, ty, lw, 22f), FishCard.Fit(label, skin.SmallMuted, lw), skin.SmallMuted);
+            var prevContent = GUI.contentColor;
+            if (color.HasValue)
+            {
+                GUI.contentColor = color.Value;
+            }
+
+            GUI.Label(new Rect(x + lw, ty, w - lw, 22f), FishCard.Fit(value, skin.SmallBold, w - lw), RightBold(skin));
+            GUI.contentColor = prevContent;
+            skin.Divider(new Rect(x, y + h - 2f, w, 1f));
+            return y + h;
         }
 
         private void DrawRecords(UiSkin skin, Rect area)

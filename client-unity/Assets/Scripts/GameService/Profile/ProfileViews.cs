@@ -87,6 +87,22 @@ namespace FishingIdle.GameService.Profile
         public double SpeciesMaxCm { get; internal set; }
         public long TimesCaught { get; internal set; }
         public long FirstCaughtAtMs { get; internal set; }
+
+        /// <summary>Smallest size of the species; with <see cref="SpeciesMaxCm"/>, its size range. Once discovered.</summary>
+        public double SpeciesMinCm { get; internal set; }
+
+        /// <summary>
+        /// Size category of the personal record, read back from its size (the save keeps only the size).
+        /// On a boundary that rounding makes ambiguous, the lower category. Null before discovery.
+        /// </summary>
+        public string LargestSizeCategoryId { get; internal set; }
+        public string LargestSizeCategoryName { get; internal set; }
+
+        /// <summary>The record's category is a special one (Excepcional, Perfeição): the album card gets its gleam.</summary>
+        public bool LargestIsSpecial { get; internal set; }
+
+        /// <summary>The species' attributes at level 1 and middle size (FishRules.Stats). Null before discovery.</summary>
+        public FishStats BaseStats { get; internal set; }
     }
 
     public sealed class RecordsView
@@ -142,6 +158,9 @@ namespace FishingIdle.GameService.Profile
         public RodItemView EquippedRod { get; internal set; }
         public List<RodItemView> Inventory { get; } = new List<RodItemView>();
         public List<EncyclopediaEntryView> Encyclopedia { get; } = new List<EncyclopediaEntryView>();
+
+        /// <summary>The highest of each base attribute (level 1, middle size) in the whole catalog: the scale of the Encyclopedia bars.</summary>
+        public FishStats EncyclopediaStatsMax { get; internal set; }
         public RecordsView Records { get; internal set; }
     }
 }

@@ -38,6 +38,57 @@ public sealed class EncyclopediaByMapTests
         Assert.All(entries.Where(e => !e.Discovered), e => Assert.Null(e.Name));
         Assert.All(entries.Where(e => e.Discovered), e => Assert.InRange(e.BiteShare, 0.0001, 1.0));
     }
+
+    [Fact]
+    public void Discovered_species_bring_size_range_record_category_and_base_stats()
+    {
+        var (game, clock, _) = TestSupport.NewGame();
+        game.Fishing.StartFishing();
+        TestSupport.PlayFor(game, clock, 600, stepSeconds: 30);
+
+        var profile = game.Profile.GetProfile();
+        var max = profile.EncyclopediaStatsMax;
+        Assert.NotNull(max);
+        Assert.True(max.Hp > 0 && max.Attack > 0 && max.Speed > 0);
+
+        var found = profile.Encyclopedia.Where(e => e.Discovered).ToList();
+        Assert.NotEmpty(found);
+        Assert.All(found, e =>
+        {
+            Assert.True(e.SpeciesMinCm > 0 && e.SpeciesMinCm < e.SpeciesMaxCm);
+            Assert.InRange(e.LargestCm, e.SpeciesMinCm - 0.1, e.SpeciesMaxCm + 0.1);
+            Assert.NotNull(e.LargestSizeCategoryId);
+            Assert.NotNull(e.LargestSizeCategoryName);
+            Assert.NotNull(e.BaseStats);
+            Assert.InRange(e.BaseStats.Hp, 0.0001, max.Hp);
+            Assert.InRange(e.BaseStats.Speed, 0.0001, max.Speed);
+        });
+        Assert.All(profile.Encyclopedia.Where(e => !e.Discovered), e =>
+        {
+            Assert.Null(e.BaseStats);
+            Assert.Null(e.LargestSizeCategoryId);
+            Assert.False(e.LargestIsSpecial);
+        });
+    }
+
+    [Fact]
+    public void The_record_category_is_read_back_from_the_size()
+    {
+        var (game, _, _) = TestSupport.NewGame();
+        var records = game.Session.Save.SpeciesRecords;
+
+        // Tambaqui: 40–110 cm, 70 cm is in the Adulto band. Pacu: 30–80 cm, 80 cm only the Perfeição band reaches.
+        records["tambaqui"] = new FishingIdle.GameService.Persistence.SpeciesRecord { LargestMm = 700, TimesCaught = 1, FirstCaughtAtMs = TestSupport.StartMs };
+        records["pacu"] = new FishingIdle.GameService.Persistence.SpeciesRecord { LargestMm = 800, TimesCaught = 1, FirstCaughtAtMs = TestSupport.StartMs };
+        var entries = game.Profile.GetProfile().Encyclopedia;
+
+        var tambaqui = entries.Single(e => e.SpeciesId == "tambaqui");
+        var pacu = entries.Single(e => e.SpeciesId == "pacu");
+        Assert.Equal("adult", tambaqui.LargestSizeCategoryId);
+        Assert.False(tambaqui.LargestIsSpecial);
+        Assert.Equal("perfect", pacu.LargestSizeCategoryId);
+        Assert.True(pacu.LargestIsSpecial);
+    }
 }
 
 /// <summary>A-124: big amounts in short form.</summary>

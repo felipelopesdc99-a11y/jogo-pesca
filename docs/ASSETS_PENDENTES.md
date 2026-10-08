@@ -274,6 +274,46 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > direita, casco branco com detalhe turquesa (#25C4C1), pequena esteira de espuma atrás. Estilo "Lago Dourado —
 > Clean Premium": limpo, arredondado, sem texto. Arquivo: ui_map_boat.png
 
+## Enciclopédia como álbum de cartas (A-143, decisão do proprietário em 08/10/2026)
+
+A tela já funciona com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/ProfileWindow.cs`). Arquivos
+esperados, em `Resources/Arte/UI/` (PNG, fundo transparente):
+- `ui_enc_card_frame.png` — 256×384, moldura fina de carta em branco (o jogo pinta na cor da raridade), cantos
+  arredondados, miolo transparente; esticável pelas bordas (9-slice, bordas de 24 px).
+- `ui_enc_card_back.png` — 256×384, verso da carta para espécie não descoberta: azul-noite com um padrão discreto de
+  ondas e um anzol pequeno no centro, sem texto.
+- `ui_enc_binder_tab.png` — 256×64, aba de fichário em branco (o jogo pinta), canto direito reto para encostar na
+  página; 9-slice, bordas de 16 px.
+- `ui_enc_album_page.png` — 512×512, página de álbum escura com textura de papel muito leve; 9-slice, bordas de 32 px.
+- `ui_enc_pedestal.png` — 480×96, pedestal de pedra/coral visto de frente, sem peixe.
+- `ui_enc_aura.png` — 512×512, brilho radial branco e suave (o jogo pinta na cor da raridade).
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Moldura fina de carta colecionável para jogo mobile, 256×384 em PNG com fundo transparente: só a borda, branca,
+> 4 px, cantos arredondados (raio 18 px), com um filete interno fino a 6 px da borda; o miolo totalmente
+> transparente, sem texto, sem ornamentos grandes. Estilo "Lago Dourado — Clean Premium": limpo e elegante.
+> Arquivo: ui_enc_card_frame.png
+
+> Verso de carta colecionável para jogo de pesca mobile, 256×384 em PNG, cantos arredondados (raio 18 px) e fundo
+> transparente fora da carta: azul-noite (#0A1422 a #11223A), padrão discreto de ondas finas em azul (#274A70) e um
+> pequeno anzol estilizado no centro, sem texto, sem brilho forte. Estilo "Lago Dourado — Clean Premium".
+> Arquivo: ui_enc_card_back.png
+
+> Aba de fichário para interface de jogo mobile, 256×64 em PNG com fundo transparente: forma de aba branca com os
+> cantos da esquerda arredondados e o lado direito reto, sem texto, sem sombra. Arquivo: ui_enc_binder_tab.png
+
+> Página de álbum para interface de jogo mobile, 512×512 em PNG: painel azul-marinho escuro (#11223A) com textura
+> de papel muito leve, cantos arredondados (raio 16 px), borda fina (#274A70), sem texto. Estilo "Lago Dourado —
+> Clean Premium". Arquivo: ui_enc_album_page.png
+
+> Pedestal para exibir um peixe num jogo mobile, 480×96 em PNG com fundo transparente: disco baixo de pedra
+> azulada com pequenos corais nas bordas, visto de frente e levemente de cima, luz suave vinda de cima, sem peixe
+> e sem texto. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, sem ruído. Arquivo: ui_enc_pedestal.png
+
+> Brilho radial suave para jogo mobile, 512×512 em PNG com fundo transparente: branco no centro sumindo até
+> transparente nas bordas, círculo perfeito, sem raios, sem texto. Arquivo: ui_enc_aura.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

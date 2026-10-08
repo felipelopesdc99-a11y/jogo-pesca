@@ -803,6 +803,33 @@ namespace FishingIdle.Texts
             public static string AllMaps(int found, int total) => "Todos · " + found + "/" + total;
             public static string MapProgress(string map, int found, int total) => map + " · " + found + "/" + total;
             public static string BiteShare(string percent) => "morde " + percent + " das vezes";
+
+            // The Encyclopedia as a card album (A-143): binder tabs, pages of cards and the species sheet.
+            public const string EncAllTab = "Todas";
+            public const string EncAllTitle = "Todas as espécies";
+            public static string EncTabProgress(int found, int total) => found + "/" + total;
+            public static string EncPage(int page, int pages) => "Página " + page + " de " + pages;
+            public static string EncNumber(int number) => "Nº " + number;
+            public static string EncRecordShort(string size) => "Recorde " + size;
+            public static string EncCaughtShort(string count) => "Pescou " + count;
+            public const string EncNotYet = "Ainda não pescada";
+            public const string EncBack = "Voltar";
+            public const string EncPrevGlyph = "‹";
+            public const string EncNextGlyph = "›";
+            public const string EncSheet = "Ficha da espécie";
+            public const string EncCaught = "Quantas pescou";
+            public const string EncLargest = "Maior exemplar";
+            public const string EncSizeRange = "Tamanho da espécie";
+            public const string EncBite = "Chance de mordida";
+            public const string EncStats = "Atributos base";
+            public const string EncStatsNote = "Nv. 1 · tamanho médio";
+            public const string EncUnknownValue = "?";
+            public const string EncEmpty = "Nenhuma espécie nesta aba.";
+            public static string EncHint(string map) => "Pesque em " + map + " para descobrir esta espécie.";
+            public static string EncLivesIn(string map) => "Vive em " + map;
+            public static string EncPosition(int index, int total) => index + " de " + total;
+            public static string EncRange(string min, string max) => min + " a " + max;
+            public static string EncLargestLine(string size, string category) => size + " · " + category;
             public const string LastBattle = "Última batalha";
             public const string Space = "Espaço";
             public const string Expedition = "Expedição";

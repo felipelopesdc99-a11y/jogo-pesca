@@ -1629,3 +1629,35 @@ Arte do proprietário (08/10/2026). Botões do menu, barra, logo "Fishing Idle",
 desenhos dele. Detalhes decididos na implementação: no botão ativo (turquesa claro) texto e ícone ficam escuros para
 ler bem; a barra passa 10 px das laterais da tela para as pontas arredondadas não ficarem sob o sino e as Opções; a
 moeda pintada nova aparece em todo o jogo (preços, Mercado, Expedição), não só no cartão.
+
+### A-143 · Enciclopédia como álbum de cartas
+
+Decisão do proprietário (08/10/2026): "vai ter o álbum de cartas sim, sendo que vai ser a enciclopédia". A aba
+Enciclopédia do Perfil virou um álbum, a partir do Exemplo 2 (álbum de cartas) para as páginas e do Exemplo 3
+(ficha de herói) para os detalhes. As "cartas" são só a forma de mostrar as espécies da Enciclopédia que já existe:
+não há pacotes, raridade de carta, cartas repetidas nem carta como item.
+
+- **Abas de fichário** na lateral esquerda: "Todas" e uma por mapa, cada uma com "descobertas/total" (em dourado
+  quando o mapa está completo). Substituem os botões por mapa da A-126.
+- **Página de cartas**: título da aba, "x de y espécies" e uma barra de progresso; as cartas numa grade que se ajusta
+  ao espaço (8 na janela grande, cerca de 6 numa janela baixa); setas e "Página n de m" embaixo; a rodinha do mouse
+  também vira a página. Bolsos vazios tracejados completam a última página.
+- **Carta descoberta**: moldura fina na cor da raridade (mais apagada em Comum e Raro), selo da raridade, "Nº" da
+  espécie no catálogo, a arte do peixe, nome, mapa, "Recorde" (maior tamanho) e "Pescou" (quantas). Se o recorde é
+  de uma categoria especial (Excepcional, Perfeição), a carta leva o selo dessa categoria sobre a arte e uma luz
+  dourada discreta passa por ela de vez em quando.
+- **Carta não descoberta**: verso escuro com moldura tracejada, silhueta do peixe com "?", "???", a raridade e o mapa
+  (onde procurar) e "Ainda não pescada".
+- **Ficha** (clique numa carta; ao lado da página na janela grande, por cima dela com "Voltar" numa janela baixa, e
+  Esc volta para a página): o peixe grande num pedestal com aura da cor da raridade (bem fraca em Comum e Raro), a
+  posição na aba ("3 de 10"), setas ‹ › (e as setas do teclado) para a anterior e a próxima da aba, com a página
+  acompanhando; nome, selo de raridade e mapa; quantas pescou, maior exemplar com a categoria de tamanho, tamanho da
+  espécie (mínimo a máximo), chance de mordida no mapa, data da descoberta e os atributos base em barras. Não tem
+  Alimentar nem Vender.
+- **Atributos base**: os do peixe no Nv. 1 com o tamanho do meio da faixa da espécie (a conta de atributos que o
+  jogo já usa); as barras vão até o maior valor de todo o catálogo. A categoria do recorde é deduzida do tamanho (o
+  save guarda só o tamanho); num limite que o arredondamento deixa ambíguo, vale a categoria menor.
+- Antes de descobrir, a ficha mostra "?" nos números, a raridade, "Vive em <mapa>" e "Pesque em <mapa> para
+  descobrir esta espécie."
+- Moldura da carta, verso, aba do fichário, página, pedestal e aura são desenhos provisórios
+  (`docs/ASSETS_PENDENTES.md`).
