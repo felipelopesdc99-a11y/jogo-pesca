@@ -3966,6 +3966,16 @@
           "dependencies": [],
           "updated_at": "2026-10-07T23:59:00Z",
           "completion_notes": "Textos: concordância (vara/barco/isca/anúncio), plurais, Moedas/Conchas/Dólares com maiúscula, números com Format.Number, termos em inglês trocados (Tier → Categoria, top → primeiros, Escapes → Fugas). Telas: batalha da Arena e comemorações corrigidas fora de 1080p (escala da tela virtual); cadeado da Loja não cobre mais o preço; selo Ganhando pelo próprio card; linha de chances do HUD sem invadir o cronômetro; avisos não cobrem mais o Fechar das janelas; balões de valor exato por cima de tudo; navegação travada com diálogo aberto; Inventário com rolagem e botões de vara que cabem; Cardume, ficha do Aquário, cards de Expedição e Bem-vindo de volta cabem em telas baixas; ✕ da busca funciona; painel de Testes com chips que cabem. Bugs: avatar padrão salvo como mostrado, peixe aberto + Ctrl, aviso certo ao dar peixe com a Caixa cheia, nome só muda se o avatar for válido. A-131. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T34",
+          "title": "Peixe precisa de cerca de 100 Comuns para o Nv. 10",
+          "subsystem": "config",
+          "description": "Pedido do proprietário (07/10/2026): exigir mais peixes para levar um peixe ao Nv. 10, no mínimo uns 100 Comuns. Escolha dele: contar pelos Comuns do mapa 1 (Lago Sereno), mesma tabela para todos os peixes.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T01:55:00Z",
+          "completion_notes": "progression.json → fish_level.xp_table recalibrada: base 35 × nível^1,5 (35, 100, 180, 280, 390, 515, 650, 790, 945), total 3.885 XP (antes 995), cerca de 100 Comuns do Lago Sereno (média de 39 XP). Peixes que já subiram mantêm o nível. Teste do peixe no nível máximo usa 6 h de capturas. A-132. Não compilado nem aberto no Unity."
         }
       ]
     }

@@ -90,5 +90,5 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
   Barcos de +3% a +15%, iscas de +5% a +15% por 100 tentativas, Vara 1 de +2% a +12%.
 - O XP do Pescador do nível 1 ao 100 soma **711.000 XP**, contra uma meta de cerca de 90 dias. É o
   valor com maior chance de precisar de recalibragem quando houver dados reais de jogo.
-- O XP do peixe do nível 1 ao 10 soma **995 XP**.
+- O XP do peixe do nível 1 ao 10 soma **3.885 XP**: cerca de 100 peixes Comuns do Lago Sereno (07/10/2026, A-132).
 - A Vara 1 custa **2.500** Moedas para comprar e **138.050** Moedas para ir do nível interno 1 ao 10.

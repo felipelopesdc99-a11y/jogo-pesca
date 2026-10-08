@@ -162,7 +162,7 @@ public sealed class AquariumTests
     [Fact]
     public void A_fish_cannot_eat_itself_and_a_max_level_fish_cannot_eat()
     {
-        var (game, _, _) = GameWithCatches(3600);
+        var (game, _, _) = GameWithCatches(6 * 3600);
         var target = game.Aquarium.KeepCatches(BoxIds(game, 1)).Value.Kept[0];
 
         var self = game.Aquarium.PreviewFeed(target.FishId, null, new[] { target.FishId });

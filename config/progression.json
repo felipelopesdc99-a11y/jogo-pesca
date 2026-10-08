@@ -431,46 +431,46 @@
     "player_distributed_stat_points": false,
     "xp_curve_generator": {
       "formula": "arredondar(base × nível^expoente) para o múltiplo de 5 mais próximo",
-      "base": 9.0,
+      "base": 35.0,
       "exponent": 1.5
     },
-    "total_xp_level_1_to_10": 995,
+    "total_xp_level_1_to_10": 3885,
     "xp_table": [
       {
         "level": 1,
-        "xp_to_next_level": 10
+        "xp_to_next_level": 35
       },
       {
         "level": 2,
-        "xp_to_next_level": 25
-      },
-      {
-        "level": 3,
-        "xp_to_next_level": 45
-      },
-      {
-        "level": 4,
-        "xp_to_next_level": 70
-      },
-      {
-        "level": 5,
         "xp_to_next_level": 100
       },
       {
+        "level": 3,
+        "xp_to_next_level": 180
+      },
+      {
+        "level": 4,
+        "xp_to_next_level": 280
+      },
+      {
+        "level": 5,
+        "xp_to_next_level": 390
+      },
+      {
         "level": 6,
-        "xp_to_next_level": 130
+        "xp_to_next_level": 515
       },
       {
         "level": 7,
-        "xp_to_next_level": 165
+        "xp_to_next_level": 650
       },
       {
         "level": 8,
-        "xp_to_next_level": 205
+        "xp_to_next_level": 790
       },
       {
         "level": 9,
-        "xp_to_next_level": 245
+        "xp_to_next_level": 945
       }
     ]
   },

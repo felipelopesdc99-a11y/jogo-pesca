@@ -1544,3 +1544,10 @@ Pedido do proprietário (07/10/2026). Decisões visíveis tomadas na revisão:
 - O resultado da batalha na Arena é uma faixa abaixo das formações, sem cobrir os peixes.
 - Um card selecionado mantém o selo de status (ex.: "Ganhando" no leilão), que desce para cima da arte.
 - No editor de nome, a regra de tamanho vem do config (`player_identity`).
+
+### A-132 · Evoluir um peixe custa cerca de 100 Comuns
+
+Pedido do proprietário (07/10/2026). Do Nv. 1 ao 10, um peixe precisa de 3.885 XP (antes 995): cerca de 100 peixes
+Comuns do Lago Sereno, que valem em média 39 XP como alimento. A tabela é a mesma para todos os peixes (escolha do
+proprietário), então com Comuns de mapas mais avançados são precisos menos peixes: cerca de 18 no Pantanal Dourado e
+3 no Abismo Atlântico. Peixes que já tinham subido de nível mantêm o nível.
