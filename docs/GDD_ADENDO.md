@@ -1557,3 +1557,12 @@ mantêm o nível.
 
 Pedido do proprietário (07/10/2026). Os três adversários aparecem da esquerda para a direita do mais fácil (pior
 posição no ranking, número maior) para o mais forte (melhor posição). A ordem se mantém se as posições mudarem.
+
+### A-134 · Arena: Duelo, cabeçalho de jogador e tela VS
+
+Escolha do proprietário entre 3 exemplos (07/10/2026). Cabeçalho: avatar e nome, a posição numa medalha ("#198 de
+201"), Energia em segmentos com o tempo do próximo ponto e Honra. Aba Adversários: os 3 adversários em pedestais que
+sobem da esquerda (pior posição) para a direita (melhor), mostrando só avatar, nome e posição; o escolhido aparece
+com o Cardume dele de frente para o seu (FRENTE/TRÁS, espelhado, nunca a Força) e um "VS" no meio; o botão diz quanto
+de Energia o ataque gasta. Antes do replay, uma tela "VS" de cerca de 1,2 s com os dois lados; clique, Espaço ou Esc
+pulam. Adversários usam o retrato padrão enquanto não houver arte de avatar para eles.

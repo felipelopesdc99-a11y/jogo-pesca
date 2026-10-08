@@ -568,5 +568,88 @@ namespace FishingIdle.Game.UI
 
         /// <summary><see cref="SmallGold"/> on one line, never wrapping.</summary>
         public GUIStyle SmallGoldLine => _smallGoldLine ?? (_smallGoldLine = new GUIStyle(SmallGold) { wordWrap = false, clipping = TextClipping.Clip });
+
+        // Arena duel and VS intro styles. Made on first use.
+        private GUIStyle _smallGoldCenter, _tinyMutedCenter, _numberBig, _titleCenter, _vsMark, _vsDisplay, _medalText;
+
+        /// <summary><see cref="SmallGold"/> centred on one line.</summary>
+        public GUIStyle SmallGoldCenter => _smallGoldCenter ?? (_smallGoldCenter = new GUIStyle(SmallGold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
+
+        /// <summary>A 10 px bold muted letter, centred (vertical row tags in short slots).</summary>
+        public GUIStyle TinyMutedCenter => _tinyMutedCenter ?? (_tinyMutedCenter = new GUIStyle(SmallMutedCenter) { fontSize = 10, font = BodyBoldFont, wordWrap = false });
+
+        /// <summary>A large gold number on one line (the Arena's Honor).</summary>
+        public GUIStyle NumberBig => _numberBig ?? (_numberBig = new GUIStyle(Number) { fontSize = 30, wordWrap = false });
+
+        /// <summary><see cref="Title"/> centred on one line.</summary>
+        public GUIStyle TitleCenter => _titleCenter ?? (_titleCenter = new GUIStyle(Title) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
+
+        /// <summary>The gold "VS" between the two formations.</summary>
+        public GUIStyle VsMark => _vsMark ?? (_vsMark = GoldDisplay(46));
+
+        /// <summary>The big gold "VS" of the battle intro.</summary>
+        public GUIStyle VsDisplay => _vsDisplay ?? (_vsDisplay = GoldDisplay(96));
+
+        /// <summary>Dark bold text centred on a gold medal.</summary>
+        public GUIStyle MedalText
+        {
+            get
+            {
+                if (_medalText == null)
+                {
+                    _medalText = new GUIStyle(CenterBold) { wordWrap = false, clipping = TextClipping.Overflow };
+                    _medalText.normal.textColor = new Color(0.23f, 0.15f, 0.02f);
+                }
+
+                return _medalText;
+            }
+        }
+
+        private GUIStyle GoldDisplay(int size)
+        {
+            var style = new GUIStyle(Display) { fontSize = size, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
+            style.normal.textColor = Gold;
+            return style;
+        }
+
+        private Texture2D _diagonal;
+
+        /// <summary>
+        /// A square mask for a "/" split: opaque below the diagonal, transparent above it, with a soft edge.
+        /// Stretched over a strip and tinted, it draws the slanted border of the Arena's VS screen.
+        /// </summary>
+        public Texture2D Diagonal
+        {
+            get
+            {
+                if (_diagonal != null)
+                {
+                    return _diagonal;
+                }
+
+                const int size = 128;
+                var tex = new Texture2D(size, size, TextureFormat.RGBA32, false)
+                {
+                    wrapMode = TextureWrapMode.Clamp,
+                    filterMode = FilterMode.Bilinear,
+                    hideFlags = HideFlags.HideAndDontSave,
+                };
+                var pixels = new Color32[size * size];
+                for (var y = 0; y < size; y++)
+                {
+                    for (var x = 0; x < size; x++)
+                    {
+                        // Row 0 is drawn at the bottom: the opaque part is the lower-right triangle.
+                        var a = Mathf.Clamp01((x - y) / 1.5f + 0.5f);
+                        pixels[y * size + x] = new Color32(255, 255, 255, (byte)Mathf.RoundToInt(a * 255f));
+                    }
+                }
+
+                tex.SetPixels32(pixels);
+                tex.Apply();
+                _diagonal = tex;
+                return _diagonal;
+            }
+        }
     }
 }

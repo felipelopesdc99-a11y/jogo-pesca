@@ -301,6 +301,12 @@ namespace FishingIdle.Texts
             public static string DefenseLostHonor(string attacker, int rank, string honor) => attacker + " venceu você na Arena. Sua posição agora é #" + rank + ". −" + honor + " de Honra.";
             public static string Versus(string opponent) => "Você × " + opponent;
             public static string Clock(string time) => "Tempo: " + time;
+
+            // Duel layout of the Adversários tab and the VS intro before the replay.
+            public static string OfTotal(int total) => "de " + total;
+            public static string AttackCost(int cost) => Attack + " · " + cost + " " + Energy;
+            public const string VsMark = "VS";
+            public const string IntroSkip = "Clique ou aperte Espaço para pular";
         }
 
         // ------------------------------------------------------------------ Tutorial (GDD section 40)

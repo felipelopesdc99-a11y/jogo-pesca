@@ -3986,6 +3986,16 @@
           "dependencies": [],
           "updated_at": "2026-10-08T02:20:00Z",
           "completion_notes": "LocalArenaService: os 3 adversários ficam ordenados da pior posição (mais fácil, à esquerda) para a melhor (mais forte, à direita), ao sortear e sempre que as posições mudam. Testes atualizados. A-133. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T36",
+          "title": "Arena com cara de jogo: Duelo, cabeçalho de jogador e tela VS",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (07/10/2026): Arena com cara de jogo. Ele viu 3 exemplos e escolheu o Duelo e a tela VS, com os pedestais do Coliseu mostrando só a posição (sem Fácil/Difícil), e o cabeçalho de jogador.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T02:40:00Z",
+          "completion_notes": "ArenaWindow: cabeçalho com avatar, nome, medalha da posição (de N), Energia em segmentos com o tempo do próximo ponto e Honra. Aba Adversários: 3 pedestais que sobem da esquerda para a direita (avatar, nome, posição), o Cardume do jogador e o do adversário escolhido frente a frente (FRENTE/TRÁS, espelhado, sem Força), VS ao centro, botão Atacar · N Energia. Tela VS de ~1,2 s antes do replay, pulável com clique, Espaço ou Esc. Bots usam o retrato padrão até existir arte. A-134. Não compilado nem aberto no Unity."
         }
       ]
     }
