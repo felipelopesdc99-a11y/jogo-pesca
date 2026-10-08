@@ -101,7 +101,7 @@ def main(wanted):
         catalog['species'].append(od(id=s['id'], display_name=s['display_name'], primary_map_id=s['primary_map_id'], rarity=s['rarity'],
                                      size_cm=od(min=s['size_cm']['min'], max=s['size_cm']['max']),
                                      base_stats=od(hp=s['base_stats']['hp'], attack=s['base_stats']['attack'], defense=s['base_stats']['defense'], speed=s['base_stats']['speed']),
-                                     base_sale_value_coins=s['base_sale_value_coins'], base_feed_xp=s['base_feed_xp'], base_fisher_xp=s['base_fisher_xp']))
+                                     base_sale_value_coins=s['base_sale_value_coins'], base_feed_xp=39  # A-132: same feed value for every species of a rarity (rarity multiplier on top), base_fisher_xp=s['base_fisher_xp']))
     catalog['maps_5_10_note'] = 'Mapas 5 em diante: espécies de docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md (números adaptados por tools/Progressao/adaptar_mapas_5_10.py).'
 
     # ---- mapas

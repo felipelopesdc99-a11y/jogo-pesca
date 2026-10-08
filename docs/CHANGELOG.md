@@ -7,7 +7,8 @@ raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
 ### Mudado
 
-- Evoluir um peixe até o Nv. 10 custa 3.885 XP (antes 995), cerca de 100 Comuns do Lago Sereno (A-132).
+- Evoluir um peixe até o Nv. 10 custa 3.885 XP (antes 995) e toda espécie vale a mesma base como alimento:
+  cerca de 100 Comuns de qualquer mapa, igual para todos os jogadores (A-132).
 
 ### Não verificado
 

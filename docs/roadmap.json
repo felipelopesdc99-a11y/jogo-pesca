@@ -3971,11 +3971,11 @@
           "id": "M22-T34",
           "title": "Peixe precisa de cerca de 100 Comuns para o Nv. 10",
           "subsystem": "config",
-          "description": "Pedido do proprietário (07/10/2026): exigir mais peixes para levar um peixe ao Nv. 10, no mínimo uns 100 Comuns. Escolha dele: contar pelos Comuns do mapa 1 (Lago Sereno), mesma tabela para todos os peixes.",
+          "description": "Pedido do proprietário (07/10/2026): exigir cerca de 100 Comuns para levar um peixe ao Nv. 10, com o mesmo padrão para todos os jogadores, em qualquer mapa (o jogo é PvP).",
           "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-08T01:55:00Z",
-          "completion_notes": "progression.json → fish_level.xp_table recalibrada: base 35 × nível^1,5 (35, 100, 180, 280, 390, 515, 650, 790, 945), total 3.885 XP (antes 995), cerca de 100 Comuns do Lago Sereno (média de 39 XP). Peixes que já subiram mantêm o nível. Teste do peixe no nível máximo usa 6 h de capturas. A-132. Não compilado nem aberto no Unity."
+          "updated_at": "2026-10-08T02:05:00Z",
+          "completion_notes": "progression.json → fish_level.xp_table: base 35 × nível^1,5 (35, 100, 180, 280, 390, 515, 650, 790, 945), total 3.885 XP (antes 995). fish_catalog.json: base_feed_xp = 39 em todas as espécies (só raridade e tamanho mudam o valor como alimento); aplicar_mapas.py fixa o mesmo valor. Cerca de 100 Comuns de qualquer mapa = Nv. 10. Peixes já evoluídos mantêm o nível. A-132. Não compilado nem aberto no Unity."
         }
       ]
     }
