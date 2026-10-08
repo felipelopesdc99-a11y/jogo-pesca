@@ -437,7 +437,11 @@ namespace FishingIdle.GameService.Arena
                 DrawOpponents();
                 // Saved right away, so reopening the game cannot redraw it (GDD section 28).
                 _session.Persist();
+                return;
             }
+
+            // Positions change (incoming attacks, other battles): keep the easiest-first order (A-133).
+            State.Opponents = State.Opponents.OrderByDescending(RankOf).ToList();
         }
 
         /// <summary>Three unique opponents from up to ~10% above the player's rank; near #1, the nearest valid ranks.</summary>
@@ -467,7 +471,8 @@ namespace FishingIdle.GameService.Arena
                 candidates.RemoveAt(i);
             }
 
-            State.Opponents = picked.OrderBy(RankOf).ToList();
+            // Easiest first: the lowest position (largest number) on the left, the strongest on the right (A-133).
+            State.Opponents = picked.OrderByDescending(RankOf).ToList();
         }
 
         private ServiceError AttackBlocker()

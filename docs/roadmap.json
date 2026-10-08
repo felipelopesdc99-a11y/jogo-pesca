@@ -3976,6 +3976,16 @@
           "dependencies": [],
           "updated_at": "2026-10-08T02:05:00Z",
           "completion_notes": "progression.json → fish_level.xp_table: base 35 × nível^1,5 (35, 100, 180, 280, 390, 515, 650, 790, 945), total 3.885 XP (antes 995). fish_catalog.json: base_feed_xp = 39 em todas as espécies (só raridade e tamanho mudam o valor como alimento); aplicar_mapas.py fixa o mesmo valor. Cerca de 100 Comuns de qualquer mapa = Nv. 10. Peixes já evoluídos mantêm o nível. A-132. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T35",
+          "title": "Arena: adversários do mais fácil ao mais forte",
+          "subsystem": "server",
+          "description": "Pedido do proprietário (07/10/2026, com print): a disposição dos adversários deve ir do nível menor para o maior.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T02:20:00Z",
+          "completion_notes": "LocalArenaService: os 3 adversários ficam ordenados da pior posição (mais fácil, à esquerda) para a melhor (mais forte, à direita), ao sortear e sempre que as posições mudam. Testes atualizados. A-133. Não compilado nem aberto no Unity."
         }
       ]
     }

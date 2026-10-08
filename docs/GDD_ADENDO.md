@@ -1552,3 +1552,8 @@ sem mudar com o mapa. Do Nv. 1 ao 10, um peixe precisa de 3.885 XP (antes 995). 
 mesma base (39 XP); só a raridade (Raro ×2, Épico ×3,5, Lendário ×6, Mítico ×10) e o tamanho mudam o valor. Assim,
 cerca de 100 Comuns levam qualquer peixe ao Nv. 10, pescados em qualquer mapa. Peixes que já tinham subido de nível
 mantêm o nível.
+
+### A-133 · Arena: adversários do mais fácil ao mais forte
+
+Pedido do proprietário (07/10/2026). Os três adversários aparecem da esquerda para a direita do mais fácil (pior
+posição no ranking, número maior) para o mais forte (melhor posição). A ordem se mantém se as posições mudarem.

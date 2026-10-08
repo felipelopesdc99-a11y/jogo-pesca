@@ -197,6 +197,16 @@ public sealed class ArenaTests
         var arena = game.Arena.GetArena();
 
         Assert.Equal(1, arena.Rank);
-        Assert.Equal(new[] { 2, 3, 4 }, arena.Opponents.Select(o => o.Rank));
+        Assert.Equal(new[] { 4, 3, 2 }, arena.Opponents.Select(o => o.Rank)); // easiest first (A-133)
+    }
+
+    [Fact]
+    public void Opponents_go_from_the_easiest_to_the_strongest()
+    {
+        var (game, _, _) = TestSupport.NewGame();
+
+        var ranks = game.Arena.GetArena().Opponents.Select(o => o.Rank).ToList();
+
+        Assert.Equal(ranks.OrderByDescending(r => r).ToList(), ranks);
     }
 }
