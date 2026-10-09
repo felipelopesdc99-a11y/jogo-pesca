@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-09T16:30:00Z",
+  "updated_at": "2026-10-09T17:10:00Z",
   "current_milestone": "M23",
   "statuses": [
     "TODO",
@@ -4217,9 +4217,10 @@
           "title": "Exemplos da ilha em 2D (3 visões)",
           "subsystem": "docs",
           "description": "3 exemplos desenhados da ilha: vista de cima, vista de lado e vista de lado em camadas, com casa, bancada, píer, recursos e a tela de fabricar a vara inicial.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-09T16:30:00Z"
+          "updated_at": "2026-10-09T17:10:00Z",
+          "completion_notes": "Página \"Ilha 2D: 3 Visões\" (fora do repositório, publicada para o proprietário): visões A (de cima), B (de lado, em corte) e C (de lado em camadas, como a cena de pesca de hoje), cada uma com 3 telas (começo da ilha, bancada fabricando a Vara Inicial, ilha mais tarde com casa e barco), prós e contras, arte nova, e a comparação de origem da arte: ChatGPT; gratuitos (Kenney e Ninja Adventure CC0; Kalponic pague quanto quiser; Sprout Lands Basic só não comercial); pagos (Sprout Lands Premium a partir de US$ 3,99; Mana Seed Character Base a partir de US$ 19,98; Village 2D Hand Painted US$ 19,99, só URP). Recomendação do agente de ideias: C com arte do ChatGPT (sem decidir pelo proprietário). Receitas, recursos e construções aparecem só como exemplo. Nada no código do jogo."
         },
         {
           "id": "M23-T02",
