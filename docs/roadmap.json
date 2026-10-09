@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-09T17:10:00Z",
+  "updated_at": "2026-10-09T18:30:00Z",
   "current_milestone": "M23",
   "statuses": [
     "TODO",
@@ -480,7 +480,7 @@
       "id": "OD-052",
       "task_id": "M23-T02",
       "title": "Visão da ilha 2D e origem da arte",
-      "detail": "A ilha pode ser vista de cima (como Stardew Valley), de lado (como Terraria) ou de lado em camadas (como a cena de pesca de hoje). A arte pode vir do ChatGPT ou de um pacote pronto (gratuito ou pago, explicado antes). Os exemplos do M23-T01 mostram as três visões.",
+      "detail": "Visão escolhida pelo proprietário em 09/10/2026: vista de cima (\"mas quero algo mais bonito\"). Em aberto: o estilo de arte (Hora Dourada, Ilha de Brinquedo ou Noite do Lago, página \"Ilha Vista de Cima: 3 Estilos\") e de onde vem a arte (ChatGPT, com pedidos de arte-conceito prontos no documento \"Pedidos de arte: Ilha vista de cima (conceito)\", ou pacote pronto).",
       "raised_at": "2026-10-09T16:30:00Z",
       "status": "OPEN"
     },
@@ -4226,12 +4226,12 @@
           "id": "M23-T02",
           "title": "Escolher a visão da ilha e a origem da arte",
           "subsystem": "docs",
-          "description": "Decisão do proprietário: visão (de cima, de lado ou de lado em camadas) e arte (ChatGPT ou pacote pronto; pago só com explicação antes).",
+          "description": "Visão: vista de cima (escolhida em 09/10/2026). Falta o estilo de arte (3 estilos desenhados) e a origem da arte (ChatGPT ou pacote pronto; pago só com explicação antes).",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [
             "M23-T01"
           ],
-          "updated_at": "2026-10-09T16:30:00Z"
+          "updated_at": "2026-10-09T18:30:00Z"
         },
         {
           "id": "M23-T03",
