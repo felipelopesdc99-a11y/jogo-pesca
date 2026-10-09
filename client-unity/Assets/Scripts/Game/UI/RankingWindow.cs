@@ -361,7 +361,7 @@ namespace FishingIdle.Game.UI
 
             if (you != null)
             {
-                GUI.Label(new Rect(footer.xMax - 240f, footer.y + 6f, 224f, 18f), TabName(_category), skin.SmallMutedRightLine);
+                GUI.Label(new Rect(footer.xMax - 240f, footer.y + 5f, 224f, UiSkin.SmallLine), TabName(_category), skin.SmallMutedRightLine);
                 DrawValueRight(skin, new Rect(footer.xMax - 240f, footer.y + 24f, 224f, 26f), you.Value);
             }
         }

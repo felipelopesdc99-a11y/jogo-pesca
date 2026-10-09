@@ -62,7 +62,9 @@ namespace FishingIdle.Game.UI
             var t = Theme;
             TitleFont = Resources.Load<Font>("Fontes/Fredoka-SemiBold");
             TitleBoldFont = Resources.Load<Font>("Fontes/Fredoka-Bold") ?? TitleFont;
-            BodyFont = Resources.Load<Font>("Fontes/Nunito-Regular");
+            // Body text in Nunito SemiBold (A-149): the interface is drawn on a 1080-tall canvas and scaled down,
+            // and the Regular weight came out too thin on 600–840 px screens. Regular stays as the fallback.
+            BodyFont = Resources.Load<Font>("Fontes/Nunito-SemiBold") ?? Resources.Load<Font>("Fontes/Nunito-Regular");
             BodyBoldFont = Resources.Load<Font>("Fontes/Nunito-Bold") ?? BodyFont;
 
             White = Art.SolidTexture(Color.white);
@@ -112,11 +114,11 @@ namespace FishingIdle.Game.UI
                 Art.PanelTexture(Alpha(t.PanelElevated, 0.85f), Alpha(t.Panel, 0.85f), Alpha(t.Border, 0.9f), 10, 1.2f, 40, 0.04f),
                 Art.PanelTexture(Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.1f), 0.95f), Alpha(t.PanelElevated, 0.95f), Color.Lerp(t.Border, Color.white, 0.3f), 10, 1.2f, 40, 0.05f),
                 Art.PanelTexture(Alpha(t.Panel, 1f), Alpha(t.Panel, 1f), t.Border, 10, 1.2f, 40, 0f),
-                t.TextMuted, 13);
-            ChipActive = ButtonStyle(ButtonPrimary.normal.background, ButtonPrimary.hover.background, ButtonPrimary.active.background, Color.white, 13);
-            Nav = new GUIStyle(Chip) { fontSize = 14 };
+                t.TextMuted, ChipSize);
+            ChipActive = ButtonStyle(ButtonPrimary.normal.background, ButtonPrimary.hover.background, ButtonPrimary.active.background, Color.white, ChipSize);
+            Nav = new GUIStyle(Chip) { fontSize = SmallSize };
             Nav.normal.textColor = Nav.hover.textColor = Nav.active.textColor = Nav.focused.textColor = t.Text;
-            NavActive = new GUIStyle(ChipActive) { fontSize = 14 };
+            NavActive = new GUIStyle(ChipActive) { fontSize = SmallSize };
 
             // The name search box (A-084): opaque, a touch lighter than the panel and with an accent
             // border, so it reads as a place to type and not as one more chip.
@@ -140,15 +142,15 @@ namespace FishingIdle.Game.UI
             Heading = Label(TitleFont, 20, Text);
             Body = Label(BodyFont, 16, Text);
             BodyBold = Label(BodyBoldFont, 16, Text);
-            Small = Label(BodyFont, 13, Text);
-            ChipText = Label(BodyBoldFont, 13, Text);
+            Small = Label(BodyFont, SmallSize, Text);
+            ChipText = Label(BodyBoldFont, ChipSize, Text);
             ChipText.alignment = TextAnchor.MiddleCenter;
             ChipText.wordWrap = false;
-            SmallMuted = Label(BodyFont, 13, Muted);
-            SmallBold = Label(BodyBoldFont, 13, Text);
+            SmallMuted = Label(BodyFont, SmallSize, Muted);
+            SmallBold = Label(BodyBoldFont, SmallSize, Text);
             SmallRight = new GUIStyle(Small) { alignment = TextAnchor.UpperRight };
             SmallMutedRight = new GUIStyle(SmallMuted) { alignment = TextAnchor.UpperRight };
-            SmallGold = Label(BodyBoldFont, 13, Gold);
+            SmallGold = Label(BodyBoldFont, SmallSize, Gold);
             SmallGoldRight = new GUIStyle(SmallGold) { alignment = TextAnchor.UpperRight };
             Number = Label(TitleFont, 21, Gold);
             NumberRight = new GUIStyle(Number) { alignment = TextAnchor.UpperRight };
@@ -160,17 +162,32 @@ namespace FishingIdle.Game.UI
             Display = Label(TitleBoldFont, 44, Text);
             Display.wordWrap = false;
             DisplaySub = Label(BodyBoldFont, 18, Text);
-            PillText = Label(BodyBoldFont, 12, Text);
+            PillText = Label(BodyBoldFont, ChipSize, Text);
             PillText.alignment = TextAnchor.MiddleCenter;
             PillText.wordWrap = false;
 
-            Badge = Label(BodyBoldFont, 11, new Color(0.06f, 0.08f, 0.12f));
+            Badge = Label(BodyBoldFont, BadgeSize, new Color(0.06f, 0.08f, 0.12f));
             Badge.alignment = TextAnchor.MiddleCenter;
             Badge.wordWrap = false;
             Badge.normal.background = Art.RoundedRectTexture(Color.white, Color.clear, 7, 0f);
             Badge.border = new RectOffset(7, 7, 7, 7);
-            Badge.padding = new RectOffset(6, 6, 2, 2);
+            Badge.padding = new RectOffset(6, 6, 1, 1);
         }
+
+        // Text sizes on the 1080-tall virtual canvas (A-149). The canvas is scaled to the screen, so on a 600 px
+        // tall window 15 px becomes about 8 px: nothing that carries information goes below these.
+
+        /// <summary>Small labels and secondary text (was 13). One line of it needs a 20 px tall rect.</summary>
+        public const int SmallSize = 15;
+
+        /// <summary>Chips, pills and the smallest centred tags (was 12–13; "Volta em" on the compass was 10).</summary>
+        public const int ChipSize = 14;
+
+        /// <summary>Solid uppercase tags ("NOVA ESPÉCIE", "EXCEPCIONAL"): dark bold on a bright colour (was 11).</summary>
+        public const int BadgeSize = 13;
+
+        /// <summary>Height of a rect holding one line of <see cref="SmallSize"/> text without clipping its descenders.</summary>
+        public const float SmallLine = 20f;
 
         private static Color Alpha(Color c, float a) => new Color(c.r, c.g, c.b, a);
 
@@ -554,6 +571,20 @@ namespace FishingIdle.Game.UI
             return Mathf.Min(height, 22f) + 6f + (style ?? SmallGold).CalcSize(new GUIContent(amount)).x + 4f;
         }
 
+        /// <summary>
+        /// A label with a soft 1 px dark shadow under it (A-149), only for text drawn straight over art with no
+        /// panel behind it: the arrival title over the scene and the fighters' lines in the Arena battle.
+        /// Text on panels, cards and pills never gets it.
+        /// </summary>
+        public static void ShadowLabel(Rect rect, string text, GUIStyle style)
+        {
+            var previous = GUI.contentColor;
+            GUI.contentColor = new Color(0f, 0f, 0f, previous.a * 0.5f);
+            GUI.Label(new Rect(rect.x + 1f, rect.y + 1f, rect.width, rect.height), text, style);
+            GUI.contentColor = previous;
+            GUI.Label(rect, text, style);
+        }
+
         /// <summary>A thin divider line.</summary>
         public void Divider(Rect rect)
         {
@@ -614,8 +645,8 @@ namespace FishingIdle.Game.UI
         /// <summary><see cref="SmallGold"/> centred on one line.</summary>
         public GUIStyle SmallGoldCenter => _smallGoldCenter ?? (_smallGoldCenter = new GUIStyle(SmallGold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
 
-        /// <summary>A 10 px bold muted letter, centred (vertical row tags in short slots).</summary>
-        public GUIStyle TinyMutedCenter => _tinyMutedCenter ?? (_tinyMutedCenter = new GUIStyle(SmallMutedCenter) { fontSize = 10, font = BodyBoldFont, wordWrap = false });
+        /// <summary>A small bold muted line, centred (short captions such as "Volta em" on the compass). 14 px since A-149 (was 10).</summary>
+        public GUIStyle TinyMutedCenter => _tinyMutedCenter ?? (_tinyMutedCenter = new GUIStyle(SmallMutedCenter) { fontSize = ChipSize, font = BodyBoldFont, wordWrap = false });
 
         /// <summary>A large gold number on one line (the Arena's Honor).</summary>
         public GUIStyle NumberBig => _numberBig ?? (_numberBig = new GUIStyle(Number) { fontSize = 30, wordWrap = false });

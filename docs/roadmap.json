@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-08T23:59:00Z",
+  "updated_at": "2026-10-08T23:59:59Z",
   "current_milestone": "M21",
   "statuses": [
     "TODO",
@@ -4138,6 +4138,16 @@
           "dependencies": [],
           "updated_at": "2026-10-08T23:59:59Z",
           "completion_notes": "WindowFrame.Header redesenhado: placa de 3 tábuas azul-escuras com borda turquesa, filete escuro e 4 parafusos, pendurada por 2 cordas que sobem até a barra principal (y 80) com argolas; ícone do menu e título em Fredoka Bold 30 com sombra; largura pelo título, sem chegar no Fechar (título longo é encurtado). Balança uma vez ao abrir (0,9 s, amortecida, tempo real de UI, matriz do GUI girando em volta do topo das cordas). Parâmetros novos: info (frase longa, atrás do \"i\") e counter (número/tempo num fundo escuro ao lado da placa, skin.Inset), mais reserveRight para a busca e o Tanque | Cartas; WindowFrame.Side/TakeSide deixam a faixa livre para cada janela. Botão \"i\" turquesa no canto da placa abre o balão \"Como funciona\", desenhado pelo Hud depois das janelas (WindowFrame.DrawInfoBalloon); fecha com outro clique no \"i\", clique fora (que não aciona o que está embaixo), Esc, diálogo da janela ou janela fechada. Chamadas: Expedição, Ranking, Mercado, Loja e Arena com info; Mapa com info = nota e counter = Viagem; batalha da Arena com counter = Tempo; Aquário e Caixa com counter = contagem. Expedição: Força do seu Cardume e x/6 num fundo escuro na faixa do cabeçalho (o aviso de Cardume vazio logo depois); a carta e a carta de missão começam no topo do conteúdo. Ranking: taça ao lado da placa. Conteúdo de todas começa em panel.y + 80 (antes 96), margem de baixo igual; Aquário e Caixa ajustados do mesmo jeito. Arte opcional ui_hdr_placa (9-slice 512×128, bordas 48/32), ui_hdr_corda (32×128, repete) e ui_hdr_argola (64×64), marcadas ASSET_PENDENTE, com pedidos em docs/ASSETS_PENDENTES.md. Textos novos em GameTexts.WindowHeader. A-148. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T51",
+          "title": "Legibilidade: cor e tamanho do texto no jogo todo",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (08/10/2026): melhorar a fonte e a cor do texto no jogo todo, nem claro demais nem escuro demais, tudo bem legível (exemplo: os rótulos finos e apagados da carta de missão da Expedição). Ajuste central no UiSkin e no tema visual, conferindo que nada corte ou se sobreponha nas telas de ~1200×600 e ~1320×840. Só apresentação.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T23:59:59Z",
+          "completion_notes": "Cores (tema_visual.json e padrões do VisualTheme): texto principal #EEF4FB → #EEF3F8; texto suave #9DB2C9 → #B4C6DB, com contraste WCAG medido de 5,0:1 (botão com o mouse em cima) a 10,6:1 (noite) — antes de 4,0 a 8,5:1; turquesa e dourado sem mudança (≥ 5,7 e ≥ 7,0 nos painéis). Fonte: Nunito SemiBold (gerada da fonte variável 3.602 por tools/Arte/gerar_nunito_semibold.py, Resources/Fontes/Nunito-SemiBold.ttf) no lugar da Regular; constantes UiSkin.SmallSize 15 (antes 13: Small, SmallMuted, SmallBold, SmallGold e derivados), ChipSize 14 (chips, PillText e TinyMutedCenter; antes 12–13 e 10), BadgeSize 13 (Tag/Badge; antes 11) e SmallLine 20 (altura de linha); balão \"Como funciona\" 14 → 15. UiSkin.ShadowLabel (sombra de 1 px a 50%) só no título de chegada ao mapa e nos nomes e danos da batalha da Arena. Layout: todas as caixas de 18 px com texto pequeno passaram a 20 px; Expedição (bloco esquerdo da carta de missão a 53% da largura, pílula da duração 20 px, aviso do Cardume com 4 linhas, nota do relatório com 2, \"Volta em\" 18 px); Hud (sino 20 px, valores do cartão do jogador medidos e com \"…\", toasts 480, aviso de escape 680, tutorial e nota do modo compacto mais altos, contagem da Caixa com Fit); Mercado (InfoRow mede o valor, notas do Leilão e de criar leilão com 4 e 3 linhas e a lista mais baixa, nota do anúncio com 3); Loja (Row mede o valor, descrição dos barcos 310 px/2 linhas, GearRow com Fit); Aquário (InfoRow medida, peças do mosaico e etiqueta do Cardume 20 px, dica de seleção 44); Caixa de Pesca (botões de menu e itens com Fit, dica 20 px); Perfil/Enciclopédia (carteira, selo de nível, tags, linhas do Cardume, parte de baixo da carta 88 px e selo especial 20 px); Mapa (pílula do nome 22 px, estado 20 px, LabelsHeight 50, rótulos das linhas com Fit); Arena (cabeçalho 20 px, letras FRENTE/TRÁS medem a fileira); Ranking, boas-vindas e Ferramentas de teste com alturas ajustadas; FishCard com linhas de 21 px e etiquetas de 20 px. A-149, TD-037, BASE_TECNICA. Não compilado nem aberto no Unity."
         }
       ]
     }

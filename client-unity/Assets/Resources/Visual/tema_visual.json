@@ -1,12 +1,13 @@
 {
   "_leia_me": "Tema visual do jogo (Bíblia de Arte, seções 3, 4, 15 e 36). Mude as cores (#RRGGBB ou #RRGGBBAA) e os tempos aqui para ajustar o jogo inteiro sem editar código. Se este arquivo tiver erro, o jogo usa os valores padrão e avisa no Console. Os nomes dos campos são chaves técnicas e não devem ser traduzidos.",
+  "_texto": "text ficou um pouco mais quente e text_muted mais claro, para leitura, em 08/10/2026 (GDD_ADENDO A-149; a Bíblia de Arte lista #EEF4FB e #9DB2C9). O texto suave tem contraste de pelo menos 4,5:1 sobre todos os fundos de painel, cartão e botão.",
   "palette": {
     "night": "#0A1422",
     "panel": "#11223A",
     "panel_elevated": "#183050",
     "border": "#274A70",
-    "text": "#EEF4FB",
-    "text_muted": "#9DB2C9",
+    "text": "#EEF3F8",
+    "text_muted": "#B4C6DB",
     "action": "#25C4C1",
     "action_hover": "#3AD6D2",
     "reward": "#F6B93B",

@@ -1803,3 +1803,53 @@ Ferramentas de teste têm cabeçalho próprio e não mudam. Muda só a forma de 
   baixo não muda.
 - Arte: a placa, a corda e a argola têm desenho de reserva no código; os arquivos finais estão pedidos em
   `docs/ASSETS_PENDENTES.md`.
+
+### A-149 · Legibilidade: cores e tamanho do texto no jogo todo
+
+Pedido do proprietário (08/10/2026): "melhore um pouco a fonte e cor para visualização em todo jogo, para não ficar
+muito claro assim e também nem tão escuro, as coisas precisam estar bem legíveis". O exemplo foi a carta de missão
+da Expedição, com os rótulos ("Força recomendada", "Aproveitamento", "Moedas previstas", "Chance de peixe") finos,
+pequenos e apagados. A interface é desenhada numa tela virtual de 1080 px de altura e reduzida para a janela: numa
+janela de 600 px, 13 px viravam uns 7 px. Muda só a forma de mostrar; nenhum texto, número ou regra muda.
+
+- **Cores do texto** (`Resources/Visual/tema_visual.json`; a Bíblia de Arte lista `#EEF4FB` e `#9DB2C9`):
+  - Texto principal: `#EEF4FB` → `#EEF3F8`, um branco suave, um pouco mais quente, nunca o branco puro.
+  - Texto suave (rótulos, linhas secundárias): `#9DB2C9` → `#B4C6DB`, um azul-acinzentado claro, bem abaixo do
+    principal para manter a hierarquia.
+  - Contraste medido (WCAG), texto suave antes → depois: fundo da noite `#0A1422` 8,5 → 10,6:1; painel `#11223A`
+    7,3 → 9,2:1; painel elevado `#183050` 6,1 → 7,6:1; cartão 5,7 → 7,1:1; cartão com o mouse em cima 4,9 → 6,1:1;
+    cartão escolhido (turquesa) 4,1 → 5,1:1; botão com o mouse em cima 4,0 → 5,0:1; poço escuro 8,0 → 10,0:1; blocos
+    da carta de missão 7,2 → 9,0:1 e 7,4 → 9,2:1. Agora todos ficam acima de 4,5:1.
+  - Texto principal: de 7,7:1 (botão com o mouse em cima) a 16,6:1 (noite).
+  - Turquesa `#25C4C1` e dourado `#F6B93B` usados como rótulo pequeno não mudam: 5,7 a 8,6:1 e 7,0 a 10,5:1 nos
+    painéis e cartões.
+- **Tamanhos** (na tela virtual de 1080 px):
+  - Texto pequeno (rótulos, linhas secundárias, valores pequenos): 13 → 15 px.
+  - Chips, filtros, selos de raridade e tamanho: 12–13 → 14 px; "Volta em" na bússola da Expedição: 10 → 14 px.
+  - Etiquetas cheias em maiúsculas ("NOVA ESPÉCIE", "RECORDE", "EXCEPCIONAL"): 11 → 13 px, letra escura sobre a cor,
+    agora em etiquetas de 20 px de altura (antes 18).
+  - Balão "Como funciona" (o "i" da placa): 14 → 15 px.
+  - Títulos, números e botões não mudam.
+- **Peso**: o texto do corpo passa de Nunito Regular para **Nunito SemiBold** (rótulos, linhas secundárias e
+  descrições); o que já era negrito continua em Nunito Bold. Fredoka continua nos títulos e números.
+- **Sombra**: uma sombra escura de 1 px, a 50%, só no texto que fica direto sobre a arte, sem painel atrás: o nome do
+  mapa ao chegar e os nomes e danos dos peixes na batalha da Arena. Texto em painel, cartão ou pílula não ganha
+  sombra.
+- **Espaço para o texto maior**: cada linha do texto pequeno ganhou 20 px de altura (antes 18) e o que vinha embaixo
+  desceu o necessário. Onde o texto não cabia mais, a caixa cresceu ou o texto é encurtado com "…":
+  - Expedição: na carta de missão o bloco "Força recomendada" ficou um pouco mais largo que o "Aproveitamento",
+    para o rótulo caber inteiro; a pílula da duração dos destinos ficou mais alta; o aviso do Cardume travado
+    ganhou espaço para 4 linhas; a nota do relatório, para 2.
+  - Barra de cima e cartão do jogador: a bolinha de avisos do sino passou a 20 px; no cartão, o valor de cada linha
+    (vara, mapa…) ocupa o que o rótulo deixa e é encurtado com "…".
+  - Avisos (toasts) 40 px mais largos (480); o aviso de peixe que escapou, 80 px mais largo; o tutorial e a nota do
+    modo compacto ganharam altura.
+  - Mercado: rótulos dos filtros com 20 px; a nota do Leilão com espaço para 4 linhas e a de criar leilão, para 3
+    (a lista desce um pouco); a nota do anúncio com 3 linhas; nas linhas "rótulo: valor" o número fica inteiro e o
+    rótulo é encurtado só se ainda faltar espaço.
+  - Loja: a descrição dos barcos ficou mais larga (2 linhas); bônus "+x% → +y%" das varas sempre inteiros.
+  - Aquário, Caixa de Pesca, Perfil, Enciclopédia, Ranking, Mapa, Arena, boas-vindas e Ferramentas de teste:
+    alturas de linha ajustadas; na Enciclopédia, a parte de baixo da carta ganhou 4 px; no Mapa, a pílula do nome
+    das ilhas ficou mais alta e escura, com o espaço dos nomes ajustado; na Arena, as letras de "FRENTE"/"TRÁS"
+    acompanham a altura da fileira; os botões de filtro da Caixa encurtam o texto com "…".
+  - Cartões de peixe: as linhas de baixo (tamanho, rodapé e moedas) ganharam 1–2 px; a arte do peixe cede esse espaço.

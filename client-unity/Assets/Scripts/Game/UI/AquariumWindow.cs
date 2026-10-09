@@ -710,8 +710,8 @@ namespace FishingIdle.Game.UI
             GUI.DrawTexture(new Rect(disc.x + 5f, disc.y + 13f, d - 10f, d - 26f), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
 
             var text = TileText(skin, f);
-            GUI.Label(new Rect(tile.x + 4f, tile.y + 64f, tile.width - 8f, 18f), text.Name, skin.ChipText);
-            GUI.Label(new Rect(tile.x + 4f, tile.y + 83f, tile.width - 8f, 18f), text.Line, skin.SmallMutedCenter);
+            GUI.Label(new Rect(tile.x + 4f, tile.y + 63f, tile.width - 8f, UiSkin.SmallLine), text.Name, skin.ChipText);
+            GUI.Label(new Rect(tile.x + 4f, tile.y + 82f, tile.width - 8f, UiSkin.SmallLine), text.Line, skin.SmallMutedCenter);
 
             if (marked)
             {
@@ -1024,8 +1024,11 @@ namespace FishingIdle.Game.UI
 
         private static void InfoRow(UiSkin skin, float x, ref float y, float w, string label, string value)
         {
-            GUI.Label(new Rect(x, y, 170, 20), label, skin.SmallMuted);
-            GUI.Label(new Rect(x + 170, y, w - 170, 20), value, skin.SmallRight);
+            // The label keeps its width (up to 55%); the value gets the rest, shortened with "…" (A-149).
+            var lw = Mathf.Min(skin.SmallMuted.CalcSize(new GUIContent(label)).x + 2f, w * 0.55f);
+            GUI.Label(new Rect(x, y, lw, 20), UI.FishCard.Fit(label, skin.SmallMuted, lw), skin.SmallMuted);
+            var vw = Mathf.Max(0f, w - lw - 8f);
+            GUI.Label(new Rect(x + w - vw, y, vw, 20), UI.FishCard.Fit(value, skin.SmallRight, vw), skin.SmallRight);
             y += 22;
         }
 
@@ -1206,7 +1209,7 @@ namespace FishingIdle.Game.UI
             var rightWidth = Mathf.Max(badgeWidth, marked ? 20f : 0f);
             if (badge != null)
             {
-                skin.Tag(new Rect(r.xMax - 10f - badgeWidth, r.y + 10f, badgeWidth, 18f), badge, UiSkin.Accent);
+                skin.Tag(new Rect(r.xMax - 10f - badgeWidth, r.y + 9f, badgeWidth, 20f), badge, UiSkin.Accent);
             }
 
             if (marked)
@@ -1489,7 +1492,7 @@ namespace FishingIdle.Game.UI
             skin.DrawIcon(new Rect(x, y + 4, 24, 24), Icons.Sell, UiSkin.Gold);
             GUI.Label(new Rect(x + 32, y, w - 32, 32), GameTexts.Aquarium.MultiSelectTitle, skin.Heading);
             y += 36;
-            GUI.Label(new Rect(x, y, w, 40), GameTexts.Aquarium.MultiSelectHint, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w, 44), GameTexts.Aquarium.MultiSelectHint, skin.SmallMuted);
             y += 46;
 
             if (skin.IconButton(new Rect(x, y, w / 2f - 6, 36), Icons.Check, GameTexts.Box.SelectAll, skin.Button))

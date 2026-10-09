@@ -83,14 +83,15 @@ namespace FishingIdle.Game.UI
             }
             else if (badgeWidth > 0f && !badgeOnArt)
             {
-                skin.Tag(new Rect(rect.xMax - pad - badgeWidth, y + 2, badgeWidth, 18), m.Badge, m.BadgeColor);
+                skin.Tag(new Rect(rect.xMax - pad - badgeWidth, y + 1, badgeWidth, 20), m.Badge, m.BadgeColor);
             }
 
             // Laid out from the bottom up, so the texts never run into each other whatever the card height:
             // coins / footer row, then the bar, the size line and the name; the fish gets the space left.
             var hasBottomRow = !string.IsNullOrEmpty(m.Coins) || !string.IsNullOrEmpty(m.Footer);
             var cursor = rect.yMax - 8f;
-            var bottomRowY = cursor - 20f;
+            // Rows are one line of the 15 px small text each (A-149): 21 px for the footer and the size line.
+            var bottomRowY = cursor - 21f;
             if (hasBottomRow)
             {
                 cursor = bottomRowY - 4f;
@@ -103,7 +104,7 @@ namespace FishingIdle.Game.UI
             }
 
             var hasLine = !string.IsNullOrEmpty(m.Line) || (exceptional && !string.IsNullOrEmpty(m.SizeCategoryName));
-            var lineY = cursor - 19f;
+            var lineY = cursor - 21f;
             if (hasLine)
             {
                 cursor = lineY - 1f;
@@ -127,7 +128,7 @@ namespace FishingIdle.Game.UI
 
             if (badgeOnArt)
             {
-                skin.Tag(new Rect(rect.xMax - pad - badgeWidth, artTop, badgeWidth, 18), m.Badge, m.BadgeColor);
+                skin.Tag(new Rect(rect.xMax - pad - badgeWidth, artTop, badgeWidth, 20), m.Badge, m.BadgeColor);
             }
 
             GUI.Label(new Rect(x, nameY, w, 22), Fit(m.Name, skin.BodyBold, w), skin.BodyBold);
@@ -137,16 +138,16 @@ namespace FishingIdle.Game.UI
                 // The gold seal sits at the right end of the size line, never over the fish.
                 var seal = m.SizeCategoryName.ToUpperInvariant();
                 var sw = skin.Badge.CalcSize(new GUIContent(seal)).x + 10f;
-                ExceptionalSeal(skin, new Rect(x + w - sw, lineY + 1, sw, 18), seal, sizeColor);
+                ExceptionalSeal(skin, new Rect(x + w - sw, lineY + 1, sw, 20), seal, sizeColor);
                 var rest = WithoutSize(m.Line, m.SizeCategoryName);
                 if (!string.IsNullOrEmpty(rest))
                 {
-                    GUI.Label(new Rect(x, lineY, w - sw - 6f, 20), Fit(rest, skin.SmallMuted, w - sw - 6f), skin.SmallMuted);
+                    GUI.Label(new Rect(x, lineY, w - sw - 6f, 21), Fit(rest, skin.SmallMuted, w - sw - 6f), skin.SmallMuted);
                 }
             }
             else if (!string.IsNullOrEmpty(m.Line))
             {
-                DrawLine(skin, new Rect(x, lineY, w, 20), m);
+                DrawLine(skin, new Rect(x, lineY, w, 21), m);
             }
 
             if (m.Bar >= 0f)
@@ -158,15 +159,15 @@ namespace FishingIdle.Game.UI
             var coinsWidth = 0f;
             if (!string.IsNullOrEmpty(m.Coins))
             {
-                coinsWidth = skin.CoinAmountWidth(m.Coins, 20f);
-                skin.CoinAmount(new Rect(rect.xMax - pad - coinsWidth, bottomRowY - 1, coinsWidth, 20), m.Coins);
+                coinsWidth = skin.CoinAmountWidth(m.Coins, 21f);
+                skin.CoinAmount(new Rect(rect.xMax - pad - coinsWidth, bottomRowY - 1, coinsWidth, 21), m.Coins);
             }
 
             if (!string.IsNullOrEmpty(m.Footer))
             {
                 var fw = w - coinsWidth - (coinsWidth > 0f ? 8f : 0f);
                 GUI.contentColor = Color.Lerp(accent, Color.white, 0.35f);
-                GUI.Label(new Rect(x, bottomRowY, fw, 20), Fit(m.Footer, skin.SmallBold, fw), skin.SmallBold);
+                GUI.Label(new Rect(x, bottomRowY, fw, 21), Fit(m.Footer, skin.SmallBold, fw), skin.SmallBold);
                 GUI.contentColor = Color.white;
             }
 

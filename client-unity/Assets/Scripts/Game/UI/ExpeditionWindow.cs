@@ -165,7 +165,7 @@ namespace FishingIdle.Game.UI
             skin.IconBadge(new Rect(well.x + 8f, well.center.y - 16f, 32f, 32f), Icons.Fish, UiSkin.Gold);
             var tx = well.x + 52f;
             var tw = well.xMax - tx - 8f;
-            GUI.Label(new Rect(tx, well.y + 3f, tw, 18f), FishCard.Fit(GameTexts.Expedition.YourStrength, skin.SmallMuted, tw), skin.SmallMuted);
+            GUI.Label(new Rect(tx, well.y + 2f, tw, UiSkin.SmallLine), FishCard.Fit(GameTexts.Expedition.YourStrength, skin.SmallMuted, tw), skin.SmallMuted);
             GUI.Label(new Rect(tx, well.y + 17f, tw, 28f), FishCard.Fit(value, skin.Number, tw), skin.Number);
         }
 
@@ -452,9 +452,9 @@ namespace FishingIdle.Game.UI
 
             var duration = Format.Duration(e.DurationMinutes * 60);
             var durationWidth = Mathf.Min(maxWidth, skin.SmallMutedCenter.CalcSize(new GUIContent(duration)).x + 34f);
-            var durationRect = new Rect(c.x - durationWidth / 2f, nameRect.yMax + 2f, durationWidth, 18f);
-            GUI.DrawTexture(durationRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.5f), 0, 9f);
-            skin.DrawIcon(new Rect(durationRect.x + 8f, durationRect.y + 3f, 12f, 12f), Icons.Clock, UiSkin.Muted);
+            var durationRect = new Rect(c.x - durationWidth / 2f, nameRect.yMax + 2f, durationWidth, UiSkin.SmallLine);
+            GUI.DrawTexture(durationRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.6f), 0, 10f);
+            skin.DrawIcon(new Rect(durationRect.x + 8f, durationRect.y + 4f, 12f, 12f), Icons.Clock, UiSkin.Muted);
             GUI.Label(new Rect(durationRect.x + 22f, durationRect.y, durationRect.width - 26f, durationRect.height), duration, skin.SmallMutedCenter);
 
             if (clickable && GUI.Button(circle, GUIContent.none, GUIStyle.none))
@@ -512,14 +512,15 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x + 24f, y, w - 24f, 20f), FishCard.Fit(GameTexts.Expedition.Duration(Format.Duration(e.DurationMinutes * 60)), skin.SmallMuted, w - 24f), skin.SmallMuted);
             y += 32f;
 
-            // Row 1: recommended strength and efficiency (with its bar).
-            var half = (w - 8f) / 2f;
-            var left = new Rect(x, y, half, firstRow);
+            // Row 1: recommended strength and efficiency (with its bar). The left block is a little wider: its label,
+            // "Força recomendada", is the longer one (A-149).
+            var leftWidth = Mathf.Round((w - 8f) * 0.53f);
+            var left = new Rect(x, y, leftWidth, firstRow);
             Block(skin, left, false);
             BlockLabel(skin, left, GameTexts.Expedition.Recommended);
             GUI.Label(new Rect(left.x + 10f, left.y + 24f, left.width - 20f, 26f), FishCard.Fit(Format.Number(e.RecommendedStrength), skin.Heading, left.width - 20f), skin.Heading);
 
-            var right = new Rect(x + half + 8f, y, half, firstRow);
+            var right = new Rect(left.xMax + 8f, y, w - leftWidth - 8f, firstRow);
             Block(skin, right, false);
             BlockLabel(skin, right, GameTexts.Expedition.Efficiency);
             GUI.Label(new Rect(right.x + 10f, right.y + 22f, right.width - 20f, 26f), Format.Percent(e.Efficiency, 0), skin.Heading);
@@ -552,7 +553,7 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.Label(face, Format.Percent(e.FishFindChance, 1), _sealStyle);
-            GUI.Label(new Rect(sealArea.x - 4f, seal.yMax + 2f, sealArea.width + 8f, 18f), FishCard.Fit(GameTexts.Expedition.FishChanceShort, skin.SmallMutedCenter, sealArea.width + 8f), skin.SmallMutedCenter);
+            GUI.Label(new Rect(sealArea.x - 4f, seal.yMax + 2f, sealArea.width + 8f, UiSkin.SmallLine), FishCard.Fit(GameTexts.Expedition.FishChanceShort, skin.SmallMutedCenter, sealArea.width + 8f), skin.SmallMutedCenter);
             y += secondRow + 12f;
 
             var send = new Rect(x, y, w, button);
@@ -580,7 +581,7 @@ namespace FishingIdle.Game.UI
 
         private static void BlockLabel(UiSkin skin, Rect block, string label)
         {
-            GUI.Label(new Rect(block.x + 10f, block.y + 6f, block.width - 20f, 18f), FishCard.Fit(label, skin.SmallMuted, block.width - 20f), skin.SmallMuted);
+            GUI.Label(new Rect(block.x + 10f, block.y + 5f, block.width - 20f, UiSkin.SmallLine), FishCard.Fit(label, skin.SmallMuted, block.width - 20f), skin.SmallMuted);
         }
 
         /// <summary>Away: where it went, the compass with the time left and a progress ring, the lock note and Cancelar.</summary>
@@ -591,7 +592,8 @@ namespace FishingIdle.Game.UI
             var w = inner.width;
             var y = inner.y;
 
-            const float button = 44f, note = 70f, labels = 50f;
+            // The lock note takes four lines of the small text in the card's width (A-149).
+            const float button = 44f, note = 86f, labels = 50f;
             var bottom = inner.yMax - button - 10f - note - 8f;
             var picture = ArtAssets.Texture("Expedicoes/" + active.ExpeditionId);
             var pictureHeight = Mathf.Min(bottom - y - labels - 8f - 240f - 12f, 110f);
@@ -601,7 +603,7 @@ namespace FishingIdle.Game.UI
                 y += pictureHeight + 12f;
             }
 
-            GUI.Label(new Rect(x, y, w, 18f), FishCard.Fit(GameTexts.Expedition.Away, skin.SmallGoldLine, w), skin.SmallGoldLine);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Expedition.Away, skin.SmallGoldLine, w), skin.SmallGoldLine);
             GUI.Label(new Rect(x, y + 18f, w, 28f), FishCard.Fit(active.Name, skin.Heading, w), skin.Heading);
             y += labels + 8f;
 
@@ -632,7 +634,7 @@ namespace FishingIdle.Game.UI
             if (dialRadius > 12f)
             {
                 DrawProgressRing(skin, dialCenter, dialRadius * 0.86f, (float)active.Progress);
-                GUI.Label(new Rect(dialCenter.x - dialRadius, dialCenter.y - 22f, dialRadius * 2f, 14f), GameTexts.Expedition.ReturnsInLabel, skin.TinyMutedCenter);
+                GUI.Label(new Rect(dialCenter.x - dialRadius, dialCenter.y - 24f, dialRadius * 2f, 18f), GameTexts.Expedition.ReturnsInLabel, skin.TinyMutedCenter);
                 GUI.Label(new Rect(dialCenter.x - dialRadius, dialCenter.y - 8f, dialRadius * 2f, 26f), Format.Countdown(active.SecondsLeft), _dialStyle);
             }
 
@@ -809,7 +811,7 @@ namespace FishingIdle.Game.UI
 
             var x = rect.x + 30;
             var w = rect.width - 60;
-            GUI.Label(new Rect(x, y, w, 18), GameTexts.Expedition.ReportLabel, skin.SmallGold);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Expedition.ReportLabel, skin.SmallGold);
             GUI.Label(new Rect(x, y + 18, w, 34), GameTexts.Expedition.ResultTitle, skin.Title);
             GUI.Label(new Rect(x, y + 54, w, 20), GameTexts.Expedition.ReturnedAt(report.Name, Format.DateTimeFromUnixMs(report.CompletedAtMs)), skin.SmallMuted);
             y += 86;
@@ -847,7 +849,7 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(x, y, w, 22), report.FoundAFish ? GameTexts.Expedition.FoundFish : GameTexts.Expedition.NoFish, skin.SmallMuted);
             }
 
-            GUI.Label(new Rect(x, rect.yMax - 58, w - 220, 40), GameTexts.Expedition.ReportNote, skin.SmallMuted);
+            GUI.Label(new Rect(x, rect.yMax - 64, w - 220, 46), GameTexts.Expedition.ReportNote, skin.SmallMuted);
             if (skin.IconButton(new Rect(rect.xMax - 230, rect.yMax - 62, 200, 42), Icons.Check, GameTexts.Expedition.Collect, skin.ButtonReward))
             {
                 _root.AcknowledgeExpedition();

@@ -364,6 +364,10 @@ passo está em `SaveMigrations.Upgrade`.
     exata do texto (`CalcSize`) pode jogar o último dígito para uma linha invisível. Dê folga (+4 px)
     ou use `CoinAmountWidth` para moedas. E um texto que cita um número de `/config` (tempos, taxas,
     limites) recebe esse número da view do serviço, nunca escrito na frase.
+  - **Tamanhos de texto** (A-149, TD-037): os pequenos ficam em constantes do `UiSkin` (`SmallSize` 15,
+    `ChipSize` 14, `BadgeSize` 13). Uma linha do texto pequeno precisa de `UiSkin.SmallLine` (20 px) de
+    altura, senão as pernas de g, p e ç são cortadas; o que fica embaixo começa pelo menos 18–20 px depois.
+    Texto direto sobre arte, sem painel atrás, usa `UiSkin.ShadowLabel` (sombra de 1 px).
 - **Camadas e paralaxe:** câmera ortográfica que oscila devagar; cada camada acompanha a câmera numa
   fração diferente, criando profundidade (2.5D). Ordem de desenho nas constantes de `FishingScene`.
 - **Animação sincronizada ao serviço:** `FishermanRig` lê `FishingStatus` (início e fim do ciclo)
@@ -371,7 +375,8 @@ passo está em `SaveMigrations.Upgrade`.
   captura (`GameRoot.CatchesArrived`).
 - **Interface em IMGUI** (`Hud`, janelas, `UiSkin`): tela virtual de 1080 px de altura, escalada.
   Todos os estilos ficam em `UiSkin`, o que isola uma futura troca para UI Toolkit. Fontes: Fredoka
-  nos títulos e números, Nunito no texto (`Resources/Fontes`).
+  nos títulos e números, Nunito SemiBold no texto e Nunito Bold no negrito (`Resources/Fontes`; a
+  SemiBold é gerada por `tools/Arte/gerar_nunito_semibold.py`).
 - **Textos:** sempre de `GameTexts`. Nunca escreva uma frase em PT-BR direto num `.cs` fora de `Texts/`.
 - **Avisos e central de notificações** (`ToastFeed`): `Push(texto, tipo, ícone, notify)` mostra o
   aviso; com `notify: true` ele também entra na lista do sino (até 50, só enquanto o jogo está

@@ -614,3 +614,24 @@ dentro de um jogo comercial sem crédito (não permitem revender o arquivo de á
 
 **Rever se.** Antes do lançamento na Steam: conferir a origem de cada arquivo usado (o Moodist não lista a fonte
 de cada som) ou trocar pelas gravações definitivas; o sistema já aceita até 4 gravações por mapa.
+
+
+## TD-037 — Nunito SemiBold gerada da fonte variável e alturas de linha numa constante
+
+**Origem.** Pedido de legibilidade do proprietário (08/10/2026, GDD_ADENDO A-149).
+
+**Decisão.** O texto do corpo usa Nunito SemiBold (peso 600), um arquivo estático
+(`Resources/Fontes/Nunito-SemiBold.ttf`) gerado da fonte variável oficial (`Nunito[wght].ttf`, versão 3.602, a
+mesma dos arquivos Regular e Bold) por `tools/Arte/gerar_nunito_semibold.py`, com fontTools. Se o arquivo faltar,
+o jogo volta para a Regular. Os tamanhos pequenos ficam em constantes de `UiSkin` (`SmallSize` 15, `ChipSize` 14,
+`BadgeSize` 13) e a altura de uma linha do texto pequeno em `UiSkin.SmallLine` (20 px), usada pelas janelas no
+lugar do número solto. Texto direto sobre a arte usa `UiSkin.ShadowLabel` (sombra de 1 px a 50%).
+
+**Por quê.** A interface é desenhada numa tela virtual de 1080 px e reduzida; em janelas de 600–840 px a Regular
+ficava fina demais. O Google Fonts só publica a Nunito como fonte variável, e o Unity (fonte dinâmica no IMGUI) não
+escolhe peso de fonte variável: precisa de um arquivo por peso. A licença é a mesma (SIL OFL 1.1, sem nome
+reservado). Os rótulos do IMGUI cortam o que passa da caixa; com 15 px, a linha da Nunito mede cerca de 20,5 px e
+as letras com perna (g, p, ç) eram cortadas nas caixas de 18 px.
+
+**Rever se.** O proprietário quiser o texto mais fino ou mais grosso: trocar o arquivo em `UiSkin` (Regular, Bold
+ou outra instância gerada pelo script com outro peso), sem mexer nas janelas.

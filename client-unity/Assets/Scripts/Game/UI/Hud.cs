@@ -41,7 +41,8 @@ namespace FishingIdle.Game.UI
         private const float CardTop = BarHeight + 16f;
         private const float CardExpandedHeight = 356f;
         private const float CardCollapsedHeight = 64f;
-        private const float ToastWidth = 440f;
+        // 480 since A-149 (was 440): two lines of the 15 px text hold what two lines of 13 px held.
+        private const float ToastWidth = 480f;
 
         private GameRoot _root;
         private FishingScene _scene;
@@ -501,8 +502,8 @@ namespace FishingIdle.Game.UI
             {
                 // Red dot with the count, like a phone badge.
                 var count = _root.Toasts.Unread > 9 ? "9+" : _root.Toasts.Unread.ToString();
-                var dot = new Rect(bell.xMax - 20, bell.y + 2, 18, 18);
-                GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Danger, 0, 9);
+                var dot = new Rect(bell.xMax - 21, bell.y + 1, 20, 20);
+                GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Danger, 0, 10);
                 GUI.Label(dot, count, skin.PillText);
             }
         }
@@ -832,8 +833,12 @@ namespace FishingIdle.Game.UI
         private static void Row(UiSkin skin, Rect card, ref float y, string icon, string label, string value)
         {
             skin.DrawIcon(new Rect(card.x + 18, y + 1, 18, 18), icon, UiSkin.Muted);
-            GUI.Label(new Rect(card.x + 46, y, 160, 22), label, skin.SmallMuted);
-            GUI.Label(new Rect(card.x + 150, y, card.width - 168, 22), value, skin.SmallRight);
+            // The label keeps its width; the value takes the rest of the line, shortened with "…" (A-149).
+            var labelWidth = skin.SmallMuted.CalcSize(new GUIContent(label)).x + 2f;
+            GUI.Label(new Rect(card.x + 46, y, labelWidth, 22), label, skin.SmallMuted);
+            var valueX = card.x + 46 + labelWidth + 10f;
+            var valueWidth = Mathf.Max(0f, card.xMax - 18f - valueX);
+            GUI.Label(new Rect(valueX, y, valueWidth, 22), FishCard.Fit(value, skin.SmallRight, valueWidth), skin.SmallRight);
             y += 32;
         }
 
@@ -989,8 +994,8 @@ namespace FishingIdle.Game.UI
 
             var previous = GUI.color;
             GUI.color = new Color(1f, 1f, 1f, alpha);
-            // Wide enough for the rare-escape line (about 520 px) on one line.
-            var panel = new Rect(cx - 300, cy - 8, 600, 64);
+            // Wide enough for the rare-escape line (about 610 px at the 15 px size, A-149) on one line.
+            var panel = new Rect(cx - 340, cy - 8, 680, 64);
             skin.FloatingPanel(panel);
             if (rare)
             {
@@ -1034,7 +1039,8 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                GUI.Label(new Rect(rect.x + 78, rect.y + 48, textW, 24), player.FishingBoxCapacity > 0 ? GameTexts.Box.CountOf(player.FishingBoxCount, player.FishingBoxCapacity) : GameTexts.Box.Count(player.FishingBoxCount), skin.SmallMuted);
+                var count = player.FishingBoxCapacity > 0 ? GameTexts.Box.CountOf(player.FishingBoxCount, player.FishingBoxCapacity) : GameTexts.Box.Count(player.FishingBoxCount);
+                GUI.Label(new Rect(rect.x + 78, rect.y + 48, textW, 24), FishCard.Fit(count, skin.SmallMuted, textW), skin.SmallMuted);
             }
             skin.DrawIcon(new Rect(rect.xMax - 30, rect.center.y - 9, 18, 18), Icons.Chevron, UiSkin.Muted);
         }
@@ -1178,15 +1184,15 @@ namespace FishingIdle.Game.UI
             if (windowOpen)
             {
                 GUI.Label(new Rect(rect.x + 18, rect.y + 10, rect.width - 260, 22), GameTexts.Tutorial.Title(tutorial.Step), skin.BodyBold);
-                GUI.Label(new Rect(rect.x + 18, rect.y + 34, rect.width - 260, 40), GameTexts.Tutorial.Body(tutorial.Step), skin.Small);
+                GUI.Label(new Rect(rect.x + 18, rect.y + 33, rect.width - 260, 42), GameTexts.Tutorial.Body(tutorial.Step), skin.Small);
             }
             else
             {
                 GUI.contentColor = UiSkin.Accent;
-                GUI.Label(new Rect(rect.x + 16, rect.y + 12, rect.width - 32, 18), GameTexts.Tutorial.StepOf(tutorial.StepNumber, tutorial.StepCount), skin.SmallBold);
+                GUI.Label(new Rect(rect.x + 16, rect.y + 11, rect.width - 32, UiSkin.SmallLine), GameTexts.Tutorial.StepOf(tutorial.StepNumber, tutorial.StepCount), skin.SmallBold);
                 GUI.contentColor = Color.white;
                 GUI.Label(new Rect(rect.x + 16, rect.y + 32, rect.width - 32, 26), GameTexts.Tutorial.Title(tutorial.Step), skin.BodyBold);
-                GUI.Label(new Rect(rect.x + 16, rect.y + 60, rect.width - 32, 90), GameTexts.Tutorial.Body(tutorial.Step), skin.Small);
+                GUI.Label(new Rect(rect.x + 16, rect.y + 60, rect.width - 32, 130), GameTexts.Tutorial.Body(tutorial.Step), skin.Small);
             }
 
             // With a window open: "Entendi" (84) + 8 + "Pular tutorial" (120), ending 18 px before the edge.
@@ -1278,8 +1284,8 @@ namespace FishingIdle.Game.UI
                         textX = panel.x + 86;
                     }
 
-                    GUI.Label(new Rect(textX, y, 60, 18), Format.Time(entry.At), skin.SmallMuted);
-                    GUI.Label(new Rect(textX, y + 18, panel.xMax - textX - 16, 36), entry.Text, entry.Kind == ToastKind.Warning ? skin.SmallGold : skin.Small);
+                    GUI.Label(new Rect(textX, y, 60, UiSkin.SmallLine), Format.Time(entry.At), skin.SmallMuted);
+                    GUI.Label(new Rect(textX, y + 18, panel.xMax - textX - 16, 42), entry.Text, entry.Kind == ToastKind.Warning ? skin.SmallGold : skin.Small);
                     y += 58;
                 }
             }
@@ -1310,7 +1316,7 @@ namespace FishingIdle.Game.UI
                     EnterCompact();
                 }
 
-                GUI.Label(new Rect(x, y + 46, w, 60), GameTexts.Hud.CompactNote, skin.SmallMuted);
+                GUI.Label(new Rect(x, y + 46, w, 66), GameTexts.Hud.CompactNote, skin.SmallMuted);
             }
         }
 

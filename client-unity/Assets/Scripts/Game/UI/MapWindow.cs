@@ -34,7 +34,7 @@ namespace FishingIdle.Game.UI
         private GUIStyle _nameStyle, _badgeStyle, _noteStyle, _tipStyle, _rowValue, _rowValueGold;
         private static Texture2D _sea;
 
-        private const float LabelsHeight = 46f;
+        private const float LabelsHeight = 50f; // gap 6 + name 22 + gap 2 + state 20 (A-149; was 46)
         private const float RouteDotGap = 14f;
 
         private static readonly Color LockedFrame = new Color(0.45f, 0.52f, 0.60f);
@@ -353,8 +353,8 @@ namespace FishingIdle.Game.UI
             var labelWidth = Mathf.Min(step * 2f - 16f, 220f);
             var name = FishCard.Fit(map.Name, _nameStyle, labelWidth - 14f);
             var nameWidth = _nameStyle.CalcSize(new GUIContent(name)).x + 14f;
-            var nameRect = new Rect(center.x - nameWidth / 2f, circle.yMax + 6f, nameWidth, 20f);
-            GUI.DrawTexture(nameRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.6f), 0, 10f);
+            var nameRect = new Rect(center.x - nameWidth / 2f, circle.yMax + 6f, nameWidth, 22f);
+            GUI.DrawTexture(nameRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.72f), 0, 11f);
             GUI.Label(nameRect, name, _nameStyle);
             if (name != map.Name && (hovered || nameRect.Contains(Event.current.mousePosition)))
             {
@@ -364,9 +364,9 @@ namespace FishingIdle.Game.UI
             var state = locked ? GameTexts.Map.LevelShort(map.UnlockFisherLevel) : map.IsCurrent ? GameTexts.Map.YouAreHere : null;
             if (state != null)
             {
-                var stateRect = new Rect(center.x - labelWidth / 2f, nameRect.yMax + 2f, labelWidth, 18f);
+                var stateRect = new Rect(center.x - labelWidth / 2f, nameRect.yMax + 2f, labelWidth, UiSkin.SmallLine);
                 var stateWidth = skin.SmallGoldCenter.CalcSize(new GUIContent(state)).x + 14f;
-                GUI.DrawTexture(new Rect(center.x - stateWidth / 2f, stateRect.y, stateWidth, stateRect.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.45f), 0, 9f);
+                GUI.DrawTexture(new Rect(center.x - stateWidth / 2f, stateRect.y, stateWidth, stateRect.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.6f), 0, 10f);
                 GUI.Label(stateRect, state, skin.SmallGoldCenter);
             }
 
@@ -441,7 +441,7 @@ namespace FishingIdle.Game.UI
             var chapter = ArrivalTitle.ChapterOf(_root, map.MapId);
             if (chapter > 0)
             {
-                GUI.Label(new Rect(tx, ty, tw, 18f), GameTexts.Map.Chapter(chapter), skin.SmallGoldLine);
+                GUI.Label(new Rect(tx, ty - 1f, tw, UiSkin.SmallLine), GameTexts.Map.Chapter(chapter), skin.SmallGoldLine);
             }
 
             var name = FishCard.Fit(map.Name, skin.Heading, tw);
@@ -519,7 +519,7 @@ namespace FishingIdle.Game.UI
 
         private void Row(UiSkin skin, float x, ref float y, float w, string label, string value, bool met)
         {
-            GUI.Label(new Rect(x, y, w * 0.5f, 22f), label, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w * 0.5f, 22f), FishCard.Fit(label, skin.SmallMuted, w * 0.5f - 4f), skin.SmallMuted);
             var style = met ? _rowValue : _rowValueGold;
             GUI.Label(new Rect(x + w * 0.5f, y, w * 0.5f, 22f), FishCard.Fit(value ?? string.Empty, style, w * 0.5f), style);
             y += 26f;

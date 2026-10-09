@@ -214,7 +214,7 @@ namespace FishingIdle.Game.UI
             AvatarFrame(skin, avatar, _profile?.AvatarId, UiSkin.Accent);
             var nameX = avatar.xMax + 12;
             var nameW = Mathf.Max(20f, playerW - (nameX - r.x) - 12);
-            GUI.Label(new Rect(nameX, r.y + 8, nameW, 18), GameTexts.Arena.You, skin.SmallMuted);
+            GUI.Label(new Rect(nameX, r.y + 7, nameW, UiSkin.SmallLine), GameTexts.Arena.You, skin.SmallMuted);
             GUI.Label(new Rect(nameX, r.y + 26, nameW, 28), FishCard.Fit(PlayerName, skin.Heading, nameW), skin.Heading);
 
             // The rank as a gold medal, "de N" beside it.
@@ -223,7 +223,7 @@ namespace FishingIdle.Game.UI
             DrawMedal(skin, medal, GameTexts.Arena.RankOf(_arena.Rank));
             var lx = medal.xMax + 10;
             var lw = Mathf.Max(20f, rankW - (lx - rx) - 12);
-            GUI.Label(new Rect(lx, r.y + 12, lw, 18), GameTexts.Arena.Rank, skin.SmallMuted);
+            GUI.Label(new Rect(lx, r.y + 11, lw, UiSkin.SmallLine), GameTexts.Arena.Rank, skin.SmallMuted);
             GUI.Label(new Rect(lx, r.y + 30, lw, 22), FishCard.Fit(GameTexts.Arena.OfTotal(_arena.Participants), skin.BodyBold, lw), skin.BodyBold);
 
             // Energy: label and amount, one segment per point, and the time to the next point.
@@ -238,7 +238,7 @@ namespace FishingIdle.Game.UI
             EnergyBar(skin, new Rect(ex, r.y + 34, ew, 10), _arena.Energy, _arena.EnergyMax);
             if (_arena.NextEnergySeconds > 0)
             {
-                GUI.Label(new Rect(ex, r.y + 46, ew, 18), FishCard.Fit(GameTexts.Arena.NextEnergy(Format.Countdown(_arena.NextEnergySeconds)), skin.SmallMuted, ew), skin.SmallMuted);
+                GUI.Label(new Rect(ex, r.y + 46, ew, UiSkin.SmallLine), FishCard.Fit(GameTexts.Arena.NextEnergy(Format.Countdown(_arena.NextEnergySeconds)), skin.SmallMuted, ew), skin.SmallMuted);
             }
 
             // Honor, big and in gold, against the right edge.
@@ -248,7 +248,7 @@ namespace FishingIdle.Game.UI
             var hx = Mathf.Max(ex + energyW, r.xMax - 44 - Mathf.Max(numberW, honorLabelW));
             var hw = Mathf.Max(20f, r.xMax - hx - 44);
             skin.DrawIcon(new Rect(hx, r.y + 14, 34, 34), Icons.Honor, UiSkin.Gold);
-            GUI.Label(new Rect(hx + 44, r.y + 4, hw, 18), GameTexts.Arena.Honor, skin.SmallMuted);
+            GUI.Label(new Rect(hx + 44, r.y + 3, hw, UiSkin.SmallLine), GameTexts.Arena.Honor, skin.SmallMuted);
             GUI.Label(new Rect(hx + 44, r.y + 20, hw, 40), FishCard.Fit(honor, skin.NumberBig, hw), skin.NumberBig);
         }
 
@@ -527,13 +527,17 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>A vertical "FRENTE" / "TRÁS" tag; letters get smaller when the row is short.</summary>
+        private static GUIStyle _rowLetter;
+
+        /// <summary>A vertical "FRENTE" / "TRÁS" tag; letters get smaller when the row is short (never below 10 px, up to the small size, A-149).</summary>
         private static void RowTag(UiSkin skin, Rect rect, string tag)
         {
             GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.14f), 0, 8);
             var letters = tag.ToCharArray();
             var spacing = Mathf.Min(17f, (rect.height - 6f) / Mathf.Max(1, letters.Length));
-            var style = spacing < 14f ? skin.TinyMutedCenter : skin.SmallMutedCenter;
+            _rowLetter ??= new GUIStyle(skin.TinyMutedCenter) { clipping = TextClipping.Overflow };
+            _rowLetter.fontSize = Mathf.RoundToInt(Mathf.Clamp(spacing * 0.95f, 10f, UiSkin.SmallSize));
+            var style = _rowLetter;
             var ly = rect.center.y - letters.Length * spacing / 2f;
             foreach (var ch in letters)
             {
@@ -1170,7 +1174,7 @@ namespace FishingIdle.Game.UI
                 var max = _maxHp[side][i];
                 skin.Bar(new Rect(x - 60, y + 38, 120, 8), max > 0 ? (float)(hp / max) : 0f, false);
                 var fighterLabel = fighter.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + fighter.Level;
-                GUI.Label(new Rect(x - 70, y + 50, 140, 20), FishCard.Fit(fighterLabel, skin.SmallMutedCenter, 140f), skin.SmallMutedCenter);
+                UiSkin.ShadowLabel(new Rect(x - 70, y + 50, 140, UiSkin.SmallLine), FishCard.Fit(fighterLabel, skin.SmallMutedCenter, 140f), skin.SmallMutedCenter);
 
                 // Damage numbers float up and fade.
                 foreach (var hit in _hits.Where(h => h.side == side && h.pos == i + 1))
@@ -1178,7 +1182,7 @@ namespace FishingIdle.Game.UI
                     var t = Time.unscaledTime - hit.at;
                     var c = GUI.color;
                     GUI.color = c * new Color(1f, 1f, 1f, 1f - t / 0.9f);
-                    GUI.Label(new Rect(x - 40, y - 60 - t * 40f, 80, 24), "-" + Format.Number((long)System.Math.Round(hit.dmg)), skin.SmallGold);
+                    UiSkin.ShadowLabel(new Rect(x - 40, y - 60 - t * 40f, 80, 24), "-" + Format.Number((long)System.Math.Round(hit.dmg)), skin.SmallGold);
                     GUI.color = c;
                 }
             }

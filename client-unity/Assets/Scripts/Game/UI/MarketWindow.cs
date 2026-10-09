@@ -276,7 +276,7 @@ namespace FishingIdle.Game.UI
             var y = area.y + 12;
             var changed = false;
 
-            GUI.Label(new Rect(x, y, w, 18), GameTexts.Market.FilterKind, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Market.FilterKind, skin.SmallMuted);
             y += 20;
             var kinds = new[] { (MarketKindFilter.All, GameTexts.Market.KindAll), (MarketKindFilter.Fish, GameTexts.Market.KindFish), (MarketKindFilter.Rods, GameTexts.Market.KindRods) };
             var kw = (w - 12) / 3f;
@@ -297,7 +297,7 @@ namespace FishingIdle.Game.UI
             changed |= Range(skin, x, ref y, w, GameTexts.Market.LevelRange, ref _minLevel, ref _maxLevel);
             changed |= Range(skin, x, ref y, w, GameTexts.Market.PriceRange, ref _minPrice, ref _maxPrice);
 
-            GUI.Label(new Rect(x, y, w, 18), GameTexts.Market.SortLabel, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Market.SortLabel, skin.SmallMuted);
             y += 20;
             if (GUI.Button(new Rect(x, y, w, 32), "« " + SortName(Sorts[_sort]) + " »", skin.Chip))
             {
@@ -342,7 +342,7 @@ namespace FishingIdle.Game.UI
         /// <summary>A filter that cycles through "any" and the options. Returns true when it changed.</summary>
         private static bool Cycle(UiSkin skin, float x, ref float y, float w, string label, string any, List<FilterOption> options, ref int index, System.Func<string, Color> colorOf = null)
         {
-            GUI.Label(new Rect(x, y, w, 18), label, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), label, skin.SmallMuted);
             y += 20;
             var count = options.Count + 1;
             index = Mathf.Clamp(index, 0, count - 1);
@@ -379,7 +379,7 @@ namespace FishingIdle.Game.UI
 
         private static bool Range(UiSkin skin, float x, ref float y, float w, string label, ref string min, ref string max)
         {
-            GUI.Label(new Rect(x, y, w, 18), label, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), label, skin.SmallMuted);
             y += 20;
             var half = (w - 10) / 2f;
             var newMin = Digits(GUI.TextField(new Rect(x, y, half, 28), min, 9), true);
@@ -425,7 +425,7 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, y, w, 28), GameTexts.Market.CurrencySellTitle, skin.Heading);
             y += 44;
 
-            GUI.Label(new Rect(x, y, w, 18), GameTexts.Market.CurrencyWhat, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Market.CurrencyWhat, skin.SmallMuted);
             y += 22;
             var half = (w - 10) / 2f;
             foreach (var (kind, label, icon, i) in new[] { (CurrencyKind.Shells, GameTexts.Player.Shells, Icons.Shell, 0), (CurrencyKind.Dollars, GameTexts.Player.Dollars, Icons.Dollar, 1) })
@@ -441,11 +441,11 @@ namespace FishingIdle.Game.UI
             InfoRow(skin, x, ref y, w, GameTexts.Market.CurrencyYouHave, Format.Number(have));
             y += 6;
 
-            GUI.Label(new Rect(x, y, w, 18), GameTexts.Market.CurrencyAmount, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Market.CurrencyAmount, skin.SmallMuted);
             y += 20;
             _currencyAmountText = Digits(GUI.TextField(new Rect(x, y, w, 32), _currencyAmountText, 9), false);
             y += 44;
-            GUI.Label(new Rect(x, y, w, 18), GameTexts.Market.CurrencyTotalPrice, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Market.CurrencyTotalPrice, skin.SmallMuted);
             y += 20;
             _currencyPriceText = Digits(GUI.TextField(new Rect(x, y, w, 32), _currencyPriceText, 12), false);
             y += 42;
@@ -457,7 +457,7 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(x, y, w, 20), GameTexts.Market.CurrencyPerUnit(Format.Decimal(price / (double)amount, 1)), skin.SmallMuted);
                 y += 22;
                 var fee = (long)System.Math.Round(price * _currency.SaleFeeRatio, System.MidpointRounding.AwayFromZero);
-                GUI.Label(new Rect(x, y, w, 20), GameTexts.Market.YouReceive + ": " + Format.Number(price - fee) + " (" + GameTexts.Market.Fee(_currency.SaleFeeRatio) + ")", skin.SmallMuted);
+                GUI.Label(new Rect(x, y, w, 42), GameTexts.Market.YouReceive + ": " + Format.Number(price - fee) + " (" + GameTexts.Market.Fee(_currency.SaleFeeRatio) + ")", skin.SmallMuted);
             }
 
             GUI.Label(new Rect(x, form.yMax - 130, w, 60), GameTexts.Market.CurrencyHoldNote, skin.SmallMuted);
@@ -589,7 +589,7 @@ namespace FishingIdle.Game.UI
             var ry = bottom - 166;
             InfoRow(skin, x, ref ry, w, GameTexts.Market.Fee(_market.SaleFeeRatio), Format.Number(fee));
             InfoRow(skin, x, ref ry, w, GameTexts.Market.YouReceive, Format.Number(Math.Max(0, price - fee)));
-            GUI.Label(new Rect(x, bottom - 110, w, 50), GameTexts.Market.ListingNote, skin.SmallMuted);
+            GUI.Label(new Rect(x, bottom - 114, w, 64), GameTexts.Market.ListingNote, skin.SmallMuted);
 
             GUI.enabled = price >= _market.MinimumPriceCoins;
             if (skin.IconButton(new Rect(x, bottom - 44, w, 44), Icons.Sell, GameTexts.Market.ListFor(_market.ListingDurationDays), skin.ButtonPrimary))
@@ -727,9 +727,9 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // The note shares its row with the search box, so it gets room for three lines.
-            GUI.Label(new Rect(body.x, body.y, body.width - SidePanelWidth - 16 - 320, 60), GameTexts.Market.AuctionNote(AuctionHours(), Format.Percent(_auctions.MinIncrementRatio, 0), Format.Percent(_auctions.BidFeeRatio, 0), Format.Duration(_auctions.AntiSnipeResetSeconds)), skin.SmallMuted);
-            var grid = new Rect(body.x, body.y + 66, body.width - SidePanelWidth - 16, body.height - 66);
+            // The note shares its row with the search box, so it gets room for four lines of the small text (A-149).
+            GUI.Label(new Rect(body.x, body.y, body.width - SidePanelWidth - 16 - 320, 84), GameTexts.Market.AuctionNote(AuctionHours(), Format.Percent(_auctions.MinIncrementRatio, 0), Format.Percent(_auctions.BidFeeRatio, 0), Format.Duration(_auctions.AntiSnipeResetSeconds)), skin.SmallMuted);
+            var grid = new Rect(body.x, body.y + 90, body.width - SidePanelWidth - 16, body.height - 90);
             DrawSearch(skin, grid.xMax, body.y, "busca_leilao");
             var shownAuctions = _auctions.Open.Where(a => NameSearch.Matches(a.Goods.Name, _search)).ToList();
             if (shownAuctions.Count == 0)
@@ -800,8 +800,9 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            GUI.Label(new Rect(area.x + 240, area.y + 6, area.width - SidePanelWidth - 260 - 320, 40), GameTexts.Market.StartAuctionNote(AuctionHours()), skin.SmallMuted);
-            var grid = new Rect(area.x, area.y + 48, area.width - SidePanelWidth - 16, area.height - 48);
+            // Room for three lines of the small text between "Voltar" and the search box (A-149).
+            GUI.Label(new Rect(area.x + 240, area.y, area.width - SidePanelWidth - 260 - 320, 64), GameTexts.Market.StartAuctionNote(AuctionHours()), skin.SmallMuted);
+            var grid = new Rect(area.x, area.y + 70, area.width - SidePanelWidth - 16, area.height - 70);
             DrawSearch(skin, grid.xMax, area.y, "busca_leilao_criar");
             var shownCandidates = _candidates.Where(c => NameSearch.Matches(c.Goods.Name, _search)).ToList();
             if (shownCandidates.Count == 0 && _candidates.Count > 0)
@@ -1012,9 +1013,12 @@ namespace FishingIdle.Game.UI
 
         private static void InfoRow(UiSkin skin, float x, ref float y, float w, string label, string value)
         {
-            // Label and value side by side, never overlapping; a long value is shortened with "…".
-            GUI.Label(new Rect(x, y, w * 0.45f, 20), FishCard.Fit(label, skin.SmallMuted, w * 0.45f), skin.SmallMuted);
-            GUI.Label(new Rect(x + w * 0.45f, y, w * 0.55f, 20), FishCard.Fit(value, skin.SmallRight, w * 0.55f), skin.SmallRight);
+            // Label and value side by side, never overlapping. The value (a short number) keeps its width, up to
+            // 55% of the line; the label gets the rest and is shortened with "…" only when it still does not fit.
+            var vw = Mathf.Min(w * 0.55f, skin.SmallRight.CalcSize(new GUIContent(value)).x + 4f);
+            var lw = Mathf.Max(0f, w - vw - 8f);
+            GUI.Label(new Rect(x, y, lw, 20), FishCard.Fit(label, skin.SmallMuted, lw), skin.SmallMuted);
+            GUI.Label(new Rect(x + w - vw, y, vw, 20), FishCard.Fit(value, skin.SmallRight, vw), skin.SmallRight);
             y += 24;
         }
 

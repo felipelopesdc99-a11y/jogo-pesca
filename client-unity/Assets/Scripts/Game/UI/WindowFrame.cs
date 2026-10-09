@@ -450,7 +450,7 @@ namespace FishingIdle.Game.UI
             _counter.normal.textColor = UiSkin.Text;
             _tipTitle = new GUIStyle(skin.Heading) { fontSize = 16, wordWrap = false };
             _tipTitle.normal.textColor = UiSkin.AccentHover;
-            _tipBody = new GUIStyle(skin.Body) { fontSize = 14, wordWrap = true };
+            _tipBody = new GUIStyle(skin.Body) { fontSize = UiSkin.SmallSize, wordWrap = true };
         }
     }
 }

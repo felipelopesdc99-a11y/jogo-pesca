@@ -513,7 +513,8 @@ namespace FishingIdle.Game.UI
                 tx += 26;
             }
 
-            GUI.Label(new Rect(tx, rect.y + 8, rect.xMax - 28 - tx, 20), text, open ? skin.SmallBold : skin.Small);
+            var textStyle = open ? skin.SmallBold : skin.Small;
+            GUI.Label(new Rect(tx, rect.y + 8, rect.xMax - 28 - tx, 20), FishCard.Fit(text, textStyle, rect.xMax - 28 - tx), textStyle);
             GUI.Label(new Rect(rect.xMax - 26, rect.y + 7, 18, 20), "▾", skin.SmallBold);
             return clicked;
         }
@@ -670,11 +671,12 @@ namespace FishingIdle.Game.UI
                 if (item.Hint != null)
                 {
                     GUI.Label(new Rect(tx, r.y + 6, r.xMax - 30 - tx, 20), item.Label, skin.BodyBold);
-                    GUI.Label(new Rect(tx, r.y + 27, r.xMax - 30 - tx, 18), FishCard.Fit(item.Hint, skin.SmallMuted, r.xMax - 30 - tx), skin.SmallMuted);
+                    GUI.Label(new Rect(tx, r.y + 26, r.xMax - 30 - tx, UiSkin.SmallLine), FishCard.Fit(item.Hint, skin.SmallMuted, r.xMax - 30 - tx), skin.SmallMuted);
                 }
                 else
                 {
-                    GUI.Label(new Rect(tx, r.y + 6, r.xMax - 30 - tx, 20), item.Label, item.Active ? skin.SmallBold : skin.Small);
+                    var itemStyle = item.Active ? skin.SmallBold : skin.Small;
+                    GUI.Label(new Rect(tx, r.y + 6, r.xMax - 30 - tx, 20), FishCard.Fit(item.Label, itemStyle, r.xMax - 30 - tx), itemStyle);
                 }
                 if (item.Active)
                 {

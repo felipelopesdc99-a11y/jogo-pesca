@@ -31,8 +31,8 @@ namespace FishingIdle.Game.UI
                 lines += 1 + (newSpecies > 0 ? 1 : 0) + (update.ShellsGained > 0 ? 1 : 0) + (update.LevelsReached.Count > 0 ? 1 : 0);
             }
 
-            // Title and the fixed lines (132), each optional line, the best catches (124), the note and buttons (124).
-            var height = 132f + lines * 24f + (best.Count > 0 ? 124f : 0f) + 124f;
+            // Title and the fixed lines (132), each optional line, the best catches (128), the note and buttons (124).
+            var height = 132f + lines * 24f + (best.Count > 0 ? 128f : 0f) + 124f;
             var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, Mathf.Max(360f, height), 720f);
             var x = rect.x + 30;
             var w = rect.width - 60;
@@ -111,11 +111,11 @@ namespace FishingIdle.Game.UI
                     GUI.Label(new Rect(x + i * cw, y + 58, cw - 10, 20), FishCard.Fit(c.SpeciesName, skin.Small, cw - 10), skin.Small);
                     // The rarity in words next to the size, not only as the glow colour (M22-T12).
                     var line = string.IsNullOrEmpty(c.RarityName) ? Format.SizeCm(c.SizeCm) : c.RarityName + " · " + Format.SizeCm(c.SizeCm);
-                    GUI.Label(new Rect(x + i * cw, y + 76, cw - 10, 20), FishCard.Fit(line, skin.SmallMuted, cw - 10), skin.SmallMuted);
+                    GUI.Label(new Rect(x + i * cw, y + 78, cw - 10, 20), FishCard.Fit(line, skin.SmallMuted, cw - 10), skin.SmallMuted);
                 }
             }
 
-            GUI.Label(new Rect(x, rect.yMax - 112, w, 40), GameTexts.Offline.Note(Format.Duration(report.CycleSeconds), GameTexts.Offline.Hours(report.CapHours)), skin.SmallMuted);
+            GUI.Label(new Rect(x, rect.yMax - 114, w, 44), GameTexts.Offline.Note(Format.Duration(report.CycleSeconds), GameTexts.Offline.Hours(report.CapHours)), skin.SmallMuted);
             var openBox = false;
             if (count > 0 && skin.IconButton(new Rect(x, rect.yMax - 62, 280, 42), Icons.Box, GameTexts.Offline.OpenBox, skin.Button))
             {

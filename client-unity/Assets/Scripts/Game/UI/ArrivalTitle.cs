@@ -56,16 +56,16 @@ namespace FishingIdle.Game.UI
 
             if (!string.IsNullOrEmpty(_chapter))
             {
-                GUI.Label(new Rect(0, centreY - 58f, screenWidth, 22f), _chapter, chapterStyle);
+                UiSkin.ShadowLabel(new Rect(0, centreY - 58f, screenWidth, 22f), _chapter, chapterStyle);
                 var lw = 60f;
                 GUI.DrawTexture(new Rect(screenWidth / 2f - 150f - lw, centreY - 47f, lw, 1.5f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(gold.r, gold.g, gold.b, 0.7f * alpha), 0, 0);
                 GUI.DrawTexture(new Rect(screenWidth / 2f + 150f, centreY - 47f, lw, 1.5f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(gold.r, gold.g, gold.b, 0.7f * alpha), 0, 0);
             }
 
-            GUI.Label(new Rect(0, centreY - 34f, screenWidth, 64f), _name, nameStyle);
+            UiSkin.ShadowLabel(new Rect(0, centreY - 34f, screenWidth, 64f), _name, nameStyle);
             if (!string.IsNullOrEmpty(_line))
             {
-                GUI.Label(new Rect(0, centreY + 32f, screenWidth, 28f), _line, lineStyle);
+                UiSkin.ShadowLabel(new Rect(0, centreY + 32f, screenWidth, 28f), _line, lineStyle);
             }
 
             GUI.color = previous;

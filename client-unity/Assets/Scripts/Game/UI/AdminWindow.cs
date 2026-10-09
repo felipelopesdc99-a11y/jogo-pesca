@@ -54,7 +54,7 @@ namespace FishingIdle.Game.UI
         {
             var w = _rect.width;
             GUI.Label(new Rect(20, 14, w - 140, 28), GameTexts.Dev.Title, skin.Heading);
-            GUI.Label(new Rect(20, 40, w - 140, 18), GameTexts.Dev.Subtitle, skin.SmallMuted);
+            GUI.Label(new Rect(20, 40, w - 140, UiSkin.SmallLine), GameTexts.Dev.Subtitle, skin.SmallMuted);
             if (GUI.Button(new Rect(w - 110, 14, 90, 32), GameTexts.Dev.Close, skin.Button))
             {
                 IsOpen = false;
@@ -168,8 +168,8 @@ namespace FishingIdle.Game.UI
                 var color = UiSkin.RarityColor(s.RarityId);
                 GUI.DrawTexture(new Rect(row.x + 4, row.y + 13, 10, 10), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, 5);
                 var textWidth = row.width - 20 - 3 * 58;
-                GUI.Label(new Rect(row.x + 20, row.y + 2, textWidth, 20), FishCard.Fit(s.Name, skin.SmallBold, textWidth), skin.SmallBold);
-                GUI.Label(new Rect(row.x + 20, row.y + 19, textWidth, 16), FishCard.Fit(s.RarityName + " · " + s.MapName, skin.SmallMuted, textWidth), skin.SmallMuted);
+                GUI.Label(new Rect(row.x + 20, row.y, textWidth, 20), FishCard.Fit(s.Name, skin.SmallBold, textWidth), skin.SmallBold);
+                GUI.Label(new Rect(row.x + 20, row.y + 18, textWidth, UiSkin.SmallLine), FishCard.Fit(s.RarityName + " · " + s.MapName, skin.SmallMuted, textWidth), skin.SmallMuted);
                 var bx = row.xMax - 3 * 58;
                 foreach (var count in new[] { 1, 5, 20 })
                 {

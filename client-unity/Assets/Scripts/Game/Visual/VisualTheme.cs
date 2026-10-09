@@ -22,8 +22,9 @@ namespace FishingIdle.Game.Visual
         public Color Panel = Hex("#11223A");
         public Color PanelElevated = Hex("#183050");
         public Color Border = Hex("#274A70");
-        public Color Text = Hex("#EEF4FB");
-        public Color TextMuted = Hex("#9DB2C9");
+        // Legibility pass (addendum A-149): Text a touch warmer, TextMuted lighter (the Art Bible lists #EEF4FB and #9DB2C9).
+        public Color Text = Hex("#EEF3F8");
+        public Color TextMuted = Hex("#B4C6DB");
         public Color Action = Hex("#25C4C1");
         public Color ActionHover = Hex("#3AD6D2");
         public Color Reward = Hex("#F6B93B");

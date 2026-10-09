@@ -145,8 +145,8 @@ namespace FishingIdle.Game.UI
                 y += 10;
                 if (!chance.BitesHere)
                 {
-                    GUI.Label(new Rect(x, y, w, 18), GameTexts.Gear.NotHere, skin.SmallMuted);
-                    y += 18;
+                    GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Gear.NotHere, skin.SmallMuted);
+                    y += UiSkin.SmallLine;
                 }
 
                 y += 8;
@@ -163,7 +163,7 @@ namespace FishingIdle.Game.UI
         private static void GearRow(UiSkin skin, float x, ref float y, float w, string icon, string label, string name, double bonus)
         {
             skin.DrawIcon(new Rect(x, y + 2, 20, 20), icon, UiSkin.Accent);
-            GUI.Label(new Rect(x + 30, y, w - 110, 22), label + ": " + name, skin.Small);
+            GUI.Label(new Rect(x + 30, y, w - 110, 22), FishCard.Fit(label + ": " + name, skin.Small, w - 110), skin.Small);
             GUI.Label(new Rect(x + w - 90, y, 90, 22), "+" + Format.Percent(bonus, 0), skin.SmallRight);
             y += 34;
         }
@@ -264,8 +264,11 @@ namespace FishingIdle.Game.UI
 
         private static void Row(UiSkin skin, float x, ref float y, float w, string label, double at1, double atMax)
         {
-            GUI.Label(new Rect(x, y, w - 100, 22), label, skin.SmallMuted);
-            GUI.Label(new Rect(x + w - 110, y, 110, 22), "+" + Format.Percent(at1, 0) + " → +" + Format.Percent(atMax, 0), skin.SmallRight);
+            // The value keeps its full width (never wraps out of sight); the label gets what is left.
+            var value = "+" + Format.Percent(at1, 0) + " → +" + Format.Percent(atMax, 0);
+            var vw = Mathf.Min(w, skin.SmallRight.CalcSize(new GUIContent(value)).x + 4f);
+            GUI.Label(new Rect(x, y, Mathf.Max(0f, w - vw - 8f), 22), FishCard.Fit(label, skin.SmallMuted, Mathf.Max(0f, w - vw - 8f)), skin.SmallMuted);
+            GUI.Label(new Rect(x + w - vw, y, vw, 22), value, skin.SmallRight);
             y += 24;
         }
 
@@ -294,12 +297,13 @@ namespace FishingIdle.Game.UI
                 }
 
                 var x = rect.x + 140;
-                GUI.Label(new Rect(x, cy, 220, 28), boat.Name, skin.Heading);
-                GUI.Label(new Rect(x, cy + 28, 220, 36), string.IsNullOrEmpty(boat.Description) ? GameTexts.Profile.Tier(boat.Tier) : boat.Description, skin.SmallMuted);
-                GUI.Label(new Rect(x + 230, cy + 4, 180, 24), GameTexts.Gear.Bonus(Format.Percent(boat.Bonus, 0)), skin.BodyBold);
+                // The description column is wide enough for two lines of the small text (A-149).
+                GUI.Label(new Rect(x, cy, 310, 28), boat.Name, skin.Heading);
+                GUI.Label(new Rect(x, cy + 28, 310, 42), string.IsNullOrEmpty(boat.Description) ? GameTexts.Profile.Tier(boat.Tier) : boat.Description, skin.SmallMuted);
+                GUI.Label(new Rect(x + 320, cy + 4, 180, 24), GameTexts.Gear.Bonus(Format.Percent(boat.Bonus, 0)), skin.BodyBold);
                 if (!boat.Owned)
                 {
-                    Cost(skin, new Rect(x + 230, cy + 30, 220, 22), boat.CostCoins, boat.CostShells);
+                    Cost(skin, new Rect(x + 320, cy + 30, 220, 22), boat.CostCoins, boat.CostShells);
                 }
 
                 var button = new Rect(rect.xMax - 230, rect.y + (rect.height - 42) / 2f, 210, 42);

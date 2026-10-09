@@ -3,6 +3,20 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.41] — 08/10/2026
+
+### Mudado
+
+- Texto mais legível no jogo todo: o texto suave ficou mais claro (`#B4C6DB`, contraste de pelo menos 5:1 em todos
+  os painéis, cartões e botões) e o principal um branco suave (`#EEF3F8`); os rótulos pequenos passaram de 13 para
+  15 px, chips e selos de 12–13 para 14 px e as etiquetas de 11 para 13 px, com a Nunito SemiBold no lugar da
+  Regular. Sombra leve só no texto sobre a arte (chegada ao mapa e batalha da Arena). Alturas de linha e caixas
+  ajustadas em todas as janelas para nada cortar nem se sobrepor (A-149).
+
+### Não verificado
+
+- Não compilado (sem .NET) e não aberto no Editor.
+
 ## [0.2.0-m21.40] — 08/10/2026
 
 ### Mudado
