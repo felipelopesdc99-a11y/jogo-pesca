@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-09T16:10:00Z",
-  "current_milestone": "M21",
+  "updated_at": "2026-10-09T16:30:00Z",
+  "current_milestone": "M23",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -474,6 +474,22 @@
       "title": "Bots da Arena para jogadores iniciantes",
       "detail": "A Arena de verdade será só entre jogadores. Falta definir como os iniciantes terão adversários no começo (bots só nas posições baixas? só até certo nível? com peixes de quais mapas?). O proprietário vai pensar numa forma.",
       "raised_at": "2026-10-07T20:30:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-052",
+      "task_id": "M23-T02",
+      "title": "Visão da ilha 2D e origem da arte",
+      "detail": "A ilha pode ser vista de cima (como Stardew Valley), de lado (como Terraria) ou de lado em camadas (como a cena de pesca de hoje). A arte pode vir do ChatGPT ou de um pacote pronto (gratuito ou pago, explicado antes). Os exemplos do M23-T01 mostram as três visões.",
+      "raised_at": "2026-10-09T16:30:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-053",
+      "task_id": "M23-T03",
+      "title": "Fabricação, construção e a Loja",
+      "detail": "Quais recursos, de onde vêm, o que se fabrica e até que nível, o que a Loja continua vendendo, o que se constrói e para que serve, e o que os jogadores de hoje recebem na ilha.",
+      "raised_at": "2026-10-09T16:30:00Z",
       "status": "OPEN"
     }
   ],
@@ -4183,6 +4199,105 @@
           "dependencies": [],
           "updated_at": "2026-10-09T16:10:00Z",
           "completion_notes": "CameraSway (FishingScene.cs) fixa em orthographicSize 5,4 (a cena inteira), sem foco no barco; Hud sem a roda do mouse aproximando e sem o controle \"Aproximar\" nas Configurações (painel 384 → 340 px); GameSettings.Zoom e GameTexts.Hud.Zoom removidos. A-151 (substitui o A-102). Não compilado nem aberto no Unity."
+        }
+      ]
+    },
+    {
+      "id": "M23",
+      "title": "Ilha 2D: jogo semi idle",
+      "goal": "Decisão do proprietário (09/10/2026): o jogo passa a ter uma ilha em 2D onde o pescador anda, junta recursos, fabrica a vara e o barco iniciais e constrói a própria casa e outras construções. A pesca idle de hoje continua sendo a base. Feito em etapas, cada uma testável antes da próxima.",
+      "completion_criteria": [
+        "O proprietário escolheu a visão da ilha e a origem da arte.",
+        "A ilha jogável leva à pesca de hoje sem quebrar nada do que já existe.",
+        "Fabricação e construção definidas pelo proprietário e registradas no GDD_ADENDO."
+      ],
+      "tasks": [
+        {
+          "id": "M23-T01",
+          "title": "Exemplos da ilha em 2D (3 visões)",
+          "subsystem": "docs",
+          "description": "3 exemplos desenhados da ilha: vista de cima, vista de lado e vista de lado em camadas, com casa, bancada, píer, recursos e a tela de fabricar a vara inicial.",
+          "status": "IN_PROGRESS",
+          "dependencies": [],
+          "updated_at": "2026-10-09T16:30:00Z"
+        },
+        {
+          "id": "M23-T02",
+          "title": "Escolher a visão da ilha e a origem da arte",
+          "subsystem": "docs",
+          "description": "Decisão do proprietário: visão (de cima, de lado ou de lado em camadas) e arte (ChatGPT ou pacote pronto; pago só com explicação antes).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M23-T01"
+          ],
+          "updated_at": "2026-10-09T16:30:00Z"
+        },
+        {
+          "id": "M23-T03",
+          "title": "Definir fabricação e construção",
+          "subsystem": "docs",
+          "description": "Decisão do proprietário: quais recursos existem e de onde vêm, o que se fabrica (vara e barco iniciais; até que nível) e o que continua na Loja, o que se constrói (casa e outras), e o que acontece com os saves de hoje. Nada disso existe no GDD travado: entra no GDD_ADENDO quando decidido.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M23-T02"
+          ],
+          "updated_at": "2026-10-09T16:30:00Z"
+        },
+        {
+          "id": "M23-T04",
+          "title": "Etapa 1: ilha com o pescador andando e o píer",
+          "subsystem": "client",
+          "description": "Protótipo: a ilha na visão escolhida, o pescador andando e o píer que leva à pesca de hoje.",
+          "status": "TODO",
+          "dependencies": [
+            "M23-T02"
+          ],
+          "updated_at": "2026-10-09T16:30:00Z"
+        },
+        {
+          "id": "M23-T05",
+          "title": "Etapa 2: juntar recursos e fabricar a vara inicial",
+          "subsystem": "server",
+          "description": "Regras no serviço de jogo (recursos, receitas, bancada) e a tela de fabricar.",
+          "status": "TODO",
+          "dependencies": [
+            "M23-T03",
+            "M23-T04"
+          ],
+          "updated_at": "2026-10-09T16:30:00Z"
+        },
+        {
+          "id": "M23-T06",
+          "title": "Etapa 3: fabricar o barco inicial para sair para pescar",
+          "subsystem": "server",
+          "description": "Sem barco, não se sai do píer; o barco fabricado libera a pesca.",
+          "status": "TODO",
+          "dependencies": [
+            "M23-T05"
+          ],
+          "updated_at": "2026-10-09T16:30:00Z"
+        },
+        {
+          "id": "M23-T07",
+          "title": "Etapa 4: construir a casa e outras construções",
+          "subsystem": "server",
+          "description": "Construção na ilha, com os efeitos que o proprietário definir.",
+          "status": "TODO",
+          "dependencies": [
+            "M23-T06"
+          ],
+          "updated_at": "2026-10-09T16:30:00Z"
+        },
+        {
+          "id": "M23-T08",
+          "title": "Migração dos saves de hoje para a ilha",
+          "subsystem": "server",
+          "description": "Quem já joga ganha o quê na ilha (vara e barco que já tem, recursos iniciais), conforme decisão do proprietário.",
+          "status": "TODO",
+          "dependencies": [
+            "M23-T03"
+          ],
+          "updated_at": "2026-10-09T16:30:00Z"
         }
       ]
     }
