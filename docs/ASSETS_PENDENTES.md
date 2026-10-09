@@ -420,6 +420,64 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > centro vazado e transparente. Sem corda, sem sombra projetada, sem texto. Estilo "Lago Dourado — Clean Premium":
 > limpo, metálico suave. Arquivo: ui_hdr_argola.png
 
+## Loja "Balcão do Píer" (A-150, escolha do proprietário em 09/10/2026)
+
+A Loja já funciona com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/ShopWindow.cs`): parede de tábuas
+azul-noite, ganchos de latão, tábua do balcão, caixa de pesca aberta e boias. A moldura da ficha reaproveita
+`ui_exp_moldura_carta.png`, e as varas, barcos e iscas usam as imagens que já existem. Texto, preços, etiquetas, a
+alça da tampa da caixa, as divisórias, a cor da raridade nas boias e todas as sombras são do código — a arte não deve
+trazer nada disso. O ChatGPT costuma entregar em 1024×1536 ou 1536×1024; tudo bem: o script
+`tools/Arte/processar_loja.py <pasta>` corta a sobra transparente (alfa > 8), redimensiona com LANCZOS e grava no
+tamanho final em `Resources/Arte/UI/`. Basta salvar os 5 PNGs com os nomes abaixo numa pasta e rodar o script.
+
+| Arquivo | Tamanho final | Como o jogo usa |
+|---|---|---|
+| `ui_loja_parede_noite.png` | 512×768 | Repete na largura, na altura do conteúdo (não é 9 partes): as bordas da esquerda e da direita têm de encaixar. |
+| `ui_loja_gancho.png` | 64×64 | Gancho de latão desenhado com 18 px, dois por prateleira. |
+| `ui_loja_balcao_pier.png` | 1024×96 | Tábua do balcão em 9 partes, só nas laterais: **48 px à esquerda e à direita** não esticam; o miolo estica na largura. Desenhada com 34 px de altura. |
+| `ui_loja_caixa.png` | 512×288 | Caixa de pesca em 9 partes, **bordas de 40 px** nos quatro lados (desenhada a 35%: ~14 px). A tampa aberta fica na faixa de cima. |
+| `ui_loja_boia.png` | 64×96 | Desenhada com 22×34 px. A metade de cima é pintada pelo jogo na cor da raridade; a de baixo fica como está. O anel escuro do meio tem de cair exatamente na metade da altura. |
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Textura de parede de tábuas para o fundo de uma loja de pesca num jogo mobile, PNG 512×768 px (pode ser 1024×1536
+> na mesma proporção), sem transparência, preenchendo a imagem inteira. Quatro tábuas verticais de 128 px de largura,
+> alternando azul-noite #132A45 e #15304E, separadas por frestas finas e escuras #0B1D33, veios de madeira suaves só
+> na vertical, luz difusa e uniforme (nada de vinheta, nada de brilho num canto). Precisa repetir sem emenda na
+> horizontal: a borda esquerda encaixa perfeitamente na direita. Sem texto, sem pregos, sem objetos, sem marrom.
+> Estilo "Lago Dourado — Clean Premium": pintura digital limpa, cores profundas, calma. Arquivo:
+> ui_loja_parede_noite.png
+
+> Gancho de parede de latão para pendurar varas de pesca, jogo mobile, PNG 64×64 px (pode ser 1024×1024 na mesma
+> proporção) com fundo transparente, visto de frente: uma plaquinha redonda presa à parede com um parafuso e um gancho
+> em "U" curto saindo para baixo, latão #C9A45A com sombra #8A6E36 e um brilho suave em cima, contorno limpo. Sem
+> parede, sem vara, sem sombra projetada, sem texto. Estilo "Lago Dourado — Clean Premium": formas simples,
+> arredondadas, metal suave. Arquivo: ui_loja_gancho.png
+
+> Tampo de balcão de loja num píer, jogo mobile, PNG 1024×96 px (pode ser 1536×1024 com a tábua centralizada
+> ocupando toda a largura) com fundo transparente, vista de frente e levemente de cima: uma tábua grossa e comprida,
+> cantos arredondados (raio 12 px), azul #2A5A86 em cima escurecendo para #183A5E e #0E2442 embaixo, com um filete
+> turquesa #25C4C1 de 4 px na borda de cima e veios de madeira só na horizontal. As pontas da esquerda e da direita
+> podem ter um acabamento (ponteira de latão #C9A45A) dentro dos primeiros 48 px de cada lado; o meio tem de ser
+> uniforme, porque vai esticar. Sem texto, sem objetos em cima, sem sombra projetada, nada de marrom. Estilo "Lago
+> Dourado — Clean Premium". Arquivo: ui_loja_balcao_pier.png
+
+> Caixa de pesca aberta, vista de frente, para interface de jogo mobile, PNG 512×288 px (pode ser 1536×1024 com a
+> caixa centralizada ocupando a largura) com fundo transparente. Corpo retangular de cantos arredondados (raio 20 px)
+> em verde-azulado escuro, #2F6A7A em cima escurecendo para #1F4F5E embaixo, borda #133A46 de 4 px; na faixa de cima
+> (40 px), a borda da tampa aberta, um pouco mais estreita que o corpo, em #3A7D8E a #2A6474. Interior liso e escuro
+> (#0B2230 a 60%), SEM divisórias, SEM alça e SEM fecho — o jogo desenha isso. Os cantos de 40 px não podem ter nada
+> que não deva esticar no meio; o miolo tem de ser uniforme. Sem texto, sem iscas, sem sombra projetada. Estilo
+> "Lago Dourado — Clean Premium": formas simples, plástico/madeira pintada suave. Arquivo: ui_loja_caixa.png
+
+> Boia de pesca em pé, vista de frente, para jogo mobile, PNG 64×96 px (pode ser 1024×1536 na mesma proporção) com
+> fundo transparente, centralizada. Antena fina cinza-clara (#DDDDDD) curta em cima; corpo em forma de gota
+> arredondada com a metade de cima BRANCA (#FFFFFF, só um sombreado cinza bem leve, porque o jogo pinta essa metade
+> na cor da raridade) e a metade de baixo branca-gelo (#F4F4F4); um anel fino escuro (#2A3646) separando as duas
+> metades EXATAMENTE na metade da altura da imagem; um brilho branco pequeno no alto à esquerda. Sem água, sem
+> reflexo, sem sombra projetada, sem texto. Estilo "Lago Dourado — Clean Premium": limpo, arredondado. Arquivo:
+> ui_loja_boia.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

@@ -663,6 +663,13 @@ namespace FishingIdle.Texts
             public static string DestroyTitle(string rod) => "Destruir " + rod + "?";
             public const string DestroyBody = "A vara some do Inventário e você não recebe nada. Esta ação não pode ser desfeita.";
             public const string CatchBonus = "Sucesso da captura";
+
+            // "Balcão do Píer" (A-150).
+            public const string OnCounter = "no balcão";
+            public const string OwnedBoat = "Já é seu";
+            public static string LevelTag(int level) => "Nv. " + Format.Number(level);
+            public static string Position(int index, int total) => Format.Number(index) + " de " + Format.Number(total);
+            public static string Info(string tabNote, string chanceNote) => tabNote + "\n\n" + chanceNote;
         }
 
         // ------------------------------------------------------------------ owner's test tools (A-123)

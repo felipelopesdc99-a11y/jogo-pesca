@@ -1853,3 +1853,53 @@ janela de 600 px, 13 px viravam uns 7 px. Muda só a forma de mostrar; nenhum te
     das ilhas ficou mais alta e escura, com o espaço dos nomes ajustado; na Arena, as letras de "FRENTE"/"TRÁS"
     acompanham a altura da fileira; os botões de filtro da Caixa encurtam o texto com "…".
   - Cartões de peixe: as linhas de baixo (tamanho, rodapé e moedas) ganharam 1–2 px; a arte do peixe cede esse espaço.
+
+### A-150 · Loja: "Balcão do Píer"
+
+Escolha do proprietário (09/10/2026): a Loja vira a "Mescla B · Balcão do Píer" da página de mesclas (parede de
+ganchos do Exemplo 3 + ficha com pedestal do Exemplo 2 + moldura de corda do Exemplo 1). Muda só a forma de mostrar:
+preços, bônus, requisitos, bloqueios e chances vêm dos serviços da Loja e do Equipamento; Comprar, Pegar grátis,
+Usar e Guardar chamam os mesmos fluxos de antes. Nenhuma regra, número ou save muda.
+
+- **Quadro**: a janela comum de 1320×840 (antes 1200×730) com a Placa do Píer (A-148). Atrás de tudo, uma parede de
+  tábuas verticais azul-noite; no alto, uma viga turquesa.
+- **"i" da placa**: a frase da aba (Varas: Inventário no Perfil; Barcos e Iscas: as notas de sempre; VIP: a nota do
+  VIP), seguida da explicação da chance de puxar o peixe (mínimo e máximo). A nota da chance saiu de baixo das barras
+  e passou a morar aqui; continua sempre disponível.
+- **Abas** Varas | Barcos | Iscas | VIP como plaquinhas penduradas na viga por duas cordinhas; a ativa com borda
+  turquesa e brilho leve.
+- **Parede de ganchos** (esquerda): uma prateleira por item, na ordem do serviço, com plaquinha (nome; categoria nas
+  varas, "+x% de chance" nos barcos e iscas, faixa na cor da categoria), o item deitado em dois ganchos de latão (as
+  varas inclinadas 28°) e uma etiqueta pendurada por um barbante: preço em Moedas (e Conchas, na linha de baixo),
+  "Grátis", "JÁ É SUA" (vara) / "JÁ É SEU" (barco), "EM USO" (turquesa cheio) ou cadeado com "Nv. X". Item bloqueado
+  aparece só como sombra. Com mais itens do que cabem, a parede rola (aí as varas ficam sem inclinação).
+- **Escolher**: clicar numa prateleira ou nas setas ‹ › do balcão. O item escolhido sai do gancho — ali fica só a
+  marca apagada com "no balcão" num contorno tracejado — e faz um arco curto até o pedestal: 0,6 s, desacelerando,
+  com um rastro pontilhado turquesa que some em 0,25 s. Depois a aura acende (0,3 s) e a ficha desliza 24 px da
+  direita (0,35 s). Acontece ao abrir a Loja, ao trocar de aba e ao escolher outro item; nada fica em loop.
+- **Balcão** (centro): "4 de 6" com as setas, o item grande sobre o pedestal com aura na cor da categoria (fraca, como
+  a ficha do Aquário, A-145) e a tábua do balcão com filete turquesa.
+- **Ficha** (direita), na moldura de corda da carta de missão (esticada em 9 partes): nome, categoria, até que nível,
+  "Pesca peixes…", "Disponível no Nível X" (visto turquesa ou cadeado dourado) e:
+  - Varas: os 4 bônus (Sucesso da captura, Chance de raridade, Qualidade de tamanho, Conchas) com "+x% → +y%" e uma
+    barra com o Nível 1 cheio sobre o nível máximo claro; a barra vai até o maior valor daquele bônus entre as varas
+    da aba (só a escala do desenho). Preço (ou "Grátis") e Comprar / Pegar grátis; "EM USO" ou "JÁ É SUA" quando já
+    é dela; o motivo do bloqueio no lugar do botão.
+  - Barcos: descrição, "+x% de chance" grande com barra (escala: o maior barco), a nota dos barcos quando cabe,
+    preço e Comprar, Usar ou "EM USO".
+  - Iscas: descrição, bônus com barra, tentativas por compra, tentativas que restam (douradas se em uso), preço,
+    Comprar e, embaixo, Usar ou Guardar.
+- **Seu equipamento** numa caixa de pesca aberta (embaixo, à esquerda): três divisórias com vara, barco e isca (rótulo,
+  imagem, nome, bônus em turquesa), as tentativas que restam da isca e o Bônus total.
+- **Chance de puxar o peixe** na água (embaixo, à direita): uma boia por raridade, com a porcentagem em cima e o nome
+  embaixo, na cor da raridade. A raridade que não morde aqui fica com a boia deitada e cinza, a porcentagem apagada e
+  "não morde aqui". As boias ficam paradas (mais limpo).
+- **VIP**: o mesmo cartão de antes, sobre um fundo escuro para ler bem na parede, com a caixa e as boias embaixo.
+- **Concessões**: o rótulo de preço com Conchas usa duas linhas para a etiqueta não alargar a parede; a nota dos barcos
+  e das iscas aparece na ficha só quando cabe inteira (sempre está no "i"); o pedestal e a aura continuam os desenhos
+  provisórios da ficha de herói.
+- **Arte**: tudo tem desenho de reserva no código. Arquivos opcionais em `Resources/Arte/UI` (pedidos em
+  `docs/ASSETS_PENDENTES.md`, processados por `tools/Arte/processar_loja.py`): `ui_loja_parede_noite` (repete na
+  largura), `ui_loja_gancho`, `ui_loja_balcao_pier` (9 partes), `ui_loja_caixa` (9 partes) e `ui_loja_boia` (metade de
+  cima pintada na cor da raridade). A moldura da ficha reaproveita `ui_exp_moldura_carta`; varas, barcos e iscas usam
+  as imagens que já existem.

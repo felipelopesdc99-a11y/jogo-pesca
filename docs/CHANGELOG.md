@@ -3,6 +3,25 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.42] — 09/10/2026
+
+### Mudado
+
+- Loja com o visual "Balcão do Píer": parede de ganchos azul-noite com as varas, barcos e iscas deitados e uma
+  etiqueta pendurada em cada um (preço, "JÁ É SUA"/"JÁ É SEU", "EM USO" ou cadeado com "Nv. X"); abas como
+  plaquinhas penduradas na viga; no centro, o balcão do píer com o item escolhido sobre um pedestal com aura; à
+  direita, a ficha numa carta de moldura de corda com os bônus em barras (Nível 1 → máximo) e Comprar / Usar /
+  Guardar. Ao escolher, o item sai do gancho e faz um arco curto até o pedestal (0,6 s, uma vez) e a ficha desliza da
+  direita. Embaixo, "Seu equipamento" numa caixa de pesca aberta e a "Chance de puxar o peixe" como 5 boias na água,
+  com as raridades que não mordem aqui deitadas e cinza. A frase de cada aba e a explicação da chance foram para o
+  "i" da placa. Todas as informações e ações de antes continuam; nenhuma regra ou número muda (A-150).
+- Arte opcional da Loja pedida em `docs/ASSETS_PENDENTES.md` (parede, gancho, balcão, caixa e boia), com o script
+  `tools/Arte/processar_loja.py`; enquanto não chega, o jogo desenha tudo no código.
+
+### Não verificado
+
+- Não compilado (sem .NET) e não aberto no Editor.
+
 ## [0.2.0-m21.41] — 08/10/2026
 
 ### Mudado
