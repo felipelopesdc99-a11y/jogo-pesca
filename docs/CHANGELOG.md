@@ -3,6 +3,20 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.40] — 08/10/2026
+
+### Mudado
+
+- Cabeçalho "Placa do Píer" em todos os menus com a moldura comum (Expedição, Ranking, Mercado, Loja, Arena,
+  batalha da Arena, Mapa, Aquário e Caixa de Pesca): placa de tábuas azul-escuras com borda turquesa, pendurada por
+  cordas, com o ícone e o título, que balança uma vez ao abrir. A frase que explicava o menu foi para o botão "i"
+  ("Como funciona"); contadores e tempo ficam num fundo escuro ao lado da placa. Na Expedição, a Força do Cardume
+  subiu para a faixa do cabeçalho e a carta náutica ganhou a altura liberada (A-148).
+
+### Não verificado
+
+- Não compilado (sem .NET) e não aberto no Editor.
+
 ## [0.2.0-m21.39] — 08/10/2026
 
 ### Mudado

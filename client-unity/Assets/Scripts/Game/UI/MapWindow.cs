@@ -83,8 +83,9 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Map.Title,
-                GameTexts.Map.TravelTime(Format.Duration(_maps.TravelSeconds)) + " · " + GameTexts.Map.TravelNote, out var closed, 1320f, 840f, Icons.Map);
+            // A-148: the travel time stays in sight next to the sign; the explanation goes behind the "i".
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Map.Title, GameTexts.Map.TravelNote, out var closed, 1320f, 840f, Icons.Map,
+                GameTexts.Map.TravelTime(Format.Duration(_maps.TravelSeconds)));
             if (closed)
             {
                 Close();

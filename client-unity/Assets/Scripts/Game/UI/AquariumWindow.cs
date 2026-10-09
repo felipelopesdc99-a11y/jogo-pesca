@@ -197,8 +197,10 @@ namespace FishingIdle.Game.UI
 
             GUI.enabled = !DialogOpen;
             var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f);
-            if (WindowFrame.Header(skin, panel, _feeding ? GameTexts.Aquarium.Title : GameTexts.Aquarium.Title,
-                    GameTexts.Aquarium.Count(_aquarium.Count, _aquarium.Capacity), Icons.Aquarium))
+            // A-148: the fish count is a counter, next to the sign; the search (300 + 16) and, outside feeding, the
+            // Tanque | Cartas toggle (~232 + 12) keep their place.
+            if (WindowFrame.Header(skin, panel, GameTexts.Aquarium.Title, null, Icons.Aquarium,
+                    GameTexts.Aquarium.Count(_aquarium.Count, _aquarium.Capacity), _feeding ? 316f : 560f))
             {
                 Close();
             }
@@ -221,8 +223,8 @@ namespace FishingIdle.Game.UI
             }
 
             var detailWidth = 420f;
-            var left = new Rect(panel.x + 28, panel.y + 96, panel.width - detailWidth - 72, panel.height - 116);
-            var right = new Rect(panel.xMax - detailWidth - 24, panel.y + 96, detailWidth, panel.height - 116);
+            var left = new Rect(panel.x + 28, panel.y + 80, panel.width - detailWidth - 72, panel.height - 100);
+            var right = new Rect(panel.xMax - detailWidth - 24, panel.y + 80, detailWidth, panel.height - 100);
 
             if (_feeding)
             {

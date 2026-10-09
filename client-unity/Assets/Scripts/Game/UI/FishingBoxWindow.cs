@@ -120,7 +120,8 @@ namespace FishingIdle.Game.UI
             var owner = _root.Player;
             var capacity = owner != null ? owner.FishingBoxCapacity : 0;
             var boxCount = owner != null ? owner.FishingBoxCount : _catches.Count;
-            if (WindowFrame.Header(skin, panel, GameTexts.Box.Title, capacity > 0 ? GameTexts.Box.CountOf(boxCount, capacity) : GameTexts.Box.Count(_catches.Count), Icons.Box))
+            // A-148: the fish count is a counter, next to the sign; the search (300 + 16) keeps its place.
+            if (WindowFrame.Header(skin, panel, GameTexts.Box.Title, null, Icons.Box, capacity > 0 ? GameTexts.Box.CountOf(boxCount, capacity) : GameTexts.Box.Count(_catches.Count), 316f))
             {
                 Close();
             }
@@ -137,7 +138,7 @@ namespace FishingIdle.Game.UI
             // filter and the order folded into two small menus on the right.
             var left = panel.x + 28;
             var right = panel.xMax - 28;
-            var tabsY = panel.y + 98;
+            var tabsY = panel.y + 82;
             var menusWidth = 2 * MenuWidth + 10f;
 
             // Tabs and menus share a row on a wide window; on a narrow one the menus go to a short row below,

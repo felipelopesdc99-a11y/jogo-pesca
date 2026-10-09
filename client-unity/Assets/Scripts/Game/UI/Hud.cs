@@ -287,6 +287,10 @@ namespace FishingIdle.Game.UI
                     _showSettings = false;
                     Event.current.Use();
                 }
+                else if (WindowFrame.CloseInfoBalloon())
+                {
+                    Event.current.Use();
+                }
                 else if (_arena.IsOpen)
                 {
                     _arena.Close();
@@ -369,6 +373,8 @@ namespace FishingIdle.Game.UI
             _arena.Draw(skin, _width, _height);
             _market.Draw(skin, _width, _height);
             _ranking.Draw(skin, _width, _height);
+            // The "Como funciona" balloon of a window header, over the window body (A-148).
+            WindowFrame.DrawInfoBalloon(skin, AnyWindowDialog());
             GUI.color = previousColor;
             GUI.enabled = true;
             if (windowOpen)

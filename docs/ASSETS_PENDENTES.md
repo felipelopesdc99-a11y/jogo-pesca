@@ -386,6 +386,40 @@ pendente nesta seção.
 Recebida e guardada sem uso: a **placa de destino** (poste com placa e bandeirola, do "Exemplo 3 — Porto"). Não foi
 copiada para o jogo; fica com o proprietário para um uso futuro.
 
+## Cabeçalho "Placa do Píer" de todos os menus (A-148, escolha do proprietário em 08/10/2026)
+
+O cabeçalho já funciona com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/WindowFrame.cs`): placa de
+três tábuas azul-escuras com borda turquesa e quatro parafusos, duas cordas listradas e argolas de aço. A sombra
+embaixo da placa, o ícone do menu, o título, o botão "i" e o balanço são do código — a arte não deve trazer nada
+disso. Arquivos esperados, em `Resources/Arte/UI/` (PNG, fundo transparente):
+- `ui_hdr_placa.png` — 512×128, placa esticável em 9 partes: as bordas que não esticam são **48 px à esquerda e à
+  direita** e **32 px em cima e embaixo** (os parafusos ficam dentro desses cantos); o miolo estica na largura, então
+  as tábuas só podem ter veios na horizontal.
+- `ui_hdr_corda.png` — 32×128, um trecho de corda na vertical que se repete sem emenda (o topo encaixa no pé). O
+  jogo desenha a corda com 6 px de largura.
+- `ui_hdr_argola.png` — 64×64, argola de aço vista de frente, centro vazado (transparente). O jogo desenha com 18 px.
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Placa de madeira para cabeçalho de jogo mobile, 512×128 px em PNG com fundo transparente, vista de frente, ocupando
+> a imagem inteira (cantos arredondados com raio de 18 px). Três tábuas horizontais azul-escuras (de cima para baixo
+> #1D4266, #1A3C5E e #173757) separadas por frestas finas #0D2440, veios de madeira suaves e só na horizontal.
+> Borda contínua turquesa (#2A8B98) de 6 px com um filete escuro (#0A1A2D) por dentro. Um parafuso de aço (#C9D6E3
+> com sombra #6C7D90 e brilho branco) em cada canto, com o centro a 20 px das duas bordas. Sem texto, sem ícone,
+> sem cordas, sem argolas e sem sombra projetada. A faixa central (de 48 a 464 px na largura, de 32 a 96 px na altura)
+> precisa ser uniforme, porque vai esticar. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, cores
+> profundas, luz suave de cima, nada de marrom. Arquivo: ui_hdr_placa.png
+
+> Trecho de corda de sisal na vertical para jogo mobile, 32×128 px em PNG com fundo transparente, corda com 24 px de
+> largura centralizada, trançada em diagonal, bege-areia (#C9A77A) com as voltas em marrom-claro (#8E6F47) e brilho
+> suave. Tem que repetir sem emenda: a ponta de cima encaixa perfeitamente na de baixo. Sem nós, sem pontas soltas,
+> sem sombra. Estilo "Lago Dourado — Clean Premium": limpo, arredondado. Arquivo: ui_hdr_corda.png
+
+> Argola de aço vista de frente para jogo mobile, 64×64 px em PNG com fundo transparente: um anel redondo (diâmetro
+> externo 60 px, espessura 10 px), aço claro (#C9D6E3) com sombra (#6C7D90) embaixo e um brilho branco em cima, o
+> centro vazado e transparente. Sem corda, sem sombra projetada, sem texto. Estilo "Lago Dourado — Clean Premium":
+> limpo, metálico suave. Arquivo: ui_hdr_argola.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

@@ -113,9 +113,12 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // WindowFrame: the title starts 74 px after the icon tile, 96 px above the content area.
-            var titleW = skin.Title.CalcSize(new GUIContent(GameTexts.Ranking.Title)).x;
-            GUI.DrawTexture(new Rect(area.x + 74f + titleW + 10f, area.y - 84f, 44f, 44f), tex, ScaleMode.ScaleToFit, true);
+            // Next to the header sign (A-148), in the strip WindowFrame leaves free.
+            var side = WindowFrame.TakeSide(44f);
+            if (side.width >= 44f)
+            {
+                GUI.DrawTexture(new Rect(side.x, side.center.y - 22f, 44f, 44f), tex, ScaleMode.ScaleToFit, true);
+            }
         }
 
         private void DrawTabs(UiSkin skin, Rect rect)

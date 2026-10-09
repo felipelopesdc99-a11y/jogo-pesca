@@ -915,6 +915,15 @@ namespace FishingIdle.Texts
             public const string ResetConfirm = "Apagar e começar de novo";
         }
 
+        // ------------------------------------------------------------------ window header "Placa do Píer" (addendum A-148)
+
+        public static class WindowHeader
+        {
+            /// <summary>The round button on the corner of the sign that opens the explanation of the menu.</summary>
+            public const string InfoButton = "i";
+            public const string InfoTitle = "Como funciona";
+        }
+
         // ------------------------------------------------------------------ toasts
 
         public static class Toasts

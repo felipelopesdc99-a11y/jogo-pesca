@@ -105,9 +105,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            skin.IconBadge(new Rect(area.x, area.y, 50, 50), Icons.Fish, UiSkin.Gold);
-            GUI.Label(new Rect(area.x + 62, area.y + 2, 400, 22), GameTexts.Expedition.YourStrength, skin.SmallMuted);
-            GUI.Label(new Rect(area.x + 62, area.y + 20, 500, 30), Format.Number(_view.CardumeStrength) + "  ·  " + GameTexts.Cardume.Filled(_view.CardumeFilled, _view.CardumeSize), skin.Number);
+            DrawStrength(skin);
 
             var chart = ArtAssets.Texture(ChartArt);
             if (chart != null && _view.Expeditions.Count > 0)
@@ -149,6 +147,28 @@ namespace FishingIdle.Game.UI
             }
         }
 
+        /// <summary>
+        /// "Força do seu Cardume" and x / 6 in a dark inset next to the header sign (A-148), where the old header
+        /// had its subtitle.
+        /// </summary>
+        private void DrawStrength(UiSkin skin)
+        {
+            var value = Format.Number(_view.CardumeStrength) + "  ·  " + GameTexts.Cardume.Filled(_view.CardumeFilled, _view.CardumeSize);
+            var textWidth = Mathf.Max(skin.SmallMuted.CalcSize(new GUIContent(GameTexts.Expedition.YourStrength)).x, skin.Number.CalcSize(new GUIContent(value)).x);
+            var well = WindowFrame.TakeSide(10f + 32f + 10f + textWidth + 16f);
+            if (well.width < 80f)
+            {
+                return;
+            }
+
+            skin.Inset(well);
+            skin.IconBadge(new Rect(well.x + 8f, well.center.y - 16f, 32f, 32f), Icons.Fish, UiSkin.Gold);
+            var tx = well.x + 52f;
+            var tw = well.xMax - tx - 8f;
+            GUI.Label(new Rect(tx, well.y + 3f, tw, 18f), FishCard.Fit(GameTexts.Expedition.YourStrength, skin.SmallMuted, tw), skin.SmallMuted);
+            GUI.Label(new Rect(tx, well.y + 17f, tw, 28f), FishCard.Fit(value, skin.Number, tw), skin.Number);
+        }
+
         private void EnsureStyles(UiSkin skin)
         {
             if (_nameStyle != null)
@@ -171,13 +191,17 @@ namespace FishingIdle.Game.UI
             var active = _view.Active;
             if (active == null && _view.CardumeFilled == 0)
             {
-                // Beside the Cardume strength, on the header line.
-                var nx = area.x + area.width * 0.36f;
-                skin.DrawIcon(new Rect(nx, area.y + 15, 20, 20), Icons.Info, UiSkin.Gold);
-                GUI.Label(new Rect(nx + 28, area.y + 14, area.xMax - nx - 28, 22), FishCard.Fit(GameTexts.Expedition.NoCardume, skin.SmallGoldLine, area.xMax - nx - 28), skin.SmallGoldLine);
+                // Beside the Cardume strength, in the header strip (A-148).
+                var note = WindowFrame.Side;
+                if (note.width > 60f)
+                {
+                    skin.DrawIcon(new Rect(note.x, note.center.y - 10f, 20, 20), Icons.Info, UiSkin.Gold);
+                    GUI.Label(new Rect(note.x + 28, note.center.y - 11f, note.width - 28, 22), FishCard.Fit(GameTexts.Expedition.NoCardume, skin.SmallGoldLine, note.width - 28), skin.SmallGoldLine);
+                }
             }
 
-            var top = area.y + 62f;
+            // The Cardume strength moved up into the header (A-148): the chart starts at the top of the content.
+            var top = area.y;
             var panelWidth = Mathf.Clamp(area.width * 0.32f, 320f, 400f);
             var panel = new Rect(area.xMax - panelWidth, top, panelWidth, area.yMax - top);
             var sea = new Rect(area.x, top, area.width - panelWidth - 20f, area.yMax - top);
@@ -643,7 +667,7 @@ namespace FishingIdle.Game.UI
 
         private void DrawCardsMenu(UiSkin skin, Rect area)
         {
-            var top = area.y + 64;
+            var top = area.y;
             var active = _view.Active;
             if (active != null)
             {

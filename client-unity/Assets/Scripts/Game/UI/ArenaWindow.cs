@@ -1077,7 +1077,9 @@ namespace FishingIdle.Game.UI
 
             _hits.RemoveAll(h => Time.unscaledTime - h.at > 0.9f);
 
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Arena.Versus(_battle.OpponentName), GameTexts.Arena.Clock(Format.Countdown(Mathf.Min(_time, duration))), out var closed, icon: Icons.Attack);
+            // A-148: the battle clock is a counter, in sight next to the sign.
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Arena.Versus(_battle.OpponentName), null, out var closed, icon: Icons.Attack,
+                counter: GameTexts.Arena.Clock(Format.Countdown(Mathf.Min(_time, duration))));
             if (closed)
             {
                 Close();

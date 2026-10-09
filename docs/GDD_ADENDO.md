@@ -1776,3 +1776,30 @@ de Expedições; continuam valendo uma Expedição por vez, Cancelar sem recompe
 - Sem a carta, a tela volta aos 4 cartões lado a lado; sem o porto, o relatório volta ao painel comum. Cada peça
   menor tem um desenho simples de reserva.
 - A placa de destino do "Exemplo 3" foi recebida e ficou guardada, sem uso.
+
+### A-148 · Cabeçalho "Placa do Píer" em todos os menus
+
+Escolha do proprietário (08/10/2026), o "Exemplo C — Placa do Píer", valendo para todos os menus que usam a moldura
+comum: Expedição, Ranking, Mercado, Loja, Arena, batalha da Arena, Mapa, Aquário e Caixa de Pesca. O Perfil e as
+Ferramentas de teste têm cabeçalho próprio e não mudam. Muda só a forma de mostrar; nenhum texto, número ou regra muda.
+
+- **A placa**: tábuas azul-escuras com borda turquesa e quatro parafusos, pendurada por duas cordas que sobem da
+  borda de cima da janela até a barra principal, com argolas onde a corda prende. Dentro, o ícone do menu e o título
+  grande. A placa tem a largura do título e nunca chega no "✕ Fechar", que continua à direita.
+- **Ao abrir**: a placa balança uma vez e para (menos de 1 segundo, amortecido, sem repetir). É só enfeite.
+- **Frase longa → "i"**: a frase que explicava o menu (Expedição, Ranking, Mercado, Loja, Arena e a nota do Mapa)
+  sai do cabeçalho. Um botão redondo turquesa "i" no canto da placa abre o balão **"Como funciona"** com o mesmo
+  texto, por cima do conteúdo da janela. Clicar no "i" de novo, clicar fora, apertar Esc, abrir uma confirmação ou
+  fechar a janela fecha o balão; o clique fora só fecha o balão, não aciona o que está embaixo.
+- **Contadores → fundo escuro**: o que é número curto ou tempo continua sempre à vista, num fundo escuro ao lado da
+  placa (o mesmo "poço" da carteira): Aquário "x / y peixes", Caixa de Pesca "x de y peixes", batalha da Arena
+  "Tempo: 0:42" e Mapa "Viagem: …". Critério: se o jogador precisa ver o valor enquanto usa a tela, é contador; se é
+  explicação de como o menu funciona, vai para o "i".
+- **Expedição**: "Força do seu Cardume" e x / 6 vão para o fundo escuro ao lado da placa, na mesma faixa do
+  cabeçalho; o aviso de Cardume vazio fica logo depois. A carta náutica e a carta de missão sobem e ganham essa
+  altura; o resto da tela não muda.
+- **Ranking**: a taça fica ao lado da placa.
+- O conteúdo de todas essas janelas começa 16 px mais alto (a placa ocupa menos que título + subtítulo); a margem de
+  baixo não muda.
+- Arte: a placa, a corda e a argola têm desenho de reserva no código; os arquivos finais estão pedidos em
+  `docs/ASSETS_PENDENTES.md`.
