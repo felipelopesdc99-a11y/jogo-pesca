@@ -265,14 +265,6 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // Mouse wheel over the scene: a gentle zoom towards the fisherman (A-102). Never while a window
-            // or panel is open, where the wheel scrolls lists.
-            if (Event.current.type == EventType.ScrollWheel && !_root.WindowOpen && !_showNotifications && !_showSettings)
-            {
-                GameSettings.Zoom -= Event.current.delta.y * 0.06f;
-                Event.current.Use();
-            }
-
             // The owner's test tools (A-123): F2 opens and closes them, only in the Editor or a development build.
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.F2 && _root.DevToolsEnabled)
             {
@@ -1292,7 +1284,7 @@ namespace FishingIdle.Game.UI
 
             if (_showSettings)
             {
-                var panel = new Rect(_width - 24 - 380, BarHeight + 8f, 380, 384);
+                var panel = new Rect(_width - 24 - 380, BarHeight + 8f, 380, 340);
                 skin.FloatingPanel(panel);
                 var x = panel.x + 20;
                 var w = panel.width - 40;
@@ -1305,10 +1297,6 @@ namespace FishingIdle.Game.UI
 
                 GUI.Label(new Rect(x, y + 4, 120, 22), GameTexts.Hud.Volume, skin.Body);
                 GameSettings.Volume = GUI.HorizontalSlider(new Rect(x + 130, y + 10, w - 130, 20), GameSettings.Volume, 0f, 1f);
-                y += 44;
-
-                GUI.Label(new Rect(x, y + 4, 120, 22), GameTexts.Hud.Zoom, skin.Body);
-                GameSettings.Zoom = GUI.HorizontalSlider(new Rect(x + 130, y + 10, w - 130, 20), GameSettings.Zoom, 0f, 1f);
                 y += 44;
 
                 if (GUI.Button(new Rect(x, y, w, 40), GameTexts.Hud.CompactMode, skin.ButtonPrimary))

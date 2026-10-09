@@ -3,6 +3,16 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.44] — 09/10/2026
+
+### Removido
+
+- Zoom da cena: a câmera mostra sempre a cena inteira; sem aproximar pela roda do mouse nem pelas Configurações (A-151).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.43] — 09/10/2026
 
 ### Mudado

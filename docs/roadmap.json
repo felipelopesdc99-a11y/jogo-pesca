@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-09T15:30:00Z",
+  "updated_at": "2026-10-09T16:10:00Z",
   "current_milestone": "M21",
   "statuses": [
     "TODO",
@@ -4173,6 +4173,16 @@
           ],
           "updated_at": "2026-10-09T15:30:00Z",
           "completion_notes": "tools/Arte/processar_loja.py rodado nas 5 imagens: ui_loja_parede_noite 256×768 (cortada de fresta a fresta, repete sem emenda; antes previsto 512×768), ui_loja_gancho 64×64, ui_loja_balcao_pier 601×96 (proporção da arte; laterais 48 continuam), ui_loja_caixa 512×262 e ui_loja_boia 64×96. O script agora mantém a proporção do balcão e da caixa, corta a parede nas frestas e mostra onde ficou o anel da boia. ShopWindow: caixa em 9 partes com topo de 100 px (a tampa) e escala 0,14 (tampa ≈ 14 px, igual ao LidHeight); boia pintada na cor da raridade acima do anel, em BobberRing = 0,635 da altura, em vez da metade. ASSETS_PENDENTES e A-150 atualizados. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T54",
+          "title": "Tirar o zoom da cena",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (09/10/2026): tirar o zoom do jogo.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-09T16:10:00Z",
+          "completion_notes": "CameraSway (FishingScene.cs) fixa em orthographicSize 5,4 (a cena inteira), sem foco no barco; Hud sem a roda do mouse aproximando e sem o controle \"Aproximar\" nas Configurações (painel 384 → 340 px); GameSettings.Zoom e GameTexts.Hud.Zoom removidos. A-151 (substitui o A-102). Não compilado nem aberto no Unity."
         }
       ]
     }

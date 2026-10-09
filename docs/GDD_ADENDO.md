@@ -1907,3 +1907,9 @@ Usar e Guardar chamam os mesmos fluxos de antes. Nenhuma regra, número ou save 
 Arte do proprietário recebida em 09/10/2026 (parede, gancho, balcão, caixa e boia): a parede repete com 2 tábuas por
 peça; a caixa mostra a tampa aberta em cima e o interior escuro; a boia é pintada na cor da raridade acima do anel
 (que fica a 63,5% da altura, não na metade).
+
+### A-151 · Sem zoom na cena
+
+Pedido do proprietário em 09/10/2026: o zoom da cena (A-102) saiu do jogo. A câmera mostra sempre a cena inteira; a
+roda do mouse não aproxima mais, e o controle "Aproximar" saiu das Configurações (o painel ficou 44 px mais baixo). O
+balanço lento da câmera continua. A preferência antiga (`fishingidle.zoom`) fica esquecida no PC e não é lida.
