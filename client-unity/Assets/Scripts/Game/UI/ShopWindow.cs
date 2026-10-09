@@ -70,8 +70,12 @@ namespace FishingIdle.Game.UI
             BoxArt = "UI/ui_loja_caixa", BobberArt = "UI/ui_loja_boia", CardArt = "UI/ui_exp_moldura_carta";
 
         /// <summary>9-slice borders in texture pixels: the card frame (412×600; rope knots in the corners), the counter
-        /// (1024×96, sides only) and the tackle box (512×288).</summary>
-        private const float CardArtBorder = 84f, CardArtScale = 0.5f, CounterArtSide = 48f, BoxArtBorder = 40f, BoxArtScale = 0.35f;
+        /// (601×96, sides only) and the tackle box (512×262; the lid is the top 100 px, drawn at LidHeight).</summary>
+        private const float CardArtBorder = 84f, CardArtScale = 0.5f, CounterArtSide = 48f, BoxArtBorder = 40f, BoxArtLid = 100f, BoxArtScale = 0.14f;
+
+        /// <summary>Where the dark ring of the bobber art is, from the top (printed by tools/Arte/processar_loja.py): the
+        /// part above it is tinted with the rarity colour.</summary>
+        private const float BobberRing = 0.635f;
 
         // Colours of the Mescla B page the owner approved (Art Bible palette: night blues and turquoise).
         private static readonly Color PlankA = Rgb(0x132A45), PlankB = Rgb(0x15304E), PlankSeam = Rgb(0x0B1D33);
@@ -1137,7 +1141,7 @@ namespace FishingIdle.Game.UI
             var art = ArtAssets.Texture(BoxArt);
             if (art != null)
             {
-                UiSkin.NineSlice(rect, art, BoxArtBorder, BoxArtBorder, BoxArtBorder, BoxArtBorder, BoxArtScale);
+                UiSkin.NineSlice(rect, art, BoxArtBorder, BoxArtBorder, BoxArtLid, BoxArtBorder, BoxArtScale);
             }
             else
             {
@@ -1268,14 +1272,14 @@ namespace FishingIdle.Game.UI
             var art = ArtAssets.Texture(BobberArt);
             if (art != null)
             {
-                // Top half tinted with the rarity colour, bottom half as drawn (texture v grows upwards).
+                // Above the ring tinted with the rarity colour, below it as drawn (texture v grows upwards).
                 var previous = GUI.color;
-                var top = new Rect(r.x, r.y, r.width, r.height / 2f);
-                var bottom = new Rect(r.x, r.y + r.height / 2f, r.width, r.height / 2f);
+                var top = new Rect(r.x, r.y, r.width, r.height * BobberRing);
+                var bottom = new Rect(r.x, top.yMax, r.width, r.height - top.height);
                 GUI.color = upright ? color : Lying;
-                GUI.DrawTextureWithTexCoords(top, art, new Rect(0f, 0.5f, 1f, 0.5f), true);
+                GUI.DrawTextureWithTexCoords(top, art, new Rect(0f, 1f - BobberRing, 1f, BobberRing), true);
                 GUI.color = upright ? Color.white : Lying;
-                GUI.DrawTextureWithTexCoords(bottom, art, new Rect(0f, 0f, 1f, 0.5f), true);
+                GUI.DrawTextureWithTexCoords(bottom, art, new Rect(0f, 0f, 1f, 1f - BobberRing), true);
                 GUI.color = previous;
             }
             else

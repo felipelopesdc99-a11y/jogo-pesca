@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-08T23:59:59Z",
+  "updated_at": "2026-10-09T15:30:00Z",
   "current_milestone": "M21",
   "statuses": [
     "TODO",
@@ -4161,6 +4161,18 @@
           ],
           "updated_at": "2026-10-09T12:00:00Z",
           "completion_notes": "ShopWindow reescrita: janela 1320×840 (conteúdo 1264×736 em qualquer tela 4:3 ou mais larga), parede de tábuas verticais azul-noite ao fundo e viga turquesa no alto; abas como plaquinhas penduradas na viga por duas cordinhas (ativa com borda turquesa e brilho). \"i\" da placa: a nota da aba (Shop.Note, BoatsNote, BaitsNote ou Vip.Note) + a nota da chance (mínimo e máximo), via GameTexts.Shop.Info. Esquerda: parede de ganchos com uma prateleira por item (plaquinha com nome, categoria ou \"+x% de chance\" e faixa na cor da categoria; item deitado em 2 ganchos de latão, varas a 28°; etiqueta pendurada: preço em Moedas e Conchas em 2 linhas, Grátis, JÁ É SUA/JÁ É SEU, EM USO ou cadeado com Nv. X; bloqueado como sombra), altura 92–124 px por prateleira e rolagem quando não cabe (sem inclinação na rolagem). Centro: \"X de N\" com setas ‹ › (HeroSheet.Arrow), item grande sobre HeroSheet.Pedestal com HeroSheet.Aura na cor da categoria e a tábua do balcão. Escolher (clique na prateleira, setas, abrir a Loja ou trocar de aba): o item sai do gancho (marca apagada com \"no balcão\" tracejado), arco Bézier até o pedestal em 0,6 s com ease-out, crescendo e endireitando, rastro pontilhado turquesa que some em 0,25 s; aura acende 0,35–0,65 s; ficha desliza 24 px da direita (0,15–0,5 s); sem loop, tempo real de UI. Direita: ficha na moldura ui_exp_moldura_carta em 9 partes (bordas 84 px a 50%) — varas com nome, categoria · até o nível, Pesca peixes…, Disponível no Nível X (visto/cadeado), legenda Nível 1 / nível máximo e 4 barras (Sucesso da captura, Chance de raridade, Qualidade de tamanho, Conchas; \"+x% → +y%\" inteiro; escala pelo maior valor da aba), preço ou Grátis e Comprar/Pegar grátis, EM USO, JÁ É SUA ou o motivo do bloqueio; barcos com descrição, bônus grande com barra (escala pelo maior barco), requisito, nota quando cabe, preço e Comprar/Usar/EM USO; iscas com descrição, bônus com barra, tentativas por compra e restantes, requisito, preço, Comprar e Usar/Guardar. Embaixo: Seu equipamento numa caixa de pesca aberta (3 divisórias com rótulo, imagem, nome e bônus; tentativas da isca; Bônus total) e Chance de puxar o peixe com 5 boias na água (porcentagem e nome na cor da raridade; quem não morde aqui com boia deitada e cinza e \"não morde aqui\"); boias paradas. VIP: o cartão de antes sobre um fundo escuro, com a caixa e as boias embaixo. Arte opcional marcada ASSET_PENDENTE: ui_loja_parede_noite (512×768, repete na largura), ui_loja_gancho (64×64), ui_loja_balcao_pier (1024×96, 9 partes, laterais 48), ui_loja_caixa (512×288, 9 partes, bordas 40) e ui_loja_boia (64×96, metade de cima pintada na cor da raridade), com pedidos em docs/ASSETS_PENDENTES.md e tools/Arte/processar_loja.py (não rodado; sem imagens ainda). Textos novos em GameTexts.Shop (OnCounter, OwnedBoat, LevelTag, Position, Info). A-150. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T53",
+          "title": "Loja: arte do proprietário no Balcão do Píer",
+          "subsystem": "client",
+          "description": "O proprietário mandou as 5 artes pedidas para a Loja (parede, gancho, balcão, caixa e boia). Processar e encaixar no jogo.",
+          "status": "DONE",
+          "dependencies": [
+            "M22-T52"
+          ],
+          "updated_at": "2026-10-09T15:30:00Z",
+          "completion_notes": "tools/Arte/processar_loja.py rodado nas 5 imagens: ui_loja_parede_noite 256×768 (cortada de fresta a fresta, repete sem emenda; antes previsto 512×768), ui_loja_gancho 64×64, ui_loja_balcao_pier 601×96 (proporção da arte; laterais 48 continuam), ui_loja_caixa 512×262 e ui_loja_boia 64×96. O script agora mantém a proporção do balcão e da caixa, corta a parede nas frestas e mostra onde ficou o anel da boia. ShopWindow: caixa em 9 partes com topo de 100 px (a tampa) e escala 0,14 (tampa ≈ 14 px, igual ao LidHeight); boia pintada na cor da raridade acima do anel, em BobberRing = 0,635 da altura, em vez da metade. ASSETS_PENDENTES e A-150 atualizados. Não compilado nem aberto no Unity."
         }
       ]
     }

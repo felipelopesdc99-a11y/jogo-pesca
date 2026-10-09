@@ -1903,3 +1903,7 @@ Usar e Guardar chamam os mesmos fluxos de antes. Nenhuma regra, número ou save 
   largura), `ui_loja_gancho`, `ui_loja_balcao_pier` (9 partes), `ui_loja_caixa` (9 partes) e `ui_loja_boia` (metade de
   cima pintada na cor da raridade). A moldura da ficha reaproveita `ui_exp_moldura_carta`; varas, barcos e iscas usam
   as imagens que já existem.
+
+Arte do proprietário recebida em 09/10/2026 (parede, gancho, balcão, caixa e boia): a parede repete com 2 tábuas por
+peça; a caixa mostra a tampa aberta em cima e o interior escuro; a boia é pintada na cor da raridade acima do anel
+(que fica a 63,5% da altura, não na metade).

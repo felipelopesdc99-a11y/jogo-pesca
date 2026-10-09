@@ -422,6 +422,12 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 ## Loja "Balcão do Píer" (A-150, escolha do proprietário em 09/10/2026)
 
+**Recebidas em 09/10/2026 e processadas** (`tools/Arte/processar_loja.py`). Como a arte chegou um pouco diferente do
+pedido, o jogo foi ajustado a ela: a parede foi cortada de fresta a fresta (2 tábuas, 256×768, repete sem emenda); o
+balcão ficou 601×96 (proporção da arte); a caixa ficou 512×262, com a tampa nos 100 px de cima (9 partes: laterais e
+base 40 px, topo 100 px, desenhada a 14%); o anel da boia ficou a 63,5% da altura, e o jogo pinta a cor da raridade
+acima dele (`ShopWindow.BobberRing`). Nada mais pendente nesta seção; o texto abaixo fica como registro do pedido.
+
 A Loja já funciona com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/ShopWindow.cs`): parede de tábuas
 azul-noite, ganchos de latão, tábua do balcão, caixa de pesca aberta e boias. A moldura da ficha reaproveita
 `ui_exp_moldura_carta.png`, e as varas, barcos e iscas usam as imagens que já existem. Texto, preços, etiquetas, a

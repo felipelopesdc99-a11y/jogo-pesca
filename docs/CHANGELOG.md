@@ -3,6 +3,16 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.43] — 09/10/2026
+
+### Mudado
+
+- Loja com a arte do proprietário: parede de tábuas, ganchos de latão, tampo do balcão, caixa de pesca e boias.
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.42] — 09/10/2026
 
 ### Mudado
