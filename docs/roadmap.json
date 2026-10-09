@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-08T22:00:00Z",
+  "updated_at": "2026-10-08T23:59:00Z",
   "current_milestone": "M21",
   "statuses": [
     "TODO",
@@ -4118,6 +4118,16 @@
           "dependencies": [],
           "updated_at": "2026-10-08T23:30:00Z",
           "completion_notes": "tools/Arte/processar_ranking.py gera em Resources/Arte/UI: ui_rk_coroa, ui_rk_emblema_nivel/moedas/conchas/peixes (128), ui_rk_palco (1200×245), ui_rk_escudo_ouro/prata/bronze/azul (96×108) e ui_rk_trofeu (192); setas e placas 12 a 19 não usadas. RankingWindow: abas grandes com emblema, nome e 'Você #N'; palco com o píer e 3 pedestais (2º, 1º mais alto, 3º) com avatar (o seu do Perfil; outros, retrato padrão), escudo com o número, nome e valor com emblema, coroa e luz dourada no 1º, subida curta ao abrir; pedestal vago com '—' e 'Vago'; placar do 4º em diante com escudo azul numerado, avatar, nome, Nv. e valor, faixas alternadas, sua linha turquesa, rolagem; sem ninguém além do pódio, a nota local no lugar da lista; barra fixa 'Sua posição #N' com o seu valor; taça ao lado do título. Cada arte tem desenho simples de reserva. Textos novos em GameTexts.Ranking. A-146; docs/ASSETS_PENDENTES.md atualizado. Não compilado nem aberto no Unity."
+        },
+        {
+          "id": "M22-T49",
+          "title": "Expedição: carta náutica com a arte do proprietário",
+          "subsystem": "client",
+          "description": "Escolha do proprietário (08/10/2026): a tela de Expedição vira uma mistura dos 3 exemplos (carta náutica, carta de missão, porto), com a arte que ele mandou. Só apresentação: números, bloqueios e tempo vêm do serviço de Expedições; uma Expedição por vez, Cancelar sem recompensa, peixe na Caixa de Pesca.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-08T23:59:00Z",
+          "completion_notes": "tools/Arte/processar_expedicao.py gera em Resources/Arte/UI: ui_exp_carta (1600×1001) e ui_exp_porto (1600×900), com compressão (ArtImportSettings.UiScene, versão 4), ui_exp_rosa, ui_exp_medalhao, ui_exp_pier (256), ui_exp_marcador (128), ui_exp_moldura_carta (412×600), ui_exp_selo (160) e ui_exp_bussola (176×320); a placa de destino não foi copiada. ExpeditionWindow: carta náutica com o píer no canto, os destinos em medalhões mais longe quanto maior a duração, nome e duração acima, rota pontilhada do píer a cada um, o escolhido com anel turquesa, rosa dos ventos de enfeite; painel com a moldura de carta de missão, paisagem, nome, duração, blocos (Força recomendada, Aproveitamento com barra, Moedas previstas em dourado com a moeda, selo com a chance de peixe) e Enviar o Cardume logo abaixo, ou o motivo do bloqueio; em andamento, o marcador do Cardume anda pela rota conforme o progresso e o painel mostra a bússola com o tempo no mostrador e um anel de progresso, o aviso e Cancelar com a confirmação; relatório sobre o porto escurecido. Sem a carta, volta aos 4 cartões; sem o porto, ao relatório comum. Textos novos: GameTexts.Expedition.FishChanceShort e ReturnsInLabel. A-147; docs/ASSETS_PENDENTES.md atualizado. Não compilado nem aberto no Unity."
         }
       ]
     }

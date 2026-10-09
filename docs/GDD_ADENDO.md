@@ -1749,3 +1749,30 @@ valendo o A-100 (só jogadores reais).
   devolver vizinhos.
 - Sem a arte, cada peça volta a um desenho simples (escudo em bloco colorido, emblema pelo ícone da categoria, linha
   no lugar do píer, estrela no lugar da coroa).
+
+### A-147 · Expedição: carta náutica
+
+Escolha do proprietário (08/10/2026), com a arte dele: a tela de Expedição vira uma **mistura dos 3 exemplos** — a
+carta náutica do "Exemplo 1" para escolher, a carta de missão do "Exemplo 2" para os números e a bússola e o porto
+do "Exemplo 3" para o tempo e a chegada. Muda só a forma de mostrar: os números, o bloqueio e o tempo vêm do serviço
+de Expedições; continuam valendo uma Expedição por vez, Cancelar sem recompensa e o peixe indo para a Caixa de Pesca.
+
+- **Escolher**: a carta náutica à noite ocupa a esquerda e o centro. O píer fica no canto de baixo à esquerda (a
+  origem). Os destinos são medalhões de latão com a paisagem da Expedição recortada em círculo; quanto maior a
+  duração, mais longe do píer (mais à direita e mais alto). Cada um tem o nome e a duração **em cima** do medalhão, e
+  uma rota pontilhada sai do píer, corre pela parte de baixo da carta e sobe até ele (assim a rota nunca cruza um
+  nome). O escolhido ganha anel turquesa e a rota turquesa. A rosa dos ventos fica no canto de cima, só como enfeite.
+  "Força do seu Cardume" e x/6 continuam no cabeçalho.
+- **Painel da direita**: a moldura de carta de missão com a paisagem no topo, o nome, a duração e os números em
+  blocos — Força recomendada, Aproveitamento (com a barra), Moedas previstas em dourado e maiores, com a moeda, e o
+  selo turquesa com a chance de peixe escrita no centro ("Chance de peixe" embaixo). "Enviar o Cardume" vem logo
+  abaixo dos blocos, sem vão. Quando não dá para enviar, o motivo aparece no lugar do botão, com o cadeado.
+- **Em andamento**: a rota escolhida fica turquesa no trecho já percorrido e o marcador do Cardume anda do píer até o
+  destino conforme o progresso (só apresentação); os outros destinos ficam apagados com cadeado. No painel, a
+  bússola mostra "Volta em" e o tempo no mostrador, com um anel pontilhado que enche em volta; embaixo, o aviso do
+  Cardume travado e "Cancelar Expedição" (com a confirmação de sempre).
+- **Chegada**: o relatório de sempre (moedas, aproveitamento e o peixe) abre sobre a cena do porto ao entardecer,
+  com o porto escurecido e o relatório num painel escuro para o texto ler bem.
+- Sem a carta, a tela volta aos 4 cartões lado a lado; sem o porto, o relatório volta ao painel comum. Cada peça
+  menor tem um desenho simples de reserva.
+- A placa de destino do "Exemplo 3" foi recebida e ficou guardada, sem uso.

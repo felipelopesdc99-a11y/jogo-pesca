@@ -21,7 +21,7 @@ namespace FishingIdle.Editor
         private const string FontFolder = "Assets/Resources/Fontes/";
 
         // Raise this when the rules below change, so Unity re-imports the art with them.
-        public override uint GetVersion() => 3;
+        public override uint GetVersion() => 4;
 
         /// <summary>
         /// Largest side, in pixels, each picture is imported at: about what a 1440p screen shows of it
@@ -110,7 +110,21 @@ namespace FishingIdle.Editor
                 importer.filterMode = FilterMode.Bilinear;
                 importer.mipmapEnabled = !NineSlice(assetPath);
                 importer.mipmapFilter = TextureImporterMipFilter.KaiserFilter;
+
+                // The full scenes behind the Expedition (chart, harbour) have no hard edges and are large: they
+                // ship with high-quality compression instead.
+                if (UiScene(assetPath))
+                {
+                    importer.textureCompression = TextureImporterCompression.CompressedHQ;
+                }
             }
+        }
+
+        /// <summary>The opaque full-window scenes in Arte/UI (Expedition chart and harbour).</summary>
+        internal static bool UiScene(string path)
+        {
+            var file = System.IO.Path.GetFileNameWithoutExtension(path);
+            return file == "ui_exp_carta" || file == "ui_exp_porto";
         }
 
         /// <summary>The interface frames drawn as 9-slice (UiSkin.NineSlice).</summary>

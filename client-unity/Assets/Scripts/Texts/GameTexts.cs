@@ -557,6 +557,7 @@ namespace FishingIdle.Texts
             public const string Efficiency = "Aproveitamento";
             public const string Reward = "Moedas previstas";
             public const string FishChance = "Chance de achar um peixe";
+            public const string FishChanceShort = "Chance de peixe";
             public const string Away = "Seu Cardume está em Expedição";
             public const string LockNote = "Enquanto ele estiver fora, você não pode mudar a formação, alimentar nem vender os peixes do Cardume. A pesca continua normalmente.";
             public const string Note = "Expedições dão Moedas e, às vezes, um peixe (que vai para a Caixa de Pesca). Não dão XP nem Conchas, e nenhum peixe se perde. Funcionam com o jogo fechado.";
@@ -578,7 +579,8 @@ namespace FishingIdle.Texts
 
             public static string Departed(string name) => "Cardume enviado: " + name + ".";
             public static string Duration(string duration) => "Duração: " + duration;
-            public static string ReturnsIn(string countdown) => "Volta em " + countdown;
+            public const string ReturnsInLabel = "Volta em";
+            public static string ReturnsIn(string countdown) => ReturnsInLabel + " " + countdown;
             public static string Coins(string coins) => "+" + coins + " Moedas";
             public static string ReturnedAt(string name, string when) => name + " · voltou em " + when;
             public static string InBox(string species, string size) => species + " · " + size + " — já está na Caixa de Pesca.";

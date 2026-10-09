@@ -369,6 +369,23 @@ Não usados (ficam fora do jogo): as setas `12A_ico_subiu` e `12B_ico_desceu` (o
 Subiu/Desceu), a parede de madeira, a moldura e as placas `13` a `19` e a placa de troféu (item 20) — são a arte do
 "Exemplo 3 — Quadro de recordes", que não foi o escolhido.
 
+## Expedição: carta náutica (A-147, arte recebida em 08/10/2026)
+
+Recebido e colocado no jogo em 08/10/2026 (a arte dos 3 exemplos da tela de Expedição, feita no ChatGPT pelo
+proprietário). `tools/Arte/processar_expedicao.py` recorta pelo alfa e redimensiona, em `Resources/Arte/UI/`:
+- `ui_exp_carta.png` (carta náutica à noite, 1600×1001, fundo da escolha) e `ui_exp_porto.png` (porto ao entardecer,
+  1600×900, fundo do relatório) — as duas cenas grandes, importadas com compressão;
+- `ui_exp_rosa.png` (rosa dos ventos, 256), `ui_exp_medalhao.png` (aro de latão com o centro vazio, 256),
+  `ui_exp_pier.png` (píer visto de cima, 256), `ui_exp_marcador.png` (marcador do Cardume, 128);
+- `ui_exp_moldura_carta.png` (moldura da carta de missão, 412×600), `ui_exp_selo.png` (selo da chance de peixe, 160)
+  e `ui_exp_bussola.png` (bússola com o mostrador vazio, 176×320).
+
+O anel de progresso da bússola, as rotas pontilhadas e o escurecimento do porto são desenhados pelo código. Nada
+pendente nesta seção.
+
+Recebida e guardada sem uso: a **placa de destino** (poste com placa e bandeirola, do "Exemplo 3 — Porto"). Não foi
+copiada para o jogo; fica com o proprietário para um uso futuro.
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).
