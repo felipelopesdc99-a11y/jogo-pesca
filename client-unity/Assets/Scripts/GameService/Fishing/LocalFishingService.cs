@@ -511,42 +511,9 @@ namespace FishingIdle.GameService.Fishing
 
         private void AddFisherXp(long xp, FishingUpdate update)
         {
-            var maxLevel = Config.Progression.Fisher.MaxLevel;
-            Save.FisherXpTotal += xp;
+            // Shared with the Crew (M24-T05): total XP, levels and the Dólares of the level milestones.
             update.XpGained += xp;
-
-            if (Save.FisherLevel >= maxLevel)
-            {
-                Save.FisherXp = 0;
-                return;
-            }
-
-            Save.FisherXp += xp;
-            while (Save.FisherLevel < maxLevel)
-            {
-                var needed = Config.FisherXpToNextLevel(Save.FisherLevel);
-                if (needed <= 0 || Save.FisherXp < needed)
-                {
-                    break;
-                }
-
-                Save.FisherXp -= needed;
-                Save.FisherLevel++;
-                update.LevelsReached.Add(Save.FisherLevel);
-
-                // A-111: a few Dólares at every level milestone, so a VIP can be saved up by playing (up to Nv.100, A-153).
-                var dollars = FisherLevelRules.DollarsForReaching(Config, Save.FisherLevel);
-                if (dollars > 0)
-                {
-                    Save.Dollars += dollars;
-                    update.DollarsGained += dollars;
-                }
-            }
-
-            if (Save.FisherLevel >= maxLevel)
-            {
-                Save.FisherXp = 0;
-            }
+            update.DollarsGained += FisherLevelRules.AddXp(Config, Save, xp, update.LevelsReached);
         }
 
         private MapConfig CurrentMap()

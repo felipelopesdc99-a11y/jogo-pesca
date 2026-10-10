@@ -22,7 +22,8 @@ namespace FishingIdle.GameService.Config
             ExpeditionsConfig expeditions,
             ArenaBotsConfig bots,
             MarketBotsConfig marketBots,
-            EquipmentConfig equipment)
+            EquipmentConfig equipment,
+            CrewConfig crew)
         {
             var errors = new List<string>();
 
@@ -818,7 +819,104 @@ namespace FishingIdle.GameService.Config
                 }
             }
 
+            ValidateCrew(crew, errors);
             return errors;
+        }
+
+        /// <summary>crew.json (M24-T05): the Crew's members, milestones and offline income.</summary>
+        private static void ValidateCrew(CrewConfig crew, List<string> errors)
+        {
+            const string file = GameConfigLoader.CrewFile;
+            if (crew?.Members == null || crew.Members.Count == 0)
+            {
+                errors.Add(V.Missing(file, "members"));
+                return;
+            }
+
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var member in crew.Members)
+            {
+                if (member == null || string.IsNullOrWhiteSpace(member.Id) || !ids.Add(member.Id))
+                {
+                    errors.Add(V.DuplicateOrEmptyId(file, "members", member?.Id));
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(member.DisplayName))
+                {
+                    errors.Add(V.Missing(file, member.Id + ".display_name"));
+                }
+
+                if (member.BaseCost < 1)
+                {
+                    errors.Add(V.AtLeast(file, member.Id + ".base_cost", 1));
+                }
+
+                // Above 1, or every unit would cost the same forever; at most 10, a guard against a typo.
+                if (!(member.CostGrowth > 1.0) || member.CostGrowth > 10.0)
+                {
+                    errors.Add(V.CrewCostGrowth(member.Id));
+                }
+
+                if (!(member.CoinsPerSecond >= 0) || !(member.XpPerSecond >= 0) || double.IsInfinity(member.CoinsPerSecond) || double.IsInfinity(member.XpPerSecond))
+                {
+                    errors.Add(V.NegativeValue(file, member.Id + " (renda)"));
+                }
+            }
+
+            if (crew.UnlockPreviousCount < 1)
+            {
+                errors.Add(V.AtLeast(file, "unlock_previous_count", 1));
+            }
+
+            if (!(crew.OnlineGapSeconds >= 1))
+            {
+                errors.Add(V.AtLeast(file, "online_gap_seconds", 1));
+            }
+
+            var offline = crew.Offline;
+            if (offline == null)
+            {
+                errors.Add(V.Missing(file, "offline"));
+            }
+            else
+            {
+                if (!(offline.FullRateHours >= 0) || !(offline.MaxHours >= offline.FullRateHours) || offline.MaxHours > 24 * 365)
+                {
+                    errors.Add(V.CrewOfflineHours);
+                }
+
+                if (!(offline.ReducedRate >= 0) || offline.ReducedRate > 1)
+                {
+                    errors.Add(V.ChanceOutOfRange(file, "offline.reduced_rate"));
+                }
+            }
+
+            ValidateCrewMilestones(crew.Milestones, "milestones", errors);
+            ValidateCrewMilestones(crew.FleetMilestones, "fleet_milestones", errors);
+        }
+
+        private static void ValidateCrewMilestones(CrewMilestonesConfig milestones, string section, List<string> errors)
+        {
+            if (milestones?.Counts == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.CrewFile, section));
+                return;
+            }
+
+            var previous = 0;
+            var ascending = true;
+            foreach (var count in milestones.Counts)
+            {
+                ascending &= count > previous;
+                previous = count;
+            }
+
+            // At most 64 counts: the multiplier is applied once per count reached.
+            if (!ascending || milestones.Counts.Count > 64 || !(milestones.Multiplier >= 1) || milestones.Multiplier > 1000)
+            {
+                errors.Add(V.CrewMilestones(section));
+            }
         }
     }
 }

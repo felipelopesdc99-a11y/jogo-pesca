@@ -484,6 +484,57 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > reflexo, sem sombra projetada, sem texto. Estilo "Lago Dourado — Clean Premium": limpo, arredondado. Arquivo:
 > ui_loja_boia.png
 
+## Tripulação: retratos e ícone do menu (M24-T08, A-154, pedido em 10/10/2026)
+
+A janela da Tripulação e o botão do menu já funcionam com desenhos provisórios (`ASSET_PENDENTE` em
+`Game/UI/CrewWindow.cs` e `Game/Visual/ArtAssets.cs`): cada tripulante aparece num quadradinho com o ícone de pessoa
+(os três primeiros) ou de barco (os outros) e o número da ordem; o botão do menu usa o ícone do barco. Quando um
+arquivo abaixo existir, o jogo passa a usá-lo sozinho; se for apagado, volta ao provisório. Texto, número, quantidade,
+moldura e cadeado são do código — a arte não deve trazer nada disso. O tripulante ainda bloqueado é desenhado
+escurecido pelo próprio jogo.
+
+| Arquivo | Tripulante | Tamanho |
+|---|---|---|
+| `Arte/Tripulacao/trip_crew_01.png` | Ajudante da Isca | 512×512 → o jogo desenha com 64×64 |
+| `Arte/Tripulacao/trip_crew_02.png` | Canoeiro | 512×512 → o jogo desenha com 64×64 |
+| `Arte/Tripulacao/trip_crew_03.png` | Tarrafeiro | 512×512 → o jogo desenha com 64×64 |
+| `Arte/Tripulacao/trip_crew_04.png` | Jangadeiro | 512×512 → o jogo desenha com 64×64 |
+| `Arte/Tripulacao/trip_crew_05.png` | Piloto da Voadeira | 512×512 → o jogo desenha com 64×64 |
+| `Arte/Tripulacao/trip_crew_06.png` | Mestre do Barco de Linha | 512×512 → o jogo desenha com 64×64 |
+| `Arte/Tripulacao/trip_crew_07.png` | Saveiro do Porto | 512×512 → o jogo desenha com 64×64 |
+| `Arte/Tripulacao/trip_crew_08.png` | Traineira | 512×512 → o jogo desenha com 64×64 |
+| `Arte/Tripulacao/trip_crew_09.png` | Barco de Arrasto | 512×512 → o jogo desenha com 64×64 |
+| `Arte/Tripulacao/trip_crew_10.png` | Navio-Fábrica | 512×512 → o jogo desenha com 64×64 |
+| `Arte/Icones/ico_tripulacao.png` | Ícone do botão "Tripulação" na barra de cima | 96×96, branco sobre transparente (como os outros ícones do menu, A-139) |
+
+Pedidos prontos para colar no ChatGPT (um por imagem; o ChatGPT costuma entregar 1024×1024, tudo bem — o recorte e o
+tamanho final ficam por minha conta):
+
+> Retrato quadrado de personagem/embarcação para a lista da Tripulação de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um menino ribeirinho de uns 12 anos, camiseta regata turquesa e bermuda, segurando um balde pequeno com iscas e uma latinha de minhocas, sorriso tímido. Enquadramento de busto (pessoas) ou do barco inteiro, centralizado, ocupando cerca de 85% da imagem, sem moldura, sem círculo de fundo, sem texto, sem número, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 64 px. Arquivo: trip_crew_01.png
+
+> Retrato quadrado de personagem/embarcação para a lista da Tripulação de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um pescador adulto de chapéu de palha remando uma canoa de madeira estreita (canoa vista de lado, só o pescador e a proa no quadro), camisa azul-clara. Enquadramento de busto (pessoas) ou do barco inteiro, centralizado, ocupando cerca de 85% da imagem, sem moldura, sem círculo de fundo, sem texto, sem número, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 64 px. Arquivo: trip_crew_02.png
+
+> Retrato quadrado de personagem/embarcação para a lista da Tripulação de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um pescador em pé na beira do rio lançando uma tarrafa aberta em leque no ar, a rede em branco-gelo, bermuda azul-noite. Enquadramento de busto (pessoas) ou do barco inteiro, centralizado, ocupando cerca de 85% da imagem, sem moldura, sem círculo de fundo, sem texto, sem número, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 64 px. Arquivo: trip_crew_03.png
+
+> Retrato quadrado de personagem/embarcação para a lista da Tripulação de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: uma jangada nordestina de madeira clara com a vela triangular branca inflada e um jangadeiro de chapéu sentado na popa, sobre água calma. Enquadramento de busto (pessoas) ou do barco inteiro, centralizado, ocupando cerca de 85% da imagem, sem moldura, sem círculo de fundo, sem texto, sem número, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 64 px. Arquivo: trip_crew_04.png
+
+> Retrato quadrado de personagem/embarcação para a lista da Tripulação de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: uma voadeira de alumínio (barco amazônico com motor de popa) correndo e levantando um pouco de espuma, o piloto de boné segurando o motor. Enquadramento de busto (pessoas) ou do barco inteiro, centralizado, ocupando cerca de 85% da imagem, sem moldura, sem círculo de fundo, sem texto, sem número, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 64 px. Arquivo: trip_crew_05.png
+
+> Retrato quadrado de personagem/embarcação para a lista da Tripulação de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um barco de pesca de linha de madeira pintado de azul e branco, com cabine pequena e varas presas na borda, o mestre de barba na proa. Enquadramento de busto (pessoas) ou do barco inteiro, centralizado, ocupando cerca de 85% da imagem, sem moldura, sem círculo de fundo, sem texto, sem número, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 64 px. Arquivo: trip_crew_06.png
+
+> Retrato quadrado de personagem/embarcação para a lista da Tripulação de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um saveiro baiano de madeira com duas velas brancas, casco vermelho-telha e branco, ancorado junto a um píer curto. Enquadramento de busto (pessoas) ou do barco inteiro, centralizado, ocupando cerca de 85% da imagem, sem moldura, sem círculo de fundo, sem texto, sem número, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 64 px. Arquivo: trip_crew_07.png
+
+> Retrato quadrado de personagem/embarcação para a lista da Tripulação de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: uma traineira de pesca de casco azul-escuro e cabine branca, mastro com luzes, rede recolhida no convés. Enquadramento de busto (pessoas) ou do barco inteiro, centralizado, ocupando cerca de 85% da imagem, sem moldura, sem círculo de fundo, sem texto, sem número, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 64 px. Arquivo: trip_crew_08.png
+
+> Retrato quadrado de personagem/embarcação para a lista da Tripulação de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um barco de arrasto maior de casco turquesa, com os dois braços (tangones) abertos dos lados e as redes penduradas. Enquadramento de busto (pessoas) ou do barco inteiro, centralizado, ocupando cerca de 85% da imagem, sem moldura, sem círculo de fundo, sem texto, sem número, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 64 px. Arquivo: trip_crew_09.png
+
+> Retrato quadrado de personagem/embarcação para a lista da Tripulação de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um grande navio-fábrica de pesca branco e azul-noite com guindastes no convés e chaminé, visto de três quartos, imponente mas limpo. Enquadramento de busto (pessoas) ou do barco inteiro, centralizado, ocupando cerca de 85% da imagem, sem moldura, sem círculo de fundo, sem texto, sem número, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 64 px. Arquivo: trip_crew_10.png
+
+> Ícone de menu para jogo mobile, PNG 96×96 px (pode ser 1024×1024) com fundo transparente, desenho BRANCO chapado
+> (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do
+> jogo: a silhueta de dois pescadores lado a lado (um de chapéu de palha) na frente da proa de um barquinho, simples e
+> legível em 24 px. Sem texto, sem fundo, sem sombra. Arquivo: ico_tripulacao.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Persistence;
 
@@ -28,6 +29,57 @@ namespace FishingIdle.GameService.Fishing
             }
 
             return reward.UpToLevel > 0 && level > reward.UpToLevel ? 0 : reward.Dollars;
+        }
+
+        /// <summary>
+        /// Adds Fisher XP from any source (fishing, the Crew): counts it in the total (TD-038), climbs the levels it
+        /// reaches (each one added to <paramref name="levelsReached"/>) and pays the Dólares of the level milestones
+        /// (A-111). Returns the Dólares paid. At the max level the XP still counts in the total.
+        /// </summary>
+        internal static long AddXp(GameConfig config, PlayerSave save, long xp, List<int> levelsReached)
+        {
+            if (xp <= 0)
+            {
+                return 0;
+            }
+
+            var maxLevel = config.Progression.Fisher.MaxLevel;
+            save.FisherXpTotal = xp > long.MaxValue - save.FisherXpTotal ? long.MaxValue : save.FisherXpTotal + xp;
+            if (save.FisherLevel >= maxLevel)
+            {
+                save.FisherXp = 0;
+                return 0;
+            }
+
+            long dollars = 0;
+            save.FisherXp = xp > long.MaxValue - save.FisherXp ? long.MaxValue : save.FisherXp + xp;
+            while (save.FisherLevel < maxLevel)
+            {
+                var needed = config.FisherXpToNextLevel(save.FisherLevel);
+                if (needed <= 0 || save.FisherXp < needed)
+                {
+                    break;
+                }
+
+                save.FisherXp -= needed;
+                save.FisherLevel++;
+                levelsReached?.Add(save.FisherLevel);
+
+                // A-111: a few Dólares at every level milestone, so a VIP can be saved up by playing (up to Nv.100, A-153).
+                var reward = DollarsForReaching(config, save.FisherLevel);
+                if (reward > 0)
+                {
+                    save.Dollars += reward;
+                    dollars += reward;
+                }
+            }
+
+            if (save.FisherLevel >= maxLevel)
+            {
+                save.FisherXp = 0;
+            }
+
+            return dollars;
         }
 
         /// <summary>The level and the XP inside it that a total XP reaches on the current curve.</summary>

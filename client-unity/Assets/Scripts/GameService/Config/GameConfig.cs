@@ -25,6 +25,7 @@ namespace FishingIdle.GameService.Config
 
         private readonly Dictionary<string, BoatConfig> _boats;
         private readonly Dictionary<string, BaitConfig> _baits;
+        private readonly Dictionary<string, CrewMemberConfig> _crew;
 
         internal GameConfig(
             FishCatalogConfig fishCatalog,
@@ -37,9 +38,12 @@ namespace FishingIdle.GameService.Config
             ArenaBotsConfig arenaBots,
             MarketBotsConfig marketBots,
             EquipmentConfig equipment,
+            CrewConfig crew,
             string version)
         {
             Equipment = equipment;
+            Crew = crew;
+            _crew = crew.Members.ToDictionary(m => m.Id, StringComparer.Ordinal);
             _boats = equipment.Boats.ToDictionary(b => b.Id, StringComparer.Ordinal);
             _baits = equipment.Baits.ToDictionary(b => b.Id, StringComparer.Ordinal);
             FishCatalog = fishCatalog;
@@ -73,6 +77,11 @@ namespace FishingIdle.GameService.Config
         public ArenaBotsConfig ArenaBots { get; }
         public MarketBotsConfig MarketBots { get; }
         public EquipmentConfig Equipment { get; }
+
+        /// <summary>The automatic Crew (crew.json, M24-T05).</summary>
+        public CrewConfig Crew { get; }
+
+        public bool TryGetCrewMember(string id, out CrewMemberConfig member) => _crew.TryGetValue(id ?? string.Empty, out member);
 
         /// <summary>The boat every player owns from the start: the lowest tier.</summary>
         public BoatConfig StarterBoat => Equipment.Boats.OrderBy(b => b.Tier).First();

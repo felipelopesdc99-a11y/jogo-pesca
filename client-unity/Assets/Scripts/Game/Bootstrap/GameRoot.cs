@@ -7,6 +7,7 @@ using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Arena;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Crew;
 using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
@@ -38,6 +39,11 @@ namespace FishingIdle.Game.Bootstrap
 
         private float _nextSyncAt;
 
+        /// <summary>How often the Crew's income is credited (it keeps fractions, so the cadence changes nothing).</summary>
+        private const float CrewSyncIntervalSeconds = 1f;
+
+        private float _nextCrewSyncAt;
+
         public static GameRoot Instance { get; private set; }
 
         /// <summary>The running local game service. Null when startup failed.</summary>
@@ -54,6 +60,18 @@ namespace FishingIdle.Game.Bootstrap
 
         /// <summary>The "while you were away" summary waiting to be shown, or null.</summary>
         public OfflineReport WelcomeBack { get; set; }
+
+        /// <summary>What the Crew earned while the game was closed, waiting to be shown with <see cref="WelcomeBack"/>, or null.</summary>
+        public CrewOfflineReport CrewWelcome { get; set; }
+
+        /// <summary>The Crew's Moedas per second (all multipliers), refreshed with the player. Presentation only.</summary>
+        public double CrewCoinsPerSecond { get; private set; }
+
+        /// <summary>
+        /// Every Moeda the Crew credited since the game opened. The HUD uses it to tell the steady income (no "+N"
+        /// pop, no pulse every second) from a sale or a reward.
+        /// </summary>
+        public long CrewCoinsCredited { get; private set; }
 
         /// <summary>A finished Expedition waiting to be shown, or null.</summary>
         public ExpeditionResultView ExpeditionResult { get; private set; }
@@ -179,6 +197,12 @@ namespace FishingIdle.Game.Bootstrap
                 });
             }
 
+            if (IsRunning && Time.unscaledTime >= _nextCrewSyncAt)
+            {
+                _nextCrewSyncAt = Time.unscaledTime + CrewSyncIntervalSeconds;
+                Guard(SyncCrew);
+            }
+
             // A failure inside the sync stops the game service; nothing more to read this frame.
             if (!IsRunning)
             {
@@ -212,6 +236,7 @@ namespace FishingIdle.Game.Bootstrap
             if (paused && IsRunning)
             {
                 Guard(() => Game.Fishing.MarkSeen());
+                Guard(() => Game.Crew.MarkSeen());
             }
         }
 
@@ -220,6 +245,7 @@ namespace FishingIdle.Game.Bootstrap
             if (IsRunning)
             {
                 Guard(() => Game.Fishing.MarkSeen());
+                Guard(() => Game.Crew.MarkSeen());
             }
         }
 
@@ -852,6 +878,71 @@ namespace FishingIdle.Game.Bootstrap
             });
         }
 
+        // ------------------------------------------------------------------ Crew intents (M24-T05)
+
+        public CrewView GetCrew(CrewBuyMode mode) => IsRunning ? Game.Crew.GetCrew(mode) : null;
+
+        /// <summary>Hires crew members. Returns true when it happened.</summary>
+        public bool HireCrew(string memberId, CrewBuyMode mode)
+        {
+            var hired = false;
+            Guard(() =>
+            {
+                var result = Game.Crew.Hire(memberId, mode);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                hired = true;
+                var hire = result.Value;
+                Toasts.Push(GameTexts.Crew.Hired(hire.Name, hire.NamePlural, hire.Bought), ToastKind.Info);
+                if (hire.MilestoneReached > 0)
+                {
+                    Toasts.Push(GameTexts.Crew.MilestoneToast(hire.NamePlural, hire.MilestoneReached, Format.Factor(hire.MilestoneMultiplier)), ToastKind.Important, notify: true);
+                }
+
+                if (hire.FleetMilestoneReached > 0)
+                {
+                    Toasts.Push(GameTexts.Crew.FleetMilestoneToast(hire.FleetMilestoneReached, Format.Factor(hire.FleetMilestoneMultiplier)), ToastKind.Important, notify: true);
+                }
+
+                if (hire.UnlockedName != null)
+                {
+                    Toasts.Push(GameTexts.Crew.Unlocked(hire.UnlockedName), ToastKind.Important, notify: true);
+                }
+
+                Refresh();
+            });
+            return hired;
+        }
+
+        /// <summary>Credits the Crew's income; level-ups from its XP get the same toasts as fishing ones.</summary>
+        private void SyncCrew()
+        {
+            var update = Game.Crew.Sync();
+            TakeOfflineReport();
+            if (!update.HasChanges)
+            {
+                return;
+            }
+
+            CrewCoinsCredited += update.CoinsGained;
+            foreach (var level in update.LevelsReached)
+            {
+                Toasts.Push(GameTexts.Toasts.LevelUp(level), ToastKind.LevelUp, notify: true);
+                Celebrations.Show(GameTexts.Celebration.LevelUp(level), GameTexts.Celebration.LevelUpLine, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+            }
+
+            if (update.DollarsGained > 0)
+            {
+                Toasts.Push(GameTexts.Toasts.Dollars(Format.Number(update.DollarsGained)), ToastKind.Important);
+            }
+
+            Player = Game.Player.GetPlayer();
+        }
+
         // ------------------------------------------------------------------ Map, Shop and rod intents
 
         public MapsView GetMaps() => IsRunning ? Game.Maps.GetMaps() : null;
@@ -1131,6 +1222,14 @@ namespace FishingIdle.Game.Bootstrap
 
         private void TakeOfflineReport()
         {
+            // The Crew's summary (M24-T05) joins the fishing one in the same "Bem-vindo de volta".
+            var crew = Game.Crew.TakeOfflineReport();
+            if (crew != null)
+            {
+                CrewWelcome = crew;
+                Refresh();
+            }
+
             var report = Game.Fishing.TakeOfflineReport();
             if (report == null)
             {
@@ -1177,6 +1276,7 @@ namespace FishingIdle.Game.Bootstrap
             Travel = Game.Maps.GetTravel();
             Gear = Game.Gear.GetGear();
             Vip = Game.Vip.GetVip();
+            CrewCoinsPerSecond = Game.Crew.GetCrew(CrewBuyMode.One).CoinsPerSecond;
         }
 
         /// <summary>

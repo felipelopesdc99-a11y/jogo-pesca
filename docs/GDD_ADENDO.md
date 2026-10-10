@@ -1968,3 +1968,80 @@ Decisão do proprietário em 10/10/2026 (M24-T09 e M24-T03), primeira etapa do A
   (A-124), abaixo de 1 milhão continua o número inteiro ("845.320") e acima vira "3,4 mi", "12 bi", "1,5 tri".
 - O Painel de Testes ganhou os atalhos "Nv. 500" e "Nv. 1000".
 
+
+### A-154 · Etapa 2 do novo escopo: a Tripulação automática
+**Seção do GDD:** 10, 17, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+Decisão do proprietário em 10/10/2026 (M24-T05 e M24-T08), segunda etapa do A-152. Números de partida aprovados por
+ele, em `config/crew.json`, para ajustar jogando.
+
+- **O que é.** Pescadores e barcos contratados com Moedas que rendem **Moedas e XP de Pescador por segundo**, com o
+  jogo aberto e fechado. A Tripulação **nunca pesca peixes**: não enche a Caixa, não descobre espécies, não bate
+  recordes nem dá Conchas.
+- **Os 10 tripulantes**, em ordem: Ajudante da Isca, Canoeiro, Tarrafeiro, Jangadeiro, Piloto da Voadeira, Mestre do
+  Barco de Linha, Saveiro do Porto, Traineira, Barco de Arrasto e Navio-Fábrica.
+
+  | # | Tripulante | 1ª unidade | Cada unidade a mais | Moedas/s por unidade | XP/s por unidade | Libera com |
+  |---|---|---|---|---|---|---|
+  | 1 | Ajudante da Isca | 15 | +10% | 0,006 | 0,0002 | desde o começo |
+  | 2 | Canoeiro | 160 | +9,7% | 0,039 | 0,0003 | 10 Ajudantes da Isca |
+  | 3 | Tarrafeiro | 1.800 | +9,3% | 0,25 | 0,00045 | 10 Canoeiros |
+  | 4 | Jangadeiro | 20.000 | +9% | 1,6 | 0,0007 | 10 Tarrafeiros |
+  | 5 | Piloto da Voadeira | 220.000 | +8,7% | 11 | 0,001 | 10 Jangadeiros |
+  | 6 | Mestre do Barco de Linha | 2,4 mi | +8,3% | 70 | 0,0015 | 10 Pilotos da Voadeira |
+  | 7 | Saveiro do Porto | 26 mi | +8% | 450 | 0,0023 | 10 Mestres do Barco de Linha |
+  | 8 | Traineira | 290 mi | +7,7% | 2.900 | 0,0034 | 10 Saveiros do Porto |
+  | 9 | Barco de Arrasto | 3,2 bi | +7,3% | 19.000 | 0,0051 | 10 Traineiras |
+  | 10 | Navio-Fábrica | 35 bi | +7% | 120.000 | 0,0077 | 10 Barcos de Arrasto |
+
+  O preço de cada unidade sobe em relação à anterior (os caros sobem mais devagar). Comprar várias de uma vez custa
+  exatamente a soma das unidades: base × crescimento^tenho × (crescimento^quantas − 1) ÷ (crescimento − 1). Nenhum
+  tripulante pede nível do Pescador (como os itens, A-153): cada um libera quando o jogador tem 10 do anterior.
+- **Comprar ×1, ×10, ×100 ou Máx** (o máximo que as Moedas pagam). O preço que aparece é o do modo escolhido. Um
+  preço grande demais para caber num número aparece como "Preço fora de alcance" e não pode ser pago.
+- **Marcos de quantidade.** Com 25, 50, 100, 150, 200, 300 e 400 unidades de um tripulante, a renda de Moedas
+  **daquele** tripulante dobra a cada marco (×128 com os 7).
+- **Marco da frota.** Quando **todos os 10** tripulantes têm pelo menos 25 (e depois 50, 100, 150, 200, 300, 400), a
+  renda de Moedas de **toda** a Tripulação dobra, uma vez por marco. Como cada tripulante só libera com 10 do
+  anterior, "todos os liberados" e "todos os 10" dão no mesmo; o jogo conta os 10.
+- Os marcos **não** mexem no XP: o XP da Tripulação é sempre pequeno (unidades × XP por unidade).
+- **Com o jogo aberto** a renda cai na carteira a cada segundo, contada pelo relógio do jogo (o que sobra de fração de
+  Moeda fica guardado para o próximo segundo). O XP soma no XP total do Pescador e sobe de nível como a pesca (com os
+  Dólares dos marcos até o Nv.100, A-111), com o mesmo aviso e a mesma comemoração.
+- **Com o jogo fechado**: renda cheia nas primeiras **2 horas**, **50%** até **10 horas** fora no total; depois disso,
+  nada. É separado da pesca offline (1 tentativa por minuto até 24 h, A-034): os dois acontecem juntos. Um intervalo
+  de mais de 2 minutos sem o jogo dar notícia (PC suspenso, jogo travado) conta como fechado. Relógio do PC voltado
+  para trás não rende nada nem tira nada; quando volta à hora certa, só o tempo novo conta (TD-030).
+- **Tela de boas-vindas**: se a Tripulação rendeu enquanto o jogo estava fechado, o "Bem-vindo de volta" ganha a parte
+  "Sua Tripulação trabalhou" (Moedas, XP, nível alcançado, o aviso do limite de 10 h e a regra de 2 h / 50% / 10 h),
+  embaixo da pesca. Se a pesca estava parada, aparece só a parte da Tripulação.
+- **Tela "Tripulação"** (botão novo na barra de cima, logo depois de Pesca; a Placa do Píer com o "i" explicando
+  tudo, A-148, e o contador "+X/s" ao lado):
+  - Em cima, num quadro afundado: "Renda da Tripulação" com "+X/s" grande em dourado, o XP por segundo e quanto a
+    Tripulação já rendeu; à direita, o **marco da frota**: "Todos com 25: ×2 para a frota · 7 de 10 prontos", uma
+    barra dourada do marco anterior até o próximo e a pílula "Frota ×2" quando já há algum alcançado.
+  - Os modos "Contratar ×1 · ×10 · ×100 · Máx" em chips.
+  - Uma linha por tripulante: retrato (provisório), nome e quantidade, a renda dele por segundo (com "renda ×4"
+    quando tem marcos), o próximo marco ("×2 em 50", "25/50" e barra) ou "Todos os marcos", e o botão "Contratar ×N"
+    com o preço embaixo (dourado quando dá para pagar). Só aparecem os liberados e o **próximo bloqueado**, escurecido,
+    com cadeado e "Libera com 10 Canoeiros (você tem 7)". Lista com rolagem quando não cabe.
+  - Avisos: "Tripulação: +10 Canoeiros", "Marco de 25 Canoeiros: renda ×2!", "Marco da frota: todos com 25! A
+    Tripulação inteira rende ×2." e "Novo na Tripulação: Tarrafeiro".
+- **Barra do jogador**: no cartão aberto, um "+X/s" discreto à direita das Moedas (some enquanto aparece o "+N" de
+  uma venda). A renda da Tripulação conta na carteira sem o pulo e sem o "+N" a cada segundo.
+- Números por segundo: "0,006/s", "0,25/s", "12,5/s", "845.320/s", "3,4 mi/s", "1,1 bi/s".
+- **Ritmo simulado** (`tools/Progressao/simular_tripulacao.py`, resultado em `docs/propostas/tripulacao.json`; a
+  pesca como em `simular_progressao.py`, uma carteira só, compras de um jogador atento):
+
+  | Jeito de jogar | 1ª compra | 2º tripulante | Tripulação passa a pesca | 1 mil/s | 1 mi/s | 1 bi/s | Renda no Nv.500 | Renda no dia 75 |
+  |---|---|---|---|---|---|---|---|---|
+  | Jogo aberto o dia todo | 0,6 min | 7,1 min | 1,5 h | 1,3 dia | 12,7 dias | 62 dias | ~2,9 mi/s (dia 17,4) | ~1,1 bi/s |
+  | Abre 4 vezes por dia (30 min) | 0,6 min* | 7,1 min* | 10,3 h* | 2,8 dias | 19,8 dias | 90 dias | ~3,6 mi/s (dia 30) | ~260 mi/s |
+  | Abre 1 vez por dia (30 min) | 0,6 min* | 7,1 min* | 5 dias* | 5,8 dias | 48 dias | — (248 mi/s no dia 168) | ~670 mil/s (dia 45) | ~3,6 mi/s |
+
+  \* Contado da primeira vez que o jogo abre. A renda nunca passa de ~1,5 bi/s nos 168 dias simulados (bem abaixo de
+  1 trilhão/s). O XP da Tripulação adianta pouco o Nv.1000: ~71 em vez de ~75 dias (jogo aberto), ~132 em vez de
+  ~144 (4 vezes por dia), ~165 em vez de ~168 (1 vez por dia).
+- **Arte provisória** (`ASSET_PENDENTE`): os retratos são um quadrado com o ícone de pessoa (1 a 3) ou de barco
+  (4 a 10) e o número; o botão do menu usa o ícone do barco. Pedidos em `docs/ASSETS_PENDENTES.md`.
+- **Quem já joga** começa com a Tripulação vazia (save versão 13); o tempo de antes da atualização não rende nada.

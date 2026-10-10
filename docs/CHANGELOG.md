@@ -3,6 +3,38 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.46] — 10/10/2026
+
+Etapa 2 do novo escopo idle: a Tripulação automática (M24-T05 e M24-T08, A-154).
+
+### Adicionado
+
+- **Tripulação**: 10 tripulantes (do Ajudante da Isca ao Navio-Fábrica) contratados com Moedas, que rendem Moedas e
+  XP de Pescador por segundo com o jogo aberto e fechado; nunca pescam peixes. Cada um libera com 10 do anterior.
+  Comprar ×1, ×10, ×100 ou Máx. Marcos de 25 a 400 unidades dobram a renda do tripulante; o marco da frota (todos
+  os 10 com o número) dobra a de todos. Fechado: 100% nas primeiras 2 h e 50% até 10 h.
+- `config/crew.json` com os números de partida, simulados por `tools/Progressao/simular_tripulacao.py`
+  (resultado em `docs/propostas/tripulacao.json`): jogo aberto — 1ª compra em 0,6 min, 2º tripulante em 7,1 min, a
+  Tripulação passa a pesca em 1,5 h, ~2,9 mi/s perto do Nv.500 e ~1,1 bi/s no dia 75.
+- Janela "Tripulação" (botão novo na barra de cima, logo depois de Pesca), "+X/s" no cartão do jogador e a parte
+  "Sua Tripulação trabalhou" no "Bem-vindo de volta". Retratos e ícone provisórios (pedidos em
+  `docs/ASSETS_PENDENTES.md`).
+- Save versão 13 (Tripulação vazia para quem já joga; o tempo de antes não rende) (TD-039).
+- Testes da Tripulação (`CrewTests`): preços ×1/×10/×100/Máx e números enormes, desbloqueio, marcos e marco da frota,
+  renda aberta e fechada com 100%/50% e teto, relógio que volta, migração v12→v13, XP no total do Pescador, nenhum
+  peixe.
+
+### Mudado
+
+- O XP do Pescador da pesca e da Tripulação passa pelo mesmo `FisherLevelRules.AddXp` (o comportamento da pesca não
+  mudou).
+- O contador de Moedas do cartão fica exato também em bilhões (antes arredondava por usar `float`).
+- M24-T08 virou "Tela da Tripulação"; a tela das Melhorias ficou numa tarefa nova, M24-T11.
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.45] — 10/10/2026
 
 Etapa 1 do novo escopo idle (M24, A-152 e A-153).

@@ -1,0 +1,136 @@
+{
+  "config_file": "crew.json",
+  "config_schema_version": 1,
+  "balance_status": "provisional",
+  "description": "Tripulação automática (M24-T05, A-154): pescadores e barcos contratados que rendem Moedas e XP de Pescador por segundo, com o jogo aberto e fechado. Nunca rendem peixes. Os números são o ponto de partida aprovado pelo proprietário em 10/10/2026, simulados por tools/Progressao/simular_tripulacao.py (resultado em docs/propostas/tripulacao.json), e serão ajustados depois que ele jogar.",
+  "unlock_previous_count": 10,
+  "unlock_note": "O primeiro tripulante está disponível desde o começo. Cada um dos seguintes libera quando o jogador tem pelo menos esta quantidade do anterior (sem nível mínimo, como os itens desde o A-153).",
+  "online_gap_seconds": 120,
+  "online_gap_note": "Tempo sem o jogo dar notícia que ainda conta como jogo aberto (renda cheia, sem tela de boas-vindas). Acima disso o período conta como offline.",
+  "offline": {
+    "full_rate_hours": 2,
+    "reduced_rate": 0.5,
+    "max_hours": 10,
+    "note": "Com o jogo fechado: renda cheia nas primeiras full_rate_hours horas, depois reduced_rate (0,5 = 50%) até max_hours horas fora no total. O que passar de max_hours não rende. Separado da pesca offline de 24 h (progression.json → fishing)."
+  },
+  "milestones": {
+    "counts": [
+      25,
+      50,
+      100,
+      150,
+      200,
+      300,
+      400
+    ],
+    "multiplier": 2.0,
+    "note": "Marcos de quantidade de cada tripulante: ao chegar a cada número, a renda de Moedas daquele tripulante é multiplicada por multiplier (×2). Não mexem no XP."
+  },
+  "fleet_milestones": {
+    "counts": [
+      25,
+      50,
+      100,
+      150,
+      200,
+      300,
+      400
+    ],
+    "multiplier": 2.0,
+    "note": "Marco da frota: quando todos os tripulantes (os 10) têm pelo menos o número, a renda de Moedas de toda a frota é multiplicada por multiplier (×2), uma vez por marco. Não mexe no XP."
+  },
+  "members_note": "Em ordem de contratação. display_name e display_name_plural: como o jogo mostra o tripulante (\"Libera com 10 Canoeiros\"). base_cost: Moedas da primeira unidade. cost_growth: quanto cada unidade a mais custa em relação à anterior (1,10 = +10%); o custo de k unidades a partir de n é base_cost × cost_growth^n × (cost_growth^k − 1) ÷ (cost_growth − 1). coins_per_second e xp_per_second: renda de uma unidade, antes dos marcos.",
+  "members": [
+    {
+      "id": "crew_01",
+      "display_name": "Ajudante da Isca",
+      "display_name_plural": "Ajudantes da Isca",
+      "base_cost": 15,
+      "cost_growth": 1.1,
+      "coins_per_second": 0.006,
+      "xp_per_second": 0.0002,
+      "note": "Disponível desde o começo. Barato para a primeira compra sair no primeiro minuto de pesca."
+    },
+    {
+      "id": "crew_02",
+      "display_name": "Canoeiro",
+      "display_name_plural": "Canoeiros",
+      "base_cost": 160,
+      "cost_growth": 1.097,
+      "coins_per_second": 0.039,
+      "xp_per_second": 0.0003
+    },
+    {
+      "id": "crew_03",
+      "display_name": "Tarrafeiro",
+      "display_name_plural": "Tarrafeiros",
+      "base_cost": 1800,
+      "cost_growth": 1.093,
+      "coins_per_second": 0.25,
+      "xp_per_second": 0.00045
+    },
+    {
+      "id": "crew_04",
+      "display_name": "Jangadeiro",
+      "display_name_plural": "Jangadeiros",
+      "base_cost": 20000,
+      "cost_growth": 1.09,
+      "coins_per_second": 1.6,
+      "xp_per_second": 0.0007
+    },
+    {
+      "id": "crew_05",
+      "display_name": "Piloto da Voadeira",
+      "display_name_plural": "Pilotos da Voadeira",
+      "base_cost": 220000,
+      "cost_growth": 1.087,
+      "coins_per_second": 11.0,
+      "xp_per_second": 0.001
+    },
+    {
+      "id": "crew_06",
+      "display_name": "Mestre do Barco de Linha",
+      "display_name_plural": "Mestres do Barco de Linha",
+      "base_cost": 2400000,
+      "cost_growth": 1.083,
+      "coins_per_second": 70.0,
+      "xp_per_second": 0.0015
+    },
+    {
+      "id": "crew_07",
+      "display_name": "Saveiro do Porto",
+      "display_name_plural": "Saveiros do Porto",
+      "base_cost": 26000000,
+      "cost_growth": 1.08,
+      "coins_per_second": 450.0,
+      "xp_per_second": 0.0023
+    },
+    {
+      "id": "crew_08",
+      "display_name": "Traineira",
+      "display_name_plural": "Traineiras",
+      "base_cost": 290000000,
+      "cost_growth": 1.077,
+      "coins_per_second": 2900.0,
+      "xp_per_second": 0.0034
+    },
+    {
+      "id": "crew_09",
+      "display_name": "Barco de Arrasto",
+      "display_name_plural": "Barcos de Arrasto",
+      "base_cost": 3200000000,
+      "cost_growth": 1.073,
+      "coins_per_second": 19000.0,
+      "xp_per_second": 0.0051
+    },
+    {
+      "id": "crew_10",
+      "display_name": "Navio-Fábrica",
+      "display_name_plural": "Navios-Fábrica",
+      "base_cost": 35000000000,
+      "cost_growth": 1.07,
+      "coins_per_second": 120000.0,
+      "xp_per_second": 0.0077
+    }
+  ]
+}

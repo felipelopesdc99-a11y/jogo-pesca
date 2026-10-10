@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-10T23:30:00Z",
+  "updated_at": "2026-10-11T01:30:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -4304,11 +4304,12 @@
           "title": "Tripulação automática",
           "subsystem": "server",
           "description": "Contratar pescadores e barcos que rendem por segundo, com e sem o jogo aberto, conforme a proposta aprovada.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M24-T02"
           ],
-          "updated_at": "2026-10-10T21:15:00Z"
+          "updated_at": "2026-10-11T01:30:00Z",
+          "completion_notes": "config/crew.json (novo arquivo obrigatório, validado, notas em PT-BR): 10 tripulantes (Ajudante da Isca, Canoeiro, Tarrafeiro, Jangadeiro, Piloto da Voadeira, Mestre do Barco de Linha, Saveiro do Porto, Traineira, Barco de Arrasto, Navio-Fábrica) com 1ª unidade de 15 a 35 bi Moedas (~11× cada), encarecimento por unidade de 1,10 a 1,07, renda de 0,006 a 120.000 Moedas/s por unidade (~6,5× cada) e XP de 0,0002 a 0,0077/s; cada um libera com 10 do anterior; marcos 25/50/100/150/200/300/400 (×2 para o tripulante) e marco da frota (todos os 10 com o número: ×2 para todos); offline 100% por 2 h e 50% até 10 h. GameService/Crew: CrewRules (preço b·r^n·(r^k−1)/(r−1) em double arredondado para long, Unaffordable acima de ~9,2×10^18, Máx por logaritmo conferido na fórmula, marcos, renda, parte offline) e LocalCrewService/ICrewService (GetCrew, Hire ×1/×10/×100/Máx, Sync pelo IClock com cursor LastCreditedAtMs e frações guardadas, MarkSeen, resumo offline). Sem sorteio; nunca gera peixe. XP pela mesma FisherLevelRules.AddXp da pesca (soma em fisher_xp_total, TD-038). Save v13 (CrewState) com migração v12→v13 (Tripulação vazia, nada pago pelo passado). Relógio que volta não paga nem tira; cursor no futuro não é pago; ferramenta de teste \"avançar tempo (online)\" paga como jogo aberto. Simulação tools/Progressao/simular_tripulacao.py → docs/propostas/tripulacao.json (jogo aberto: 1ª compra 0,6 min, 2º tripulante 7,1 min, passa a pesca em 1,5 h, ~2,9 mi/s no Nv.500, ~1,1 bi/s no dia 75). Testes em CrewTests. A-154, TD-039. Não compilado (sem .NET) nem aberto no Unity."
         },
         {
           "id": "M24-T06",
@@ -4335,15 +4336,15 @@
         },
         {
           "id": "M24-T08",
-          "title": "Telas da Tripulação e das Melhorias",
+          "title": "Tela da Tripulação",
           "subsystem": "client",
-          "description": "Telas no padrão visual atual (Placa do Píer).",
-          "status": "TODO",
+          "description": "Janela da Tripulação no padrão visual atual (Placa do Píer), botão no menu e renda na barra e no \"Bem-vindo de volta\". A tela das Melhorias ficou no M24-T11.",
+          "status": "DONE",
           "dependencies": [
-            "M24-T05",
-            "M24-T06"
+            "M24-T05"
           ],
-          "updated_at": "2026-10-10T21:15:00Z"
+          "updated_at": "2026-10-11T01:30:00Z",
+          "completion_notes": "UI/CrewWindow (IMGUI, WindowFrame com a Placa do Píer, \"i\" explicando desbloqueio, marcos e offline, contador \"+X/s\"): renda total e XP por segundo, marco da frota com barra e \"N de 10 prontos\", modos ×1/×10/×100/Máx, uma linha por tripulante (retrato provisório, nome, quantidade, renda, próximo marco \"×2 em 50\" com barra, Contratar ×N e preço), só os liberados e o próximo bloqueado (\"Libera com 10 Canoeiros (você tem 7)\"). Botão \"Tripulação\" na barra de cima logo depois de Pesca (posições dos botões em constantes, tutorial ajustado); ícone provisório: o barco (ASSET_PENDENTE ico_tripulacao). Cartão do jogador com \"+X/s\" discreto ao lado das Moedas; a renda da Tripulação entra na carteira sem o pulo e sem o \"+N\" a cada segundo (e o contador de Moedas ficou exato em bilhões). \"Bem-vindo de volta\" com a parte \"Sua Tripulação trabalhou\" (abre também só com ela). Avisos de contratação, marco, marco da frota e novo tripulante; níveis vindos do XP da Tripulação com o aviso e a comemoração da pesca. Textos em GameTexts.Crew, Format.PerSecond/Rate/Factor. Pedidos de arte (10 retratos 512×512 e o ícone 96×96) em docs/ASSETS_PENDENTES.md. A-154. Não compilado (sem .NET) nem aberto no Unity."
         },
         {
           "id": "M24-T09",
@@ -4365,6 +4366,17 @@
             "M24-T03"
           ],
           "updated_at": "2026-10-10T23:30:00Z"
+        },
+        {
+          "id": "M24-T11",
+          "title": "Tela das Melhorias",
+          "subsystem": "client",
+          "description": "Tela das Melhorias compradas (M24-T06) no padrão visual atual (Placa do Píer), separada da Tripulação (M24-T08).",
+          "status": "TODO",
+          "dependencies": [
+            "M24-T06"
+          ],
+          "updated_at": "2026-10-11T01:30:00Z"
         }
       ]
     }

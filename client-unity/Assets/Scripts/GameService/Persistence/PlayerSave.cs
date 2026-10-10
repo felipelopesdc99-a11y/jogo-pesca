@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 12;
+        public const int CurrentVersion = 13;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -131,6 +131,9 @@ namespace FishingIdle.GameService.Persistence
 
         public PlayerStats Stats { get; set; } = new PlayerStats();
 
+        /// <summary>The automatic Crew: units hired and the last moment its income was credited (M24-T05). Added in save version 13.</summary>
+        public CrewState Crew { get; set; } = new CrewState();
+
         /// <summary>The equipped rod item, or null if the reference is broken.</summary>
         public InventoryItem EquippedRodItem()
         {
@@ -160,6 +163,33 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Coins spent on internal-level upgrades. Part comes back on NPC resale.</summary>
         public long UpgradeCoinsInvested { get; set; }
+    }
+
+    /// <summary>
+    /// The automatic Crew (M24-T05, A-154). Only the units and the income cursor are stored: names, prices and rates
+    /// come from crew.json, so a balance change applies to the units already hired.
+    /// </summary>
+    public sealed class CrewState
+    {
+        /// <summary>Units hired of each member, by member id (crew.json). Members never hired are absent.</summary>
+        public Dictionary<string, long> Units { get; set; } = new Dictionary<string, long>();
+
+        /// <summary>The moment the income was last credited (Unix ms). Time after it is still owed.</summary>
+        public long LastCreditedAtMs { get; set; }
+
+        /// <summary>Fractions of a Moeda and of an XP point earned but not yet credited, so nothing is lost to rounding.</summary>
+        public double CoinsCarry { get; set; }
+        public double XpCarry { get; set; }
+
+        /// <summary>Everything the Crew ever earned (for the window and audits).</summary>
+        public long CoinsEarned { get; set; }
+        public long XpEarned { get; set; }
+
+        /// <summary>Units of a member; 0 when never hired.</summary>
+        public long UnitsOf(string memberId)
+        {
+            return memberId != null && Units != null && Units.TryGetValue(memberId, out var units) ? units : 0;
+        }
     }
 
     /// <summary>Map travel: 30 s, fishing paused, manual only (GDD section 18).</summary>

@@ -69,6 +69,8 @@ namespace FishingIdle.GameService.Core
         NotEnoughHonor,
         ArenaWeeklyLimit,
         InvalidAmount,
+        CrewMemberNotFound,
+        CrewMemberLocked,
     }
 
     /// <summary>

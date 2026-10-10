@@ -657,3 +657,43 @@ qualquer curva futura mais lenta.
 
 **Rever se.** Entrar uma fonte de XP do Pescador que não passe por `AddFisherXp` (por exemplo, a Tripulação do M24):
 ela também precisa somar em `fisher_xp_total`, senão uma troca de curva futura não a enxerga.
+
+## TD-039 — Tripulação: renda por relógio sem sorteio, cursor no save e preços em fórmula fechada
+
+**Origem.** M24-T05 (A-154): pescadores e barcos que rendem Moedas e XP por segundo, com o jogo aberto e fechado.
+
+**Decisão.**
+- `config/crew.json` (novo arquivo obrigatório em `GameConfigLoader.RequiredFiles`, validado) guarda os 10
+  tripulantes, o desbloqueio (10 do anterior), os marcos, o marco da frota e a regra offline. As regras puras ficam em
+  `GameService/Crew/CrewRules.cs`; o serviço em `LocalCrewService` (`ICrewService`: `GetCrew`, `Hire`, `Sync`,
+  `MarkSeen`, `TakeOfflineReport`).
+- **Sem sorteio.** A renda é determinística: unidades × renda base × 2^(marcos do tripulante) × 2^(marcos da frota),
+  em `double` por segundo. Não usa o `Rng`.
+- **Cursor no save** (`PlayerSave.Crew`, save versão 13): unidades por id, `LastCreditedAtMs` (até onde a renda já
+  foi paga), as frações de Moeda e de XP que ainda não deram 1 (`CoinsCarry`, `XpCarry`) e o total já rendido. `Sync`
+  paga de `LastCreditedAtMs` até agora e move o cursor; chamar duas vezes não paga duas vezes. O cliente chama a cada
+  1 s; a fração guardada faz a cadência não mudar nada.
+- **Aberto ou fechado** se decide pelo tamanho do intervalo: até `online_gap_seconds` (120 s) é jogo aberto (100%);
+  acima, é offline (100% até `full_rate_hours`, depois `reduced_rate` até `max_hours`) e gera o resumo do "Bem-vindo
+  de volta". Fica separado da pesca offline (TD-019), que tem o próprio teto.
+- **Relógio.** O serviço lê só o `IClock` da sessão, que nunca volta (TD-030): relógio voltado não paga nem tira nada.
+  Um cursor no futuro (save editado) é trazido para agora sem pagar. O teto offline limita o relógio adiantado.
+  Ferramentas de teste: "avançar tempo (online)" paga o período cheio como jogo aberto (`CreditAsOnline`).
+- **Gravação.** A renda sozinha grava o save no máximo a cada 30 s (contratar e fechar o jogo gravam na hora). Moedas
+  e cursor vão juntos no mesmo arquivo, então uma queda perde no máximo esses segundos de *gravação*, não de renda: no
+  próximo início o tempo é pago como offline.
+- **Preços em fórmula fechada:** b·r^n·(r^k − 1)/(r − 1) em `double`, arredondada para `long`. O que passa de
+  ~9,2 × 10^18 vira `CrewRules.Unaffordable` e nunca é pago (nem com `long.MaxValue` Moedas). "Máx" resolve k por
+  logaritmo e confere com a própria fórmula. Moedas e XP somam com teto em `long.MaxValue`.
+- **XP** entra por `FisherLevelRules.AddXp`, o mesmo caminho da pesca (que passou a usá-lo): soma em
+  `fisher_xp_total` (TD-038), sobe níveis e paga os Dólares dos marcos.
+- **Save v13**: a migração da v12 cria a Tripulação vazia com o cursor em 0; o serviço o põe em "agora" ao carregar,
+  então o tempo de antes da atualização não é pago.
+
+**Por quê.** É o modelo dos idles do gênero (AdVenture Capitalist, Idle Miner): custo geométrico, marcos que dobram,
+renda contínua. Renda por relógio + cursor é o mesmo princípio da pesca (TD-019): o cliente nunca diz "ganhei X".
+A fórmula fechada dá ×100 e Máx sem laço de compra e sem estouro.
+
+**Rever se.** O proprietário quiser que os marcos também multipliquem o XP, um limite de unidades, ou a Tripulação
+render enquanto o jogo está aberto mas parado por mais de 2 minutos (hoje isso conta como offline, com 100% nas 2
+primeiras horas de qualquer jeito). As Melhorias (M24-T06) vão multiplicar a renda: entram em `CrewRules.CoinsPerSecond`.

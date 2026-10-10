@@ -160,6 +160,7 @@ namespace FishingIdle.GameService
                 RngSeed = Rng.NewSeed(),
                 CurrentMapId = Config.StartingMap.Id,
                 FisherXpCurveVersion = Config.Progression.Fisher.XpCurveVersion,
+                Crew = new CrewState { LastCreditedAtMs = now },
             };
             // No rod yet: the tutorial has the player claim the free Starter Rod in the Shop (GDD section 40).
             for (var i = 0; i < Config.CardumeSize; i++)

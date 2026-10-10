@@ -4,6 +4,7 @@ using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Arena;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Crew;
 using FishingIdle.GameService.Dev;
 using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
@@ -49,7 +50,9 @@ namespace FishingIdle.GameService
             Ranking = new LocalRankingService(session);
             CurrencyTrade = new LocalCurrencyTradeService(session);
             Vip = new LocalVipService(session);
-            DevTools = new LocalDevToolsService(session, fishing);
+            var crew = new LocalCrewService(session);
+            Crew = crew;
+            DevTools = new LocalDevToolsService(session, fishing, crew);
         }
 
         public GameSession Session { get; }
@@ -69,6 +72,9 @@ namespace FishingIdle.GameService
         public IRankingService Ranking { get; }
         public ICurrencyTradeService CurrencyTrade { get; }
         public IVipService Vip { get; }
+
+        /// <summary>The automatic Crew (M24-T05): hired fishers and boats that earn Moedas and XP per second.</summary>
+        public ICrewService Crew { get; }
 
         /// <summary>The owner's test tools (A-123); they refuse everything unless Session.DevToolsEnabled is on.</summary>
         public IDevToolsService DevTools { get; }

@@ -701,4 +701,77 @@ namespace FishingIdle.GameService.Config
         public long CostCoins { get; set; }
         public long CostShells { get; set; }
     }
+
+    // ---------------------------------------------------------------- crew.json
+
+    /// <summary>
+    /// The automatic Crew (M24-T05, A-154): hired fishers and boats that earn Moedas and Fisher XP per second, with
+    /// the game open or closed. Never fish.
+    /// </summary>
+    public sealed class CrewConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+
+        /// <summary>Each member after the first unlocks when the player has at least this many of the previous one.</summary>
+        public int UnlockPreviousCount { get; set; }
+
+        /// <summary>Time without a sync that still counts as the game open (full income, no welcome summary).</summary>
+        public double OnlineGapSeconds { get; set; }
+
+        public CrewOfflineConfig Offline { get; set; }
+
+        /// <summary>Per member: reaching each count multiplies that member's Moedas.</summary>
+        public CrewMilestonesConfig Milestones { get; set; }
+
+        /// <summary>Fleet: every member with at least the count multiplies the whole Crew's Moedas.</summary>
+        public CrewMilestonesConfig FleetMilestones { get; set; }
+
+        /// <summary>In hiring order.</summary>
+        public List<CrewMemberConfig> Members { get; set; }
+    }
+
+    public sealed class CrewOfflineConfig
+    {
+        /// <summary>Hours away at the full rate.</summary>
+        public double FullRateHours { get; set; }
+
+        /// <summary>Share of the income after <see cref="FullRateHours"/> (0.5 = 50%).</summary>
+        public double ReducedRate { get; set; }
+
+        /// <summary>Hours away that count at all; the rest earns nothing.</summary>
+        public double MaxHours { get; set; }
+    }
+
+    public sealed class CrewMilestonesConfig
+    {
+        /// <summary>Ascending unit counts.</summary>
+        public List<int> Counts { get; set; }
+
+        /// <summary>Multiplier applied once per count reached (2 = doubles).</summary>
+        public double Multiplier { get; set; }
+    }
+
+    public sealed class CrewMemberConfig
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
+
+        /// <summary>The plural ("Canoeiros"), for "Libera com 10 Canoeiros"; the display name when missing.</summary>
+        public string DisplayNamePlural { get; set; }
+
+        /// <summary>The plural, or the display name when the file has none.</summary>
+        public string PluralName => string.IsNullOrWhiteSpace(DisplayNamePlural) ? DisplayName : DisplayNamePlural;
+
+        /// <summary>Moedas of the first unit.</summary>
+        public long BaseCost { get; set; }
+
+        /// <summary>Each extra unit costs this much times the previous one (1.07 to 1.10).</summary>
+        public double CostGrowth { get; set; }
+
+        /// <summary>Moedas per second of one unit, before milestones.</summary>
+        public double CoinsPerSecond { get; set; }
+
+        /// <summary>Fisher XP per second of one unit (milestones do not change it).</summary>
+        public double XpPerSecond { get; set; }
+    }
 }

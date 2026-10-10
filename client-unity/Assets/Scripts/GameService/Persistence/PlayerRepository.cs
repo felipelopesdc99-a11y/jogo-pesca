@@ -383,6 +383,14 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 12;
             }
 
+            if (save.SaveVersion == 12)
+            {
+                // v13 adds the automatic Crew (M24-T05). Everyone starts with no one hired; the income cursor starts
+                // at 0 and GameSession sets it to "now" on load, so no Crew income is owed for the time before it.
+                save.Crew = new CrewState();
+                save.SaveVersion = 13;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BaitCharges = save.BaitCharges ?? new Dictionary<string, int>();
 
@@ -409,6 +417,8 @@ namespace FishingIdle.GameService.Persistence
             save.SpeciesRecords = save.SpeciesRecords ?? new Dictionary<string, SpeciesRecord>();
             save.Stats = save.Stats ?? new PlayerStats();
             save.Fishing = save.Fishing ?? new FishingSessionState();
+            save.Crew = save.Crew ?? new CrewState();
+            save.Crew.Units = save.Crew.Units ?? new Dictionary<string, long>();
         }
     }
 
@@ -514,6 +524,13 @@ namespace FishingIdle.GameService.Persistence
                 if (fishIds.Any(id => id <= 0 || id >= save.NextFishId)) problems.Add("aquarium id outside issued range");
             }
             if (save.Stats == null) problems.Add("stats missing");
+            if (save.Crew == null || save.Crew.Units == null) problems.Add("crew missing");
+            else
+            {
+                if (save.Crew.Units.Any(u => string.IsNullOrWhiteSpace(u.Key) || u.Value < 0)) problems.Add("crew has malformed units");
+                if (save.Crew.CoinsEarned < 0 || save.Crew.XpEarned < 0 || save.Crew.LastCreditedAtMs < 0) problems.Add("crew negative values");
+                if (double.IsNaN(save.Crew.CoinsCarry) || double.IsNaN(save.Crew.XpCarry)) problems.Add("crew carry is not a number");
+            }
 
             return problems;
         }

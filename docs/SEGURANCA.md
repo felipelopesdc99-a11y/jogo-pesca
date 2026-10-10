@@ -53,6 +53,13 @@ ciclos são elegíveis a partir do carimbo de tempo autoritativo do início da s
 ciclo gravado, e processa apenas os ciclos que realmente passaram. Requisições a mais devolvem o
 mesmo estado.
 
+**Tripulação acelerada (M24, TD-039).** O cliente só pede "sincronizar" ou "contratar"; nunca diz quanto a
+Tripulação rendeu. O serviço paga do cursor gravado (`LastCreditedAtMs`) até agora, pelo relógio que nunca volta
+(TD-030), e move o cursor: pedir de novo no mesmo instante não paga nada. Relógio voltado não paga nem tira; relógio
+adiantado com o jogo fechado vale no máximo o teto offline (10 h, metade da renda depois das 2 primeiras); um cursor
+no futuro (save editado) é trazido para agora sem pagar. Preços que não cabem num número nunca são cobrados nem
+pagos. No servidor, o mesmo cálculo roda com o relógio dele.
+
 **Uso duplo do peixe.** Duas requisições tentam vender e alimentar o mesmo `FishInstance` no mesmo
 instante. As duas rodam em transação contra a versão de estado do peixe; uma confirma e a outra é
 rejeitada com um conflito claro.

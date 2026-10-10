@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Crew;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Persistence;
 
@@ -61,11 +62,13 @@ namespace FishingIdle.GameService.Dev
         private const double MaxHoursPerStep = 72;
         private readonly GameSession _session;
         private readonly LocalFishingService _fishing;
+        private readonly LocalCrewService _crew;
 
-        public LocalDevToolsService(GameSession session, LocalFishingService fishing)
+        public LocalDevToolsService(GameSession session, LocalFishingService fishing, LocalCrewService crew = null)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
             _fishing = fishing ?? throw new ArgumentNullException(nameof(fishing));
+            _crew = crew;
         }
 
         private PlayerSave Save => _session.Save;
@@ -193,6 +196,7 @@ namespace FishingIdle.GameService.Dev
             {
                 // The jump counts as time the game was open: the next Sync settles it as online cycles.
                 _fishing.MarkSeenNow();
+                _crew?.CreditAsOnline();
             }
 
             Done("advanced " + hours + " h (" + (online ? "online" : "offline") + ")");

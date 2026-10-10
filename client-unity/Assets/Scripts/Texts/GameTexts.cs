@@ -49,6 +49,7 @@ namespace FishingIdle.Texts
             public const string Shop = "Loja";
             public const string Market = "Mercado";
             public const string Profile = "Perfil";
+            public const string Crew = "Tripulação";
         }
 
         // ------------------------------------------------------------------ fishing HUD
@@ -263,6 +264,50 @@ namespace FishingIdle.Texts
             public static string LevelsWithDollars(int level, string dollars) => "Subiu para o Nível " + level + "! +" + dollars + (dollars == "1" ? " Dólar" : " Dólares");
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
             public static string Escaped(int count) => count == 1 ? "1 peixe escapou" : Format.Number(count) + " peixes escaparam";
+
+            // The Crew's part of the summary (M24-T05, A-154).
+            public const string CrewTitle = "Sua Tripulação trabalhou";
+            public static string CrewCoins(string coins) => "+" + coins + " Moedas";
+            public static string CrewXp(string xp) => "+" + xp + " XP de Pescador";
+            public static string CrewCapped(string hours) => "Para a Tripulação, só contam as primeiras " + hours + " fora.";
+            public static string CrewNote(string fullHours, string reducedPercent, string maxHours) => "Com o jogo fechado, a Tripulação rende tudo nas primeiras " + fullHours + " e " + reducedPercent + " até " + maxHours + ".";
+        }
+
+        // ------------------------------------------------------------------ the automatic Crew (M24-T05, A-154)
+
+        public static class Crew
+        {
+            public const string Title = "Tripulação";
+            public const string TotalIncome = "Renda da Tripulação";
+            public const string Fleet = "Marco da frota";
+            public const string BuyModeLabel = "Contratar";
+            public const string ModeOne = "×1";
+            public const string ModeTen = "×10";
+            public const string ModeHundred = "×100";
+            public const string ModeMax = "Máx";
+            public const string AllMilestones = "Todos os marcos";
+            public const string NoneYet = "Contrate o primeiro tripulante para a renda começar.";
+            public const string TooExpensive = "Preço fora de alcance";
+            public static string Info(int unlockCount, string counts, string multiplier, string fleetMultiplier, string fullHours, string reducedPercent, string maxHours) =>
+                "Contrate pescadores e barcos que rendem Moedas e XP de Pescador por segundo, com o jogo aberto ou fechado. " +
+                "Cada tripulante libera o próximo quando você tem " + unlockCount + " dele. A cada marco de quantidade " +
+                "(" + counts + ") a renda daquele tripulante fica ×" + multiplier + "; quando todos chegam a um marco da frota, " +
+                "a Tripulação inteira fica ×" + fleetMultiplier + ". Com o jogo fechado: renda cheia nas primeiras " + fullHours +
+                " e " + reducedPercent + " até " + maxHours + ". A Tripulação nunca pesca peixes.";
+            public static string XpPerSecond(string xp) => "+" + xp + " XP de Pescador por segundo";
+            public static string Earned(string coins) => "Já rendeu " + coins + " Moedas";
+            public static string FleetNext(int count, int ready, int total, string multiplier) => "Todos com " + count + ": ×" + multiplier + " para a frota · " + ready + " de " + total + " prontos";
+            public static string FleetDone(string multiplier) => "Todos os marcos da frota alcançados · frota ×" + multiplier;
+            public static string FleetActive(string multiplier) => "Frota ×" + multiplier;
+            public static string NextMilestone(string multiplier, int count) => "×" + multiplier + " em " + count;
+            public static string MemberMultiplier(string multiplier) => "renda ×" + multiplier;
+            public static string HireAmount(string amount) => "Contratar ×" + amount;
+            public static string LockedLine(int count, string pluralName, string have) => "Libera com " + count + " " + pluralName + " (você tem " + have + ")";
+            public static string Hired(string name, string pluralName, long amount) => "Tripulação: +" + Format.Number(amount) + " " + (amount == 1 ? name : pluralName);
+            public static string MilestoneToast(string pluralName, int count, string multiplier) => "Marco de " + count + " " + pluralName + ": renda ×" + multiplier + "!";
+            public static string FleetMilestoneToast(int count, string multiplier) => "Marco da frota: todos com " + count + "! A Tripulação inteira rende ×" + multiplier + ".";
+            public static string Unlocked(string name) => "Novo na Tripulação: " + name;
+            public static string HudRate(string perSecond) => "+" + perSecond;
         }
 
         // ------------------------------------------------------------------ Arena (GDD sections 27–30)
@@ -1033,6 +1078,8 @@ namespace FishingIdle.Texts
                 case "NotEnoughHonor": return "Honra insuficiente.";
                 case "ArenaWeeklyLimit": return "Limite desta semana atingido. Volte em alguns dias.";
                 case "InvalidAmount": return "Escolha uma quantidade de pelo menos 1.";
+                case "CrewMemberNotFound": return "Esse tripulante não existe.";
+                case "CrewMemberLocked": return "Este tripulante ainda não está liberado. Contrate mais do anterior.";
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
                 case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";
@@ -1117,6 +1164,9 @@ namespace FishingIdle.Texts
             public static string MapRodCatchesNothing(string map, string rod) => "maps.json / rods.json: com a vara \"" + rod + "\" o mapa \"" + map + "\" não teria nenhum peixe para pescar (nenhuma raridade em comum). Ajuste o pool do mapa ou as raridades da vara.";
             public static string UnknownRodRarity(string rod, string rarity) => "rods.json: a vara \"" + rod + "\" cita a raridade \"" + rarity + "\", que não existe em progression.json.";
             public static string BadIntRange(string file, string what) => file + ": \"" + what + "\" precisa ter mínimo ≥ 0 e máximo ≥ mínimo.";
+            public static string CrewCostGrowth(string member) => "crew.json: o tripulante \"" + member + "\" precisa de cost_growth maior que 1 (cada unidade custa mais que a anterior) e no máximo 10.";
+            public const string CrewOfflineHours = "crew.json: \"offline\" precisa de full_rate_hours ≥ 0 e max_hours ≥ full_rate_hours (no máximo um ano).";
+            public static string CrewMilestones(string section) => "crew.json: \"" + section + ".counts\" precisa de números maiores que zero em ordem crescente (no máximo 64), e \"" + section + ".multiplier\" entre 1 e 1.000.";
         }
 
         // ------------------------------------------------------------------ Dev Panel (Unity Editor window)
