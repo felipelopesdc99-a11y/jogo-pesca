@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-10T21:15:00Z",
+  "updated_at": "2026-10-10T21:30:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -502,7 +502,9 @@
       "title": "Aprovar a proposta do novo escopo idle",
       "detail": "Decidido em 10/10/2026: números até bilhões, Nv.1000, sem Renascer, Tripulação automática e Melhorias compradas. Falta aprovar a proposta detalhada (M24-T01): velocidade, custos, o que acontece com os sistemas de hoje e com os saves.",
       "raised_at": "2026-10-10T21:15:00Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolved_at": "2026-10-10T21:30:00Z",
+      "resolution": "Proprietário (10/10/2026): implementar em etapas e ver no jogo, sem proposta fechada antes. Itens sem nível mínimo, basta ter o dinheiro. Quebrar a economia por sorte ou investimento real não é problema."
     }
   ],
   "milestones": [
@@ -4229,20 +4231,22 @@
           "title": "Proposta do novo escopo com simulação",
           "subsystem": "docs",
           "description": "Documento com o que muda, o que fica e como cada sistema se ajusta (mapas, peixes, Loja, Arena, Mercado, Expedição, Aquário), mais a curva de XP até o Nv.1000 e a economia até bilhões, simuladas.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-10T21:15:00Z"
+          "updated_at": "2026-10-10T21:30:00Z",
+          "completion_notes": "Substituída pela decisão do proprietário de implementar em etapas e ajustar jogando (OD-054). A pesquisa de referências (AdVenture Capitalist, Idle Miner Tycoon, idles de pesca) orienta os números iniciais."
         },
         {
           "id": "M24-T02",
           "title": "Aprovar a proposta",
           "subsystem": "docs",
           "description": "Decisão do proprietário sobre a proposta do M24-T01.",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M24-T01"
           ],
-          "updated_at": "2026-10-10T21:15:00Z"
+          "updated_at": "2026-10-10T21:30:00Z",
+          "completion_notes": "Aprovado em 10/10/2026: seguir implementando em etapas (OD-054)."
         },
         {
           "id": "M24-T03",
@@ -4311,6 +4315,15 @@
             "M24-T06"
           ],
           "updated_at": "2026-10-10T21:15:00Z"
+        },
+        {
+          "id": "M24-T09",
+          "title": "Itens sem nível mínimo",
+          "subsystem": "server",
+          "description": "Varas, barcos e iscas podem ser comprados em qualquer nível: basta ter o dinheiro (decisão do proprietário, 10/10/2026).",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-10T21:30:00Z"
         }
       ]
     }

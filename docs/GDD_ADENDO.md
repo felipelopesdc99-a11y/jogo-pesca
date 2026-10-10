@@ -1925,6 +1925,10 @@ crescimento rápido de dinheiro, experiência e níveis:
 - O crescimento vem de uma Tripulação automática (pescadores e barcos que rendem sozinhos) e de Melhorias compradas
   que multiplicam a renda.
 
-Os detalhes (curvas, custos, o que muda em cada sistema e nos saves) dependem da proposta do M24-T01, que o
-proprietário aprova antes de qualquer mudança no jogo.
+- O jogo continua multiplayer. Um jogador "quebrar" a economia por sorte ou por investir dinheiro de verdade não é
+  visto como problema.
+- Varas, barcos e iscas não têm mais nível mínimo para comprar: basta ter o dinheiro.
+
+O proprietário preferiu implementar em etapas e ver no jogo como se comporta, em vez de aprovar uma proposta fechada
+antes (10/10/2026). Os números de cada etapa ficam em /config e são ajustados depois de ele jogar.
 
