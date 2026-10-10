@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-10T21:05:00Z",
-  "current_milestone": "M22",
+  "updated_at": "2026-10-10T21:15:00Z",
+  "current_milestone": "M24",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -495,6 +495,14 @@
       "status": "RESOLVED",
       "resolved_at": "2026-10-10T21:05:00Z",
       "resolution": "Descartado pelo proprietário em 10/10/2026: a ilha 2D (M23) saiu do plano; o jogo volta a ser idle, com novo escopo de crescimento rápido de dinheiro, experiência e níveis."
+    },
+    {
+      "id": "OD-054",
+      "task_id": "M24-T02",
+      "title": "Aprovar a proposta do novo escopo idle",
+      "detail": "Decidido em 10/10/2026: números até bilhões, Nv.1000, sem Renascer, Tripulação automática e Melhorias compradas. Falta aprovar a proposta detalhada (M24-T01): velocidade, custos, o que acontece com os sistemas de hoje e com os saves.",
+      "raised_at": "2026-10-10T21:15:00Z",
+      "status": "OPEN"
     }
   ],
   "milestones": [
@@ -4203,6 +4211,106 @@
           "dependencies": [],
           "updated_at": "2026-10-09T16:10:00Z",
           "completion_notes": "CameraSway (FishingScene.cs) fixa em orthographicSize 5,4 (a cena inteira), sem foco no barco; Hud sem a roda do mouse aproximando e sem o controle \"Aproximar\" nas Configurações (painel 384 → 340 px); GameSettings.Zoom e GameTexts.Hud.Zoom removidos. A-151 (substitui o A-102). Não compilado nem aberto no Unity."
+        }
+      ]
+    },
+    {
+      "id": "M24",
+      "title": "Novo escopo idle: números grandes, Tripulação e Melhorias",
+      "goal": "Decisão do proprietário (10/10/2026): o jogo volta a ser idle puro, no estilo de crescimento rápido. Dinheiro e XP crescem bem mais rápido, até bilhões (sem letras como \"aa\"); o Pescador vai até o Nv.1000; sem Renascer (prestígio); o crescimento vem de uma Tripulação automática (pescadores e barcos que rendem sozinhos) e de Melhorias compradas que multiplicam a renda. Primeiro a proposta com números simulados; nada muda no jogo sem a aprovação dele.",
+      "completion_criteria": [
+        "Proposta com números simulados aprovada pelo proprietário.",
+        "Nv.1000, economia até bilhões, Tripulação e Melhorias funcionando, com testes.",
+        "Saves de hoje migrados sem perda."
+      ],
+      "tasks": [
+        {
+          "id": "M24-T01",
+          "title": "Proposta do novo escopo com simulação",
+          "subsystem": "docs",
+          "description": "Documento com o que muda, o que fica e como cada sistema se ajusta (mapas, peixes, Loja, Arena, Mercado, Expedição, Aquário), mais a curva de XP até o Nv.1000 e a economia até bilhões, simuladas.",
+          "status": "IN_PROGRESS",
+          "dependencies": [],
+          "updated_at": "2026-10-10T21:15:00Z"
+        },
+        {
+          "id": "M24-T02",
+          "title": "Aprovar a proposta",
+          "subsystem": "docs",
+          "description": "Decisão do proprietário sobre a proposta do M24-T01.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T01"
+          ],
+          "updated_at": "2026-10-10T21:15:00Z"
+        },
+        {
+          "id": "M24-T03",
+          "title": "Nível até 1000 e nova curva de XP",
+          "subsystem": "server",
+          "description": "progression.json com max_level 1000 e curva simulada; telas que mostram nível ajustadas.",
+          "status": "TODO",
+          "dependencies": [
+            "M24-T02"
+          ],
+          "updated_at": "2026-10-10T21:15:00Z"
+        },
+        {
+          "id": "M24-T04",
+          "title": "Economia até bilhões",
+          "subsystem": "config",
+          "description": "Preços, valores de peixe e recompensas reescalados conforme a proposta aprovada; formatação de números grandes em PT-BR (mil, mi, bi).",
+          "status": "TODO",
+          "dependencies": [
+            "M24-T02"
+          ],
+          "updated_at": "2026-10-10T21:15:00Z"
+        },
+        {
+          "id": "M24-T05",
+          "title": "Tripulação automática",
+          "subsystem": "server",
+          "description": "Contratar pescadores e barcos que rendem por segundo, com e sem o jogo aberto, conforme a proposta aprovada.",
+          "status": "TODO",
+          "dependencies": [
+            "M24-T02"
+          ],
+          "updated_at": "2026-10-10T21:15:00Z"
+        },
+        {
+          "id": "M24-T06",
+          "title": "Melhorias compradas",
+          "subsystem": "server",
+          "description": "Melhorias com níveis que multiplicam a renda, conforme a proposta aprovada.",
+          "status": "TODO",
+          "dependencies": [
+            "M24-T02"
+          ],
+          "updated_at": "2026-10-10T21:15:00Z"
+        },
+        {
+          "id": "M24-T07",
+          "title": "Migração dos saves",
+          "subsystem": "server",
+          "description": "Os saves de hoje passam para a nova escala sem perder progresso.",
+          "status": "TODO",
+          "dependencies": [
+            "M24-T03",
+            "M24-T04"
+          ],
+          "updated_at": "2026-10-10T21:15:00Z"
+        },
+        {
+          "id": "M24-T08",
+          "title": "Telas da Tripulação e das Melhorias",
+          "subsystem": "client",
+          "description": "Telas no padrão visual atual (Placa do Píer).",
+          "status": "TODO",
+          "dependencies": [
+            "M24-T05",
+            "M24-T06"
+          ],
+          "updated_at": "2026-10-10T21:15:00Z"
         }
       ]
     }

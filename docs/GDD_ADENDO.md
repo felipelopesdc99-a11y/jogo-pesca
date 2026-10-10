@@ -1913,3 +1913,18 @@ peça; a caixa mostra a tampa aberta em cima e o interior escuro; a boia é pint
 Pedido do proprietário em 09/10/2026: o zoom da cena (A-102) saiu do jogo. A câmera mostra sempre a cena inteira; a
 roda do mouse não aproxima mais, e o controle "Aproximar" saiu das Configurações (o painel ficou 44 px mais baixo). O
 balanço lento da câmera continua. A preferência antiga (`fishingidle.zoom`) fica esquecida no PC e não é lida.
+
+### A-152 · Novo escopo: idle de crescimento rápido
+
+Decisão do proprietário em 10/10/2026. A ilha 2D foi descartada e o jogo volta a ser idle puro, no estilo de
+crescimento rápido de dinheiro, experiência e níveis:
+
+- Números grandes, até bilhões (sem letras como "aa").
+- O Pescador vai até o Nv.1000 (antes Nv.100).
+- Sem Renascer (prestígio): o progresso é contínuo.
+- O crescimento vem de uma Tripulação automática (pescadores e barcos que rendem sozinhos) e de Melhorias compradas
+  que multiplicam a renda.
+
+Os detalhes (curvas, custos, o que muda em cada sistema e nos saves) dependem da proposta do M24-T01, que o
+proprietário aprova antes de qualquer mudança no jogo.
+
