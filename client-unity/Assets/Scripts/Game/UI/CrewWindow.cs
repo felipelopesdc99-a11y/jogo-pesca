@@ -9,7 +9,8 @@ namespace FishingIdle.Game.UI
 {
     /// <summary>
     /// The Crew window (M24-T08, addendum A-154): the Crew's income, the fleet milestone, the hire mode (×1, ×10, ×100,
-    /// Máx) and one row per member with its units, income, next milestone, price and Contratar.
+    /// Máx) and one row per member with its units, income, next milestone, price and Contratar. A second tab holds the
+    /// Upgrades bought with Moedas (M24-T11, A-155, <see cref="UpgradesPanel"/>).
     /// </summary>
     /// <remarks>
     /// Shows what the Crew service returns (prices, income, milestones, locks); nothing here computes a price or an
@@ -19,7 +20,7 @@ namespace FishingIdle.Game.UI
     /// </remarks>
     public sealed class CrewWindow
     {
-        private const float SummaryHeight = 104f, ModeHeight = 44f, RowHeight = 100f, Gap = 12f;
+        private const float SummaryHeight = 104f, ModeHeight = 44f, RowHeight = 100f, Gap = 12f, TabHeight = 40f, TabWidth = 170f;
         private const float RefreshSeconds = 0.25f;
 
         /// <summary>The members' portraits (Resources/Arte/Tripulacao), by member id. Missing = the drawn placeholder.</summary>
@@ -27,7 +28,15 @@ namespace FishingIdle.Game.UI
 
         private static readonly CrewBuyMode[] Modes = { CrewBuyMode.One, CrewBuyMode.Ten, CrewBuyMode.Hundred, CrewBuyMode.Max };
 
+        private enum Tab
+        {
+            Crew,
+            Upgrades,
+        }
+
         private readonly GameRoot _root;
+        private readonly UpgradesPanel _upgrades;
+        private Tab _tab = Tab.Crew;
         private CrewBuyMode _mode = CrewBuyMode.One;
         private CrewView _view;
         private float _nextRefresh;
@@ -36,6 +45,7 @@ namespace FishingIdle.Game.UI
         public CrewWindow(GameRoot root)
         {
             _root = root;
+            _upgrades = new UpgradesPanel(root);
         }
 
         public bool IsOpen { get; private set; }
@@ -44,6 +54,7 @@ namespace FishingIdle.Game.UI
         {
             IsOpen = true;
             _nextRefresh = 0f;
+            _upgrades.Invalidate();
         }
 
         public void Close() => IsOpen = false;
@@ -61,7 +72,8 @@ namespace FishingIdle.Game.UI
             }
 
             var view = _view;
-            var info = view == null ? null : GameTexts.Crew.Info(view.UnlockPreviousCount, string.Join(", ", view.MilestoneCounts),
+            var info = _tab == Tab.Upgrades ? _upgrades.Info
+                : view == null ? null : GameTexts.Crew.Info(view.UnlockPreviousCount, string.Join(", ", view.MilestoneCounts),
                 Format.Factor(view.MilestoneMultiplier), Format.Factor(view.FleetMilestoneMultiplier),
                 GameTexts.Offline.Hours(view.OfflineFullRateHours), Format.Percent(view.OfflineReducedRate, 0), GameTexts.Offline.Hours(view.OfflineMaxHours));
             var counter = view == null ? null : GameTexts.Crew.HudRate(Format.PerSecond(view.CoinsPerSecond));
@@ -74,6 +86,14 @@ namespace FishingIdle.Game.UI
 
             if (view == null)
             {
+                return;
+            }
+
+            DrawTabs(skin, new Rect(area.x, area.y, area.width, TabHeight));
+            area = new Rect(area.x, area.y + TabHeight + Gap, area.width, area.height - TabHeight - Gap);
+            if (_tab == Tab.Upgrades)
+            {
+                _upgrades.Draw(skin, area);
                 return;
             }
 
@@ -92,6 +112,24 @@ namespace FishingIdle.Game.UI
         {
             _view = _root.GetCrew(_mode);
             _nextRefresh = Time.unscaledTime + RefreshSeconds;
+        }
+
+        /// <summary>"Tripulação | Melhorias" as chips, like the Market's tabs.</summary>
+        private void DrawTabs(UiSkin skin, Rect rect)
+        {
+            var x = rect.x;
+            foreach (var (tab, label) in new[] { (Tab.Crew, GameTexts.Crew.TabCrew), (Tab.Upgrades, GameTexts.Crew.TabUpgrades) })
+            {
+                var active = _tab == tab;
+                if (GUI.Button(new Rect(x, rect.y, TabWidth, rect.height), label, active ? skin.ChipActive : skin.Chip) && !active)
+                {
+                    _tab = tab;
+                    _nextRefresh = 0f;
+                    _upgrades.Invalidate();
+                }
+
+                x += TabWidth + 10f;
+            }
         }
 
         // ------------------------------------------------------------------ summary and modes

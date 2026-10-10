@@ -4,6 +4,7 @@ using System.Linq;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Persistence;
+using FishingIdle.GameService.Upgrades;
 
 namespace FishingIdle.GameService.Fishing
 {
@@ -181,7 +182,7 @@ namespace FishingIdle.GameService.Fishing
         {
             return Save.FishingBox
                 .OrderByDescending(c => c.Id)
-                .Select(c => CatchViews.Create(Config, c))
+                .Select(c => CatchViews.Create(Config, c, BoxSaleMultiplier))
                 .ToList();
         }
 
@@ -196,7 +197,7 @@ namespace FishingIdle.GameService.Fishing
             var wanted = new HashSet<long>(catchIds);
             foreach (var entry in Save.FishingBox.Where(c => wanted.Contains(c.Id)))
             {
-                var view = CatchViews.Create(Config, entry);
+                var view = CatchViews.Create(Config, entry, BoxSaleMultiplier);
                 preview.Count++;
                 preview.TotalCoins += view.SalePriceCoins;
                 if (view.IsProtected)
@@ -228,6 +229,8 @@ namespace FishingIdle.GameService.Fishing
                 return ServiceResult<SaleResult>.Fail(ServiceError.CatchNotFound);
             }
 
+            // Freguesia na Feira × Maré Boa (M24-T06): the same price each card shows.
+            var multiplier = BoxSaleMultiplier;
             long total = 0;
             foreach (var entry in entries)
             {
@@ -236,13 +239,13 @@ namespace FishingIdle.GameService.Fishing
                     return ServiceResult<SaleResult>.Fail(ServiceError.SpeciesMissingFromConfig);
                 }
 
-                total += CatchRules.SalePrice(Config, species, entry.SizeMm);
+                total = SafeAdd(total, CatchRules.SalePrice(Config, species, entry.SizeMm, multiplier));
             }
 
             Save.FishingBox.RemoveAll(c => wanted.Contains(c.Id));
-            Save.Coins += total;
+            Save.Coins = SafeAdd(Save.Coins, total);
             Save.Stats.FishSold += entries.Count;
-            Save.Stats.CoinsFromSales += total;
+            Save.Stats.CoinsFromSales = SafeAdd(Save.Stats.CoinsFromSales, total);
             _session.Persist();
             _session.Log("Sold " + entries.Count + " catches for " + total + " coins.");
 
@@ -504,10 +507,15 @@ namespace FishingIdle.GameService.Fishing
                 update.VipXpGained += vipXp;
                 AddFisherXp(rolled.FisherXp + vipXp, update);
             }
-            var view = CatchViews.Create(Config, entry);
+            var view = CatchViews.Create(Config, entry, BoxSaleMultiplier);
             view.PreviousRecordCm = previousRecordMm / 10.0;
             update.NewCatches.Add(view);
         }
+
+        /// <summary>What the Upgrades multiply a Fishing Box catch's NPC price by: Freguesia na Feira × Maré Boa (M24-T06).</summary>
+        private double BoxSaleMultiplier => UpgradeRules.BoxSaleMultiplier(Config, Save.Upgrades);
+
+        private static long SafeAdd(long a, long b) => b > long.MaxValue - a ? long.MaxValue : a + b;
 
         private void AddFisherXp(long xp, FishingUpdate update)
         {

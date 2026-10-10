@@ -6,7 +6,8 @@ namespace FishingIdle.GameService.Fishing
     /// <summary>Builds the read-only view of a Fishing Box catch. Shared by the fishing and Aquarium services.</summary>
     internal static class CatchViews
     {
-        public static CatchView Create(GameConfig config, BoxCatch entry)
+        /// <summary>The view of <paramref name="entry"/>; its NPC price is multiplied by <paramref name="saleMultiplier"/> (the Upgrades, UpgradeRules.BoxSaleMultiplier).</summary>
+        public static CatchView Create(GameConfig config, BoxCatch entry, double saleMultiplier = 1.0)
         {
             var view = new CatchView
             {
@@ -34,7 +35,7 @@ namespace FishingIdle.GameService.Fishing
                 view.SpeciesMinCm = species.SizeCm.Min;
                 view.SpeciesMaxCm = species.SizeCm.Max;
                 view.SizePercentile = CatchRules.Percentile(species, entry.SizeMm);
-                view.SalePriceCoins = CatchRules.SalePrice(config, species, entry.SizeMm);
+                view.SalePriceCoins = CatchRules.SalePrice(config, species, entry.SizeMm, saleMultiplier);
                 view.FeedXp = FishRules.FeedValue(config, species, entry.SizeMm, 0);
             }
 

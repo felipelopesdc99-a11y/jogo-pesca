@@ -60,6 +60,11 @@ adiantado com o jogo fechado vale no máximo o teto offline (10 h, metade da ren
 no futuro (save editado) é trazido para agora sem pagar. Preços que não cabem num número nunca são cobrados nem
 pagos. No servidor, o mesmo cálculo roda com o relógio dele.
 
+**Melhorias (M24, TD-040).** O cliente só pede "comprar esta Melhoria"; preço, desbloqueio e efeito vêm do
+`upgrades.json` e do save. A de tripulante não se compra duas vezes nem antes da quantidade; a geral não passa do
+nível máximo, e um nível maior que o máximo num save editado conta só até o máximo. Preços que não cabem num número
+nunca são cobrados. A renda da Tripulação é paga antes da compra, na taxa antiga, então comprar não muda o passado.
+
 **Uso duplo do peixe.** Duas requisições tentam vender e alimentar o mesmo `FishInstance` no mesmo
 instante. As duas rodam em transação contra a versão de estado do peixe; uma confirma e a outra é
 rejeitada com um conflito claro.

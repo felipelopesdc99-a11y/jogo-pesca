@@ -112,6 +112,13 @@ namespace FishingIdle.Texts
             return Decimal(ratio * 100.0, decimals) + "%";
         }
 
+        /// <summary>A percentage without a needless decimal: 0.25 → "25%", 0.125 → "12,5%", 2.5 → "250%".</summary>
+        public static string PercentShort(double ratio)
+        {
+            var percent = Math.Round(ratio * 100.0, 1);
+            return (percent == Math.Floor(percent) ? Decimal(percent, 0) : Decimal(percent, 1)) + "%";
+        }
+
         /// <summary>Centimetres, with one decimal: "35,2 cm".</summary>
         public static string SizeCm(double centimetres)
         {

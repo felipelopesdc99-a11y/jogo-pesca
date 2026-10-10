@@ -116,7 +116,8 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `ICurrencyTradeService` | `LocalCurrencyTradeService` | Venda de Conchas e Dólares por Moedas: anunciar (a quantidade sai da carteira) e cancelar; no MVP local não há ofertas nem compradores (`CurrencyTradeView.LocalOnly`) |
 | `IDevToolsService` | `LocalDevToolsService` | Ferramentas de teste (A-123): recursos, peixes, nível, Energia e avançar o tempo; recusa tudo se `GameSession.DevToolsEnabled` estiver desligado |
 | `IVipService` | `LocalVipService` | VIP (A-110): comprar com Dólares (soma os dias ao fim do atual) e ver até quando vale. O bônus de XP é aplicado pela pesca offline (`VipRules.OfflineBonusXp`), conferido na hora de cada captura |
-| `ICrewService` | `LocalCrewService` | Tripulação (M24-T05, A-154, TD-039): contratar ×1/×10/×100/Máx, renda de Moedas e XP por segundo pelo relógio (aberto e fechado), marcos, resumo offline. Regras puras em `CrewRules` (preço em fórmula fechada, marcos, renda, parte offline) |
+| `ICrewService` | `LocalCrewService` | Tripulação (M24-T05, A-154, TD-039): contratar ×1/×10/×100/Máx, renda de Moedas e XP por segundo pelo relógio (aberto e fechado), marcos, resumo offline. Regras puras em `CrewRules` (preço em fórmula fechada, marcos, renda com as Melhorias, parte offline) |
+| `IUpgradeService` | `LocalUpgradeService` | Melhorias (M24-T06, A-155, TD-040): as 3 Melhorias de tripulante mais baratas, as gerais com o próximo nível e as compradas; comprar (credita a Tripulação antes). Regras puras em `UpgradeRules` (ids `crew_NN_up_K`, nomes, preços, multiplicadores); os efeitos entram em `CrewRules`, na venda ao NPC (`CatchRules.SalePrice` com multiplicador) e no teto offline da Tripulação |
 | `IRankingService` | `LocalRankingService` | Ranking de jogadores reais por Nível, Moedas, Conchas e Peixes pescados; no MVP local só o jogador deste PC (`RankingView.LocalOnly`) |
 | `ITutorialService` | `LocalTutorialService` | Tutorial: passo atual, avanço automático, "Entendi", pular |
 | `IProfileService` | `LocalProfileService` | Perfil próprio: vara equipada, Inventário, Enciclopédia, Destaques |
@@ -191,8 +192,9 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 - O jogo carrega todos os arquivos de `GameConfigLoader.RequiredFiles`: `fish_catalog`, `maps`,
   `progression`, `rods`, `economy`, `arena`, `expeditions`, `arena_bots` (adversários simulados do
   MVP local), `market_bots` (vendedores e compradores simulados do Mercado), `equipment` (barcos e
-  iscas, desde a V0.2) e `crew` (a Tripulação, desde o M24). O Painel de Desenvolvimento usa a mesma lista (o
-  `crew.json` ainda não tem seção própria no Painel de Balanceamento: edita-se à mão e o jogo valida ao abrir).
+  iscas, desde a V0.2), `crew` (a Tripulação, desde o M24) e `upgrades` (as Melhorias, desde o M24). O Painel de
+  Desenvolvimento usa a mesma lista (o `crew.json` e o `upgrades.json` ainda não têm seção própria no Painel de
+  Balanceamento: edita-se à mão e o jogo valida ao abrir).
 - `GameConfigLoader.LoadFromTexts` é usado tanto pelo jogo quanto pelo Painel de Desenvolvimento:
   o painel só grava se a mesma validação que o jogo usa passar.
 - `GameConfig.Version` é uma impressão digital curta do conteúdo. Mesmos arquivos, mesma versão.
@@ -241,11 +243,15 @@ antigos entram com o Barco Inicial e sem isca; v11 adiciona os Dólares (`Dollar
 (`MarketState.CurrencyListings`); v12 grava a curva de XP do Pescador em que o nível foi ganho
 (`FisherXpCurveVersion`; saves antigos entram com a curva 1); v13 adiciona a Tripulação (`CrewState`: unidades por
 id, cursor `LastCreditedAtMs`, frações guardadas e total rendido; saves antigos entram com ela vazia e o cursor é
-posto em "agora" ao carregar). Cada passo está em `SaveMigrations.Upgrade`.
+posto em "agora" ao carregar); v14 adiciona as Melhorias (`UpgradesState.Levels`: nível por id; saves antigos entram
+sem nenhuma). Cada passo está em `SaveMigrations.Upgrade`.
 - Tripulação (TD-039): `LocalCrewService.Sync` paga a renda de `LastCreditedAtMs` até agora (relógio da sessão, que
   nunca volta) e move o cursor; um intervalo maior que `online_gap_seconds` conta como offline (100% e depois a taxa
   reduzida até o teto) e vira `CrewOfflineReport`. Só a renda grava o save no máximo a cada 30 s; contratar e fechar
   gravam na hora. O XP passa por `FisherLevelRules.AddXp`, o mesmo caminho da pesca.
+- Melhorias (TD-040): `LocalUpgradeService.Buy` chama `LocalCrewService.SettleNow` antes de cobrar, para a renda até
+  ali ficar na taxa antiga. Para um efeito novo: uma chave em `UpgradeEffects`, um multiplicador em `UpgradeRules` e a
+  chamada no ponto em que aquele valor é calculado (nunca na tela).
 - Troca de curva de XP (TD-038): ao carregar, o `GameSession` chama `FisherLevelRules.MoveToCurrentCurve`, que
   converte o XP total (`FisherXpTotal`) no nível da curva atual quando o save é de uma curva mais antiga, sem nunca
   baixar o nível. Mudou a tabela de XP de um jeito que mexe em quem já joga? Aumente `fisher.xp_curve_version` em
@@ -417,6 +423,9 @@ posto em "agora" ao carregar). Cada passo está em `SaveMigrations.Upgrade`.
   depois de Pesca (posições dos botões nas constantes `Hud.Nav*`, usadas também pelo tutorial). O
   `WelcomeBackDialog` junta `GameRoot.WelcomeBack` (pesca) e `GameRoot.CrewWelcome` (Tripulação); qualquer um
   basta para abrir.
+- **Melhorias na tela** (M24-T11, A-155): a `CrewWindow` tem as abas "Tripulação | Melhorias" (chips); a aba
+  Melhorias é desenhada por `UI/UpgradesPanel`, que pede `GameRoot.GetUpgrades()` a cada 0,25 s e compra por
+  `GameRoot.BuyUpgrade`. O "i" da janela mostra o texto da aba aberta.
 
 ## 7. Painel de Desenvolvimento (Editor)
 

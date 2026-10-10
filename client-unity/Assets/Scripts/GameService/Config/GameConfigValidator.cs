@@ -23,7 +23,8 @@ namespace FishingIdle.GameService.Config
             ArenaBotsConfig bots,
             MarketBotsConfig marketBots,
             EquipmentConfig equipment,
-            CrewConfig crew)
+            CrewConfig crew,
+            UpgradesConfig upgrades)
         {
             var errors = new List<string>();
 
@@ -820,7 +821,124 @@ namespace FishingIdle.GameService.Config
             }
 
             ValidateCrew(crew, errors);
+            ValidateUpgrades(upgrades, crew, errors);
             return errors;
+        }
+
+        /// <summary>upgrades.json (M24-T06): the Crew members' ×2s and the general upgrades with levels.</summary>
+        private static void ValidateUpgrades(UpgradesConfig upgrades, CrewConfig crew, List<string> errors)
+        {
+            const string file = GameConfigLoader.UpgradesFile;
+            var crewUpgrades = upgrades?.CrewUpgrades;
+            if (crewUpgrades?.Tiers == null || crewUpgrades.Tiers.Count == 0)
+            {
+                errors.Add(V.Missing(file, "crew_upgrades.tiers"));
+                return;
+            }
+
+            if (upgrades.GeneralUpgrades == null)
+            {
+                errors.Add(V.Missing(file, "general_upgrades"));
+                return;
+            }
+
+            if (!(crewUpgrades.Multiplier >= 1) || crewUpgrades.Multiplier > 1000)
+            {
+                errors.Add(V.UpgradeMultiplier);
+            }
+
+            // At most 20 tiers: each bought one multiplies the member once more.
+            var previous = 0;
+            var ascending = crewUpgrades.Tiers.Count <= 20;
+            foreach (var tier in crewUpgrades.Tiers)
+            {
+                if (tier == null)
+                {
+                    ascending = false;
+                    continue;
+                }
+
+                ascending &= tier.UnlockCount > previous;
+                previous = tier.UnlockCount;
+                if (!(tier.CostFactor > 0) || tier.CostFactor > 1e12)
+                {
+                    errors.Add(V.UpgradeCostFactor(tier.UnlockCount));
+                }
+
+                if (string.IsNullOrWhiteSpace(tier.Name))
+                {
+                    errors.Add(V.Missing(file, "crew_upgrades.tiers (" + tier.UnlockCount + ").name"));
+                }
+            }
+
+            if (!ascending)
+            {
+                errors.Add(V.UpgradeTiers);
+            }
+
+            // Every member needs the end of its upgrades' names; the generated ids must not clash with the general ones.
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            if (crew?.Members != null)
+            {
+                foreach (var member in crew.Members)
+                {
+                    if (member == null || string.IsNullOrWhiteSpace(member.Id))
+                    {
+                        continue;
+                    }
+
+                    if (crewUpgrades.MemberSuffixes == null || !crewUpgrades.MemberSuffixes.TryGetValue(member.Id, out var suffix) || string.IsNullOrWhiteSpace(suffix))
+                    {
+                        errors.Add(V.UpgradeSuffixMissing(member.Id));
+                    }
+
+                    for (var i = 0; i < crewUpgrades.Tiers.Count; i++)
+                    {
+                        ids.Add(FishingIdle.GameService.Upgrades.UpgradeRules.CrewUpgradeId(member.Id, i));
+                    }
+                }
+            }
+
+            foreach (var upgrade in upgrades.GeneralUpgrades)
+            {
+                if (upgrade == null || string.IsNullOrWhiteSpace(upgrade.Id) || !ids.Add(upgrade.Id))
+                {
+                    errors.Add(V.DuplicateOrEmptyId(file, "general_upgrades", upgrade?.Id));
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(upgrade.DisplayName))
+                {
+                    errors.Add(V.Missing(file, upgrade.Id + ".display_name"));
+                }
+
+                if (!UpgradeEffects.All.Contains(upgrade.Effect))
+                {
+                    errors.Add(V.UpgradeUnknownEffect(upgrade.Id, upgrade.Effect));
+                }
+
+                if (upgrade.MaxLevel < 1 || upgrade.MaxLevel > 1000)
+                {
+                    errors.Add(V.UpgradeMaxLevel(upgrade.Id));
+                }
+
+                // +% effects at most +10.000% per level; the offline hours at most a year in total.
+                var limit = upgrade.Effect == UpgradeEffects.CrewOfflineHours ? 24.0 * 365 / Math.Max(1, upgrade.MaxLevel) : 100.0;
+                if (!(upgrade.ValuePerLevel > 0) || upgrade.ValuePerLevel > limit)
+                {
+                    errors.Add(V.UpgradeValue(upgrade.Id));
+                }
+
+                if (upgrade.BaseCost < 1)
+                {
+                    errors.Add(V.AtLeast(file, upgrade.Id + ".base_cost", 1));
+                }
+
+                if (!(upgrade.CostGrowth >= 1) || upgrade.CostGrowth > 1000)
+                {
+                    errors.Add(V.UpgradeCostGrowth(upgrade.Id));
+                }
+            }
         }
 
         /// <summary>crew.json (M24-T05): the Crew's members, milestones and offline income.</summary>

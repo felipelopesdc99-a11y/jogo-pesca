@@ -14,7 +14,8 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | `arena_bots.json` | Só no jogo local: como os 200 adversários simulados da Arena são montados e com que frequência atacam você |
 | `market_bots.json` | Só no jogo local: vendedores e compradores simulados do Mercado (quantos anúncios, preços de referência, chance de vender) |
 | `equipment.json` | Barcos e iscas: bônus na Chance de Sucesso da Captura, custo em Moedas e Conchas, nível, tentativas de cada isca |
-| `crew.json` | A Tripulação automática (M24): os 10 tripulantes (nome, preço da 1ª unidade, quanto cada unidade a mais encarece, Moedas e XP por segundo), quantos do anterior liberam o próximo, marcos de quantidade e da frota, e a renda com o jogo fechado (100% nas primeiras horas, depois a taxa reduzida até o teto). Resultado da simulação em `docs/propostas/tripulacao.json` (`tools/Progressao/simular_tripulacao.py`) |
+| `crew.json` | A Tripulação automática (M24): os 10 tripulantes (nome, preço da 1ª unidade, quanto cada unidade a mais encarece, Moedas e XP por segundo), quantos do anterior liberam o próximo, marcos de quantidade e da frota, e a renda com o jogo fechado (100% nas primeiras horas, depois a taxa reduzida até o teto). Resultado da simulação em `docs/propostas/tripulacao.json` (`tools/Progressao/simular_tripulacao.py`); a renda por unidade foi recalibrada com as Melhorias (A-155) |
+| `upgrades.json` | As Melhorias compradas com Moedas (M24): as de tripulante (`crew_upgrades`: com quantas unidades cada uma libera, o fator de preço sobre a unidade daquele número, o nome e o complemento do nome de cada tripulante; ×2 na renda dele, uma vez só) e as gerais com níveis (`general_upgrades`: efeito, quanto cada nível soma, quantos níveis, preço do nível 1 e quanto cada nível encarece). Resultado da simulação com a Tripulação em `docs/propostas/melhorias.json` (`tools/Progressao/simular_melhorias.py`) |
 
 ## Como editar
 
@@ -40,6 +41,7 @@ Onde fica cada coisa no painel:
 | Preço, duração e bônus do VIP | Economia → `vip` | `economy.json` |
 | Arena, Cardume, Expedições | Outros arquivos | `arena.json`, `expeditions.json`… |
 | Tripulação (preços, renda, marcos, offline) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play | `crew.json` |
+| Melhorias (preços, efeitos, níveis, nomes) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play | `upgrades.json` |
 
 ## Regras
 

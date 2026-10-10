@@ -189,14 +189,20 @@ namespace FishingIdle.GameService.Fishing
 
         /// <summary>
         /// NPC sale price: base value × rarity multiplier × a continuous size factor
-        /// (GDD section 36). Never below the configured minimum.
+        /// (GDD section 36) × <paramref name="multiplier"/> (the player's Upgrades, M24-T06; 1 for the Market's
+        /// reference prices). Never below the configured minimum.
         /// </summary>
-        public static long SalePrice(GameConfig config, SpeciesConfig species, int sizeMm)
+        public static long SalePrice(GameConfig config, SpeciesConfig species, int sizeMm, double multiplier = 1.0)
         {
             config.TryGetRarity(species.Rarity, out var rarity);
             var influence = config.Progression.Size.SaleValueInfluence.Influence;
             var sizeFactor = 1.0 + influence * (Percentile(species, sizeMm) - 0.5);
-            var price = species.BaseSaleValueCoins * (rarity?.SaleValueMultiplier ?? 1.0) * sizeFactor * config.Economy.NpcFishSale.PriceMultiplier;
+            var price = species.BaseSaleValueCoins * (rarity?.SaleValueMultiplier ?? 1.0) * sizeFactor * config.Economy.NpcFishSale.PriceMultiplier * multiplier;
+            if (price >= 9.2e18)
+            {
+                return long.MaxValue;
+            }
+
             return Math.Max(config.Economy.NpcFishSale.MinimumPriceCoins, (long)Math.Round(price, MidpointRounding.AwayFromZero));
         }
 

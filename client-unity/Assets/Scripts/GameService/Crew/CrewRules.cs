@@ -1,6 +1,7 @@
 using System;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Persistence;
+using FishingIdle.GameService.Upgrades;
 
 namespace FishingIdle.GameService.Crew
 {
@@ -159,32 +160,41 @@ namespace FishingIdle.GameService.Crew
             return Math.Pow(config.Crew.Milestones.Multiplier, MilestonesReached(config.Crew.Milestones, units));
         }
 
-        /// <summary>Moedas per second of one member with <paramref name="units"/> hired: base × units × its milestones × the fleet.</summary>
-        public static double MemberCoinsPerSecond(GameConfig config, CrewMemberConfig member, long units, double fleetMultiplier)
+        /// <summary>
+        /// Moedas per second of one member with <paramref name="units"/> hired: base × units × its milestones × the
+        /// fleet × its own upgrades (×2 each) × the Rádio do Porto (M24-T06). <paramref name="upgrades"/> null = none.
+        /// </summary>
+        public static double MemberCoinsPerSecond(GameConfig config, CrewMemberConfig member, long units, double fleetMultiplier, UpgradesState upgrades = null)
         {
             if (units <= 0)
             {
                 return 0;
             }
 
-            return member.CoinsPerSecond * units * MemberMultiplier(config, units) * fleetMultiplier;
+            var income = member.CoinsPerSecond * units * MemberMultiplier(config, units) * fleetMultiplier;
+            if (upgrades != null)
+            {
+                income *= UpgradeRules.CrewMemberMultiplier(config, upgrades, member.Id) * UpgradeRules.CrewCoinsMultiplier(config, upgrades);
+            }
+
+            return income;
         }
 
-        /// <summary>Moedas per second of the whole Crew.</summary>
-        public static double CoinsPerSecond(GameConfig config, CrewState crew)
+        /// <summary>Moedas per second of the whole Crew, with the upgrades bought (<paramref name="upgrades"/> null = none).</summary>
+        public static double CoinsPerSecond(GameConfig config, CrewState crew, UpgradesState upgrades = null)
         {
             var fleet = FleetMultiplier(config, crew);
             double total = 0;
             foreach (var member in config.Crew.Members)
             {
-                total += MemberCoinsPerSecond(config, member, crew.UnitsOf(member.Id), fleet);
+                total += MemberCoinsPerSecond(config, member, crew.UnitsOf(member.Id), fleet, upgrades);
             }
 
             return total;
         }
 
-        /// <summary>Fisher XP per second of the whole Crew (milestones do not multiply XP).</summary>
-        public static double XpPerSecond(GameConfig config, CrewState crew)
+        /// <summary>Fisher XP per second of the whole Crew (milestones do not multiply XP; the Sonar de Cardume does).</summary>
+        public static double XpPerSecond(GameConfig config, CrewState crew, UpgradesState upgrades = null)
         {
             double total = 0;
             foreach (var member in config.Crew.Members)
@@ -192,20 +202,22 @@ namespace FishingIdle.GameService.Crew
                 total += member.XpPerSecond * crew.UnitsOf(member.Id);
             }
 
-            return total;
+            return upgrades == null ? total : total * UpgradeRules.CrewXpMultiplier(config, upgrades);
         }
 
         /// <summary>
         /// The seconds of income that <paramref name="awayMs"/> with the game closed are worth: the first
-        /// full_rate_hours at 100%, then reduced_rate up to max_hours away, nothing after that.
+        /// full_rate_hours at 100%, then reduced_rate up to max_hours away (plus <paramref name="extraMaxHours"/>, the
+        /// Caixa Térmica), nothing after that.
         /// </summary>
-        public static OfflineShare OfflineSeconds(CrewConfig crew, long awayMs)
+        public static OfflineShare OfflineSeconds(CrewConfig crew, long awayMs, double extraMaxHours = 0)
         {
             var away = Math.Max(0L, awayMs) / 1000.0;
             var offline = crew.Offline;
+            var maxSeconds = (offline.MaxHours + Math.Max(0.0, extraMaxHours)) * 3600.0;
             var full = Math.Min(away, offline.FullRateHours * 3600.0);
-            var reduced = Math.Max(0.0, Math.Min(away, offline.MaxHours * 3600.0) - offline.FullRateHours * 3600.0);
-            return new OfflineShare(full, reduced, full + reduced * offline.ReducedRate, away > offline.MaxHours * 3600.0);
+            var reduced = Math.Max(0.0, Math.Min(away, maxSeconds) - offline.FullRateHours * 3600.0);
+            return new OfflineShare(full, reduced, full + reduced * offline.ReducedRate, away > maxSeconds);
         }
     }
 

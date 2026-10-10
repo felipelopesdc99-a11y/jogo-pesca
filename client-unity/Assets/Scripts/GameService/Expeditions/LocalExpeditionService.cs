@@ -5,6 +5,7 @@ using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Persistence;
+using FishingIdle.GameService.Upgrades;
 using FishingIdle.GameService.Profile;
 
 namespace FishingIdle.GameService.Expeditions
@@ -244,7 +245,7 @@ namespace FishingIdle.GameService.Expeditions
                 CompletedAtMs = result.CompletedAtMs,
                 Coins = result.Coins,
                 Efficiency = result.Efficiency,
-                FoundFish = box != null ? CatchViews.Create(Config, box) : null,
+                FoundFish = box != null ? CatchViews.Create(Config, box, UpgradeRules.BoxSaleMultiplier(Config, Save.Upgrades)) : null,
                 FoundAFish = result.FoundCatchId != 0,
             };
         }

@@ -26,6 +26,7 @@ namespace FishingIdle.GameService.Config
         private readonly Dictionary<string, BoatConfig> _boats;
         private readonly Dictionary<string, BaitConfig> _baits;
         private readonly Dictionary<string, CrewMemberConfig> _crew;
+        private readonly Dictionary<string, GeneralUpgradeConfig> _generalUpgrades;
 
         internal GameConfig(
             FishCatalogConfig fishCatalog,
@@ -39,11 +40,14 @@ namespace FishingIdle.GameService.Config
             MarketBotsConfig marketBots,
             EquipmentConfig equipment,
             CrewConfig crew,
+            UpgradesConfig upgrades,
             string version)
         {
             Equipment = equipment;
             Crew = crew;
             _crew = crew.Members.ToDictionary(m => m.Id, StringComparer.Ordinal);
+            Upgrades = upgrades;
+            _generalUpgrades = upgrades.GeneralUpgrades.ToDictionary(u => u.Id, StringComparer.Ordinal);
             _boats = equipment.Boats.ToDictionary(b => b.Id, StringComparer.Ordinal);
             _baits = equipment.Baits.ToDictionary(b => b.Id, StringComparer.Ordinal);
             FishCatalog = fishCatalog;
@@ -82,6 +86,11 @@ namespace FishingIdle.GameService.Config
         public CrewConfig Crew { get; }
 
         public bool TryGetCrewMember(string id, out CrewMemberConfig member) => _crew.TryGetValue(id ?? string.Empty, out member);
+
+        /// <summary>The upgrades bought with Moedas (upgrades.json, M24-T06).</summary>
+        public UpgradesConfig Upgrades { get; }
+
+        public bool TryGetGeneralUpgrade(string id, out GeneralUpgradeConfig upgrade) => _generalUpgrades.TryGetValue(id ?? string.Empty, out upgrade);
 
         /// <summary>The boat every player owns from the start: the lowest tier.</summary>
         public BoatConfig StarterBoat => Equipment.Boats.OrderBy(b => b.Tier).First();

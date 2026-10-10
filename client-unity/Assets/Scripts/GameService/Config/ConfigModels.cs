@@ -774,4 +774,84 @@ namespace FishingIdle.GameService.Config
         /// <summary>Fisher XP per second of one unit (milestones do not change it).</summary>
         public double XpPerSecond { get; set; }
     }
+
+    // ---------------------------------------------------------------- upgrades.json
+
+    /// <summary>
+    /// Upgrades bought with Moedas (M24-T06, A-155): one-off ×2s per Crew member and general upgrades with levels.
+    /// None asks for a Fisher level.
+    /// </summary>
+    public sealed class UpgradesConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+
+        public CrewUpgradesConfig CrewUpgrades { get; set; }
+
+        /// <summary>The general upgrades, in the order the window lists them.</summary>
+        public List<GeneralUpgradeConfig> GeneralUpgrades { get; set; }
+    }
+
+    /// <summary>One upgrade per Crew member and per tier: unlocked by that member's units, bought once, ×multiplier on its Moedas.</summary>
+    public sealed class CrewUpgradesConfig
+    {
+        /// <summary>What each bought upgrade multiplies that member's Moedas by (2 = doubles).</summary>
+        public double Multiplier { get; set; }
+
+        public List<CrewUpgradeTierConfig> Tiers { get; set; }
+
+        /// <summary>The end of each upgrade's name, by member id ("do Canoeiro").</summary>
+        public Dictionary<string, string> MemberSuffixes { get; set; }
+    }
+
+    public sealed class CrewUpgradeTierConfig
+    {
+        /// <summary>Units of the member needed to buy it.</summary>
+        public int UnlockCount { get; set; }
+
+        /// <summary>The price is this times the price of that member's unit number <see cref="UnlockCount"/>.</summary>
+        public double CostFactor { get; set; }
+
+        /// <summary>The start of the name ("Anzol Afiado"); the member's suffix completes it.</summary>
+        public string Name { get; set; }
+    }
+
+    public sealed class GeneralUpgradeConfig
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
+
+        /// <summary>What it does: one of <see cref="UpgradeEffects"/>.</summary>
+        public string Effect { get; set; }
+
+        /// <summary>What each level adds (0.25 = +25%; for the offline hours, hours).</summary>
+        public double ValuePerLevel { get; set; }
+
+        public int MaxLevel { get; set; }
+
+        /// <summary>Moedas of level 1; level N costs base_cost × cost_growth^(N−1).</summary>
+        public long BaseCost { get; set; }
+
+        public double CostGrowth { get; set; }
+    }
+
+    /// <summary>The effect keys a general upgrade can have (upgrades.json → effect). Stored keys, never shown.</summary>
+    public static class UpgradeEffects
+    {
+        /// <summary>+% on the whole Crew's Moedas.</summary>
+        public const string CrewCoins = "crew_coins";
+
+        /// <summary>+% on the NPC sale price of every fish (Fishing Box and Aquarium); the Market between players is untouched.</summary>
+        public const string FishSale = "fish_sale";
+
+        /// <summary>Hours added to the Crew's offline cap (at the reduced rate).</summary>
+        public const string CrewOfflineHours = "crew_offline_hours";
+
+        /// <summary>+% on the Crew's Fisher XP.</summary>
+        public const string CrewXp = "crew_xp";
+
+        /// <summary>+% on the Moedas of selling the Fishing Box (the fish just caught).</summary>
+        public const string FishingCoins = "fishing_coins";
+
+        public static readonly IReadOnlyList<string> All = new[] { CrewCoins, FishSale, CrewOfflineHours, CrewXp, FishingCoins };
+    }
 }

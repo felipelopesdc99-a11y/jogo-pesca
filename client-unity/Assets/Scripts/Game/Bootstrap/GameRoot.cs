@@ -8,6 +8,7 @@ using FishingIdle.GameService.Arena;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Crew;
+using FishingIdle.GameService.Upgrades;
 using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
@@ -916,6 +917,34 @@ namespace FishingIdle.Game.Bootstrap
                 Refresh();
             });
             return hired;
+        }
+
+        // ------------------------------------------------------------------ Upgrade intents (M24-T06)
+
+        public UpgradesView GetUpgrades() => IsRunning ? Game.Upgrades.GetUpgrades() : null;
+
+        /// <summary>Buys an Upgrade (a Crew member's ×2 or the next level of a general one). Returns true when it happened.</summary>
+        public bool BuyUpgrade(string upgradeId)
+        {
+            var bought = false;
+            Guard(() =>
+            {
+                var result = Game.Upgrades.Buy(upgradeId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                bought = true;
+                var upgrade = result.Value;
+                var effect = GameTexts.Upgrades.Effect(upgrade.EffectKey, upgrade.EffectValue, upgrade.MemberName);
+                Toasts.Push(upgrade.IsCrewUpgrade
+                    ? GameTexts.Upgrades.BoughtToast(upgrade.Name, effect)
+                    : GameTexts.Upgrades.LevelToast(upgrade.Name, upgrade.Level, effect), ToastKind.Info);
+                Refresh();
+            });
+            return bought;
         }
 
         /// <summary>Credits the Crew's income; level-ups from its XP get the same toasts as fishing ones.</summary>

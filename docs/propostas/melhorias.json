@@ -1,0 +1,682 @@
+{
+  "gerado_por": "tools/Progressao/simular_melhorias.py",
+  "config": [
+    "config/crew.json",
+    "config/upgrades.json"
+  ],
+  "dias": 80,
+  "dias_perfis": 170,
+  "segundos_de_renda_para_sonar_e_caixa": 600.0,
+  "nota": "Política de compra: entre tripulantes e Melhorias que aumentam a renda, sempre a de maior renda a mais por Moeda; Sonar de Cardume e Caixa Térmica quando o próximo nível custa até 10 minutos de renda. \"sem_melhorias\" é a mesma Tripulação (os mesmos números de crew.json) sem comprar nenhuma Melhoria. Primeira compra, segundo tripulante, primeira Melhoria e \"passa a pesca\" contam da primeira vez que o jogo abre; os dias, da meia-noite do primeiro dia.",
+  "perfis": {
+    "sempre_aberto": {
+      "primeira_compra": "0,6 min",
+      "segundo_tripulante": "2,3 h",
+      "primeira_melhoria": "5,6 min",
+      "tripulacao_passa_a_pesca": "45,6 min",
+      "renda_maxima_moedas_s": 3638087405.6,
+      "dias_ate_renda": {
+        "1,0 mil/s": 0.9,
+        "1,0 mi/s": 14.38,
+        "1,0 bi/s": 62.68,
+        "1,0 tri/s": null
+      },
+      "dias_ate_renda_sem_melhorias": {
+        "1,0 mil/s": 4.28,
+        "1,0 mi/s": null,
+        "1,0 bi/s": null,
+        "1,0 tri/s": null
+      },
+      "dias_ate_nivel": {
+        "Nv.10": 0.04,
+        "Nv.100": 1.05,
+        "Nv.500": 17.24,
+        "Nv.1000": 70.5
+      },
+      "dias_ate_nivel_sem_melhorias": {
+        "Nv.10": 0.04,
+        "Nv.100": 1.64,
+        "Nv.500": 18.67,
+        "Nv.1000": 75.19
+      },
+      "melhorias_compradas": 88,
+      "melhorias_de_tripulante": 44,
+      "niveis_gerais": {
+        "port_radio": 10,
+        "fair_customers": 10,
+        "cooler_box": 5,
+        "school_sonar": 9,
+        "good_tide": 10
+      },
+      "por_dia": {
+        "1": {
+          "renda_tripulacao": "1,5 mil/s",
+          "renda_pesca": "514,8/s",
+          "xp_tripulacao": "0,1/s",
+          "nivel": 97,
+          "unidades": [
+            100,
+            68,
+            61,
+            50,
+            3,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "3": {
+          "renda_tripulacao": "26,9 mil/s",
+          "renda_pesca": "9,1 mil/s",
+          "xp_tripulacao": "0,3/s",
+          "nivel": 191,
+          "unidades": [
+            101,
+            100,
+            100,
+            66,
+            58,
+            42,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "7": {
+          "renda_tripulacao": "240,6 mil/s",
+          "renda_pesca": "12,4 mil/s",
+          "xp_tripulacao": "0,6/s",
+          "nivel": 309,
+          "unidades": [
+            112,
+            106,
+            100,
+            100,
+            92,
+            63,
+            50,
+            0,
+            0,
+            0
+          ]
+        },
+        "17,5": {
+          "renda_tripulacao": "1,6 mi/s",
+          "renda_pesca": "13,6 mil/s",
+          "xp_tripulacao": "0,9/s",
+          "nivel": 503,
+          "unidades": [
+            150,
+            116,
+            111,
+            104,
+            100,
+            100,
+            66,
+            50,
+            0,
+            0
+          ]
+        },
+        "30": {
+          "renda_tripulacao": "4,1 mi/s",
+          "renda_pesca": "14,3 mil/s",
+          "xp_tripulacao": "1,5/s",
+          "nivel": 658,
+          "unidades": [
+            150,
+            150,
+            117,
+            110,
+            104,
+            100,
+            100,
+            64,
+            25,
+            22
+          ]
+        },
+        "45": {
+          "renda_tripulacao": "142,5 mi/s",
+          "renda_pesca": "14,3 mil/s",
+          "xp_tripulacao": "2,6/s",
+          "nivel": 801,
+          "unidades": [
+            150,
+            150,
+            150,
+            150,
+            115,
+            109,
+            102,
+            100,
+            90,
+            50
+          ]
+        },
+        "60": {
+          "renda_tripulacao": "425,7 mi/s",
+          "renda_pesca": "14,3 mil/s",
+          "xp_tripulacao": "3,3/s",
+          "nivel": 922,
+          "unidades": [
+            151,
+            150,
+            150,
+            150,
+            116,
+            110,
+            103,
+            100,
+            100,
+            96
+          ]
+        },
+        "75": {
+          "renda_tripulacao": "3,3 bi/s",
+          "renda_pesca": "14,3 mil/s",
+          "xp_tripulacao": "4,2/s",
+          "nivel": 1000,
+          "unidades": [
+            165,
+            161,
+            158,
+            153,
+            150,
+            150,
+            150,
+            150,
+            127,
+            100
+          ]
+        }
+      },
+      "descricao": "Deixa o jogo aberto o dia todo"
+    },
+    "quatro_vezes": {
+      "primeira_compra": "0,6 min",
+      "segundo_tripulante": "4,5 h",
+      "primeira_melhoria": "5,6 min",
+      "tripulacao_passa_a_pesca": "10,0 h",
+      "renda_maxima_moedas_s": 20748510003.2,
+      "dias_ate_renda": {
+        "1,0 mil/s": 2.33,
+        "1,0 mi/s": 22.33,
+        "1,0 bi/s": 90.92,
+        "1,0 tri/s": null
+      },
+      "dias_ate_renda_sem_melhorias": {
+        "1,0 mil/s": 5.76,
+        "1,0 mi/s": null,
+        "1,0 bi/s": null,
+        "1,0 tri/s": null
+      },
+      "dias_ate_nivel": {
+        "Nv.10": 0.5,
+        "Nv.100": 2.35,
+        "Nv.500": 33.33,
+        "Nv.1000": 129.5
+      },
+      "dias_ate_nivel_sem_melhorias": {
+        "Nv.10": 0.5,
+        "Nv.100": 2.35,
+        "Nv.500": 33.75,
+        "Nv.1000": 140.75
+      },
+      "melhorias_compradas": 92,
+      "melhorias_de_tripulante": 48,
+      "niveis_gerais": {
+        "port_radio": 10,
+        "fair_customers": 10,
+        "cooler_box": 5,
+        "school_sonar": 9,
+        "good_tide": 10
+      },
+      "por_dia": {
+        "1": {
+          "renda_tripulacao": "73,2/s",
+          "renda_pesca": "87,1/s",
+          "xp_tripulacao": "0,0/s",
+          "nivel": 64,
+          "unidades": [
+            59,
+            52,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "3": {
+          "renda_tripulacao": "3,9 mil/s",
+          "renda_pesca": "2,3 mil/s",
+          "xp_tripulacao": "0,2/s",
+          "nivel": 127,
+          "unidades": [
+            100,
+            71,
+            64,
+            56,
+            30,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "7": {
+          "renda_tripulacao": "45,7 mil/s",
+          "renda_pesca": "7,7 mil/s",
+          "xp_tripulacao": "0,3/s",
+          "nivel": 213,
+          "unidades": [
+            105,
+            100,
+            100,
+            70,
+            63,
+            50,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "17,5": {
+          "renda_tripulacao": "531,3 mil/s",
+          "renda_pesca": "12,9 mil/s",
+          "xp_tripulacao": "0,7/s",
+          "nivel": 354,
+          "unidades": [
+            117,
+            112,
+            107,
+            100,
+            100,
+            92,
+            61,
+            5,
+            0,
+            0
+          ]
+        },
+        "30": {
+          "renda_tripulacao": "2,3 mi/s",
+          "renda_pesca": "11,6 mil/s",
+          "xp_tripulacao": "1,0/s",
+          "nivel": 477,
+          "unidades": [
+            150,
+            116,
+            111,
+            104,
+            100,
+            100,
+            66,
+            52,
+            0,
+            0
+          ]
+        },
+        "45": {
+          "renda_tripulacao": "4,1 mi/s",
+          "renda_pesca": "12,2 mil/s",
+          "xp_tripulacao": "1,5/s",
+          "nivel": 589,
+          "unidades": [
+            150,
+            150,
+            117,
+            110,
+            104,
+            100,
+            100,
+            64,
+            25,
+            23
+          ]
+        },
+        "60": {
+          "renda_tripulacao": "52,9 mi/s",
+          "renda_pesca": "12,2 mil/s",
+          "xp_tripulacao": "2,1/s",
+          "nivel": 679,
+          "unidades": [
+            150,
+            150,
+            117,
+            110,
+            104,
+            100,
+            100,
+            64,
+            50,
+            50
+          ]
+        },
+        "75": {
+          "renda_tripulacao": "345,2 mi/s",
+          "renda_pesca": "12,2 mil/s",
+          "xp_tripulacao": "2,9/s",
+          "nivel": 759,
+          "unidades": [
+            151,
+            150,
+            150,
+            150,
+            116,
+            110,
+            103,
+            100,
+            100,
+            65
+          ]
+        },
+        "100": {
+          "renda_tripulacao": "1,8 bi/s",
+          "renda_pesca": "12,2 mil/s",
+          "xp_tripulacao": "3,8/s",
+          "nivel": 876,
+          "unidades": [
+            165,
+            161,
+            158,
+            153,
+            150,
+            150,
+            150,
+            113,
+            107,
+            100
+          ]
+        },
+        "144": {
+          "renda_tripulacao": "5,1 bi/s",
+          "renda_pesca": "14,3 mil/s",
+          "xp_tripulacao": "4,9/s",
+          "nivel": 1000,
+          "unidades": [
+            165,
+            161,
+            158,
+            153,
+            150,
+            150,
+            150,
+            150,
+            150,
+            144
+          ]
+        },
+        "168": {
+          "renda_tripulacao": "18,9 bi/s",
+          "renda_pesca": "14,3 mil/s",
+          "xp_tripulacao": "5,6/s",
+          "nivel": 1000,
+          "unidades": [
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            196,
+            150,
+            150
+          ]
+        }
+      },
+      "descricao": "Abre 4 vezes por dia, 30 min de cada vez"
+    },
+    "uma_vez": {
+      "primeira_compra": "0,6 min",
+      "segundo_tripulante": "1,0 d",
+      "primeira_melhoria": "5,6 min",
+      "tripulacao_passa_a_pesca": "5,0 d",
+      "renda_maxima_moedas_s": 3263881965.6,
+      "dias_ate_renda": {
+        "1,0 mil/s": 4.85,
+        "1,0 mi/s": 38.83,
+        "1,0 bi/s": 144.83,
+        "1,0 tri/s": null
+      },
+      "dias_ate_renda_sem_melhorias": {
+        "1,0 mil/s": 8.83,
+        "1,0 mi/s": null,
+        "1,0 bi/s": null,
+        "1,0 tri/s": null
+      },
+      "dias_ate_nivel": {
+        "Nv.10": 1.83,
+        "Nv.100": 4.83,
+        "Nv.500": 39.83,
+        "Nv.1000": 157.83
+      },
+      "dias_ate_nivel_sem_melhorias": {
+        "Nv.10": 1.83,
+        "Nv.100": 4.83,
+        "Nv.500": 40.83,
+        "Nv.1000": 166.83
+      },
+      "melhorias_compradas": 88,
+      "melhorias_de_tripulante": 44,
+      "niveis_gerais": {
+        "port_radio": 10,
+        "fair_customers": 10,
+        "cooler_box": 5,
+        "school_sonar": 9,
+        "good_tide": 10
+      },
+      "por_dia": {
+        "1": {
+          "renda_tripulacao": "0,6/s",
+          "renda_pesca": "1,0/s",
+          "xp_tripulacao": "0,0/s",
+          "nivel": 24,
+          "unidades": [
+            25,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "3": {
+          "renda_tripulacao": "73,2/s",
+          "renda_pesca": "94,5/s",
+          "xp_tripulacao": "0,0/s",
+          "nivel": 88,
+          "unidades": [
+            59,
+            52,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "7": {
+          "renda_tripulacao": "8,6 mil/s",
+          "renda_pesca": "2,7 mil/s",
+          "xp_tripulacao": "0,2/s",
+          "nivel": 182,
+          "unidades": [
+            100,
+            100,
+            69,
+            61,
+            50,
+            1,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "17,5": {
+          "renda_tripulacao": "132,0 mil/s",
+          "renda_pesca": "10,8 mil/s",
+          "xp_tripulacao": "0,5/s",
+          "nivel": 317,
+          "unidades": [
+            110,
+            104,
+            100,
+            100,
+            68,
+            60,
+            32,
+            1,
+            0,
+            0
+          ]
+        },
+        "30": {
+          "renda_tripulacao": "529,1 mil/s",
+          "renda_pesca": "11,0 mil/s",
+          "xp_tripulacao": "0,7/s",
+          "nivel": 435,
+          "unidades": [
+            117,
+            112,
+            107,
+            100,
+            100,
+            90,
+            61,
+            5,
+            0,
+            0
+          ]
+        },
+        "45": {
+          "renda_tripulacao": "1,6 mi/s",
+          "renda_pesca": "11,6 mil/s",
+          "xp_tripulacao": "0,9/s",
+          "nivel": 539,
+          "unidades": [
+            150,
+            116,
+            111,
+            104,
+            100,
+            100,
+            66,
+            50,
+            0,
+            0
+          ]
+        },
+        "60": {
+          "renda_tripulacao": "3,3 mi/s",
+          "renda_pesca": "12,2 mil/s",
+          "xp_tripulacao": "1,1/s",
+          "nivel": 623,
+          "unidades": [
+            150,
+            150,
+            115,
+            109,
+            103,
+            100,
+            100,
+            61,
+            3,
+            0
+          ]
+        },
+        "75": {
+          "renda_tripulacao": "4,1 mi/s",
+          "renda_pesca": "12,2 mil/s",
+          "xp_tripulacao": "1,5/s",
+          "nivel": 695,
+          "unidades": [
+            150,
+            150,
+            117,
+            110,
+            104,
+            100,
+            100,
+            64,
+            25,
+            23
+          ]
+        },
+        "100": {
+          "renda_tripulacao": "87,9 mi/s",
+          "renda_pesca": "12,2 mil/s",
+          "xp_tripulacao": "2,1/s",
+          "nivel": 799,
+          "unidades": [
+            150,
+            150,
+            150,
+            112,
+            106,
+            100,
+            100,
+            65,
+            50,
+            50
+          ]
+        },
+        "144": {
+          "renda_tripulacao": "433,5 mi/s",
+          "renda_pesca": "12,2 mil/s",
+          "xp_tripulacao": "3,3/s",
+          "nivel": 958,
+          "unidades": [
+            151,
+            150,
+            150,
+            150,
+            116,
+            110,
+            103,
+            100,
+            100,
+            99
+          ]
+        },
+        "168": {
+          "renda_tripulacao": "3,0 bi/s",
+          "renda_pesca": "14,3 mil/s",
+          "xp_tripulacao": "4,0/s",
+          "nivel": 1000,
+          "unidades": [
+            165,
+            161,
+            158,
+            153,
+            150,
+            150,
+            150,
+            141,
+            109,
+            100
+          ]
+        }
+      },
+      "descricao": "Abre 1 vez por dia, 30 min"
+    }
+  }
+}

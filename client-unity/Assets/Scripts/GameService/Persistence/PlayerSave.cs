@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 13;
+        public const int CurrentVersion = 14;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -134,6 +134,9 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>The automatic Crew: units hired and the last moment its income was credited (M24-T05). Added in save version 13.</summary>
         public CrewState Crew { get; set; } = new CrewState();
 
+        /// <summary>The upgrades bought with Moedas, by id, with their levels (M24-T06). Added in save version 14.</summary>
+        public UpgradesState Upgrades { get; set; } = new UpgradesState();
+
         /// <summary>The equipped rod item, or null if the reference is broken.</summary>
         public InventoryItem EquippedRodItem()
         {
@@ -189,6 +192,23 @@ namespace FishingIdle.GameService.Persistence
         public long UnitsOf(string memberId)
         {
             return memberId != null && Units != null && Units.TryGetValue(memberId, out var units) ? units : 0;
+        }
+    }
+
+    /// <summary>
+    /// The upgrades bought with Moedas (M24-T06, A-155). Only ids and levels are stored: names, prices and effects come
+    /// from upgrades.json, so a balance change applies to what was already bought. A Crew member's upgrade is level 1
+    /// once bought; a general upgrade keeps its level. Ids no longer in upgrades.json are kept and ignored.
+    /// </summary>
+    public sealed class UpgradesState
+    {
+        /// <summary>Level of each bought upgrade, by id. Upgrades never bought are absent.</summary>
+        public Dictionary<string, int> Levels { get; set; } = new Dictionary<string, int>();
+
+        /// <summary>Level of an upgrade; 0 when never bought.</summary>
+        public int LevelOf(string upgradeId)
+        {
+            return upgradeId != null && Levels != null && Levels.TryGetValue(upgradeId, out var level) ? level : 0;
         }
     }
 

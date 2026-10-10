@@ -38,7 +38,8 @@ public sealed class CrewTests
             if (i > 0)
             {
                 Assert.InRange(members[i].BaseCost / (double)members[i - 1].BaseCost, 8.0, 13.0);
-                Assert.InRange(members[i].CoinsPerSecond / members[i - 1].CoinsPerSecond, 4.5, 7.5);
+                // ~4,6× each since the Upgrades (A-155) recalibrated the income; ~6,5× before.
+                Assert.InRange(members[i].CoinsPerSecond / members[i - 1].CoinsPerSecond, 4.0, 7.5);
                 Assert.True(members[i].CostGrowth <= members[i - 1].CostGrowth, "the expensive ones grow slower");
             }
         }
@@ -531,14 +532,14 @@ public sealed class CrewTests
         var reopened = TestSupport.NewGame(saveDir: dir, clock: clock).Game;
         var save = reopened.Session.Save;
 
-        Assert.Equal(13, PlayerSave.CurrentVersion);
+        Assert.True(PlayerSave.CurrentVersion >= 13);
         Assert.Equal(PlayerSave.CurrentVersion, save.SaveVersion);
         Assert.NotNull(save.Crew);
         Assert.Empty(save.Crew.Units);
         Assert.Equal(clock.UtcNowMs, save.Crew.LastCreditedAtMs);
         Assert.Equal(5_000, save.Coins);
         Assert.Null(reopened.Crew.TakeOfflineReport());
-        Assert.Contains("\"save_version\": 13", File.ReadAllText(path));
+        Assert.Contains("\"save_version\": " + PlayerSave.CurrentVersion, File.ReadAllText(path));
     }
 
     [Fact]

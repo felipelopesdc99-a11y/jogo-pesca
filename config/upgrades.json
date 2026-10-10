@@ -1,0 +1,98 @@
+{
+  "config_file": "upgrades.json",
+  "config_schema_version": 1,
+  "balance_status": "provisional",
+  "description": "Melhorias compradas com Moedas (M24-T06, A-155): as de tripulante (×2 na renda de um tripulante, uma vez cada) e as gerais (com níveis). Nenhuma pede nível do Pescador. Os números são o ponto de partida, simulados por tools/Progressao/simular_melhorias.py (resultado em docs/propostas/melhorias.json), e serão ajustados depois que o proprietário jogar.",
+  "crew_upgrades": {
+    "multiplier": 2.0,
+    "note": "Melhorias de tripulante: cada tripulante de crew.json tem uma Melhoria por linha de tiers. Ela libera quando o jogador tem pelo menos unlock_count unidades daquele tripulante, é comprada uma vez só e multiplica a renda de Moedas daquele tripulante por multiplier (×2). Não mexe no XP. Preço: cost_factor × o preço da unidade número unlock_count (base_cost × cost_growth^unlock_count, de crew.json). O nome é o name da linha + o complemento do tripulante em member_suffixes (\"Anzol Afiado\" + \"do Canoeiro\").",
+    "tiers": [
+      {
+        "unlock_count": 1,
+        "cost_factor": 10,
+        "name": "Anzol Afiado"
+      },
+      {
+        "unlock_count": 10,
+        "cost_factor": 50,
+        "name": "Linha Reforçada"
+      },
+      {
+        "unlock_count": 25,
+        "cost_factor": 250,
+        "name": "Rede Nova"
+      },
+      {
+        "unlock_count": 50,
+        "cost_factor": 1250,
+        "name": "Motor Revisado"
+      },
+      {
+        "unlock_count": 100,
+        "cost_factor": 6250,
+        "name": "Mapa dos Cardumes"
+      }
+    ],
+    "member_suffixes_note": "Complemento do nome de cada tripulante (com \"do\" ou \"da\"). Todo tripulante de crew.json precisa ter o seu.",
+    "member_suffixes": {
+      "crew_01": "do Ajudante da Isca",
+      "crew_02": "do Canoeiro",
+      "crew_03": "do Tarrafeiro",
+      "crew_04": "do Jangadeiro",
+      "crew_05": "do Piloto da Voadeira",
+      "crew_06": "do Mestre do Barco de Linha",
+      "crew_07": "do Saveiro do Porto",
+      "crew_08": "da Traineira",
+      "crew_09": "do Barco de Arrasto",
+      "crew_10": "do Navio-Fábrica"
+    }
+  },
+  "general_upgrades_note": "Melhorias gerais, compradas nível a nível. effect diz o que fazem: crew_coins (+% nas Moedas de toda a Tripulação), fish_sale (+% no preço de venda ao NPC de todo peixe, da Caixa e do Aquário; o Mercado entre jogadores não muda), crew_offline_hours (horas a mais no teto da Tripulação com o jogo fechado, na taxa reduzida), crew_xp (+% no XP da Tripulação) e fishing_coins (+% nas Moedas da venda da Caixa de Pesca). value_per_level: quanto cada nível soma (0,2 = +20%; nas horas, 2 = +2 h). O nível N custa base_cost × cost_growth^(N−1).",
+  "general_upgrades": [
+    {
+      "id": "port_radio",
+      "display_name": "Rádio do Porto",
+      "effect": "crew_coins",
+      "value_per_level": 0.25,
+      "max_level": 10,
+      "base_cost": 20000,
+      "cost_growth": 12.0
+    },
+    {
+      "id": "fair_customers",
+      "display_name": "Freguesia na Feira",
+      "effect": "fish_sale",
+      "value_per_level": 0.1,
+      "max_level": 10,
+      "base_cost": 1500,
+      "cost_growth": 4.0
+    },
+    {
+      "id": "cooler_box",
+      "display_name": "Caixa Térmica",
+      "effect": "crew_offline_hours",
+      "value_per_level": 2,
+      "max_level": 5,
+      "base_cost": 50000,
+      "cost_growth": 15.0
+    },
+    {
+      "id": "school_sonar",
+      "display_name": "Sonar de Cardume",
+      "effect": "crew_xp",
+      "value_per_level": 0.05,
+      "max_level": 10,
+      "base_cost": 100000,
+      "cost_growth": 8.0
+    },
+    {
+      "id": "good_tide",
+      "display_name": "Maré Boa",
+      "effect": "fishing_coins",
+      "value_per_level": 0.1,
+      "max_level": 10,
+      "base_cost": 2500,
+      "cost_growth": 4.0
+    }
+  ]
+}

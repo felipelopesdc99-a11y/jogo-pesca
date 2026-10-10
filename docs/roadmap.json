@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-11T01:30:00Z",
+  "updated_at": "2026-10-11T03:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -512,6 +512,14 @@
       "title": "Dólares por nível depois do Nv.100",
       "detail": "Hoje o jogador ganha 10 Dólares a cada 10 níveis até o Nv.100 (100 Dólares = 1 VIP). Com o Nv.1000, opções: (a) parar no Nv.100, como está agora; (b) continuar 10 a cada 10 até o Nv.1000 (+900 Dólares, 9 VIPs a mais); (c) continuar mais devagar, por exemplo 10 a cada 50 níveis (+180 Dólares).",
       "raised_at": "2026-10-10T23:30:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-056",
+      "task_id": "M24-T12",
+      "title": "Maré Boa e Freguesia na Feira",
+      "detail": "As duas Melhorias aumentam as Moedas da venda de peixe ao NPC. Opções: (a) ficam as duas como estão (somam na Caixa; no Aquário só a Freguesia); (b) a Maré Boa passa a dar +% no XP de Pescador da pesca; (c) a Maré Boa sai e a Freguesia fica com os 10 níveis.",
+      "raised_at": "2026-10-11T03:00:00Z",
       "status": "OPEN"
     }
   ],
@@ -4316,11 +4324,12 @@
           "title": "Melhorias compradas",
           "subsystem": "server",
           "description": "Melhorias com níveis que multiplicam a renda, conforme a proposta aprovada.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M24-T02"
           ],
-          "updated_at": "2026-10-10T21:15:00Z"
+          "updated_at": "2026-10-11T03:00:00Z",
+          "completion_notes": "config/upgrades.json (novo arquivo obrigatório, validado, notas em PT-BR). Melhorias de tripulante: 5 por tripulante (50 no total), liberadas com 1, 10, 25, 50 e 100 unidades dele, compradas uma vez, ×2 na renda de Moedas daquele tripulante (não no XP); preço = 10×, 50×, 250×, 1.250× e 6.250× o preço da unidade número 1/10/25/50/100 (base_cost × cost_growth^n); nomes \"Anzol Afiado\", \"Linha Reforçada\", \"Rede Nova\", \"Motor Revisado\" e \"Mapa dos Cardumes\" + o complemento do tripulante (\"Anzol Afiado do Canoeiro\"). Melhorias gerais com níveis (nível N custa base × crescimento^(N−1)): Rádio do Porto (+25% na renda da Tripulação por nível, 10 níveis, 20 mil ×12), Freguesia na Feira (+10% no preço de venda ao NPC de todo peixe, Caixa e Aquário, 10 níveis, 1.500 ×4), Caixa Térmica (+2 h no teto offline da Tripulação, 5 níveis, 50 mil ×15), Sonar de Cardume (+5% no XP da Tripulação, 10 níveis, 100 mil ×8) e Maré Boa (+10% nas Moedas da venda da Caixa de Pesca, 10 níveis, 2.500 ×4). Sem nível mínimo. GameService/Upgrades: UpgradeRules (ids crew_NN_up_K, nomes, preços com Unaffordable acima de ~9,2×10^18, efeitos) e LocalUpgradeService/IUpgradeService (GetUpgrades com as 3 Melhorias de tripulante mais baratas, as gerais e as compradas; Buy credita a renda da Tripulação antes). Efeitos aplicados em CrewRules (renda e XP), LocalCrewService (teto offline e resumo), CatchRules.SalePrice/CatchViews/LocalFishingService (Caixa: Freguesia × Maré Boa) e LocalAquariumService (Freguesia); o Mercado entre jogadores continua com o preço base. crew.json recalibrado (renda por unidade ~4,6× de um tripulante para o próximo, antes ~6,5×) com tools/Progressao/simular_melhorias.py → docs/propostas/melhorias.json: jogo aberto 1 mi/s no dia 14,4, 1 bi/s no dia 62,7, ~3,3 bi/s no dia 75, Nv.1000 em 70,5 dias; 4x/dia 22,3 / 90,9 / 129,5 dias; 1x/dia 38,8 / 144,8 / 157,8 dias. Save v14 (UpgradesState: nível por id) com migração v13→v14 (começa sem nenhuma). Testes em UpgradeTests. A-155, TD-040. Não compilado (sem .NET) nem aberto no Unity."
         },
         {
           "id": "M24-T07",
@@ -4372,11 +4381,23 @@
           "title": "Tela das Melhorias",
           "subsystem": "client",
           "description": "Tela das Melhorias compradas (M24-T06) no padrão visual atual (Placa do Píer), separada da Tripulação (M24-T08).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M24-T06"
           ],
-          "updated_at": "2026-10-11T01:30:00Z"
+          "updated_at": "2026-10-11T03:00:00Z",
+          "completion_notes": "Abas \"Tripulação | Melhorias\" em chips no alto da janela Tripulação (padrão das abas do Mercado); o \"i\" da Placa do Píer explica a aba aberta. UI/UpgradesPanel: à esquerda \"Próximas Melhorias da Tripulação\" (as 3 mais baratas liberadas, depois as bloqueadas com \"Libera com 25 Canoeiros (você tem 12)\"; \"+N outras liberadas\"; \"12 de 50 da Tripulação\") e \"Compradas (N)\" recolhível (Mostrar/Esconder) com o que cada uma dá agora; à direita as 5 Melhorias gerais com \"Nível 3/10 · +25% Tripulação\", \"Agora: +75% Tripulação\", Comprar e o preço, ou \"Nível máximo\". Efeitos \"×2 Canoeiro\", \"+25% Tripulação\", \"+10% na venda de peixe\", \"+2 h fora do jogo\", \"+5% XP da Tripulação\", \"+10% Moedas da pesca\" (GameTexts.Upgrades, Format.PercentShort). Avisos de compra. Arte provisória: retrato do tripulante e ícones existentes por efeito (ASSET_PENDENTE melhoria_<id>, pedidos em docs/ASSETS_PENDENTES.md). A-155. Não compilado (sem .NET) nem aberto no Unity."
+        },
+        {
+          "id": "M24-T12",
+          "title": "Maré Boa e Freguesia na Feira quase iguais",
+          "subsystem": "config",
+          "description": "A pesca só rende Moedas pela venda dos peixes ao NPC, então a Maré Boa (+% nas Moedas da pesca) e a Freguesia na Feira (+% no preço de venda) fazem quase o mesmo: hoje as duas multiplicam a venda da Caixa de Pesca e só a Freguesia vale também para o Aquário. Decidir se ficam as duas assim, se a Maré Boa passa a dar outra coisa (por exemplo +% no XP da pesca) ou se sai (OD-056).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T06"
+          ],
+          "updated_at": "2026-10-11T03:00:00Z"
         }
       ]
     }

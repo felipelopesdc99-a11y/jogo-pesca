@@ -73,7 +73,7 @@ infraestrutura online que já existia foi preservada no M12, adiada. Em 05/10/20
 | **M21** | Progressão até o Nível 100: Mapas 5 a 10 | Aprovado pelo proprietário em 05/10/2026 e adaptado às regras atuais (`docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md`, números em `docs/propostas/mapas_5_10.json`): Lendário e Mítico, 60 espécies, Mapas 5 a 10, Varas 3 a 5, integração, simulação e arte |
 | **M22** | Revisão de segurança, jogo mais leve e pesquisa sobre jogos idle | Brechas de relógio, Mercado e save fechadas; imagens com teto de tamanho e PNG sem perdas; propostas da pesquisa registradas para o proprietário analisar (OD-048 a OD-050) |
 | **M23** | Ilha 2D (descartada) | Descartada pelo proprietário em 10/10/2026; fica só a página com as 3 visões, para a numeração seguir em ordem |
-| **M24** | Novo escopo idle: números grandes, Tripulação e Melhorias | Feito em etapas, vendo no jogo (OD-054). Etapa 1: itens sem nível mínimo, Pescador até o Nv.1000 com curva nova e saves convertidos sem perder nível (A-153). Etapa 2: a Tripulação automática, com a tela, a renda aberta e fechada e o save v13 (A-154). Depois: economia até bilhões e Melhorias |
+| **M24** | Novo escopo idle: números grandes, Tripulação e Melhorias | Feito em etapas, vendo no jogo (OD-054). Etapa 1: itens sem nível mínimo, Pescador até o Nv.1000 com curva nova e saves convertidos sem perder nível (A-153). Etapa 2: a Tripulação automática, com a tela, a renda aberta e fechada e o save v13 (A-154). Etapa 3: Melhorias compradas (×2 de cada tripulante e 5 gerais com níveis), aba Melhorias na janela da Tripulação e save v14 (A-155). Depois: economia até bilhões |
 
 ## Regras que o roadmap impõe a si mesmo
 

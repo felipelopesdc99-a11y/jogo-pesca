@@ -15,6 +15,7 @@ using FishingIdle.GameService.Profile;
 using FishingIdle.GameService.Ranking;
 using FishingIdle.GameService.Shop;
 using FishingIdle.GameService.Tutorial;
+using FishingIdle.GameService.Upgrades;
 using FishingIdle.GameService.Vip;
 
 namespace FishingIdle.GameService
@@ -52,6 +53,7 @@ namespace FishingIdle.GameService
             Vip = new LocalVipService(session);
             var crew = new LocalCrewService(session);
             Crew = crew;
+            Upgrades = new LocalUpgradeService(session, crew);
             DevTools = new LocalDevToolsService(session, fishing, crew);
         }
 
@@ -75,6 +77,9 @@ namespace FishingIdle.GameService
 
         /// <summary>The automatic Crew (M24-T05): hired fishers and boats that earn Moedas and XP per second.</summary>
         public ICrewService Crew { get; }
+
+        /// <summary>Upgrades bought with Moedas (M24-T06): the Crew members' ×2s and the general upgrades with levels.</summary>
+        public IUpgradeService Upgrades { get; }
 
         /// <summary>The owner's test tools (A-123); they refuse everything unless Session.DevToolsEnabled is on.</summary>
         public IDevToolsService DevTools { get; }

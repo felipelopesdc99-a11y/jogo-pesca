@@ -697,3 +697,41 @@ A fórmula fechada dá ×100 e Máx sem laço de compra e sem estouro.
 **Rever se.** O proprietário quiser que os marcos também multipliquem o XP, um limite de unidades, ou a Tripulação
 render enquanto o jogo está aberto mas parado por mais de 2 minutos (hoje isso conta como offline, com 100% nas 2
 primeiras horas de qualquer jeito). As Melhorias (M24-T06) vão multiplicar a renda: entram em `CrewRules.CoinsPerSecond`.
+
+## TD-040 — Melhorias: ids gerados, nível por id no save e multiplicadores aplicados onde a renda é calculada
+
+**Origem.** M24-T06 (A-155): Melhorias compradas com Moedas, as de tripulante (×2, uma vez) e as gerais (com níveis).
+
+**Decisão.**
+- `config/upgrades.json` (novo arquivo obrigatório em `GameConfigLoader.RequiredFiles`, validado junto com o
+  `crew.json`). As Melhorias de tripulante **não são listadas uma a uma**: o arquivo tem as linhas (`tiers`:
+  quantidade que libera, fator de preço, nome) e o complemento do nome de cada tripulante; o jogo gera uma por
+  tripulante e por linha, com id `crew_NN_up_K` (`UpgradeRules.CrewUpgradeId`). Um tripulante novo no `crew.json`
+  ganha as dele sozinho (o validador pede o complemento do nome). As gerais têm id próprio e um `effect` de uma lista
+  fechada (`UpgradeEffects`: `crew_coins`, `fish_sale`, `crew_offline_hours`, `crew_xp`, `fishing_coins`); o
+  validador recusa efeito desconhecido e id geral igual a um id gerado.
+- **Save v14**: `PlayerSave.Upgrades.Levels`, nível por id (a de tripulante fica 1 quando comprada). Só ids e níveis:
+  nomes, preços e efeitos vêm do arquivo, então um ajuste vale para o que já foi comprado. Nível acima do
+  `max_level` atual conta só até o máximo; id que saiu do arquivo fica guardado e é ignorado. A migração da v13 cria
+  a lista vazia.
+- **Regras puras** em `GameService/Upgrades/UpgradeRules.cs` (preço em `double` arredondado para `long`, com
+  `Unaffordable` acima de ~9,2 × 10^18, como a Tripulação; efeitos como multiplicadores 1 + Σ nível × valor). O
+  serviço `LocalUpgradeService` (`IUpgradeService`: `GetUpgrades`, `Buy`) só confere e grava.
+- **Onde os efeitos entram:** `CrewRules.MemberCoinsPerSecond / CoinsPerSecond / XpPerSecond` recebem o
+  `UpgradesState` (null = nenhuma; os testes e simuladores antigos continuam valendo); `CrewRules.OfflineSeconds`
+  recebe as horas a mais da Caixa Térmica. Na pesca, `CatchRules.SalePrice` ganhou um multiplicador (1 por padrão):
+  a Caixa usa Freguesia × Maré Boa (`UpgradeRules.BoxSaleMultiplier`) no cartão, na prévia e na venda; o Aquário usa
+  só a Freguesia; o Mercado (`MarketRules`) continua chamando sem multiplicador, com o preço base.
+- **Comprar credita a Tripulação antes** (`LocalCrewService.SettleNow`, interno): o que ela rendeu até ali fica na
+  taxa antiga, como ao contratar, e as Moedas que ela rendeu já podem pagar a compra.
+- A venda da Caixa passou a somar com teto em `long.MaxValue` (antes podia estourar com preços multiplicados).
+
+**Por quê.** Gerar as 50 Melhorias de tripulante a partir de 5 linhas deixa o arquivo pequeno e impossível de ficar
+torto (um tripulante sem Melhoria, um preço fora da curva). Aplicar os multiplicadores dentro das regras que já
+calculam a renda mantém uma só fonte de verdade: a janela, a barra, o "Bem-vindo de volta" e o servidor futuro veem o
+mesmo número. Guardar nível por id é o mesmo princípio da Tripulação (TD-039): o save guarda o que o jogador fez, o
+arquivo diz quanto vale.
+
+**Rever se.** O proprietário decidir o OD-056 (Maré Boa e Freguesia se sobrepõem), quiser Melhorias que mexem em
+outra coisa (por exemplo XP da pesca, renda offline da pesca) — basta um efeito novo em `UpgradeEffects` e no ponto de
+cálculo — ou quiser Melhorias de tripulante diferentes por tripulante (aí as linhas viram uma lista por tripulante).

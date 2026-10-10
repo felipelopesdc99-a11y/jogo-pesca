@@ -3,6 +3,42 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.47] — 10/10/2026
+
+Etapa 3 do novo escopo idle: Melhorias compradas (M24-T06 e M24-T11, A-155).
+
+### Adicionado
+
+- **Melhorias da Tripulação**: 5 por tripulante (Anzol Afiado, Linha Reforçada, Rede Nova, Motor Revisado e Mapa dos
+  Cardumes), liberadas com 1, 10, 25, 50 e 100 unidades dele, compradas uma vez, cada uma ×2 na renda de Moedas
+  daquele tripulante. Preço: 10× a 6.250× o preço da unidade daquele número.
+- **Melhorias gerais com níveis**: Rádio do Porto (+25% na renda da Tripulação por nível, 10 níveis), Freguesia na
+  Feira (+10% no preço de venda ao NPC de todo peixe, 10 níveis), Caixa Térmica (+2 h no teto offline da Tripulação,
+  5 níveis), Sonar de Cardume (+5% no XP da Tripulação, 10 níveis) e Maré Boa (+10% nas Moedas da venda da Caixa de
+  Pesca, 10 níveis). Nenhuma Melhoria pede nível do Pescador.
+- `config/upgrades.json` (novo, validado) e `tools/Progressao/simular_melhorias.py` (resultado em
+  `docs/propostas/melhorias.json`).
+- Aba "Melhorias" na janela da Tripulação (abas "Tripulação | Melhorias"): as 3 Melhorias de tripulante mais baratas,
+  as 5 gerais com o próximo nível, "Compradas" recolhível e avisos de compra. Ícones provisórios (pedidos em
+  `docs/ASSETS_PENDENTES.md`).
+- Save versão 14 (sem nenhuma Melhoria para quem já joga) (TD-040).
+- Testes das Melhorias (`UpgradeTests`): liberação por quantidade, compra única, níveis das gerais, efeitos na renda
+  e no XP da Tripulação, na venda de peixe da Caixa e do Aquário (Mercado sem mudança), no teto offline, crédito da
+  renda antes da compra, sem nível mínimo, números enormes sem estouro, migração v13→v14.
+- Decisão pendente OD-056 (M24-T12): a Maré Boa e a Freguesia na Feira fazem quase o mesmo.
+
+### Mudado
+
+- `config/crew.json`: renda por unidade recalibrada para as Melhorias (cada tripulante ~4,6× o anterior, antes
+  ~6,5×; o Ajudante da Isca não mudou). Simulado, jogo aberto: 1 mi/s no dia 14,4 (era 12,7), 1 bi/s no dia 62,7
+  (era 62), ~3,3 bi/s no dia 75 e Nv.1000 em 70,5 dias (era 71).
+- O "renda ×N" de cada tripulante conta também as Melhorias dele; o teto offline mostrado inclui a Caixa Térmica.
+- A venda da Caixa de Pesca soma com teto no maior número (não estoura com preços multiplicados).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.46] — 10/10/2026
 
 Etapa 2 do novo escopo idle: a Tripulação automática (M24-T05 e M24-T08, A-154).

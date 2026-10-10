@@ -308,6 +308,57 @@ namespace FishingIdle.Texts
             public static string FleetMilestoneToast(int count, string multiplier) => "Marco da frota: todos com " + count + "! A Tripulação inteira rende ×" + multiplier + ".";
             public static string Unlocked(string name) => "Novo na Tripulação: " + name;
             public static string HudRate(string perSecond) => "+" + perSecond;
+            public const string TabCrew = "Tripulação";
+            public const string TabUpgrades = "Melhorias";
+        }
+
+        // ------------------------------------------------------------------ Upgrades (M24-T06, A-155)
+
+        public static class Upgrades
+        {
+            public const string NextCrew = "Próximas Melhorias da Tripulação";
+            public const string General = "Melhorias gerais";
+            public const string Buy = "Comprar";
+            public const string MaxLevel = "Nível máximo";
+            public const string Bought = "Comprada";
+            public const string Show = "Mostrar";
+            public const string Hide = "Esconder";
+            public const string NoCrewOffers = "Contrate tripulantes para liberar as Melhorias deles.";
+            public const string AllCrewBought = "Todas as Melhorias da Tripulação compradas!";
+            public const string NothingBought = "Nenhuma Melhoria comprada ainda.";
+            public static string BoughtHeader(int count) => "Compradas (" + count + ")";
+            public static string MoreAvailable(int count) => count == 1 ? "+1 outra liberada, mais cara" : "+" + count + " outras liberadas, mais caras";
+            public static string CrewProgress(int bought, int total) => bought + " de " + total + " da Tripulação";
+            public static string Level(int level, int max) => "Nível " + level + "/" + max;
+            public static string Now(string effect) => "Agora: " + effect;
+
+            /// <summary>
+            /// What an upgrade does, from its stored effect key: "×2 Canoeiro", "+25% Tripulação", "+10% na venda de peixe",
+            /// "+2 h fora do jogo", "+5% XP da Tripulação", "+10% Moedas da pesca".
+            /// </summary>
+            public static string Effect(string effectKey, double value, string memberName)
+            {
+                switch (effectKey)
+                {
+                    case "crew_member": return "×" + Format.Factor(value) + " " + memberName;
+                    case "crew_coins": return "+" + Format.PercentShort(value) + " Tripulação";
+                    case "fish_sale": return "+" + Format.PercentShort(value) + " na venda de peixe";
+                    case "crew_offline_hours": return "+" + Format.Factor(value) + " h fora do jogo";
+                    case "crew_xp": return "+" + Format.PercentShort(value) + " XP da Tripulação";
+                    case "fishing_coins": return "+" + Format.PercentShort(value) + " Moedas da pesca";
+                    default: return string.Empty;
+                }
+            }
+
+            public static string Info(string crewMultiplier, string unlockCounts) =>
+                "Melhorias são compradas com Moedas e valem para sempre. Nenhuma pede nível. " +
+                "Melhorias da Tripulação: cada tripulante tem as dele, liberadas quando você tem " + unlockCounts + " dele; cada uma deixa a renda " +
+                "daquele tripulante ×" + crewMultiplier + " e é comprada uma vez só. Aqui aparecem só as 3 mais baratas. " +
+                "Melhorias gerais têm níveis: Rádio do Porto (renda de toda a Tripulação), Freguesia na Feira (preço de venda ao NPC de todo peixe, " +
+                "da Caixa e do Aquário; o Mercado entre jogadores não muda), Caixa Térmica (mais horas de renda da Tripulação com o jogo fechado, " +
+                "na taxa reduzida), Sonar de Cardume (XP da Tripulação) e Maré Boa (Moedas da venda da Caixa de Pesca).";
+            public static string BoughtToast(string name, string effect) => "Melhoria comprada: " + name + " (" + effect + ")";
+            public static string LevelToast(string name, int level, string effect) => name + ": nível " + level + " (" + effect + ")";
         }
 
         // ------------------------------------------------------------------ Arena (GDD sections 27–30)
@@ -1080,6 +1131,10 @@ namespace FishingIdle.Texts
                 case "InvalidAmount": return "Escolha uma quantidade de pelo menos 1.";
                 case "CrewMemberNotFound": return "Esse tripulante não existe.";
                 case "CrewMemberLocked": return "Este tripulante ainda não está liberado. Contrate mais do anterior.";
+                case "UpgradeNotFound": return "Essa Melhoria não existe.";
+                case "UpgradeLocked": return "Esta Melhoria ainda não está liberada. Contrate mais desse tripulante.";
+                case "UpgradeAlreadyBought": return "Você já tem esta Melhoria.";
+                case "UpgradeMaxLevel": return "Esta Melhoria já está no nível máximo.";
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
                 case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";
@@ -1167,6 +1222,14 @@ namespace FishingIdle.Texts
             public static string CrewCostGrowth(string member) => "crew.json: o tripulante \"" + member + "\" precisa de cost_growth maior que 1 (cada unidade custa mais que a anterior) e no máximo 10.";
             public const string CrewOfflineHours = "crew.json: \"offline\" precisa de full_rate_hours ≥ 0 e max_hours ≥ full_rate_hours (no máximo um ano).";
             public static string CrewMilestones(string section) => "crew.json: \"" + section + ".counts\" precisa de números maiores que zero em ordem crescente (no máximo 64), e \"" + section + ".multiplier\" entre 1 e 1.000.";
+            public const string UpgradeMultiplier = "upgrades.json: \"crew_upgrades.multiplier\" precisa estar entre 1 e 1.000.";
+            public const string UpgradeTiers = "upgrades.json: \"crew_upgrades.tiers\" precisa ter de 1 a 20 linhas, com unlock_count maior que zero e em ordem crescente.";
+            public static string UpgradeCostFactor(int unlockCount) => "upgrades.json: a linha de crew_upgrades.tiers com unlock_count " + unlockCount + " precisa de cost_factor maior que zero.";
+            public static string UpgradeSuffixMissing(string member) => "upgrades.json: o tripulante \"" + member + "\" de crew.json precisa de um complemento de nome em crew_upgrades.member_suffixes (por exemplo \"do Canoeiro\").";
+            public static string UpgradeUnknownEffect(string upgrade, string effect) => "upgrades.json: a Melhoria \"" + upgrade + "\" tem o efeito \"" + (effect ?? "") + "\", que não existe. Use crew_coins, fish_sale, crew_offline_hours, crew_xp ou fishing_coins.";
+            public static string UpgradeMaxLevel(string upgrade) => "upgrades.json: a Melhoria \"" + upgrade + "\" precisa de max_level entre 1 e 1.000.";
+            public static string UpgradeValue(string upgrade) => "upgrades.json: a Melhoria \"" + upgrade + "\" precisa de value_per_level maior que zero (no máximo 100 por nível; nas horas offline, no máximo um ano somando todos os níveis).";
+            public static string UpgradeCostGrowth(string upgrade) => "upgrades.json: a Melhoria \"" + upgrade + "\" precisa de cost_growth entre 1 e 1.000.";
         }
 
         // ------------------------------------------------------------------ Dev Panel (Unity Editor window)

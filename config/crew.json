@@ -57,7 +57,7 @@
       "display_name_plural": "Canoeiros",
       "base_cost": 160,
       "cost_growth": 1.097,
-      "coins_per_second": 0.039,
+      "coins_per_second": 0.028,
       "xp_per_second": 0.0003
     },
     {
@@ -66,7 +66,7 @@
       "display_name_plural": "Tarrafeiros",
       "base_cost": 1800,
       "cost_growth": 1.093,
-      "coins_per_second": 0.25,
+      "coins_per_second": 0.13,
       "xp_per_second": 0.00045
     },
     {
@@ -75,7 +75,7 @@
       "display_name_plural": "Jangadeiros",
       "base_cost": 20000,
       "cost_growth": 1.09,
-      "coins_per_second": 1.6,
+      "coins_per_second": 0.6,
       "xp_per_second": 0.0007
     },
     {
@@ -84,7 +84,7 @@
       "display_name_plural": "Pilotos da Voadeira",
       "base_cost": 220000,
       "cost_growth": 1.087,
-      "coins_per_second": 11.0,
+      "coins_per_second": 3.0,
       "xp_per_second": 0.001
     },
     {
@@ -93,7 +93,7 @@
       "display_name_plural": "Mestres do Barco de Linha",
       "base_cost": 2400000,
       "cost_growth": 1.083,
-      "coins_per_second": 70.0,
+      "coins_per_second": 13.5,
       "xp_per_second": 0.0015
     },
     {
@@ -102,7 +102,7 @@
       "display_name_plural": "Saveiros do Porto",
       "base_cost": 26000000,
       "cost_growth": 1.08,
-      "coins_per_second": 450.0,
+      "coins_per_second": 63.0,
       "xp_per_second": 0.0023
     },
     {
@@ -111,7 +111,7 @@
       "display_name_plural": "Traineiras",
       "base_cost": 290000000,
       "cost_growth": 1.077,
-      "coins_per_second": 2900.0,
+      "coins_per_second": 290.0,
       "xp_per_second": 0.0034
     },
     {
@@ -120,7 +120,7 @@
       "display_name_plural": "Barcos de Arrasto",
       "base_cost": 3200000000,
       "cost_growth": 1.073,
-      "coins_per_second": 19000.0,
+      "coins_per_second": 1370.0,
       "xp_per_second": 0.0051
     },
     {
@@ -129,7 +129,7 @@
       "display_name_plural": "Navios-Fábrica",
       "base_cost": 35000000000,
       "cost_growth": 1.07,
-      "coins_per_second": 120000.0,
+      "coins_per_second": 6240.0,
       "xp_per_second": 0.0077
     }
   ]

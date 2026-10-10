@@ -1994,6 +1994,8 @@ ele, em `config/crew.json`, para ajustar jogando.
   | 9 | Barco de Arrasto | 3,2 bi | +7,3% | 19.000 | 0,0051 | 10 Traineiras |
   | 10 | Navio-Fábrica | 35 bi | +7% | 120.000 | 0,0077 | 10 Barcos de Arrasto |
 
+  A coluna "Moedas/s por unidade" foi recalibrada com as Melhorias (A-155); os valores atuais estão lá.
+
   O preço de cada unidade sobe em relação à anterior (os caros sobem mais devagar). Comprar várias de uma vez custa
   exatamente a soma das unidades: base × crescimento^tenho × (crescimento^quantas − 1) ÷ (crescimento − 1). Nenhum
   tripulante pede nível do Pescador (como os itens, A-153): cada um libera quando o jogador tem 10 do anterior.
@@ -2045,3 +2047,91 @@ ele, em `config/crew.json`, para ajustar jogando.
 - **Arte provisória** (`ASSET_PENDENTE`): os retratos são um quadrado com o ícone de pessoa (1 a 3) ou de barco
   (4 a 10) e o número; o botão do menu usa o ícone do barco. Pedidos em `docs/ASSETS_PENDENTES.md`.
 - **Quem já joga** começa com a Tripulação vazia (save versão 13); o tempo de antes da atualização não rende nada.
+
+### A-155 · Etapa 3 do novo escopo: Melhorias compradas
+**Seção do GDD:** 10, 17, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+Decisão do proprietário em 10/10/2026 (M24-T06 e M24-T11), terceira etapa do A-152: Melhorias compradas com Moedas
+que multiplicam a renda. Números de partida em `config/upgrades.json`, para ajustar jogando. Nenhuma Melhoria pede
+nível do Pescador (como os itens, A-153).
+
+- **Melhorias da Tripulação** (estilo Cookie Clicker). Cada um dos 10 tripulantes tem 5, compradas **uma vez só**:
+
+  | Melhoria | Libera com (unidades do tripulante) | Preço | Efeito |
+  |---|---|---|---|
+  | Anzol Afiado | 1 | 10 × o preço da 1ª unidade a mais (base × crescimento¹) | ×2 na renda de Moedas daquele tripulante |
+  | Linha Reforçada | 10 | 50 × base × crescimento¹⁰ | ×2 |
+  | Rede Nova | 25 | 250 × base × crescimento²⁵ | ×2 |
+  | Motor Revisado | 50 | 1.250 × base × crescimento⁵⁰ | ×2 |
+  | Mapa dos Cardumes | 100 | 6.250 × base × crescimento¹⁰⁰ | ×2 |
+
+  O nome junta a Melhoria e o tripulante: "Anzol Afiado do Canoeiro", "Rede Nova da Traineira". Exemplos de preço:
+  Anzol Afiado do Ajudante da Isca 165 Moedas, do Canoeiro 1.755, do Navio-Fábrica ~375 bi; Mapa dos Cardumes do
+  Ajudante da Isca ~1,3 bi. As 5 juntas deixam o tripulante ×32. Não mexem no XP (como os marcos).
+- **Melhorias gerais**, compradas nível a nível (o nível N custa base × crescimento^(N−1)):
+
+  | Melhoria | Efeito por nível | Níveis | Nível 1 | Cada nível a mais | Último nível | Tudo |
+  |---|---|---|---|---|---|---|
+  | Rádio do Porto | +25% na renda de Moedas de toda a Tripulação | 10 | 20 mil | ×12 | ~103 tri | +250% (×3,5) |
+  | Freguesia na Feira | +10% no preço de venda ao NPC de todo peixe (Caixa e Aquário) | 10 | 1.500 | ×4 | ~393 mi | +100% |
+  | Caixa Térmica | +2 h no teto da Tripulação com o jogo fechado | 5 | 50 mil | ×15 | ~2,5 bi | +10 h (teto de 20 h) |
+  | Sonar de Cardume | +5% no XP da Tripulação | 10 | 100 mil | ×8 | ~13 tri | +50% |
+  | Maré Boa | +10% nas Moedas da venda da Caixa de Pesca | 10 | 2.500 | ×4 | ~655 mi | +100% |
+
+  Os "+%" de cada Melhoria somam por nível (+25% × 4 níveis = +100%) e multiplicam o resto. As horas da Caixa
+  Térmica entram na taxa reduzida (50%): com os 5 níveis, 100% nas 2 primeiras horas e 50% até 20 h fora.
+- **Venda de peixe.** A Freguesia na Feira entra no preço de venda ao NPC de cada peixe, o que aparece no cartão
+  da Caixa e do Aquário e o que a venda paga. A Maré Boa vale só para a Caixa de Pesca (o peixe recém-pescado): na
+  Caixa os dois multiplicam (+30% e +10% = ×1,43); no Aquário só a Freguesia. O **Mercado entre jogadores não muda**:
+  o valor de referência e o "valor no NPC" do Mercado continuam com o preço base. Como a pesca só rende Moedas pela
+  venda, a Maré Boa e a Freguesia fazem quase o mesmo; o que fazer com isso é decisão do proprietário (OD-056).
+- **Na janela da Tripulação** (abas "Tripulação | Melhorias" em chips no alto, como no Mercado; ficou no lugar de uma
+  janela própria para a Tripulação e o que a multiplica ficarem juntas e o menu não ganhar outro botão):
+  - O "i" da Placa do Píer explica a aba aberta.
+  - À esquerda, **"Próximas Melhorias da Tripulação"** com "12 de 50 da Tripulação": só as **3 mais baratas** já
+    liberadas (se faltarem, as próximas bloqueadas, escurecidas, com cadeado e "Libera com 25 Canoeiros (você tem
+    12)"), e "+N outras liberadas, mais caras" quando há mais. Cada linha: retrato do tripulante, nome, efeito
+    ("×2 Canoeiro") e Comprar com o preço embaixo (dourado quando dá para pagar).
+  - Embaixo, **"Compradas (N)"** recolhível (Mostrar / Esconder, começa fechada): uma linha por Melhoria com o que
+    ela dá agora ("+75% Tripulação · Nível 3/10").
+  - À direita, **"Melhorias gerais"**: as 5, cada uma com "Nível 3/10 · +25% Tripulação" (o próximo nível), "Agora:
+    +75% Tripulação" e Comprar com o preço, ou "Nível máximo".
+  - Avisos: "Melhoria comprada: Anzol Afiado do Canoeiro (×2 Canoeiro)" e "Rádio do Porto: nível 3 (+25% Tripulação)".
+  - Na aba Tripulação, o "renda ×N" de cada tripulante passa a contar também as Melhorias dele (marcos × Melhorias), e
+    o "i" e o "Bem-vindo de volta" mostram o teto offline com a Caixa Térmica.
+- **Renda recalibrada.** Com as Melhorias a renda subia rápido demais (1 bi/s no dia 6 e 4 tri/s no dia 30). A renda
+  por unidade de cada tripulante agora cresce ~4,6× de um para o próximo (antes ~6,5×); o Ajudante da Isca não mudou:
+
+  | Tripulante | Moedas/s por unidade (antes → agora) |
+  |---|---|
+  | Ajudante da Isca | 0,006 → 0,006 |
+  | Canoeiro | 0,039 → 0,028 |
+  | Tarrafeiro | 0,25 → 0,13 |
+  | Jangadeiro | 1,6 → 0,6 |
+  | Piloto da Voadeira | 11 → 3 |
+  | Mestre do Barco de Linha | 70 → 13,5 |
+  | Saveiro do Porto | 450 → 63 |
+  | Traineira | 2.900 → 290 |
+  | Barco de Arrasto | 19.000 → 1.370 |
+  | Navio-Fábrica | 120.000 → 6.240 |
+
+- **Ritmo simulado** (`tools/Progressao/simular_melhorias.py`, resultado em `docs/propostas/melhorias.json`; um
+  jogador atento que compra sempre o que dá mais renda por Moeda, entre tripulantes e Melhorias, e o Sonar e a Caixa
+  Térmica quando custam até 10 minutos de renda). "Antes" é a Tripulação do A-154, sem Melhorias:
+
+  | Jeito de jogar | 1 mi/s (antes → agora) | 1 bi/s | Renda no dia 75 | Renda máxima simulada | Nv.1000 |
+  |---|---|---|---|---|---|
+  | Jogo aberto o dia todo | 12,7 → 14,4 dias | 62 → 62,7 dias | ~1,1 → ~3,3 bi/s | ~3,6 bi/s (80 dias) | 71 → 70,5 dias |
+  | Abre 4 vezes por dia (30 min) | 19,8 → 22,3 dias | 90 → 91 dias | ~260 → ~345 mi/s | ~21 bi/s (170 dias) | 132 → 129,5 dias |
+  | Abre 1 vez por dia (30 min) | 48 → 38,8 dias | — → 145 dias | ~3,6 → ~4,1 mi/s | ~3,3 bi/s (170 dias) | 165 → 158 dias |
+
+  A renda nunca chega a 1 trilhão/s nos dias simulados. 1ª compra em 0,6 min e 1ª Melhoria em 5,6 min (o Anzol
+  Afiado do Ajudante da Isca). Na simulação, o jogador atento demora mais para o 2º tripulante (2,3 h em vez de 7
+  min), porque o Ajudante da Isca com Melhorias rende mais por Moeda que o primeiro Canoeiro; quem compra o novo
+  tripulante logo que ele libera continua tendo o Canoeiro nos primeiros minutos. A pesca chega a ~14 mil/s com a
+  Freguesia e a Maré Boa no máximo (era ~3,6 mil/s). Sem nenhuma Melhoria, com os números novos, a Tripulação não
+  passaria de ~1 mil/s em 4 dias e nem chegaria a 1 mi/s no jogo aberto: as Melhorias são parte da progressão.
+- **Arte provisória** (`ASSET_PENDENTE`): as Melhorias da Tripulação usam o retrato do tripulante (que também é
+  provisório); as gerais, um quadrado com um ícone que já existe (sino, vender, caixa, lupa, ondas). Pedidos em
+  `docs/ASSETS_PENDENTES.md`.
+- **Quem já joga** começa sem nenhuma Melhoria (save versão 14).

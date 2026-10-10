@@ -535,6 +535,34 @@ tamanho final ficam por minha conta):
 > jogo: a silhueta de dois pescadores lado a lado (um de chapéu de palha) na frente da proa de um barquinho, simples e
 > legível em 24 px. Sem texto, sem fundo, sem sombra. Arquivo: ico_tripulacao.png
 
+## Melhorias: ícones das Melhorias gerais (M24-T11, A-155, pedido em 10/10/2026)
+
+A aba "Melhorias" da janela da Tripulação já funciona com desenhos provisórios (`ASSET_PENDENTE` em
+`Game/UI/UpgradesPanel.cs`): as Melhorias da Tripulação usam o retrato do tripulante (pedido acima); as gerais
+aparecem num quadradinho dourado com um ícone que já existe (sino, vender, caixa, lupa, ondas). Quando um arquivo
+abaixo existir, o jogo passa a usá-lo sozinho; se for apagado, volta ao provisório. Nome, nível, efeito, preço e
+cadeado são do código — a arte não deve trazer nada disso.
+
+| Arquivo | Melhoria | Tamanho |
+|---|---|---|
+| `Arte/Melhorias/melhoria_port_radio.png` | Rádio do Porto | 512×512 → o jogo desenha com 56×56 |
+| `Arte/Melhorias/melhoria_fair_customers.png` | Freguesia na Feira | 512×512 → o jogo desenha com 56×56 |
+| `Arte/Melhorias/melhoria_cooler_box.png` | Caixa Térmica | 512×512 → o jogo desenha com 56×56 |
+| `Arte/Melhorias/melhoria_school_sonar.png` | Sonar de Cardume | 512×512 → o jogo desenha com 56×56 |
+| `Arte/Melhorias/melhoria_good_tide.png` | Maré Boa | 512×512 → o jogo desenha com 56×56 |
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Ícone quadrado de item para a loja de Melhorias de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um rádio antigo de cabine de barco, de madeira escura com alto-falante de tela dourada e uma antena curta, com duas ondinhas de som saindo. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem círculo de fundo, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 56 px. Arquivo: melhoria_port_radio.png
+
+> Ícone quadrado de item para a loja de Melhorias de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: uma banca de feira de peixe com toldo listrado turquesa e branco, dois peixes frescos sobre gelo e uma plaquinha de preço em branco (sem número). Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem círculo de fundo, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 56 px. Arquivo: melhoria_fair_customers.png
+
+> Ícone quadrado de item para a loja de Melhorias de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: uma caixa térmica de pesca azul-noite com tampa branca e alça, um pouco de gelo aparecendo pela fresta da tampa e um floquinho de frio turquesa. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem círculo de fundo, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 56 px. Arquivo: melhoria_cooler_box.png
+
+> Ícone quadrado de item para a loja de Melhorias de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: a tela redonda de um sonar de pesca com moldura escura, fundo azul-noite, anéis e um feixe turquesa girando, e três pontinhos dourados de cardume. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura extra, sem círculo de fundo, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 56 px. Arquivo: melhoria_school_sonar.png
+
+> Ícone quadrado de item para a loja de Melhorias de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: uma onda de maré cheia turquesa e branca se curvando, com um peixinho dourado pulando por cima e uma moeda dourada brilhando na espuma. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem círculo de fundo, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 56 px. Arquivo: melhoria_good_tide.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

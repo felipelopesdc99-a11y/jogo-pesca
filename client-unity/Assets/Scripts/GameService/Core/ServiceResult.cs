@@ -71,6 +71,10 @@ namespace FishingIdle.GameService.Core
         InvalidAmount,
         CrewMemberNotFound,
         CrewMemberLocked,
+        UpgradeNotFound,
+        UpgradeLocked,
+        UpgradeAlreadyBought,
+        UpgradeMaxLevel,
     }
 
     /// <summary>

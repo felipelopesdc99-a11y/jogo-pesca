@@ -53,7 +53,7 @@ namespace FishingIdle.GameService.Crew
         public int UnlockPreviousCount { get; internal set; }
         public List<int> MilestoneCounts { get; } = new List<int>();
 
-        /// <summary>The offline rules, for the "Como funciona" text.</summary>
+        /// <summary>The offline rules, for the "Como funciona" text (the cap includes the Caixa Térmica's hours).</summary>
         public double OfflineFullRateHours { get; internal set; }
         public double OfflineReducedRate { get; internal set; }
         public double OfflineMaxHours { get; internal set; }
@@ -82,7 +82,7 @@ namespace FishingIdle.GameService.Crew
         /// <summary>Moedas per second of all units of this member, every multiplier included.</summary>
         public double CoinsPerSecond { get; internal set; }
 
-        /// <summary>Its own milestone multiplier (×2 per milestone reached; 1 when none).</summary>
+        /// <summary>Its own multiplier: ×2 per milestone reached and ×2 per Upgrade of this member bought (M24-T06); 1 when none.</summary>
         public double Multiplier { get; internal set; }
 
         /// <summary>The next quantity milestone, or 0 when all are reached; and the previous one (0 before the first).</summary>

@@ -3,6 +3,7 @@ using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Persistence;
+using FishingIdle.GameService.Upgrades;
 
 namespace FishingIdle.GameService.Crew
 {
@@ -69,13 +70,14 @@ namespace FishingIdle.GameService.Crew
         {
             var config = Config;
             var crew = Save.Crew;
+            var upgrades = Save.Upgrades;
             var fleet = CrewRules.FleetMultiplier(config, crew);
             var fewest = CrewRules.FewestUnits(config, crew);
             var fleetNext = CrewRules.NextMilestone(config.Crew.FleetMilestones, fewest);
             var view = new CrewView
             {
-                CoinsPerSecond = CrewRules.CoinsPerSecond(config, crew),
-                XpPerSecond = CrewRules.XpPerSecond(config, crew),
+                CoinsPerSecond = CrewRules.CoinsPerSecond(config, crew, upgrades),
+                XpPerSecond = CrewRules.XpPerSecond(config, crew, upgrades),
                 CoinsEarned = crew.CoinsEarned,
                 Coins = Save.Coins,
                 Mode = mode,
@@ -89,7 +91,7 @@ namespace FishingIdle.GameService.Crew
                 MemberCount = config.Crew.Members.Count,
                 OfflineFullRateHours = config.Crew.Offline.FullRateHours,
                 OfflineReducedRate = config.Crew.Offline.ReducedRate,
-                OfflineMaxHours = config.Crew.Offline.MaxHours,
+                OfflineMaxHours = config.Crew.Offline.MaxHours + UpgradeRules.OfflineExtraHours(config, upgrades),
                 UnlockPreviousCount = config.Crew.UnlockPreviousCount,
             };
             view.MilestoneCounts.AddRange(config.Crew.Milestones.Counts);
@@ -115,8 +117,8 @@ namespace FishingIdle.GameService.Crew
                     Position = i + 1,
                     Units = units,
                     Unlocked = unlocked,
-                    CoinsPerSecond = CrewRules.MemberCoinsPerSecond(config, member, units, fleet),
-                    Multiplier = CrewRules.MemberMultiplier(config, units),
+                    CoinsPerSecond = CrewRules.MemberCoinsPerSecond(config, member, units, fleet, upgrades),
+                    Multiplier = CrewRules.MemberMultiplier(config, units) * UpgradeRules.CrewMemberMultiplier(config, upgrades, member.Id),
                     NextMilestone = CrewRules.NextMilestone(config.Crew.Milestones, units),
                     PreviousMilestone = PreviousMilestone(config.Crew.Milestones, units),
                     BuyAmount = amount,
@@ -191,7 +193,7 @@ namespace FishingIdle.GameService.Crew
                 MilestoneReached = milestoneAfter > milestoneBefore ? config.Crew.Milestones.Counts[milestoneAfter - 1] : 0,
                 FleetMilestoneReached = fleetAfter > fleetBefore ? config.Crew.FleetMilestones.Counts[fleetAfter - 1] : 0,
                 UnlockedName = nextWasLocked && CrewRules.IsUnlocked(config, crew, index + 1) ? config.Crew.Members[index + 1].DisplayName : null,
-                CoinsPerSecond = CrewRules.CoinsPerSecond(config, crew),
+                CoinsPerSecond = CrewRules.CoinsPerSecond(config, crew, Save.Upgrades),
                 MilestoneMultiplier = config.Crew.Milestones.Multiplier,
                 FleetMilestoneMultiplier = config.Crew.FleetMilestones.Multiplier,
             };
@@ -224,6 +226,12 @@ namespace FishingIdle.GameService.Crew
             _pendingOffline = null;
             return report;
         }
+
+        /// <summary>
+        /// Credits what is owed at the current rates, before something changes them (an Upgrade bought, M24-T06). Does
+        /// not write the save: the caller does, with its own change.
+        /// </summary>
+        internal void SettleNow() => Settle(Config);
 
         /// <summary>The owner's test tools (A-123): the time that just passed counts as time the game was open.</summary>
         internal void CreditAsOnline()
@@ -273,13 +281,14 @@ namespace FishingIdle.GameService.Crew
                 return update;
             }
 
-            // The game was not seen running: offline income, at the offline rate and cap.
-            var share = CrewRules.OfflineSeconds(config.Crew, elapsedMs);
+            // The game was not seen running: offline income, at the offline rate and cap (the Caixa Térmica raises it).
+            var extraHours = UpgradeRules.OfflineExtraHours(config, Save.Upgrades);
+            var share = CrewRules.OfflineSeconds(config.Crew, elapsedMs, extraHours);
             var report = _pendingOffline ?? new CrewOfflineReport
             {
                 FullRateHours = config.Crew.Offline.FullRateHours,
                 ReducedRate = config.Crew.Offline.ReducedRate,
-                MaxHours = config.Crew.Offline.MaxHours,
+                MaxHours = config.Crew.Offline.MaxHours + extraHours,
             };
             Credit(config, share.EffectiveSeconds, report.LevelsReached, out var offlineCoins, out var offlineXp, out var offlineDollars);
             report.AwayMs += elapsedMs;
@@ -312,9 +321,9 @@ namespace FishingIdle.GameService.Crew
             }
 
             var crew = Save.Crew;
-            coins = Whole(CrewRules.CoinsPerSecond(config, crew) * seconds, crew.CoinsCarry, out var coinsCarry);
+            coins = Whole(CrewRules.CoinsPerSecond(config, crew, Save.Upgrades) * seconds, crew.CoinsCarry, out var coinsCarry);
             crew.CoinsCarry = coinsCarry;
-            xp = Whole(CrewRules.XpPerSecond(config, crew) * seconds, crew.XpCarry, out var xpCarry);
+            xp = Whole(CrewRules.XpPerSecond(config, crew, Save.Upgrades) * seconds, crew.XpCarry, out var xpCarry);
             crew.XpCarry = xpCarry;
 
             if (coins > 0)

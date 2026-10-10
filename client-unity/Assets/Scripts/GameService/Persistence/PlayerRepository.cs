@@ -391,6 +391,13 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 13;
             }
 
+            if (save.SaveVersion == 13)
+            {
+                // v14 adds the upgrades bought with Moedas (M24-T06). Everyone starts with none.
+                save.Upgrades = new UpgradesState();
+                save.SaveVersion = 14;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BaitCharges = save.BaitCharges ?? new Dictionary<string, int>();
 
@@ -419,6 +426,8 @@ namespace FishingIdle.GameService.Persistence
             save.Fishing = save.Fishing ?? new FishingSessionState();
             save.Crew = save.Crew ?? new CrewState();
             save.Crew.Units = save.Crew.Units ?? new Dictionary<string, long>();
+            save.Upgrades = save.Upgrades ?? new UpgradesState();
+            save.Upgrades.Levels = save.Upgrades.Levels ?? new Dictionary<string, int>();
         }
     }
 
@@ -531,6 +540,8 @@ namespace FishingIdle.GameService.Persistence
                 if (save.Crew.CoinsEarned < 0 || save.Crew.XpEarned < 0 || save.Crew.LastCreditedAtMs < 0) problems.Add("crew negative values");
                 if (double.IsNaN(save.Crew.CoinsCarry) || double.IsNaN(save.Crew.XpCarry)) problems.Add("crew carry is not a number");
             }
+            if (save.Upgrades == null || save.Upgrades.Levels == null) problems.Add("upgrades missing");
+            else if (save.Upgrades.Levels.Any(u => string.IsNullOrWhiteSpace(u.Key) || u.Value < 0)) problems.Add("upgrades have malformed levels");
 
             return problems;
         }
