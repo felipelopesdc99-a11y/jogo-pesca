@@ -1,0 +1,18 @@
+{
+  "_leia_me": "Som ambiente de cada mapa: gravações longas (2 a 3 minutos cada) tocadas uma depois da outra, em ordem sorteada, com uma passagem suave entre elas; a mesma gravação nunca toca duas vezes seguidas. Hoje cada mapa tem 1 gravação de 2,5 minutos feita com sons reais da natureza (tools/Audio/mixar_ambiente.py); dá para acrescentar mais gravações à lista de um mapa. Os arquivos ficam em Resources/Sons/Ambiente (.ogg, .wav ou .mp3), com o nome listado aqui, sem a extensão. Mapa sem nenhum arquivo fica sem som ambiente. Os nomes dos campos são chaves técnicas e não devem ser traduzidos.",
+  "_tempos": "crossfade = segundos da passagem de uma gravação para a outra. gain = volume do ambiente em relação ao volume geral (0 a 1).",
+  "crossfade": 8,
+  "gain": 0.6,
+  "scenes": [
+    { "scene": "LagoSereno", "tracks": ["lago_01"] },
+    { "scene": "RioSelvagem", "tracks": ["rio_01"] },
+    { "scene": "PantanalDourado", "tracks": ["pantanal_01"] },
+    { "scene": "EstuarioDasMares", "tracks": ["estuario_01"] },
+    { "scene": "CostaDeCoral", "tracks": ["coral_01"] },
+    { "scene": "ArquipelagoDoSol", "tracks": ["arquipelago_01"] },
+    { "scene": "CorrenteAzul", "tracks": ["corrente_01"] },
+    { "scene": "BancoDasBaleias", "tracks": ["baleias_01"] },
+    { "scene": "TaludeNoturno", "tracks": ["talude_01"] },
+    { "scene": "AbismoAtlantico", "tracks": ["abismo_01"] }
+  ]
+}

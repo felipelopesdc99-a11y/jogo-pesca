@@ -8,6 +8,17 @@
 Parta do princípio de que existem clientes modificados e bots. Toda ação com valor econômico, de
 progressão ou competitivo é decidida pelo servidor.
 
+## Na fase do MVP local
+
+Enquanto o jogo roda inteiro no PC (`docs/CLAUDE_START_HERE_V0_1_1.md`), o papel do "servidor" é do
+**serviço de jogo local** (`client-unity/Assets/Scripts/GameService`), separado da apresentação e
+proibido de usar o Unity. A regra acima vale igual entre essas duas partes: a tela só pede e mostra.
+
+O que o MVP local **não** protege, e só o servidor vai proteger (Milestone 12): o relógio é o do PC
+(a regra da TD-019 evita o abuso grosseiro, como adiantar o relógio com o jogo aberto) e o save é um
+arquivo no PC, que pode ser editado — por isso o save é validado ao carregar, mas não é tratado
+como a arquitetura definitiva.
+
 ## Nunca confiar no cliente para
 
 Hora atual · conclusão de ciclo de pesca · qual peixe foi capturado · tamanho ou raridade do peixe ·
@@ -41,6 +52,18 @@ pode voltar como entrada de um resultado.
 ciclos são elegíveis a partir do carimbo de tempo autoritativo do início da sessão e do cursor de
 ciclo gravado, e processa apenas os ciclos que realmente passaram. Requisições a mais devolvem o
 mesmo estado.
+
+**Tripulação acelerada (M24, TD-039).** O cliente só pede "sincronizar" ou "contratar"; nunca diz quanto a
+Tripulação rendeu. O serviço paga do cursor gravado (`LastCreditedAtMs`) até agora, pelo relógio que nunca volta
+(TD-030), e move o cursor: pedir de novo no mesmo instante não paga nada. Relógio voltado não paga nem tira; relógio
+adiantado com o jogo fechado vale no máximo o teto offline (10 h, metade da renda depois das 2 primeiras); um cursor
+no futuro (save editado) é trazido para agora sem pagar. Preços que não cabem num número nunca são cobrados nem
+pagos. No servidor, o mesmo cálculo roda com o relógio dele.
+
+**Melhorias (M24, TD-040).** O cliente só pede "comprar esta Melhoria"; preço, desbloqueio e efeito vêm do
+`upgrades.json` e do save. A de tripulante não se compra duas vezes nem antes da quantidade; a geral não passa do
+nível máximo, e um nível maior que o máximo num save editado conta só até o máximo. Preços que não cabem num número
+nunca são cobrados. A renda da Tripulação é paga antes da compra, na taxa antiga, então comprar não muda o passado.
 
 **Uso duplo do peixe.** Duas requisições tentam vender e alimentar o mesmo `FishInstance` no mesmo
 instante. As duas rodam em transação contra a versão de estado do peixe; uma confirma e a outra é

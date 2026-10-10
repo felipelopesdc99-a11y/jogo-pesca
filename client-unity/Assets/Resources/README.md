@@ -1,5 +1,8 @@
 # Assets/Resources
 
+> **Dormente no MVP local.** O jogo não fala com servidor nenhum por enquanto; este arquivo só
+> importa quando os serviços remotos existirem (Milestone 12, veja `docs/INFRA_ONLINE.md`).
+
 O arquivo `BackendSettings.asset` pertence a esta pasta, mas **não** é versionado: o cliente roda
 sem ele, usando `http://localhost:5080` como padrão, que é o endereço servido pelo ambiente Docker
 Compose local.

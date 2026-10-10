@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Agent",
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "WebSearch",
+      "WebFetch",
+      "Artifact",
+      "mcp__Claude_Docs"
+    ]
+  }
+}

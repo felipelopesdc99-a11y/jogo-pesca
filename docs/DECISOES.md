@@ -6,6 +6,9 @@ Este arquivo guarda dois tipos de decisão.
 está aberta a reinterpretação. Trate cada linha como fechada, a menos que o dono reabra
 explicitamente.
 
+Detalhes de **design** decididos durante a implementação (o que o jogador vê e sente) ficam em
+`GDD_ADENDO.md`. Como o código funciona está em `BASE_TECNICA.md`.
+
 **A Parte 2** são as decisões técnicas tomadas durante a implementação, nos pontos em que o GDD
 deixa margem. Cada uma registra o que foi escolhido, por quê, e o que faria valer a pena rever.
 Conforme a instrução inicial do projeto: escolhas puramente técnicas, que não mudam a experiência
@@ -257,3 +260,478 @@ substituindo o original.
 **Rever se.** O projeto ganhar jogadores fora do Brasil. Aí o painel troca `strings.ts` e o jogo
 precisa de um sistema de textos de verdade — que seria um sistema novo, e portanto uma decisão do
 dono, não algo a inventar durante a V0.1.
+
+## TD-015 — MVP local primeiro; as regras rodam num "serviço de jogo" dentro do Unity
+
+**Origem.** Nova prioridade definida pelo proprietário em `docs/CLAUDE_START_HERE_V0_1_1.md`:
+primeiro um MVP local, jogável no PC, sem servidor, sem Docker, sem hospedagem e sem custo.
+
+**Decisão.** As regras do jogo ficam no assembly `FishingIdle.GameService`, dentro do projeto Unity,
+com `noEngineReferences: true` (proibido usar `UnityEngine`). A apresentação (`FishingIdle.Game`)
+fala com ele só por interfaces (`IFishingService`, `IPlayerService`), enviando intenção e recebendo
+resultados. O servidor ASP.NET, o PostgreSQL, o Docker e o painel web continuam no repositório,
+funcionando, guardados no Milestone 12.
+
+**Por quê.** Mantém o princípio "cliente = intenção + apresentação" já no MVP, sem exigir nada
+além do Unity. Por não depender do Unity, o mesmo código pode ser testado fora dele e, depois,
+rodar dentro do servidor .NET como autoridade.
+
+**Rever se.** O jogo for para a internet: aí entram os `Remote...Service` (tarefa `M12-T13`).
+
+## TD-016 — A cena é montada por código; a cena salva só existe para o build
+
+**Decisão.** Ao apertar Play, `GameBootstrap` (RuntimeInitializeOnLoadMethod) cria o `GameRoot`,
+que monta céu, água, barco, pescador e interface por código. Na primeira abertura, o Editor cria
+`Assets/Scenes/Principal.unity` (com o Unity salvando o arquivo, não escrito à mão) e a registra no
+Build Settings. Continuação da TD-008.
+
+**Por quê.** O proprietário aperta Play e joga, em qualquer cena. Nenhum arquivo de cena ou prefab
+foi escrito fora do Editor, o que evitaria formatos quebrados. Toda a arte provisória também é
+gerada por código (`Art.cs`), então o projeto não depende de nenhum asset importado.
+
+**Rever se.** A arte final chegar: aí faz sentido montar a cena no Editor, com prefabs. A troca é
+local: `FishingScene` e `Art` são os únicos pontos que mudam.
+
+## TD-017 — Interface do MVP em IMGUI
+
+**Decisão.** HUD, Caixa de Pesca e avisos usam o IMGUI do Unity (`OnGUI`), com estilos gerados por
+código em `UiSkin` e uma tela virtual de 1080 px escalada.
+
+**Por quê.** Funciona no instante do Play, sem prefabs, sem fontes importadas, sem configurar
+EventSystem nem o sistema de input (que muda entre projetos do Unity 6). É inteiramente checável
+fora do Editor. O visual fica aceitável como provisório.
+
+**Rever se.** A interface final for desenhada (Milestone 10): o caminho natural é UI Toolkit. Todos
+os estilos estão em `UiSkin` e as telas só leem visões do serviço, então a troca não toca nas regras.
+
+## TD-018 — Pipeline de renderização padrão (Built-in) no MVP
+
+**Decisão.** Nenhum pacote de pipeline é adicionado; o projeto usa o pipeline padrão, com sprites
+e câmera ortográfica com paralaxe. Encerra a TD-009 para o MVP.
+
+**Por quê.** O visual 2.5D do MVP é feito de camadas de sprites, que não precisam de luzes 2D nem de
+pós-processamento. Adicionar o URP agora exigiria assets de pipeline criados no Editor.
+
+**Rever se.** A arte final pedir luz dinâmica, bloom ou shaders de água: aí o URP entra junto com
+ela.
+
+## TD-019 — Tempo com o jogo fechado não é pesca online
+
+**Decisão.** O serviço guarda a última vez em que viu o jogo rodando. Um intervalo maior que
+`max(3 ciclos, 2 minutos)` sem ser visto (jogo fechado, PC em suspensão, relógio adiantado) não
+gera capturas online: o serviço entrega o que foi pescado até ali e recomeça o ciclo.
+
+**Por quê.** O GDD define 30s online e 60s offline com limite de 24h. Sem essa regra, fechar o jogo
+por 10 horas renderia 1.200 capturas "online" ao voltar, e adiantar o relógio do PC também. O
+intervalo detectado é justamente o que a pesca offline (Milestone 5) recompensa: desde então ele é
+creditado no ritmo offline (60s, até 24h), numa passada só, continuando a mesma sequência de sorteio. Registrado
+como design em `GDD_ADENDO.md`, A-001.
+
+**Limite conhecido.** No MVP local, o relógio é o do PC; um jogador pode adiantá-lo. A regra acima
+evita o abuso grosseiro, mas a proteção real só existe com o servidor (Milestone 12).
+
+## TD-020 — Checagens sem o Unity: testes em .NET e compilação contra bibliotecas de referência
+
+**Decisão.** `tools/` tem quatro projetos .NET: um compila o `GameService` exatamente como o Unity
+(.NET Standard 2.1, C# 9), outro roda os testes, e dois compilam o código do jogo e do Editor contra
+as bibliotecas de referência públicas do Unity (NuGet `UnityEngine.Modules` 2021.3 e `Unity3D.SDK`).
+`ops/scripts/verify.sh` roda tudo; o servidor e o painel web só entram se o .NET 10 e o Node
+estiverem instalados.
+
+**Por quê.** O código é escrito num ambiente sem o Editor do Unity. Sem essas checagens, um erro de
+digitação só apareceria quando o proprietário abrisse o projeto. As bibliotecas de referência são
+2021.3, então o código evita de propósito APIs que só existem no Unity 6.
+
+**Limite.** Compilar não é rodar: comportamento visual só se confirma no Editor (tarefa `M0-T13`).
+
+## TD-021 — Sem Vercel
+
+**Origem.** Pedido do proprietário (28/09/2026): "não quero usar o Vercel, quero simplificar".
+
+**Decisão.** O projeto não usa a Vercel. O guia de publicação (`docs/PAINEL_ONLINE.md`), a tarefa de
+publicar o painel e a decisão pendente sobre a conta foram removidos ou encerrados. O painel web
+continua no repositório (Milestone 12) apenas para uso local.
+
+Um projeto da Vercel já estava conectado a este repositório no GitHub e publicava uma prévia a cada
+envio, mandando e-mail ao proprietário. Até ele ser desconectado, os arquivos `vercel.json` (na raiz
+e em `web/dev-console`) com `git.deploymentEnabled: false` mandam a Vercel ignorar os envios. Nenhum
+dos dois é usado pelo jogo.
+
+**Rever se.** O projeto da Vercel for desconectado do GitHub ou apagado: aí os dois `vercel.json`
+podem ser removidos.
+
+## TD-022 — Partes arquivadas ficam fora do trabalho do dia a dia
+
+**Origem.** Pedido do proprietário (28/09/2026): manter a infraestrutura online guardada, mas sem
+gastar tokens com ela.
+
+**Decisão.** `server/`, `web/`, `shared-contracts/`, os scripts do Docker e o cliente HTTP dormente
+do Unity continuam versionados, mas: o `CLAUDE.md` (seção 8) proíbe lê-los ou alterá-los sem pedido
+do proprietário; o arquivo `.ignore` faz as buscas pularem essas pastas; e `verify.sh` só os
+compila com `--completo`.
+
+**Rever se.** O jogo for para a internet (Milestone 12): aí essas regras saem.
+
+## TD-023 — Mercado local com jogadores simulados e custódia dentro do save
+
+**Origem.** Milestone 8 (START HERE V0.1.1: "o Mercado pode ser simulado com anúncios gerados
+localmente/bots, mas o fluxo deve ser o real").
+
+**Decisão.** O fluxo é o do GDD (anunciar, comprar, cancelar, vencer, Itens a Retirar) e mora em
+`LocalMarketService`. Os outros jogadores são simulados: vendedores repõem anúncios de hora em hora e
+compradores olham os seus anúncios a cada 20 minutos, sempre calculado a partir do relógio e do `Rng`
+do jogador — nada roda "em segundo plano". Os valores da simulação ficam num arquivo separado,
+`config/market_bots.json`, para que as regras reais (`economy.json → market_fixed_price`) não se
+misturem com o que é só do MVP. Um item no Mercado sai do Aquário/Inventário e fica guardado dentro
+do anúncio ou de Itens a Retirar.
+
+**Por quê.** Com o item fisicamente em um só lugar, vender duas vezes, comprar duas vezes ou usar um
+peixe anunciado deixam de ser possíveis por construção, e o limite do Aquário é checado num ponto só
+(a retirada). Quando o Mercado for online, `IMarketService` ganha uma versão remota e
+`market_bots.json` deixa de ser usado.
+
+**Rever se.** O Mercado for para o servidor (Milestone 12).
+
+## TD-024 — Áudio provisório sintetizado e preferências no PlayerPrefs
+
+**Origem.** Milestone 10 (START HERE V0.1.1: "áudio provisório").
+
+**Decisão.** Os sons do MVP são gerados por código na primeira vez que tocam (`SoundBank`), sem
+arquivos de áudio no projeto. Som ligado/desligado, som ambiente e volume ficam no `PlayerPrefs`,
+fora do save.
+
+**Por quê.** Nada para importar nem licenciar agora, e o som final entra trocando só o `SoundBank`.
+Preferências de apresentação não são estado do jogo: não mudam captura, preço nem batalha, então não
+precisam da validação e das migrações do save.
+
+**Rever se.** O áudio final chegar (arquivos em `Assets/Audio`) ou as preferências precisarem ir junto
+com a conta, online.
+
+## TD-025 — Sons como arquivos gerados por script (substitui parte da TD-024)
+
+**Origem.** V0.2, Milestone 13 (29/09/2026): o proprietário achou o som ambiente anterior ruim e pediu
+sons para captura, recorde, subir de nível e um ambiente de mar e vento.
+
+**Decisão.** Os sons deixam de ser sintetizados dentro do jogo e passam a ser arquivos `.wav` em
+`Assets/Resources/Sons`, carregados pelo nome. Os arquivos atuais são gerados por
+`tools/Audio/gerar_sons.py` com uma semente fixa. As preferências de som continuam no `PlayerPrefs`
+(TD-024).
+
+**Por quê.** Com arquivos, qualquer som pode ser trocado por uma gravação sem mexer em código, o som
+pode ser ouvido fora do Unity antes de testar, e a síntese fora do jogo pode ser bem mais cuidadosa
+(filtros, estéreo, loops sem emenda) sem custo na hora de jogar.
+
+**Rever se.** Chegar áudio final (gravado ou comprado): basta substituir os arquivos.
+
+## TD-026 — Arte como arquivos trocáveis, pintados por script, e tema visual em dados
+
+**Origem.** V0.2, Milestone 14 (29/09/2026): a Bíblia de Arte "Lago Dourado" e o documento de 185
+referências visuais enviados pelo proprietário.
+
+**Decisão.** Toda imagem do jogo passa a ser um arquivo PNG em `Assets/Resources/Arte`, carregado pelo
+nome (`ArtAssets`), no lugar dos desenhos feitos por código na hora de jogar — que continuam como
+reserva quando um arquivo falta. A arte provisória é pintada fora do jogo por scripts Python em
+`tools/Arte` (sementes fixas). As cores, o brilho e os tempos de efeito ficam num arquivo único,
+`Assets/Resources/Visual/tema_visual.json`, lido por `VisualTheme`. A interface continua em IMGUI
+(TD-017), com as fontes Fredoka e Nunito (SIL OFL, gratuitas) dentro do projeto. Ícones em PNG, não
+em SVG.
+
+**Por quê.** Arquivos seguem o processo da Bíblia (seção 39): o proprietário gera a arte final e ela
+entra trocando o arquivo, sem mexer em código nem em layout. Pintar fora do jogo permite uma arte bem
+mais rica (sombreado, reflexos, camadas) sem custo ao abrir o jogo, e dá para ver o resultado antes de
+abrir o Unity. O tema fica em `Resources`, e não em `/config`, porque é apresentação: não muda captura,
+preço nem batalha, e não precisa da validação nem das migrações do balanceamento. PNG porque o Unity
+não importa SVG sem um pacote extra.
+
+**Rever se.** A arte final chegar (basta trocar os arquivos), ou a interface migrar para UI Toolkit
+(o tema e os arquivos continuam valendo).
+
+## TD-027 — Paisagem viva em dados de apresentação, com um diretor de cenário
+
+**Origem.** V0.2, Milestone 14 (30/09/2026): as imagens "Vivo 01 a 18" do proprietário e o pedido dele
+de não fazer "spam" de animação (intervalos realistas entre os animais).
+
+**Decisão.** Onde fica cada planta e cada animal, o peso de cada animal e os tempos de descanso e de
+vento ficam em `Assets/Resources/Visual/paisagem_viva.json`, ao lado do tema visual. Um único
+`SceneDirector` por cena decide quando o próximo animal aparece: um por vez, descanso sorteado,
+sorteio por peso sem repetir o último, pausa com janela aberta, celebração ou viagem. Os efeitos
+pequenos que já existiam passam a pedir vez a ele. O comportamento de cada animal é código
+(`LivingAnimals`), porque é movimento, não número de balanceamento. Os quadros de animação são
+alinhados no script de recorte, não no jogo.
+
+**Por quê.** Um relógio central é o jeito simples de garantir o ritmo pedido: cada efeito com o seu
+próprio temporizador acaba coincidindo e parece "spam". Posições e frequências em arquivo deixam o
+proprietário ajustar sem mexer em código, como o tema. É apresentação pura, então fica em
+`Resources` e não em `/config` (mesma razão da TD-026). Alinhar os quadros no recorte mantém o jogo
+simples: todo quadro de um animal tem o mesmo tamanho e o mesmo pivô.
+
+**Rever se.** Entrarem muitos animais novos (talvez um animal por "faixa" da tela ao mesmo tempo) ou
+se o proprietário quiser horários do dia (hoje o ritmo não depende da hora).
+
+## TD-028 — Sucesso da Captura como segunda etapa do mesmo sorteio, com barcos e iscas em `equipment.json`
+
+**Origem.** V0.2, Milestone 15 (30/09/2026): `docs/SISTEMA_SUCESSO_PESCA.md`, do proprietário.
+
+**Decisão.** `CatchRules.Attempt` faz, na ordem: espécie, chance de sucesso, sorteio de puxar e, só se
+puxou, tamanho, XP e Conchas. Usa o mesmo `Rng` do ciclo (semente do save + sessão + ciclo), então a
+mesma tentativa sempre dá o mesmo resultado, online, offline ou refeita. Expedições continuam com
+`CatchRules.Roll` (sempre acha o peixe), porque a especificação só fala da pesca. A chance-base fica
+em cada raridade (`progression.json → rarity.tiers[].catch_success_base`), o piso e o teto em
+`fishing`, o bônus da vara num novo eixo `catch_success` de `rods.json`, e barcos e iscas num arquivo
+novo, `config/equipment.json`, que entrou em `GameConfigLoader.RequiredFiles`. O save passou para a
+versão 10 (`BoatId`, `OwnedBoatIds`, `BaitCharges`, `ActiveBaitId`, `Stats.Escapes`); saves antigos
+entram com o Barco Inicial e sem isca. A isca gasta a carga em `GearRules.SpendAttempt`, dentro da
+própria tentativa, e a compra e a troca de equipamento sincronizam a pesca antes (as tentativas já
+completas usam o equipamento antigo). O novo `IGearService` (`LocalGearService`) cuida de barcos e
+iscas. `CatchSimulator` roda N tentativas de uma combinação sem save; o Painel de Desenvolvimento e
+`tools/Simulador` usam o mesmo.
+
+Nos testes, `TestSupport.NewGame()` usa por padrão o config real com 100% de sucesso
+(`CertainCatchConfig`), porque os testes de tempo, Caixa, venda e demais sistemas contam um peixe por
+ciclo. Os testes do sucesso (`CatchSuccessTests`) e o de "Nível 10 em cerca de 2 h" usam o config de
+verdade.
+
+**Por quê.** Ser a segunda etapa do mesmo sorteio mantém a regra auditável e determinística, sem
+estado novo além do equipamento. Um arquivo próprio para o equipamento deixa barcos e iscas fáceis de
+achar e editar, e prepara barcos e iscas futuros sem inchar `rods.json`.
+
+**Rever se.** Entrar a raridade Épico (chance-base 24%, `OD-019`), bônus temporários
+(`bonus_temporario_configuravel` da especificação) ou multiplicadores por mapa.
+
+## TD-029 — Versão para testadores gerada por um menu do Editor, sem servidor
+
+**Decisão.** O menu **Fishing Idle → Gerar versão para amigos (Windows)** (`Editor/FriendsBuild.cs`)
+faz o build Windows 64 bits da cena principal em `/dist/FishingIdle_<versão>` (a versão vem de
+`version.json`), apaga a pasta de símbolos de depuração, grava um `LEIA-ME.txt` em PT-BR para o
+jogador (texto em `GameTexts.FriendsBuild`) e compacta tudo em `/dist/FishingIdle_<versão>.zip`, que é
+o arquivo a enviar. O `/config` entra no build pelo `ConfigBuildStep` de sempre. `/dist` não é
+versionado. O zip é feito com `ZipArchive`, para não depender de `ZipFile`.
+
+**Por quê.** O proprietário quer amigos testando já, e o MVP é local: cada amigo roda o jogo no
+próprio PC, com save próprio, sem servidor nem custo. Um clique evita errar a lista de cenas, o
+destino ou o nome do arquivo. Distribuição (Drive, WeTransfer, itch.io) e custos estão em
+`docs/ENVIAR_PARA_AMIGOS.md`.
+
+**Rever se.** O jogo for online (M12), entrar Mac ou celular, ou chegar a hora da Steam (taxa de
+US$ 100, decisão do proprietário).
+
+## TD-030 — O relógio das regras nunca volta
+
+**Decisão.** O `GameSession` entrega às regras um `SteadyClock`: "agora" é o maior horário em que este
+save já foi visto (`ClockHighWaterMs`, novo campo do save, 0 nos saves antigos). Se o relógio do PC
+voltar, o tempo do jogo fica parado até a hora real alcançar o ponto onde estava; se adiantar, continua
+valendo a TD-019 e os limites de cada sistema (24 h de pesca offline, Energia máxima da Arena).
+
+**Por quê.** A revisão de segurança de 06/10/2026 achou um truque grátis e repetível: voltar o relógio
+24 h, parar e recomeçar a pesca (ou reabrir o jogo) e voltar o relógio para a hora certa dava 24 h de
+pesca offline, sem custo. O mesmo valia para a Energia da Arena e as Expedições, porque cada sistema
+reancorava o seu tempo no horário atrasado. Corrigir no relógio fecha os três de uma vez e é o mesmo
+papel que o relógio do servidor fará na versão online.
+
+**Rever se.** O jogo ficar online (o relógio do servidor substitui este) ou aparecer jogador com o
+relógio do PC muito errado por engano (o jogo ficaria parado até a hora real alcançar o salto).
+
+## TD-031 — Tamanho das imagens: cópia menor no build e PNG sem perdas
+
+**Decisão.** `Editor/ArtImportSettings.cs` importa cada tipo de imagem no tamanho que a câmera mostra
+numa tela 1440p (peixes, Expedições e pescador até 512 px; cantos, margens, fotos dos mapas e barcos até
+1024 px; céu até 2048 px; o resto até 4096 px). `GetVersion()` sobe quando a regra muda, para o Unity
+reimportar. Os arquivos continuam na resolução do proprietário. `tools/Arte/otimizar_png.py` recomprime
+todos os PNG sem mudar nenhum pixel (oxipng) e deve rodar depois de qualquer script de arte.
+
+**Por quê.** A auditoria de 06/10/2026 mediu ~127 MB de arte e ~209 MB de texturas no build, a maior
+parte acima do que a tela mostra. O teto por tipo reduz o build e a memória para ~135–140 MB sem tocar
+na arte (a Bíblia de Arte manda guardar os originais grandes e deixar o Unity gerar os menores). A
+recompressão sem perdas tirou 20 MB do repositório.
+
+**Rever se.** Alguma imagem ficar borrada ao apertar Play (subir o teto daquele tipo), ou o jogo for
+para o celular (compressão ASTC e atlas).
+
+## TD-032 — 15 quadros por segundo com a janela em segundo plano
+
+**Decisão.** Com a janela sem foco, o `GameRoot` baixa para 15 quadros por segundo (desligando o vSync
+só nesse período) e volta a 60 ao receber o foco. Ao pausar (celular), anota o horário como no fechar
+do jogo.
+
+**Por quê.** O jogo continua pescando com a janela atrás de outras; desenhar 60 quadros que ninguém vê
+gasta CPU, GPU e bateria. No Android o `OnApplicationQuit` nem sempre é chamado.
+
+**Rever se.** Alguma animação depender de quadros e não de tempo.
+
+## TD-033 — Simulador de progressão em Python, por valor esperado
+
+**Decisão.** `tools/Progressao/simular_progressao.py` simula a subida do Nv.1 ao Nv.100 lendo `/config` e
+aplicando as fórmulas do `CatchRules` por valor esperado (sem sorteio), com perfis de jogador (aberto o dia
+todo, 4, 2 ou 1 visita por dia) e um comprador de equipamento simples. `tools/Progressao/calibrar_xp.py`
+usa esse simulador para gerar a tabela de XP do Pescador e gravá-la com `--gravar`.
+
+**Por quê.** O simulador em C# (`tools/Simulador`) precisa do .NET, que não está disponível em todo
+ambiente, e roda as regras completas devagar. Para decidir o ritmo de dias, o valor esperado dá o mesmo
+resultado em segundos e é fácil de rodar de novo depois de mexer no balanceamento.
+
+**Rever se.** As fórmulas do `CatchRules` mudarem (o simulador em Python copia as fórmulas), ou entrarem
+fontes de XP do Pescador fora da pesca.
+
+## TD-034 — Ferramentas de teste dentro do serviço de jogo
+
+**Decisão.** As ferramentas de teste do proprietário (A-123) são um serviço do jogo (`GameService/Dev`,
+`IDevToolsService`) que recusa tudo enquanto `GameSession.DevToolsEnabled` estiver desligado. O cliente liga
+essa chave só quando `Application.isEditor || Debug.isDebugBuild`. Avançar o tempo soma um deslocamento
+(`PlayerSave.DevTimeOffsetMs`) ao relógio real, por baixo do `SteadyClock` (`OffsetClock`).
+
+**Por quê.** Assim a tela continua só pedindo e mostrando (regra 2 do projeto), os testes usam as mesmas regras
+do jogo de verdade, e o build publicado não tem como dar recursos. Guardar o deslocamento no save evita que,
+ao reabrir o jogo, o relógio pareça ter voltado (o que congelaria o tempo pelo TD-030).
+
+**Rever se.** O jogo ganhar servidor: lá as ferramentas não existem (o servidor nunca liga a chave) e um
+painel de administração próprio, com registro, substitui este.
+
+## TD-035 — Arte compactada com crunch e mapa anterior liberado da memória
+
+**Decisão.** No build, as camadas dos mapas (menos os céus), a paisagem viva, os barcos e as varas usam a
+compressão com crunch (qualidade 90); céus e peixes continuam na compressão de alta qualidade. A arte desenhada
+bem menor que o arquivo (peixes, ícones, varas, barcos, iscas, Expedições) usa o filtro Kaiser nas cópias
+menores, que fica mais nítido. Ao viajar, as camadas do mapa anterior saem da memória (`ArtAssets.Release`).
+
+**Por quê.** A arte é quase todo o tamanho do jogo. Pela conta das texturas, o build cai de ~160 MB para ~75 MB
+sem mudar nenhum arquivo do proprietário (os PNG já estavam otimizados sem perda, TD-031). Os céus ficam fora
+porque degradês formam faixas com o crunch; os peixes, porque aparecem de perto nos cards.
+
+**Rever se.** Alguma camada aparecer com manchas no jogo: basta tirá-la de `ArtImportSettings.Crunched` ou subir a
+qualidade. A primeira importação depois desta mudança demora mais (o crunch é lento só nessa hora).
+
+
+## TD-036 — Som ambiente montado com gravações reais de terceiros (CC0 / Pixabay)
+
+**Decisão.** O som ambiente sintetizado (`ambiente_mar` e `ambiente_vento`) saiu do jogo. Cada mapa tem uma
+gravação de 2,5 minutos (`Resources/Sons/Ambiente/<mapa>_01.ogg`) montada por `tools/Audio/mixar_ambiente.py` com
+gravações reais de natureza (rio, ondas, vento, pássaros, sapos, gaivotas, baleias) do projeto de código aberto
+Moodist (github.com/remvze/moodist), que declara seus sons como CC0 ou Licença de Conteúdo Pixabay.
+
+**Por quê.** O proprietário achou o loop do mar horrível e pediu um som ambiente normal de escutar. O ambiente de
+trabalho não acessa sites de áudio (freesound, Pixabay), mas acessa o GitHub. As duas licenças permitem usar o som
+dentro de um jogo comercial sem crédito (não permitem revender o arquivo de áudio sozinho).
+
+**Rever se.** Antes do lançamento na Steam: conferir a origem de cada arquivo usado (o Moodist não lista a fonte
+de cada som) ou trocar pelas gravações definitivas; o sistema já aceita até 4 gravações por mapa.
+
+
+## TD-037 — Nunito SemiBold gerada da fonte variável e alturas de linha numa constante
+
+**Origem.** Pedido de legibilidade do proprietário (08/10/2026, GDD_ADENDO A-149).
+
+**Decisão.** O texto do corpo usa Nunito SemiBold (peso 600), um arquivo estático
+(`Resources/Fontes/Nunito-SemiBold.ttf`) gerado da fonte variável oficial (`Nunito[wght].ttf`, versão 3.602, a
+mesma dos arquivos Regular e Bold) por `tools/Arte/gerar_nunito_semibold.py`, com fontTools. Se o arquivo faltar,
+o jogo volta para a Regular. Os tamanhos pequenos ficam em constantes de `UiSkin` (`SmallSize` 15, `ChipSize` 14,
+`BadgeSize` 13) e a altura de uma linha do texto pequeno em `UiSkin.SmallLine` (20 px), usada pelas janelas no
+lugar do número solto. Texto direto sobre a arte usa `UiSkin.ShadowLabel` (sombra de 1 px a 50%).
+
+**Por quê.** A interface é desenhada numa tela virtual de 1080 px e reduzida; em janelas de 600–840 px a Regular
+ficava fina demais. O Google Fonts só publica a Nunito como fonte variável, e o Unity (fonte dinâmica no IMGUI) não
+escolhe peso de fonte variável: precisa de um arquivo por peso. A licença é a mesma (SIL OFL 1.1, sem nome
+reservado). Os rótulos do IMGUI cortam o que passa da caixa; com 15 px, a linha da Nunito mede cerca de 20,5 px e
+as letras com perna (g, p, ç) eram cortadas nas caixas de 18 px.
+
+**Rever se.** O proprietário quiser o texto mais fino ou mais grosso: trocar o arquivo em `UiSkin` (Regular, Bold
+ou outra instância gerada pelo script com outro peso), sem mexer nas janelas.
+
+
+## TD-038 — Troca de curva de XP do Pescador: XP total vira nível, nunca para baixo
+
+**Origem.** M24-T03 (A-153): o Pescador passa do Nv.100 para o Nv.1000 com uma tabela de XP nova.
+
+**Decisão.** `progression.json → fisher.xp_curve_version` numera a curva (1 = Nv.1 ao Nv.100, A-109; 2 = Nv.1 ao
+Nv.1000). O save, na versão 12, grava em `fisher_xp_curve_version` a curva em que o nível foi ganho (a migração da
+versão 11 grava 1; um jogador novo nasce com a curva atual). Ao carregar o save ou trocar o config, o `GameSession`
+chama `FisherLevelRules.MoveToCurrentCurve`: se a curva do save é mais antiga, o `fisher_xp_total` (todo XP já ganho,
+inclusive depois do nível máximo) é percorrido na tabela atual. Se o nível alcançado é maior ou igual ao que o jogador
+tinha, ele fica com esse nível e a sobra de XP; se é menor, mantém o nível e o XP dentro dele (limitado a 1 abaixo do
+próximo). Os marcos de Dólares cruzados na subida (A-111, até `up_to_level`) são pagos. Depois a curva do save passa a
+ser a atual, e a conversão não se repete.
+
+**Por quê.** A tabela antiga não precisa ficar no jogo: o XP total já estava no save e é a medida justa do esforço do
+jogador. A conversão depende do config (a tabela), por isso fica no `GameSession` e não no `SaveMigrations`, que só
+mexe na forma do arquivo. Nunca baixar o nível protege quem subiu com as ferramentas de teste (nível sem XP) e
+qualquer curva futura mais lenta.
+
+**Rever se.** Entrar uma fonte de XP do Pescador que não passe por `AddFisherXp` (por exemplo, a Tripulação do M24):
+ela também precisa somar em `fisher_xp_total`, senão uma troca de curva futura não a enxerga.
+
+## TD-039 — Tripulação: renda por relógio sem sorteio, cursor no save e preços em fórmula fechada
+
+**Origem.** M24-T05 (A-154): pescadores e barcos que rendem Moedas e XP por segundo, com o jogo aberto e fechado.
+
+**Decisão.**
+- `config/crew.json` (novo arquivo obrigatório em `GameConfigLoader.RequiredFiles`, validado) guarda os 10
+  tripulantes, o desbloqueio (10 do anterior), os marcos, o marco da frota e a regra offline. As regras puras ficam em
+  `GameService/Crew/CrewRules.cs`; o serviço em `LocalCrewService` (`ICrewService`: `GetCrew`, `Hire`, `Sync`,
+  `MarkSeen`, `TakeOfflineReport`).
+- **Sem sorteio.** A renda é determinística: unidades × renda base × 2^(marcos do tripulante) × 2^(marcos da frota),
+  em `double` por segundo. Não usa o `Rng`.
+- **Cursor no save** (`PlayerSave.Crew`, save versão 13): unidades por id, `LastCreditedAtMs` (até onde a renda já
+  foi paga), as frações de Moeda e de XP que ainda não deram 1 (`CoinsCarry`, `XpCarry`) e o total já rendido. `Sync`
+  paga de `LastCreditedAtMs` até agora e move o cursor; chamar duas vezes não paga duas vezes. O cliente chama a cada
+  1 s; a fração guardada faz a cadência não mudar nada.
+- **Aberto ou fechado** se decide pelo tamanho do intervalo: até `online_gap_seconds` (120 s) é jogo aberto (100%);
+  acima, é offline (100% até `full_rate_hours`, depois `reduced_rate` até `max_hours`) e gera o resumo do "Bem-vindo
+  de volta". Fica separado da pesca offline (TD-019), que tem o próprio teto.
+- **Relógio.** O serviço lê só o `IClock` da sessão, que nunca volta (TD-030): relógio voltado não paga nem tira nada.
+  Um cursor no futuro (save editado) é trazido para agora sem pagar. O teto offline limita o relógio adiantado.
+  Ferramentas de teste: "avançar tempo (online)" paga o período cheio como jogo aberto (`CreditAsOnline`).
+- **Gravação.** A renda sozinha grava o save no máximo a cada 30 s (contratar e fechar o jogo gravam na hora). Moedas
+  e cursor vão juntos no mesmo arquivo, então uma queda perde no máximo esses segundos de *gravação*, não de renda: no
+  próximo início o tempo é pago como offline.
+- **Preços em fórmula fechada:** b·r^n·(r^k − 1)/(r − 1) em `double`, arredondada para `long`. O que passa de
+  ~9,2 × 10^18 vira `CrewRules.Unaffordable` e nunca é pago (nem com `long.MaxValue` Moedas). "Máx" resolve k por
+  logaritmo e confere com a própria fórmula. Moedas e XP somam com teto em `long.MaxValue`.
+- **XP** entra por `FisherLevelRules.AddXp`, o mesmo caminho da pesca (que passou a usá-lo): soma em
+  `fisher_xp_total` (TD-038), sobe níveis e paga os Dólares dos marcos.
+- **Save v13**: a migração da v12 cria a Tripulação vazia com o cursor em 0; o serviço o põe em "agora" ao carregar,
+  então o tempo de antes da atualização não é pago.
+
+**Por quê.** É o modelo dos idles do gênero (AdVenture Capitalist, Idle Miner): custo geométrico, marcos que dobram,
+renda contínua. Renda por relógio + cursor é o mesmo princípio da pesca (TD-019): o cliente nunca diz "ganhei X".
+A fórmula fechada dá ×100 e Máx sem laço de compra e sem estouro.
+
+**Rever se.** O proprietário quiser que os marcos também multipliquem o XP, um limite de unidades, ou a Tripulação
+render enquanto o jogo está aberto mas parado por mais de 2 minutos (hoje isso conta como offline, com 100% nas 2
+primeiras horas de qualquer jeito). As Melhorias (M24-T06) vão multiplicar a renda: entram em `CrewRules.CoinsPerSecond`.
+
+## TD-040 — Melhorias: ids gerados, nível por id no save e multiplicadores aplicados onde a renda é calculada
+
+**Origem.** M24-T06 (A-155): Melhorias compradas com Moedas, as de tripulante (×2, uma vez) e as gerais (com níveis).
+
+**Decisão.**
+- `config/upgrades.json` (novo arquivo obrigatório em `GameConfigLoader.RequiredFiles`, validado junto com o
+  `crew.json`). As Melhorias de tripulante **não são listadas uma a uma**: o arquivo tem as linhas (`tiers`:
+  quantidade que libera, fator de preço, nome) e o complemento do nome de cada tripulante; o jogo gera uma por
+  tripulante e por linha, com id `crew_NN_up_K` (`UpgradeRules.CrewUpgradeId`). Um tripulante novo no `crew.json`
+  ganha as dele sozinho (o validador pede o complemento do nome). As gerais têm id próprio e um `effect` de uma lista
+  fechada (`UpgradeEffects`: `crew_coins`, `fish_sale`, `crew_offline_hours`, `crew_xp`, `fishing_coins`); o
+  validador recusa efeito desconhecido e id geral igual a um id gerado.
+- **Save v14**: `PlayerSave.Upgrades.Levels`, nível por id (a de tripulante fica 1 quando comprada). Só ids e níveis:
+  nomes, preços e efeitos vêm do arquivo, então um ajuste vale para o que já foi comprado. Nível acima do
+  `max_level` atual conta só até o máximo; id que saiu do arquivo fica guardado e é ignorado. A migração da v13 cria
+  a lista vazia.
+- **Regras puras** em `GameService/Upgrades/UpgradeRules.cs` (preço em `double` arredondado para `long`, com
+  `Unaffordable` acima de ~9,2 × 10^18, como a Tripulação; efeitos como multiplicadores 1 + Σ nível × valor). O
+  serviço `LocalUpgradeService` (`IUpgradeService`: `GetUpgrades`, `Buy`) só confere e grava.
+- **Onde os efeitos entram:** `CrewRules.MemberCoinsPerSecond / CoinsPerSecond / XpPerSecond` recebem o
+  `UpgradesState` (null = nenhuma; os testes e simuladores antigos continuam valendo); `CrewRules.OfflineSeconds`
+  recebe as horas a mais da Caixa Térmica. Na pesca, `CatchRules.SalePrice` ganhou um multiplicador (1 por padrão):
+  a Caixa usa Freguesia × Maré Boa (`UpgradeRules.BoxSaleMultiplier`) no cartão, na prévia e na venda; o Aquário usa
+  só a Freguesia; o Mercado (`MarketRules`) continua chamando sem multiplicador, com o preço base.
+- **Comprar credita a Tripulação antes** (`LocalCrewService.SettleNow`, interno): o que ela rendeu até ali fica na
+  taxa antiga, como ao contratar, e as Moedas que ela rendeu já podem pagar a compra.
+- A venda da Caixa passou a somar com teto em `long.MaxValue` (antes podia estourar com preços multiplicados).
+
+**Por quê.** Gerar as 50 Melhorias de tripulante a partir de 5 linhas deixa o arquivo pequeno e impossível de ficar
+torto (um tripulante sem Melhoria, um preço fora da curva). Aplicar os multiplicadores dentro das regras que já
+calculam a renda mantém uma só fonte de verdade: a janela, a barra, o "Bem-vindo de volta" e o servidor futuro veem o
+mesmo número. Guardar nível por id é o mesmo princípio da Tripulação (TD-039): o save guarda o que o jogador fez, o
+arquivo diz quanto vale.
+
+**Rever se.** O proprietário decidir o OD-056 (Maré Boa e Freguesia se sobrepõem), quiser Melhorias que mexem em
+outra coisa (por exemplo XP da pesca, renda offline da pesca) — basta um efeito novo em `UpgradeEffects` e no ponto de
+cálculo — ou quiser Melhorias de tripulante diferentes por tripulante (aí as linhas viram uma lista por tripulante).

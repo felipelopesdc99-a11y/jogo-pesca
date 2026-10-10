@@ -15,7 +15,7 @@
       "display_name": "Conchas",
       "is_primary": false,
       "spendable_in_v0_1": false,
-      "note": "Ganháveis na V0.1, mas de propósito ainda não têm onde ser gastas. Não podem ser usadas para melhorar varas nem peixes."
+      "note": "Na V0.1 não tinham onde ser gastas. Desde a V0.2 compram barcos e iscas (equipment.json, docs/SISTEMA_SUCESSO_PESCA.md). Continuam sem melhorar varas nem peixes."
     },
     {
       "id": "honor",
@@ -26,19 +26,28 @@
     }
   ],
   "npc_fish_sale": {
-    "formula": "arredondar(base_sale_value_coins × multiplicador_de_raridade × influência_do_tamanho)",
+    "formula": "arredondar(base_sale_value_coins × multiplicador_de_raridade × influência_do_tamanho × price_multiplier)",
     "reimburses_invested_fish_xp": false,
-    "minimum_price_coins": 1
+    "minimum_price_coins": 1,
+    "price_multiplier": 1.0,
+    "price_multiplier_note": "Ajuste geral de todos os preços de venda (1 = valores do catálogo). Foi 0,5 por algumas horas em 02/10/2026 e voltou a 1: melhorar varas e barcos já pede bastante."
   },
   "shells": {
     "source": "fishing_only_in_v0_1",
-    "base_drop_chance_per_catch": 0.05,
+    "base_drop_chance_per_catch": 0.07,
+    "base_drop_chance_note": "Era 0,05; dobrou para 0,1 junto com a Chance de Sucesso da Captura, porque só peixe puxado dá Conchas. Em 02/10/2026 caiu para 0,07 (A-099): as Conchas ficaram um pouco mais difíceis, agora que todo equipamento pede Conchas. A Vara Inicial também passa a dar Conchas.",
     "amount_per_drop": {
       "min": 1,
       "max": 2
     },
     "starter_rod_generates_shells": false,
     "rod_bonus_axis": "shell_yield"
+  },
+  "currency_trade": {
+    "note": "Venda de Conchas e Dólares entre jogadores reais, por Moedas (A-101). No jogo local só dá para anunciar e cancelar: ninguém compra até o jogo ser online.",
+    "max_active_listings_per_player": 5,
+    "completed_sale_fee_ratio": 0.03,
+    "minimum_price_coins": 1
   },
   "market_fixed_price": {
     "max_active_listings_per_player": 5,
@@ -70,9 +79,37 @@
     "seller_cancellation_without_bids": false,
     "max_auctions_a_buyer_can_join": null
   },
+  "fishing_box": {
+    "capacity": 1500,
+    "capacity_note": "OD-025 (decisão do proprietário, 07/10/2026): a Caixa de Pesca guarda até capacity peixes (cabe um dia inteiro de pesca offline). Cheia, a pesca não puxa mais peixes (nem gasta isca) até o jogador vender ou guardar algum. Peixes achados em Expedição ou retirados do Mercado ainda entram. 0 = sem limite.",
+    "bulk_sale_protection": {
+      "note": "Peixes que disparam a confirmação única \"Revisar peixes / Confirmar\" quando entram numa venda da Caixa de Pesca (seção 11 do GDD). Por raridade e por categoria de tamanho.",
+      "rarities": [
+        "rare",
+        "epic",
+        "legendary",
+        "mythic"
+      ],
+      "size_categories": [
+        "exceptional",
+        "perfect"
+      ]
+    }
+  },
   "aquarium": {
     "hard_capacity": 100,
     "expansion_allowed": false,
     "fishing_box_keeps_receiving_when_full": true
+  },
+  "vip": {
+    "note": "VIP (A-110, decisão do proprietário em 07/10/2026): comprado com Dólares do jogo, dá XP de Pescador a mais na pesca offline por um tempo. Comprar de novo com o VIP ativo soma os dias ao fim do atual.",
+    "price_dollars": 100,
+    "duration_days": 30,
+    "offline_fisher_xp_bonus": 0.5,
+    "dollars_real_money_reference": {
+      "dollars": 100,
+      "price_brl": 4.99,
+      "note": "Referência do proprietário: 100 Dólares = R$ 4,99. A compra com dinheiro real só existe quando o jogo tiver uma loja (Steam, Google Play); o jogo ainda não lê este valor."
+    }
   }
 }

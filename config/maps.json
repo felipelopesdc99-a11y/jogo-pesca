@@ -2,9 +2,10 @@
   "config_file": "maps",
   "config_schema_version": 1,
   "balance_status": "PROVISÓRIO",
-  "description": "Mapas jogáveis, seus pools de peixes com pesos de captura, requisitos de desbloqueio e regras de viagem. Só os Mapas 1 e 2 são jogáveis na V0.1; a escada de desbloqueio dos Mapas 3 a 10 fica registrada apenas como referência e nenhum mapa além do 2 está definido aqui.",
+  "description": "Mapas jogáveis, seus pools de peixes com pesos de captura, requisitos de desbloqueio e regras de viagem. Mapas 1 e 2 desde a V0.1; mapas 3 e 4 desde a V0.2 (docs/PROGRESSAO_MAPAS_3_4.md). A escada dos Mapas 5 a 10 fica registrada apenas como referência.",
+  "catch_success_rebalance_note": "30/09/2026: o peso do Aruanã no Rio Selvagem foi de 5 para 10 com a Chance de Sucesso da Captura (docs/SISTEMA_SUCESSO_PESCA.md). Ele morde 1% das vezes, mas só é puxado em cerca de 40% delas, e o primeiro Raro continua chegando perto do tempo de antes.",
   "travel": {
-    "duration_seconds": 30,
+    "duration_seconds": 10,
     "fishing_paused_during_travel": true,
     "requires_manual_confirmation": true,
     "auto_travel_on_level_up": false,
@@ -13,7 +14,7 @@
     "cooldown_seconds": 0
   },
   "unlock_ladder_reference": {
-    "note": "Escada de progressão da seção 17 do GDD. Os Mapas 3 a 10 estão fora do escopo da V0.1 e de propósito não são definidos abaixo.",
+    "note": "Escada de progressão da seção 17 do GDD. Os Mapas 5 a 10 seguem docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md e entram no jogo aos poucos.",
     "fisher_level_per_map": {
       "map_01": 1,
       "map_02": 10,
@@ -97,7 +98,8 @@
           "catch_weight": 20
         }
       ],
-      "fish_pool_weight_total": 1000
+      "fish_pool_weight_total": 1000,
+      "expedition_reward_multiplier": 1
     },
     {
       "id": "map_02",
@@ -154,10 +156,513 @@
         },
         {
           "species_id": "aruana",
+          "catch_weight": 10
+        }
+      ],
+      "fish_pool_weight_total": 1000,
+      "expedition_reward_multiplier": 8.5
+    },
+    {
+      "id": "map_03",
+      "display_name": "Pantanal Dourado",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 20,
+      "minimum_rod_tier": 1,
+      "visual_theme": {
+        "summary": "Grande área alagada e aberta, água calma com reflexos dourados, ilhas baixas de vegetação, gramíneas e árvores espaçadas, céu amplo e névoa leve no horizonte. Amplitude viva.",
+        "water": "alagada e calma",
+        "light": "dourada, manhã cedo",
+        "mood": "riqueza natural"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "mandi_amarelo",
+          "catch_weight": 220
+        },
+        {
+          "species_id": "pacu_peva",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "jundia",
+          "catch_weight": 170
+        },
+        {
+          "species_id": "jurupensem",
+          "catch_weight": 150
+        },
+        {
+          "species_id": "mucum",
+          "catch_weight": 120
+        },
+        {
+          "species_id": "piavucu",
+          "catch_weight": 102
+        },
+        {
+          "species_id": "piraputanga",
+          "catch_weight": 15
+        },
+        {
+          "species_id": "jurupoca",
+          "catch_weight": 15
+        },
+        {
+          "species_id": "armado",
+          "catch_weight": 15
+        },
+        {
+          "species_id": "barbado",
+          "catch_weight": 3
+        }
+      ],
+      "expedition_reward_multiplier": 13.5
+    },
+    {
+      "id": "map_04",
+      "display_name": "Estuário das Marés",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 30,
+      "minimum_rod_tier": 2,
+      "visual_theme": {
+        "summary": "Canal de maré largo, raízes de mangue nas margens, bancos de areia e lama, água verde-azulada, abertura para o mar ao fundo e névoa salgada leve. Fronteira nova.",
+        "water": "salobra, canal de maré",
+        "light": "quente, fim de tarde",
+        "mood": "transição de mundo"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "parati",
+          "catch_weight": 250
+        },
+        {
+          "species_id": "tainha",
+          "catch_weight": 220
+        },
+        {
+          "species_id": "carapeba",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "corvina",
+          "catch_weight": 150
+        },
+        {
+          "species_id": "bagre_marinho",
+          "catch_weight": 124
+        },
+        {
+          "species_id": "robalo_peva",
+          "catch_weight": 20
+        },
+        {
+          "species_id": "pescada_amarela",
+          "catch_weight": 20
+        },
+        {
+          "species_id": "xareu",
+          "catch_weight": 20
+        },
+        {
+          "species_id": "camurupim",
+          "catch_weight": 3
+        },
+        {
+          "species_id": "mero",
+          "catch_weight": 3
+        }
+      ],
+      "expedition_reward_multiplier": 29
+    },
+    {
+      "id": "map_05",
+      "display_name": "Costa de Coral",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 40,
+      "minimum_rod_tier": 2,
+      "visual_theme": {
+        "summary": "Costa tropical brasileira rasa, água turquesa muito limpa, recifes de coral sob a superfície, praia de areia clara com coqueiros e falésias baixas ao fundo. Primeiro mapa de mar.",
+        "water": "mar raso e turquesa sobre recife",
+        "light": "manhã clara e quente, sol alto à esquerda",
+        "mood": "chegada ao mar"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "sargo",
+          "catch_weight": 220
+        },
+        {
+          "species_id": "salema",
+          "catch_weight": 200
+        },
+        {
+          "species_id": "peixe_porco",
+          "catch_weight": 180
+        },
+        {
+          "species_id": "pampo",
+          "catch_weight": 165
+        },
+        {
+          "species_id": "sargentinho",
+          "catch_weight": 145
+        },
+        {
+          "species_id": "ariaco",
+          "catch_weight": 30
+        },
+        {
+          "species_id": "cioba",
+          "catch_weight": 25
+        },
+        {
+          "species_id": "badejo",
+          "catch_weight": 20
+        },
+        {
+          "species_id": "dentao",
+          "catch_weight": 8
+        },
+        {
+          "species_id": "caranha",
+          "catch_weight": 7
+        }
+      ],
+      "expedition_reward_multiplier": 50
+    },
+    {
+      "id": "map_06",
+      "display_name": "Arquipélago do Sol",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 50,
+      "minimum_rod_tier": 3,
+      "visual_theme": {
+        "summary": "Arquipélago tropical brasileiro em mar aberto: ilhas rochosas altas com vegetação, canais azul-cobalto e ondulação visível. Primeiro mar fundo.",
+        "water": "mar fundo azul-cobalto",
+        "light": "começo da tarde, dourado limpo",
+        "mood": "longe da costa, peixes troféu"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "olhete",
+          "catch_weight": 210
+        },
+        {
+          "species_id": "peixe_galo",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "beijupira",
+          "catch_weight": 175
+        },
+        {
+          "species_id": "bonito_cachorro",
+          "catch_weight": 155
+        },
+        {
+          "species_id": "serra",
+          "catch_weight": 135
+        },
+        {
+          "species_id": "cavala_verdadeira",
+          "catch_weight": 55
+        },
+        {
+          "species_id": "olho_de_boi",
+          "catch_weight": 45
+        },
+        {
+          "species_id": "dourado_do_mar",
+          "catch_weight": 16
+        },
+        {
+          "species_id": "atum_amarelo",
+          "catch_weight": 14
+        },
+        {
+          "species_id": "veleiro",
           "catch_weight": 5
         }
       ],
-      "fish_pool_weight_total": 1000
+      "expedition_reward_multiplier": 113
+    },
+    {
+      "id": "map_07",
+      "display_name": "Corrente Azul",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 60,
+      "minimum_rod_tier": 3,
+      "visual_theme": {
+        "summary": "Mar aberto sem terra à vista, ondulações longas, água azul intensa e horizonte enorme.",
+        "water": "mar aberto azul intenso",
+        "light": "fim de tarde dourado",
+        "mood": "liberdade e distância"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "bicuda",
+          "catch_weight": 230
+        },
+        {
+          "species_id": "bonito_pintado",
+          "catch_weight": 210
+        },
+        {
+          "species_id": "agulha_branca",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "cavalinha",
+          "catch_weight": 170
+        },
+        {
+          "species_id": "atum_patudo",
+          "catch_weight": 50
+        },
+        {
+          "species_id": "albacora_branca",
+          "catch_weight": 45
+        },
+        {
+          "species_id": "peixe_lua",
+          "catch_weight": 40
+        },
+        {
+          "species_id": "espadarte",
+          "catch_weight": 30
+        },
+        {
+          "species_id": "marlim_branco",
+          "catch_weight": 25
+        },
+        {
+          "species_id": "marlim_azul",
+          "catch_weight": 10
+        }
+      ],
+      "expedition_reward_multiplier": 215
+    },
+    {
+      "id": "map_08",
+      "display_name": "Banco das Baleias",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 70,
+      "minimum_rod_tier": 4,
+      "visual_theme": {
+        "summary": "Banco oceânico com ilhotas rochosas muito distantes, água azul-esverdeada escura e baleias ao longe.",
+        "water": "oceano profundo sobre bancos",
+        "light": "amanhecer frio",
+        "mood": "equipamento profissional"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "pargo_rosa",
+          "catch_weight": 200
+        },
+        {
+          "species_id": "namorado",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "batata",
+          "catch_weight": 175
+        },
+        {
+          "species_id": "congro_rosa",
+          "catch_weight": 155
+        },
+        {
+          "species_id": "cherne",
+          "catch_weight": 90
+        },
+        {
+          "species_id": "cacao_anjo",
+          "catch_weight": 80
+        },
+        {
+          "species_id": "tubarao_lixa",
+          "catch_weight": 48
+        },
+        {
+          "species_id": "arraia_chita",
+          "catch_weight": 42
+        },
+        {
+          "species_id": "tubarao_martelo",
+          "catch_weight": 11
+        },
+        {
+          "species_id": "raia_manta",
+          "catch_weight": 9
+        }
+      ],
+      "expedition_reward_multiplier": 485
+    },
+    {
+      "id": "map_09",
+      "display_name": "Talude Noturno",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 80,
+      "minimum_rod_tier": 4,
+      "visual_theme": {
+        "summary": "Oceano profundo à noite, sem costa, água quase preta e brilho discreto de plâncton.",
+        "water": "mar profundo noturno",
+        "light": "crepúsculo azul e noite limpa",
+        "mood": "mistério sem medo"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "escolar",
+          "catch_weight": 230
+        },
+        {
+          "species_id": "peixe_espada",
+          "catch_weight": 210
+        },
+        {
+          "species_id": "abrotea_fundo",
+          "catch_weight": 180
+        },
+        {
+          "species_id": "congro_negro",
+          "catch_weight": 80
+        },
+        {
+          "species_id": "peixe_lanceta",
+          "catch_weight": 75
+        },
+        {
+          "species_id": "quimera",
+          "catch_weight": 65
+        },
+        {
+          "species_id": "tubarao_lanterna",
+          "catch_weight": 65
+        },
+        {
+          "species_id": "peixe_opah",
+          "catch_weight": 60
+        },
+        {
+          "species_id": "tubarao_duende",
+          "catch_weight": 18
+        },
+        {
+          "species_id": "tubarao_seis_guelras",
+          "catch_weight": 17
+        }
+      ],
+      "expedition_reward_multiplier": 880
+    },
+    {
+      "id": "map_10",
+      "display_name": "Abismo Atlântico",
+      "playable_in_v0_1": false,
+      "unlock_fisher_level": 90,
+      "minimum_rod_tier": 5,
+      "visual_theme": {
+        "summary": "Mar oceânico extremamente profundo sob céu estrelado, água negro-azulada e fosforescência muito discreta.",
+        "water": "abismo negro-azulado",
+        "light": "noite profunda",
+        "mood": "destino final"
+      },
+      "available_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary",
+        "mythic"
+      ],
+      "fish_pool_weight_total": 1000,
+      "fish_pool": [
+        {
+          "species_id": "peixe_machado",
+          "catch_weight": 190
+        },
+        {
+          "species_id": "peixe_dragao",
+          "catch_weight": 175
+        },
+        {
+          "species_id": "peixe_vibora",
+          "catch_weight": 155
+        },
+        {
+          "species_id": "enguia_pelicano",
+          "catch_weight": 130
+        },
+        {
+          "species_id": "peixe_ogro",
+          "catch_weight": 120
+        },
+        {
+          "species_id": "peixe_pescador_abissal",
+          "catch_weight": 85
+        },
+        {
+          "species_id": "quimera_azul",
+          "catch_weight": 75
+        },
+        {
+          "species_id": "tubarao_cobra",
+          "catch_weight": 36
+        },
+        {
+          "species_id": "peixe_fita_gigante",
+          "catch_weight": 32
+        },
+        {
+          "species_id": "tubarao_boca_grande",
+          "catch_weight": 2
+        }
+      ],
+      "expedition_reward_multiplier": 2000
     }
   ]
 }

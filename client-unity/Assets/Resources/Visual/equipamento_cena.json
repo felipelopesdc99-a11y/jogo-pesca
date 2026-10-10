@@ -1,0 +1,135 @@
+{
+  "note": "Gerado por tools/Arte/equipamento_na_cena.py. Barco, vara e isca equipados na cena (GDD_ADENDO A-096).",
+  "fisherman": {
+    "art": "Cena/pescador",
+    "height": 1.66,
+    "pivot_u": 0.255,
+    "pivot_v": 0.1,
+    "hands_u": 0.8855,
+    "hands_v": 0.523,
+    "hands_art": "Cena/pescador_maos"
+  },
+  "boats": [
+    {
+      "id": "boat_01",
+      "art": "Barcos/boat_01",
+      "front": "Barcos/Cena/boat_01_frente",
+      "width": 3.9,
+      "pivot_y": 0.2651,
+      "seat_x": -0.693,
+      "seat_y": 0.334
+    },
+    {
+      "id": "boat_02",
+      "art": "Barcos/boat_02",
+      "front": "Barcos/Cena/boat_02_frente",
+      "width": 4.1,
+      "pivot_y": 0.2876,
+      "seat_x": -0.729,
+      "seat_y": 0.276
+    },
+    {
+      "id": "boat_03",
+      "art": "Barcos/boat_03",
+      "front": "Barcos/Cena/boat_03_frente",
+      "width": 4.3,
+      "pivot_y": 0.2611,
+      "seat_x": -0.386,
+      "seat_y": 0.379
+    },
+    {
+      "id": "boat_04",
+      "art": "Barcos/boat_04",
+      "front": "Barcos/Cena/boat_04_frente",
+      "width": 4.6,
+      "pivot_y": 0.1518,
+      "seat_x": -0.952,
+      "seat_y": 0.482
+    },
+    {
+      "id": "boat_05",
+      "art": "Barcos/boat_05",
+      "front": "Barcos/Cena/boat_05_frente",
+      "width": 5.3,
+      "pivot_y": 0.112,
+      "seat_x": -1.097,
+      "seat_y": 0.505
+    }
+  ],
+  "rods": [
+    {
+      "id": "rod_00_starter",
+      "art": "Varas/Cena/rod_00_starter",
+      "butt_u": 0.0046,
+      "butt_v": 0.8368,
+      "tip_u": 0.9973,
+      "tip_v": 0.7965,
+      "grip": 0.12
+    },
+    {
+      "id": "rod_01",
+      "art": "Varas/Cena/rod_01",
+      "butt_u": 0.0046,
+      "butt_v": 0.8371,
+      "tip_u": 0.9973,
+      "tip_v": 0.7903,
+      "grip": 0.12
+    },
+    {
+      "id": "rod_02",
+      "art": "Varas/Cena/rod_02",
+      "butt_u": 0.0048,
+      "butt_v": 0.8119,
+      "tip_u": 0.9973,
+      "tip_v": 0.7769,
+      "grip": 0.12
+    },
+    {
+      "id": "rod_03",
+      "art": "Varas/Cena/rod_03",
+      "butt_u": 0.0045,
+      "butt_v": 0.871,
+      "tip_u": 0.9968,
+      "tip_v": 0.8405,
+      "grip": 0.12
+    },
+    {
+      "id": "rod_04",
+      "art": "Varas/Cena/rod_04",
+      "butt_u": 0.0048,
+      "butt_v": 0.8534,
+      "tip_u": 0.997,
+      "tip_v": 0.8138,
+      "grip": 0.12
+    },
+    {
+      "id": "rod_05",
+      "art": "Varas/Cena/rod_05",
+      "butt_u": 0.0049,
+      "butt_v": 0.8791,
+      "tip_u": 0.997,
+      "tip_v": 0.8459,
+      "grip": 0.12
+    }
+  ],
+  "baits": [
+    {
+      "id": "bait_01",
+      "color": "#9A6A4A",
+      "width": 0.22,
+      "art": "Iscas/bait_01"
+    },
+    {
+      "id": "bait_02",
+      "color": "#E0803C",
+      "width": 0.22,
+      "art": "Iscas/bait_02"
+    },
+    {
+      "id": "bait_03",
+      "color": "#E9BE45",
+      "width": 0.22,
+      "art": "Iscas/bait_03"
+    }
+  ]
+}

@@ -40,14 +40,19 @@
     "attacker_victory_swaps_positions": true,
     "intermediate_ranks_shift": false,
     "attacker_defeat_changes_rank": false,
-    "defender_can_move_while_offline": true
+    "defender_can_move_while_offline": true,
+    "top_shown": 100,
+    "page_size": 10,
+    "view_note": "Tela do Ranking (A-112, pedido do proprietário em 07/10/2026): pódio com os 3 primeiros e lista em páginas de page_size jogadores, até o top top_shown. Quem está abaixo vê só a própria posição."
   },
   "honor": {
     "attacker_victory_gain": 12,
     "successful_defense_gain": 8,
     "defeat_loss": 4,
+    "defense_defeat_loss": 2,
     "minimum_balance": 0,
-    "cap_on_defense_gains": null
+    "cap_on_defense_gains": null,
+    "note": "defense_defeat_loss (OD-024, decisão do proprietário em 07/10/2026): quem perde uma defesa perde um pouco de Honra, metade do que perde atacando."
   },
   "combat": {
     "stats": [
@@ -144,7 +149,28 @@
   },
   "shop": {
     "currency": "honor",
-    "note": "Cadastrar um estoque mínimo e configurável. Não implementar sistemas de itens futuros só para preencher a loja.",
-    "items": []
+    "note": "OD-009 (decisão do proprietário, 07/10/2026): a Loja da Arena vende Conchas e Dólares por Honra. reward.currency é \"shells\" ou \"dollars\"; weekly_limit 0 = sem limite (conta compras nos últimos 7 dias).",
+    "items": [
+      {
+        "id": "arena_shells_20",
+        "display_name": "Saco de Conchas",
+        "price_honor": 100,
+        "reward": {
+          "currency": "shells",
+          "amount": 20
+        },
+        "weekly_limit": 0
+      },
+      {
+        "id": "arena_dollars_5",
+        "display_name": "Bolsa de Dólares",
+        "price_honor": 300,
+        "reward": {
+          "currency": "dollars",
+          "amount": 5
+        },
+        "weekly_limit": 2
+      }
+    ]
   }
 }

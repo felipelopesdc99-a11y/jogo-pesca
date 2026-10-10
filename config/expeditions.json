@@ -44,7 +44,7 @@
       "display_name": "Saída Rápida",
       "duration_minutes": 30,
       "recommended_strength": 250,
-      "reward_coins": 120,
+      "reward_coins": 300,
       "fish_find_chance": 0.02
     },
     {
@@ -52,7 +52,7 @@
       "display_name": "Volta na Margem",
       "duration_minutes": 60,
       "recommended_strength": 450,
-      "reward_coins": 260,
+      "reward_coins": 650,
       "fish_find_chance": 0.04
     },
     {
@@ -60,7 +60,7 @@
       "display_name": "Águas Profundas",
       "duration_minutes": 180,
       "recommended_strength": 800,
-      "reward_coins": 900,
+      "reward_coins": 2250,
       "fish_find_chance": 0.1
     },
     {
@@ -68,7 +68,7 @@
       "display_name": "Viagem Longa",
       "duration_minutes": 360,
       "recommended_strength": 1400,
-      "reward_coins": 2000,
+      "reward_coins": 5000,
       "fish_find_chance": 0.18
     }
   ],
@@ -76,5 +76,6 @@
     "online": "toast_then_reward_result",
     "offline": "pending_completion_on_next_login",
     "highlight_found_fish": true
-  }
+  },
+  "reward_scaling_note": "A-114 (decisão do proprietário, 07/10/2026): reward_coins é o valor no Mapa 1; a recompensa é multiplicada pelo expedition_reward_multiplier do mapa de onde o Cardume saiu (maps.json). Na Força Recomendada, uma Expedição rende cerca de metade do que o mesmo tempo de pesca offline renderia no mapa. Multiplicadores calculados com tools/Progressao/simular_progressao.py (valor esperado da venda por tentativa com a vara mínima do mapa)."
 }
