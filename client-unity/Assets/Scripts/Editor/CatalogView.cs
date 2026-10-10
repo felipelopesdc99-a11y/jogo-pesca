@@ -87,7 +87,6 @@ namespace FishingIdle.Editor
                     {
                         var card = new Card { Title = rod.DisplayName, Subtitle = rod.Id + " · " + GameTexts.Profile.Tier(rod.Tier), Art = ArtAssets.Texture("Varas/" + rod.Id) };
                         card.Lines.Add(T.CatalogPrice(Format.Short(rod.Acquisition?.PurchaseCostCoins ?? 0), Format.Number(rod.Acquisition?.PurchaseCostShells ?? 0)));
-                        card.Lines.Add(T.CatalogUnlock(rod.Acquisition?.UnlockFisherLevel ?? 1));
                         card.Lines.Add(T.CatalogMaxLevel(config.RodMaxLevel(rod)));
                         card.Lines.Add(T.CatalogCatches(string.Join(", ", (rod.CanCatchRarities ?? new List<string>()).Select(r => config.TryGetRarity(r, out var t) ? t.DisplayName : r))));
                         yield return card;

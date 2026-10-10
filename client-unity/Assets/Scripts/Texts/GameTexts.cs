@@ -648,7 +648,6 @@ namespace FishingIdle.Texts
             public const string MaxLevel = "Nível máximo";
 
             public static string Price(string coins) => coins + " Moedas";
-            public static string Requires(int level) => "Disponível no Nível " + level;
             public static string Bought(string rod) => "Vara " + rod + " comprada e equipada!";
             public static string Upgraded(string rod, int level) => rod + " agora está no Nível " + level + ".";
             public static string RodSold(string coins) => "Vara vendida por " + coins + " Moedas.";
@@ -666,7 +665,6 @@ namespace FishingIdle.Texts
             // "Balcão do Píer" (A-150).
             public const string OnCounter = "no balcão";
             public const string OwnedBoat = "Já é seu";
-            public static string LevelTag(int level) => "Nv. " + Format.Number(level);
             public static string Position(int index, int total) => Format.Number(index) + " de " + Format.Number(total);
             public static string Info(string tabNote, string chanceNote) => tabNote + "\n\n" + chanceNote;
         }
@@ -1022,14 +1020,11 @@ namespace FishingIdle.Texts
                 case "RodTooWeakForMap": return "Sua vara não serve para este mapa. Compre uma vara melhor na Loja.";
                 case "NotEnoughCoins": return "Moedas insuficientes.";
                 case "RodNotForSale": return "Essa vara não está à venda.";
-                case "RodLocked": return "Você ainda não tem nível para comprar esta vara.";
                 case "RodAlreadyOwned": return "Você já tem esta vara no Inventário.";
                 case "BoatNotFound": return "Esse barco não existe.";
-                case "BoatLocked": return "Você ainda não tem nível para comprar este barco.";
                 case "BoatAlreadyOwned": return "Você já tem este barco.";
                 case "BoatNotOwned": return "Compre este barco antes de usá-lo.";
                 case "BaitNotFound": return "Essa isca não existe.";
-                case "BaitLocked": return "Você ainda não tem nível para comprar esta isca.";
                 case "BaitNoCharges": return "Essa isca acabou. Compre mais na Loja.";
                 case "NotEnoughShells": return "Conchas insuficientes.";
                 case "NotEnoughDollars": return "Dólares insuficientes.";
@@ -1285,7 +1280,6 @@ namespace FishingIdle.Texts
             public const string GearBonus = "Bônus";
             public const string GearCoins = "Moedas";
             public const string GearShells = "Conchas";
-            public const string GearLevel = "Nível";
             public const string GearCharges = "Tentativas";
             public const string GearNote = "Bônus em pontos (0,05 = +5%). O barco de menor categoria é o inicial: todo jogador já tem e ele precisa custar 0. A isca gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline.";
             public const string SimulatorTitle = "Simulador de sucesso";

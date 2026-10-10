@@ -33,7 +33,7 @@ public sealed class DevToolsTests
         Assert.Equal(0, game.Session.Save.FisherXpTotal);
 
         Assert.Equal(50, game.DevTools.SetFisherLevel(50).Value);
-        Assert.Equal(100, game.DevTools.SetFisherLevel(500).Value);
+        Assert.Equal(game.Session.Config.Progression.Fisher.MaxLevel, game.DevTools.SetFisherLevel(5000).Value);
     }
 
     [Fact]

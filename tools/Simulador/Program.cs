@@ -223,7 +223,7 @@ public static class Program
                     // bought, and not in the 3 levels before the next rod (saving up for it).
                     var level = game.Player.GetPlayer().FisherLevel;
                     var nextRod = buyable.FirstOrDefault(r => !bought.Contains(r.Id));
-                    if (nextRod == null || level < nextRod.Acquisition.UnlockFisherLevel - 3)
+                    if (nextRod == null || level < LevelThatNeeds(config, nextRod) - 3)
                     {
                         foreach (var boat in game.Gear.GetGear().Boats.Where(x => !x.Owned && x.BuyBlocker == ServiceError.None))
                         {
@@ -670,20 +670,29 @@ public static class Program
         r.AppendLine();
         r.AppendLine("Preço dos barcos em horas de pesca no segundo mapa (Moedas e Conchas por hora da seção 1):");
         r.AppendLine();
-        r.AppendLine("| Barco | Bônus | Custo | Nível | Horas de pesca | Conchas |");
-        r.AppendLine("|---|---:|---:|---:|---:|---:|");
+        r.AppendLine("| Barco | Bônus | Custo | Horas de pesca | Conchas |");
+        r.AppendLine("|---|---:|---:|---:|---:|");
         foreach (var boat in boats.Skip(1))
         {
             var hours = after.CoinsPerHourMap2 > 0 ? boat.CostCoins / after.CoinsPerHourMap2 : 0;
             var shellHours = after.ShellsPerHourMap2 > 0 ? boat.CostShells / after.ShellsPerHourMap2 : 0;
             r.AppendLine("| " + boat.DisplayName + " | +" + Format.Percent(boat.CatchSuccessBonus, 0) + " | " + Format.Number(boat.CostCoins) + " Moedas + " + Format.Number(boat.CostShells) + " Conchas | "
-                         + boat.UnlockFisherLevel + " | " + Format.Decimal(hours, 1) + " h | " + (boat.CostShells > 0 ? Format.Decimal(shellHours, 1) + " h" : "—") + " |");
+                         + Format.Decimal(hours, 1) + " h | " + (boat.CostShells > 0 ? Format.Decimal(shellHours, 1) + " h" : "—") + " |");
         }
 
         r.AppendLine();
     }
 
     // ------------------------------------------------------------------ helpers
+
+    /// <summary>
+    /// The Fisher level of the first map that asks for this rod's tier. Items have no minimum level
+    /// (M24-T09), so the player saves up for a rod when the map that needs it is near.
+    /// </summary>
+    private static int LevelThatNeeds(GameConfig config, RodConfig rod)
+    {
+        return config.Maps.Maps.Where(m => m.MinimumRodTier >= rod.Tier).Select(m => m.UnlockFisherLevel).DefaultIfEmpty(int.MaxValue).Min();
+    }
 
     private static (LocalGame Game, ManualClock Clock) NewPlayer(GameConfig config, ulong seed)
     {

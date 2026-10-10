@@ -16,7 +16,7 @@ namespace FishingIdle.Game.UI
     /// <remarks>
     /// Layout: a navy plank wall behind everything with a turquoise beam on top; the tabs are small plaques hanging
     /// from the beam. On the left, the hook wall: one shelf per item, lying on two brass hooks, with a name plate and a
-    /// hanging tag (price, "JÁ É SUA", "EM USO" or a padlock with "Nv. X"). In the middle, the pier counter with a
+    /// hanging tag (price, "JÁ É SUA" or "EM USO"; items have no minimum level, M24-T09). In the middle, the pier counter with a
     /// pedestal and a soft aura where the chosen item rests; on the right, its sheet in the rope-framed card, with the
     /// bonuses as bars and Comprar / Usar. At the bottom, "Seu equipamento" in an open tackle box and the chance of
     /// pulling each rarity as five bobbers on the water.
@@ -39,14 +39,13 @@ namespace FishingIdle.Game.UI
             Free,
             Owned,
             InUse,
-            Locked,
         }
 
         /// <summary>One item on the hook wall, whatever the tab: only what the wall and the counter draw.</summary>
         private struct WallItem
         {
             public string Id, Name, Sub, Art, Icon, OwnedText;
-            public int Tier, Level;
+            public int Tier;
             public long Coins, Shells;
             public TagKind Tag;
             public bool Square, Turned;
@@ -83,12 +82,12 @@ namespace FishingIdle.Game.UI
         private static readonly Color TabTop = Rgb(0x1D4266), TabBottom = Rgb(0x173757), TabSeam = Rgb(0x0D2440), TabEdge = Rgb(0x2A5480);
         private static readonly Color PlateTop = Rgb(0x20435F), PlateBottom = Rgb(0x152F47), PlateEdge = Rgb(0x2F5F86);
         private static readonly Color Shelf = Rgb(0x25476B), Brass = Rgb(0xC9A45A), TagString = Rgb(0xD8CDB6), TagHole = Rgb(0x173244);
-        private static readonly Color TagDark = Rgb(0x0E3A40), TagLocked = Rgb(0x2A3646), TealLight = Rgb(0x3AD6D2), TealInk = Rgb(0x06313A);
+        private static readonly Color TagDark = Rgb(0x0E3A40), TealLight = Rgb(0x3AD6D2), TealInk = Rgb(0x06313A);
         private static readonly Color CounterTop = Rgb(0x2A5A86), CounterMid = Rgb(0x183A5E), CounterBottom = Rgb(0x0E2442);
         private static readonly Color BoxTop = Rgb(0x2F6A7A), BoxBottom = Rgb(0x1F4F5E), BoxEdge = Rgb(0x133A46), LidTop = Rgb(0x3A7D8E), LidBottom = Rgb(0x2A6474);
         private static readonly Color Well = Rgb(0x0B2230), BoxInk = Rgb(0xE9FBFA), WaterTop = Rgb(0x0F2A47), WaterA = Rgb(0x0D3A5C), WaterB = Rgb(0x0A2A48);
         private static readonly Color WaterLine = Rgb(0x1B5D7A), BobberWhite = Rgb(0xF4F4F4), BobberBand = Rgb(0x2A3646), Antenna = Rgb(0xDDDDDD);
-        private static readonly Color Silhouette = new Color(0.02f, 0.05f, 0.09f, 0.75f), Ghost = new Color(0.62f, 0.68f, 0.75f, 0.13f);
+        private static readonly Color Ghost = new Color(0.62f, 0.68f, 0.75f, 0.13f);
         private static readonly Color Lying = new Color(0.45f, 0.50f, 0.58f, 0.6f);
 
         private readonly GameRoot _root;
@@ -225,9 +224,9 @@ namespace FishingIdle.Game.UI
                         _items.Add(new WallItem
                         {
                             Id = boat.BoatId, Name = boat.Name, Sub = GameTexts.Gear.Bonus(Format.Percent(boat.Bonus, 0)),
-                            Art = "Barcos/" + boat.BoatId, Icon = Icons.Boat, Tier = boat.Tier, Level = boat.UnlockFisherLevel,
+                            Art = "Barcos/" + boat.BoatId, Icon = Icons.Boat, Tier = boat.Tier,
                             Coins = boat.CostCoins, Shells = boat.CostShells, OwnedText = GameTexts.Shop.OwnedBoat,
-                            Tag = boat.InUse ? TagKind.InUse : boat.Owned ? TagKind.Owned : boat.BuyBlocker == ServiceError.BoatLocked ? TagKind.Locked : TagKind.Price,
+                            Tag = boat.InUse ? TagKind.InUse : boat.Owned ? TagKind.Owned : TagKind.Price,
                         });
                     }
 
@@ -238,9 +237,9 @@ namespace FishingIdle.Game.UI
                         _items.Add(new WallItem
                         {
                             Id = bait.BaitId, Name = bait.Name, Sub = GameTexts.Gear.Bonus(Format.Percent(bait.Bonus, 0)),
-                            Art = "Iscas/" + bait.BaitId, Icon = Icons.Bait, Tier = bait.Tier, Level = bait.UnlockFisherLevel,
+                            Art = "Iscas/" + bait.BaitId, Icon = Icons.Bait, Tier = bait.Tier,
                             Coins = bait.CostCoins, Shells = bait.CostShells, Square = true,
-                            Tag = bait.InUse ? TagKind.InUse : bait.BuyBlocker == ServiceError.BaitLocked ? TagKind.Locked : TagKind.Price,
+                            Tag = bait.InUse ? TagKind.InUse : TagKind.Price,
                         });
                     }
 
@@ -252,9 +251,9 @@ namespace FishingIdle.Game.UI
                         _items.Add(new WallItem
                         {
                             Id = rod.RodId, Name = rod.Name, Sub = GameTexts.Profile.Tier(rod.Tier),
-                            Art = "Varas/" + rod.RodId, Icon = Icons.Rod, Tier = rod.Tier, Level = rod.UnlockFisherLevel,
+                            Art = "Varas/" + rod.RodId, Icon = Icons.Rod, Tier = rod.Tier,
                             Coins = rod.PriceCoins, Shells = rod.PriceShells, OwnedText = GameTexts.Shop.Owned, Turned = true,
-                            Tag = inUse ? TagKind.InUse : rod.Owned ? TagKind.Owned : rod.BuyBlocker == ServiceError.RodLocked ? TagKind.Locked : rod.IsFree ? TagKind.Free : TagKind.Price,
+                            Tag = inUse ? TagKind.InUse : rod.Owned ? TagKind.Owned : rod.IsFree ? TagKind.Free : TagKind.Price,
                         });
                     }
 
@@ -521,7 +520,7 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                DrawItemArt(skin, itemRect, item, angle, item.Tag == TagKind.Locked ? Silhouette : Color.white);
+                DrawItemArt(skin, itemRect, item, angle, Color.white);
             }
 
             return itemRect;
@@ -560,8 +559,6 @@ namespace FishingIdle.Game.UI
                     return width;
                 case TagKind.Free:
                     return skin.SmallGoldLine.CalcSize(new GUIContent(GameTexts.Shop.Free)).x;
-                case TagKind.Locked:
-                    return 18f + 4f + skin.SmallMuted.CalcSize(new GUIContent(GameTexts.Shop.LevelTag(item.Level))).x;
                 default:
                     return 18f + 4f + skin.PillText.CalcSize(new GUIContent(TagText(item))).x;
             }
@@ -572,7 +569,7 @@ namespace FishingIdle.Game.UI
             return (item.Tag == TagKind.InUse ? GameTexts.Gear.InUse : item.OwnedText ?? GameTexts.Shop.Owned).ToUpperInvariant();
         }
 
-        /// <summary>The tag hanging from the shelf: price, "JÁ É SUA" / "JÁ É SEU", "EM USO" or a padlock with "Nv. X".</summary>
+        /// <summary>The tag hanging from the shelf: price, "JÁ É SUA" / "JÁ É SEU" or "EM USO".</summary>
         private static void DrawTag(UiSkin skin, Rect col, WallItem item, float stringTop)
         {
             var content = TagContentWidth(skin, item);
@@ -585,7 +582,6 @@ namespace FishingIdle.Game.UI
             switch (item.Tag)
             {
                 case TagKind.InUse: fill = UiSkin.Accent; edge = UiSkin.Accent; ink = TealInk; break;
-                case TagKind.Locked: fill = TagLocked; edge = UiSkin.Border; ink = UiSkin.Muted; break;
                 case TagKind.Owned: fill = TagDark; edge = UiSkin.Accent; ink = TealLight; break;
                 default: fill = TagDark; edge = UiSkin.Accent; ink = UiSkin.Gold; break;
             }
@@ -615,10 +611,6 @@ namespace FishingIdle.Game.UI
                     break;
                 case TagKind.Free:
                     GUI.Label(line, GameTexts.Shop.Free, skin.SmallGoldLine);
-                    break;
-                case TagKind.Locked:
-                    skin.DrawIcon(new Rect(x, line.y + 1f, 18f, 18f), Icons.Lock, UiSkin.Gold);
-                    GUI.Label(new Rect(x + 22f, line.y, line.width - 22f, line.height), GameTexts.Shop.LevelTag(item.Level), skin.SmallMuted);
                     break;
                 default:
                     skin.DrawIcon(new Rect(x, line.y + 1f, 18f, 18f), Icons.Check, ink);
@@ -688,7 +680,7 @@ namespace FishingIdle.Game.UI
             // While it flies, the item is drawn by DrawFlight instead.
             if (!_hasSource || t >= FlightSeconds)
             {
-                DrawItemArt(skin, _heroRect, item, 0f, item.Tag == TagKind.Locked ? Silhouette : Color.white);
+                DrawItemArt(skin, _heroRect, item, 0f, Color.white);
             }
         }
 
@@ -750,7 +742,7 @@ namespace FishingIdle.Game.UI
             var centre = Bezier(from, control, to, e);
             var size = Vector2.Lerp(_flySource.size, _heroRect.size, e);
             var item = _items[selected];
-            var color = item.Tag == TagKind.Locked ? Silhouette : Color.white;
+            var color = Color.white;
             color.a *= Mathf.Lerp(0.4f, 1f, Mathf.Clamp01(u * 3f));
             DrawItemArt(skin, new Rect(centre.x - size.x / 2f, centre.y - size.y / 2f, size.x, size.y), item, Mathf.Lerp(_flyAngle, 0f, e), color);
         }
@@ -863,7 +855,6 @@ namespace FishingIdle.Game.UI
             y += 24f;
             var catches = rod.CanCatchMythic ? GameTexts.Profile.CatchesUpToMythic : rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare;
             y = WrappedLabel(new Rect(x, y, w, 0f), catches, skin.Small) + 4f;
-            RequireLine(skin, x, ref y, w, rod.UnlockFisherLevel, rod.BuyBlocker == ServiceError.RodLocked);
             y += 8f;
 
             // Bottom: price, then the button row.
@@ -921,7 +912,7 @@ namespace FishingIdle.Game.UI
             }
             else if (rod.BuyBlocker != ServiceError.None)
             {
-                Blocked(skin, button, rod.BuyBlocker, rod.BuyBlocker == ServiceError.RodLocked ? GameTexts.Shop.Requires(rod.UnlockFisherLevel) : null);
+                Blocked(skin, button, rod.BuyBlocker);
             }
             else if (skin.IconButton(button, Icons.Buy, rod.IsFree ? GameTexts.Shop.ClaimFree : GameTexts.Shop.Buy, skin.ButtonPrimary))
             {
@@ -951,7 +942,6 @@ namespace FishingIdle.Game.UI
             }
 
             BigBonus(skin, x, ref y, w, boat.Bonus, max);
-            RequireLine(skin, x, ref y, w, boat.UnlockFisherLevel, boat.BuyBlocker == ServiceError.BoatLocked);
 
             var button = new Rect(x, inner.yMax - 44f, w, 44f);
             var price = new Rect(x, button.y - 32f, w, 24f);
@@ -974,7 +964,7 @@ namespace FishingIdle.Game.UI
             }
             else if (boat.BuyBlocker != ServiceError.None)
             {
-                Blocked(skin, button, boat.BuyBlocker, boat.BuyBlocker == ServiceError.BoatLocked ? GameTexts.Shop.Requires(boat.UnlockFisherLevel) : null);
+                Blocked(skin, button, boat.BuyBlocker);
             }
             else if (skin.IconButton(button, Icons.Buy, GameTexts.Shop.Buy, skin.ButtonPrimary))
             {
@@ -1012,8 +1002,6 @@ namespace FishingIdle.Game.UI
                 y += 22f;
             }
 
-            RequireLine(skin, x, ref y, w, bait.UnlockFisherLevel, bait.BuyBlocker == ServiceError.BaitLocked);
-
             // Bottom: price, Comprar, and Usar / Guardar under it.
             var use = new Rect(x, inner.yMax - 40f, w, 40f);
             var buy = new Rect(x, use.y - 50f, w, 44f);
@@ -1023,7 +1011,7 @@ namespace FishingIdle.Game.UI
 
             if (bait.BuyBlocker != ServiceError.None)
             {
-                Blocked(skin, buy, bait.BuyBlocker, bait.BuyBlocker == ServiceError.BaitLocked ? GameTexts.Shop.Requires(bait.UnlockFisherLevel) : null);
+                Blocked(skin, buy, bait.BuyBlocker);
             }
             else if (skin.IconButton(buy, Icons.Buy, GameTexts.Shop.Buy, skin.ButtonPrimary))
             {
@@ -1094,15 +1082,6 @@ namespace FishingIdle.Game.UI
             }
 
             y += 14f;
-        }
-
-        /// <summary>"Disponível no Nível X", with a check when it is unlocked and a padlock when not.</summary>
-        private static void RequireLine(UiSkin skin, float x, ref float y, float w, int level, bool locked)
-        {
-            skin.DrawIcon(new Rect(x, y + 1f, 18f, 18f), locked ? Icons.Lock : Icons.Check, locked ? UiSkin.Gold : UiSkin.Accent);
-            var style = locked ? skin.SmallGold : skin.Small;
-            GUI.Label(new Rect(x + 24f, y, w - 24f, UiSkin.SmallLine), FishCard.Fit(GameTexts.Shop.Requires(level), style, w - 24f), style);
-            y += 24f;
         }
 
         /// <summary>A wrapped label; returns the y under it.</summary>

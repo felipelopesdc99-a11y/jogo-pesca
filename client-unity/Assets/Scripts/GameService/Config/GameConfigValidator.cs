@@ -176,6 +176,16 @@ namespace FishingIdle.GameService.Config
                 {
                     errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fisher.dollars_per_levels every_levels", 1));
                 }
+
+                if (dollars != null && dollars.UpToLevel < 0)
+                {
+                    errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fisher.dollars_per_levels up_to_level", 0));
+                }
+
+                if (fisher.XpCurveVersion < 0)
+                {
+                    errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fisher.xp_curve_version", 0));
+                }
             }
 
             var fishLevel = progression.FishLevel;
@@ -361,7 +371,7 @@ namespace FishingIdle.GameService.Config
                     {
                         errors.Add(V.Missing(GameConfigLoader.RodsFile, rod.Id + ".acquisition"));
                     }
-                    else if (rod.Acquisition.PurchaseCostCoins < 0 || rod.Acquisition.PurchaseCostShells < 0 || rod.Acquisition.UnlockFisherLevel < 1)
+                    else if (rod.Acquisition.PurchaseCostCoins < 0 || rod.Acquisition.PurchaseCostShells < 0)
                     {
                         errors.Add(V.NegativeValue(GameConfigLoader.RodsFile, rod.Id + ".acquisition"));
                     }

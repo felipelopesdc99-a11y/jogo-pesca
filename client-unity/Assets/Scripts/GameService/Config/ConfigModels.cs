@@ -135,6 +135,12 @@ namespace FishingIdle.GameService.Config
     public sealed class FisherConfig
     {
         public int MaxLevel { get; set; }
+
+        /// <summary>
+        /// Raised whenever the XP table changes in a way that moves existing players (M24-T03, TD-038). A save made
+        /// on an older curve has its total XP converted to the matching level on this one, never going down.
+        /// </summary>
+        public int XpCurveVersion { get; set; }
         public List<XpLevelConfig> XpTable { get; set; }
 
         /// <summary>Dólares earned by playing (A-111): a few at every level milestone. Null = none.</summary>
@@ -146,6 +152,9 @@ namespace FishingIdle.GameService.Config
     {
         public int EveryLevels { get; set; }
         public long Dollars { get; set; }
+
+        /// <summary>Last level that still gives Dólares (A-153: Nv.100 while OD-055 is open); 0 = every milestone.</summary>
+        public int UpToLevel { get; set; }
     }
 
     public sealed class XpLevelConfig
@@ -265,7 +274,6 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>Conchas asked on top of the coins (A-099).</summary>
         public long PurchaseCostShells { get; set; }
-        public int UnlockFisherLevel { get; set; }
     }
 
     public sealed class RodUpgradeCostConfig
@@ -676,7 +684,6 @@ namespace FishingIdle.GameService.Config
         public double CatchSuccessBonus { get; set; }
         public long CostCoins { get; set; }
         public long CostShells { get; set; }
-        public int UnlockFisherLevel { get; set; } = 1;
     }
 
     public sealed class BaitConfig
@@ -693,6 +700,5 @@ namespace FishingIdle.GameService.Config
         public int Charges { get; set; }
         public long CostCoins { get; set; }
         public long CostShells { get; set; }
-        public int UnlockFisherLevel { get; set; } = 1;
     }
 }

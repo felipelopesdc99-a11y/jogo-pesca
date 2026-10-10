@@ -17,7 +17,6 @@ namespace FishingIdle.GameService.Shop
         public double Bonus { get; internal set; }
         public long CostCoins { get; internal set; }
         public long CostShells { get; internal set; }
-        public int UnlockFisherLevel { get; internal set; }
         public bool Owned { get; internal set; }
         public bool InUse { get; internal set; }
 
@@ -38,7 +37,6 @@ namespace FishingIdle.GameService.Shop
         public int ChargesLeft { get; internal set; }
         public long CostCoins { get; internal set; }
         public long CostShells { get; internal set; }
-        public int UnlockFisherLevel { get; internal set; }
         public bool InUse { get; internal set; }
         public ServiceError BuyBlocker { get; internal set; }
     }
@@ -164,7 +162,6 @@ namespace FishingIdle.GameService.Shop
                     Bonus = b.CatchSuccessBonus,
                     CostCoins = b.CostCoins,
                     CostShells = b.CostShells,
-                    UnlockFisherLevel = b.UnlockFisherLevel,
                     Owned = OwnsBoat(b),
                     InUse = b.Id == boat.Id,
                     BuyBlocker = BoatBlocker(b),
@@ -184,7 +181,6 @@ namespace FishingIdle.GameService.Shop
                     ChargesLeft = GearRules.Charges(save, b.Id),
                     CostCoins = b.CostCoins,
                     CostShells = b.CostShells,
-                    UnlockFisherLevel = b.UnlockFisherLevel,
                     InUse = bait != null && b.Id == bait.Id,
                     BuyBlocker = BaitBlocker(b),
                 });
@@ -285,10 +281,10 @@ namespace FishingIdle.GameService.Shop
 
         private bool OwnsBoat(BoatConfig boat) => boat.Id == Config.StarterBoat.Id || Save.OwnedBoatIds.Contains(boat.Id);
 
+        // Boats and baits have no minimum Fisher level (M24-T09, A-153): only the money (or owning the boat) blocks.
         private ServiceError BoatBlocker(BoatConfig boat)
         {
             if (OwnsBoat(boat)) return ServiceError.BoatAlreadyOwned;
-            if (Save.FisherLevel < boat.UnlockFisherLevel) return ServiceError.BoatLocked;
             if (Save.Coins < boat.CostCoins) return ServiceError.NotEnoughCoins;
             if (Save.Shells < boat.CostShells) return ServiceError.NotEnoughShells;
             return ServiceError.None;
@@ -296,7 +292,6 @@ namespace FishingIdle.GameService.Shop
 
         private ServiceError BaitBlocker(BaitConfig bait)
         {
-            if (Save.FisherLevel < bait.UnlockFisherLevel) return ServiceError.BaitLocked;
             if (Save.Coins < bait.CostCoins) return ServiceError.NotEnoughCoins;
             if (Save.Shells < bait.CostShells) return ServiceError.NotEnoughShells;
             return ServiceError.None;

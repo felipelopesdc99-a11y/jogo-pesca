@@ -45,10 +45,11 @@ public sealed class MapsSevenToTenTests
     }
 
     [Fact]
-    public void Rods_4_and_5_open_at_levels_70_and_90()
+    public void Rods_4_and_5_can_be_bought_at_any_level_with_the_money()
     {
-        Assert.Equal(ServiceError.RodLocked, Player(69, "rod_01", "rod_02", "rod_03").Shop.BuyRod("rod_04").Error);
-        Assert.Equal(ServiceError.RodLocked, Player(89, "rod_01", "rod_02", "rod_03", "rod_04").Shop.BuyRod("rod_05").Error);
+        // M24-T09: no minimum level; the map still asks for its level (Each_map_needs_its_level_and_its_rod).
+        Assert.True(Player(1, "rod_01", "rod_02", "rod_03").Shop.BuyRod("rod_04").Succeeded);
+        Assert.True(Player(1, "rod_01", "rod_02", "rod_03", "rod_04").Shop.BuyRod("rod_05").Succeeded);
     }
 
     [Fact]

@@ -16,7 +16,6 @@ namespace FishingIdle.GameService.Shop
         public int Tier { get; internal set; }
         public long PriceCoins { get; internal set; }
         public long PriceShells { get; internal set; }
-        public int UnlockFisherLevel { get; internal set; }
         public int MaxLevel { get; internal set; }
         public double RarityBonus { get; internal set; }
         public double SizeBonus { get; internal set; }
@@ -130,7 +129,6 @@ namespace FishingIdle.GameService.Shop
                 Tier = rod.Tier,
                 PriceCoins = rod.Acquisition.PurchaseCostCoins,
                 PriceShells = rod.Acquisition.PurchaseCostShells,
-                UnlockFisherLevel = rod.Acquisition.UnlockFisherLevel,
                 MaxLevel = max,
                 RarityBonus = at1.RarityEfficiency,
                 SizeBonus = at1.SizeQuality,
@@ -168,10 +166,10 @@ namespace FishingIdle.GameService.Shop
                     || market.Auctions.Any(a => a.SellerName == null && Same(a.Goods))));
         }
 
+        /// <summary>Items have no minimum Fisher level (M24-T09, A-153): only owning it or the money can block.</summary>
         private ServiceError Blocker(RodConfig rod)
         {
             if (Owns(rod)) return ServiceError.RodAlreadyOwned;
-            if (Save.FisherLevel < rod.Acquisition.UnlockFisherLevel) return ServiceError.RodLocked;
             if (Save.Coins < rod.Acquisition.PurchaseCostCoins) return ServiceError.NotEnoughCoins;
             if (Save.Shells < rod.Acquisition.PurchaseCostShells) return ServiceError.NotEnoughShells;
             return ServiceError.None;

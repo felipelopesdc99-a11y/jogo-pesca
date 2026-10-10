@@ -1932,3 +1932,39 @@ crescimento rápido de dinheiro, experiência e níveis:
 O proprietário preferiu implementar em etapas e ver no jogo como se comporta, em vez de aprovar uma proposta fechada
 antes (10/10/2026). Os números de cada etapa ficam em /config e são ajustados depois de ele jogar.
 
+### A-153 · Etapa 1 do novo escopo: itens sem nível, Pescador até o Nv.1000
+**Seção do GDD:** 7, 17, 19 · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+Decisão do proprietário em 10/10/2026 (M24-T09 e M24-T03), primeira etapa do A-152:
+
+- **Itens sem nível mínimo.** Varas, barcos e iscas podem ser comprados em qualquer nível: basta ter as Moedas e as
+  Conchas. Na Loja, a etiqueta do gancho não mostra mais o cadeado com "Nv. X", a ficha não tem mais a linha
+  "Disponível no Nível X" e nenhum item aparece escurecido por nível; o único motivo de bloqueio é faltar Moedas ou
+  Conchas (ou já ter o item). "Categoria · Até o Nível 10" continua: é o nível máximo de melhoria da vara. Os mapas
+  continuam liberando nos mesmos níveis do Pescador (Nv.10, 20, … 90) e pedindo a categoria mínima de vara: comprar a
+  Vara 5 no Nv.1 não leva ninguém ao Mapa 10 antes do Nv.90.
+- **Pescador até o Nv.1000** (antes Nv.100), com uma curva de XP nova, mais rápida no começo. Os primeiros níveis
+  vêm vários por sessão: Nv.10 em ~1 hora pescando online (era ~2 horas, seção 17 do GDD). O XP dos peixes não mudou.
+  Tempo simulado até cada nível (`tools/Progressao/calibrar_xp.py`, valor esperado):
+
+  | Jeito de jogar | Nv.10 | Nv.50 | Nv.100 | Nv.250 | Nv.500 | Nv.750 | Nv.1000 |
+  |---|---|---|---|---|---|---|---|
+  | Jogo aberto o dia todo | ~1 h | ~9 h | ~1 dia | ~4,8 dias | ~17,5 dias | ~41 dias | ~75 dias |
+  | Abre 4 vezes por dia (30 min) | 12 h* | ~1,3 dia | ~2,3 dias | ~9,8 dias | ~34 dias | ~78 dias | ~144 dias |
+  | Abre 1 vez por dia (30 min) | 1,8 dia* | ~2,8 dias | ~4,8 dias | ~12,8 dias | ~41 dias | ~92 dias | ~168 dias |
+
+  \* Contado da meia-noite do primeiro dia; a primeira visita é às 8 h (4 vezes) ou às 20 h (1 vez).
+
+  XP para o próximo nível: Nv.1 pede 10; Nv.10, 715; Nv.50, 2.200; Nv.100, 9.640; Nv.250, 80.000; Nv.500, 178.000;
+  Nv.750, 303.000; Nv.999, 408.000. Do Nv.1 ao Nv.1000 são 188.953.530 XP. A tabela sobe sem degraus grandes
+  (no máximo ~5% de um nível para o seguinte), menos no Nv.10, quando o jogador vai para o Mapa 2.
+- **Dólares por nível** (A-111): continuam 10 a cada 10 níveis só até o Nv.100 (100 Dólares no total). O que acontece
+  depois do Nv.100 é decisão do proprietário (OD-055).
+- **Quem já joga** sobe para o nível que o XP total acumulado alcança na curva nova, ao abrir o jogo pela primeira vez
+  depois da mudança. Ninguém perde nível: se a curva nova pedir mais, o jogador fica no nível que tinha. Os marcos de
+  Dólares cruzados nessa subida (até o Nv.100) são pagos, como se tivessem sido alcançados pescando. Um jogador que
+  estava no Nv.100 (11,5 milhões de XP na curva antiga) passa para o Nv.304.
+- **Números grandes**: Moedas, XP e preços já guardam valores até bilhões e além. Onde o jogo mostra valores curtos
+  (A-124), abaixo de 1 milhão continua o número inteiro ("845.320") e acima vira "3,4 mi", "12 bi", "1,5 tri".
+- O Painel de Testes ganhou os atalhos "Nv. 500" e "Nv. 1000".
+

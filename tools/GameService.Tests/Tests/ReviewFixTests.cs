@@ -21,6 +21,8 @@ public sealed class ReviewFixTests
         }
 
         game.Fishing.SellCatches(game.Fishing.GetFishingBox().Select(c => c.CatchId).ToList());
+        // Level 10 now comes in about an hour (M24-T03): the Conchas of so few catches are a matter of luck.
+        game.Session.Save.Shells += 50;
         Assert.True(game.Shop.BuyRod("rod_01").Succeeded);
         return (game, clock, dir);
     }

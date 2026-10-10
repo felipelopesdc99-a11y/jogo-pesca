@@ -62,7 +62,7 @@ namespace FishingIdle.Game.UI
 
             var area = new Rect(16, 66, w - 32, _rect.height - 80);
             var inner = area.width - 18;
-            _scroll = GUI.BeginScrollView(area, _scroll, new Rect(0, 0, inner, 1040));
+            _scroll = GUI.BeginScrollView(area, _scroll, new Rect(0, 0, inner, 1080));
             var y = 0f;
 
             // Currencies
@@ -95,9 +95,9 @@ namespace FishingIdle.Game.UI
 
             GUI.Label(new Rect(x + 6, y + 6, inner - x - 6, 22), GameTexts.Player.LevelShort + " " + current, skin.BodyBold);
             y += 40;
-            // Level chips as wide as their label ("Nv. 100"), wrapping to a new line when the row is full.
+            // Level chips as wide as their label ("Nv. 1000", A-153), wrapping to a new line when the row is full.
             x = 0f;
-            foreach (var level in new[] { 10, 30, 50, 70, 90, 100 })
+            foreach (var level in new[] { 10, 30, 50, 70, 90, 100, 500, 1000 })
             {
                 var label = GameTexts.Player.LevelShort + " " + level;
                 var lw = skin.Chip.CalcSize(new GUIContent(label)).x + 10f;

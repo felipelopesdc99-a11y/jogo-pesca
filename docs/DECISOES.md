@@ -635,3 +635,25 @@ as letras com perna (g, p, ç) eram cortadas nas caixas de 18 px.
 
 **Rever se.** O proprietário quiser o texto mais fino ou mais grosso: trocar o arquivo em `UiSkin` (Regular, Bold
 ou outra instância gerada pelo script com outro peso), sem mexer nas janelas.
+
+
+## TD-038 — Troca de curva de XP do Pescador: XP total vira nível, nunca para baixo
+
+**Origem.** M24-T03 (A-153): o Pescador passa do Nv.100 para o Nv.1000 com uma tabela de XP nova.
+
+**Decisão.** `progression.json → fisher.xp_curve_version` numera a curva (1 = Nv.1 ao Nv.100, A-109; 2 = Nv.1 ao
+Nv.1000). O save, na versão 12, grava em `fisher_xp_curve_version` a curva em que o nível foi ganho (a migração da
+versão 11 grava 1; um jogador novo nasce com a curva atual). Ao carregar o save ou trocar o config, o `GameSession`
+chama `FisherLevelRules.MoveToCurrentCurve`: se a curva do save é mais antiga, o `fisher_xp_total` (todo XP já ganho,
+inclusive depois do nível máximo) é percorrido na tabela atual. Se o nível alcançado é maior ou igual ao que o jogador
+tinha, ele fica com esse nível e a sobra de XP; se é menor, mantém o nível e o XP dentro dele (limitado a 1 abaixo do
+próximo). Os marcos de Dólares cruzados na subida (A-111, até `up_to_level`) são pagos. Depois a curva do save passa a
+ser a atual, e a conversão não se repete.
+
+**Por quê.** A tabela antiga não precisa ficar no jogo: o XP total já estava no save e é a medida justa do esforço do
+jogador. A conversão depende do config (a tabela), por isso fica no `GameSession` e não no `SaveMigrations`, que só
+mexe na forma do arquivo. Nunca baixar o nível protege quem subiu com as ferramentas de teste (nível sem XP) e
+qualquer curva futura mais lenta.
+
+**Rever se.** Entrar uma fonte de XP do Pescador que não passe por `AddFisherXp` (por exemplo, a Tripulação do M24):
+ela também precisa somar em `fisher_xp_total`, senão uma troca de curva futura não a enxerga.

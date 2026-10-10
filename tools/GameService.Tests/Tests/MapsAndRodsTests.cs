@@ -37,7 +37,8 @@ public sealed class MapsAndRodsTests
         Assert.Equal(ServiceError.MapLocked, map2.TravelBlocker);
         Assert.Equal(ServiceError.MapLocked, game.Maps.TravelTo("map_02").Error);
         Assert.Equal(ServiceError.AlreadyOnMap, game.Maps.TravelTo("map_01").Error);
-        Assert.Equal(ServiceError.RodLocked, game.Shop.BuyRod("rod_01").Error);
+        // No minimum level for items (M24-T09): only the money is missing.
+        Assert.Equal(ServiceError.NotEnoughCoins, game.Shop.BuyRod("rod_01").Error);
         Assert.Equal(ServiceError.RodAlreadyOwned, game.Shop.BuyRod("rod_00_starter").Error);
         Assert.Equal(ServiceError.RodNotForSale, game.Shop.BuyRod("rod_99").Error);
     }

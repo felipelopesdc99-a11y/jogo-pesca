@@ -236,8 +236,12 @@ Regras:
   (`TutorialState`; saves antigos entram com ele concluído), v10 adiciona barcos e iscas (`BoatId`,
 `OwnedBoatIds`, `BaitCharges`, `ActiveBaitId`) e a contagem de escapes (`Stats.Escapes`); saves
 antigos entram com o Barco Inicial e sem isca; v11 adiciona os Dólares (`Dollars`, começa em 0) e os anúncios de Conchas e Dólares
-(`MarketState.CurrencyListings`). Cada
-passo está em `SaveMigrations.Upgrade`.
+(`MarketState.CurrencyListings`); v12 grava a curva de XP do Pescador em que o nível foi ganho
+(`FisherXpCurveVersion`; saves antigos entram com a curva 1). Cada passo está em `SaveMigrations.Upgrade`.
+- Troca de curva de XP (TD-038): ao carregar, o `GameSession` chama `FisherLevelRules.MoveToCurrentCurve`, que
+  converte o XP total (`FisherXpTotal`) no nível da curva atual quando o save é de uma curva mais antiga, sem nunca
+  baixar o nível. Mudou a tabela de XP de um jeito que mexe em quem já joga? Aumente `fisher.xp_curve_version` em
+  `progression.json`.
 - Tutorial (desde a versão 9): o jogador novo começa **sem vara** (`EquippedRodItemId = 0`) e pega a
   Vara Inicial de graça na Loja (`free_claim_in_shop` em `rods.json`). O save só aceita "sem vara"
   enquanto o tutorial não terminou; pular o tutorial entrega a Vara Inicial. Cada passo termina sozinho

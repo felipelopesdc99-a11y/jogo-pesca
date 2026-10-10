@@ -267,16 +267,16 @@ public sealed class FishingServiceTests
     }
 
     [Fact]
-    public void Level_10_takes_roughly_two_hours_of_online_fishing()
+    public void Level_10_takes_roughly_one_hour_of_online_fishing()
     {
-        // GDD section 17: Lv.1→10 around 2 hours online, on average, with the real Catch Success
-        // (about half of the 240 bites pulled out; the fish XP was doubled to keep the pace).
+        // A-153 (M24-T03): the first levels are quick, Lv.1→10 in about 1 hour online, on average, with the
+        // real Catch Success and no bait (about half of the 120 bites pulled out). It was 2 hours (GDD section 17).
         var levels = new List<int>();
         for (var run = 0; run < 5; run++)
         {
             var (game, clock, _) = TestSupport.NewGame(TestSupport.RealConfig());
             game.Fishing.StartFishing();
-            TestSupport.PlayFor(game, clock, 2 * 3600, stepSeconds: 30);
+            TestSupport.PlayFor(game, clock, 3600, stepSeconds: 30);
             levels.Add(game.Player.GetPlayer().FisherLevel);
         }
 

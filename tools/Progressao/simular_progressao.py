@@ -1,4 +1,4 @@
-"""Simula a progressão do Pescador do Nv.1 ao Nv.100 com as regras e os números de /config.
+"""Simula a progressão do Pescador do Nv.1 ao nível máximo (hoje Nv.1000) com as regras e os números de /config.
 
 Uso:  python3 tools/Progressao/simular_progressao.py [--escala-xp arquivo.json] [--saida relatorio.md]
 
@@ -8,8 +8,9 @@ O que ele faz:
     tamanho (qualidade da vara e raridade), XP do Pescador, venda ao NPC e Conchas;
   - pesca online a cada 30 s e offline a cada 60 s, com o limite de 24 h, e gasta uma carga de isca por
     tentativa, online ou offline;
-  - compra como um jogador cuidadoso: a vara do próximo mapa assim que pode (guardando dinheiro para ela),
-    depois barcos, melhorias da vara e iscas (só quando a isca se paga);
+  - compra como um jogador cuidadoso: a próxima vara assim que tem o dinheiro (itens não têm nível mínimo desde
+    M24-T09; guarda dinheiro para ela quando o mapa que a pede está a 8 níveis), depois barcos, melhorias da vara
+    e iscas (só quando a isca se paga);
   - vende tudo o que pesca ao NPC (é o máximo de Moedas sem Mercado) e sempre pesca no melhor mapa liberado;
   - repete para quatro jeitos de jogar (perfis) e escreve os dias até cada faixa de nível.
 
@@ -42,6 +43,9 @@ class Rules:
         self.species = {s['id']: s for s in load('fish_catalog.json')['species']}
         self.maps = sorted(load('maps.json')['maps'], key=lambda m: m['unlock_fisher_level'])
         self.rods = sorted(load('rods.json')['rods'], key=lambda r: r['tier'])
+        # Fisher level of the first map that asks for each rod tier (items themselves have no level, M24-T09).
+        self.rod_needed_at = {r['id']: min([m['unlock_fisher_level'] for m in self.maps if m['minimum_rod_tier'] >= r['tier']] or [10 ** 9])
+                              for r in self.rods}
         eq = load('equipment.json')
         self.boats = sorted(eq['boats'], key=lambda b: b['tier'])
         self.baits = eq['baits']
@@ -112,6 +116,8 @@ class Player:
         self.bait, self.bait_charges = None, 0
         self.reached = {1: 0.0}
         self.usage = {}          # (band of 10 levels, map id) -> attempts
+        self.att = {}            # Fisher level -> fishing attempts made at it
+        self.xp_at = {}          # Fisher level -> XP earned at it
         self.bought = {}         # item id -> day bought
 
     # ------------------------------------------------------------- where and with what
@@ -140,6 +146,8 @@ class Player:
             steps = n if xp <= 0 else min(n, max(1, int(-(-need // xp))))
             key = ((self.level - 1) // 10, mp['id'])
             self.usage[key] = self.usage.get(key, 0) + steps
+            self.att[self.level] = self.att.get(self.level, 0) + steps
+            self.xp_at[self.level] = self.xp_at.get(self.level, 0.0) + xp * steps
             self.xp += xp * steps
             self.coins += coins * steps
             self.shells += shells * steps
@@ -165,19 +173,19 @@ class Player:
         nxt = self.next_rod()
         if nxt:
             acq = nxt['acquisition']
-            if self.level >= acq['unlock_fisher_level'] and self.coins >= acq['purchase_cost_coins'] and self.shells >= acq.get('purchase_cost_shells', 0):
+            if self.coins >= acq['purchase_cost_coins'] and self.shells >= acq.get('purchase_cost_shells', 0):
                 self.coins -= acq['purchase_cost_coins']
                 self.shells -= acq.get('purchase_cost_shells', 0)
                 self.rods[nxt['id']] = 1
                 self.rod = nxt
                 self.bought[nxt['id']] = getattr(self, 'now', 0.0)
                 nxt = self.next_rod()
-            if nxt and nxt['acquisition']['unlock_fisher_level'] <= self.level + 8:
+            if nxt and r.rod_needed_at[nxt['id']] <= self.level + 8:
                 reserve_c = nxt['acquisition']['purchase_cost_coins']
                 reserve_s = nxt['acquisition'].get('purchase_cost_shells', 0)
         # boats
         for boat in r.boats:
-            if boat['tier'] > self.boat['tier'] and self.level >= boat['unlock_fisher_level'] \
+            if boat['tier'] > self.boat['tier'] \
                     and self.coins - reserve_c >= boat['cost_coins'] and self.shells - reserve_s >= boat['cost_shells']:
                 self.coins -= boat['cost_coins']
                 self.shells -= boat['cost_shells']
@@ -201,8 +209,6 @@ class Player:
             base = r.per_attempt(mp, self.rod, lvl, self.boat['catch_success_bonus'])
             best = None
             for bait in sorted(r.baits, key=lambda b: -b['catch_success_bonus']):
-                if self.level < bait.get('unlock_fisher_level', 1):
-                    continue
                 with_bait = r.per_attempt(mp, self.rod, lvl, self.boat['catch_success_bonus'] + bait['catch_success_bonus'])
                 gain = with_bait[1] - base[1]
                 cost = bait['cost_coins'] / bait['charges']
@@ -233,7 +239,7 @@ PROFILES = {
 SMOOTH = 'quatro_vezes'
 
 
-def play(rules, profile, max_days=120):
+def play(rules, profile, max_days=400):
     p = Player(rules)
     online_per_min = 60.0 / rules.fishing['online_cycle_seconds']
     offline_per_min = 60.0 / rules.fishing['offline_cycle_seconds']
@@ -271,16 +277,19 @@ def play(rules, profile, max_days=120):
     return p
 
 
-def bands(p):
-    out = []
-    for lvl in (10, 20, 30, 40, 50, 60, 70, 80, 90, 100):
-        out.append(p.reached.get(lvl))
-    return out
+MILESTONES = (10, 50, 100, 250, 500, 750, 1000)
+
+
+def bands(p, levels=None):
+    """Days until each milestone level (None if not reached)."""
+    return [p.reached.get(lvl) for lvl in (levels or [l for l in MILESTONES if l <= p.r.max_level])]
 
 
 def fmt(d):
     if d is None:
         return '—'
+    if d < 1 / 24.0:
+        return ('%.0f min' % (d * 1440)).replace('.', ',')
     if d < 1:
         return ('%.1f h' % (d * 24)).replace('.', ',')
     return ('%.1f d' % d).replace('.', ',')
@@ -302,7 +311,7 @@ def main():
         p = play(rules, name)
         rows.append((name, desc, bands(p), p))
     print('Dias até cada nível (a partir do início do jogo):')
-    print('%-14s ' % 'perfil' + ' '.join('%7s' % ('Nv.%d' % l) for l in (10, 20, 30, 40, 50, 60, 70, 80, 90, 100)))
+    print('%-14s ' % 'perfil' + ' '.join('%7s' % ('Nv.%d' % l) for l in MILESTONES if l <= rules.max_level))
     for name, desc, b, p in rows:
         print('%-14s ' % name + ' '.join('%7s' % fmt(x) for x in b) + '   vara %s nv %d, barco %s' % (p.rod['id'], p.rods[p.rod['id']], p.boat['id']))
     if a.saida:

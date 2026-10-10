@@ -25,7 +25,8 @@ namespace FishingIdle.Texts
         /// </summary>
         public static string Short(long value)
         {
-            var abs = Math.Abs(value);
+            // Math.Abs(long.MinValue) throws; that value only matters for not crashing.
+            var abs = value == long.MinValue ? long.MaxValue : Math.Abs(value);
             if (abs < 1_000_000L)
             {
                 return Number(value);

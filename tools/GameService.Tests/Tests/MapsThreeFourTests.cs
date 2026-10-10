@@ -44,7 +44,7 @@ public sealed class MapsThreeFourTests
     {
         Assert.Equal(ServiceError.MapLocked, Player(29, "rod_01").Maps.TravelTo("map_04").Error);
         Assert.Equal(ServiceError.RodTooWeakForMap, Player(30, "rod_01").Maps.TravelTo("map_04").Error);
-        Assert.Equal(ServiceError.RodLocked, Player(29).Shop.BuyRod("rod_02").Error);
+        Assert.True(Player(1).Shop.BuyRod("rod_02").Succeeded); // items have no minimum level (M24-T09)
 
         var game = Player(30, "rod_01", "rod_02");
         Assert.Equal(10_000_000 - 2_500 - 90_000, game.Session.Save.Coins);

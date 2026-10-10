@@ -450,7 +450,7 @@ namespace FishingIdle.Editor
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField(T.BoatsTitle, EditorStyles.boldLabel);
             var boats = (JArray)_documents[equipment]["boats"];
-            Header(new[] { T.SpeciesName, T.GearBonus, T.GearCoins, T.GearShells, T.GearLevel });
+            Header(new[] { T.SpeciesName, T.GearBonus, T.GearCoins, T.GearShells });
             for (var i = 0; boats != null && i < boats.Count; i++)
             {
                 var prefix = "boats[" + i + "].";
@@ -460,14 +460,13 @@ namespace FishingIdle.Editor
                     Cell(equipment, prefix + "catch_success_bonus");
                     Cell(equipment, prefix + "cost_coins");
                     Cell(equipment, prefix + "cost_shells");
-                    Cell(equipment, prefix + "unlock_fisher_level");
                 }
             }
 
             EditorGUILayout.Space(8);
             EditorGUILayout.LabelField(T.BaitsTitle, EditorStyles.boldLabel);
             var baits = (JArray)_documents[equipment]["baits"];
-            Header(new[] { T.SpeciesName, T.GearBonus, T.GearCharges, T.GearCoins, T.GearShells, T.GearLevel });
+            Header(new[] { T.SpeciesName, T.GearBonus, T.GearCharges, T.GearCoins, T.GearShells });
             for (var i = 0; baits != null && i < baits.Count; i++)
             {
                 var prefix = "baits[" + i + "].";
@@ -478,7 +477,6 @@ namespace FishingIdle.Editor
                     Cell(equipment, prefix + "charges");
                     Cell(equipment, prefix + "cost_coins");
                     Cell(equipment, prefix + "cost_shells");
-                    Cell(equipment, prefix + "unlock_fisher_level");
                 }
             }
 
@@ -628,7 +626,6 @@ namespace FishingIdle.Editor
                 var prefix = "rods[" + r + "].";
                 EditorGUILayout.LabelField(rod.Value<string>("display_name"), EditorStyles.boldLabel);
                 Number(file, prefix + "acquisition.purchase_cost_coins", T.RodPrice, 0);
-                Number(file, prefix + "acquisition.unlock_fisher_level", T.UnlockLevel, 1);
                 Number(file, prefix + "bonuses.catch_success", T.RodStarterCatchBonus, 0);
 
                 if (rod["bonuses_per_level"] != null)

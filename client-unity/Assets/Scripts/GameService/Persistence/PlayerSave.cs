@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 11;
+        public const int CurrentVersion = 12;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -48,7 +48,14 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>XP accumulated inside the current level.</summary>
         public long FisherXp { get; set; }
 
+        /// <summary>Every Fisher XP ever earned, also past the max level. Used to move a save to a new XP curve.</summary>
         public long FisherXpTotal { get; set; }
+
+        /// <summary>
+        /// The Fisher XP curve this save's level was earned on (progression.json → fisher.xp_curve_version). When the
+        /// config has a newer one, the game moves the level to it on load, never down (M24-T03, TD-038).
+        /// </summary>
+        public int FisherXpCurveVersion { get; set; }
 
         public string CurrentMapId { get; set; }
 

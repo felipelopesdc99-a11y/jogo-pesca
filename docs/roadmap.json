@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-10T21:30:00Z",
+  "updated_at": "2026-10-10T23:30:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -505,6 +505,14 @@
       "status": "RESOLVED",
       "resolved_at": "2026-10-10T21:30:00Z",
       "resolution": "Proprietário (10/10/2026): implementar em etapas e ver no jogo, sem proposta fechada antes. Itens sem nível mínimo, basta ter o dinheiro. Quebrar a economia por sorte ou investimento real não é problema."
+    },
+    {
+      "id": "OD-055",
+      "task_id": "M24-T10",
+      "title": "Dólares por nível depois do Nv.100",
+      "detail": "Hoje o jogador ganha 10 Dólares a cada 10 níveis até o Nv.100 (100 Dólares = 1 VIP). Com o Nv.1000, opções: (a) parar no Nv.100, como está agora; (b) continuar 10 a cada 10 até o Nv.1000 (+900 Dólares, 9 VIPs a mais); (c) continuar mais devagar, por exemplo 10 a cada 50 níveis (+180 Dólares).",
+      "raised_at": "2026-10-10T23:30:00Z",
+      "status": "OPEN"
     }
   ],
   "milestones": [
@@ -4217,6 +4225,26 @@
       ]
     },
     {
+      "id": "M23",
+      "title": "Ilha 2D (descartada)",
+      "goal": "Descartada pelo proprietário em 10/10/2026: a ilha 2D saiu do plano e o jogo volta a ser idle (M24). Fica aqui só o que foi entregue, para a numeração dos milestones continuar em ordem.",
+      "completion_criteria": [
+        "Nada a fazer: milestone encerrado pelo proprietário."
+      ],
+      "tasks": [
+        {
+          "id": "M23-T01",
+          "title": "Exemplos da ilha em 2D (3 visões)",
+          "subsystem": "docs",
+          "description": "3 exemplos desenhados da ilha: vista de cima, vista de lado e vista de lado em camadas, com casa, bancada, píer, recursos e a tela de fabricar a vara inicial.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-09T17:10:00Z",
+          "completion_notes": "Página \"Ilha 2D: 3 Visões\" (fora do repositório, publicada para o proprietário): visões A (de cima), B (de lado, em corte) e C (de lado em camadas, como a cena de pesca de hoje), cada uma com 3 telas (começo da ilha, bancada fabricando a Vara Inicial, ilha mais tarde com casa e barco), prós e contras, arte nova, e a comparação de origem da arte: ChatGPT; gratuitos (Kenney e Ninja Adventure CC0; Kalponic pague quanto quiser; Sprout Lands Basic só não comercial); pagos (Sprout Lands Premium a partir de US$ 3,99; Mana Seed Character Base a partir de US$ 19,98; Village 2D Hand Painted US$ 19,99, só URP). Recomendação do agente de ideias: C com arte do ChatGPT (sem decidir pelo proprietário). Receitas, recursos e construções aparecem só como exemplo. Nada no código do jogo."
+        }
+      ]
+    },
+    {
       "id": "M24",
       "title": "Novo escopo idle: números grandes, Tripulação e Melhorias",
       "goal": "Decisão do proprietário (10/10/2026): o jogo volta a ser idle puro, no estilo de crescimento rápido. Dinheiro e XP crescem bem mais rápido, até bilhões (sem letras como \"aa\"); o Pescador vai até o Nv.1000; sem Renascer (prestígio); o crescimento vem de uma Tripulação automática (pescadores e barcos que rendem sozinhos) e de Melhorias compradas que multiplicam a renda. Primeiro a proposta com números simulados; nada muda no jogo sem a aprovação dele.",
@@ -4253,11 +4281,12 @@
           "title": "Nível até 1000 e nova curva de XP",
           "subsystem": "server",
           "description": "progression.json com max_level 1000 e curva simulada; telas que mostram nível ajustadas.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M24-T02"
           ],
-          "updated_at": "2026-10-10T21:15:00Z"
+          "updated_at": "2026-10-10T23:30:00Z",
+          "completion_notes": "progression.json: max_level 1000, nova tabela de XP (999 níveis) gerada por tools/Progressao/calibrar_xp.py --gravar (metas: Nv.10 em ~1 h, Nv.100 em ~1 dia, Nv.500 em ~17,5 dias e Nv.1000 em ~75 dias com o jogo aberto; 4x/dia: Nv.100 ~2,3 d, Nv.500 ~34 d, Nv.1000 ~144 d; 1x/dia: Nv.100 ~4,8 d, Nv.500 ~41 d, Nv.1000 ~168 d). XP para o próximo nível: Nv.1 10, Nv.10 715, Nv.50 2.200, Nv.100 9.640, Nv.250 80.000, Nv.500 178.000, Nv.750 303.000, Nv.999 408.000; total 188.953.530. Dólares por nível (A-111) só até o Nv.100 (dollars_per_levels.up_to_level; depois: OD-055). Saves: versão 12 grava a curva (fisher_xp_curve_version); ao abrir um save da curva antiga, o XP total vira o nível equivalente na curva nova, nunca descendo, com os Dólares dos marcos cruzados (FisherLevelRules, TD-038). Mapas continuam liberando nos mesmos níveis. Format.Short já formata \"mi\", \"bi\" e \"tri\" (A-124) e agora aguenta long.MinValue. Testes em IdleScopeStageOneTests. A-153. Não compilado (sem .NET) nem aberto no Unity."
         },
         {
           "id": "M24-T04",
@@ -4321,9 +4350,21 @@
           "title": "Itens sem nível mínimo",
           "subsystem": "server",
           "description": "Varas, barcos e iscas podem ser comprados em qualquer nível: basta ter o dinheiro (decisão do proprietário, 10/10/2026).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-10T21:30:00Z"
+          "updated_at": "2026-10-10T23:30:00Z",
+          "completion_notes": "unlock_fisher_level saiu das varas (rods.json → acquisition), dos barcos e das iscas (equipment.json) e dos modelos; a Loja (LocalShopService, LocalGearService) só bloqueia por já ter o item ou faltar Moedas/Conchas; RodLocked, BoatLocked e BaitLocked saíram do ServiceError e dos textos. A Loja não mostra mais o cadeado \"Nv. X\" nem \"Disponível no Nível X\"; a silhueta escura dos itens bloqueados saiu. Painel de Balanceamento e Catálogo sem a coluna de nível dos itens; simuladores (Python e C#) compram sem nível. Mapas continuam pedindo nível. Testes atualizados e novos em IdleScopeStageOneTests. A-153. Não compilado (sem .NET) nem aberto no Unity."
+        },
+        {
+          "id": "M24-T10",
+          "title": "Dólares depois do Nv.100",
+          "subsystem": "config",
+          "description": "Com o Pescador até o Nv.1000, os 10 Dólares a cada 10 níveis (A-111) continuam só até o Nv.100 (100 Dólares no total). Decidir o que acontece depois do Nv.100: nada, a mesma recompensa até o Nv.1000 (mais 900 Dólares, 9 VIPs) ou outro ritmo (OD-055).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T03"
+          ],
+          "updated_at": "2026-10-10T23:30:00Z"
         }
       ]
     }

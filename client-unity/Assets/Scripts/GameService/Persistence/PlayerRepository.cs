@@ -371,6 +371,18 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 11;
             }
 
+            if (save.SaveVersion == 11)
+            {
+                // v12 records the Fisher XP curve the level was earned on. Every older save used curve 1 (Nv.1 to
+                // Nv.100, A-109); GameSession then moves it to the current curve (M24-T03, TD-038), never down.
+                if (save.FisherXpCurveVersion < 1)
+                {
+                    save.FisherXpCurveVersion = 1;
+                }
+
+                save.SaveVersion = 12;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BaitCharges = save.BaitCharges ?? new Dictionary<string, int>();
 

@@ -3,6 +3,35 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.45] — 10/10/2026
+
+Etapa 1 do novo escopo idle (M24, A-152 e A-153).
+
+### Mudado
+
+- Varas, barcos e iscas não têm mais nível mínimo para comprar: basta ter as Moedas e as Conchas (M24-T09). A Loja
+  não mostra mais o cadeado "Nv. X", a linha "Disponível no Nível X" nem os itens escurecidos por nível. Os mapas
+  continuam liberando nos mesmos níveis do Pescador.
+- O Pescador vai até o Nv.1000 (antes Nv.100), com uma curva de XP nova (M24-T03): Nv.10 em ~1 h, Nv.100 em ~1 dia,
+  Nv.500 em ~17,5 dias e Nv.1000 em ~75 dias com o jogo aberto o dia todo (4 vezes por dia: ~2,3, ~34 e ~144 dias;
+  1 vez por dia: ~4,8, ~41 e ~168 dias).
+- Os 10 Dólares a cada 10 níveis continuam só até o Nv.100; depois do Nv.100 é decisão do proprietário (OD-055).
+- Saves na versão 12: quem já joga sobe para o nível que o XP total acumulado alcança na curva nova, nunca descendo,
+  e recebe os Dólares dos marcos cruzados até o Nv.100 (TD-038).
+- `tools/Progressao/calibrar_xp.py` calibra a curva para metas de tempo por nível (até o Nv.1000);
+  `simular_progressao.py` e o simulador em C# compram itens sem nível.
+- Painel de Testes: atalhos "Nv. 500" e "Nv. 1000". Painel de Balanceamento e Catálogo sem o nível dos itens.
+
+### Corrigido
+
+- `Format.Short` não quebra mais com o menor número possível (`long.MinValue`).
+- O milestone M23 (ilha 2D, descartada) voltou ao `docs/roadmap.json` só com a tarefa entregue, para a numeração dos
+  milestones seguir em ordem (o teste `Milestones_are_numbered_in_order_from_0` falhava sem ele).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity.
+
 ## [0.2.0-m21.44] — 09/10/2026
 
 ### Removido

@@ -2,7 +2,7 @@
   "config_file": "equipment.json",
   "config_schema_version": 1,
   "balance_status": "provisional",
-  "description": "Barcos e iscas (docs/SISTEMA_SUCESSO_PESCA.md). Os dois só aumentam a Chance de Sucesso da Captura, somando pontos percentuais à chance-base da raridade (progression.json → rarity.tiers → catch_success_base) e aos da vara (rods.json → catch_success). Todos os números são provisórios.",
+  "description": "Barcos e iscas (docs/SISTEMA_SUCESSO_PESCA.md). Os dois só aumentam a Chance de Sucesso da Captura, somando pontos percentuais à chance-base da raridade (progression.json → rarity.tiers → catch_success_base) e aos da vara (rods.json → catch_success). Desde 10/10/2026 (M24-T09, A-153) barcos e iscas não têm nível mínimo para comprar: basta ter as Moedas e as Conchas. Todos os números são provisórios.",
   "boats": [
     {
       "id": "boat_00",
@@ -12,7 +12,6 @@
       "catch_success_bonus": 0.0,
       "cost_coins": 0,
       "cost_shells": 0,
-      "unlock_fisher_level": 1,
       "note": "Todo jogador já tem."
     },
     {
@@ -22,8 +21,7 @@
       "tier": 1,
       "catch_success_bonus": 0.02,
       "cost_coins": 12000,
-      "cost_shells": 5,
-      "unlock_fisher_level": 10
+      "cost_shells": 5
     },
     {
       "id": "boat_02",
@@ -32,8 +30,7 @@
       "tier": 2,
       "catch_success_bonus": 0.04,
       "cost_coins": 45000,
-      "cost_shells": 15,
-      "unlock_fisher_level": 20
+      "cost_shells": 15
     },
     {
       "id": "boat_03",
@@ -42,8 +39,7 @@
       "tier": 3,
       "catch_success_bonus": 0.06,
       "cost_coins": 160000,
-      "cost_shells": 25,
-      "unlock_fisher_level": 30
+      "cost_shells": 25
     },
     {
       "id": "boat_04",
@@ -52,8 +48,7 @@
       "tier": 4,
       "catch_success_bonus": 0.08,
       "cost_coins": 600000,
-      "cost_shells": 120,
-      "unlock_fisher_level": 50
+      "cost_shells": 120
     },
     {
       "id": "boat_05",
@@ -62,8 +57,7 @@
       "tier": 5,
       "catch_success_bonus": 0.1,
       "cost_coins": 2500000,
-      "cost_shells": 500,
-      "unlock_fisher_level": 80
+      "cost_shells": 500
     }
   ],
   "baits_note": "Cada compra é um pacote de cargas; cada tentativa de pesca (online ou offline) gasta 1 carga da isca em uso, pegando o peixe ou não. Quando as cargas acabam, a pesca continua sem isca.",
@@ -76,8 +70,7 @@
       "catch_success_bonus": 0.03,
       "charges": 60,
       "cost_coins": 1500,
-      "cost_shells": 1,
-      "unlock_fisher_level": 1
+      "cost_shells": 1
     },
     {
       "id": "bait_02",
@@ -87,8 +80,7 @@
       "catch_success_bonus": 0.07,
       "charges": 60,
       "cost_coins": 6000,
-      "cost_shells": 3,
-      "unlock_fisher_level": 10
+      "cost_shells": 3
     },
     {
       "id": "bait_03",
@@ -98,8 +90,7 @@
       "catch_success_bonus": 0.1,
       "charges": 60,
       "cost_coins": 15000,
-      "cost_shells": 5,
-      "unlock_fisher_level": 18
+      "cost_shells": 5
     }
   ]
 }

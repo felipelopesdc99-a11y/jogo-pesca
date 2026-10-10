@@ -101,7 +101,8 @@ def main(wanted):
         catalog['species'].append(od(id=s['id'], display_name=s['display_name'], primary_map_id=s['primary_map_id'], rarity=s['rarity'],
                                      size_cm=od(min=s['size_cm']['min'], max=s['size_cm']['max']),
                                      base_stats=od(hp=s['base_stats']['hp'], attack=s['base_stats']['attack'], defense=s['base_stats']['defense'], speed=s['base_stats']['speed']),
-                                     base_sale_value_coins=s['base_sale_value_coins'], base_feed_xp=39  # A-132: same feed value for every species of a rarity (rarity multiplier on top), base_fisher_xp=s['base_fisher_xp']))
+                                     base_sale_value_coins=s['base_sale_value_coins'], base_feed_xp=39,  # A-132: same feed value for every species of a rarity (rarity multiplier on top)
+                                     base_fisher_xp=s['base_fisher_xp']))
     catalog['maps_5_10_note'] = 'Mapas 5 em diante: espécies de docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md (números adaptados por tools/Progressao/adaptar_mapas_5_10.py).'
 
     # ---- mapas
@@ -129,8 +130,7 @@ def main(wanted):
         b = prop['bonuses_per_level']
         rods['rods'].append(od(
             id=rid, display_name=prop['display_name'], description=ROD_TEXT[rid], tier=ROD_TIER[rid], implemented_in_v0_1=False,
-            acquisition=od(method='coin_purchase', purchase_cost_coins=prop['purchase_cost_coins'], purchase_cost_shells=prop['purchase_cost_shells'],
-                           unlock_fisher_level=prop['unlock_fisher_level']),
+            acquisition=od(method='coin_purchase', purchase_cost_coins=prop['purchase_cost_coins'], purchase_cost_shells=prop['purchase_cost_shells']),
             has_internal_levels=True, can_catch_rarities=prop['can_catch_rarities'], generates_shells=True,
             bonuses_per_level=od(note='Os valores são o bônus total naquele nível interno, não um acréscimo por nível. Chance de puxar um terço menor que no documento do proprietário (A-095); demais bônus como no documento.',
                                  rarity_efficiency=b['rarity_efficiency'], size_quality=b['size_quality'], shell_yield=b['shell_yield'], catch_success=b['catch_success']),
@@ -139,7 +139,8 @@ def main(wanted):
                           note='A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno.'),
             tradable_on_market=True, market_note='Uma vara negociada mantém o tier, o nível interno e os bônus.'))
         print('   vara', prop['display_name'])
-    rods['tier_ladder_reference']['note'] = 'Escada de progressão da seção 19 do GDD. As Varas 3 a 5 seguem docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md e entram junto com os mapas delas.'
+    # Items have no minimum Fisher level since M24-T09 (A-153): the note says so and is not overwritten.
+    rods['tier_ladder_reference'].setdefault('note', 'Escada de progressão da seção 19 do GDD.')
 
     for name, data in (('progression.json', progression), ('fish_catalog.json', catalog), ('maps.json', maps), ('rods.json', rods), ('economy.json', economy)):
         save(name, data)

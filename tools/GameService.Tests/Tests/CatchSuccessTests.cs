@@ -130,7 +130,7 @@ public sealed class CatchSuccessTests
         TestSupport.PlayFor(game, clock, 30 * 5);
         Assert.Equal(2 * pack - 10, game.Session.Save.BaitCharges["bait_01"]);
         Assert.Equal(ServiceError.BaitNoCharges, game.Gear.UseBait("bait_02").Error);
-        Assert.Equal(ServiceError.BaitLocked, game.Gear.BuyBait("bait_02").Error);
+        Assert.True(game.Gear.BuyBait("bait_02").Succeeded); // no minimum level (M24-T09), only the price
     }
 
     [Fact]
@@ -141,10 +141,9 @@ public sealed class CatchSuccessTests
         var gear = game.Gear.GetGear();
         Assert.Equal("boat_00", gear.BoatId);
         Assert.True(gear.Boats.First().Owned);
-        Assert.Equal(ServiceError.BoatLocked, game.Gear.BuyBoat("boat_01").Error);
+        Assert.Equal(ServiceError.NotEnoughCoins, game.Gear.BuyBoat("boat_01").Error);
 
         var boat1 = gear.Boats.Single(b => b.BoatId == "boat_01");
-        save.FisherLevel = 30;
         save.Coins = boat1.CostCoins;
         save.Shells = boat1.CostShells;
         var bought = game.Gear.BuyBoat("boat_01");

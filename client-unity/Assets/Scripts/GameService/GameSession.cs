@@ -159,6 +159,7 @@ namespace FishingIdle.GameService
                 UpdatedAtMs = now,
                 RngSeed = Rng.NewSeed(),
                 CurrentMapId = Config.StartingMap.Id,
+                FisherXpCurveVersion = Config.Progression.Fisher.XpCurveVersion,
             };
             // No rod yet: the tutorial has the player claim the free Starter Rod in the Shop (GDD section 40).
             for (var i = 0; i < Config.CardumeSize; i++)
@@ -199,6 +200,14 @@ namespace FishingIdle.GameService
             {
                 Save.FisherLevel = maxLevel;
                 Save.FisherXp = 0;
+            }
+
+            // A save from an older XP curve moves to the current one: total XP → level, never down (TD-038).
+            var curve = Fishing.FisherLevelRules.MoveToCurrentCurve(Config, Save);
+            if (curve != null)
+            {
+                _log("Fisher XP curve " + Save.FisherXpCurveVersion + ": level " + curve.LevelBefore + " -> " + curve.LevelAfter
+                     + ", " + curve.DollarsGained + " dollars for the milestones crossed.");
             }
 
             // Levels and charges stay inside what the config allows (an edited save, or a config that
