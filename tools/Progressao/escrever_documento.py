@@ -1,5 +1,7 @@
 """Escreve docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md a partir de docs/propostas/mapas_5_10.json."""
 import json, os
+if __name__ == "__main__":
+    raise SystemExit("Este script grava o formato antigo das varas (antes do M24-T13, TD-041) e não deve mais ser rodado: use tools/Progressao/niveis_100.py.")
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 P = json.load(open(os.path.join(ROOT, 'docs', 'propostas', 'mapas_5_10.json'), encoding='utf-8'))
 br = lambda n: '{:,}'.format(int(n)).replace(',', '.')
