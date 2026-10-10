@@ -142,6 +142,8 @@ class Game:
         self.carry = 0.0
         self.start = None            # first moment the game is open (the first session of a profile)
         self.rate_at = {}            # threshold (coins/s) -> first time the Crew earns that much
+        # Rod and boat levels (M24-T13) are bought when one costs at most 10 minutes of income, as niveis_100.py does.
+        self.p.upgrade_ok = lambda coins: coins <= (self.crew.coins_rate() + self.fishing_coins_per_second()) * 600.0
 
     def add_xp(self, xp):
         p, r = self.p, self.rules

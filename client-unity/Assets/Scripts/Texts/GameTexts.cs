@@ -737,7 +737,7 @@ namespace FishingIdle.Texts
             public const string Owned = "Já é sua";
             public const string AtLevel1 = "No Nível 1";
             public const string AtMax = "No nível máximo";
-            public const string Note = "Varas compradas ficam no Inventário (Perfil) e são equipadas na hora. Lá você também melhora, vende ou destrói varas.";
+            public const string Note = "Varas compradas ficam no Inventário (Perfil) e são equipadas na hora. Melhore o nível da sua vara aqui ou no Inventário (cada nível dá um pouco mais, até o Nível 100); lá você também vende ou destrói varas.";
             public const string Upgrade = "Melhorar";
             public const string SellRod = "Vender";
             public const string DestroyRod = "Destruir";
@@ -752,6 +752,11 @@ namespace FishingIdle.Texts
             public static string UpgradeForWithShells(int level, string coins, string shells) => "Nv. " + level + ": " + coins + " + " + shells + " Conchas";
             public static string SellFor(string coins) => "Vender (" + coins + ")";
             public static string MaxLevelOf(int max) => "Até o Nível " + max;
+
+            // Levels up to Nv.100 (M24-T13, A-156).
+            public static string LevelOf(int level, int max) => "Nível " + level + "/" + max;
+            public static string AtLevelNow(int level) => "No Nível " + level + " (agora)";
+            public static string UpgradeTo(int level) => "Melhorar → Nv. " + level;
             public static string SellTitle(string rod) => "Vender " + rod + "?";
             public static string SellBody(string coins) => "O jogo paga " + coins + " Moedas por ela. A vara sai do seu Inventário.";
             public static string DestroyTitle(string rod) => "Destruir " + rod + "?";
@@ -831,7 +836,7 @@ namespace FishingIdle.Texts
             public const string InUse = "Em uso";
             public const string Use = "Usar";
             public const string PutAway = "Guardar";
-            public const string BoatsNote = "O barco fica com você para sempre e aumenta a chance de puxar todo peixe. Troque quando quiser.";
+            public const string BoatsNote = "O barco fica com você para sempre e aumenta a chance de puxar todo peixe. Cada nível que você melhora soma um pouco mais, até o Nível 100. Troque quando quiser.";
             public const string BaitsNote = "A isca dura um número de tentativas: gasta 1 por tentativa, puxando o peixe ou não, também offline. Comprar de novo soma tentativas. Só uma isca fica em uso.";
             public const string OpenDetails = "Ver equipamento e chances";
 
@@ -842,6 +847,9 @@ namespace FishingIdle.Texts
             public static string CostCoinsAndShells(string coins, string shells) => coins + " Moedas + " + shells + " Conchas";
             public static string BoughtBoat(string boat) => "Barco " + boat + " comprado! Ele já está em uso.";
             public static string UsingBoat(string boat) => "Agora você pesca com o " + boat + ".";
+            public static string UpgradedBoat(string boat, int level) => boat + " agora está no Nível " + level + ".";
+            public static string NextLevelBonus(string percent) => "Próximo nível: +" + percent + " de chance";
+            public static string MaxLevelBonus(int max, string percent) => "No Nível " + max + ": +" + percent + " de chance";
             public static string BoughtBait(string bait, int charges) => bait + ": +" + (charges == 1 ? "1 tentativa." : Format.Number(charges) + " tentativas.");
             public static string UsingBait(string bait) => "Isca em uso: " + bait + ".";
             public const string BaitPutAway = "Isca guardada. As tentativas que sobraram ficam para depois.";
@@ -1120,6 +1128,8 @@ namespace FishingIdle.Texts
                 case "BoatNotFound": return "Esse barco não existe.";
                 case "BoatAlreadyOwned": return "Você já tem este barco.";
                 case "BoatNotOwned": return "Compre este barco antes de usá-lo.";
+                case "BoatAtMaxLevel": return "Este barco já está no nível máximo.";
+                case "BoatHasNoLevels": return "Este barco não tem níveis para melhorar.";
                 case "BaitNotFound": return "Essa isca não existe.";
                 case "BaitNoCharges": return "Essa isca acabou. Compre mais na Loja.";
                 case "NotEnoughShells": return "Conchas insuficientes.";
@@ -1204,7 +1214,10 @@ namespace FishingIdle.Texts
             public static string AtLeast(string file, string what, int min) => file + ": \"" + what + "\" precisa ser pelo menos " + min + ".";
             public static string BadPercentileBand(string category) => "progression.json: a categoria de tamanho \"" + category + "\" precisa de percentis entre 0 e 1, com o mínimo menor que o máximo.";
             public static string WeightsSumToZero(string file, string what) => file + ": os pesos de \"" + what + "\" somam zero — nada poderia ser sorteado.";
-            public static string RodUpgradeCostMissing(string rod, int level) => "rods.json: a vara \"" + rod + "\" não tem custo de melhoria para o nível " + level + " em upgrade_costs.";
+            public static string LevelCostInvalid(string file, string item) => file + ": \"" + item + ".upgrade_cost\" precisa de coins_first maior que zero, shells_first ≥ 0 e crescimentos entre 1 e 10, e o último nível precisa custar menos de 1 quintilhão.";
+            public static string LevelBonusInvalid(string file, string item) => file + ": os bônus de \"" + item + "\" não podem ser negativos, o do nível máximo precisa ser maior ou igual ao do Nv.1, e a chance de sucesso fica entre 0 e 1.";
+            public static string LegacyLevelsInvalid(string file, string item) => file + ": \"" + item + ".legacy_levels_v1\" precisa ter 10 níveis (os níveis 1 a 10 antigos), em ordem crescente, entre 1 e o nível máximo.";
+            public static string LevelCurveInvalid(string file, string what) => file + ": \"" + what + "\" precisa de nível máximo entre 1 e 1.000 e expoente da curva entre 0,1 e 10.";
             public static string FishXpTableGap(int level) => "progression.json: a tabela de XP do peixe (fish_level.xp_table) não tem o nível " + level + ".";
             public static string BadBaseStats(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de base_stats com Vida e Velocidade maiores que zero e Ataque e Defesa não negativos.";
             public static string XpTableGap(int level) => "progression.json: a tabela de XP do Pescador não tem o nível " + level + ".";
@@ -1370,15 +1383,24 @@ namespace FishingIdle.Texts
             public const string FishXpTable = "XP do peixe por nível";
             public const string FisherXpTable = "XP do Pescador por nível";
             public const string AquariumCapacity = "Capacidade do Aquário";
-            public const string FishLevelBonus = "Bônus de atributo por nível do peixe (%)";
+            public const string FishLevelBonus = "Bônus de atributo do peixe no nível máximo (%)";
+            public const string LevelCurveMax = "Nível máximo";
+            public const string LevelCurveExponent = "Expoente da curva (acima de 1: cada nível soma um pouco mais)";
+            public const string RodAtLevel1 = "No Nível 1";
+            public const string RodAtMaxLevel = "No nível máximo";
+            public const string LevelCostFirst = "1º nível";
+            public const string LevelCostGrowth = "× por nível";
+            public const string LevelShellsFirst = "Conchas 1º";
+            public const string LevelShellsGrowth = "Conchas ×";
+            public const string GearBonusAtMax = "Bônus máx.";
             public const string FeedRecovery = "Recuperação do XP investido ao alimentar (0 a 1)";
             public const string RodPrice = "Preço de compra (Moedas)";
             public const string RodRarityBonus = "Raridade";
             public const string RodSizeBonus = "Tamanho";
             public const string RodShellBonus = "Conchas";
             public const string RodCatchBonus = "Puxar";
-            public const string RodUpgradeCost = "Custo para este nível";
-            public const string RodsNote = "Bônus são o total naquele nível (0,10 = +10%). \"Puxar\" soma pontos na Chance de Sucesso da Captura (0,05 = +5%); ele também aparece na aba Sucesso da pesca.";
+            public const string RodUpgradeCost = "Custo de cada nível";
+            public const string RodsNote = "Bônus são o total naquele nível (0,10 = +10%); entre o Nível 1 e o máximo o jogo segue a curva (expoente abaixo). Um nível custa \"1º nível\" × \"× por nível\" elevado a (nível − 1), em Moedas e em Conchas. \"Puxar\" soma pontos na Chance de Sucesso da Captura (0,05 = +5%); ele também aparece na aba Sucesso da pesca.";
             public const string RodStarterCatchBonus = "Bônus de puxar da vara inicial, o Caniço Manso (0,05 = +5%)";
 
             // ---- Sucesso da pesca (docs/SISTEMA_SUCESSO_PESCA.md)
@@ -1394,7 +1416,7 @@ namespace FishingIdle.Texts
             public const string GearCoins = "Moedas";
             public const string GearShells = "Conchas";
             public const string GearCharges = "Tentativas";
-            public const string GearNote = "Bônus em pontos (0,05 = +5%). O barco de menor categoria é o inicial: todo jogador já tem e ele precisa custar 0. A isca gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline.";
+            public const string GearNote = "Bônus em pontos (0,05 = +5%). O barco de menor categoria é o inicial: todo jogador já tem, ele precisa custar 0 e não tem nível. Os outros barcos sobem de nível como as varas: \"Bônus\" no Nível 1, \"Bônus máx.\" no nível máximo. A isca gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline.";
             public const string SimulatorTitle = "Simulador de sucesso";
             public const string SimulatorNote = "Roda as regras do jogo com os números desta tela, mesmo os que ainda não foram salvos. A isca fica sempre ligada; o custo dela por hora é descontado das Moedas.";
             public const string SimMap = "Mapa";

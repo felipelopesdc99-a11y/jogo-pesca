@@ -14,6 +14,8 @@ namespace FishingIdle.GameService.Shop
         public string Name { get; internal set; }
         public string Description { get; internal set; }
         public int Tier { get; internal set; }
+
+        /// <summary>The bonus now: at the boat's level when owned, at Nv.1 otherwise.</summary>
         public double Bonus { get; internal set; }
         public long CostCoins { get; internal set; }
         public long CostShells { get; internal set; }
@@ -22,6 +24,25 @@ namespace FishingIdle.GameService.Shop
 
         /// <summary>Why buying is refused right now; None when it is possible.</summary>
         public ServiceError BuyBlocker { get; internal set; }
+
+        /// <summary>Whether the boat levels up (M24-T13); the starter boat does not.</summary>
+        public bool HasLevels { get; internal set; }
+
+        /// <summary>The boat's level (1 when not owned).</summary>
+        public int Level { get; internal set; } = 1;
+        public int MaxLevel { get; internal set; } = 1;
+        public double BonusAtLevel1 { get; internal set; }
+        public double BonusAtMax { get; internal set; }
+
+        /// <summary>The bonus one level up; equal to <see cref="Bonus"/> at the max level.</summary>
+        public double BonusNextLevel { get; internal set; }
+
+        /// <summary>Price of the next level; 0 at the max level or without levels.</summary>
+        public long NextUpgradeCoins { get; internal set; }
+        public long NextUpgradeShells { get; internal set; }
+
+        /// <summary>Why the next level cannot be bought right now; None when it can.</summary>
+        public ServiceError UpgradeBlocker { get; internal set; }
     }
 
     public sealed class BaitOfferView
@@ -90,6 +111,9 @@ namespace FishingIdle.GameService.Shop
         /// <summary>Switches to a boat already owned.</summary>
         ServiceResult<GearView> UseBoat(string boatId);
 
+        /// <summary>Takes an owned boat one level up, paying Moedas and Conchas (M24-T13).</summary>
+        ServiceResult<GearView> UpgradeBoat(string boatId);
+
         /// <summary>Buys one batch of a bait (its charges add up); it is put in use when no bait is.</summary>
         ServiceResult<GearView> BuyBait(string baitId);
 
@@ -130,7 +154,7 @@ namespace FishingIdle.GameService.Shop
                 RodBonus = config.RodBonusesAt(rod, rodLevel).CatchSuccess,
                 BoatId = boat.Id,
                 BoatName = boat.DisplayName,
-                BoatBonus = boat.CatchSuccessBonus,
+                BoatBonus = GearRules.BoatBonus(config, save, boat),
                 BaitId = bait?.Id,
                 BaitName = bait?.DisplayName,
                 BaitBonus = bait?.CatchSuccessBonus ?? 0.0,
@@ -153,18 +177,30 @@ namespace FishingIdle.GameService.Shop
 
             foreach (var b in config.Equipment.Boats.OrderBy(b => b.Tier))
             {
+                var owned = OwnsBoat(b);
+                var level = owned ? GearRules.BoatLevel(config, save, b) : 1;
+                var max = config.BoatMaxLevel(b);
                 view.Boats.Add(new BoatOfferView
                 {
                     BoatId = b.Id,
                     Name = b.DisplayName,
                     Description = b.Description,
                     Tier = b.Tier,
-                    Bonus = b.CatchSuccessBonus,
+                    Bonus = config.BoatBonusAt(b, level),
                     CostCoins = b.CostCoins,
                     CostShells = b.CostShells,
-                    Owned = OwnsBoat(b),
+                    Owned = owned,
                     InUse = b.Id == boat.Id,
                     BuyBlocker = BoatBlocker(b),
+                    HasLevels = b.HasLevels,
+                    Level = level,
+                    MaxLevel = max,
+                    BonusAtLevel1 = config.BoatBonusAt(b, 1),
+                    BonusAtMax = config.BoatBonusAt(b, max),
+                    BonusNextLevel = config.BoatBonusAt(b, Math.Min(max, level + 1)),
+                    NextUpgradeCoins = config.BoatUpgradeCost(b, level),
+                    NextUpgradeShells = config.BoatUpgradeShellCost(b, level),
+                    UpgradeBlocker = BoatUpgradeBlocker(b),
                 });
             }
 
@@ -231,6 +267,33 @@ namespace FishingIdle.GameService.Shop
             return ServiceResult<GearView>.Ok(GetGear());
         }
 
+        public ServiceResult<GearView> UpgradeBoat(string boatId)
+        {
+            if (!Config.TryGetBoat(boatId, out var boat))
+            {
+                return ServiceResult<GearView>.Fail(ServiceError.BoatNotFound);
+            }
+
+            var blocker = BoatUpgradeBlocker(boat);
+            if (blocker != ServiceError.None)
+            {
+                return ServiceResult<GearView>.Fail(blocker);
+            }
+
+            var level = GearRules.BoatLevel(Config, Save, boat);
+            var coins = Config.BoatUpgradeCost(boat, level);
+            var shells = Config.BoatUpgradeShellCost(boat, level);
+
+            // Cycles completed before the upgrade are settled at the old level.
+            _fishing.Sync();
+            Save.Coins -= coins;
+            Save.Shells -= shells;
+            Save.BoatLevels[boat.Id] = level + 1;
+            _session.Persist();
+            _session.Log("Upgraded boat " + boat.Id + " to level " + (level + 1) + " for " + coins + " coins and " + shells + " shells.");
+            return ServiceResult<GearView>.Ok(GetGear());
+        }
+
         public ServiceResult<GearView> BuyBait(string baitId)
         {
             if (!Config.TryGetBait(baitId, out var bait))
@@ -287,6 +350,18 @@ namespace FishingIdle.GameService.Shop
             if (OwnsBoat(boat)) return ServiceError.BoatAlreadyOwned;
             if (Save.Coins < boat.CostCoins) return ServiceError.NotEnoughCoins;
             if (Save.Shells < boat.CostShells) return ServiceError.NotEnoughShells;
+            return ServiceError.None;
+        }
+
+        private ServiceError BoatUpgradeBlocker(BoatConfig boat)
+        {
+            if (!boat.HasLevels) return ServiceError.BoatHasNoLevels;
+            if (!OwnsBoat(boat)) return ServiceError.BoatNotOwned;
+            var level = GearRules.BoatLevel(Config, Save, boat);
+            var coins = Config.BoatUpgradeCost(boat, level);
+            if (level >= Config.BoatMaxLevel(boat) || coins <= 0) return ServiceError.BoatAtMaxLevel;
+            if (coins >= LevelCurve.Unaffordable || Save.Coins < coins) return ServiceError.NotEnoughCoins;
+            if (Save.Shells < Config.BoatUpgradeShellCost(boat, level)) return ServiceError.NotEnoughShells;
             return ServiceError.None;
         }
 

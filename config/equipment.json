@@ -3,6 +3,11 @@
   "config_schema_version": 1,
   "balance_status": "provisional",
   "description": "Barcos e iscas (docs/SISTEMA_SUCESSO_PESCA.md). Os dois só aumentam a Chance de Sucesso da Captura, somando pontos percentuais à chance-base da raridade (progression.json → rarity.tiers → catch_success_base) e aos da vara (rods.json → catch_success). Desde 10/10/2026 (M24-T09, A-153) barcos e iscas não têm nível mínimo para comprar: basta ter as Moedas e as Conchas. Todos os números são provisórios.",
+  "boat_levels": {
+    "max_level": 100,
+    "bonus_curve_exponent": 1.2,
+    "note": "Desde 10/10/2026 (M24-T13, A-156) cada barco comprado tem nível, do 1 ao max_level. catch_success_bonus é o bônus no Nv.1 (o de antes) e catch_success_bonus_at_max_level o do nível máximo (~3×); o bônus no nível N é Nv.1 + (máx − Nv.1) × ((N − 1) ÷ (max_level − 1)) ^ bonus_curve_exponent. Melhorar de N para N + 1 custa coins_first × coins_growth ^ (N − 1) Moedas e shells_first × shells_growth ^ (N − 1) Conchas, arredondados como as varas. O barco inicial não tem nível (has_levels false): o bônus dele é 0. Números gerados por tools/Progressao/niveis_100.py."
+  },
   "boats": [
     {
       "id": "boat_00",
@@ -10,6 +15,7 @@
       "description": "Uma canoa simples. Foi aqui que tudo começou.",
       "tier": 0,
       "catch_success_bonus": 0.0,
+      "has_levels": false,
       "cost_coins": 0,
       "cost_shells": 0,
       "note": "Todo jogador já tem."
@@ -20,8 +26,16 @@
       "description": "Mais firme e confiável para jornadas maiores.",
       "tier": 1,
       "catch_success_bonus": 0.02,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.06,
       "cost_coins": 12000,
-      "cost_shells": 5
+      "cost_shells": 5,
+      "upgrade_cost": {
+        "coins_first": 600,
+        "coins_growth": 1.14,
+        "shells_first": 1,
+        "shells_growth": 1.03
+      }
     },
     {
       "id": "boat_02",
@@ -29,8 +43,16 @@
       "description": "Seu primeiro motor muda a forma de explorar as águas.",
       "tier": 2,
       "catch_success_bonus": 0.04,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.12,
       "cost_coins": 45000,
-      "cost_shells": 15
+      "cost_shells": 15,
+      "upgrade_cost": {
+        "coins_first": 2250,
+        "coins_growth": 1.14,
+        "shells_first": 1,
+        "shells_growth": 1.03
+      }
     },
     {
       "id": "boat_03",
@@ -38,8 +60,16 @@
       "description": "Feito para pescadores que já enfrentam peixes de verdade.",
       "tier": 3,
       "catch_success_bonus": 0.06,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.18,
       "cost_coins": 160000,
-      "cost_shells": 25
+      "cost_shells": 25,
+      "upgrade_cost": {
+        "coins_first": 8000,
+        "coins_growth": 1.14,
+        "shells_first": 1,
+        "shells_growth": 1.03
+      }
     },
     {
       "id": "boat_04",
@@ -47,8 +77,16 @@
       "description": "Conforto e estabilidade para águas mais exigentes.",
       "tier": 4,
       "catch_success_bonus": 0.08,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.24,
       "cost_coins": 600000,
-      "cost_shells": 120
+      "cost_shells": 120,
+      "upgrade_cost": {
+        "coins_first": 30000,
+        "coins_growth": 1.14,
+        "shells_first": 6,
+        "shells_growth": 1.03
+      }
     },
     {
       "id": "boat_05",
@@ -56,8 +94,16 @@
       "description": "O auge da pesca esportiva. Potência, controle e presença.",
       "tier": 5,
       "catch_success_bonus": 0.1,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.3,
       "cost_coins": 2500000,
-      "cost_shells": 500
+      "cost_shells": 500,
+      "upgrade_cost": {
+        "coins_first": 125000,
+        "coins_growth": 1.14,
+        "shells_first": 25,
+        "shells_growth": 1.03
+      }
     }
   ],
   "baits_note": "Cada compra é um pacote de cargas; cada tentativa de pesca (online ou offline) gasta 1 carga da isca em uso, pegando o peixe ou não. Quando as cargas acabam, a pesca continua sem isca.",

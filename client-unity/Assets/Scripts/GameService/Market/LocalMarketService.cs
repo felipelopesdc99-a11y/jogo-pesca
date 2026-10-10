@@ -444,7 +444,7 @@ namespace FishingIdle.GameService.Market
             if (rods.Count > 0 && rodRoll < rodChance)
             {
                 var rod = rods[rng.NextIntInclusive(0, rods.Count - 1)];
-                var level = rod.HasInternalLevels ? LowBiasedLevel(rng, Config.RodMaxLevel(rod)) : 1;
+                var level = rod.HasInternalLevels ? LowBiasedLevel(rng, Math.Min(Config.MarketBots.Supply.MaxRodLevel, Config.RodMaxLevel(rod))) : 1;
                 return new MarketGoods
                 {
                     Kind = MarketGoods.KindRod,

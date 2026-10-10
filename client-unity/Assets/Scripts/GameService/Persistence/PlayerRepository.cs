@@ -398,7 +398,18 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 14;
             }
 
+            if (save.SaveVersion == 14)
+            {
+                // v15 gives rods, boats and fish levels up to Nv.100 (M24-T13). Rods and fish were on the old curve
+                // (Nv.1 to Nv.10): GameSession moves them to the current one, never down (TD-041). Boats start at Nv.1.
+                save.BoatLevels = new Dictionary<string, int>();
+                save.RodLevelCurveVersion = 1;
+                save.FishLevelCurveVersion = 1;
+                save.SaveVersion = 15;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
+            save.BoatLevels = save.BoatLevels ?? new Dictionary<string, int>();
             save.BaitCharges = save.BaitCharges ?? new Dictionary<string, int>();
 
             save.Tutorial = save.Tutorial ?? new TutorialState { Completed = true, Step = "done" };
@@ -540,6 +551,7 @@ namespace FishingIdle.GameService.Persistence
                 if (save.Crew.CoinsEarned < 0 || save.Crew.XpEarned < 0 || save.Crew.LastCreditedAtMs < 0) problems.Add("crew negative values");
                 if (double.IsNaN(save.Crew.CoinsCarry) || double.IsNaN(save.Crew.XpCarry)) problems.Add("crew carry is not a number");
             }
+            if (save.BoatLevels != null && save.BoatLevels.Any(b => string.IsNullOrWhiteSpace(b.Key) || b.Value < 1)) problems.Add("boat levels malformed");
             if (save.Upgrades == null || save.Upgrades.Levels == null) problems.Add("upgrades missing");
             else if (save.Upgrades.Levels.Any(u => string.IsNullOrWhiteSpace(u.Key) || u.Value < 0)) problems.Add("upgrades have malformed levels");
 

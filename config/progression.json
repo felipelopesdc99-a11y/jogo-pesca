@@ -4031,52 +4031,428 @@
     "total_xp_level_1_to_1000": 188953530
   },
   "fish_level": {
-    "max_level": 10,
-    "stat_bonus_per_level_percent": 4.0,
-    "stat_bonus_note": "Aplicado como (1 + 0,04 × (nível − 1)) sobre cada atributo derivado. No nível 10 são +36%.",
+    "max_level": 100,
+    "level_curve_version": 2,
+    "stat_bonus_at_max_level_percent": 108.0,
+    "stat_bonus_curve_exponent": 1.2,
+    "stat_bonus_note": "Desde 10/10/2026 (M24-T13, A-156): cada atributo derivado é multiplicado por (1 + bônus), com bônus = 108,0% × ((nível − 1) ÷ 99) ^ 1,2: 0 no Nv.1, pequenos passos no começo e +108,0% no Nv.100 (3× os +36% do Nv.10 de antes).",
     "player_distributed_stat_points": false,
     "xp_curve_generator": {
-      "formula": "arredondar(base × nível^expoente) para o múltiplo de 5 mais próximo",
-      "base": 35.0,
-      "exponent": 1.5
+      "formula": "máximo(minimo, base × nível^expoente), arredondado para o múltiplo de 5 mais próximo",
+      "base": 0.11,
+      "exponent": 2.0,
+      "minimum": 5
     },
-    "total_xp_level_1_to_10": 3885,
+    "total_xp_level_1_to_max": 36160,
+    "legacy_levels_v1": [
+      1,
+      8,
+      13,
+      17,
+      22,
+      26,
+      30,
+      34,
+      37,
+      41
+    ],
+    "legacy_note": "Para qual nível novo vai um peixe que estava no nível 1 a 10 da curva antiga (level_curve_version 1, +4% por nível): o menor com bônus maior ou igual. O XP que ele tinha dentro do nível é somado de novo.",
     "xp_table": [
       {
         "level": 1,
-        "xp_to_next_level": 35
+        "xp_to_next_level": 5
       },
       {
         "level": 2,
-        "xp_to_next_level": 100
+        "xp_to_next_level": 5
       },
       {
         "level": 3,
-        "xp_to_next_level": 180
+        "xp_to_next_level": 5
       },
       {
         "level": 4,
-        "xp_to_next_level": 280
+        "xp_to_next_level": 5
       },
       {
         "level": 5,
-        "xp_to_next_level": 390
+        "xp_to_next_level": 5
       },
       {
         "level": 6,
-        "xp_to_next_level": 515
+        "xp_to_next_level": 5
       },
       {
         "level": 7,
-        "xp_to_next_level": 650
+        "xp_to_next_level": 5
       },
       {
         "level": 8,
-        "xp_to_next_level": 790
+        "xp_to_next_level": 5
       },
       {
         "level": 9,
-        "xp_to_next_level": 945
+        "xp_to_next_level": 10
+      },
+      {
+        "level": 10,
+        "xp_to_next_level": 10
+      },
+      {
+        "level": 11,
+        "xp_to_next_level": 15
+      },
+      {
+        "level": 12,
+        "xp_to_next_level": 15
+      },
+      {
+        "level": 13,
+        "xp_to_next_level": 20
+      },
+      {
+        "level": 14,
+        "xp_to_next_level": 20
+      },
+      {
+        "level": 15,
+        "xp_to_next_level": 25
+      },
+      {
+        "level": 16,
+        "xp_to_next_level": 30
+      },
+      {
+        "level": 17,
+        "xp_to_next_level": 30
+      },
+      {
+        "level": 18,
+        "xp_to_next_level": 35
+      },
+      {
+        "level": 19,
+        "xp_to_next_level": 40
+      },
+      {
+        "level": 20,
+        "xp_to_next_level": 45
+      },
+      {
+        "level": 21,
+        "xp_to_next_level": 50
+      },
+      {
+        "level": 22,
+        "xp_to_next_level": 55
+      },
+      {
+        "level": 23,
+        "xp_to_next_level": 60
+      },
+      {
+        "level": 24,
+        "xp_to_next_level": 65
+      },
+      {
+        "level": 25,
+        "xp_to_next_level": 70
+      },
+      {
+        "level": 26,
+        "xp_to_next_level": 75
+      },
+      {
+        "level": 27,
+        "xp_to_next_level": 80
+      },
+      {
+        "level": 28,
+        "xp_to_next_level": 85
+      },
+      {
+        "level": 29,
+        "xp_to_next_level": 95
+      },
+      {
+        "level": 30,
+        "xp_to_next_level": 100
+      },
+      {
+        "level": 31,
+        "xp_to_next_level": 105
+      },
+      {
+        "level": 32,
+        "xp_to_next_level": 115
+      },
+      {
+        "level": 33,
+        "xp_to_next_level": 120
+      },
+      {
+        "level": 34,
+        "xp_to_next_level": 125
+      },
+      {
+        "level": 35,
+        "xp_to_next_level": 135
+      },
+      {
+        "level": 36,
+        "xp_to_next_level": 145
+      },
+      {
+        "level": 37,
+        "xp_to_next_level": 150
+      },
+      {
+        "level": 38,
+        "xp_to_next_level": 160
+      },
+      {
+        "level": 39,
+        "xp_to_next_level": 165
+      },
+      {
+        "level": 40,
+        "xp_to_next_level": 175
+      },
+      {
+        "level": 41,
+        "xp_to_next_level": 185
+      },
+      {
+        "level": 42,
+        "xp_to_next_level": 195
+      },
+      {
+        "level": 43,
+        "xp_to_next_level": 205
+      },
+      {
+        "level": 44,
+        "xp_to_next_level": 215
+      },
+      {
+        "level": 45,
+        "xp_to_next_level": 225
+      },
+      {
+        "level": 46,
+        "xp_to_next_level": 235
+      },
+      {
+        "level": 47,
+        "xp_to_next_level": 245
+      },
+      {
+        "level": 48,
+        "xp_to_next_level": 255
+      },
+      {
+        "level": 49,
+        "xp_to_next_level": 265
+      },
+      {
+        "level": 50,
+        "xp_to_next_level": 275
+      },
+      {
+        "level": 51,
+        "xp_to_next_level": 285
+      },
+      {
+        "level": 52,
+        "xp_to_next_level": 295
+      },
+      {
+        "level": 53,
+        "xp_to_next_level": 310
+      },
+      {
+        "level": 54,
+        "xp_to_next_level": 320
+      },
+      {
+        "level": 55,
+        "xp_to_next_level": 335
+      },
+      {
+        "level": 56,
+        "xp_to_next_level": 345
+      },
+      {
+        "level": 57,
+        "xp_to_next_level": 355
+      },
+      {
+        "level": 58,
+        "xp_to_next_level": 370
+      },
+      {
+        "level": 59,
+        "xp_to_next_level": 385
+      },
+      {
+        "level": 60,
+        "xp_to_next_level": 395
+      },
+      {
+        "level": 61,
+        "xp_to_next_level": 410
+      },
+      {
+        "level": 62,
+        "xp_to_next_level": 425
+      },
+      {
+        "level": 63,
+        "xp_to_next_level": 435
+      },
+      {
+        "level": 64,
+        "xp_to_next_level": 450
+      },
+      {
+        "level": 65,
+        "xp_to_next_level": 465
+      },
+      {
+        "level": 66,
+        "xp_to_next_level": 480
+      },
+      {
+        "level": 67,
+        "xp_to_next_level": 495
+      },
+      {
+        "level": 68,
+        "xp_to_next_level": 510
+      },
+      {
+        "level": 69,
+        "xp_to_next_level": 525
+      },
+      {
+        "level": 70,
+        "xp_to_next_level": 540
+      },
+      {
+        "level": 71,
+        "xp_to_next_level": 555
+      },
+      {
+        "level": 72,
+        "xp_to_next_level": 570
+      },
+      {
+        "level": 73,
+        "xp_to_next_level": 585
+      },
+      {
+        "level": 74,
+        "xp_to_next_level": 600
+      },
+      {
+        "level": 75,
+        "xp_to_next_level": 620
+      },
+      {
+        "level": 76,
+        "xp_to_next_level": 635
+      },
+      {
+        "level": 77,
+        "xp_to_next_level": 650
+      },
+      {
+        "level": 78,
+        "xp_to_next_level": 670
+      },
+      {
+        "level": 79,
+        "xp_to_next_level": 685
+      },
+      {
+        "level": 80,
+        "xp_to_next_level": 705
+      },
+      {
+        "level": 81,
+        "xp_to_next_level": 720
+      },
+      {
+        "level": 82,
+        "xp_to_next_level": 740
+      },
+      {
+        "level": 83,
+        "xp_to_next_level": 760
+      },
+      {
+        "level": 84,
+        "xp_to_next_level": 775
+      },
+      {
+        "level": 85,
+        "xp_to_next_level": 795
+      },
+      {
+        "level": 86,
+        "xp_to_next_level": 815
+      },
+      {
+        "level": 87,
+        "xp_to_next_level": 835
+      },
+      {
+        "level": 88,
+        "xp_to_next_level": 850
+      },
+      {
+        "level": 89,
+        "xp_to_next_level": 870
+      },
+      {
+        "level": 90,
+        "xp_to_next_level": 890
+      },
+      {
+        "level": 91,
+        "xp_to_next_level": 910
+      },
+      {
+        "level": 92,
+        "xp_to_next_level": 930
+      },
+      {
+        "level": 93,
+        "xp_to_next_level": 950
+      },
+      {
+        "level": 94,
+        "xp_to_next_level": 970
+      },
+      {
+        "level": 95,
+        "xp_to_next_level": 995
+      },
+      {
+        "level": 96,
+        "xp_to_next_level": 1015
+      },
+      {
+        "level": 97,
+        "xp_to_next_level": 1035
+      },
+      {
+        "level": 98,
+        "xp_to_next_level": 1055
+      },
+      {
+        "level": 99,
+        "xp_to_next_level": 1080
       }
     ]
   },
@@ -4228,7 +4604,7 @@
         "exceptional",
         "perfect"
       ],
-      "min_level": 2
+      "min_level": 8
     }
   },
   "fishing": {

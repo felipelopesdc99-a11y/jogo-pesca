@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 14;
+        public const int CurrentVersion = 15;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -76,6 +76,19 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Boats bought (the starter boat is always owned and not listed).</summary>
         public List<string> OwnedBoatIds { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Level of each boat bought, by boat id (M24-T13). A boat missing here is at Nv.1. Added in save version 15.
+        /// </summary>
+        public Dictionary<string, int> BoatLevels { get; set; } = new Dictionary<string, int>();
+
+        /// <summary>
+        /// The rod and fish level curves this save's levels are on (rods.json → upgrade_rules.level_curve_version and
+        /// progression.json → fish_level.level_curve_version). 1 = the old Nv.1 to Nv.10; the game moves the levels to the
+        /// current curve on load, never down (M24-T13, TD-041). 0 = nothing to move (a new player). Added in save version 15.
+        /// </summary>
+        public int RodLevelCurveVersion { get; set; }
+        public int FishLevelCurveVersion { get; set; }
 
         /// <summary>Charges left of each bait bought, by bait id.</summary>
         public Dictionary<string, int> BaitCharges { get; set; } = new Dictionary<string, int>();

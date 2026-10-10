@@ -107,8 +107,8 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IAquariumService` | `LocalAquariumService` | Guardar capturas, ficha do peixe, alimentar, vender do Aquário |
 | `ICardumeService` | `LocalCardumeService` | Posições 1–6, bônus 6/6, Força privada |
 | `IMapService` | `LocalMapService` | Mapas, requisitos, viagem de 30s (pausa e retoma a pesca) |
-| `IShopService` | `LocalShopService` | Loja: varas à venda e compra |
-| `IGearService` | `LocalGearService` | Barcos e iscas: comprar, usar, guardar; equipamento em uso e chance de puxar por raridade |
+| `IShopService` | `LocalShopService` | Loja: varas à venda e compra; a oferta mostra o nível da sua vara, os bônus agora e o preço do próximo nível (melhorar continua em `IProfileService.UpgradeRod`) |
+| `IGearService` | `LocalGearService` | Barcos e iscas: comprar, usar, guardar; melhorar o nível do barco (`UpgradeBoat`, M24-T13); equipamento em uso e chance de puxar por raridade |
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
 | `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
 | `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
@@ -171,7 +171,8 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 | XP do Pescador | XP base da espécie × raridade × multiplicador da categoria, arredondado, mínimo 1 | `fish_catalog.json`, `progression.json` |
 | Conchas | Só peixe puxado e só varas que geram Conchas; chance base × (1 + bônus da vara) | `economy.json → shells` |
 | Preço de venda | Valor base × raridade × (1 + influência × (percentil − 0,5)), mínimo configurável | `economy.json`, `progression.json` |
-| Atributos do peixe | Base × raridade × (1 + influência × (percentil − 0,5)) × (1 + bônus por nível × (nível − 1)) | `fish_catalog.json`, `progression.json` |
+| Atributos do peixe | Base × raridade × (1 + influência × (percentil − 0,5)) × (1 + bônus do nível na curva, `GameConfig.FishStatBonus`) | `fish_catalog.json`, `progression.json → fish_level` |
+| Níveis de vara, barco e peixe (M24-T13, TD-041) | `LevelCurve.Value`: Nv.1 + (máx − Nv.1) × ((N − 1) ÷ (máx − 1)) ^ expoente; preço do nível N → N + 1 = `LevelCurve.Cost` (primeiro × crescimento ^ (N − 1), arredondado a 3 algarismos), em Moedas e Conchas. `GameConfig.RodBonusesAt / RodUpgradeCost / RodUpgradeShellCost / BoatBonusAt / BoatUpgradeCost / BoatUpgradeShellCost / FishStatBonus` | `rods.json → upgrade_rules, bonuses_at_level_1, bonuses_at_max_level, upgrade_cost`; `equipment.json → boat_levels, boats[].upgrade_cost`; `progression.json → fish_level` |
 | XP como alimento | XP base × raridade × fator de tamanho + 50% do XP investido | `progression.json → feeding` |
 | Bônus do Cardume | +3% nos quatro atributos com 6/6, só enquanto completo | `arena.json → cardume.complete_bonus` |
 | Força do Cardume | Σ (Ataque×2 + Defesa×1,5 + Vida÷10 + Velocidade×0,5) × escala | `arena.json → cardume_strength` |
@@ -179,7 +180,7 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 | Intervalo de ataque | 2 s × (100 ÷ Velocidade) | `arena.json → combat.speed` |
 | Dano | Ataque × sorteio(0,97–1,03) × (1 − Defesa ÷ (Defesa + 100)), mínimo 10% do Ataque | `arena.json → combat` |
 | Taxa do Mercado | 3% do preço, arredondado, descontada na venda concluída | `economy.json → market_fixed_price` |
-| Referência do mercado simulado | Peixe: venda ao NPC × 1,5 × (1 + 15% × (nível − 1)); vara: (preço + melhorias) × 0,8 | `market_bots.json → valuation` |
+| Referência do mercado simulado | Peixe: venda ao NPC × 1,5 × (1 + 3,37% × (nível − 1)); vara: (preço + melhorias) × 0,8 | `market_bots.json → valuation` |
 | Lance mínimo do Leilão | 1º lance ≥ lance inicial; depois ≥ arredondar para cima(lance atual × 1,03) | `economy.json → auction` |
 | Taxa por lance | 1% do lance, arredondado, cobrada a cada lance e nunca devolvida | `economy.json → auction` |
 | Encerramento antecipado | Vendedor recebe o maior lance − 3%; no fim normal, sem taxa | `economy.json → auction` |
@@ -244,7 +245,20 @@ antigos entram com o Barco Inicial e sem isca; v11 adiciona os Dólares (`Dollar
 (`FisherXpCurveVersion`; saves antigos entram com a curva 1); v13 adiciona a Tripulação (`CrewState`: unidades por
 id, cursor `LastCreditedAtMs`, frações guardadas e total rendido; saves antigos entram com ela vazia e o cursor é
 posto em "agora" ao carregar); v14 adiciona as Melhorias (`UpgradesState.Levels`: nível por id; saves antigos entram
-sem nenhuma). Cada passo está em `SaveMigrations.Upgrade`.
+sem nenhuma); v15 adiciona o nível dos barcos (`BoatLevels`: nível por id de barco, ausente = Nv.1) e as curvas de nível
+de varas e peixes (`RodLevelCurveVersion`, `FishLevelCurveVersion`; saves antigos entram com 1, a curva Nv.1–Nv.10).
+Cada passo está em `SaveMigrations.Upgrade`.
+- Troca de curva de nível de varas e peixes (TD-041): ao carregar, depois da curva do Pescador, o `GameSession` chama
+  `LevelCurveMigration.MoveToCurrentCurves`. Um save na curva 1 tem cada vara (Inventário e Mercado) levada ao nível
+  de `rods.json → legacy_levels_v1` e cada peixe (Aquário e Mercado) ao de `fish_level.legacy_levels_v1` (com o XP que
+  ele tinha dentro do nível aplicado de novo), nunca para baixo; depois a curva do save passa a ser a atual. Um save
+  com 0 (jogador novo, criado já na curva atual) não é mexido. Mudou uma curva de um jeito que mexe em quem já joga?
+  Gere um mapa novo (`tools/Progressao/niveis_100.py`), aumente `level_curve_version` e trate a versão anterior na
+  migração.
+- Barcos com nível (M24-T13): `IGearService.UpgradeBoat` cobra Moedas e Conchas do próximo nível (`GameConfig.
+  BoatUpgradeCost / BoatUpgradeShellCost`), chama `Sync` da pesca antes (os ciclos já completos ficam no nível antigo)
+  e grava `BoatLevels`. O bônus em uso vem de `GearRules.BoatBonus` (nível do save), usado pela pesca
+  (`SpendAttempt`), pela tela (`GetGear`) e pelo `CatchSimulator` (parâmetro `boatLevel`).
 - Tripulação (TD-039): `LocalCrewService.Sync` paga a renda de `LastCreditedAtMs` até agora (relógio da sessão, que
   nunca volta) e move o cursor; um intervalo maior que `online_gap_seconds` conta como offline (100% e depois a taxa
   reduzida até o teto) e vira `CrewOfflineReport`. Só a renda grava o save no máximo a cada 30 s; contratar e fechar

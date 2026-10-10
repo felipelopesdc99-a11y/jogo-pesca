@@ -3,6 +3,53 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.48] — 10/10/2026
+
+Etapa 4 do novo escopo idle: varas, barcos e peixes até o Nv.100 (M24-T13, A-156).
+
+### Adicionado
+
+- **Barcos com nível** (Nv.1 ao Nv.100): cada barco comprado começa no Nv.1 com o bônus de antes e chega a 3× no
+  Nv.100; cada nível custa Moedas e Conchas (o 1º, 5% do preço do barco). O barco inicial não tem nível. Botão
+  "Melhorar → Nv. N" na ficha do barco na Loja, com o nível ("Nível 12/100"), o próximo nível e o preço.
+- Na Loja, a ficha da vara que você tem mostra "Nível 37/100", os bônus de agora e "Melhorar → Nv. 38" com o preço.
+- `config/rods.json`: `upgrade_rules.bonus_curve_exponent`, `level_curve_version`; por vara `bonuses_at_level_1`,
+  `bonuses_at_max_level`, `upgrade_cost` e `legacy_levels_v1`. `config/equipment.json`: `boat_levels` e, por barco,
+  `has_levels`, `catch_success_bonus_at_max_level`, `upgrade_cost`. `config/market_bots.json`: `supply.max_rod_level`.
+- `GameService/Config/LevelCurve.cs` (curva e preço dos níveis), `GameService/Persistence/LevelCurveMigration.cs`,
+  `IGearService.UpgradeBoat`, erros "Este barco já está no nível máximo." e "Este barco não tem níveis para melhorar."
+- Save versão 15 (`BoatLevels`, `RodLevelCurveVersion`, `FishLevelCurveVersion`) (TD-041).
+- `tools/Progressao/niveis_100.py` (gera os números e simula o ritmo; resultado em `docs/propostas/niveis_100.json`)
+  e `tools/Progressao/curva_niveis.py` (as mesmas contas do jogo, para as simulações).
+- Testes `ItemLevelsTests`: curva e arredondamento dos preços, varas até o Nv.100, teto de 95%, atributos do peixe,
+  melhorar barco (custos, erros, bônus na pesca, save), ficha da Loja, migração v14→v15 sem perder força.
+- Decisões pendentes OD-057 (M24-T14: subir o nível do peixe deve custar Moedas e Conchas?) e OD-058 (M24-T15: com o
+  equipamento no Nv.100 o Pescador chega ao Nv.1000 mais cedo: ~50 dias em vez de ~70 com a Tripulação, ~54 em vez
+  de ~75 só pescando, jogo aberto).
+
+### Mudado
+
+- **Varas até o Nv.100** (antes Nv.10): Nv.1 igual a antes, Nv.100 com 3× o bônus do Nv.10 de antes, passos pequenos
+  no começo. O 1º nível custa um terço do de antes em Moedas e um quarto em Conchas, e cada nível 14% a mais em Moedas
+  e 3% a mais em Conchas (Vara 1: 500 Moedas + 1 Concha no 1º nível, antes 1.500 + 2).
+- **Peixes até o Nv.100** (antes Nv.10): bônus de atributo de 0 no Nv.1 a +108% no Nv.100 (antes +4% por nível, +36%
+  no Nv.10); XP por nível pequeno no começo (5 XP); 2.465 XP até o Nv.41 (a força do Nv.10 de antes, que pedia
+  3.885 XP) e 36.160 XP até o Nv.100. Continua sem custo em Moedas ou Conchas.
+- Arena: os adversários mais fortes têm peixes no Nv.41 (antes 10). Mercado: peixes dos vendedores até o Nv.26 (antes
+  6), prêmio de 3,37% por nível (antes 15%), varas até o Nv.41. Aviso de comida valiosa a partir do Nv.8 (antes 2).
+- Quem já joga: cada vara e cada peixe vão para o nível novo com bônus igual ou maior (por exemplo Vara 1 Nv.10 →
+  Nv.41, peixe Nv.10 → Nv.41); barcos começam no Nv.1.
+- Perfil: bônus do barco e da vara com uma casa decimal quando não é inteiro; a dica do barco mostra o nível.
+- Painel de Balanceamento: varas com Nível 1 / nível máximo / custo, barcos com bônus máximo e custo de nível, peixe
+  com bônus no nível máximo e expoente.
+- `tools/Progressao/simular_progressao.py` lê o formato novo (níveis de vara e barco até o Nv.100, o mais barato
+  primeiro); nos simuladores da Tripulação e das Melhorias um nível é comprado quando custa até 10 minutos de renda.
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity: a Loja, o Perfil e o Painel precisam do
+  Play do proprietário para serem declarados verificados.
+
 ## [0.2.0-m21.47] — 10/10/2026
 
 Etapa 3 do novo escopo idle: Melhorias compradas (M24-T06 e M24-T11, A-155).

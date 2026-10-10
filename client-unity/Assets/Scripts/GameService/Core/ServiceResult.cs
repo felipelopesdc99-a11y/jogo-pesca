@@ -60,6 +60,8 @@ namespace FishingIdle.GameService.Core
         BoatNotFound,
         BoatAlreadyOwned,
         BoatNotOwned,
+        BoatAtMaxLevel,
+        BoatHasNoLevels,
         BaitNotFound,
         BaitNoCharges,
         NotEnoughShells,

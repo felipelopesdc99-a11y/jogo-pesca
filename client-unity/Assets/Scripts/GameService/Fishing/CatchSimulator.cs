@@ -45,15 +45,15 @@ namespace FishingIdle.GameService.Fishing
 
     /// <summary>
     /// Runs the real Catch Success rules for a gear combination, without a save: map + rod + level +
-    /// boat + bait + N attempts (docs/SISTEMA_SUCESSO_PESCA.md, section 22). The bait is assumed
+    /// boat (+ its level, M24-T13) + bait + N attempts (docs/SISTEMA_SUCESSO_PESCA.md, section 22). The bait is assumed
     /// kept on for every attempt.
     /// </summary>
     public static class CatchSimulator
     {
-        public static CatchSimulationResult Run(GameConfig config, MapConfig map, RodConfig rod, int rodLevel, BoatConfig boat, BaitConfig bait, int attempts, ulong seed)
+        public static CatchSimulationResult Run(GameConfig config, MapConfig map, RodConfig rod, int rodLevel, BoatConfig boat, BaitConfig bait, int attempts, ulong seed, int boatLevel = 1)
         {
             var rng = new Rng(seed);
-            var gear = (boat?.CatchSuccessBonus ?? 0) + (bait?.CatchSuccessBonus ?? 0);
+            var gear = (boat != null ? config.BoatBonusAt(boat, boatLevel) : 0) + (bait?.CatchSuccessBonus ?? 0);
             var rows = new Dictionary<string, RaritySimulationRow>(StringComparer.Ordinal);
             var result = new CatchSimulationResult { AttemptsPerHour = 3600.0 / Math.Max(1.0, config.Fishing.OnlineCycleSeconds) };
 

@@ -31,6 +31,19 @@ namespace FishingIdle.GameService.Shop
             return save.ActiveBaitId != null && config.TryGetBait(save.ActiveBaitId, out var bait) && Charges(save, bait.Id) > 0 ? bait : null;
         }
 
+        /// <summary>The level of a boat (M24-T13): what the save says, 1 when it says nothing, never above the boat's maximum.</summary>
+        public static int BoatLevel(GameConfig config, PlayerSave save, BoatConfig boat)
+        {
+            var level = save.BoatLevels != null && save.BoatLevels.TryGetValue(boat.Id, out var l) ? l : 1;
+            return System.Math.Max(1, System.Math.Min(config.BoatMaxLevel(boat), level));
+        }
+
+        /// <summary>The boat's Catch Success bonus at the level the player took it to.</summary>
+        public static double BoatBonus(GameConfig config, PlayerSave save, BoatConfig boat)
+        {
+            return config.BoatBonusAt(boat, BoatLevel(config, save, boat));
+        }
+
         public static int Charges(PlayerSave save, string baitId)
         {
             return save.BaitCharges != null && baitId != null && save.BaitCharges.TryGetValue(baitId, out var n) ? n : 0;
@@ -39,7 +52,7 @@ namespace FishingIdle.GameService.Shop
         /// <summary>Boat + bait bonus right now, without spending anything (what the screens show).</summary>
         public static double Bonus(GameConfig config, PlayerSave save)
         {
-            return ActiveBoat(config, save).CatchSuccessBonus + (ActiveBait(config, save)?.CatchSuccessBonus ?? 0.0);
+            return BoatBonus(config, save, ActiveBoat(config, save)) + (ActiveBait(config, save)?.CatchSuccessBonus ?? 0.0);
         }
 
         /// <summary>
@@ -48,7 +61,7 @@ namespace FishingIdle.GameService.Shop
         /// </summary>
         public static double SpendAttempt(GameConfig config, PlayerSave save, FishingUpdate update)
         {
-            var bonus = ActiveBoat(config, save).CatchSuccessBonus;
+            var bonus = BoatBonus(config, save, ActiveBoat(config, save));
             var bait = ActiveBait(config, save);
             if (bait == null)
             {

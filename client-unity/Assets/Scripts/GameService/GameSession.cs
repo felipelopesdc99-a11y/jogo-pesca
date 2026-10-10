@@ -160,6 +160,8 @@ namespace FishingIdle.GameService
                 RngSeed = Rng.NewSeed(),
                 CurrentMapId = Config.StartingMap.Id,
                 FisherXpCurveVersion = Config.Progression.Fisher.XpCurveVersion,
+                RodLevelCurveVersion = Config.Rods.UpgradeRules?.LevelCurveVersion ?? 0,
+                FishLevelCurveVersion = Config.Progression.FishLevel.LevelCurveVersion,
                 Crew = new CrewState { LastCreditedAtMs = now },
             };
             // No rod yet: the tutorial has the player claim the free Starter Rod in the Shop (GDD section 40).
@@ -211,6 +213,13 @@ namespace FishingIdle.GameService
                      + ", " + curve.DollarsGained + " dollars for the milestones crossed.");
             }
 
+            // Rods and fish from the old Nv.1–Nv.10 move to the current level curve, never down (M24-T13, TD-041).
+            var levels = Persistence.LevelCurveMigration.MoveToCurrentCurves(Config, Save);
+            if (levels.RodsMoved > 0 || levels.FishMoved > 0)
+            {
+                _log("Level curves: " + levels.RodsMoved + " rods and " + levels.FishMoved + " fish moved to the current curve.");
+            }
+
             // Levels and charges stay inside what the config allows (an edited save, or a config that
             // lowered a maximum, cannot leave a fish or a rod above the top level).
             var fishMax = Config.Progression.FishLevel.MaxLevel;
@@ -231,6 +240,15 @@ namespace FishingIdle.GameService
                 if (Config.TryGetRod(item.RodId, out var rod))
                 {
                     item.Level = Math.Max(1, Math.Min(Config.RodMaxLevel(rod), item.Level));
+                }
+            }
+
+            if (Save.BoatLevels != null)
+            {
+                foreach (var boatId in Save.BoatLevels.Keys.ToList())
+                {
+                    var boatMax = Config.TryGetBoat(boatId, out var boat) ? Config.BoatMaxLevel(boat) : 1;
+                    Save.BoatLevels[boatId] = Math.Max(1, Math.Min(boatMax, Save.BoatLevels[boatId]));
                 }
             }
 

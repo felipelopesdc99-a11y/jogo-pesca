@@ -139,39 +139,87 @@ namespace FishingIdle.GameService.Config
             return _fisherXpTable.TryGetValue(level, out var xp) ? xp : 0;
         }
 
-        /// <summary>Highest internal level of a rod (1 for rods without levels).</summary>
+        /// <summary>Highest internal level of a rod (1 for rods without levels; rods.json → upgrade_rules, M24-T13).</summary>
         public int RodMaxLevel(RodConfig rod)
         {
-            if (!rod.HasInternalLevels || rod.BonusesPerLevel?.RarityEfficiency == null)
+            if (!rod.HasInternalLevels || rod.BonusesAtLevel1 == null || rod.BonusesAtMaxLevel == null)
             {
                 return 1;
             }
 
-            return Math.Max(1, rod.BonusesPerLevel.RarityEfficiency.Count);
+            return Math.Max(1, Rods.UpgradeRules?.InternalLevels?.Max ?? 1);
         }
 
-        /// <summary>Coins to go from <paramref name="level"/> to the next; 0 at the max level.</summary>
+        /// <summary>Coins to go from <paramref name="level"/> to the next; 0 at the max level (LevelCurve.Cost).</summary>
         public long RodUpgradeCost(RodConfig rod, int level)
         {
-            if (level >= RodMaxLevel(rod) || rod.UpgradeCosts == null)
+            if (level < 1 || level >= RodMaxLevel(rod) || rod.UpgradeCost == null)
             {
                 return 0;
             }
 
-            var step = rod.UpgradeCosts.FirstOrDefault(c => c.ToLevel == level + 1);
-            return step?.CostCoins ?? 0;
+            return LevelCurve.Cost(rod.UpgradeCost.CoinsFirst, rod.UpgradeCost.CoinsGrowth, level);
         }
 
         /// <summary>Conchas to go from <paramref name="level"/> to the next; 0 at the max level.</summary>
         public long RodUpgradeShellCost(RodConfig rod, int level)
         {
-            if (level >= RodMaxLevel(rod) || rod.UpgradeCosts == null)
+            if (level < 1 || level >= RodMaxLevel(rod) || rod.UpgradeCost == null)
             {
                 return 0;
             }
 
-            var step = rod.UpgradeCosts.FirstOrDefault(c => c.ToLevel == level + 1);
-            return step?.CostShells ?? 0;
+            return LevelCurve.Cost(rod.UpgradeCost.ShellsFirst, rod.UpgradeCost.ShellsGrowth, level);
+        }
+
+        /// <summary>Highest level of a boat (1 for the starter boat and boats without levels; M24-T13).</summary>
+        public int BoatMaxLevel(BoatConfig boat)
+        {
+            return boat.HasLevels ? Math.Max(1, Equipment.BoatLevels?.MaxLevel ?? 1) : 1;
+        }
+
+        /// <summary>The boat's Catch Success bonus at a level (equipment.json → boat_levels, M24-T13).</summary>
+        public double BoatBonusAt(BoatConfig boat, int level)
+        {
+            if (!boat.HasLevels)
+            {
+                return boat.CatchSuccessBonus;
+            }
+
+            return LevelCurve.Value(boat.CatchSuccessBonus, boat.CatchSuccessBonusAtMaxLevel, level, BoatMaxLevel(boat),
+                Equipment.BoatLevels?.BonusCurveExponent ?? 1.0);
+        }
+
+        /// <summary>Coins to take a boat from <paramref name="level"/> to the next; 0 at the max level.</summary>
+        public long BoatUpgradeCost(BoatConfig boat, int level)
+        {
+            if (level < 1 || level >= BoatMaxLevel(boat) || boat.UpgradeCost == null)
+            {
+                return 0;
+            }
+
+            return LevelCurve.Cost(boat.UpgradeCost.CoinsFirst, boat.UpgradeCost.CoinsGrowth, level);
+        }
+
+        /// <summary>Conchas to take a boat from <paramref name="level"/> to the next; 0 at the max level.</summary>
+        public long BoatUpgradeShellCost(BoatConfig boat, int level)
+        {
+            if (level < 1 || level >= BoatMaxLevel(boat) || boat.UpgradeCost == null)
+            {
+                return 0;
+            }
+
+            return LevelCurve.Cost(boat.UpgradeCost.ShellsFirst, boat.UpgradeCost.ShellsGrowth, level);
+        }
+
+        /// <summary>
+        /// The fish's attribute bonus at a level: 0 at Nv.1, stat_bonus_at_max_level_percent ÷ 100 at the max, on the
+        /// curve in between (progression.json → fish_level, M24-T13). Attributes are multiplied by 1 + this.
+        /// </summary>
+        public double FishStatBonus(int level)
+        {
+            var fish = Progression.FishLevel;
+            return LevelCurve.Value(0.0, fish.StatBonusAtMaxLevelPercent / 100.0, level, fish.MaxLevel, fish.StatBonusCurveExponent);
         }
 
         public bool IsPurchasable(RodConfig rod) => rod.Acquisition != null && rod.Acquisition.Method == "coin_purchase";
@@ -195,33 +243,25 @@ namespace FishingIdle.GameService.Config
 
         public int AquariumCapacity => Economy.Aquarium.HardCapacity;
 
-        /// <summary>The rod's bonuses at an internal level (1–10). Rods without levels ignore it.</summary>
+        /// <summary>The rod's bonuses at an internal level (1 to 100, on the curve of LevelCurve). Rods without levels ignore it.</summary>
         public RodBonusesConfig RodBonusesAt(RodConfig rod, int level)
         {
-            if (!rod.HasInternalLevels || rod.BonusesPerLevel == null)
+            if (!rod.HasInternalLevels || rod.BonusesAtLevel1 == null || rod.BonusesAtMaxLevel == null)
             {
                 return rod.Bonuses ?? new RodBonusesConfig();
             }
 
-            var perLevel = rod.BonusesPerLevel;
-            var index = Math.Max(0, level - 1);
+            var a = rod.BonusesAtLevel1;
+            var z = rod.BonusesAtMaxLevel;
+            var max = RodMaxLevel(rod);
+            var exponent = Rods.UpgradeRules?.BonusCurveExponent ?? 1.0;
             return new RodBonusesConfig
             {
-                RarityEfficiency = At(perLevel.RarityEfficiency, index),
-                SizeQuality = At(perLevel.SizeQuality, index),
-                ShellYield = At(perLevel.ShellYield, index),
-                CatchSuccess = At(perLevel.CatchSuccess, index),
+                RarityEfficiency = LevelCurve.Value(a.RarityEfficiency, z.RarityEfficiency, level, max, exponent),
+                SizeQuality = LevelCurve.Value(a.SizeQuality, z.SizeQuality, level, max, exponent),
+                ShellYield = LevelCurve.Value(a.ShellYield, z.ShellYield, level, max, exponent),
+                CatchSuccess = LevelCurve.Value(a.CatchSuccess, z.CatchSuccess, level, max, exponent),
             };
-        }
-
-        private static double At(IReadOnlyList<double> values, int index)
-        {
-            if (values == null || values.Count == 0)
-            {
-                return 0;
-            }
-
-            return values[Math.Min(index, values.Count - 1)];
         }
     }
 }

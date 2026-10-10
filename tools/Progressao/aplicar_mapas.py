@@ -52,6 +52,10 @@ RARITY_NOTE = {
 }
 
 
+
+if __name__ == "__main__":
+    raise SystemExit("Este script grava o formato antigo das varas (antes do M24-T13, TD-041) e não deve mais ser rodado: use tools/Progressao/niveis_100.py.")
+
 def load(name):
     path = os.path.join(CONFIG, name)
     with open(path, encoding='utf-8') as f:

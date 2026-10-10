@@ -6,7 +6,7 @@
   "valuation": {
     "note": "Valor de referência de um peixe = preço de venda ao NPC × fish_reference_ratio × (1 + fish_level_premium_per_level × (nível − 1)). De uma vara = (preço na Loja + melhorias do nível) × rod_reference_ratio. Os bots nunca vendem abaixo do que o NPC pagaria.",
     "fish_reference_ratio": 1.5,
-    "fish_level_premium_per_level": 0.15,
+    "fish_level_premium_per_level": 0.0337,
     "rod_reference_ratio": 0.8
   },
   "supply": {
@@ -16,11 +16,12 @@
     "new_listings_per_refresh": 6,
     "listing_duration_hours": 48,
     "rod_listing_chance": 0.12,
-    "max_fish_level": 6,
+    "max_fish_level": 26,
     "price_ratio": {
       "min": 0.85,
       "max": 1.6
-    }
+    },
+    "max_rod_level": 41
   },
   "demand": {
     "note": "Compradores para os seus anúncios: a cada check_interval_minutes cada anúncio tem uma chance de venda. No preço de referência a chance é chance_at_reference_price; mais barato vende mais rápido; a partir de max_price_ratio × referência ninguém compra.",

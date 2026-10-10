@@ -1,0 +1,1703 @@
+{
+  "gerado_por": "tools/Progressao/niveis_100.py",
+  "nota": "Varas, barcos e peixes até o Nv.100 (M24-T13, A-156). Ritmo simulado com o perfil \"jogo aberto o dia todo\" e a economia do M24 (Tripulação e Melhorias, simular_melhorias.py): o jogador compra o próximo nível da vara ou do barco em uso (o mais barato primeiro) quando tem as Moedas e as Conchas e o nível custa até 600 segundos de renda (Tripulação + pesca); guarda Conchas para a próxima vara. As Conchas só vêm da pesca.",
+  "parametros": {
+    "nivel_maximo": 100,
+    "expoente_da_curva": 1.2,
+    "multiplicador_no_maximo": 3.0,
+    "vara_moedas_primeiro_fracao_do_antigo": 0.3333333333333333,
+    "vara_moedas_crescimento": 1.14,
+    "vara_conchas_primeiro_fracao_do_antigo": 0.25,
+    "vara_conchas_crescimento": 1.03,
+    "barco_moedas_primeiro_fracao_do_preco": 0.05,
+    "barco_moedas_crescimento": 1.14,
+    "barco_conchas_primeiro_fracao_do_preco": 0.05,
+    "barco_conchas_crescimento": 1.03,
+    "xp_peixe": {
+      "base": 0.11,
+      "expoente": 2.0,
+      "minimo": 5
+    },
+    "segundos_de_renda_por_nivel": 600.0
+  },
+  "ritmo_jogo_aberto": {
+    "vara rod_01": {
+      "comprada_em": "2,5 h",
+      "Nv.10": "2,6 h (10 min depois da compra)"
+    },
+    "barco boat_01": {
+      "comprada_em": "2,7 dias",
+      "Nv.10": "2,8 dias (22 min depois da compra)",
+      "Nv.30": "2,8 dias (1,8 h depois da compra)",
+      "Nv.50": "2,9 dias (4,4 h depois da compra)"
+    },
+    "barco boat_02": {
+      "comprada_em": "3,0 dias",
+      "Nv.10": "3,0 dias (20 min depois da compra)",
+      "Nv.30": "3,1 dias (1,7 h depois da compra)"
+    },
+    "barco boat_03": {
+      "comprada_em": "3,2 dias",
+      "Nv.10": "3,2 dias (18 min depois da compra)",
+      "Nv.30": "3,2 dias (1,6 h depois da compra)",
+      "Nv.50": "4,5 dias (1,3 dias depois da compra)"
+    },
+    "vara rod_05": {
+      "comprada_em": "2,7 dias",
+      "Nv.10": "4,0 dias (1,3 dias depois da compra)",
+      "Nv.30": "5,7 dias (2,9 dias depois da compra)",
+      "Nv.50": "12,1 dias (9,3 dias depois da compra)",
+      "Nv.100": "58,9 dias (56,2 dias depois da compra)"
+    },
+    "barco boat_04": {
+      "comprada_em": "6,4 dias",
+      "Nv.10": "6,4 dias (58 min depois da compra)",
+      "Nv.30": "6,6 dias (4,5 h depois da compra)",
+      "Nv.50": "6,8 dias (10,9 h depois da compra)"
+    },
+    "barco boat_05": {
+      "comprada_em": "8,2 dias",
+      "Nv.10": "8,3 dias (4,0 h depois da compra)",
+      "Nv.30": "8,9 dias (17,7 h depois da compra)",
+      "Nv.50": "9,9 dias (1,7 dias depois da compra)",
+      "Nv.100": "42,0 dias (33,8 dias depois da compra)"
+    }
+  },
+  "cada_vara_sozinha": {
+    "rod_01": {
+      "comprada_em": "2,5 h",
+      "Nv.10": "2,6 h (10 min depois da compra)",
+      "Nv.30": "6,8 h (4,4 h depois da compra)",
+      "Nv.50": "23,4 h (20,9 h depois da compra)",
+      "Nv.100": "11,7 dias (11,6 dias depois da compra)"
+    },
+    "rod_02": {
+      "comprada_em": "9,1 h",
+      "Nv.10": "12,4 h (3,2 h depois da compra)",
+      "Nv.30": "1,2 dias (18,9 h depois da compra)",
+      "Nv.50": "1,8 dias (1,5 dias depois da compra)",
+      "Nv.100": "21,8 dias (21,4 dias depois da compra)"
+    },
+    "rod_03": {
+      "comprada_em": "17,0 h",
+      "Nv.10": "1,1 dias (8,9 h depois da compra)",
+      "Nv.30": "1,7 dias (23,5 h depois da compra)",
+      "Nv.50": "3,9 dias (3,2 dias depois da compra)",
+      "Nv.100": "42,5 dias (41,8 dias depois da compra)"
+    },
+    "rod_04": {
+      "comprada_em": "1,3 dias",
+      "Nv.10": "1,7 dias (9,1 h depois da compra)",
+      "Nv.30": "2,7 dias (1,3 dias depois da compra)",
+      "Nv.50": "7,4 dias (6,1 dias depois da compra)",
+      "Nv.100": "43,3 dias (42,0 dias depois da compra)"
+    },
+    "rod_05": {
+      "comprada_em": "2,7 dias",
+      "Nv.10": "4,0 dias (1,3 dias depois da compra)",
+      "Nv.30": "5,7 dias (2,9 dias depois da compra)",
+      "Nv.50": "12,1 dias (9,3 dias depois da compra)",
+      "Nv.100": "58,9 dias (56,2 dias depois da compra)"
+    }
+  },
+  "conchas_ganhas_acumulado": {
+    "dia 1": 253,
+    "dia 2": 661,
+    "dia 3": 1160,
+    "dia 7": 5972,
+    "dia 14": 19216,
+    "dia 30": 55356,
+    "dia 45": 95816,
+    "dia 60": 112922,
+    "dia 75": 112922
+  },
+  "dias_ate_nivel_do_pescador": {
+    "Nv.100": 1.08,
+    "Nv.500": 14.19,
+    "Nv.1000": 50.48
+  },
+  "varas": {
+    "rod_01": {
+      "nome": "Ponta Selvagem",
+      "niveis": {
+        "Nv.1": {
+          "bonus": {
+            "rarity_efficiency": 0.0,
+            "size_quality": 0.0,
+            "shell_yield": 0.0,
+            "catch_success": 0.015
+          },
+          "proximo_nivel": {
+            "moedas": 500,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": {
+            "rarity_efficiency": 0.0027,
+            "size_quality": 0.0025,
+            "shell_yield": 0.0063,
+            "catch_success": 0.0159
+          },
+          "proximo_nivel": {
+            "moedas": 570,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 500,
+            "conchas": 1
+          }
+        },
+        "Nv.10": {
+          "bonus": {
+            "rarity_efficiency": 0.0371,
+            "size_quality": 0.0355,
+            "shell_yield": 0.0878,
+            "catch_success": 0.0277
+          },
+          "proximo_nivel": {
+            "moedas": 1630,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 8048,
+            "conchas": 9
+          }
+        },
+        "Nv.30": {
+          "bonus": {
+            "rarity_efficiency": 0.1512,
+            "size_quality": 0.1444,
+            "shell_yield": 0.3575,
+            "catch_success": 0.0666
+          },
+          "proximo_nivel": {
+            "moedas": 22300,
+            "conchas": 2
+          },
+          "gasto_desde_nv1": {
+            "moedas": 156058,
+            "conchas": 44
+          }
+        },
+        "Nv.50": {
+          "bonus": {
+            "rarity_efficiency": 0.2838,
+            "size_quality": 0.2709,
+            "shell_yield": 0.6708,
+            "catch_success": 0.1118
+          },
+          "proximo_nivel": {
+            "moedas": 307000,
+            "conchas": 4
+          },
+          "gasto_desde_nv1": {
+            "moedas": 2190258,
+            "conchas": 108
+          }
+        },
+        "Nv.99": {
+          "bonus": {
+            "rarity_efficiency": 0.652,
+            "size_quality": 0.6224,
+            "shell_yield": 1.5411,
+            "catch_success": 0.2373
+          },
+          "proximo_nivel": {
+            "moedas": 189000000,
+            "conchas": 18
+          },
+          "gasto_desde_nv1": {
+            "moedas": 1346538258,
+            "conchas": 570
+          }
+        },
+        "Nv.100": {
+          "bonus": {
+            "rarity_efficiency": 0.66,
+            "size_quality": 0.63,
+            "shell_yield": 1.56,
+            "catch_success": 0.24
+          },
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 1535538258,
+            "conchas": 588
+          }
+        }
+      },
+      "migracao_nv1_a_10": [
+        1,
+        7,
+        12,
+        16,
+        19,
+        24,
+        28,
+        32,
+        37,
+        41
+      ]
+    },
+    "rod_02": {
+      "nome": "Maré Dourada",
+      "niveis": {
+        "Nv.1": {
+          "bonus": {
+            "rarity_efficiency": 0.24,
+            "size_quality": 0.23,
+            "shell_yield": 0.55,
+            "catch_success": 0.055
+          },
+          "proximo_nivel": {
+            "moedas": 3330,
+            "conchas": 3
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": {
+            "rarity_efficiency": 0.2451,
+            "size_quality": 0.2342,
+            "shell_yield": 0.5611,
+            "catch_success": 0.0564
+          },
+          "proximo_nivel": {
+            "moedas": 3800,
+            "conchas": 3
+          },
+          "gasto_desde_nv1": {
+            "moedas": 3330,
+            "conchas": 3
+          }
+        },
+        "Nv.10": {
+          "bonus": {
+            "rarity_efficiency": 0.3109,
+            "size_quality": 0.288,
+            "shell_yield": 0.7048,
+            "catch_success": 0.0747
+          },
+          "proximo_nivel": {
+            "moedas": 10800,
+            "conchas": 4
+          },
+          "gasto_desde_nv1": {
+            "moedas": 53560,
+            "conchas": 30
+          }
+        },
+        "Nv.30": {
+          "bonus": {
+            "rarity_efficiency": 0.5287,
+            "size_quality": 0.466,
+            "shell_yield": 1.1802,
+            "catch_success": 0.1352
+          },
+          "proximo_nivel": {
+            "moedas": 149000,
+            "conchas": 7
+          },
+          "gasto_desde_nv1": {
+            "moedas": 1039760,
+            "conchas": 135
+          }
+        },
+        "Nv.50": {
+          "bonus": {
+            "rarity_efficiency": 0.7818,
+            "size_quality": 0.6729,
+            "shell_yield": 1.7325,
+            "catch_success": 0.2055
+          },
+          "proximo_nivel": {
+            "moedas": 2050000,
+            "conchas": 13
+          },
+          "gasto_desde_nv1": {
+            "moedas": 14574760,
+            "conchas": 325
+          }
+        },
+        "Nv.99": {
+          "bonus": {
+            "rarity_efficiency": 1.4847,
+            "size_quality": 1.2475,
+            "shell_yield": 3.2667,
+            "catch_success": 0.4008
+          },
+          "proximo_nivel": {
+            "moedas": 1260000000,
+            "conchas": 54
+          },
+          "gasto_desde_nv1": {
+            "moedas": 8971094760,
+            "conchas": 1711
+          }
+        },
+        "Nv.100": {
+          "bonus": {
+            "rarity_efficiency": 1.5,
+            "size_quality": 1.26,
+            "shell_yield": 3.3,
+            "catch_success": 0.405
+          },
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 10231094760,
+            "conchas": 1765
+          }
+        }
+      },
+      "migracao_nv1_a_10": [
+        1,
+        7,
+        11,
+        14,
+        18,
+        19,
+        21,
+        24,
+        27,
+        30
+      ]
+    },
+    "rod_03": {
+      "nome": "Corrente Mestra",
+      "niveis": {
+        "Nv.1": {
+          "bonus": {
+            "rarity_efficiency": 0.52,
+            "size_quality": 0.44,
+            "shell_yield": 1.15,
+            "catch_success": 0.08
+          },
+          "proximo_nivel": {
+            "moedas": 36700,
+            "conchas": 5
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": {
+            "rarity_efficiency": 0.5276,
+            "size_quality": 0.4457,
+            "shell_yield": 1.1665,
+            "catch_success": 0.0816
+          },
+          "proximo_nivel": {
+            "moedas": 41800,
+            "conchas": 5
+          },
+          "gasto_desde_nv1": {
+            "moedas": 36700,
+            "conchas": 5
+          }
+        },
+        "Nv.10": {
+          "bonus": {
+            "rarity_efficiency": 0.6258,
+            "size_quality": 0.5199,
+            "shell_yield": 1.3807,
+            "catch_success": 0.1025
+          },
+          "proximo_nivel": {
+            "moedas": 119000,
+            "conchas": 7
+          },
+          "gasto_desde_nv1": {
+            "moedas": 590700,
+            "conchas": 50
+          }
+        },
+        "Nv.30": {
+          "bonus": {
+            "rarity_efficiency": 0.9508,
+            "size_quality": 0.7654,
+            "shell_yield": 2.0895,
+            "catch_success": 0.1717
+          },
+          "proximo_nivel": {
+            "moedas": 1640000,
+            "conchas": 12
+          },
+          "gasto_desde_nv1": {
+            "moedas": 11455700,
+            "conchas": 226
+          }
+        },
+        "Nv.50": {
+          "bonus": {
+            "rarity_efficiency": 1.3284,
+            "size_quality": 1.0506,
+            "shell_yield": 2.913,
+            "catch_success": 0.252
+          },
+          "proximo_nivel": {
+            "moedas": 22500000,
+            "conchas": 21
+          },
+          "gasto_desde_nv1": {
+            "moedas": 160685700,
+            "conchas": 542
+          }
+        },
+        "Nv.99": {
+          "bonus": {
+            "rarity_efficiency": 2.3772,
+            "size_quality": 1.8428,
+            "shell_yield": 5.2004,
+            "catch_success": 0.4752
+          },
+          "proximo_nivel": {
+            "moedas": 13800000000,
+            "conchas": 91
+          },
+          "gasto_desde_nv1": {
+            "moedas": 98906485700,
+            "conchas": 2850
+          }
+        },
+        "Nv.100": {
+          "bonus": {
+            "rarity_efficiency": 2.4,
+            "size_quality": 1.86,
+            "shell_yield": 5.25,
+            "catch_success": 0.48
+          },
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 112706485700,
+            "conchas": 2941
+          }
+        }
+      },
+      "migracao_nv1_a_10": [
+        1,
+        5,
+        7,
+        10,
+        12,
+        16,
+        18,
+        22,
+        24,
+        27
+      ]
+    },
+    "rod_04": {
+      "nome": "Atlântico Nobre",
+      "niveis": {
+        "Nv.1": {
+          "bonus": {
+            "rarity_efficiency": 0.82,
+            "size_quality": 0.64,
+            "shell_yield": 1.8,
+            "catch_success": 0.12
+          },
+          "proximo_nivel": {
+            "moedas": 160000,
+            "conchas": 11
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": {
+            "rarity_efficiency": 0.8302,
+            "size_quality": 0.6473,
+            "shell_yield": 1.823,
+            "catch_success": 0.1221
+          },
+          "proximo_nivel": {
+            "moedas": 182000,
+            "conchas": 11
+          },
+          "gasto_desde_nv1": {
+            "moedas": 160000,
+            "conchas": 11
+          }
+        },
+        "Nv.10": {
+          "bonus": {
+            "rarity_efficiency": 0.9629,
+            "size_quality": 0.7424,
+            "shell_yield": 2.1208,
+            "catch_success": 0.1492
+          },
+          "proximo_nivel": {
+            "moedas": 520000,
+            "conchas": 14
+          },
+          "gasto_desde_nv1": {
+            "moedas": 2572000,
+            "conchas": 112
+          }
+        },
+        "Nv.30": {
+          "bonus": {
+            "rarity_efficiency": 1.402,
+            "size_quality": 1.057,
+            "shell_yield": 3.1061,
+            "catch_success": 0.2389
+          },
+          "proximo_nivel": {
+            "moedas": 7150000,
+            "conchas": 26
+          },
+          "gasto_desde_nv1": {
+            "moedas": 49921000,
+            "conchas": 497
+          }
+        },
+        "Nv.50": {
+          "bonus": {
+            "rarity_efficiency": 1.9122,
+            "size_quality": 1.4226,
+            "shell_yield": 4.251,
+            "catch_success": 0.3432
+          },
+          "proximo_nivel": {
+            "moedas": 98300000,
+            "conchas": 47
+          },
+          "gasto_desde_nv1": {
+            "moedas": 700911000,
+            "conchas": 1194
+          }
+        },
+        "Nv.99": {
+          "bonus": {
+            "rarity_efficiency": 3.3292,
+            "size_quality": 2.438,
+            "shell_yield": 7.431,
+            "catch_success": 0.6327
+          },
+          "proximo_nivel": {
+            "moedas": 60400000000,
+            "conchas": 199
+          },
+          "gasto_desde_nv1": {
+            "moedas": 431203211000,
+            "conchas": 6277
+          }
+        },
+        "Nv.100": {
+          "bonus": {
+            "rarity_efficiency": 3.36,
+            "size_quality": 2.46,
+            "shell_yield": 7.5,
+            "catch_success": 0.639
+          },
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 491603211000,
+            "conchas": 6476
+          }
+        }
+      },
+      "migracao_nv1_a_10": [
+        1,
+        4,
+        8,
+        10,
+        13,
+        15,
+        18,
+        21,
+        22,
+        25
+      ]
+    },
+    "rod_05": {
+      "nome": "Soberana Abissal",
+      "niveis": {
+        "Nv.1": {
+          "bonus": {
+            "rarity_efficiency": 1.15,
+            "size_quality": 0.85,
+            "shell_yield": 2.6,
+            "catch_success": 0.167
+          },
+          "proximo_nivel": {
+            "moedas": 663000,
+            "conchas": 41
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": {
+            "rarity_efficiency": 1.1635,
+            "size_quality": 0.8593,
+            "shell_yield": 2.6318,
+            "catch_success": 0.1696
+          },
+          "proximo_nivel": {
+            "moedas": 756000,
+            "conchas": 42
+          },
+          "gasto_desde_nv1": {
+            "moedas": 663000,
+            "conchas": 41
+          }
+        },
+        "Nv.10": {
+          "bonus": {
+            "rarity_efficiency": 1.3385,
+            "size_quality": 0.9794,
+            "shell_yield": 3.0446,
+            "catch_success": 0.2027
+          },
+          "proximo_nivel": {
+            "moedas": 2160000,
+            "conchas": 53
+          },
+          "gasto_desde_nv1": {
+            "moedas": 10673000,
+            "conchas": 416
+          }
+        },
+        "Nv.30": {
+          "bonus": {
+            "rarity_efficiency": 1.9176,
+            "size_quality": 1.377,
+            "shell_yield": 4.4103,
+            "catch_success": 0.3123
+          },
+          "proximo_nivel": {
+            "moedas": 29600000,
+            "conchas": 97
+          },
+          "gasto_desde_nv1": {
+            "moedas": 206853000,
+            "conchas": 1853
+          }
+        },
+        "Nv.50": {
+          "bonus": {
+            "rarity_efficiency": 2.5905,
+            "size_quality": 1.839,
+            "shell_yield": 5.997,
+            "catch_success": 0.4396
+          },
+          "proximo_nivel": {
+            "moedas": 407000000,
+            "conchas": 175
+          },
+          "gasto_desde_nv1": {
+            "moedas": 2904753000,
+            "conchas": 4451
+          }
+        },
+        "Nv.99": {
+          "bonus": {
+            "rarity_efficiency": 4.4594,
+            "size_quality": 3.1221,
+            "shell_yield": 10.4043,
+            "catch_success": 0.7933
+          },
+          "proximo_nivel": {
+            "moedas": 250000000000,
+            "conchas": 743
+          },
+          "gasto_desde_nv1": {
+            "moedas": 1786063753000,
+            "conchas": 23393
+          }
+        },
+        "Nv.100": {
+          "bonus": {
+            "rarity_efficiency": 4.5,
+            "size_quality": 3.15,
+            "shell_yield": 10.5,
+            "catch_success": 0.801
+          },
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 2036063753000,
+            "conchas": 24136
+          }
+        }
+      },
+      "migracao_nv1_a_10": [
+        1,
+        5,
+        8,
+        11,
+        14,
+        15,
+        18,
+        19,
+        21,
+        23
+      ]
+    }
+  },
+  "barcos": {
+    "boat_01": {
+      "nome": "Remo Valente",
+      "niveis": {
+        "Nv.1": {
+          "bonus": 0.02,
+          "proximo_nivel": {
+            "moedas": 600,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": 0.0202,
+          "proximo_nivel": {
+            "moedas": 684,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 600,
+            "conchas": 1
+          }
+        },
+        "Nv.10": {
+          "bonus": 0.0223,
+          "proximo_nivel": {
+            "moedas": 1950,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 9653,
+            "conchas": 9
+          }
+        },
+        "Nv.30": {
+          "bonus": 0.0292,
+          "proximo_nivel": {
+            "moedas": 26800,
+            "conchas": 2
+          },
+          "gasto_desde_nv1": {
+            "moedas": 187173,
+            "conchas": 44
+          }
+        },
+        "Nv.50": {
+          "bonus": 0.0372,
+          "proximo_nivel": {
+            "moedas": 369000,
+            "conchas": 4
+          },
+          "gasto_desde_nv1": {
+            "moedas": 2627073,
+            "conchas": 108
+          }
+        },
+        "Nv.99": {
+          "bonus": 0.0595,
+          "proximo_nivel": {
+            "moedas": 226000000,
+            "conchas": 18
+          },
+          "gasto_desde_nv1": {
+            "moedas": 1617804073,
+            "conchas": 570
+          }
+        },
+        "Nv.100": {
+          "bonus": 0.06,
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 1843804073,
+            "conchas": 588
+          }
+        }
+      }
+    },
+    "boat_02": {
+      "nome": "Rastro Azul",
+      "niveis": {
+        "Nv.1": {
+          "bonus": 0.04,
+          "proximo_nivel": {
+            "moedas": 2250,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": 0.0403,
+          "proximo_nivel": {
+            "moedas": 2570,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 2250,
+            "conchas": 1
+          }
+        },
+        "Nv.10": {
+          "bonus": 0.0445,
+          "proximo_nivel": {
+            "moedas": 7320,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 36190,
+            "conchas": 9
+          }
+        },
+        "Nv.30": {
+          "bonus": 0.0583,
+          "proximo_nivel": {
+            "moedas": 101000,
+            "conchas": 2
+          },
+          "gasto_desde_nv1": {
+            "moedas": 702260,
+            "conchas": 44
+          }
+        },
+        "Nv.50": {
+          "bonus": 0.0744,
+          "proximo_nivel": {
+            "moedas": 1380000,
+            "conchas": 4
+          },
+          "gasto_desde_nv1": {
+            "moedas": 9852260,
+            "conchas": 108
+          }
+        },
+        "Nv.99": {
+          "bonus": 0.119,
+          "proximo_nivel": {
+            "moedas": 849000000,
+            "conchas": 18
+          },
+          "gasto_desde_nv1": {
+            "moedas": 6065192260,
+            "conchas": 570
+          }
+        },
+        "Nv.100": {
+          "bonus": 0.12,
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 6914192260,
+            "conchas": 588
+          }
+        }
+      }
+    },
+    "boat_03": {
+      "nome": "Proa Selvagem",
+      "niveis": {
+        "Nv.1": {
+          "bonus": 0.06,
+          "proximo_nivel": {
+            "moedas": 8000,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": 0.0605,
+          "proximo_nivel": {
+            "moedas": 9120,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 8000,
+            "conchas": 1
+          }
+        },
+        "Nv.10": {
+          "bonus": 0.0668,
+          "proximo_nivel": {
+            "moedas": 26000,
+            "conchas": 1
+          },
+          "gasto_desde_nv1": {
+            "moedas": 128720,
+            "conchas": 9
+          }
+        },
+        "Nv.30": {
+          "bonus": 0.0875,
+          "proximo_nivel": {
+            "moedas": 358000,
+            "conchas": 2
+          },
+          "gasto_desde_nv1": {
+            "moedas": 2497120,
+            "conchas": 44
+          }
+        },
+        "Nv.50": {
+          "bonus": 0.1116,
+          "proximo_nivel": {
+            "moedas": 4910000,
+            "conchas": 4
+          },
+          "gasto_desde_nv1": {
+            "moedas": 35040120,
+            "conchas": 108
+          }
+        },
+        "Nv.99": {
+          "bonus": 0.1785,
+          "proximo_nivel": {
+            "moedas": 3020000000,
+            "conchas": 18
+          },
+          "gasto_desde_nv1": {
+            "moedas": 21576780120,
+            "conchas": 570
+          }
+        },
+        "Nv.100": {
+          "bonus": 0.18,
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 24596780120,
+            "conchas": 588
+          }
+        }
+      }
+    },
+    "boat_04": {
+      "nome": "Costa Nobre",
+      "niveis": {
+        "Nv.1": {
+          "bonus": 0.08,
+          "proximo_nivel": {
+            "moedas": 30000,
+            "conchas": 6
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": 0.0806,
+          "proximo_nivel": {
+            "moedas": 34200,
+            "conchas": 6
+          },
+          "gasto_desde_nv1": {
+            "moedas": 30000,
+            "conchas": 6
+          }
+        },
+        "Nv.10": {
+          "bonus": 0.089,
+          "proximo_nivel": {
+            "moedas": 97600,
+            "conchas": 8
+          },
+          "gasto_desde_nv1": {
+            "moedas": 482600,
+            "conchas": 61
+          }
+        },
+        "Nv.30": {
+          "bonus": 0.1167,
+          "proximo_nivel": {
+            "moedas": 1340000,
+            "conchas": 14
+          },
+          "gasto_desde_nv1": {
+            "moedas": 9365200,
+            "conchas": 272
+          }
+        },
+        "Nv.50": {
+          "bonus": 0.1488,
+          "proximo_nivel": {
+            "moedas": 18400000,
+            "conchas": 26
+          },
+          "gasto_desde_nv1": {
+            "moedas": 131415200,
+            "conchas": 651
+          }
+        },
+        "Nv.99": {
+          "bonus": 0.2381,
+          "proximo_nivel": {
+            "moedas": 11300000000,
+            "conchas": 109
+          },
+          "gasto_desde_nv1": {
+            "moedas": 80855615200,
+            "conchas": 3422
+          }
+        },
+        "Nv.100": {
+          "bonus": 0.24,
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 92155615200,
+            "conchas": 3531
+          }
+        }
+      }
+    },
+    "boat_05": {
+      "nome": "Horizonte Dourado",
+      "niveis": {
+        "Nv.1": {
+          "bonus": 0.1,
+          "proximo_nivel": {
+            "moedas": 125000,
+            "conchas": 25
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": 0.1008,
+          "proximo_nivel": {
+            "moedas": 143000,
+            "conchas": 26
+          },
+          "gasto_desde_nv1": {
+            "moedas": 125000,
+            "conchas": 25
+          }
+        },
+        "Nv.10": {
+          "bonus": 0.1113,
+          "proximo_nivel": {
+            "moedas": 406000,
+            "conchas": 33
+          },
+          "gasto_desde_nv1": {
+            "moedas": 2011000,
+            "conchas": 255
+          }
+        },
+        "Nv.30": {
+          "bonus": 0.1458,
+          "proximo_nivel": {
+            "moedas": 5590000,
+            "conchas": 59
+          },
+          "gasto_desde_nv1": {
+            "moedas": 39022000,
+            "conchas": 1134
+          }
+        },
+        "Nv.50": {
+          "bonus": 0.186,
+          "proximo_nivel": {
+            "moedas": 76800000,
+            "conchas": 106
+          },
+          "gasto_desde_nv1": {
+            "moedas": 547762000,
+            "conchas": 2717
+          }
+        },
+        "Nv.99": {
+          "bonus": 0.2976,
+          "proximo_nivel": {
+            "moedas": 47200000000,
+            "conchas": 453
+          },
+          "gasto_desde_nv1": {
+            "moedas": 336808862000,
+            "conchas": 14265
+          }
+        },
+        "Nv.100": {
+          "bonus": 0.3,
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 384008862000,
+            "conchas": 14718
+          }
+        }
+      }
+    }
+  },
+  "peixes": {
+    "Nv.1": {
+      "bonus_atributos": 0.0,
+      "xp_proximo_nivel": 5,
+      "xp_desde_nv1": 0,
+      "comuns_de_39_xp": 0
+    },
+    "Nv.2": {
+      "bonus_atributos": 0.0044,
+      "xp_proximo_nivel": 5,
+      "xp_desde_nv1": 5,
+      "comuns_de_39_xp": 1
+    },
+    "Nv.5": {
+      "bonus_atributos": 0.023,
+      "xp_proximo_nivel": 5,
+      "xp_desde_nv1": 20,
+      "comuns_de_39_xp": 1
+    },
+    "Nv.10": {
+      "bonus_atributos": 0.0608,
+      "xp_proximo_nivel": 10,
+      "xp_desde_nv1": 50,
+      "comuns_de_39_xp": 2
+    },
+    "Nv.20": {
+      "bonus_atributos": 0.149,
+      "xp_proximo_nivel": 45,
+      "xp_desde_nv1": 290,
+      "comuns_de_39_xp": 8
+    },
+    "Nv.30": {
+      "bonus_atributos": 0.2475,
+      "xp_proximo_nivel": 100,
+      "xp_desde_nv1": 970,
+      "comuns_de_39_xp": 25
+    },
+    "Nv.40": {
+      "bonus_atributos": 0.3531,
+      "xp_proximo_nivel": 175,
+      "xp_desde_nv1": 2290,
+      "comuns_de_39_xp": 59
+    },
+    "Nv.50": {
+      "bonus_atributos": 0.4644,
+      "xp_proximo_nivel": 275,
+      "xp_desde_nv1": 4490,
+      "comuns_de_39_xp": 116
+    },
+    "Nv.75": {
+      "bonus_atributos": 0.7616,
+      "xp_proximo_nivel": 620,
+      "xp_desde_nv1": 15205,
+      "comuns_de_39_xp": 390
+    },
+    "Nv.100": {
+      "bonus_atributos": 1.08,
+      "xp_proximo_nivel": 0,
+      "xp_desde_nv1": 36160,
+      "comuns_de_39_xp": 928
+    }
+  },
+  "peixes_migracao_nv1_a_10": [
+    1,
+    8,
+    13,
+    17,
+    22,
+    26,
+    30,
+    34,
+    37,
+    41
+  ],
+  "antes": {
+    "varas": {
+      "rod_01": {
+        "bonuses_per_level": {
+          "rarity_efficiency": [
+            0.0,
+            0.02,
+            0.04,
+            0.06,
+            0.08,
+            0.1,
+            0.13,
+            0.16,
+            0.19,
+            0.22
+          ],
+          "size_quality": [
+            0.0,
+            0.02,
+            0.04,
+            0.06,
+            0.08,
+            0.1,
+            0.12,
+            0.15,
+            0.18,
+            0.21
+          ],
+          "shell_yield": [
+            0.0,
+            0.05,
+            0.1,
+            0.15,
+            0.2,
+            0.26,
+            0.32,
+            0.38,
+            0.45,
+            0.52
+          ],
+          "catch_success": [
+            0.015,
+            0.02,
+            0.025,
+            0.035,
+            0.04,
+            0.045,
+            0.055,
+            0.06,
+            0.065,
+            0.08
+          ]
+        },
+        "upgrade_costs": [
+          [
+            1500,
+            2
+          ],
+          [
+            2300,
+            3
+          ],
+          [
+            3600,
+            4
+          ],
+          [
+            5600,
+            5
+          ],
+          [
+            8650,
+            6
+          ],
+          [
+            13400,
+            8
+          ],
+          [
+            20800,
+            10
+          ],
+          [
+            32250,
+            12
+          ],
+          [
+            49950,
+            15
+          ]
+        ]
+      },
+      "rod_02": {
+        "bonuses_per_level": {
+          "rarity_efficiency": [
+            0.24,
+            0.26,
+            0.28,
+            0.31,
+            0.34,
+            0.37,
+            0.4,
+            0.43,
+            0.47,
+            0.5
+          ],
+          "size_quality": [
+            0.23,
+            0.25,
+            0.27,
+            0.29,
+            0.31,
+            0.33,
+            0.35,
+            0.37,
+            0.4,
+            0.42
+          ],
+          "shell_yield": [
+            0.55,
+            0.6,
+            0.66,
+            0.72,
+            0.78,
+            0.84,
+            0.91,
+            0.98,
+            1.04,
+            1.1
+          ],
+          "catch_success": [
+            0.055,
+            0.065,
+            0.075,
+            0.085,
+            0.095,
+            0.1,
+            0.105,
+            0.115,
+            0.125,
+            0.135
+          ]
+        },
+        "upgrade_costs": [
+          [
+            10000,
+            10
+          ],
+          [
+            15000,
+            12
+          ],
+          [
+            23000,
+            15
+          ],
+          [
+            35000,
+            18
+          ],
+          [
+            52000,
+            22
+          ],
+          [
+            78000,
+            26
+          ],
+          [
+            117000,
+            30
+          ],
+          [
+            175000,
+            35
+          ],
+          [
+            260000,
+            40
+          ]
+        ]
+      },
+      "rod_03": {
+        "bonuses_per_level": {
+          "rarity_efficiency": [
+            0.52,
+            0.55,
+            0.58,
+            0.61,
+            0.64,
+            0.67,
+            0.7,
+            0.73,
+            0.76,
+            0.8
+          ],
+          "size_quality": [
+            0.44,
+            0.46,
+            0.48,
+            0.5,
+            0.52,
+            0.54,
+            0.56,
+            0.58,
+            0.6,
+            0.62
+          ],
+          "shell_yield": [
+            1.15,
+            1.22,
+            1.29,
+            1.36,
+            1.43,
+            1.5,
+            1.57,
+            1.64,
+            1.7,
+            1.75
+          ],
+          "catch_success": [
+            0.08,
+            0.087,
+            0.093,
+            0.1,
+            0.107,
+            0.12,
+            0.127,
+            0.14,
+            0.147,
+            0.16
+          ]
+        },
+        "upgrade_costs": [
+          [
+            110000,
+            21
+          ],
+          [
+            160000,
+            26
+          ],
+          [
+            240000,
+            32
+          ],
+          [
+            350000,
+            38
+          ],
+          [
+            530000,
+            47
+          ],
+          [
+            800000,
+            55
+          ],
+          [
+            1200000,
+            64
+          ],
+          [
+            1770000,
+            74
+          ],
+          [
+            2660000,
+            85
+          ]
+        ]
+      },
+      "rod_04": {
+        "bonuses_per_level": {
+          "rarity_efficiency": [
+            0.82,
+            0.85,
+            0.88,
+            0.92,
+            0.95,
+            0.98,
+            1.02,
+            1.05,
+            1.08,
+            1.12
+          ],
+          "size_quality": [
+            0.64,
+            0.66,
+            0.68,
+            0.7,
+            0.72,
+            0.74,
+            0.76,
+            0.78,
+            0.8,
+            0.82
+          ],
+          "shell_yield": [
+            1.8,
+            1.88,
+            1.96,
+            2.04,
+            2.12,
+            2.2,
+            2.28,
+            2.36,
+            2.43,
+            2.5
+          ],
+          "catch_success": [
+            0.12,
+            0.127,
+            0.14,
+            0.147,
+            0.16,
+            0.167,
+            0.18,
+            0.193,
+            0.2,
+            0.213
+          ]
+        },
+        "upgrade_costs": [
+          [
+            480000,
+            45
+          ],
+          [
+            720000,
+            54
+          ],
+          [
+            1080000,
+            68
+          ],
+          [
+            1610000,
+            81
+          ],
+          [
+            2400000,
+            99
+          ],
+          [
+            3650000,
+            117
+          ],
+          [
+            5480000,
+            135
+          ],
+          [
+            8170000,
+            158
+          ],
+          [
+            12300000,
+            180
+          ]
+        ]
+      },
+      "rod_05": {
+        "bonuses_per_level": {
+          "rarity_efficiency": [
+            1.15,
+            1.19,
+            1.23,
+            1.27,
+            1.31,
+            1.35,
+            1.39,
+            1.43,
+            1.47,
+            1.5
+          ],
+          "size_quality": [
+            0.85,
+            0.87,
+            0.89,
+            0.92,
+            0.94,
+            0.96,
+            0.98,
+            1.0,
+            1.03,
+            1.05
+          ],
+          "shell_yield": [
+            2.6,
+            2.7,
+            2.8,
+            2.9,
+            3.0,
+            3.1,
+            3.2,
+            3.3,
+            3.4,
+            3.5
+          ],
+          "catch_success": [
+            0.167,
+            0.18,
+            0.193,
+            0.207,
+            0.22,
+            0.227,
+            0.24,
+            0.247,
+            0.26,
+            0.267
+          ]
+        },
+        "upgrade_costs": [
+          [
+            1990000,
+            162
+          ],
+          [
+            2990000,
+            195
+          ],
+          [
+            4490000,
+            244
+          ],
+          [
+            6780000,
+            292
+          ],
+          [
+            10170000,
+            358
+          ],
+          [
+            15150000,
+            422
+          ],
+          [
+            22730000,
+            488
+          ],
+          [
+            33900000,
+            569
+          ],
+          [
+            49850000,
+            650
+          ]
+        ]
+      }
+    },
+    "barcos": {
+      "boat_00": 0.0,
+      "boat_01": 0.02,
+      "boat_02": 0.04,
+      "boat_03": 0.06,
+      "boat_04": 0.08,
+      "boat_05": 0.1
+    },
+    "peixes": {
+      "max_level": 10,
+      "stat_bonus_per_level_percent": 4.0,
+      "xp_table": [
+        35,
+        100,
+        180,
+        280,
+        390,
+        515,
+        650,
+        790,
+        945
+      ]
+    },
+    "arena_top_fish_level": 10,
+    "mercado_max_fish_level": 6,
+    "mercado_fish_level_premium_per_level": 0.15,
+    "peixes_aviso_min_level": 2
+  }
+}

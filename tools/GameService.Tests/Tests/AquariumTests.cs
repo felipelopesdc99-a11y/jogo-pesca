@@ -100,9 +100,10 @@ public sealed class AquariumTests
 
         Assert.Equal((a.Hp, a.Attack, a.Defense, a.Speed), (b.Hp, b.Attack, b.Defense, b.Speed));
         Assert.True(bigger.Attack > a.Attack);
-        // Level 10 = +36% (4% per level) over level 1.
+        // The level bonus follows the curve (M24-T13): level 10 = 1 + FishStatBonus(10) over level 1.
         var level1 = FishRules.Stats(config, tilapia, 420, 1);
-        Assert.Equal(level1.Hp * 1.36, higher.Hp, 6);
+        Assert.Equal(level1.Hp * (1 + config.FishStatBonus(10)), higher.Hp, 6);
+        Assert.True(higher.Hp > level1.Hp);
     }
 
     [Fact]
@@ -168,10 +169,13 @@ public sealed class AquariumTests
         var self = game.Aquarium.PreviewFeed(target.FishId, null, new[] { target.FishId });
         Assert.Equal(ServiceError.CannotFeedItself, self.Error);
 
+        // Levels go to 100 now (M24-T13): start one level short of the top so a box of food overflows it.
+        var max = game.Session.Config.Progression.FishLevel.MaxLevel;
+        game.Session.Save.Aquarium.Single(f => f.Id == target.FishId).Level = max - 1;
         var all = game.Fishing.GetFishingBox().Select(c => c.CatchId).ToList();
         var feast = game.Aquarium.Feed(target.FishId, all, null);
         Assert.True(feast.Succeeded);
-        Assert.Equal(10, feast.Value.LevelAfter);
+        Assert.Equal(max, feast.Value.LevelAfter);
         Assert.True(feast.Value.WastedXp > 0);
         Assert.True(feast.Value.NeedsConfirmation);
 

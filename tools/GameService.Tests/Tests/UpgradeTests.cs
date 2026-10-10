@@ -532,13 +532,13 @@ public sealed class UpgradeTests
         var reopened = TestSupport.NewGame(saveDir: dir, clock: clock).Game;
         var save = reopened.Session.Save;
 
-        Assert.Equal(14, PlayerSave.CurrentVersion);
-        Assert.Equal(14, save.SaveVersion);
+        Assert.True(PlayerSave.CurrentVersion >= 14);
+        Assert.Equal(PlayerSave.CurrentVersion, save.SaveVersion);
         Assert.NotNull(save.Upgrades);
         Assert.Empty(save.Upgrades.Levels);
         Assert.Equal(3, save.Crew.UnitsOf("crew_01"));
         Assert.Equal(7_000, save.Coins);
-        Assert.Contains("\"save_version\": 14", File.ReadAllText(path));
+        Assert.Contains("\"save_version\": " + PlayerSave.CurrentVersion, File.ReadAllText(path));
     }
 
     [Fact]

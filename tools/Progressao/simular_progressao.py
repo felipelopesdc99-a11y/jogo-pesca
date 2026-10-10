@@ -9,8 +9,8 @@ O que ele faz:
   - pesca online a cada 30 s e offline a cada 60 s, com o limite de 24 h, e gasta uma carga de isca por
     tentativa, online ou offline;
   - compra como um jogador cuidadoso: a próxima vara assim que tem o dinheiro (itens não têm nível mínimo desde
-    M24-T09; guarda dinheiro para ela quando o mapa que a pede está a 8 níveis), depois barcos, melhorias da vara
-    e iscas (só quando a isca se paga);
+    M24-T09; guarda dinheiro para ela quando o mapa que a pede está a 8 níveis), depois barcos, níveis da vara e
+    do barco (até o Nv.100, curva_niveis.py; o mais barato primeiro) e iscas (só quando a isca se paga);
   - vende tudo o que pesca ao NPC (é o máximo de Moedas sem Mercado) e sempre pesca no melhor mapa liberado;
   - repete para quatro jeitos de jogar (perfis) e escreve os dias até cada faixa de nível.
 
@@ -20,6 +20,10 @@ mapa, para testar um ajuste antes de gravar em /config.
 import argparse
 import json
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import curva_niveis as C  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 CONFIG = os.path.join(ROOT, 'config')
@@ -42,11 +46,13 @@ class Rules:
         self.xp_to_next = [0] + [table.get(l, 0) for l in range(1, self.max_level)]
         self.species = {s['id']: s for s in load('fish_catalog.json')['species']}
         self.maps = sorted(load('maps.json')['maps'], key=lambda m: m['unlock_fisher_level'])
-        self.rods = sorted(load('rods.json')['rods'], key=lambda r: r['tier'])
+        self.rods_cfg = load('rods.json')
+        self.rods = sorted(self.rods_cfg['rods'], key=lambda r: r['tier'])
         # Fisher level of the first map that asks for each rod tier (items themselves have no level, M24-T09).
         self.rod_needed_at = {r['id']: min([m['unlock_fisher_level'] for m in self.maps if m['minimum_rod_tier'] >= r['tier']] or [10 ** 9])
                               for r in self.rods}
         eq = load('equipment.json')
+        self.eq_cfg = eq
         self.boats = sorted(eq['boats'], key=lambda b: b['tier'])
         self.baits = eq['baits']
         econ = load('economy.json')
@@ -58,15 +64,14 @@ class Rules:
         self._cache = {}
 
     def rod_bonus(self, rod, level):
-        b = rod.get('bonuses_per_level')
-        if b:
-            i = max(0, min(level, len(b['catch_success'])) - 1)
-            return {k: b[k][i] for k in ('rarity_efficiency', 'size_quality', 'shell_yield', 'catch_success')}
-        b = rod.get('bonuses') or {}
-        return {k: b.get(k, 0.0) for k in ('rarity_efficiency', 'size_quality', 'shell_yield', 'catch_success')}
+        # Rods level up to Nv.100 on a curve (M24-T13, curva_niveis.py).
+        return C.rod_bonus(self.rods_cfg, rod, level)
 
     def rod_max_level(self, rod):
-        return len(rod['bonuses_per_level']['catch_success']) if rod.get('bonuses_per_level') else 1
+        return C.rod_max_level(self.rods_cfg, rod)
+
+    def boat_bonus(self, boat, level):
+        return C.boat_bonus(self.eq_cfg, boat, level)
 
     def per_attempt(self, mp, rod, rod_level, gear):
         """Expected XP, coins and Shells of one attempt, and the chance it is pulled out."""
@@ -113,6 +118,9 @@ class Player:
         self.rods = {rules.rods[0]['id']: 1}
         self.rod = rules.rods[0]
         self.boat = rules.boats[0]
+        self.boat_levels = {}    # boat id -> level (boats level up to Nv.100 since M24-T13)
+        # Whether a level of a rod or boat that costs this many Moedas is worth it now (a simulator can limit it).
+        self.upgrade_ok = lambda coins: True
         self.bait, self.bait_charges = None, 0
         self.reached = {1: 0.0}
         self.usage = {}          # (band of 10 levels, map id) -> attempts
@@ -129,7 +137,10 @@ class Player:
         return best
 
     def gear(self):
-        return self.boat['catch_success_bonus'] + (self.bait['catch_success_bonus'] if self.bait and self.bait_charges > 0 else 0.0)
+        return self.boat_bonus() + (self.bait['catch_success_bonus'] if self.bait and self.bait_charges > 0 else 0.0)
+
+    def boat_bonus(self):
+        return self.r.boat_bonus(self.boat, self.boat_levels.get(self.boat['id'], 1))
 
     # ------------------------------------------------------------- fishing
     def fish(self, attempts, t_days, xp_mult=1.0):
@@ -190,26 +201,37 @@ class Player:
                 self.coins -= boat['cost_coins']
                 self.shells -= boat['cost_shells']
                 self.boat = boat
+                self.boat_levels.setdefault(boat['id'], 1)
                 self.bought[boat['id']] = getattr(self, 'now', 0.0)
-        # rod upgrades
+        # rod and boat levels (curva_niveis.py): the cheaper of the two next levels first
         while True:
-            lvl = self.rods[self.rod['id']]
-            ups = {u['to_level']: u for u in self.rod.get('upgrade_costs') or []}
-            u = ups.get(lvl + 1)
-            if not u or self.coins - reserve_c < u['cost_coins'] or self.shells - reserve_s < u.get('cost_shells', 0):
+            options = []
+            u = C.rod_cost(r.rods_cfg, self.rod, self.rods[self.rod['id']])
+            if u:
+                options.append((u, 'rod'))
+            u = C.boat_cost(r.eq_cfg, self.boat, self.boat_levels.get(self.boat['id'], 1))
+            if u:
+                options.append((u, 'boat'))
+            if not options:
                 break
-            self.coins -= u['cost_coins']
-            self.shells -= u.get('cost_shells', 0)
-            self.rods[self.rod['id']] = lvl + 1
+            (coins, shells), what = min(options)
+            if self.coins - reserve_c < coins or self.shells - reserve_s < shells or not self.upgrade_ok(coins):
+                break
+            self.coins -= coins
+            self.shells -= shells
+            if what == 'rod':
+                self.rods[self.rod['id']] += 1
+            else:
+                self.boat_levels[self.boat['id']] = self.boat_levels.get(self.boat['id'], 1) + 1
         # bait: the best one that pays for itself in coins
         if self.bait_charges <= 0:
             self.bait = None
             mp = self.map()
             lvl = self.rods[self.rod['id']]
-            base = r.per_attempt(mp, self.rod, lvl, self.boat['catch_success_bonus'])
+            base = r.per_attempt(mp, self.rod, lvl, self.boat_bonus())
             best = None
             for bait in sorted(r.baits, key=lambda b: -b['catch_success_bonus']):
-                with_bait = r.per_attempt(mp, self.rod, lvl, self.boat['catch_success_bonus'] + bait['catch_success_bonus'])
+                with_bait = r.per_attempt(mp, self.rod, lvl, self.boat_bonus() + bait['catch_success_bonus'])
                 gain = with_bait[1] - base[1]
                 cost = bait['cost_coins'] / bait['charges']
                 if gain >= cost and self.coins - reserve_c >= bait['cost_coins'] and self.shells - reserve_s >= bait['cost_shells']:

@@ -222,9 +222,19 @@ namespace FishingIdle.GameService.Config
                     errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fish_level.xp_table xp_to_next_level", 1));
                 }
 
-                if (fishLevel.StatBonusPerLevelPercent < 0)
+                if (fishLevel.MaxLevel > 1000 || fishLevel.StatBonusCurveExponent < 0.1 || fishLevel.StatBonusCurveExponent > 10)
                 {
-                    errors.Add(V.NegativeValue(GameConfigLoader.ProgressionFile, "fish_level.stat_bonus_per_level_percent"));
+                    errors.Add(V.LevelCurveInvalid(GameConfigLoader.ProgressionFile, "fish_level"));
+                }
+
+                if (fishLevel.StatBonusAtMaxLevelPercent < 0)
+                {
+                    errors.Add(V.NegativeValue(GameConfigLoader.ProgressionFile, "fish_level.stat_bonus_at_max_level_percent"));
+                }
+
+                if (!LegacyLevelsValid(fishLevel.LegacyLevelsV1, fishLevel.MaxLevel))
+                {
+                    errors.Add(V.LegacyLevelsInvalid(GameConfigLoader.ProgressionFile, "fish_level"));
                 }
             }
 
@@ -342,6 +352,13 @@ namespace FishingIdle.GameService.Config
             }
 
             // ---- rods.json
+            var rodRules = rods.UpgradeRules;
+            if (rodRules?.InternalLevels == null || rodRules.InternalLevels.Max < 1 || rodRules.InternalLevels.Max > 1000
+                || rodRules.BonusCurveExponent < 0.1 || rodRules.BonusCurveExponent > 10)
+            {
+                errors.Add(V.LevelCurveInvalid(GameConfigLoader.RodsFile, "upgrade_rules"));
+            }
+
             if (rods.Rods == null || rods.Rods.Count == 0)
             {
                 errors.Add(V.Missing(GameConfigLoader.RodsFile, "rods"));
@@ -380,28 +397,25 @@ namespace FishingIdle.GameService.Config
 
                     if (rod.HasInternalLevels)
                     {
-                        var levelCount = rod.BonusesPerLevel?.RarityEfficiency?.Count ?? 0;
-                        for (var level = 2; level <= levelCount; level++)
+                        // Levels on a curve (M24-T13): Nv.1 and max bonuses, a price per level, the old-level map.
+                        var maxLevel = rods.UpgradeRules?.InternalLevels?.Max ?? 0;
+                        if (rod.BonusesAtLevel1 == null || rod.BonusesAtMaxLevel == null)
                         {
-                            var step = rod.UpgradeCosts?.FirstOrDefault(c => c.ToLevel == level);
-                            if (step == null || step.CostCoins <= 0 || step.CostShells < 0)
-                            {
-                                errors.Add(V.RodUpgradeCostMissing(rod.Id, level));
-                                break;
-                            }
+                            errors.Add(V.Missing(GameConfigLoader.RodsFile, rod.Id + ".bonuses_at_level_1 / bonuses_at_max_level"));
                         }
-                    }
+                        else if (!RodBonusesValid(rod.BonusesAtLevel1, rod.BonusesAtMaxLevel))
+                        {
+                            errors.Add(V.LevelBonusInvalid(GameConfigLoader.RodsFile, rod.Id));
+                        }
 
-                    if (rod.HasInternalLevels)
-                    {
-                        var perLevel = rod.BonusesPerLevel;
-                        if (perLevel == null || perLevel.RarityEfficiency == null || perLevel.SizeQuality == null || perLevel.ShellYield == null)
+                        if (!LevelCostValid(rod.UpgradeCost, maxLevel))
                         {
-                            errors.Add(V.Missing(GameConfigLoader.RodsFile, rod.Id + ".bonuses_per_level"));
+                            errors.Add(V.LevelCostInvalid(GameConfigLoader.RodsFile, rod.Id));
                         }
-                        else if (perLevel.RarityEfficiency.Concat(perLevel.SizeQuality).Concat(perLevel.ShellYield).Any(b => b < 0))
+
+                        if (!LegacyLevelsValid(rod.LegacyLevelsV1, maxLevel))
                         {
-                            errors.Add(V.NegativeValue(GameConfigLoader.RodsFile, rod.Id + ".bonuses_per_level"));
+                            errors.Add(V.LegacyLevelsInvalid(GameConfigLoader.RodsFile, rod.Id));
                         }
                     }
                     else if (rod.Bonuses != null && (rod.Bonuses.RarityEfficiency < 0 || rod.Bonuses.SizeQuality < 0 || rod.Bonuses.ShellYield < 0))
@@ -662,7 +676,7 @@ namespace FishingIdle.GameService.Config
 
                 var sup = marketBots.Supply;
                 if (sup.TargetListingCount < 0 || sup.NewListingsPerRefresh < 0 || sup.RefreshIntervalMinutes <= 0 || sup.ListingDurationHours <= 0
-                    || sup.MaxFishLevel < 1 || sup.PriceRatio.Min <= 0 || sup.PriceRatio.Max < sup.PriceRatio.Min)
+                    || sup.MaxFishLevel < 1 || sup.MaxRodLevel < 1 || sup.PriceRatio.Min <= 0 || sup.PriceRatio.Max < sup.PriceRatio.Min)
                 {
                     errors.Add(V.BadIntRange(GameConfigLoader.MarketBotsFile, "supply"));
                 }
@@ -780,6 +794,27 @@ namespace FishingIdle.GameService.Config
                     {
                         errors.Add(V.NegativeValue(GameConfigLoader.EquipmentFile, boat.Id + " (custo)"));
                     }
+
+                    if (boat.HasLevels)
+                    {
+                        // Boat levels (M24-T13): the bonus at the max level stays a chance and never below Nv.1.
+                        if (boat.CatchSuccessBonusAtMaxLevel < boat.CatchSuccessBonus || boat.CatchSuccessBonusAtMaxLevel > 1)
+                        {
+                            errors.Add(V.LevelBonusInvalid(GameConfigLoader.EquipmentFile, boat.Id));
+                        }
+
+                        if (!LevelCostValid(boat.UpgradeCost, equipment.BoatLevels?.MaxLevel ?? 0))
+                        {
+                            errors.Add(V.LevelCostInvalid(GameConfigLoader.EquipmentFile, boat.Id));
+                        }
+                    }
+                }
+
+                var boatLevels = equipment.BoatLevels;
+                if (equipment.Boats.Any(b => b.HasLevels)
+                    && (boatLevels == null || boatLevels.MaxLevel < 1 || boatLevels.MaxLevel > 1000 || boatLevels.BonusCurveExponent < 0.1 || boatLevels.BonusCurveExponent > 10))
+                {
+                    errors.Add(V.LevelCurveInvalid(GameConfigLoader.EquipmentFile, "boat_levels"));
                 }
 
                 var starter = equipment.Boats.OrderBy(b => b.Tier).First();
@@ -823,6 +858,47 @@ namespace FishingIdle.GameService.Config
             ValidateCrew(crew, errors);
             ValidateUpgrades(upgrades, crew, errors);
             return errors;
+        }
+
+        /// <summary>A level price (M24-T13): something to pay, growth from 1 to 10, and the last level fits a long with room to spare.</summary>
+        private static bool LevelCostValid(LevelCostConfig cost, int maxLevel)
+        {
+            if (cost == null || cost.CoinsFirst <= 0 || cost.ShellsFirst < 0
+                || cost.CoinsGrowth < 1 || cost.CoinsGrowth > 10 || cost.ShellsGrowth < 1 || cost.ShellsGrowth > 10)
+            {
+                return false;
+            }
+
+            var last = Math.Max(1, maxLevel - 1);
+            return LevelCurve.Cost(cost.CoinsFirst, cost.CoinsGrowth, last) < 1_000_000_000_000_000_000L
+                && LevelCurve.Cost(cost.ShellsFirst, cost.ShellsGrowth, last) < 1_000_000_000_000_000_000L;
+        }
+
+        /// <summary>A rod's Nv.1 and max-level bonuses: none negative, none smaller at the max, the Catch Success a chance.</summary>
+        private static bool RodBonusesValid(RodBonusesConfig at1, RodBonusesConfig atMax)
+        {
+            var low = new[] { at1.RarityEfficiency, at1.SizeQuality, at1.ShellYield, at1.CatchSuccess };
+            var high = new[] { atMax.RarityEfficiency, atMax.SizeQuality, atMax.ShellYield, atMax.CatchSuccess };
+            return low.All(v => v >= 0) && low.Zip(high, (a, b) => b >= a).All(ok => ok) && atMax.CatchSuccess <= 1;
+        }
+
+        /// <summary>The map of the old levels 1–10 (curve 1) to the current curve: 10 levels, never going down, inside 1..max.</summary>
+        private static bool LegacyLevelsValid(List<int> legacy, int maxLevel)
+        {
+            if (legacy == null || legacy.Count != 10 || legacy[0] < 1 || legacy.Any(l => l > maxLevel))
+            {
+                return false;
+            }
+
+            for (var i = 1; i < legacy.Count; i++)
+            {
+                if (legacy[i] < legacy[i - 1])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>upgrades.json (M24-T06): the Crew members' ×2s and the general upgrades with levels.</summary>

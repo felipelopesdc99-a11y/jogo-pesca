@@ -985,6 +985,10 @@ namespace FishingIdle.Game.Bootstrap
 
         public void UseBoat(string boatId) => GearIntent(() => Game.Gear.UseBoat(boatId), gear => GameTexts.Gear.UsingBoat(gear.BoatName), ToastKind.Info);
 
+        /// <summary>Takes an owned boat one level up (M24-T13).</summary>
+        public void UpgradeBoat(string boatId) => GearIntent(() => Game.Gear.UpgradeBoat(boatId),
+            gear => GameTexts.Gear.UpgradedBoat(gear.Boats.Find(b => b.BoatId == boatId).Name, gear.Boats.Find(b => b.BoatId == boatId).Level), ToastKind.LevelUp);
+
         public void BuyBait(string baitId)
         {
             var charges = 0;

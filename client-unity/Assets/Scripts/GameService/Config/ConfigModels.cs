@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace FishingIdle.GameService.Config
 {
@@ -113,7 +114,16 @@ namespace FishingIdle.GameService.Config
     public sealed class FishLevelConfig
     {
         public int MaxLevel { get; set; }
-        public double StatBonusPerLevelPercent { get; set; }
+
+        /// <summary>Numbers the level curve (1 = Nv.1 to Nv.10 with +4% a level; 2 = Nv.1 to Nv.100, M24-T13).</summary>
+        public int LevelCurveVersion { get; set; }
+
+        /// <summary>Attribute bonus at the max level, in percent (0 at Nv.1); the curve in between is <see cref="LevelCurve"/>.</summary>
+        public double StatBonusAtMaxLevelPercent { get; set; }
+        public double StatBonusCurveExponent { get; set; } = 1.0;
+
+        /// <summary>The level on the current curve of a fish that was at level 1–10 of curve 1 (index 0 = old Nv.1).</summary>
+        public List<int> LegacyLevelsV1 { get; set; }
         public List<XpLevelConfig> XpTable { get; set; }
     }
 
@@ -238,7 +248,30 @@ namespace FishingIdle.GameService.Config
     public sealed class RodsConfig
     {
         public int ConfigSchemaVersion { get; set; }
+        public RodUpgradeRulesConfig UpgradeRules { get; set; }
         public List<RodConfig> Rods { get; set; }
+    }
+
+    /// <summary>The level curve every rod with levels shares (M24-T13).</summary>
+    public sealed class RodUpgradeRulesConfig
+    {
+        public IntRangeConfig InternalLevels { get; set; }
+        public double BonusCurveExponent { get; set; } = 1.0;
+
+        /// <summary>Numbers the level curve (1 = Nv.1 to Nv.10 from tables; 2 = Nv.1 to Nv.100 on a curve).</summary>
+        public int LevelCurveVersion { get; set; }
+    }
+
+    /// <summary>
+    /// Price of each level of a rod or boat (M24-T13): from level N to N + 1 costs
+    /// first × growth^(N − 1), rounded by <see cref="LevelCurve.Cost"/>, in Moedas and in Conchas.
+    /// </summary>
+    public sealed class LevelCostConfig
+    {
+        public long CoinsFirst { get; set; }
+        public double CoinsGrowth { get; set; } = 1.0;
+        public long ShellsFirst { get; set; }
+        public double ShellsGrowth { get; set; } = 1.0;
     }
 
     public sealed class RodConfig
@@ -254,7 +287,9 @@ namespace FishingIdle.GameService.Config
         public bool GeneratesShells { get; set; }
 
         public RodAcquisitionConfig Acquisition { get; set; }
-        public List<RodUpgradeCostConfig> UpgradeCosts { get; set; }
+
+        /// <summary>Price of each level, for rods with levels (M24-T13).</summary>
+        public LevelCostConfig UpgradeCost { get; set; }
         public RodResaleConfig NpcResale { get; set; }
         public long NpcResaleValueCoins { get; set; }
         public bool TradableOnMarket { get; set; }
@@ -262,8 +297,14 @@ namespace FishingIdle.GameService.Config
         /// <summary>Flat bonuses, for rods without internal levels (the Starter Rod).</summary>
         public RodBonusesConfig Bonuses { get; set; }
 
-        /// <summary>Total bonus at each internal level (index 0 = Lv.1), for upgradable rods.</summary>
-        public RodBonusesPerLevelConfig BonusesPerLevel { get; set; }
+        /// <summary>Total bonuses at Nv.1 and at the max level, for rods with levels; the curve in between is <see cref="LevelCurve"/>.</summary>
+        /// <remarks>Named explicitly: the snake_case strategy does not split digits (it would read "bonuses_at_level1").</remarks>
+        [JsonProperty("bonuses_at_level_1")]
+        public RodBonusesConfig BonusesAtLevel1 { get; set; }
+        public RodBonusesConfig BonusesAtMaxLevel { get; set; }
+
+        /// <summary>The level on the current curve of a rod that was at level 1–10 of curve 1 (index 0 = old Nv.1).</summary>
+        public List<int> LegacyLevelsV1 { get; set; }
     }
 
     public sealed class RodAcquisitionConfig
@@ -274,15 +315,6 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>Conchas asked on top of the coins (A-099).</summary>
         public long PurchaseCostShells { get; set; }
-    }
-
-    public sealed class RodUpgradeCostConfig
-    {
-        public int ToLevel { get; set; }
-        public long CostCoins { get; set; }
-
-        /// <summary>Conchas asked on top of the coins (A-099).</summary>
-        public long CostShells { get; set; }
     }
 
     /// <summary>NPC resale: part of the purchase price plus part of what was spent on upgrades.</summary>
@@ -300,14 +332,6 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>Percentage points added to the Catch Success chance (0,05 = +5%).</summary>
         public double CatchSuccess { get; set; }
-    }
-
-    public sealed class RodBonusesPerLevelConfig
-    {
-        public List<double> RarityEfficiency { get; set; }
-        public List<double> SizeQuality { get; set; }
-        public List<double> ShellYield { get; set; }
-        public List<double> CatchSuccess { get; set; }
     }
 
     // ---------------------------------------------------------------- economy.json
@@ -581,6 +605,9 @@ namespace FishingIdle.GameService.Config
         public double ListingDurationHours { get; set; }
         public double RodListingChance { get; set; }
         public int MaxFishLevel { get; set; }
+
+        /// <summary>Highest level of a rod the traders list (M24-T13; levels go to 100).</summary>
+        public int MaxRodLevel { get; set; } = 1;
         public RangeConfig PriceRatio { get; set; }
     }
 
@@ -669,8 +696,17 @@ namespace FishingIdle.GameService.Config
     public sealed class EquipmentConfig
     {
         public int ConfigSchemaVersion { get; set; }
+
+        /// <summary>The level curve every boat with levels shares (M24-T13).</summary>
+        public BoatLevelsConfig BoatLevels { get; set; }
         public List<BoatConfig> Boats { get; set; }
         public List<BaitConfig> Baits { get; set; }
+    }
+
+    public sealed class BoatLevelsConfig
+    {
+        public int MaxLevel { get; set; } = 1;
+        public double BonusCurveExponent { get; set; } = 1.0;
     }
 
     public sealed class BoatConfig
@@ -681,7 +717,14 @@ namespace FishingIdle.GameService.Config
         /// <summary>One short line for the Shop (A-103).</summary>
         public string Description { get; set; }
         public int Tier { get; set; }
+
+        /// <summary>Points added to the Catch Success chance; for a boat with levels, the bonus at Nv.1.</summary>
         public double CatchSuccessBonus { get; set; }
+
+        /// <summary>Whether the boat levels up (M24-T13). The starter boat does not.</summary>
+        public bool HasLevels { get; set; }
+        public double CatchSuccessBonusAtMaxLevel { get; set; }
+        public LevelCostConfig UpgradeCost { get; set; }
         public long CostCoins { get; set; }
         public long CostShells { get; set; }
     }

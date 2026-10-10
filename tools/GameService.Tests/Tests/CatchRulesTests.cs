@@ -127,13 +127,18 @@ public sealed class CatchRulesTests
         int CountRare(int level) =>
             Enumerable.Range(0, draws).Count(i => CatchRules.Roll(Config, map, rod, level, Rng.For(5, level, i)).Species.Rarity == "rare");
 
+        // Levels go to 100 (M24-T13): the level that matches the old Nv.10 (+22% efficiency) and the top one (+66%).
+        var oldTen = rod.LegacyLevelsV1[9];
         var level1 = CountRare(1) / (double)draws;
-        var level10 = CountRare(10) / (double)draws;
+        var level10 = CountRare(oldTen) / (double)draws;
+        var level100 = CountRare(100) / (double)draws;
 
         // Aruanã is 10 of 1005 weight: 1% of the bites at Lv.1 (doubled with Catch Success, since a rare
-        // bite is pulled out only ~40% of the time); +22% efficiency at Lv.10 must stay near 1.2%, never 22%.
+        // bite is pulled out only ~40% of the time); +22% efficiency at the old Lv.10 must stay near 1.2%, never 22%,
+        // and +66% at Nv.100 near 1.65%.
         Assert.InRange(level1, 0.009, 0.011);
         Assert.InRange(level10, 0.011, 0.0135);
+        Assert.InRange(level100, 0.015, 0.018);
     }
 
     [Fact]

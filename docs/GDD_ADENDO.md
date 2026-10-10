@@ -2135,3 +2135,95 @@ nível do Pescador (como os itens, A-153).
   provisório); as gerais, um quadrado com um ícone que já existe (sino, vender, caixa, lupa, ondas). Pedidos em
   `docs/ASSETS_PENDENTES.md`.
 - **Quem já joga** começa sem nenhuma Melhoria (save versão 14).
+
+### A-156 · Etapa 4 do novo escopo: varas, barcos e peixes até o Nv.100
+**Seção do GDD:** 13, 19, 22, 24 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+Pedido do proprietário em 10/10/2026 (M24-T13): "o foco vai ser ter níveis mais altos nos peixes, nos barcos, nas
+varas, então diminuir preço para melhorar o nível das coisas, mas aumentar para até nv 100 e começar dando pequenas
+porcentagens de melhoria". Força no Nv.100: "crescimento mediano" (3× o máximo de hoje no Nv.10). Custo de cada
+nível: Moedas e Conchas. Tudo que já existia continua; números em `/config`, para ajustar jogando.
+
+- **Varas até o Nv.100** (antes Nv.10). O Nv.1 tem o mesmo bônus de antes; o Nv.100 tem 3× o bônus do Nv.10 de antes.
+  Cada nível soma um pouco, começando com passos pequenos (+0,1 a +0,3 ponto na chance de puxar) e crescendo devagar
+  até o fim. O que era o máximo de antes chega por volta do Nv.23 (Vara 5) ao Nv.41 (Vara 1). Exemplos:
+
+  | Vara | Nível | Puxar | Raridade | Tamanho | Conchas | Próximo nível custa | Gasto desde o Nv.1 |
+  |---|---|---|---|---|---|---|---|
+  | Ponta Selvagem (Vara 1) | 1 | +1,5% | +0% | +0% | +0% | 500 Moedas + 1 Concha (antes 1.500 + 2) | — |
+  | | 10 | +2,8% | +3,7% | +3,5% | +8,8% | 1.630 + 1 | 8.048 + 9 |
+  | | 30 | +6,7% | +15% | +14% | +36% | 22.300 + 2 | 156 mil + 44 |
+  | | 50 | +11,2% | +28% | +27% | +67% | 307 mil + 4 | 2,2 mi + 108 |
+  | | 100 | +24% | +66% | +63% | +156% | — | 1,5 bi + 588 |
+  | Corrente Mestra (Vara 3) | 1 | +8% | +52% | +44% | +115% | 36.700 + 5 (antes 110 mil + 21) | — |
+  | | 10 | +10,2% | +63% | +52% | +138% | 119 mil + 7 | 591 mil + 50 |
+  | | 30 | +17,2% | +95% | +77% | +209% | 1,64 mi + 12 | 11,5 mi + 226 |
+  | | 50 | +25,2% | +133% | +105% | +291% | 22,5 mi + 21 | 161 mi + 542 |
+  | | 100 | +48% | +240% | +186% | +525% | — | 113 bi + 2.941 |
+  | Soberana Abissal (Vara 5) | 1 | +16,7% | +115% | +85% | +260% | 663 mil + 41 (antes 1,99 mi + 162) | — |
+  | | 10 | +20,3% | +134% | +98% | +305% | 2,16 mi + 53 | 10,7 mi + 416 |
+  | | 30 | +31,2% | +192% | +138% | +441% | 29,6 mi + 97 | 207 mi + 1.853 |
+  | | 50 | +44% | +259% | +184% | +600% | 407 mi + 175 | 2,9 bi + 4.451 |
+  | | 100 | +80,1% | +450% | +315% | +1.050% | — | 2 tri + 24.136 |
+
+  O preço de cada nível é o do anterior × 1,14 em Moedas e × 1,03 em Conchas (o 1º nível custa um terço do 1º nível
+  de antes em Moedas e um quarto em Conchas). O preço de compra das varas não mudou.
+- **Barcos com nível** (antes cada barco tinha um bônus fixo). Todo barco comprado começa no Nv.1, com o bônus de
+  antes, e vai até o Nv.100 com 3× esse bônus, na mesma curva das varas. O **barco inicial (Água Mansa) não tem
+  nível**: o bônus dele é 0. Comprar barco continua igual (sem nível mínimo, A-153). Cada nível custa o anterior ×
+  1,14 em Moedas e × 1,03 em Conchas; o 1º custa 5% do preço do barco. Exemplos:
+
+  | Barco | Nv.1 | Nv.10 | Nv.30 | Nv.50 | Nv.100 | 1º nível | Do Nv.1 ao 100 |
+  |---|---|---|---|---|---|---|---|
+  | Remo Valente | +2% | +2,2% | +2,9% | +3,7% | +6% | 600 + 1 Concha | 1,8 bi + 588 |
+  | Proa Selvagem | +6% | +6,7% | +8,8% | +11,2% | +18% | 8.000 + 1 | 24,6 bi + 588 |
+  | Horizonte Dourado | +10% | +11,1% | +14,6% | +18,6% | +30% | 125 mil + 25 | 384 bi + 14.718 |
+- **Teto da chance de puxar:** continua 95% (e o piso 5%), mesmo com Vara 5 e Horizonte Dourado no Nv.100 e a melhor
+  isca.
+- **Peixes até o Nv.100** (antes Nv.10). O bônus nos quatro atributos começa em 0 no Nv.1 e chega a **+108%** no
+  Nv.100 (3× os +36% do Nv.10 de antes), na mesma curva: +0,4% no Nv.2, +6,1% no Nv.10, +25% no Nv.30, +36% no Nv.41
+  (o máximo de antes), +46% no Nv.50, +76% no Nv.75. Subir de nível continua sendo só alimentar com outros peixes
+  (sem custo em Moedas ou Conchas; ver OD-057), com XP pequeno no começo: 5 XP por nível do Nv.1 ao Nv.9, 10 no Nv.10, 100
+  no Nv.30, 275 no Nv.50 e 1.080 no Nv.99. Do Nv.1 ao Nv.41 são 2.465 XP (~63 Comuns; antes 3.885 XP até o Nv.10) e
+  ao Nv.100, 36.160 XP (~930 Comuns). O aviso de "peixe valioso" ao alimentar passa a valer a partir do Nv.8 (o
+  equivalente ao Nv.2 de antes).
+- **Ritmo simulado** (`tools/Progressao/niveis_100.py simular`, resultado em `docs/propostas/niveis_100.json`; jogo
+  aberto o dia todo com a Tripulação e as Melhorias do A-155; o jogador compra o próximo nível da vara ou do barco em
+  uso quando tem Moedas e Conchas e o nível custa até 10 minutos da renda):
+
+  | Vara (só ela, sem comprar a seguinte) | Comprada em | Nv.10 | Nv.30 | Nv.50 | Nv.100 |
+  |---|---|---|---|---|---|
+  | Ponta Selvagem | 2,5 h | +10 min | +4,4 h | +21 h | +11,6 dias |
+  | Maré Dourada | 9 h | +3,2 h | +19 h | +1,5 dia | +21 dias |
+  | Corrente Mestra | 17 h | +9 h | +23,5 h | +3,2 dias | +42 dias |
+  | Atlântico Nobre | 1,3 dia | +9 h | +1,3 dia | +6,1 dias | +42 dias |
+  | Soberana Abissal | 2,7 dias | +1,3 dia | +2,9 dias | +9,3 dias | +56 dias (dia 59) |
+
+  Os primeiros níveis vêm em minutos; o Nv.30 de uma vara do meio, em ~1 dia; o Nv.100 da Vara 5, perto do dia 59. O
+  Horizonte Dourado chega ao Nv.100 por volta do dia 42. As Conchas (só da pesca) somam ~250 no 1º dia, ~1.160 até o
+  dia 3, ~19 mil até o dia 14 e ~55 mil até o dia 30, e não travaram nenhum nível na simulação. **Efeito colateral:**
+  com varas e barcos mais fortes a pesca rende mais XP, e o Pescador chega ao Nv.1000 mais cedo: ~50 dias com o jogo
+  aberto, a Tripulação e as Melhorias (eram ~70, A-155); só pescando (`simular_progressao.py`), ~54 dias com o jogo
+  aberto (eram ~75), ~101 abrindo 4 vezes por dia (eram ~144) e ~113 abrindo 1 vez por dia (eram ~168). O que fazer é
+  decisão do proprietário (OD-058).
+- **Na Loja ("Balcão do Píer").** Na ficha da vara que você tem aparece "Nível 37/100" (em dourado), as barras passam
+  a mostrar "No Nível 37 (agora)" → "No nível máximo" (com uma casa decimal no valor de agora, porque os passos são
+  pequenos), o preço do próximo nível em Moedas e Conchas e o botão "Melhorar → Nv. 38" (o mesmo melhorar do
+  Inventário, que continua lá); no nível máximo, "NÍVEL MÁXIMO". Vara que você não tem continua com "Até o Nível 100",
+  preço e Comprar. Na ficha do barco: "Nível 12/100" quando é seu, o bônus de agora com uma casa ("+6,7% de chance"),
+  "Próximo nível: +6,8% de chance" (ou "No Nível 100: +18,0% de chance" para quem ainda não tem), o preço do próximo
+  nível, "Melhorar → Nv. 13" e, acima, "Usar" ou "EM USO". Aviso: "Remo Valente agora está no Nível 13.".
+- **No Perfil**, o barco e a vara no equipamento mostram o bônus com uma casa quando não é inteiro ("+2,3%") e a dica
+  do barco diz o nível. **No Aquário**, "Nível 37 de 100" e a barra de XP do nível, como antes.
+- **Arena e Mercado.** Os adversários simulados mais fortes têm peixes no Nv.41 (a força do Nv.10 de antes); os
+  vendedores do Mercado oferecem peixes até o Nv.26 (o Nv.6 de antes) e varas até o Nv.41, e o valor de referência de
+  um peixe sobe 3,37% por nível (antes 15%), para o Nv.41 valer o que o Nv.10 valia.
+- **Quem já joga** (save versão 15): cada vara vai para o menor nível novo que tem bônus igual ou maior que o de
+  antes em tudo (nunca fica mais fraca): por exemplo, a Ponta Selvagem no Nv.10 vira Nv.41, no Nv.5 vira Nv.19; a
+  Soberana Abissal no Nv.10 vira Nv.23. Cada peixe vai para o nível com bônus igual ou maior (Nv.2 → 8, 3 → 13,
+  4 → 17, 5 → 22, 6 → 26, 7 → 30, 8 → 34, 9 → 37, 10 → 41), e o XP que ele tinha dentro do nível continua valendo. Os
+  barcos que o jogador tem começam no Nv.1. Varas e peixes anunciados no Mercado também passam.
+- **Painel de Desenvolvimento → Balanceamento:** na aba Varas, cada vara mostra "No Nível 1" e "No nível máximo" nos
+  quatro bônus e o custo (1º nível e × por nível, em Moedas e Conchas), mais o nível máximo e o expoente da curva; na
+  aba Sucesso da pesca, os barcos ganharam bônus máximo e custo de nível; em XP, o bônus do peixe no nível máximo e o
+  expoente.

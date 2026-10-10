@@ -1,4 +1,6 @@
+using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Market;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Shop;
 using Xunit;
@@ -141,15 +143,20 @@ public sealed class MapsAndRodsTests
         game.Shop.BuyRod("rod_01");
         var rod = game.Profile.GetProfile().EquippedRod;
         var coins = game.Player.GetPlayer().Coins;
-        Assert.Equal(1500, rod.NextUpgradeCost);
+        game.Session.Config.TryGetRod("rod_01", out var config);
+        // Level prices on a curve (M24-T13): coins_first × coins_growth^(N − 1), rounded.
+        var first = LevelCurve.Cost(config.UpgradeCost.CoinsFirst, config.UpgradeCost.CoinsGrowth, 1);
+        Assert.Equal(config.UpgradeCost.CoinsFirst, first);
+        Assert.Equal(first, rod.NextUpgradeCost);
 
         var up = game.Profile.UpgradeRod(rod.ItemId);
 
         Assert.True(up.Succeeded, up.ErrorMessage);
         Assert.Equal(2, up.Value.Level);
-        Assert.Equal(coins - 1500, game.Player.GetPlayer().Coins);
+        Assert.Equal(coins - first, game.Player.GetPlayer().Coins);
         Assert.True(up.Value.RarityBonus > rod.RarityBonus);
-        Assert.Equal(2300, up.Value.NextUpgradeCost);
+        Assert.Equal(LevelCurve.Cost(config.UpgradeCost.CoinsFirst, config.UpgradeCost.CoinsGrowth, 2), up.Value.NextUpgradeCost);
+        Assert.True(up.Value.NextUpgradeCost > first);
     }
 
     [Fact]
@@ -172,7 +179,7 @@ public sealed class MapsAndRodsTests
     }
 
     [Fact]
-    public void Upgrading_needs_coins_and_stops_at_level_10()
+    public void Upgrading_needs_coins_and_stops_at_the_max_level()
     {
         var (game, _, _) = VeteranPlayer();
         game.Shop.BuyRod("rod_01");
@@ -184,17 +191,21 @@ public sealed class MapsAndRodsTests
         game.Session.Save.Coins = 0;
         Assert.Equal(ServiceError.NotEnoughCoins, game.Profile.UpgradeRod(id).Error);
 
-        game.Session.Save.Coins = 1_000_000;
+        const long wallet = 1_000_000_000_000;
+        game.Session.Save.Coins = wallet;
         game.Session.Save.Shells = 0;
         Assert.Equal(ServiceError.NotEnoughShells, game.Profile.UpgradeRod(id).Error); // upgrades ask for Conchas too (A-099)
-        game.Session.Save.Shells = 1_000;
-        for (var level = 2; level <= 10; level++)
+        game.Session.Save.Shells = 1_000_000;
+        game.Session.Config.TryGetRod("rod_01", out var rod);
+        var max = game.Session.Config.RodMaxLevel(rod);
+        Assert.Equal(100, max); // M24-T13
+        for (var level = 2; level <= max; level++)
         {
             Assert.True(game.Profile.UpgradeRod(id).Succeeded);
         }
 
-        Assert.Equal(10, game.Profile.GetProfile().EquippedRod.Level);
-        Assert.Equal(1_000_000 - 138_050, game.Player.GetPlayer().Coins); // sum of upgrade_costs
+        Assert.Equal(max, game.Profile.GetProfile().EquippedRod.Level);
+        Assert.Equal(wallet - MarketRules.RodUpgradeSpend(game.Session.Config, rod, max), game.Player.GetPlayer().Coins);
         Assert.Equal(ServiceError.RodAtMaxLevel, game.Profile.UpgradeRod(id).Error);
     }
 
@@ -212,7 +223,8 @@ public sealed class MapsAndRodsTests
 
         game.Profile.EquipRod(starter.ItemId);
         var view = game.Profile.GetProfile().Inventory.Single(r => r.ItemId == rod.ItemId);
-        Assert.Equal((long)Math.Round(2500 * 0.4 + 1500 * 0.25), view.ResaleValue);
+        game.Session.Config.TryGetRod("rod_01", out var config);
+        Assert.Equal((long)Math.Round(2500 * 0.4 + game.Session.Config.RodUpgradeCost(config, 1) * 0.25), view.ResaleValue);
         var coins = game.Player.GetPlayer().Coins;
 
         var sale = game.Profile.SellRod(rod.ItemId);

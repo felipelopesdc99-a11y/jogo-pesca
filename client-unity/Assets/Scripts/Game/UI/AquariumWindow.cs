@@ -1361,7 +1361,7 @@ namespace FishingIdle.Game.UI
                 y += 16f;
             }
 
-            // The level, big: a disc with the number, "Nível X de 10" and the XP bar.
+            // The level, big: a disc with the number, "Nível X de 100" and the XP bar.
             const float disc = 52f;
             var discRect = new Rect(x, y + 2f, disc, disc);
             var night = UiSkin.Night;

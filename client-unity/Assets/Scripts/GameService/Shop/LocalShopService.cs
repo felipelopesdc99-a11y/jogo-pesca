@@ -39,6 +39,25 @@ namespace FishingIdle.GameService.Shop
 
         /// <summary>Why buying is refused right now; None when it is possible.</summary>
         public ServiceError BuyBlocker { get; internal set; }
+
+        /// <summary>The player's copy in the Inventory (the highest level, if more than one); 0 when none (M24-T13).</summary>
+        public long OwnedItemId { get; internal set; }
+
+        /// <summary>Level of the player's copy; 0 when none.</summary>
+        public int OwnedLevel { get; internal set; }
+
+        /// <summary>Bonuses of the player's copy at its level (Nv.1 values when none).</summary>
+        public double CatchBonusNow { get; internal set; }
+        public double RarityBonusNow { get; internal set; }
+        public double SizeBonusNow { get; internal set; }
+        public double ShellBonusNow { get; internal set; }
+
+        /// <summary>Price of the copy's next level; 0 at the max level, without levels or without a copy.</summary>
+        public long NextUpgradeCost { get; internal set; }
+        public long NextUpgradeShells { get; internal set; }
+
+        /// <summary>Why the copy cannot go one level up right now; None when it can.</summary>
+        public ServiceError UpgradeBlocker { get; internal set; }
     }
 
     public sealed class ShopView
@@ -121,6 +140,10 @@ namespace FishingIdle.GameService.Shop
             var at1 = Config.RodBonusesAt(rod, 1);
             var max = Config.RodMaxLevel(rod);
             var atMax = Config.RodBonusesAt(rod, max);
+            var copy = Save.Inventory.Where(i => i.Kind == InventoryItem.KindRod && i.RodId == rod.Id).OrderByDescending(i => i.Level).FirstOrDefault();
+            var now = Config.RodBonusesAt(rod, copy?.Level ?? 1);
+            var nextCoins = copy != null && rod.HasInternalLevels ? Config.RodUpgradeCost(rod, copy.Level) : 0;
+            var nextShells = copy != null && rod.HasInternalLevels ? Config.RodUpgradeShellCost(rod, copy.Level) : 0;
             return new RodOfferView
             {
                 RodId = rod.Id,
@@ -146,7 +169,27 @@ namespace FishingIdle.GameService.Shop
                 Owned = Owns(rod),
                 IsFree = IsClaimable(rod),
                 BuyBlocker = Blocker(rod),
+                OwnedItemId = copy?.Id ?? 0,
+                OwnedLevel = copy?.Level ?? 0,
+                CatchBonusNow = now.CatchSuccess,
+                RarityBonusNow = now.RarityEfficiency,
+                SizeBonusNow = now.SizeQuality,
+                ShellBonusNow = now.ShellYield,
+                NextUpgradeCost = nextCoins,
+                NextUpgradeShells = nextShells,
+                UpgradeBlocker = CopyUpgradeBlocker(rod, copy, nextCoins, nextShells),
             };
+        }
+
+        /// <summary>The same checks as the upgrade itself (LocalProfileService.UpgradeRod), for the Shop's button.</summary>
+        private ServiceError CopyUpgradeBlocker(RodConfig rod, InventoryItem copy, long coins, long shells)
+        {
+            if (copy == null) return ServiceError.ItemNotFound;
+            if (!rod.HasInternalLevels) return ServiceError.RodHasNoLevels;
+            if (coins <= 0) return ServiceError.RodAtMaxLevel;
+            if (Save.Coins < coins) return ServiceError.NotEnoughCoins;
+            if (Save.Shells < shells) return ServiceError.NotEnoughShells;
+            return ServiceError.None;
         }
 
         private static bool IsClaimable(RodConfig rod) => rod.Acquisition != null && rod.Acquisition.Method == "free_claim_in_shop";

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-11T03:00:00Z",
+  "updated_at": "2026-10-11T05:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -520,6 +520,22 @@
       "title": "Maré Boa e Freguesia na Feira",
       "detail": "As duas Melhorias aumentam as Moedas da venda de peixe ao NPC. Opções: (a) ficam as duas como estão (somam na Caixa; no Aquário só a Freguesia); (b) a Maré Boa passa a dar +% no XP de Pescador da pesca; (c) a Maré Boa sai e a Freguesia fica com os 10 níveis.",
       "raised_at": "2026-10-11T03:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-057",
+      "task_id": "M24-T14",
+      "title": "Custo para subir o nível do peixe",
+      "detail": "Hoje o peixe sobe de nível só com XP de alimento (outros peixes). Opções: (a) fica assim, sem Moedas nem Conchas; (b) cada nível do peixe também cobra Moedas e Conchas, barato no começo, como varas e barcos; (c) só Moedas.",
+      "raised_at": "2026-10-11T05:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-058",
+      "task_id": "M24-T15",
+      "title": "Nv.1000 do Pescador mais cedo com o equipamento no Nv.100",
+      "detail": "Com varas e barcos até o Nv.100 a pesca rende mais XP. Simulado: com a Tripulação e as Melhorias, jogo aberto, o Nv.1000 chega em ~50 dias (antes ~70); só pescando, ~54 dias com o jogo aberto (antes ~75), ~101 abrindo 4 vezes por dia (antes ~144) e ~113 abrindo 1 vez por dia (antes ~168). Opções: (a) aceitar; (b) recalibrar a curva de XP do Pescador para voltar aos tempos de antes; (c) diminuir o bônus de raridade das varas no Nv.100 (hoje 3× o Nv.10 de antes).",
+      "raised_at": "2026-10-11T05:00:00Z",
       "status": "OPEN"
     }
   ],
@@ -4398,6 +4414,40 @@
             "M24-T06"
           ],
           "updated_at": "2026-10-11T03:00:00Z"
+        },
+        {
+          "id": "M24-T13",
+          "title": "Varas, barcos e peixes até o Nv.100",
+          "subsystem": "server",
+          "description": "Pedido do proprietário (10/10/2026): níveis mais altos nas varas, nos barcos e nos peixes, até o Nv.100, começando com pequenas porcentagens e com níveis baratos no começo; força no Nv.100 \"crescimento mediano\" (~3× o máximo de hoje no Nv.10); custo de cada nível em Moedas e Conchas.",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T06"
+          ],
+          "updated_at": "2026-10-11T05:00:00Z",
+          "completion_notes": "Curva com dois pontos (TD-041): rods.json → upgrade_rules.internal_levels.max 100, bonus_curve_exponent 1,2, level_curve_version 2; cada vara com bonuses_at_level_1 (o de antes), bonuses_at_max_level (3× o Nv.10 de antes) e upgrade_cost (coins_first = 1/3 do 1º nível de antes, ×1,14 por nível; shells_first = 1/4, ×1,03); equipment.json → boat_levels (max 100, expoente 1,2) e barcos com has_levels, catch_success_bonus_at_max_level (3×) e upgrade_cost (1º nível = 5% do preço, ×1,14 / ×1,03); barco inicial sem nível. progression.json → fish_level: max_level 100, stat_bonus_at_max_level_percent 108 (0 no Nv.1), nova xp_table (5 XP por nível no começo, 36.160 XP até o Nv.100). Regras em GameService/Config/LevelCurve.cs e GameConfig (RodBonusesAt, RodUpgradeCost/ShellCost, BoatMaxLevel, BoatBonusAt, BoatUpgradeCost/ShellCost, FishStatBonus); teto de 95% na chance de puxar mantido. Barcos: IGearService.UpgradeBoat (Moedas + Conchas, erros BoatAtMaxLevel e BoatHasNoLevels), GearRules.BoatLevel/BoatBonus na pesca, CatchSimulator com boatLevel. Save v15: BoatLevels, RodLevelCurveVersion e FishLevelCurveVersion; LevelCurveMigration leva varas e peixes (Inventário, Aquário e Mercado) ao nível equivalente de legacy_levels_v1, nunca para baixo; barcos começam no Nv.1. Arena (top_fish_level 41), Mercado (max_fish_level 26, prêmio 0,0337 por nível, max_rod_level 41 novo) e aviso de comida valiosa (Nv.8) levados à mesma força de antes. Loja: ficha da vara com \"Nível 37/100\", barras \"No Nível 37 (agora)\", preço do próximo nível e \"Melhorar → Nv. 38\"; ficha do barco com nível, próximo nível, Melhorar e Usar; Perfil com uma casa decimal; Painel de Balanceamento com os campos novos. Números e ritmo em tools/Progressao/niveis_100.py (gerar/simular) e docs/propostas/niveis_100.json: Nv.30 de uma vara do meio em ~1 dia, Nv.100 da Vara 5 no dia ~59 (jogo aberto). simular_progressao.py lê o formato novo (curva_niveis.py). Testes: ItemLevelsTests (curva, preços, teto, barcos, Loja, migração v14→v15) e ajustes em MapsAndRods, Aquarium, CatchRules e Upgrade. GDD_ADENDO A-156, DECISOES TD-041. Não compilado (sem .NET aqui) nem aberto no Unity."
+        },
+        {
+          "id": "M24-T14",
+          "title": "Subir o nível do peixe deve custar Moedas e Conchas?",
+          "subsystem": "config",
+          "description": "O proprietário disse que o custo de cada nível é em Moedas e Conchas. Varas e barcos já cobram assim (M24-T13); o peixe continua subindo só com XP de alimento (outros peixes), sem custo em Moedas ou Conchas, porque isso seria um custo novo. Decidir se o peixe também cobra (OD-057).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T13"
+          ],
+          "updated_at": "2026-10-11T05:00:00Z"
+        },
+        {
+          "id": "M24-T15",
+          "title": "Pescador chega ao Nv.1000 mais cedo com varas e barcos no Nv.100",
+          "subsystem": "config",
+          "description": "Com varas e barcos até 3× mais fortes, a pesca rende mais XP: o Pescador chega ao Nv.1000 em ~50 dias com o jogo aberto, a Tripulação e as Melhorias (antes ~70) e em ~54/101/113 dias só pescando (aberto / 4 vezes / 1 vez por dia; antes ~75/144/168). Decidir se fica assim, se a curva de XP do Pescador fica mais lenta ou se os bônus do Nv.100 diminuem (OD-058).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T13"
+          ],
+          "updated_at": "2026-10-11T05:00:00Z"
         }
       ]
     }

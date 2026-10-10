@@ -450,7 +450,7 @@ namespace FishingIdle.Editor
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField(T.BoatsTitle, EditorStyles.boldLabel);
             var boats = (JArray)_documents[equipment]["boats"];
-            Header(new[] { T.SpeciesName, T.GearBonus, T.GearCoins, T.GearShells });
+            Header(new[] { T.SpeciesName, T.GearBonus, T.GearBonusAtMax, T.GearCoins, T.GearShells, T.LevelCostFirst, T.LevelCostGrowth, T.LevelShellsFirst, T.LevelShellsGrowth });
             for (var i = 0; boats != null && i < boats.Count; i++)
             {
                 var prefix = "boats[" + i + "].";
@@ -458,10 +458,18 @@ namespace FishingIdle.Editor
                 {
                     Text(equipment, prefix + "display_name", 130);
                     Cell(equipment, prefix + "catch_success_bonus");
+                    Cell(equipment, prefix + "catch_success_bonus_at_max_level");
                     Cell(equipment, prefix + "cost_coins");
                     Cell(equipment, prefix + "cost_shells");
+                    Cell(equipment, prefix + "upgrade_cost.coins_first");
+                    Cell(equipment, prefix + "upgrade_cost.coins_growth");
+                    Cell(equipment, prefix + "upgrade_cost.shells_first");
+                    Cell(equipment, prefix + "upgrade_cost.shells_growth");
                 }
             }
+
+            Number(equipment, "boat_levels.max_level", T.LevelCurveMax, 1);
+            Number(equipment, "boat_levels.bonus_curve_exponent", T.LevelCurveExponent, 0.1);
 
             EditorGUILayout.Space(8);
             EditorGUILayout.LabelField(T.BaitsTitle, EditorStyles.boldLabel);
@@ -578,7 +586,8 @@ namespace FishingIdle.Editor
             }
 
             EditorGUILayout.LabelField(T.XpTotalTo10, Format.Number(total));
-            Number(file, "fish_level.stat_bonus_per_level_percent", T.FishLevelBonus, 0);
+            Number(file, "fish_level.stat_bonus_at_max_level_percent", T.FishLevelBonus, 0);
+            Number(file, "fish_level.stat_bonus_curve_exponent", T.LevelCurveExponent, 0.1);
             Number(file, "feeding.invested_xp_recovery_ratio", T.FeedRecovery, 0);
             EditorGUILayout.Space(6);
 
@@ -628,23 +637,30 @@ namespace FishingIdle.Editor
                 Number(file, prefix + "acquisition.purchase_cost_coins", T.RodPrice, 0);
                 Number(file, prefix + "bonuses.catch_success", T.RodStarterCatchBonus, 0);
 
-                if (rod["bonuses_per_level"] != null)
+                if (rod["bonuses_at_level_1"] != null)
                 {
-                    Header(new[] { T.XpLevel, T.RodCatchBonus, T.RodRarityBonus, T.RodSizeBonus, T.RodShellBonus, T.RodUpgradeCost });
-                    var levels = ((JArray)rod.SelectToken("bonuses_per_level.rarity_efficiency")).Count;
-                    for (var level = 0; level < levels; level++)
+                    // Levels on a curve (M24-T13): the bonuses at Nv.1 and at the max level, and the price of a level.
+                    Header(new[] { T.XpLevel, T.RodCatchBonus, T.RodRarityBonus, T.RodSizeBonus, T.RodShellBonus });
+                    foreach (var (key, label) in new[] { ("bonuses_at_level_1", T.RodAtLevel1), ("bonuses_at_max_level", T.RodAtMaxLevel) })
                     {
                         using (new EditorGUILayout.HorizontalScope())
                         {
-                            GUILayout.Label((level + 1).ToString(), GUILayout.Width(130));
-                            Cell(file, prefix + "bonuses_per_level.catch_success[" + level + "]");
-                            Cell(file, prefix + "bonuses_per_level.rarity_efficiency[" + level + "]");
-                            Cell(file, prefix + "bonuses_per_level.size_quality[" + level + "]");
-                            Cell(file, prefix + "bonuses_per_level.shell_yield[" + level + "]");
-                            if (level > 0)
-                            {
-                                Cell(file, prefix + "upgrade_costs[" + (level - 1) + "].cost_coins");
-                            }
+                            GUILayout.Label(label, GUILayout.Width(130));
+                            Cell(file, prefix + key + ".catch_success");
+                            Cell(file, prefix + key + ".rarity_efficiency");
+                            Cell(file, prefix + key + ".size_quality");
+                            Cell(file, prefix + key + ".shell_yield");
+                        }
+                    }
+
+                    Header(new[] { T.RodUpgradeCost, T.LevelCostFirst, T.LevelCostGrowth });
+                    foreach (var (key, label) in new[] { ("coins", T.GearCoins), ("shells", T.GearShells) })
+                    {
+                        using (new EditorGUILayout.HorizontalScope())
+                        {
+                            GUILayout.Label(label, GUILayout.Width(130));
+                            Cell(file, prefix + "upgrade_cost." + key + "_first");
+                            Cell(file, prefix + "upgrade_cost." + key + "_growth");
                         }
                     }
                 }
@@ -652,6 +668,8 @@ namespace FishingIdle.Editor
                 EditorGUILayout.Space(10);
             }
 
+            Number(file, "upgrade_rules.internal_levels.max", T.LevelCurveMax, 1);
+            Number(file, "upgrade_rules.bonus_curve_exponent", T.LevelCurveExponent, 0.1);
             EditorGUILayout.HelpBox(T.RodsNote, MessageType.None);
         }
 

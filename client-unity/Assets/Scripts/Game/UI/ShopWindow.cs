@@ -851,16 +851,24 @@ namespace FishingIdle.Game.UI
             var y = inner.y;
             GUI.Label(new Rect(x, y, w, 30f), FishCard.Fit(rod.Name, skin.Heading, w), skin.Heading);
             y += 30f;
-            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Profile.Tier(rod.Tier) + " · " + GameTexts.Shop.MaxLevelOf(rod.MaxLevel), skin.SmallMuted, w), skin.SmallMuted);
+            // Your copy shows its level ("Nível 37/100", M24-T13); otherwise how far the rod goes.
+            var hasCopy = rod.OwnedLevel > 0;
+            var levelText = hasCopy && rod.MaxLevel > 1 ? GameTexts.Shop.LevelOf(rod.OwnedLevel, rod.MaxLevel) : GameTexts.Shop.MaxLevelOf(rod.MaxLevel);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Profile.Tier(rod.Tier) + " · " + levelText, hasCopy ? skin.SmallGold : skin.SmallMuted, w), hasCopy ? skin.SmallGold : skin.SmallMuted);
             y += 24f;
             var catches = rod.CanCatchMythic ? GameTexts.Profile.CatchesUpToMythic : rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare;
             y = WrappedLabel(new Rect(x, y, w, 0f), catches, skin.Small) + 4f;
             y += 8f;
 
-            // Bottom: price, then the button row.
+            // Bottom: price (of the rod, or of your copy's next level), then the button row.
             var button = new Rect(x, inner.yMax - 44f, w, 44f);
             var price = new Rect(x, button.y - 32f, w, 24f);
-            if (!rod.Owned)
+            var canLevel = hasCopy && rod.MaxLevel > 1;
+            if (canLevel && rod.NextUpgradeCost > 0)
+            {
+                Cost(skin, new Rect(price.x, price.y + 1f, price.width, 22f), rod.NextUpgradeCost, rod.NextUpgradeShells);
+            }
+            else if (!rod.Owned)
             {
                 if (rod.IsFree)
                 {
@@ -893,16 +901,34 @@ namespace FishingIdle.Game.UI
                 var bx = bars.x + 10f;
                 var bw = bars.width - 20f;
                 var by = bars.y + 6f;
-                Legend(skin, bx, by, bw);
+                // With a copy, the bright shade is its level now; otherwise Nv.1.
+                Legend(skin, bx, by, bw, canLevel ? GameTexts.Shop.AtLevelNow(rod.OwnedLevel) : GameTexts.Shop.AtLevel1);
                 by += 24f;
                 var rowHeight = Mathf.Clamp((bars.yMax - 6f - by) / 4f, 30f, 40f);
-                BonusBar(skin, new Rect(bx, by, bw, rowHeight), GameTexts.Shop.CatchBonus, rod.CatchBonus, rod.CatchBonusAtMax, maxCatch);
-                BonusBar(skin, new Rect(bx, by + rowHeight, bw, rowHeight), GameTexts.Profile.RarityBonus, rod.RarityBonus, rod.RarityBonusAtMax, maxRarity);
-                BonusBar(skin, new Rect(bx, by + rowHeight * 2f, bw, rowHeight), GameTexts.Profile.SizeBonus, rod.SizeBonus, rod.SizeBonusAtMax, maxSize);
-                BonusBar(skin, new Rect(bx, by + rowHeight * 3f, bw, rowHeight), GameTexts.Profile.ShellBonus, rod.ShellBonus, rod.ShellBonusAtMax, maxShell);
+                BonusBar(skin, new Rect(bx, by, bw, rowHeight), GameTexts.Shop.CatchBonus, canLevel ? rod.CatchBonusNow : rod.CatchBonus, rod.CatchBonusAtMax, maxCatch, canLevel);
+                BonusBar(skin, new Rect(bx, by + rowHeight, bw, rowHeight), GameTexts.Profile.RarityBonus, canLevel ? rod.RarityBonusNow : rod.RarityBonus, rod.RarityBonusAtMax, maxRarity, canLevel);
+                BonusBar(skin, new Rect(bx, by + rowHeight * 2f, bw, rowHeight), GameTexts.Profile.SizeBonus, canLevel ? rod.SizeBonusNow : rod.SizeBonus, rod.SizeBonusAtMax, maxSize, canLevel);
+                BonusBar(skin, new Rect(bx, by + rowHeight * 3f, bw, rowHeight), GameTexts.Profile.ShellBonus, canLevel ? rod.ShellBonusNow : rod.ShellBonus, rod.ShellBonusAtMax, maxShell, canLevel);
             }
 
-            if (inUse)
+            if (canLevel)
+            {
+                // Your copy: "Melhorar → Nv. 38" (the same upgrade as the Inventory), or "Nível máximo".
+                if (rod.UpgradeBlocker == ServiceError.RodAtMaxLevel)
+                {
+                    OwnedPill(skin, button, GameTexts.Shop.MaxLevel);
+                }
+                else if (rod.UpgradeBlocker != ServiceError.None)
+                {
+                    Blocked(skin, button, rod.UpgradeBlocker);
+                }
+                else if (skin.IconButton(button, Icons.Level, GameTexts.Shop.UpgradeTo(rod.OwnedLevel + 1), skin.ButtonPrimary))
+                {
+                    _root.UpgradeRod(rod.OwnedItemId);
+                    _dirty = true;
+                }
+            }
+            else if (inUse)
             {
                 OwnedPill(skin, button, GameTexts.Gear.InUse);
             }
@@ -928,7 +954,11 @@ namespace FishingIdle.Game.UI
             var y = inner.y;
             GUI.Label(new Rect(x, y, w, 30f), FishCard.Fit(boat.Name, skin.Heading, w), skin.Heading);
             y += 30f;
-            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Profile.BoatTier(boat.Tier), skin.SmallMuted, w), skin.SmallMuted);
+            // Owned boats with levels show "Nível 12/100" (M24-T13); the others how far they go.
+            var levels = boat.HasLevels && boat.MaxLevel > 1;
+            var owned = levels && boat.Owned;
+            var tierLine = GameTexts.Profile.BoatTier(boat.Tier) + (owned ? " · " + GameTexts.Shop.LevelOf(boat.Level, boat.MaxLevel) : levels ? " · " + GameTexts.Shop.MaxLevelOf(boat.MaxLevel) : string.Empty);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(tierLine, owned ? skin.SmallGold : skin.SmallMuted, w), owned ? skin.SmallGold : skin.SmallMuted);
             y += 24f;
             if (!string.IsNullOrEmpty(boat.Description))
             {
@@ -938,26 +968,57 @@ namespace FishingIdle.Game.UI
             var max = 0.0;
             foreach (var b in gear.Boats)
             {
-                max = System.Math.Max(max, b.Bonus);
+                max = System.Math.Max(max, System.Math.Max(b.Bonus, b.BonusAtMax));
             }
 
-            BigBonus(skin, x, ref y, w, boat.Bonus, max);
+            BigBonus(skin, x, ref y, w, boat.Bonus, max, levels ? 1 : 0);
+            if (levels)
+            {
+                // The next level (small steps, with one decimal) or what the top level gives.
+                var line = owned && boat.Level < boat.MaxLevel
+                    ? GameTexts.Gear.NextLevelBonus(Format.Percent(boat.BonusNextLevel, 1))
+                    : GameTexts.Gear.MaxLevelBonus(boat.MaxLevel, Format.Percent(boat.BonusAtMax, 1));
+                GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(line, skin.Small, w), skin.Small);
+                y += 22f;
+            }
 
+            // Owned with levels: the Use button / "Em uso" pill sits over the upgrade row.
             var button = new Rect(x, inner.yMax - 44f, w, 44f);
-            var price = new Rect(x, button.y - 32f, w, 24f);
-            Note(skin, new Rect(x, y + 6f, w, (boat.Owned ? button.y : price.y) - 8f - y - 6f), GameTexts.Gear.BoatsNote);
+            var use = owned ? new Rect(x, button.y - 50f, w, 40f) : button;
+            var price = new Rect(x, use.y - 32f, w, 24f);
+            Note(skin, new Rect(x, y + 6f, w, (boat.Owned && !owned ? button.y : price.y) - 8f - y - 6f), GameTexts.Gear.BoatsNote);
             if (!boat.Owned)
             {
                 Cost(skin, new Rect(price.x, price.y + 1f, price.width, 22f), boat.CostCoins, boat.CostShells);
             }
+            else if (owned && boat.NextUpgradeCoins > 0)
+            {
+                Cost(skin, new Rect(price.x, price.y + 1f, price.width, 22f), boat.NextUpgradeCoins, boat.NextUpgradeShells);
+            }
+
+            if (owned)
+            {
+                if (boat.UpgradeBlocker == ServiceError.BoatAtMaxLevel)
+                {
+                    OwnedPill(skin, button, GameTexts.Shop.MaxLevel);
+                }
+                else if (boat.UpgradeBlocker != ServiceError.None)
+                {
+                    Blocked(skin, button, boat.UpgradeBlocker);
+                }
+                else if (skin.IconButton(button, Icons.Level, GameTexts.Shop.UpgradeTo(boat.Level + 1), skin.ButtonPrimary))
+                {
+                    _root.UpgradeBoat(boat.BoatId);
+                }
+            }
 
             if (boat.InUse)
             {
-                OwnedPill(skin, button, GameTexts.Gear.InUse);
+                OwnedPill(skin, use, GameTexts.Gear.InUse);
             }
             else if (boat.Owned)
             {
-                if (skin.IconButton(button, Icons.Swap, GameTexts.Gear.Use, skin.Button))
+                if (skin.IconButton(use, Icons.Swap, GameTexts.Gear.Use, skin.Button))
                 {
                     _root.UseBoat(boat.BoatId);
                 }
@@ -1031,20 +1092,23 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>"No Nível 1" and "No nível máximo" with their two bar shades.</summary>
-        private static void Legend(UiSkin skin, float x, float y, float w)
+        /// <summary>"No Nível 1" (or "No Nível 37 (agora)") and "No nível máximo" with their two bar shades.</summary>
+        private static void Legend(UiSkin skin, float x, float y, float w, string first)
         {
             var half = w / 2f;
             Fill(skin, new Rect(x, y + 6f, 14f, 8f), UiSkin.Accent, 3f);
-            GUI.Label(new Rect(x + 20f, y, half - 24f, UiSkin.SmallLine), FishCard.Fit(GameTexts.Shop.AtLevel1, skin.SmallMuted, half - 24f), skin.SmallMuted);
+            GUI.Label(new Rect(x + 20f, y, half - 24f, UiSkin.SmallLine), FishCard.Fit(first, skin.SmallMuted, half - 24f), skin.SmallMuted);
             Fill(skin, new Rect(x + half, y + 6f, 14f, 8f), new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.4f), 3f);
             GUI.Label(new Rect(x + half + 20f, y, half - 20f, UiSkin.SmallLine), FishCard.Fit(GameTexts.Shop.AtMax, skin.SmallMuted, half - 20f), skin.SmallMuted);
         }
 
-        /// <summary>One bonus: label, "+x% → +y%" (always whole) and a bar with the level-1 value over the max-level one.</summary>
-        private static void BonusBar(UiSkin skin, Rect r, string label, double at1, double atMax, double scale)
+        /// <summary>
+        /// One bonus: label, "+x% → +y%" and a bar with the level-1 (or current) value over the max-level one. Whole
+        /// percentages, except the current value of a copy, which moves in small steps (one decimal when needed).
+        /// </summary>
+        private static void BonusBar(UiSkin skin, Rect r, string label, double at1, double atMax, double scale, bool now = false)
         {
-            var value = "+" + Format.Percent(at1, 0) + " → +" + Format.Percent(atMax, 0);
+            var value = "+" + (now ? Format.PercentShort(at1) : Format.Percent(at1, 0)) + " → +" + Format.Percent(atMax, 0);
             var vw = Mathf.Min(r.width, skin.SmallBold.CalcSize(new GUIContent(value)).x + 4f);
             var lw = Mathf.Max(0f, r.width - vw - 8f);
             GUI.Label(new Rect(r.x, r.y, lw, UiSkin.SmallLine), FishCard.Fit(label, skin.SmallMuted, lw), skin.SmallMuted);
@@ -1069,9 +1133,9 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>The big "+x% de chance" of a boat or bait and a bar scaled by the biggest bonus of the tab.</summary>
-        private void BigBonus(UiSkin skin, float x, ref float y, float w, double bonus, double max)
+        private void BigBonus(UiSkin skin, float x, ref float y, float w, double bonus, double max, int decimals = 0)
         {
-            GUI.Label(new Rect(x, y, w, 28f), FishCard.Fit(GameTexts.Gear.Bonus(Format.Percent(bonus, 0)), _bonusBig, w), _bonusBig);
+            GUI.Label(new Rect(x, y, w, 28f), FishCard.Fit(GameTexts.Gear.Bonus(Format.Percent(bonus, decimals)), _bonusBig, w), _bonusBig);
             y += 30f;
             var bar = new Rect(x, y, w, 6f);
             Fill(skin, bar, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.9f), 3f);

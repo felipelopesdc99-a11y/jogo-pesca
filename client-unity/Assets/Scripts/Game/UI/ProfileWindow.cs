@@ -706,7 +706,7 @@ namespace FishingIdle.Game.UI
                 var boat = gear.Boats.FirstOrDefault(b => b.BoatId == gear.BoatId);
                 var hovered = Hover(slot, mouse);
                 ItemSlot(skin, slot, ArtAssets.Texture("Barcos/" + gear.BoatId), Icons.Boat, UiSkin.TierColor(boat?.Tier ?? 0), false, hovered);
-                SlotText(skin, textX, slot, textW, gear.BoatName, GameTexts.Profile.BoatLine(Format.Percent(gear.BoatBonus, 0)));
+                SlotText(skin, textX, slot, textW, gear.BoatName, GameTexts.Profile.BoatLine(Format.PercentShort(gear.BoatBonus)));
                 if (hovered)
                 {
                     BoatTip(gear, boat);
@@ -755,7 +755,7 @@ namespace FishingIdle.Game.UI
                 y = BonusRow(skin, x, y, w, bottom, GameTexts.Shop.CatchBonus, "+" + Format.Percent(gear.TotalBonus, 0), true);
                 if (bottom - y >= 20f + 3 * 24f)
                 {
-                    var split = GameTexts.Profile.SuccessSplit(Format.Percent(gear.RodBonus, 0), Format.Percent(gear.BoatBonus, 0), Format.Percent(gear.BaitBonus, 0));
+                    var split = GameTexts.Profile.SuccessSplit(Format.PercentShort(gear.RodBonus), Format.PercentShort(gear.BoatBonus), Format.Percent(gear.BaitBonus, 0));
                     GUI.Label(new Rect(x, y - 4f, w, 20), FishCard.Fit(split, skin.SmallMuted, w), skin.SmallMuted);
                     y += 20f;
                 }
@@ -1037,9 +1037,10 @@ namespace FishingIdle.Game.UI
         {
             var tier = boat?.Tier ?? 0;
             BeginTip(gear.BoatName, UiSkin.TierColor(tier));
-            TipAdd(TipKind.Line, GameTexts.Profile.BoatTier(tier));
+            var boatLevel = boat != null && boat.HasLevels && boat.Owned ? " · " + GameTexts.Shop.LevelOf(boat.Level, boat.MaxLevel) : string.Empty;
+            TipAdd(TipKind.Line, GameTexts.Profile.BoatTier(tier) + boatLevel);
             TipAdd(TipKind.Divider);
-            TipAdd(TipKind.Row, GameTexts.Shop.CatchBonus, "+" + Format.Percent(gear.BoatBonus, 0));
+            TipAdd(TipKind.Row, GameTexts.Shop.CatchBonus, "+" + Format.PercentShort(gear.BoatBonus));
             if (!string.IsNullOrEmpty(boat?.Description))
             {
                 TipAdd(TipKind.Text, boat.Description);

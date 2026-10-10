@@ -735,3 +735,45 @@ arquivo diz quanto vale.
 **Rever se.** O proprietário decidir o OD-056 (Maré Boa e Freguesia se sobrepõem), quiser Melhorias que mexem em
 outra coisa (por exemplo XP da pesca, renda offline da pesca) — basta um efeito novo em `UpgradeEffects` e no ponto de
 cálculo — ou quiser Melhorias de tripulante diferentes por tripulante (aí as linhas viram uma lista por tripulante).
+
+## TD-041 — Níveis até o Nv.100: curva com dois pontos, preço geométrico e mapa dos níveis antigos
+
+**Origem.** M24-T13 (A-156): varas, barcos e peixes passam a ir até o Nv.100, começando com pequenas porcentagens.
+
+**Decisão.**
+- **Curva com dois pontos em vez de tabelas.** As varas não guardam mais 10 valores por eixo e 9 custos: guardam o
+  bônus no Nv.1 (`bonuses_at_level_1`, o de antes), o do nível máximo (`bonuses_at_max_level`, 3× o Nv.10 de antes) e
+  um expoente comum (`upgrade_rules.bonus_curve_exponent`, 1,2). O bônus no nível N é
+  `Nv.1 + (máx − Nv.1) × ((N − 1) ÷ (máx − 1)) ^ expoente` (`Config/LevelCurve.Value`). Os barcos com nível usam a
+  mesma forma (`catch_success_bonus` e `catch_success_bonus_at_max_level`, `equipment.json → boat_levels`) e o peixe
+  também (`fish_level.stat_bonus_at_max_level_percent`, 0 no Nv.1). Os números são gerados e explicados por
+  `tools/Progressao/niveis_100.py`; o mesmo cálculo está em `tools/Progressao/curva_niveis.py` para as simulações.
+- **Preço geométrico arredondado.** `upgrade_cost` (vara e barco): `coins_first × coins_growth ^ (N − 1)` Moedas e
+  `shells_first × shells_growth ^ (N − 1)` Conchas de N para N + 1 (`LevelCurve.Cost`), arredondado para o inteiro
+  abaixo de 1.000 (mínimo 1) e para 3 algarismos acima ("12.300", não "12.347"), com `LevelCurve.Unaffordable` se não
+  couber num `long`. O validador recusa crescimento fora de 1–10 e último nível acima de 10^18.
+- **O XP do peixe continua tabela** (`fish_level.xp_table`, 99 linhas), gerada pela fórmula registrada em
+  `xp_curve_generator`, como a do Pescador: o carregador, o Painel e a migração já trabalham com ela.
+- **Migração por mapa no config.** Save v15: `BoatLevels` (nível por id; ausente = Nv.1) e `RodLevelCurveVersion` /
+  `FishLevelCurveVersion`. A migração da v14 grava 1 nas duas; o `GameSession` chama
+  `Persistence/LevelCurveMigration.MoveToCurrentCurves`, que leva cada vara (Inventário, anúncios, leilões, Itens a
+  Retirar) ao nível de `legacy_levels_v1` da vara e cada peixe (Aquário e Mercado) ao de `fish_level.legacy_levels_v1`,
+  reaplicando o XP que ele tinha dentro do nível; nunca baixa um nível. `legacy_levels_v1[i]` é o menor nível novo cujo
+  bônus é ≥ o do nível antigo i + 1 em **todos** os eixos (calculado pelo script a partir das tabelas antigas, que
+  ficam guardadas em `docs/propostas/niveis_100.json → antes`). Jogador novo nasce com as curvas atuais (0 também
+  significa "nada a mover").
+- **O barco inicial não tem nível** (`has_levels: false`): o bônus dele é 0 e 3 × 0 é 0; um nível que não muda nada
+  só confundiria.
+- **Números que dependiam do nível 1–10** foram levados ao nível equivalente pelo mesmo mapa: adversários da Arena
+  (`top_fish_level` 10 → 41), peixes dos vendedores do Mercado (`max_fish_level` 6 → 26, prêmio 0,15 → 0,0337 por
+  nível, para o Nv.41 valer o que o Nv.10 valia), varas dos vendedores (`market_bots.json → supply.max_rod_level`,
+  novo, 41) e o aviso de comida valiosa (`min_level` 2 → 8).
+
+**Por quê.** Dois pontos e um expoente escalam a 100 (ou 1.000) níveis sem listas gigantes escritas à mão, mantêm o
+Nv.1 de hoje exato e deixam o proprietário mexer em três números por vara no Painel. O mapa dos níveis antigos no
+config segue o princípio da TD-038: a conversão depende do balanceamento, então fica no `GameSession`, e o
+`SaveMigrations` só muda a forma do arquivo. Converter pelo bônus (e não pelo nível) garante que ninguém fica mais fraco.
+
+**Rever se.** O proprietário quiser níveis com custo também para o peixe (OD-057), uma curva por vara, ou se a força
+extra das varas e barcos no Nv.100 adiantar demais o Pescador (a simulação mostra o Nv.1000 em ~50 dias em vez de
+~70 com o jogo aberto e a Tripulação, e ~54 em vez de ~75 só pescando; OD-058).

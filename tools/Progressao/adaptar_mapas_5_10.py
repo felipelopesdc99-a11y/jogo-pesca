@@ -41,6 +41,10 @@ GEAR = {'map_04': ('rod_02', 5, 0.06), 'map_05': ('rod_02', 10, 0.06), 'map_06':
         'map_08': ('rod_04', 3, 0.08), 'map_09': ('rod_04', 8, 0.10), 'map_10': ('rod_05', 5, 0.10)}
 RARITY = {'Comum': 'common', 'Raro': 'rare', 'Épico': 'epic', 'Lendário': 'legendary', 'Mítico': 'mythic'}
 
+
+if __name__ == "__main__":
+    raise SystemExit("Este script grava o formato antigo das varas (antes do M24-T13, TD-041) e não deve mais ser rodado: use tools/Progressao/niveis_100.py.")
+
 def num(s):
     return float(s.replace('.', '').replace(',', '.'))
 
