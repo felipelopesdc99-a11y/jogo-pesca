@@ -865,3 +865,18 @@ raridade sem mexer nas outras.
 **Rever se.** O proprietário decidir mexer nos ganhos do fim do jogo (OD-063) ou nos tamanhos especiais por hora
 (OD-064); ou se o multiplicador passar de 1 (os Comuns podem chegar a 0; o código aceita, mas o resto deixa de somar 1
 na proporção pedida).
+
+## TD-044 · Verificação automática no GitHub (11/10/2026)
+
+**Contexto.** O ambiente onde o código é escrito não tem .NET, então mudanças grandes iam para o repositório sem
+compilar. Um erro de compilação (CS1501 na Tripulação) chegou ao proprietário e o Unity não abriu o projeto.
+
+**Decisão.** `.github/workflows/verificar.yml` roda, a cada envio, o mesmo que `ops/scripts/verify.sh`: testes das
+regras, compilação do jogo e do Painel contra as bibliotecas de referência do Unity 2021.3 e compilação do Simulador.
+Cada etapa roda mesmo que outra falhe. O log e o resultado são gravados na branch `ci-resultados` (arquivos
+`verify.log`, `resultado.txt` e `commit.txt`), para serem lidos com `git fetch` sem precisar da API do GitHub.
+
+**Custo.** Gratuito dentro da cota do GitHub Actions (cerca de 1 a 2 minutos por envio).
+
+**Regra.** Uma mudança só é dada como pronta depois que o `resultado.txt` do seu commit disser `success`.
+

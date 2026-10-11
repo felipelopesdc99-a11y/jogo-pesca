@@ -498,6 +498,9 @@ painel, mensagens de validação). `Format.cs` formata números (`1.234`, `35,2 
 ./ops/scripts/verify.sh --completo   # também o servidor e o painel web arquivados
 ```
 
+Sem .NET na máquina, o GitHub faz o mesmo a cada envio (`.github/workflows/verificar.yml`, TD-044) e grava o
+resultado na branch `ci-resultados`: `git fetch origin ci-resultados && git show origin/ci-resultados:resultado.txt`.
+
 | Projeto | O que garante |
 |---|---|
 | `tools/GameService.Build` | O `GameService` compila como no Unity: .NET Standard 2.1 e C# 9 |

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-11T15:00:00Z",
+  "updated_at": "2026-10-11T21:30:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -4604,6 +4604,25 @@
             "M24-T22"
           ],
           "updated_at": "2026-10-11T15:00:00Z"
+        },
+        {
+          "id": "M24-T25",
+          "title": "Corrigir o erro que impedia o Unity de abrir e verificar no GitHub",
+          "subsystem": "ops",
+          "description": "O proprietário relatou que o Unity não abria (11/10/2026). Compilar e testar de verdade para achar e corrigir os erros.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-11T21:30:00Z",
+          "completion_notes": "Causa: erro de compilação CS1501 em GameService/Crew/LocalCrewService.cs (CreditAsOnline chamava Credit com 3 parâmetros out; a assinatura tem 2), vindo do M24-T16/T17. Corrigido. Criado .github/workflows/verificar.yml: a cada envio, o GitHub compila as regras, o código do jogo e do Painel contra as bibliotecas do Unity 2021.3, compila o Simulador e roda os testes; o log vai para a branch ci-resultados (TD-044). 3 testes desatualizados pelo ciclo de 15 s e pela Tripulação foram ajustados (ReviewFix, Vip, Abuse). Resultado: 365 testes passando e 0 erros de compilação no commit 6d326e3."
+        },
+        {
+          "id": "M24-T26",
+          "title": "Teste do Leilão que falha de vez em quando",
+          "subsystem": "server",
+          "description": "AuctionTests.Being_outbid_returns_the_principal_but_never_the_fee falhou uma vez (PlaceBid recusado) e passou na repetição do mesmo commit. Descobrir a fonte de aleatoriedade e deixar o teste estável.",
+          "status": "TODO",
+          "dependencies": [],
+          "updated_at": "2026-10-11T21:30:00Z"
         }
       ]
     }

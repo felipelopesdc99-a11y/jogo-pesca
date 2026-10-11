@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.51] — 11/10/2026
+
+### Corrigido
+
+- O Unity não abria o projeto: erro de compilação na Tripulação (CS1501). Testes desatualizados ajustados.
+
+### Adicionado
+
+- Verificação automática no GitHub a cada envio (TD-044). Resultado: 365 testes passando, jogo, Painel e Simulador
+  compilando sem erros.
+
 ## [0.2.0-m21.50] — 11/10/2026
 
 Mais peixes, menos raros (M24-T22, A-159, TD-043): decisão do proprietário de 11/10/2026.
