@@ -752,6 +752,12 @@ namespace FishingIdle.GameService.Config
                 {
                     errors.Add(V.ChanceOutOfRange(GameConfigLoader.ProgressionFile, "rarity " + tier.Id + " catch_success_base"));
                 }
+
+                // M24-T22 (A-159): the share of the plain chance a rarity keeps while fishing.
+                if (tier.FishingBiteMultiplier < 0 || double.IsNaN(tier.FishingBiteMultiplier))
+                {
+                    errors.Add(V.NegativeValue(GameConfigLoader.ProgressionFile, "rarity " + tier.Id + " fishing_bite_multiplier"));
+                }
             }
 
             if (progression.Fishing != null && (progression.Fishing.CatchSuccessMin < 0 || progression.Fishing.CatchSuccessMax > 1

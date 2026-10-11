@@ -42,7 +42,7 @@ public sealed class ReviewFixTests
         Assert.Equal("map_02", reopened.Player.GetPlayer().MapId);
         Assert.True(reopened.Fishing.GetStatus().IsFishing);
         var offline = reopened.Player.GetPlayer().TotalCatches - before;
-        Assert.InRange(offline, 115, 120); // 2 h at one catch per 60 s
+        Assert.InRange(offline, 230, 241); // 2 h at one catch per 30 s (M24-T22)
         Assert.NotNull(reopened.Fishing.TakeOfflineReport());
     }
 

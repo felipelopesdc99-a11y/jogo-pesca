@@ -782,7 +782,7 @@ namespace FishingIdle.Texts
             public const string Time = "Avançar o tempo";
             public const string Open = "Com o jogo aberto";
             public const string Closed = "Com o jogo fechado";
-            public const string TimeNote = "Aberto: pesca online (a cada 30 s). Fechado: pesca offline e o Bem-vindo de volta. Expedições, Energia e o resto andam junto.";
+            public const string TimeNote = "Aberto: pesca online (1 tentativa a cada ciclo de pesca). Fechado: pesca offline e o Bem-vindo de volta. Expedições, Energia e o resto andam junto.";
             public const string Level = "Nível do Pescador";
             public const string Fish = "Dar peixes (vão para a Caixa, sem XP)";
             public const string Search = "Buscar espécie";
@@ -1404,8 +1404,9 @@ namespace FishingIdle.Texts
 
             // Raridades (addendum A-083)
             public const string RarityValuesTitle = "Quanto cada raridade vale a mais";
-            public const string RarityValuesNote = "Multiplicadores sobre os valores de cada espécie: 2 = o dobro, 1 = igual ao básico. \"Venda\" é o preço para o comerciante; \"Atributos\", Vida, Ataque, Defesa e Velocidade.";
+            public const string RarityValuesNote = "Multiplicadores sobre os valores de cada espécie: 2 = o dobro, 1 = igual ao básico. \"Venda\" é o preço para o comerciante; \"Atributos\", Vida, Ataque, Defesa e Velocidade. \"Na pesca\" multiplica a chance de um peixe daquela raridade morder na pesca (0,35 = 35% da chance do mapa e da vara); os Comuns completam o resto. Não vale para Expedições nem para o Mercado.";
             public const string RarityName = "Raridade";
+            public const string RarityFishingBite = "Na pesca";
             public const string RarityStat = "Atributos";
             public const string RarityFisherXp = "XP Pescador";
             public const string RarityFeedXp = "XP alimento";
@@ -1481,7 +1482,7 @@ namespace FishingIdle.Texts
             public const string BoatFragments = "Fragmentos";
             public const string BoatFragmentChance = "Chance/peixe";
             public const string GearCharges = "Tentativas";
-            public const string GearNote = "Bônus em pontos (0,05 = +5%). O barco de menor categoria é o inicial: todo jogador já tem, não é de nenhum mapa e não tem nível. Os outros barcos não são vendidos: cada um é de um mapa (map_id) e é montado com \"Fragmentos\"; cada peixe puxado naquele mapa tem a \"Chance/peixe\" de dar 1 (0,013 = 1,3%). Eles sobem de nível como as varas: \"Bônus\" no Nível 1, \"Bônus máx.\" no nível máximo. A isca gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline.";
+            public const string GearNote = "Bônus em pontos (0,05 = +5%). O barco de menor categoria é o inicial: todo jogador já tem, não é de nenhum mapa e não tem nível. Os outros barcos não são vendidos: cada um é de um mapa (map_id) e é montado com \"Fragmentos\"; cada peixe puxado naquele mapa tem a \"Chance/peixe\" de dar 1 (0,0065 = 0,65%). Eles sobem de nível como as varas: \"Bônus\" no Nível 1, \"Bônus máx.\" no nível máximo. A isca gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline.";
             public const string SimulatorTitle = "Simulador de sucesso";
             public const string SimulatorNote = "Roda as regras do jogo com os números desta tela, mesmo os que ainda não foram salvos. A isca fica sempre ligada; o custo dela por hora é descontado das Moedas.";
             public const string SimMap = "Mapa";

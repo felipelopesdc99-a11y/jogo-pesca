@@ -3,6 +3,46 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.50] — 11/10/2026
+
+Mais peixes, menos raros (M24-T22, A-159, TD-043): decisão do proprietário de 11/10/2026.
+
+### Adicionado
+
+- `progression.json → rarity.tiers[].fishing_bite_multiplier` (0,35 no Raro, Épico, Lendário e Mítico): na pesca,
+  a chance de cada raridade morder é multiplicada por ele depois dos pesos do mapa e do bônus de raridade da vara, e os
+  Comuns completam o resto. `CatchRules.RollBite`, `FishingWeights` e `BiteShare`; validação (não pode ser negativo).
+- Painel de Balanceamento → Raridades: coluna "Na pesca".
+- Testes `MoreFishFewerRaresTests`: ciclo na metade, 70% dos raros por hora por raridade em 4 cenários (começo, meio,
+  fim e fim sem nível), simulação com semente fixa, 240 tentativas por hora online e 2.880 num dia offline, fragmentos
+  por hora iguais aos de antes, Expedições sem o multiplicador, Enciclopédia e validação.
+- Decisões pendentes OD-063 (ganhos da pesca no fim do jogo caem com menos raros) e OD-064 (Excepcional e Perfeição
+  vêm o dobro por hora).
+
+### Mudado
+
+- **O dobro de peixes por hora**: uma tentativa a cada 15 s online (era 30 s) e a cada 30 s offline (era 60 s); a
+  chance de puxar e o limite de 24 h offline não mudaram.
+- **Raros por peixe a 35%** e por hora a ~70% de antes em cada raridade (só na pesca; Expedições e vendedores do
+  Mercado continuam iguais). A Enciclopédia mostra o "morde X%" da pesca, com duas casas abaixo de 0,1%.
+- Caixa de Pesca de 1.500 para **3.000** peixes; iscas de 60 para **120** tentativas por compra (mesmo preço).
+- Chance de fragmento de barco de 1,3%–2,4% para **0,64%–1,03%** por peixe puxado (mesmo ritmo de montagem); a Loja e o
+  Catálogo mostram duas casas abaixo de 1%.
+- `config/pass.json` regerado com a economia nova (agora é exatamente o que o script gera; o anterior não batia do
+  Nv.300 em diante): Nv.10 1.950 Moedas e 6 Conchas (era 930 e 3), Nv.1000 1,11 tri e 138 Conchas (era 844 bi e 69).
+- Tempos simulados com a Tripulação e as Melhorias (aberto / 4 vezes / 1 vez por dia): Nv.100 em 0,7 / 1,8 / 3,8 dias
+  (era 1,1 / 2,4 / 4,8), Nv.1000 em 56,6 / 102,3 / 118,8 dias (era 50,5 / 91,5 / 105,8). Nv.10 em ~30 min online.
+- `tools/Progressao`: `simular_progressao.py` aplica o multiplicador; `passe_fragmentos.py` grava a chance com 4 casas;
+  `passe_fragmentos.py`, `simular_melhorias.py`, `simular_tripulacao.py` e `niveis_100.py` imprimem com vírgula
+  decimal. `docs/propostas/` (melhorias, tripulação, níveis e passe) regerados. O simulador C# mostra a raridade da
+  mordida na pesca.
+- Texto do Painel de Testes: "Aberto: pesca online (1 tentativa a cada ciclo de pesca)" (antes citava 30 s).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity: os testes novos e ajustados não rodaram; a
+  pesca a cada 15 s na cena, a Loja e a Enciclopédia precisam do Play do proprietário para serem declaradas verificadas.
+
 ## [0.2.0-m21.49] — 11/10/2026
 
 Etapa 5 do novo escopo idle: barcos por fragmentos (M24-T16, A-157) e o Passe do Pescador (M24-T17, A-158).

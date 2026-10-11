@@ -822,3 +822,46 @@ recebeu de fato.
 
 **Rever se.** O proprietário decidir os extras (OD-060), as temporadas (OD-059) ou quiser um botão "Montar"; ou se os
 fragmentos do Premium deixarem os barcos fáceis demais (OD-062).
+
+## TD-043 — Mais peixes, menos raros: ciclo na metade e um multiplicador de mordida por raridade aplicado sobre a chance final
+
+**Origem.** M24-T22 (A-159): o proprietário pediu o dobro de peixes por hora e ~70% dos raros por hora de antes, sem
+mexer no valor nem no XP de cada peixe.
+
+**Decisão.**
+- **Quantidade pelo tempo do ciclo**, não pela chance de puxar: `progression.json → fishing.online_cycle_seconds` 30 → 15
+  e `offline_cycle_seconds` 60 → 30. Cada tentativa continua igual (mesma chance de puxar, mesmo teto de 95%, mesmo
+  `Rng.For(seed, sessão, ciclo)`), o que é o mais limpo: os ciclos, o cursor salvo e a pesca offline já eram contados
+  pelo config, e nenhum código mudou para isso. `LocalFishingService.MaxCyclesPerSettle` (10.000) continua acima das
+  2.880 tentativas de um dia offline.
+- **Raridade por um número por raridade**, `rarity.tiers[].fishing_bite_multiplier` (0,35 no Raro, Épico, Lendário e
+  Mítico; 1 quando ausente; ignorado no Comum), aplicado em `CatchRules.FishingWeights` **depois** dos pesos do mapa e
+  do bônus de raridade da vara: cada espécie não comum fica com exatamente multiplicador × a chance que tinha, e os
+  Comuns dividem o resto na proporção deles (o total dos pesos não muda). Mudar os pesos do `maps.json` foi descartado:
+  o efeito dependeria da proporção de raros no mapa e na vara (com a Vara 5 no Nv.100 os raros são 84% das mordidas no
+  Mapa 10 e um peso × 0,35 daria ~150% dos raros por hora, não 70%), mexeria nas Expedições e nos vendedores do Mercado,
+  e espalharia o ajuste por 10 mapas. Com o número sobre a chance final, o resultado é exato em qualquer mapa e com
+  qualquer vara, barco, isca e Melhoria (barco e isca só mexem na chance de puxar, que não muda).
+- **Só na pesca.** `CatchRules.Attempt` (online e offline) usa `RollBite`; `Roll`/`RollFound` (Expedições, vendedores do
+  Mercado, simulador de mordidas antigo) continuam com `RollSpecies`, o sorteio de antes. O sorteio gasta o mesmo único
+  `NextDouble`, então a sequência do `Rng` de cada ciclo não muda de formato.
+- **Enciclopédia** usa `CatchRules.BiteShare` (o mesmo `FishingWeights` sobre o pool inteiro do mapa, sem vara). A coluna
+  "Chance" do mapa no Painel de Balanceamento continua mostrando o peso puro; o multiplicador ganhou uma coluna na aba
+  Raridades.
+- **Pool sem Comuns**: nada para preencher o resto, então `FishingWeights` devolve os pesos como estão (não existe no
+  config de hoje; evita dividir por zero).
+- **Fragmentos com 4 casas.** `tools/Progressao/passe_fragmentos.py gerar` grava `fragment_drop_chance` com 4 casas (com
+  3, chances abaixo de 1% erravam até ~10%) e recalcula pelo alvo de dias (A-157), em vez de dividir por 2 à mão: com
+  menos raros, mais tentativas viram peixe puxado, e a metade exata deixaria os barcos até ~16% mais rápidos (nos mapas com mais raros).
+- **`config/pass.json` igual ao script.** Regerado pelo `gerar`; o arquivo anterior tinha números do Nv.300 em diante que
+  o script não produzia.
+- **Saídas dos scripts em PT-BR.** `passe_fragmentos.py`, `simular_melhorias.py`, `simular_tripulacao.py` e
+  `niveis_100.py` imprimem números com vírgula decimal (antes alguns imprimiam dicionários do Python com ponto).
+
+**Por quê.** O pedido fala em "peixes por hora" e "raros por hora": medir e garantir pela chance final é o que torna as
+duas metas verdadeiras ao mesmo tempo em todos os cenários, e um número por raridade deixa o proprietário ajustar uma
+raridade sem mexer nas outras.
+
+**Rever se.** O proprietário decidir mexer nos ganhos do fim do jogo (OD-063) ou nos tamanhos especiais por hora
+(OD-064); ou se o multiplicador passar de 1 (os Comuns podem chegar a 0; o código aceita, mas o resto deixa de somar 1
+na proporção pedida).

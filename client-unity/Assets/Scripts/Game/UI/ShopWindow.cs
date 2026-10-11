@@ -1012,7 +1012,7 @@ namespace FishingIdle.Game.UI
                 {
                     skin.Bar(new Rect(x, y + 2f, w, 10f), boat.FragmentsRequired > 0 ? boat.Fragments / (float)boat.FragmentsRequired : 0f, true);
                     y += 18f;
-                    var chance = GameTexts.Gear.FragmentsChance(Format.Percent(boat.FragmentChance, 1));
+                    var chance = GameTexts.Gear.FragmentsChance(Format.Percent(boat.FragmentChance, boat.FragmentChance < 0.01 ? 2 : 1));
                     GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(chance, skin.SmallMuted, w), skin.SmallMuted);
                     y += 22f;
                 }

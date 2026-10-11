@@ -101,7 +101,7 @@ namespace FishingIdle.Editor
                         // Boats are not sold since M24-T16: the fragments that assemble it and where they drop.
                         if (config.TryGetMap(boat.MapId, out var boatMap))
                         {
-                            card.Lines.Add(T.CatalogFragments(boat.FragmentsRequired, Format.Percent(boat.FragmentDropChance, 1), boatMap.DisplayName));
+                            card.Lines.Add(T.CatalogFragments(boat.FragmentsRequired, Format.Percent(boat.FragmentDropChance, boat.FragmentDropChance < 0.01 ? 2 : 1), boatMap.DisplayName));
                         }
                         yield return card;
                     }

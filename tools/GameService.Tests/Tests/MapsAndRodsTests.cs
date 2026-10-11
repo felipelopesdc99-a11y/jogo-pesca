@@ -98,7 +98,7 @@ public sealed class MapsAndRodsTests
         var catches = new List<FishingIdle.GameService.Fishing.CatchView>();
         for (var i = 0; i < 40; i++)
         {
-            clock.AdvanceSeconds(30);
+            clock.AdvanceSeconds(game.Session.Config.Fishing.OnlineCycleSeconds);
             game.Maps.Update();
             catches.AddRange(game.Fishing.Sync().NewCatches);
         }
@@ -262,7 +262,7 @@ public sealed class MapsAndRodsTests
         var catches = TestSupport.PlayFor(game, clock, 12 * 3600, stepSeconds: 30);
 
         Assert.True(game.Player.GetPlayer().Shells > 0);
-        // 1440 catches at ~0.5% Aruanã: expect a few; allow the rare unlucky run.
+        // 2880 catches (one every 15 s, M24-T22) at ~0.35% rares (A-159): expect a few; allow the rare unlucky run.
         Assert.InRange(catches.Count(c => c.RarityId == "rare"), 0, 30);
     }
 }

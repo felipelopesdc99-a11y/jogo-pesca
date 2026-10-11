@@ -272,9 +272,10 @@ def gerar(days):
         target = DIAS_ALVO_PRIMEIRO * (DIAS_ALVO_ULTIMO / DIAS_ALVO_PRIMEIRO) ** (i / float(max(1, n - 1)))
         rate = rates[b['map_id']]['por_tentativa']
         chance = b['fragments_required'] / (target * per_day * rate)
-        b['fragment_drop_chance'] = round(max(0.001, chance), 3)
-        print('  %s (%s): %d fragmentos, %.1f%% por peixe (alvo %.1f dias, %.0f%% dos peixes puxados)'
-              % (b['id'], b['map_id'], b['fragments_required'], b['fragment_drop_chance'] * 100, target, rate * 100))
+        # 4 casas: com o ciclo de pesca na metade (M24-T22) as chances ficaram abaixo de 1% e 3 casas erravam ~10%.
+        b['fragment_drop_chance'] = round(max(0.0001, chance), 4)
+        print('  %s (%s): %d fragmentos, %s por peixe (alvo %s dias, %s das tentativas viram peixe puxado)'
+              % (b['id'], b['map_id'], b['fragments_required'], pct(b['fragment_drop_chance'], 2), dec(target, 1), pct(rate, 0)))
     save('equipment.json', eq)
 
     boats_by_map = {int(b['map_id'][-2:]): b for b in boats}
@@ -299,6 +300,16 @@ def gerar(days):
     ])
     save('pass.json', pass_cfg)
     print('config/equipment.json e config/pass.json gravados.')
+
+
+def dec(value, places):
+    """A number with a decimal comma (PT-BR, CLAUDE.md): 1.5 → "1,5"."""
+    return ('%.*f' % (places, value)).replace('.', ',')
+
+
+def pct(ratio, places):
+    """A ratio as a PT-BR percentage: 0.0065 → "0,65%"."""
+    return dec(ratio * 100.0, places) + '%'
 
 
 def fmt_days(seconds):
@@ -346,9 +357,9 @@ def simular(days, gravar):
             per_day = attempts_per_day(rules, p) * rate * b['fragment_drop_chance']
             row['dias_' + p] = round(b['fragments_required'] / per_day, 2) if per_day > 0 else None
         no_mapa[b['id']] = row
-        print('  %-18s %-7s %3d frag. %4.1f%%  aberto %5.1f d · 4×/dia %5.1f d · 1×/dia %5.1f d'
-              % (b['display_name'], b['map_id'], b['fragments_required'], b['fragment_drop_chance'] * 100,
-                 row['dias_sempre_aberto'], row['dias_quatro_vezes'], row['dias_uma_vez']))
+        print('  %-18s %-7s %3d frag. %6s  aberto %5s d · 4×/dia %5s d · 1×/dia %5s d'
+              % (b['display_name'], b['map_id'], b['fragments_required'], pct(b['fragment_drop_chance'], 2),
+                 dec(row['dias_sempre_aberto'], 1), dec(row['dias_quatro_vezes'], 1), dec(row['dias_uma_vez'], 1)))
     out['no_mapa'] = no_mapa
 
     resumo = collections.OrderedDict()
@@ -388,7 +399,8 @@ def simular(days, gravar):
                 ('marcos_resgatados', len(g.claimed_free)),
             ])
             print('  barcos:', ', '.join('%s %s' % (bid, r['montado_em']) for bid, r in boats_row.items()))
-            print('  níveis:', prog[key]['dias_ate_nivel'], '· premium', prog[key]['premium_comprado_em'])
+            print('  níveis:', ', '.join('%s %s' % (k, fmt_days(v * 86400.0) if v is not None else '—') for k, v in prog[key]['dias_ate_nivel'].items()),
+                  '· premium', prog[key]['premium_comprado_em'])
     out['progressao'] = prog
     if gravar:
         os.makedirs(os.path.dirname(OUT), exist_ok=True)

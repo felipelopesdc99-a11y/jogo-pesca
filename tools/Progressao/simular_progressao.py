@@ -6,8 +6,9 @@ O que ele faz:
   - joga, por valor esperado (sem sorte), cada tentativa de pesca como o serviço do jogo faz: espécie pelo
     peso do mapa (raridade da vara), chance de puxar (raridade + vara + barco + isca, entre 5% e 95%),
     tamanho (qualidade da vara e raridade), XP do Pescador, venda ao NPC e Conchas;
-  - pesca online a cada 30 s e offline a cada 60 s, com o limite de 24 h, e gasta uma carga de isca por
-    tentativa, online ou offline;
+  - pesca online e offline no ciclo de progression.json → fishing (hoje 15 s e 30 s, M24-T22), com o limite de
+    24 h, e gasta uma carga de isca por tentativa, online ou offline; na pesca, cada raridade morde com o
+    fishing_bite_multiplier dela (os Comuns completam o resto, A-159);
   - compra como um jogador cuidadoso: a próxima vara assim que tem o dinheiro (itens não têm nível mínimo desde
     M24-T09; guarda dinheiro para ela quando o mapa que a pede está a 8 níveis), níveis da vara e do barco (até o
     Nv.100, curva_niveis.py; o mais barato primeiro) e iscas (só quando a isca se paga);
@@ -79,6 +80,19 @@ class Rules:
     def boat_bonus(self, boat, level):
         return C.boat_bonus(self.eq_cfg, boat, level)
 
+    def bite_multiplier(self, rarity):
+        return 1.0 if rarity == 'common' else self.tiers[rarity].get('fishing_bite_multiplier', 1.0)
+
+    def fishing_weights(self, pool):
+        """Each rarity's fishing_bite_multiplier on its final chance, commons filling the rest (CatchRules.FishingWeights, A-159)."""
+        total = sum(max(0.0, w) for _, w in pool)
+        commons = sum(max(0.0, w) for s, w in pool if s['rarity'] == 'common')
+        others = sum(max(0.0, w) * self.bite_multiplier(s['rarity']) for s, w in pool if s['rarity'] != 'common')
+        if commons <= 0 or total <= 0:
+            return pool
+        scale = max(0.0, total - others) / commons
+        return [(s, max(0.0, w) * (scale if s['rarity'] == 'common' else self.bite_multiplier(s['rarity']))) for s, w in pool]
+
     def per_attempt(self, mp, rod, rod_level, gear):
         """Expected XP, coins and Shells of one attempt, and the chance it is pulled out."""
         key = (mp['id'], rod['id'], rod_level, round(gear, 4))
@@ -92,6 +106,7 @@ class Rules:
                 continue
             w = e['catch_weight'] * (1.0 if s['rarity'] == 'common' else 1.0 + b['rarity_efficiency'])
             pool.append((s, w))
+        pool = self.fishing_weights(pool)
         total = sum(w for _, w in pool)
         xp = coins = shells = caught = 0.0
         scale = self.xp_scale.get(mp['id'], 1.0)

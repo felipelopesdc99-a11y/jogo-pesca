@@ -33,6 +33,7 @@ Onde fica cada coisa no painel:
 | Chance de cada peixe em cada mapa | Mapas e chances | `maps.json` |
 | Chance de Pequeno, Adulto, Grande e Excepcional | Distribuição de tamanho | `progression.json` |
 | Quanto o Raro vale a mais (venda, atributos, XP) e a chance de tamanho por raridade | Raridades | `progression.json` |
+| Quanto cada raridade morde na pesca (o 0,35 do A-159) | Raridades (coluna "Na pesca") | `progression.json` |
 | Chance de puxar o peixe (por raridade, mínimo e máximo), barcos e iscas, e o simulador | Sucesso da pesca | `progression.json`, `equipment.json` |
 | Bônus de puxar de cada vara no Nv.1 e no Nv.100 | Varas (coluna "Puxar") | `rods.json` |
 | Tempo de pesca | Pesca | `progression.json` |
@@ -66,6 +67,11 @@ Onde fica cada coisa no painel:
   `progression.json → rarity.tiers`), que multiplica o `draw_weight` de cada categoria de tamanho
   para os peixes dessa raridade. O que não estiver listado fica 1. Hoje o Raro tem Grande × 0,85 e
   Excepcional × 0,7 (GDD_ADENDO A-083). Campo opcional: arquivos sem ele continuam valendo.
+- **Mordida na pesca por raridade (M24-T22, A-159, TD-043):** `rarity.tiers[].fishing_bite_multiplier` (0,35 no Raro,
+  Épico, Lendário e Mítico) multiplica a chance de um peixe daquela raridade morder **na pesca** (online e offline),
+  depois dos pesos do mapa e do bônus de raridade da vara; os Comuns completam o resto. Com o ciclo na metade
+  (`fishing.online_cycle_seconds` 15 e `offline_cycle_seconds` 30), cada raridade chega a ~70% dos peixes por hora de
+  antes. Expedições e os vendedores do Mercado usam os pesos do mapa sem ele. Ausente = 1; não vale para o Comum.
 - Todo arquivo carrega `config_schema_version`. Aumente-o quando o *formato* do arquivo mudar, não
   quando um número mudar.
 
@@ -100,6 +106,12 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
 - O XP do peixe do nível 1 ao 10 somava **3.885 XP** (A-132). Desde 10/10/2026 (M24-T13, A-156) o peixe vai até o
   **Nv.100**: do Nv.1 ao 100 são **36.160 XP** (~930 Comuns de 39 XP); o Nv.41, que tem a força do Nv.10 de antes
   (+36%), pede **2.465 XP** (~63 Comuns).
+- **Mais peixes, menos raros (11/10/2026, M24-T22, A-159):** ciclo de pesca na metade (online 30 → 15 s, offline 60 →
+  30 s, limite offline de 24 h igual), `fishing_bite_multiplier` 0,35 nas raridades acima de Comum, Caixa de Pesca de
+  1.500 para 3.000 peixes, iscas de 60 para 120 tentativas pelo mesmo preço, chance de fragmento ~metade e o Passe
+  regerado. O Nv.10 do Pescador chega em ~30 min online (era ~1 h); o Nv.1000 com a Tripulação e as Melhorias, em
+  ~57 / ~102 / ~119 dias (jogo aberto / 4 vezes / 1 vez por dia; eram ~50 / ~92 / ~106), porque no fim do jogo os raros
+  valiam mais que o dobro de Comuns (OD-063).
 - A Vara 1 custa **2.500** Moedas para comprar. Desde o M24-T13 ela vai até o **Nv.100**: o 1º nível custa **500**
   Moedas e 1 Concha (antes 1.500 e 2), do Nv.1 ao 30 são ~156 mil Moedas e 44 Conchas, e do 1 ao 100 ~1,5 bi Moedas
   e 588 Conchas.
@@ -140,7 +152,8 @@ Desde 11/10/2026 (M24-T16 e M24-T17, A-157 e A-158, TD-042). Números gerados po
 
 - **Barcos não são vendidos.** Cada barco (menos o inicial) tem `map_id` (o mapa cujos peixes dão os fragmentos dele;
   um barco por mapa), `fragments_required` (quantos montam o barco: 20 no Mapa 1 até 200 no Mapa 10) e
-  `fragment_drop_chance` (a chance de um peixe puxado naquele mapa dar 1 fragmento: 1,3% a 2,4%). O barco inicial não
+  `fragment_drop_chance` (a chance de um peixe puxado naquele mapa dar 1 fragmento: 0,64% a 1,03% desde o M24-T22; eram
+  1,3% a 2,4% com o ciclo de 30 s). O script grava com 4 casas. O barco inicial não
   tem `map_id`. `boat_fragments.drop_on_offline_fishing` diz se a pesca offline também dá fragmentos (sim).
 - **Como a chance foi calibrada.** Para quem abre o jogo 4 vezes por dia e pesca no mapa do barco, montar leva ~2 dias
   no Mapa 1 e ~10 no Mapa 10 (`DIAS_ALVO_PRIMEIRO` e `DIAS_ALVO_ULTIMO` no script).

@@ -55,14 +55,14 @@ public sealed class DevToolsTests
 
         Assert.True(game.DevTools.AdvanceTime(1, online: true).Succeeded);
         var online = game.Fishing.Sync();
-        Assert.Equal(120, online.NewCatches.Count); // one every 30 s
+        Assert.Equal(240, online.NewCatches.Count); // one every 15 s (M24-T22)
         Assert.Null(game.Fishing.TakeOfflineReport());
 
         Assert.True(game.DevTools.AdvanceTime(1, online: false).Succeeded);
         game.Fishing.Sync();
         var report = game.Fishing.TakeOfflineReport();
         Assert.NotNull(report);
-        Assert.Equal(60, report.Update.NewCatches.Count); // one every 60 s
+        Assert.Equal(120, report.Update.NewCatches.Count); // one every 30 s (M24-T22)
     }
 }
 

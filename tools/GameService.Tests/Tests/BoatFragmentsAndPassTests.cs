@@ -193,7 +193,8 @@ public sealed class BoatFragmentsAndPassTests
             game.Fishing.StartFishing();
             game.Fishing.MarkSeen();
 
-            clock.AdvanceSeconds(600);
+            // 10 offline cycles: fewer than the 20 fragments that assemble boat_01, so they all stay as fragments.
+            clock.AdvanceSeconds(10 * config.Fishing.OfflineCycleSeconds);
             var (reopened, _, _) = TestSupport.NewGame(config, saveDir, clock);
             var report = reopened.Fishing.TakeOfflineReport();
             Assert.NotNull(report);

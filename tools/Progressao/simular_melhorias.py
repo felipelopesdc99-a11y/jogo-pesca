@@ -304,12 +304,12 @@ def main():
         print('== %s (%s)' % (name, desc))
         print('  primeira compra %s · 2º tripulante %s · 1ª Melhoria %s · passa a pesca %s · renda máxima %s/s'
               % (s['primeira_compra'], s['segundo_tripulante'], s['primeira_melhoria'], s['tripulacao_passa_a_pesca'], T.short(g.max_rate)))
-        print('  dias até a renda (com Melhorias):', s['dias_ate_renda'])
-        print('  dias até a renda (sem Melhorias):', s['dias_ate_renda_sem_melhorias'])
+        print('  dias até a renda (com Melhorias):', T.dias(s['dias_ate_renda']))
+        print('  dias até a renda (sem Melhorias):', T.dias(s['dias_ate_renda_sem_melhorias']))
         for d, row in s['por_dia'].items():
             print('  dia %5s: Tripulação %-12s pesca %-10s XP %-8s Nv.%d' % (d, row['renda_tripulacao'], row['renda_pesca'], row['xp_tripulacao'], row['nivel']))
-        print('  dias até o nível (com Melhorias):', s['dias_ate_nivel'])
-        print('  dias até o nível (sem Melhorias):', s['dias_ate_nivel_sem_melhorias'])
+        print('  dias até o nível (com Melhorias):', T.dias(s['dias_ate_nivel']))
+        print('  dias até o nível (sem Melhorias):', T.dias(s['dias_ate_nivel_sem_melhorias']))
         print('  Melhorias: %d (de tripulante %d), níveis gerais %s' % (s['melhorias_compradas'], s['melhorias_de_tripulante'], s['niveis_gerais']))
     if a.gravar:
         os.makedirs(os.path.dirname(OUT), exist_ok=True)

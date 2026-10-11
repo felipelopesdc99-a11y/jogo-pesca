@@ -22,99 +22,75 @@
   },
   "ritmo_jogo_aberto": {
     "vara rod_01": {
-      "comprada_em": "2,5 h",
-      "Nv.10": "2,6 h (10 min depois da compra)"
-    },
-    "barco boat_01": {
-      "comprada_em": "2,7 dias",
-      "Nv.10": "2,8 dias (22 min depois da compra)",
-      "Nv.30": "2,8 dias (1,8 h depois da compra)",
-      "Nv.50": "2,9 dias (4,4 h depois da compra)"
-    },
-    "barco boat_02": {
-      "comprada_em": "3,0 dias",
-      "Nv.10": "3,0 dias (20 min depois da compra)",
-      "Nv.30": "3,1 dias (1,7 h depois da compra)"
-    },
-    "barco boat_03": {
-      "comprada_em": "3,2 dias",
-      "Nv.10": "3,2 dias (18 min depois da compra)",
-      "Nv.30": "3,2 dias (1,6 h depois da compra)",
-      "Nv.50": "4,5 dias (1,3 dias depois da compra)"
+      "comprada_em": "1,8 h",
+      "Nv.10": "1,9 h (6 min depois da compra)"
     },
     "vara rod_05": {
-      "comprada_em": "2,7 dias",
-      "Nv.10": "4,0 dias (1,3 dias depois da compra)",
-      "Nv.30": "5,7 dias (2,9 dias depois da compra)",
-      "Nv.50": "12,1 dias (9,3 dias depois da compra)",
-      "Nv.100": "58,9 dias (56,2 dias depois da compra)"
+      "comprada_em": "1,3 dias",
+      "Nv.10": "1,6 dias (7,2 h depois da compra)",
+      "Nv.30": "2,7 dias (1,4 dias depois da compra)",
+      "Nv.50": "11,4 dias (10,2 dias depois da compra)",
+      "Nv.100": "58,4 dias (57,1 dias depois da compra)"
     },
-    "barco boat_04": {
-      "comprada_em": "6,4 dias",
-      "Nv.10": "6,4 dias (58 min depois da compra)",
-      "Nv.30": "6,6 dias (4,5 h depois da compra)",
-      "Nv.50": "6,8 dias (10,9 h depois da compra)"
-    },
-    "barco boat_05": {
-      "comprada_em": "8,2 dias",
-      "Nv.10": "8,3 dias (4,0 h depois da compra)",
-      "Nv.30": "8,9 dias (17,7 h depois da compra)",
-      "Nv.50": "9,9 dias (1,7 dias depois da compra)",
-      "Nv.100": "42,0 dias (33,8 dias depois da compra)"
+    "barco boat_10": {
+      "comprada_em": "5,2 dias",
+      "Nv.10": "5,3 dias (48 min depois da compra)",
+      "Nv.30": "19,4 dias (14,2 dias depois da compra)",
+      "Nv.50": "40,6 dias (35,3 dias depois da compra)"
     }
   },
   "cada_vara_sozinha": {
     "rod_01": {
-      "comprada_em": "2,5 h",
-      "Nv.10": "2,6 h (10 min depois da compra)",
-      "Nv.30": "6,8 h (4,4 h depois da compra)",
-      "Nv.50": "23,4 h (20,9 h depois da compra)",
-      "Nv.100": "11,7 dias (11,6 dias depois da compra)"
+      "comprada_em": "1,8 h",
+      "Nv.10": "1,9 h (6 min depois da compra)",
+      "Nv.30": "3,5 h (1,8 h depois da compra)",
+      "Nv.50": "18,1 h (16,3 h depois da compra)",
+      "Nv.100": "11,0 dias (10,9 dias depois da compra)"
     },
     "rod_02": {
-      "comprada_em": "9,1 h",
-      "Nv.10": "12,4 h (3,2 h depois da compra)",
-      "Nv.30": "1,2 dias (18,9 h depois da compra)",
-      "Nv.50": "1,8 dias (1,5 dias depois da compra)",
-      "Nv.100": "21,8 dias (21,4 dias depois da compra)"
+      "comprada_em": "4,8 h",
+      "Nv.10": "6,2 h (1,4 h depois da compra)",
+      "Nv.30": "10,1 h (5,3 h depois da compra)",
+      "Nv.50": "1,3 dias (1,1 dias depois da compra)",
+      "Nv.100": "21,5 dias (21,3 dias depois da compra)"
     },
     "rod_03": {
-      "comprada_em": "17,0 h",
-      "Nv.10": "1,1 dias (8,9 h depois da compra)",
-      "Nv.30": "1,7 dias (23,5 h depois da compra)",
-      "Nv.50": "3,9 dias (3,2 dias depois da compra)",
-      "Nv.100": "42,5 dias (41,8 dias depois da compra)"
+      "comprada_em": "8,7 h",
+      "Nv.10": "10,3 h (1,6 h depois da compra)",
+      "Nv.30": "17,8 h (9,0 h depois da compra)",
+      "Nv.50": "3,5 dias (3,1 dias depois da compra)",
+      "Nv.100": "42,1 dias (41,7 dias depois da compra)"
     },
     "rod_04": {
-      "comprada_em": "1,3 dias",
-      "Nv.10": "1,7 dias (9,1 h depois da compra)",
-      "Nv.30": "2,7 dias (1,3 dias depois da compra)",
-      "Nv.50": "7,4 dias (6,1 dias depois da compra)",
-      "Nv.100": "43,3 dias (42,0 dias depois da compra)"
+      "comprada_em": "17,2 h",
+      "Nv.10": "18,0 h (46 min depois da compra)",
+      "Nv.30": "1,3 dias (13,0 h depois da compra)",
+      "Nv.50": "5,7 dias (5,0 dias depois da compra)",
+      "Nv.100": "42,9 dias (42,2 dias depois da compra)"
     },
     "rod_05": {
-      "comprada_em": "2,7 dias",
-      "Nv.10": "4,0 dias (1,3 dias depois da compra)",
-      "Nv.30": "5,7 dias (2,9 dias depois da compra)",
-      "Nv.50": "12,1 dias (9,3 dias depois da compra)",
-      "Nv.100": "58,9 dias (56,2 dias depois da compra)"
+      "comprada_em": "1,3 dias",
+      "Nv.10": "1,6 dias (7,2 h depois da compra)",
+      "Nv.30": "2,7 dias (1,4 dias depois da compra)",
+      "Nv.50": "11,4 dias (10,2 dias depois da compra)",
+      "Nv.100": "58,4 dias (57,1 dias depois da compra)"
     }
   },
   "conchas_ganhas_acumulado": {
-    "dia 1": 253,
-    "dia 2": 661,
-    "dia 3": 1160,
-    "dia 7": 5972,
-    "dia 14": 19216,
-    "dia 30": 55356,
-    "dia 45": 95816,
-    "dia 60": 112922,
-    "dia 75": 112922
+    "dia 1": 697,
+    "dia 2": 2327,
+    "dia 3": 5027,
+    "dia 7": 18255,
+    "dia 14": 45912,
+    "dia 30": 118532,
+    "dia 45": 200247,
+    "dia 60": 274255,
+    "dia 75": 274255
   },
   "dias_ate_nivel_do_pescador": {
-    "Nv.100": 1.08,
-    "Nv.500": 14.19,
-    "Nv.1000": 50.48
+    "Nv.100": 0.67,
+    "Nv.500": 14.28,
+    "Nv.1000": 56.55
   },
   "varas": {
     "rod_01": {
@@ -1140,6 +1116,401 @@
           "gasto_desde_nv1": {
             "moedas": 384008862000,
             "conchas": 14718
+          }
+        }
+      }
+    },
+    "boat_06": {
+      "nome": "Vela do Sol",
+      "niveis": {
+        "Nv.1": {
+          "bonus": 0.12,
+          "proximo_nivel": {
+            "moedas": 375000,
+            "conchas": 40
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": 0.121,
+          "proximo_nivel": {
+            "moedas": 427000,
+            "conchas": 41
+          },
+          "gasto_desde_nv1": {
+            "moedas": 375000,
+            "conchas": 40
+          }
+        },
+        "Nv.10": {
+          "bonus": 0.1335,
+          "proximo_nivel": {
+            "moedas": 1220000,
+            "conchas": 52
+          },
+          "gasto_desde_nv1": {
+            "moedas": 6031000,
+            "conchas": 406
+          }
+        },
+        "Nv.30": {
+          "bonus": 0.175,
+          "proximo_nivel": {
+            "moedas": 16800000,
+            "conchas": 94
+          },
+          "gasto_desde_nv1": {
+            "moedas": 117031000,
+            "conchas": 1808
+          }
+        },
+        "Nv.50": {
+          "bonus": 0.2232,
+          "proximo_nivel": {
+            "moedas": 230000000,
+            "conchas": 170
+          },
+          "gasto_desde_nv1": {
+            "moedas": 1641831000,
+            "conchas": 4339
+          }
+        },
+        "Nv.99": {
+          "bonus": 0.3571,
+          "proximo_nivel": {
+            "moedas": 141000000000,
+            "conchas": 725
+          },
+          "gasto_desde_nv1": {
+            "moedas": 1010841831000,
+            "conchas": 22816
+          }
+        },
+        "Nv.100": {
+          "bonus": 0.36,
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 1151841831000,
+            "conchas": 23541
+          }
+        }
+      }
+    },
+    "boat_07": {
+      "nome": "Quilha Azul",
+      "niveis": {
+        "Nv.1": {
+          "bonus": 0.14,
+          "proximo_nivel": {
+            "moedas": 1130000,
+            "conchas": 60
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": 0.1411,
+          "proximo_nivel": {
+            "moedas": 1290000,
+            "conchas": 62
+          },
+          "gasto_desde_nv1": {
+            "moedas": 1130000,
+            "conchas": 60
+          }
+        },
+        "Nv.10": {
+          "bonus": 0.1558,
+          "proximo_nivel": {
+            "moedas": 3670000,
+            "conchas": 78
+          },
+          "gasto_desde_nv1": {
+            "moedas": 18180000,
+            "conchas": 612
+          }
+        },
+        "Nv.30": {
+          "bonus": 0.2042,
+          "proximo_nivel": {
+            "moedas": 50500000,
+            "conchas": 141
+          },
+          "gasto_desde_nv1": {
+            "moedas": 352620000,
+            "conchas": 2714
+          }
+        },
+        "Nv.50": {
+          "bonus": 0.2604,
+          "proximo_nivel": {
+            "moedas": 694000000,
+            "conchas": 255
+          },
+          "gasto_desde_nv1": {
+            "moedas": 4946620000,
+            "conchas": 6515
+          }
+        },
+        "Nv.99": {
+          "bonus": 0.4166,
+          "proximo_nivel": {
+            "moedas": 426000000000,
+            "conchas": 1090
+          },
+          "gasto_desde_nv1": {
+            "moedas": 3043563620000,
+            "conchas": 34232
+          }
+        },
+        "Nv.100": {
+          "bonus": 0.42,
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 3469563620000,
+            "conchas": 35322
+          }
+        }
+      }
+    },
+    "boat_08": {
+      "nome": "Canto da Baleia",
+      "niveis": {
+        "Nv.1": {
+          "bonus": 0.16,
+          "proximo_nivel": {
+            "moedas": 3380000,
+            "conchas": 90
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": 0.1613,
+          "proximo_nivel": {
+            "moedas": 3850000,
+            "conchas": 93
+          },
+          "gasto_desde_nv1": {
+            "moedas": 3380000,
+            "conchas": 90
+          }
+        },
+        "Nv.10": {
+          "bonus": 0.178,
+          "proximo_nivel": {
+            "moedas": 11000000,
+            "conchas": 117
+          },
+          "gasto_desde_nv1": {
+            "moedas": 54370000,
+            "conchas": 913
+          }
+        },
+        "Nv.30": {
+          "bonus": 0.2333,
+          "proximo_nivel": {
+            "moedas": 151000000,
+            "conchas": 212
+          },
+          "gasto_desde_nv1": {
+            "moedas": 1055270000,
+            "conchas": 4067
+          }
+        },
+        "Nv.50": {
+          "bonus": 0.2976,
+          "proximo_nivel": {
+            "moedas": 2080000000,
+            "conchas": 383
+          },
+          "gasto_desde_nv1": {
+            "moedas": 14808270000,
+            "conchas": 9766
+          }
+        },
+        "Nv.99": {
+          "bonus": 0.4761,
+          "proximo_nivel": {
+            "moedas": 1280000000000,
+            "conchas": 1630
+          },
+          "gasto_desde_nv1": {
+            "moedas": 9111548270000,
+            "conchas": 51365
+          }
+        },
+        "Nv.100": {
+          "bonus": 0.48,
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 10391548270000,
+            "conchas": 52995
+          }
+        }
+      }
+    },
+    "boat_09": {
+      "nome": "Farol Noturno",
+      "niveis": {
+        "Nv.1": {
+          "bonus": 0.18,
+          "proximo_nivel": {
+            "moedas": 10100000,
+            "conchas": 135
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": 0.1815,
+          "proximo_nivel": {
+            "moedas": 11500000,
+            "conchas": 139
+          },
+          "gasto_desde_nv1": {
+            "moedas": 10100000,
+            "conchas": 135
+          }
+        },
+        "Nv.10": {
+          "bonus": 0.2003,
+          "proximo_nivel": {
+            "moedas": 32800000,
+            "conchas": 176
+          },
+          "gasto_desde_nv1": {
+            "moedas": 162500000,
+            "conchas": 1372
+          }
+        },
+        "Nv.30": {
+          "bonus": 0.2625,
+          "proximo_nivel": {
+            "moedas": 451000000,
+            "conchas": 318
+          },
+          "gasto_desde_nv1": {
+            "moedas": 3151800000,
+            "conchas": 6104
+          }
+        },
+        "Nv.50": {
+          "bonus": 0.3348,
+          "proximo_nivel": {
+            "moedas": 6200000000,
+            "conchas": 575
+          },
+          "gasto_desde_nv1": {
+            "moedas": 44235800000,
+            "conchas": 14655
+          }
+        },
+        "Nv.99": {
+          "bonus": 0.5356,
+          "proximo_nivel": {
+            "moedas": 3810000000000,
+            "conchas": 2450
+          },
+          "gasto_desde_nv1": {
+            "moedas": 27221355800000,
+            "conchas": 77028
+          }
+        },
+        "Nv.100": {
+          "bonus": 0.54,
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 31031355800000,
+            "conchas": 79478
+          }
+        }
+      }
+    },
+    "boat_10": {
+      "nome": "Titã do Atlântico",
+      "niveis": {
+        "Nv.1": {
+          "bonus": 0.2,
+          "proximo_nivel": {
+            "moedas": 30400000,
+            "conchas": 200
+          },
+          "gasto_desde_nv1": {
+            "moedas": 0,
+            "conchas": 0
+          }
+        },
+        "Nv.2": {
+          "bonus": 0.2016,
+          "proximo_nivel": {
+            "moedas": 34700000,
+            "conchas": 206
+          },
+          "gasto_desde_nv1": {
+            "moedas": 30400000,
+            "conchas": 200
+          }
+        },
+        "Nv.10": {
+          "bonus": 0.2225,
+          "proximo_nivel": {
+            "moedas": 98900000,
+            "conchas": 261
+          },
+          "gasto_desde_nv1": {
+            "moedas": 488900000,
+            "conchas": 2032
+          }
+        },
+        "Nv.30": {
+          "bonus": 0.2917,
+          "proximo_nivel": {
+            "moedas": 1360000000,
+            "conchas": 471
+          },
+          "gasto_desde_nv1": {
+            "moedas": 9487800000,
+            "conchas": 9046
+          }
+        },
+        "Nv.50": {
+          "bonus": 0.372,
+          "proximo_nivel": {
+            "moedas": 18700000000,
+            "conchas": 851
+          },
+          "gasto_desde_nv1": {
+            "moedas": 133267800000,
+            "conchas": 21707
+          }
+        },
+        "Nv.99": {
+          "bonus": 0.5952,
+          "proximo_nivel": {
+            "moedas": 11500000000000,
+            "conchas": 3620
+          },
+          "gasto_desde_nv1": {
+            "moedas": 81966567800000,
+            "conchas": 114163
+          }
+        },
+        "Nv.100": {
+          "bonus": 0.6,
+          "proximo_nivel": null,
+          "gasto_desde_nv1": {
+            "moedas": 93466567800000,
+            "conchas": 117783
           }
         }
       }

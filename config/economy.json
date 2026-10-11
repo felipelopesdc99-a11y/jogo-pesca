@@ -80,8 +80,8 @@
     "max_auctions_a_buyer_can_join": null
   },
   "fishing_box": {
-    "capacity": 1500,
-    "capacity_note": "OD-025 (decisão do proprietário, 07/10/2026): a Caixa de Pesca guarda até capacity peixes (cabe um dia inteiro de pesca offline). Cheia, a pesca não puxa mais peixes (nem gasta isca) até o jogador vender ou guardar algum. Peixes achados em Expedição ou retirados do Mercado ainda entram. 0 = sem limite.",
+    "capacity": 3000,
+    "capacity_note": "OD-025 (decisão do proprietário, 07/10/2026): a Caixa de Pesca guarda até capacity peixes (cabe um dia inteiro de pesca offline). Cheia, a pesca não puxa mais peixes (nem gasta isca) até o jogador vender ou guardar algum. Peixes achados em Expedição ou retirados do Mercado ainda entram. 0 = sem limite. Era 1.500; dobrou para 3.000 em 11/10/2026 (M24-T22, A-159) junto com o ciclo de pesca na metade, para continuar cabendo um dia inteiro de pesca offline (24 h a cada 30 s = 2.880 tentativas) e as mesmas horas de pesca online.",
     "bulk_sale_protection": {
       "note": "Peixes que disparam a confirmação única \"Revisar peixes / Confirmar\" quando entram numa venda da Caixa de Pesca (seção 11 do GDD). Por raridade e por categoria de tamanho.",
       "rarities": [

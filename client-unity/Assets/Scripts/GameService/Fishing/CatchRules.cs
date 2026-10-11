@@ -43,14 +43,14 @@ namespace FishingIdle.GameService.Fishing
         }
 
         /// <summary>
-        /// One fishing attempt, in the order of the design: the fish that bit (species), then the
-        /// Catch Success roll with the rod's bonus plus <paramref name="gearBonus"/> (boat + bait),
-        /// and only when it is pulled out, its size, XP and Shells.
+        /// One fishing attempt, in the order of the design: the fish that bit (species, with the rarities'
+        /// fishing_bite_multiplier, A-159), then the Catch Success roll with the rod's bonus plus
+        /// <paramref name="gearBonus"/> (boat + bait), and only when it is pulled out, its size, XP and Shells.
         /// </summary>
         public static CatchAttempt Attempt(GameConfig config, MapConfig map, RodConfig rod, int rodLevel, double gearBonus, Rng rng)
         {
             var bonuses = config.RodBonusesAt(rod, rodLevel);
-            var species = RollSpecies(config, map, rod, bonuses, rng);
+            var species = RollBite(config, map, rod, bonuses, rng);
             var chance = SuccessChance(config, species.Rarity, bonuses.CatchSuccess + gearBonus);
             var attempt = new CatchAttempt { Species = species, Chance = chance };
             if (rng.NextDouble() < chance)
@@ -116,13 +116,88 @@ namespace FishingIdle.GameService.Fishing
         /// </summary>
         public static SpeciesConfig RollSpecies(GameConfig config, MapConfig map, RodConfig rod, RodBonusesConfig bonuses, Rng rng)
         {
-            var candidates = EligiblePool(config, map, rod)
+            return PickWeighted(WeightedPool(config, map, rod, bonuses), rng);
+        }
+
+        /// <summary>
+        /// The fish that bites in a fishing attempt (online and offline, M24-T22, A-159): the same draw as
+        /// <see cref="RollSpecies"/>, then each rarity's fishing_bite_multiplier on its final chance (commons fill
+        /// the rest). Expeditions and the Market's sellers keep the plain draw.
+        /// </summary>
+        public static SpeciesConfig RollBite(GameConfig config, MapConfig map, RodConfig rod, RodBonusesConfig bonuses, Rng rng)
+        {
+            return PickWeighted(FishingWeights(config, WeightedPool(config, map, rod, bonuses)), rng);
+        }
+
+        /// <summary>The eligible pool with the rod's rarity efficiency on the non-common weights.</summary>
+        private static List<KeyValuePair<SpeciesConfig, double>> WeightedPool(GameConfig config, MapConfig map, RodConfig rod, RodBonusesConfig bonuses)
+        {
+            return EligiblePool(config, map, rod)
                 .Select(pair => new KeyValuePair<SpeciesConfig, double>(
                     pair.Key,
                     IsCommon(pair.Key) ? pair.Value : pair.Value * (1.0 + bonuses.RarityEfficiency)))
                 .ToList();
+        }
 
-            return PickWeighted(candidates, rng);
+        /// <summary>
+        /// Applies each rarity's fishing_bite_multiplier (A-159) to a weighted pool without changing its total:
+        /// a non-common species keeps exactly multiplier × the chance it had, and the commons share what is left in
+        /// their own proportions. A pool without commons is returned as it is (nothing would fill the rest).
+        /// </summary>
+        public static List<KeyValuePair<SpeciesConfig, double>> FishingWeights(GameConfig config, IReadOnlyList<KeyValuePair<SpeciesConfig, double>> pool)
+        {
+            double total = 0, commons = 0, others = 0;
+            foreach (var pair in pool)
+            {
+                var weight = Math.Max(0, pair.Value);
+                total += weight;
+                if (IsCommon(pair.Key))
+                {
+                    commons += weight;
+                }
+                else
+                {
+                    others += weight * BiteMultiplier(config, pair.Key.Rarity);
+                }
+            }
+
+            if (commons <= 0 || total <= 0)
+            {
+                return pool.ToList();
+            }
+
+            var commonScale = Math.Max(0, total - others) / commons;
+            return pool
+                .Select(pair => new KeyValuePair<SpeciesConfig, double>(
+                    pair.Key,
+                    Math.Max(0, pair.Value) * (IsCommon(pair.Key) ? commonScale : BiteMultiplier(config, pair.Key.Rarity))))
+                .ToList();
+        }
+
+        /// <summary>
+        /// The chance a species bites on a map while fishing, with no rod bonus (the Encyclopedia's "morde X% das
+        /// vezes"): its share of the whole pool, after the rarities' fishing_bite_multiplier.
+        /// </summary>
+        public static double BiteShare(GameConfig config, MapConfig map, string speciesId)
+        {
+            var pool = new List<KeyValuePair<SpeciesConfig, double>>();
+            foreach (var entry in map.FishPool)
+            {
+                if (entry.CatchWeight > 0 && config.TryGetSpecies(entry.SpeciesId, out var species))
+                {
+                    pool.Add(new KeyValuePair<SpeciesConfig, double>(species, entry.CatchWeight));
+                }
+            }
+
+            var weights = FishingWeights(config, pool);
+            var total = weights.Sum(p => p.Value);
+            var own = weights.Where(p => p.Key.Id == speciesId).Sum(p => p.Value);
+            return total > 0 ? own / total : 0;
+        }
+
+        private static double BiteMultiplier(GameConfig config, string rarityId)
+        {
+            return config.TryGetRarity(rarityId, out var rarity) && rarity != null ? rarity.FishingBiteMultiplier : 1.0;
         }
 
         /// <summary>The species a rod can actually pull out of a map, with their base weights.</summary>

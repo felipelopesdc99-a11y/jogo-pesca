@@ -210,6 +210,14 @@ namespace FishingIdle.GameService.Config
         public double CatchSuccessBase { get; set; } = 1.0;
 
         /// <summary>
+        /// Multiplies the chance that a fish of this rarity bites while fishing (online and offline), after the
+        /// map's weights and the rod's rarity bonus (M24-T22, A-159): 0,35 = 35% of the chance it would have.
+        /// Commons fill the rest, so the chance per fish of every other rarity is exactly this share of the
+        /// plain draw. Ignored for the common rarity; Expeditions and the Market's sellers use the plain draw. 1 when not set.
+        /// </summary>
+        public double FishingBiteMultiplier { get; set; } = 1.0;
+
+        /// <summary>
         /// Multiplies the draw weight of size categories for fish of this rarity (e.g. "large": 0.85):
         /// rarer fish come big a little less often. Categories not listed keep their weight.
         /// </summary>

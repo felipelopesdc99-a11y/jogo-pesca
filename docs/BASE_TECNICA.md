@@ -149,8 +149,8 @@ não gera peixe a mais; chamar cedo não gera nada.
 
 **Tempo com o jogo fechado não é pesca online; é pesca offline.** Se o jogo ficou mais de
 `max(3 ciclos, 2 minutos)` sem ser visto (fechado, PC dormindo, relógio adiantado), o serviço entrega
-o que foi pescado até `last_seen_at_ms`, credita o intervalo no ritmo offline (`CatchUpOffline`: 60s
-por captura, no máximo 24h, numa passada só, continuando a mesma sequência de sorteio) e recomeça o
+o que foi pescado até `last_seen_at_ms`, credita o intervalo no ritmo offline (`CatchUpOffline`: uma
+tentativa a cada `offline_cycle_seconds`, hoje 30 s, no máximo 24h, numa passada só, continuando a mesma sequência de sorteio) e recomeça o
 ciclo online a partir de agora. O resumo fica disponível uma vez em `TakeOfflineReport()`.
 
 ### Sorteio determinístico
@@ -167,6 +167,7 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 | Raridade da vara | A eficiência de raridade multiplica o peso de toda espécie não Comum (Raro e Épico) que a vara pode pegar; os Comuns ficam iguais | `rods.json` |
 | Chance de Sucesso | Chance-base da raridade + vara (`catch_success`) + barco + isca, entre o piso e o teto; sorteada depois da espécie e antes do tamanho | `progression.json → rarity.tiers, fishing`, `rods.json`, `equipment.json` |
 | Espécie | Peso de captura do mapa, só raridades que o mapa **e** a vara permitem; a eficiência de raridade da vara multiplica só o peso das espécies não comuns | `maps.json`, `rods.json` |
+| Mordida na pesca (M24-T22, TD-043) | `RollBite` = o sorteio da Espécie e depois `FishingWeights`: cada espécie não Comum fica com `fishing_bite_multiplier` × a chance que tinha e os Comuns dividem o resto; só `Attempt` (pesca online e offline) usa; `Roll`/`RollFound` (Expedições, Mercado) não. `BiteShare` dá o "morde X%" da Enciclopédia | `progression.json → rarity.tiers[].fishing_bite_multiplier` |
 | Categoria de tamanho | Peso 20/60/19/1; a qualidade de tamanho da vara multiplica Grande e Excepcional | `progression.json → size` |
 | Tamanho exato | Uniforme dentro da faixa de percentil da categoria, sobre a faixa de cm da espécie; gravado em milímetros | `fish_catalog.json → size_cm` |
 | XP do Pescador | XP base da espécie × raridade × multiplicador da categoria, arredondado, mínimo 1 | `fish_catalog.json`, `progression.json` |

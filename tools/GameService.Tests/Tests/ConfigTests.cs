@@ -22,7 +22,7 @@ public sealed class ConfigTests
         var a = GameConfigLoader.LoadFromTexts(TestSupport.ConfigTexts());
         var b = GameConfigLoader.LoadFromTexts(TestSupport.ConfigTexts());
         var edited = TestSupport.ConfigWith(GameConfigLoader.ProgressionFile,
-            json => json.Replace("\"online_cycle_seconds\": 30", "\"online_cycle_seconds\": 25"));
+            json => json.Replace("\"online_cycle_seconds\": 15", "\"online_cycle_seconds\": 25"));
 
         Assert.True(edited.Succeeded, string.Join("\n", edited.Errors));
         Assert.Equal(a.Config.Version, b.Config.Version);
@@ -64,7 +64,7 @@ public sealed class ConfigTests
     public void A_cycle_shorter_than_one_second_is_rejected()
     {
         var result = TestSupport.ConfigWith(GameConfigLoader.ProgressionFile,
-            json => json.Replace("\"online_cycle_seconds\": 30", "\"online_cycle_seconds\": 0"));
+            json => json.Replace("\"online_cycle_seconds\": 15", "\"online_cycle_seconds\": 0"));
 
         Assert.False(result.Succeeded);
         Assert.Contains(result.Errors, e => e.Contains("online_cycle_seconds"));

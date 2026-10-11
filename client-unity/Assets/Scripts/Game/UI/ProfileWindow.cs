@@ -1885,7 +1885,7 @@ namespace FishingIdle.Game.UI
                 : GameTexts.Profile.EncLargestLine(Format.SizeCm(e.LargestCm), e.LargestSizeCategoryName);
             y = EncRow(skin, x, y, w, rowH, GameTexts.Profile.EncLargest, largest, found && e.LargestSizeCategoryId != null ? UiSkin.SizeColor(e.LargestSizeCategoryId) : (Color?)null);
             y = EncRow(skin, x, y, w, rowH, GameTexts.Profile.EncSizeRange, found ? GameTexts.Profile.EncRange(Format.SizeCm(e.SpeciesMinCm), Format.SizeCm(e.SpeciesMaxCm)) : unknown, null);
-            y = EncRow(skin, x, y, w, rowH, GameTexts.Profile.EncBite, found ? Format.Percent(e.BiteShare, e.BiteShare < 0.01 ? 1 : 0) : unknown, null);
+            y = EncRow(skin, x, y, w, rowH, GameTexts.Profile.EncBite, found ? Format.Percent(e.BiteShare, e.BiteShare < 0.001 ? 2 : e.BiteShare < 0.01 ? 1 : 0) : unknown, null);
             var date = !found ? unknown
                 : e.FirstCaughtAtMs > 0 ? Format.Date(DateTimeOffset.FromUnixTimeMilliseconds(e.FirstCaughtAtMs).LocalDateTime)
                 : GameTexts.Profile.None;

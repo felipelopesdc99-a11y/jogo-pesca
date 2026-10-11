@@ -39,7 +39,8 @@ public sealed class CatchSuccessTests
         Config.TryGetBoat("boat_02", out var boat);
         Config.TryGetBait("bait_02", out var bait);
         var rod = Rod("rod_01");
-        var result = CatchSimulator.Run(Config, Map("map_02"), rod, 10, boat, bait, 40_000, 7);
+        // Rares bite 35% as often while fishing since M24-T22 (A-159): more attempts keep ~700 rare bites to measure.
+        var result = CatchSimulator.Run(Config, Map("map_02"), rod, 10, boat, bait, 200_000, 7);
 
         var expectedCommon = 0.50 + Config.RodBonusesAt(rod, 10).CatchSuccess + boat.CatchSuccessBonus + bait.CatchSuccessBonus;
         var common = result.ByRarity.Single(r => r.RarityId == "common");
@@ -61,7 +62,7 @@ public sealed class CatchSuccessTests
         long xp = 0, shells = 0;
         for (var i = 0; i < 400; i++)
         {
-            clock.AdvanceSeconds(30);
+            clock.AdvanceSeconds(Config.Fishing.OnlineCycleSeconds);
             var update = game.Fishing.Sync();
             escapes += update.Escapes.Count;
             catches += update.NewCatches.Count;
@@ -91,15 +92,15 @@ public sealed class CatchSuccessTests
         Assert.True(game.Gear.BuyBait("bait_01").Succeeded);
         game.Fishing.StartFishing();
 
-        // Closed for 3 hours: 180 offline attempts; the bait's charges run out on the way.
+        // Closed for 3 hours: 360 offline attempts (one every 30 s, M24-T22); the bait's 120 charges run out on the way.
         clock.AdvanceSeconds(3 * 3600);
         var (back, _, _) = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock, skipTutorial: false);
         var report = back.Fishing.TakeOfflineReport();
 
         Assert.NotNull(report);
         var update = report.Update;
-        Assert.Equal(180, update.NewCatches.Count + update.Escapes.Count);
-        Assert.InRange(update.Escapes.Count, 50, 110);
+        Assert.Equal(360, update.NewCatches.Count + update.Escapes.Count);
+        Assert.InRange(update.Escapes.Count, 140, 215);
         Assert.Equal("Terra Viva", update.BaitRanOut);
         Assert.Equal(0, back.Session.Save.BaitCharges["bait_01"]);
         Assert.Null(back.Gear.GetGear().BaitId);
@@ -120,14 +121,14 @@ public sealed class CatchSuccessTests
         Assert.True(bought.Value.BaitBonus > 0);
 
         game.Fishing.StartFishing();
-        TestSupport.PlayFor(game, clock, 30 * 10);
+        TestSupport.PlayFor(game, clock, Config.Fishing.OnlineCycleSeconds * 10);
         Assert.Equal(pack - 10, game.Gear.GetGear().BaitChargesLeft);
 
         // A second batch adds up, and the bait can be put away and back without losing charges.
         Assert.True(game.Gear.BuyBait("bait_01").Succeeded);
         Assert.Equal(2 * pack - 10, game.Gear.GetGear().BaitChargesLeft);
         Assert.True(game.Gear.UseBait(null).Succeeded);
-        TestSupport.PlayFor(game, clock, 30 * 5);
+        TestSupport.PlayFor(game, clock, Config.Fishing.OnlineCycleSeconds * 5);
         Assert.Equal(2 * pack - 10, game.Session.Save.BaitCharges["bait_01"]);
         Assert.Equal(ServiceError.BaitNoCharges, game.Gear.UseBait("bait_02").Error);
         Assert.True(game.Gear.BuyBait("bait_02").Succeeded); // no minimum level (M24-T09), only the price

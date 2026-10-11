@@ -3,8 +3,8 @@
 Uso:  python3 tools/Progressao/simular_tripulacao.py [--dias 75] [--gravar]
 
 O que ele faz:
-  - joga a pesca como tools/Progressao/simular_progressao.py (valor esperado, sem sorte): pesca online a cada 30 s,
-    offline a cada 60 s até 24 h, compra varas, melhorias e iscas, monta barcos com fragmentos, vende tudo ao NPC;
+  - joga a pesca como tools/Progressao/simular_progressao.py (valor esperado, sem sorte): pesca online e offline no
+    ciclo de progression.json → fishing (hoje 15 s e 30 s), offline até 24 h, compra varas, melhorias e iscas, monta barcos com fragmentos, vende tudo ao NPC;
   - a Tripulação (config/crew.json) rende Moedas e XP de Pescador por segundo, com o jogo aberto e fechado
     (offline: 100% nas primeiras horas, depois a taxa reduzida, até o teto), exatamente como o serviço do jogo:
     custo b·r^k·(r^n−1)/(r−1), cada marco de quantidade ×2 para aquele tripulante, marco da frota ×2 para todos;
@@ -264,6 +264,11 @@ def play(crew_cfg, profile, days, crew_xp=True):
     return g
 
 
+def dias(d):
+    """{"Nv.10": 0.04, ...} → "Nv.10 0,04 · ..." with the PT-BR decimal comma (CLAUDE.md)."""
+    return ' · '.join('%s %s' % (k, ('%.2f' % v).replace('.', ',') if v is not None else '—') for k, v in d.items())
+
+
 def fmt_time(seconds):
     if seconds is None:
         return '—'
@@ -330,11 +335,11 @@ def main():
         print('== %s (%s)' % (name, desc))
         print('  primeira compra %s · 2º tripulante %s · passa a pesca %s · renda máxima %s/s'
               % (s['primeira_compra'], s['segundo_tripulante'], s['tripulacao_passa_a_pesca'], short(g.max_rate)))
-        print('  dias até a renda da Tripulação chegar a:', s['dias_ate_renda'])
+        print('  dias até a renda da Tripulação chegar a:', dias(s['dias_ate_renda']))
         for d, row in s['por_dia'].items():
             print('  dia %5s: Tripulação %-12s pesca %-10s XP %-8s Nv.%d' % (d, row['renda_tripulacao'], row['renda_pesca'], row['xp_tripulacao'], row['nivel']))
-        print('  dias até o nível com o XP da Tripulação:', s['dias_ate_nivel_com_tripulacao'])
-        print('  dias até o nível sem o XP da Tripulação:', s['dias_ate_nivel_sem_xp_da_tripulacao'])
+        print('  dias até o nível com o XP da Tripulação:', dias(s['dias_ate_nivel_com_tripulacao']))
+        print('  dias até o nível sem o XP da Tripulação:', dias(s['dias_ate_nivel_sem_xp_da_tripulacao']))
     if a.gravar:
         os.makedirs(os.path.dirname(OUT), exist_ok=True)
         with open(OUT, 'w', encoding='utf-8') as f:

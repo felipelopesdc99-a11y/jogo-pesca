@@ -323,7 +323,7 @@ public static class Program
     {
         r.AppendLine("## 2. Frequência de raridade e de tamanho");
         r.AppendLine();
-        r.AppendLine("200.000 sorteios reais (`CatchRules.Roll`) por combinação de mapa e vara: o que morde, antes da Chance de Sucesso (seção 7).");
+        r.AppendLine("200.000 sorteios reais por combinação de mapa e vara: a raridade do que morde na pesca (`CatchRules.RollBite`, com o fishing_bite_multiplier de cada raridade, A-159), antes da Chance de Sucesso (seção 7); o tamanho e as Conchas de `CatchRules.Roll`.");
         r.AppendLine();
         var combos = new List<(string label, MapConfig map, RodConfig rod, int level)>();
         foreach (var map in config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel))
@@ -346,13 +346,15 @@ public static class Program
         {
             const int n = 200_000;
             var rng = new Rng(42);
+            var biteRng = new Rng(43);
+            var bonuses = config.RodBonusesAt(rod, level);
             var byRarity = rarities.ToDictionary(x => x.Id, _ => 0);
             var bySize = sizes.ToDictionary(x => x.Id, _ => 0);
             long shells = 0;
             for (var i = 0; i < n; i++)
             {
                 var c = CatchRules.Roll(config, map, rod, level, rng);
-                byRarity[c.Species.Rarity]++;
+                byRarity[CatchRules.RollBite(config, map, rod, bonuses, biteRng).Rarity]++;
                 bySize[c.SizeCategory.Id]++;
                 shells += c.Shells;
             }
@@ -361,7 +363,7 @@ public static class Program
             if (rare > 0 && level == 1 && rod.HasInternalLevels)
             {
                 var pulled = rare * CatchRules.SuccessChance(config, rarities[1].Id, config.RodBonusesAt(rod, level).CatchSuccess + config.StarterBoat.CatchSuccessBonus);
-                Attention.Add("Peixes acima de comum: " + Format.Percent(rare, 2) + " das mordidas em " + label + "; com a Chance de Sucesso, um puxado a cada ~" + Format.Number((long)Math.Round(1 / pulled)) + " tentativas (~" + Format.Decimal(1 / pulled / 120.0, 1) + " h online, sem barco nem isca).");
+                Attention.Add("Peixes acima de comum: " + Format.Percent(rare, 2) + " das mordidas em " + label + "; com a Chance de Sucesso, um puxado a cada ~" + Format.Number((long)Math.Round(1 / pulled)) + " tentativas (~" + Format.Decimal(1 / pulled / (3600.0 / config.Progression.Fishing.OnlineCycleSeconds), 1) + " h online, sem barco nem isca).");
             }
 
             r.AppendLine("| " + label + " | " + string.Join(" | ", rarities.Select(x => Format.Percent(byRarity[x.Id] / (double)n, 2)))

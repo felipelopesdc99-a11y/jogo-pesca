@@ -407,9 +407,8 @@ namespace FishingIdle.GameService.Profile
 
             if (map != null)
             {
-                var total = map.FishPool.Sum(p => p.CatchWeight);
-                var own = map.FishPool.Where(p => p.SpeciesId == species.Id).Sum(p => p.CatchWeight);
-                entry.BiteShare = total > 0 ? own / total : 0;
+                // While fishing, with the rarities' fishing_bite_multiplier (M24-T22, A-159).
+                entry.BiteShare = CatchRules.BiteShare(Config, map, species.Id);
             }
 
             entry.Discovered = true;

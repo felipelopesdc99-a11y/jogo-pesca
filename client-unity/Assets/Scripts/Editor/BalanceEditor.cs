@@ -352,7 +352,7 @@ namespace FishingIdle.Editor
 
             EditorGUILayout.LabelField(T.RarityValuesTitle, EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(T.RarityValuesNote, MessageType.None);
-            Header(new[] { T.RarityName, T.RaritySale, T.RarityStat, T.RarityFisherXp, T.RarityFeedXp });
+            Header(new[] { T.RarityName, T.RaritySale, T.RarityStat, T.RarityFisherXp, T.RarityFeedXp, T.RarityFishingBite });
             for (var i = 0; i < tiers.Count; i++)
             {
                 var prefix = "rarity.tiers[" + i + "].";
@@ -363,6 +363,7 @@ namespace FishingIdle.Editor
                     Cell(file, prefix + "stat_multiplier");
                     Cell(file, prefix + "fisher_xp_multiplier");
                     Cell(file, prefix + "feed_xp_multiplier");
+                    Cell(file, prefix + "fishing_bite_multiplier");
                 }
             }
 

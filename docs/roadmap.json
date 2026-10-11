@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-11T12:00:00Z",
+  "updated_at": "2026-10-11T15:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -570,6 +570,22 @@
       "title": "Ritmo dos barcos fora do mapa e força do Premium",
       "detail": "Simulado (docs/propostas/passe_fragmentos.json): pescando no mapa do barco, ~1–2 dias no Mapa 1 e ~5–11 dias no Mapa 10. Quem nunca volta a um mapa antigo depende do Passe: grátis, ~25 a ~100 dias para os barcos 1 a 9; Premium (fragmentos em dobro e retroativos), ~3 a ~13 dias. Opções: (a) fica assim (voltar a um mapa antigo para pegar o barco é escolha do jogador); (b) mais fragmentos na faixa grátis; (c) menos fragmentos no Premium; (d) os mapas também dão, com chance menor, fragmentos dos barcos de mapas anteriores.",
       "raised_at": "2026-10-11T12:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-063",
+      "task_id": "M24-T23",
+      "title": "Ganhos da pesca no fim do jogo com menos raros",
+      "detail": "Simulado: XP e Moedas da pesca por hora ficam ~1,9× no começo, ~1,5× no meio e ~0,8× no fim (Vara 5, Titã do Atlântico e isca, no Abismo Atlântico), porque lá os raros eram 84% das mordidas e valem até 15× o XP de um Comum. Com a Tripulação e as Melhorias o Nv.1000 passa de ~50 para ~57 dias (jogo aberto), ~92 para ~102 (4 vezes por dia) e ~106 para ~119 (1 vez por dia). Opções: (a) fica assim; (b) o multiplicador dos raros fica maior nos mapas finais (por exemplo 0,5: mais raros por hora que hoje lá); (c) os Comuns dos Mapas 6 a 10 valem mais (venda e XP) para o fim render pelo menos o de antes; (d) recalibrar a curva de XP do Pescador.",
+      "raised_at": "2026-10-11T15:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-064",
+      "task_id": "M24-T24",
+      "title": "Excepcional e Perfeição por hora",
+      "detail": "Com o dobro de peixes por hora, os tamanhos Excepcional (~1% dos peixes) e Perfeição (~0,01%) vêm o dobro por hora, porque o tamanho é sorteado por peixe. Opções: (a) fica assim (são tamanho, não raridade); (b) cortar a chance deles pela metade (o mesmo por hora de antes); (c) cortar para ~35% como as raridades (~70% por hora).",
+      "raised_at": "2026-10-11T15:00:00Z",
       "status": "OPEN"
     }
   ],
@@ -4553,6 +4569,41 @@
             "M24-T17"
           ],
           "updated_at": "2026-10-11T12:00:00Z"
+        },
+        {
+          "id": "M24-T22",
+          "title": "Mais peixes, menos raros",
+          "subsystem": "config",
+          "description": "Decisão do proprietário (11/10/2026): \"a ideia é aumentar a quantidade de peixes pescados e diminuir a chance de pegar mais raros\". O dobro de peixes por hora; raros por hora um pouco menos que hoje (~70%); Moedas e XP por hora sobem junto (o valor e o XP de cada peixe não mudam).",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T16",
+            "M24-T17"
+          ],
+          "updated_at": "2026-10-11T15:00:00Z",
+          "completion_notes": "Ciclo de pesca na metade em progression.json (online 30 → 15 s, offline 60 → 30 s; limite offline de 24 h igual; chance de puxar e teto de 95% iguais). Novo rarity.tiers[].fishing_bite_multiplier = 0,35 no Raro, Épico, Lendário e Mítico, aplicado por CatchRules.FishingWeights/RollBite sobre a chance final (depois dos pesos do mapa e do bônus de raridade da vara; os Comuns completam o resto): cada raridade fica com exatamente 70% dos peixes por hora de antes em qualquer mapa e equipamento (TD-043). Só a pesca (online e offline) usa; Expedições e vendedores do Mercado continuam com o sorteio de antes. Enciclopédia (\"morde X%\") com o multiplicador (CatchRules.BiteShare) e duas casas abaixo de 0,1%; Painel de Balanceamento com a coluna \"Na pesca\" na aba Raridades; validação (não negativo). Caixa de Pesca 1.500 → 3.000 (cabe 24 h offline = 2.880 tentativas); iscas 60 → 120 tentativas pelo mesmo preço (mesma duração e custo por hora). Fragmentos de barco recalibrados por tools/Progressao/passe_fragmentos.py gerar (agora com 4 casas): 0,64% a 1,03% por peixe puxado (eram 1,3% a 2,4%), mesmo ritmo de montagem do A-157; Loja e Catálogo mostram duas casas abaixo de 1%. config/pass.json regerado (agora igual ao que o script produz; o anterior não batia do Nv.300 em diante): Nv.10 1.950 Moedas e 6 Conchas, Nv.100 822 mil e 15, Nv.500 979 mi e 91, Nv.1000 1,11 tri e 138. Scripts com vírgula decimal (passe_fragmentos, simular_melhorias, simular_tripulacao, niveis_100) e simular_progressao.py com o multiplicador; simulador C# mostra a raridade da mordida na pesca. Novos tempos (Tripulação + Melhorias, simular_melhorias.py): Nv.100 em 0,7 / 1,8 / 3,8 dias, Nv.500 em 14,3 / 26,9 / 33,8, Nv.1000 em 56,6 / 102,3 / 118,8 (aberto / 4x / 1x; antes 1,1 / 2,4 / 4,8, 14,2 / 26,9 / 32,8 e 50,5 / 91,5 / 105,8); Nv.10 em ~30 min online. No fim do jogo a pesca rende ~80% das Moedas e ~84% do XP por hora de antes (OD-063); Excepcional e Perfeição vêm o dobro por hora (OD-064). docs/propostas (melhorias, tripulacao, niveis_100, passe_fragmentos) regerados. Testes: MoreFishFewerRaresTests (ciclo, 70% por raridade em 4 cenários, simulação com semente fixa, 240 tentativas/h e 2.880 offline, fragmentos por hora, Expedições sem o multiplicador, Enciclopédia, validação) e ajustes em FishingService, CatchSuccess, MapsAndRods, FishingBoxLimit, DevTools, ReviewFix, Config e IdleScopeStageOne. A-159, TD-043. Não compilado neste ambiente (sem .NET) nem aberto no Unity."
+        },
+        {
+          "id": "M24-T23",
+          "title": "Ganhos da pesca no fim do jogo com menos raros",
+          "subsystem": "config",
+          "description": "Com o dobro de peixes e 35% dos raros por peixe, a pesca rende mais por hora no começo (~1,9× XP e Moedas) e no meio (~1,5×), mas no fim, com tudo no Nv.100 no Abismo Atlântico, rende ~84% do XP e ~80% das Moedas por hora de antes, porque os raros valem muito mais que os Comuns. Por isso o Nv.1000 chega mais tarde (~57 dias com o jogo aberto, antes ~50). O proprietário esperava que os ganhos subissem junto (OD-063).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T22"
+          ],
+          "updated_at": "2026-10-11T15:00:00Z"
+        },
+        {
+          "id": "M24-T24",
+          "title": "Excepcional e Perfeição por hora com o dobro de peixes",
+          "subsystem": "config",
+          "description": "O tamanho é sorteado por peixe puxado, e a decisão do M24-T22 reduziu só as raridades. Com o dobro de peixes, os tamanhos Excepcional e Perfeição (que têm selo, comemoração e proteção na venda) vêm o dobro por hora (OD-064).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T22"
+          ],
+          "updated_at": "2026-10-11T15:00:00Z"
         }
       ]
     }

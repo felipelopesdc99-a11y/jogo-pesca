@@ -405,16 +405,16 @@ def simular(days, gravar):
     print('  Conchas ganhas (acumulado):', dict(shells))
     print('  Final: vara %s Nv.%d, barco %s Nv.%d, Nv. do Pescador %d' % (p.rod['id'], p.rods[p.rod['id']], p.boat['id'], p.boat_levels.get(p.boat['id'], 1), p.level))
     fisher = collections.OrderedDict(('Nv.%d' % l, round(p.reached[l], 2) if l in p.reached else None) for l in (100, 500, 1000))
-    print('  Dias até o nível do Pescador:', dict(fisher))
+    print('  Dias até o nível do Pescador:', ', '.join('%s %s' % (k, ('%.2f' % v).replace('.', ',') if v is not None else '—') for k, v in fisher.items()))
     for rid, info in rods.items():
-        print('  %s %s' % (rid, ' | '.join('%s: +%.1f%% sucesso, raridade +%.0f%%, próximo %s/%s' % (
-            lvl, r['bonus']['catch_success'] * 100, r['bonus']['rarity_efficiency'] * 100,
+        print('  %s %s' % (rid, ' | '.join('%s: +%s%% sucesso, raridade +%.0f%%, próximo %s/%s' % (
+            lvl, ('%.1f' % (r['bonus']['catch_success'] * 100)).replace('.', ','), r['bonus']['rarity_efficiency'] * 100,
             r['proximo_nivel']['moedas'] if r['proximo_nivel'] else '—', r['proximo_nivel']['conchas'] if r['proximo_nivel'] else '—')
             for lvl, r in info['niveis'].items() if lvl in ('Nv.1', 'Nv.10', 'Nv.30', 'Nv.50', 'Nv.100'))))
         print('     migração 1..10 →', info['migracao_nv1_a_10'])
     print('  peixes: migração 1..10 →', fish_legacy)
     for lvl, r in fish.items():
-        print('    %s: +%.1f%%, XP desde Nv.1 %d (%d Comuns)' % (lvl, r['bonus_atributos'] * 100, r['xp_desde_nv1'], r['comuns_de_39_xp']))
+        print('    %s: +%s%%, XP desde Nv.1 %d (%d Comuns)' % (lvl, ('%.1f' % (r['bonus_atributos'] * 100)).replace('.', ','), r['xp_desde_nv1'], r['comuns_de_39_xp']))
     print('== Cada vara sozinha (o jogador não compra vara melhor que ela)')
     alone = focused(days)
     if gravar:

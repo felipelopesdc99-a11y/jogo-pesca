@@ -2247,16 +2247,19 @@ novos); o barco **sai da Loja**. Números em `config/equipment.json`, gerados po
 
   | Barco | Mapa | Fragmentos | Chance por peixe puxado | Bônus Nv.1 | Bônus Nv.100 |
   |---|---|---|---|---|---|
-  | Remo Valente | Lago Sereno | 20 | 1,3% | +2% | +6% |
-  | Rastro Azul | Rio Selvagem | 25 | 1,3% | +4% | +12% |
-  | Proa Selvagem | Pantanal Dourado | 35 | 1,5% | +6% | +18% |
-  | Costa Nobre | Estuário das Marés | 45 | 1,5% | +8% | +24% |
-  | Horizonte Dourado | Costa de Coral | 55 | 1,6% | +10% | +30% |
-  | Vela do Sol *(sugestão)* | Arquipélago do Sol | 70 | 1,7% | +12% | +36% |
-  | Quilha Azul *(sugestão)* | Corrente Azul | 90 | 1,9% | +14% | +42% |
-  | Canto da Baleia *(sugestão)* | Banco das Baleias | 120 | 2,0% | +16% | +48% |
-  | Farol Noturno *(sugestão)* | Talude Noturno | 155 | 2,3% | +18% | +54% |
-  | Titã do Atlântico *(sugestão)* | Abismo Atlântico | 200 | 2,4% | +20% | +60% |
+  | Remo Valente | Lago Sereno | 20 | 0,64% | +2% | +6% |
+  | Rastro Azul | Rio Selvagem | 25 | 0,65% | +4% | +12% |
+  | Proa Selvagem | Pantanal Dourado | 35 | 0,72% | +6% | +18% |
+  | Costa Nobre | Estuário das Marés | 45 | 0,77% | +8% | +24% |
+  | Horizonte Dourado | Costa de Coral | 55 | 0,78% | +10% | +30% |
+  | Vela do Sol *(sugestão)* | Arquipélago do Sol | 70 | 0,81% | +12% | +36% |
+  | Quilha Azul *(sugestão)* | Corrente Azul | 90 | 0,88% | +14% | +42% |
+  | Canto da Baleia *(sugestão)* | Banco das Baleias | 120 | 0,93% | +16% | +48% |
+  | Farol Noturno *(sugestão)* | Talude Noturno | 155 | 1,02% | +18% | +54% |
+  | Titã do Atlântico *(sugestão)* | Abismo Atlântico | 200 | 1,03% | +20% | +60% |
+
+  *Desde 11/10/2026 (A-159) a chance por peixe é ~metade da de antes (era 1,3% a 2,4%): com o dobro de peixes por hora,
+  os barcos continuam chegando no mesmo ritmo.*
 
   O 1º nível dos barcos novos custa ~3× o do anterior (375 mil, 1,13 mi, 3,38 mi, 10,1 mi e 30,4 mi Moedas; 40, 60,
   90, 135 e 200 Conchas), com o mesmo crescimento por nível (× 1,14 em Moedas e × 1,03 em Conchas).
@@ -2275,7 +2278,7 @@ novos); o barco **sai da Loja**. Números em `config/equipment.json`, gerados po
   pesca com o …", que não servia para os nomes femininos).
 - **Na Loja ("Balcão do Píer"), aba Barcos.** Os 10 barcos continuam na parede, mas sem preço: a etiqueta mostra
   "12/20" com o ícone do barco enquanto não é seu, e "JÁ É SEU" / "EM USO" depois. A ficha mostra "Fragmentos 12/20 ·
-  Caem no mapa Lago Sereno", uma barra dourada, "1,3% de chance por peixe puxado" e, no lugar do Comprar, a pílula
+  Caem no mapa Lago Sereno", uma barra dourada, "0,64% de chance por peixe puxado" (duas casas abaixo de 1%, A-159) e, no lugar do Comprar, a pílula
   dourada "MONTE COM FRAGMENTOS". Barco seu: "Fragmentos extras: N · Caem no mapa …", nível, Melhorar e Usar / EM USO, como
   já era (A-156). O "i" explica os fragmentos.
 - **O Passe do Pescador** (A-158) também dá fragmentos.
@@ -2287,13 +2290,14 @@ novos); o barco **sai da Loja**. Números em `config/equipment.json`, gerados po
   |---|---|---|---|
   | Remo Valente | 1,1 dia | 2,0 dias | 2,1 dias |
   | Proa Selvagem | 1,6 dia | 2,9 dias | 3,0 dias |
-  | Horizonte Dourado | 2,2 dias | 4,1 dias | 4,3 dias |
-  | Quilha Azul | 3,1 dias | 5,7 dias | 6,0 dias |
-  | Titã do Atlântico | 5,4 dias | 10,0 dias | 10,6 dias |
+  | Horizonte Dourado | 2,2 dias | 4,1 dias | 4,4 dias |
+  | Quilha Azul | 3,1 dias | 5,8 dias | 6,2 dias |
+  | Titã do Atlântico | 5,4 dias | 10,0 dias | 10,7 dias |
 
-  Quem sempre pesca no melhor mapa liberado e nunca volta a um mapa antigo monta o Titã do Atlântico em ~5,5 dias
-  (jogo aberto), ~11 (4 vezes por dia) ou ~14 (1 vez por dia); os outros 9 chegam pelos fragmentos do Passe grátis
-  entre ~25 e ~100 dias, ou em ~3 a ~13 dias com o Premium (ver A-158 e OD-062).
+  Quem sempre pesca no melhor mapa liberado e nunca volta a um mapa antigo monta o Titã do Atlântico em ~4 dias
+  (jogo aberto), ~8 (4 vezes por dia) ou ~13 (1 vez por dia); os outros 9 chegam pelos fragmentos do Passe grátis
+  entre ~24 e ~113 dias, ou em ~2 a ~13 dias com o Premium (ver A-158 e OD-062). *Números de 11/10/2026, já com o
+  dobro de peixes por hora (A-159); antes eram ~5,5 / ~11 / ~14 dias para o Titã e ~25 a ~100 (Passe grátis).*
 - **Quem já joga** (save versão 16): os barcos comprados continuam seus, com o nível; os fragmentos começam em 0.
 - **Arte provisória** (`ASSET_PENDENTE`): os 5 barcos novos usam o ícone do barco na Loja e a canoa inicial na cena;
   o fragmento usa o ícone do barco. Pedidos em `docs/ASSETS_PENDENTES.md`.
@@ -2321,19 +2325,25 @@ sugestões para ajustar jogando.
 
   | Marco | Grátis | Premium |
   |---|---|---|
-  | Nv.10 | 930 Moedas, 3 Conchas, 10 Dólares, 3 frag. Remo Valente | 1.860 Moedas, 6 Conchas, 6 frag. Remo Valente |
-  | Nv.50 | 74 mil, 5 Conchas, 10 Dólares, 9 frag. Horizonte Dourado | 148 mil, 10 Conchas, 10 Dólares, 18 frag. |
-  | Nv.100 | 1,22 mi, 7 Conchas, 10 Dólares, 30 frag. Titã do Atlântico | 2,44 mi, 14 Conchas, 10 Dólares, 60 frag. |
-  | Nv.250 | 90,4 mi, 26 Conchas, 6 frag. Horizonte Dourado | 181 mi, 52 Conchas, 10 Dólares, 12 frag. |
-  | Nv.500 | 982 mi, 45 Conchas, 10 Dólares, 20 frag. Titã do Atlântico | 1,96 bi, 90 Conchas, 10 Dólares, 40 frag. |
-  | Nv.1000 | 844 bi, 69 Conchas, 10 Dólares, 20 frag. Titã do Atlântico | 1,69 tri, 138 Conchas, 10 Dólares, 40 frag. |
+  | Nv.10 | 1.950 Moedas, 6 Conchas, 10 Dólares, 3 frag. Remo Valente | 3.900 Moedas, 12 Conchas, 6 frag. Remo Valente |
+  | Nv.50 | 110 mil, 11 Conchas, 10 Dólares, 9 frag. Horizonte Dourado | 220 mil, 22 Conchas, 10 Dólares, 18 frag. |
+  | Nv.100 | 822 mil, 15 Conchas, 10 Dólares, 30 frag. Titã do Atlântico | 1,64 mi, 30 Conchas, 10 Dólares, 60 frag. |
+  | Nv.250 | 61,9 mi, 65 Conchas, 6 frag. Horizonte Dourado | 124 mi, 130 Conchas, 10 Dólares, 12 frag. |
+  | Nv.500 | 979 mi, 91 Conchas, 10 Dólares, 20 frag. Titã do Atlântico | 1,96 bi, 182 Conchas, 10 Dólares, 40 frag. |
+  | Nv.1000 | 1,11 tri, 138 Conchas, 10 Dólares, 20 frag. Titã do Atlântico | 2,22 tri, 276 Conchas, 10 Dólares, 40 frag. |
+
+  *Regerado em 11/10/2026 (A-159) com o dobro de peixes por hora. O arquivo anterior não batia com o script do Nv.300
+  em diante (por exemplo 844 bi Moedas grátis no Nv.1000, quando o script dava 260 bi); agora `config/pass.json` é
+  exatamente o que `tools/Progressao/passe_fragmentos.py gerar` produz. Antes: Nv.10 930 Moedas e 3 Conchas, Nv.100
+  1,22 mi e 7 Conchas, Nv.500 982 mi e 45 Conchas. O Nv.100 dá menos Moedas porque o jogador de referência chega lá
+  mais cedo (com renda menor); as Conchas dobraram junto com os peixes.*
 
 - **Premium**: 100 Dólares (o preço do VIP), comprado uma vez, vale para sempre. Libera também as recompensas Premium
   dos marcos que o jogador já passou (ficam "Resgatar"). Os Dólares grátis até o Nv.100 pagam exatamente um Premium
   (ou um VIP): é escolha do jogador.
 - **Resgate**: nada é pago sozinho. Os marcos alcançados ficam com "Resgatar"; "Resgatar tudo" pega todos de uma vez.
   Ao alcançar um marco aparece o aviso "Passe do Pescador: marco do Nv.20 alcançado. Resgate no Passe!". Aviso do
-  resgate: "Passe: +930 Moedas, +3 Conchas, +10 Dólares, +3 fragmentos de barco: Remo Valente".
+  resgate: "Passe: +1.950 Moedas, +6 Conchas, +10 Dólares, +3 fragmentos de barco: Remo Valente".
 - **Tela "Passe do Pescador"**: botão novo na barra de cima, só com ícone, à esquerda do sino (os nove menus principais
   continuam com espaço), com um ponto dourado contando as recompensas prontas. A janela usa a Placa do Píer com o "i"
   (explica tudo) e o "Nv.37" no canto:
@@ -2352,3 +2362,79 @@ sugestões para ajustar jogando.
   nessa subida pagam os Dólares no Passe (antes eram pagos na hora).
 - **Arte provisória** (`ASSET_PENDENTE`): o botão usa a estrela (`ico_passe` pedido) e os fragmentos o ícone do barco
   (`frag_boat_01` … `frag_boat_10` pedidos). Pedidos em `docs/ASSETS_PENDENTES.md`.
+
+### A-159 · Mais peixes, menos raros
+**Seção do GDD:** 7, 10, 17, 22 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+Decisão do proprietário em 11/10/2026 (M24-T22): "a ideia é aumentar a quantidade de peixes pescados e diminuir a
+chance de pegar mais raros". Respostas dele: **o dobro de peixes por hora**; peixes raros por hora **um pouco menos que
+hoje** (~70%); Moedas e XP por hora **sobem junto** (o valor e o XP de cada peixe não mudam). Números em `/config`.
+
+- **Ritmo da pesca na metade.** Uma tentativa a cada **15 s** online (era 30 s) e a cada **30 s** offline (era 60 s).
+  A chance de puxar cada peixe não mudou (nem o teto de 95%), e a pesca offline continua juntando até **24 h**. Na
+  tela, o pescador continua lançando, esperando a mordida, fisgando e mostrando o peixe: tudo isso leva ~7 s e cabe nos
+  15 s (a animação já se ajustava ao tempo da tentativa).
+- **Raros por peixe ~35% de antes.** Na pesca, a chance de um peixe Raro, Épico, Lendário ou Mítico morder é
+  multiplicada por **0,35** depois dos pesos do mapa e do bônus de raridade da vara; os Comuns ficam com o resto. Assim,
+  com o dobro de tentativas, cada raridade chega a **70% dos peixes por hora de antes**, em qualquer mapa, com qualquer
+  vara, barco, isca ou Melhoria (o número é exato, não depende do equipamento). Exemplos (online, por hora):
+
+  | Momento | Raridade | Morde, por peixe (antes → agora) | Puxados por hora (antes → agora) |
+  |---|---|---|---|
+  | Começo: Rio Selvagem, Ponta Selvagem Nv.10, Remo Valente | Raro | 1,03% → 0,36% | 0,53 → 0,37 |
+  | | Todos os peixes | | 66 → 131 |
+  | Meio: Costa de Coral, Corrente Mestra Nv.30, Horizonte Dourado Nv.10, isca Maré Viva | Raro | 13,5% → 4,7% | 11,9 → 8,3 |
+  | | Épico | 2,7% → 0,94% | 1,9 → 1,3 |
+  | | Todos os peixes | | 100 → 203 |
+  | Fim: Abismo Atlântico, Soberana Abissal Nv.100, Titã do Atlântico Nv.100, isca Ouro de Maré | Raro | 43,5% → 15,2% | 49,6 → 34,7 |
+  | | Épico | 27,8% → 9,7% | 31,8 → 22,2 |
+  | | Lendário | 11,8% → 4,1% | 13,5 → 9,4 |
+  | | Mítico | 0,35% → 0,12% | 0,40 → 0,28 |
+  | | Todos os peixes | | 114 → 228 |
+
+  Os Comuns, que antes eram só 16% das mordidas no fim, passam a ~71%.
+- **Só na pesca.** O peixe achado numa **Expedição** e os peixes dos vendedores do **Mercado** continuam com o sorteio de
+  antes (o número de Expedições não dobrou, então elas não ficam mais pobres em raros).
+- **Enciclopédia.** "Morde X% das vezes" passa a mostrar a chance na pesca (com o 0,35); abaixo de 0,1% aparece com
+  duas casas ("0,04%").
+- **Caixa de Pesca: 3.000 peixes** (era 1.500), para continuar cabendo um dia inteiro de pesca offline (24 h a cada
+  30 s = 2.880 tentativas) e as mesmas horas de pesca online antes de encher.
+- **Iscas: 120 tentativas por compra** (eram 60), pelo mesmo preço: continuam durando ~30 min de pesca online e
+  custando o mesmo por hora.
+- **Fragmentos de barco: chance por peixe ~metade** (0,64% no Lago Sereno a 1,03% no Abismo Atlântico; eram 1,3% a
+  2,4%). Recalculada pelo script para o mesmo ritmo de montagem de antes (A-157: ~2 dias no Mapa 1 e ~10 no Mapa 10
+  abrindo o jogo 4 vezes por dia): como agora há menos raros, um pouco mais de tentativas viram peixe puxado, e a
+  chance ficou um pouco abaixo da metade exata. Fragmentos por hora: entre ~97% e ~104% dos de antes com a vara mínima
+  do mapa, e entre ~88% e ~104% com vara e barco já fortes (o fim é um pouco mais lento).
+- **Passe do Pescador regerado** com a economia nova (A-158).
+- **Ganhos.** O valor de venda e o XP de cada peixe não mudaram. No começo e no meio do jogo a pesca rende bem mais
+  por hora; no fim, como os raros valem muito mais que os Comuns, rende um pouco **menos** (decisão aberta, OD-063):
+
+  | Momento | XP da pesca por hora | Moedas da pesca por hora | Conchas por hora |
+  |---|---|---|---|
+  | Começo (como acima) | ×1,9 | ×1,85 | ×2 |
+  | Meio | ×1,56 | ×1,45 | ×2 |
+  | Fim (tudo no Nv.100) | ×0,84 | ×0,80 | ×2 |
+
+- **Tempo até cada nível** (`tools/Progressao/simular_melhorias.py`, com a Tripulação e as Melhorias, sem o Passe;
+  antes → agora; a curva do Pescador **não** foi recalibrada):
+
+  | Jeito de jogar | Nv.10 | Nv.100 | Nv.500 | Nv.1000 |
+  |---|---|---|---|---|
+  | Jogo aberto o dia todo | ~1 h → ~29 min | 1,1 → 0,7 dia | 14,2 → 14,3 dias | 50,5 → 56,6 dias |
+  | Abre 4 vezes por dia (30 min) | 12 h* → 8,4 h* | 2,4 → 1,8 dias | 26,9 → 26,9 dias | 91,5 → 102,3 dias |
+  | Abre 1 vez por dia (30 min) | 1,8 dia* → 20 h* | 4,8 → 3,8 dias | 32,8 → 33,8 dias | 105,8 → 118,8 dias |
+
+  \* Contado da meia-noite do primeiro dia. Só pescando (`simular_progressao.py`): Nv.10 em 30 min online (era 1 h);
+  Nv.1000 em ~60 / ~113 / ~123 dias (eram ~53 / ~99 / ~110). A renda da pesca no fim do jogo fica em ~20 mil/s (era
+  ~25 mil/s) e a da Tripulação não muda. O Nv.1000 continua bem acima de 30 dias com o jogo sempre aberto.
+- **Efeitos que sobem junto com o dobro de peixes:** a Caixa enche no dobro da velocidade (por isso a capacidade
+  dobrou); há o dobro de peixes para alimentar o Aquário (os peixes sobem de nível mais rápido); os tamanhos
+  **Excepcional** e **Perfeição** são sorteados por peixe e por isso vêm o dobro por hora (decisão aberta, OD-064); as
+  Conchas da pesca dobram; o bônus de XP offline do VIP acompanha o XP da pesca offline. Expedições, Arena, Leilão,
+  Tripulação e Melhorias não mudam.
+- **Quem já joga**: nada a migrar. Ao abrir o jogo atualizado, o que foi pescado com o jogo aberto antes de fechar conta no
+  ritmo antigo, e o tempo fechado conta como pesca offline no ritmo novo (30 s); dali em diante, 15 s. A Caixa passa a
+  aceitar 3.000; as iscas compradas antes mantêm as tentativas que têm.
+- **Painel de Desenvolvimento → Balanceamento → Raridades:** a coluna nova "Na pesca" (o 0,35 de cada raridade). A
+  coluna "Chance" da aba Mapas continua mostrando a chance do mapa sem esse número.
