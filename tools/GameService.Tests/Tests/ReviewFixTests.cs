@@ -53,7 +53,8 @@ public sealed class ReviewFixTests
         game.Maps.TravelTo("map_02");
         var before = game.Player.GetPlayer().TotalCatches;
 
-        TestSupport.PlayFor(game, clock, 31, stepSeconds: 0.25);
+        // The 10 s trip plus 1 s on the new map: shorter than one 15 s fishing cycle (M24-T22), so no catch yet.
+        TestSupport.PlayFor(game, clock, 11, stepSeconds: 0.25);
         game.Maps.Update();
 
         Assert.Equal("map_02", game.Player.GetPlayer().MapId);

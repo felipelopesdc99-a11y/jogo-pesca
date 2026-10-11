@@ -213,6 +213,7 @@ public sealed class AbuseTests
         game.Fishing.StartFishing();
         TestSupport.PlayFor(game, clock, 60, stepSeconds: 30);
         game.Fishing.MarkSeen();
+        game.Crew.Sync(); // the game loop settles the Crew every frame; reopening settles it too (M24-T05)
         var path = Path.Combine(dir, JsonFilePlayerRepository.SaveFileName);
         var before = File.ReadAllText(path);
 

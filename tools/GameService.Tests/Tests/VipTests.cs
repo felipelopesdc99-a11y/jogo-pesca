@@ -70,11 +70,20 @@ public sealed class VipTests
         var (game, clock, _) = TestSupport.NewGame();
         game.Session.Save.VipUntilMs = clock.UtcNowMs + 30 * Day;
         game.Fishing.StartFishing();
-        clock.AdvanceSeconds(600);
 
-        var update = game.Fishing.Sync();
-        Assert.NotEmpty(update.NewCatches);
-        Assert.Equal(0, update.VipXpGained);
+        // Watched online the whole time (a single 600 s jump would count as time away, offline fishing).
+        var catches = 0;
+        long vipXp = 0;
+        for (var i = 0; i < 600; i++)
+        {
+            clock.AdvanceSeconds(1);
+            var update = game.Fishing.Sync();
+            catches += update.NewCatches.Count;
+            vipXp += update.VipXpGained;
+        }
+
+        Assert.True(catches > 0);
+        Assert.Equal(0, vipXp);
     }
 
     [Fact]
