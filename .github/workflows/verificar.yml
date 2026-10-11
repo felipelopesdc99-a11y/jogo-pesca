@@ -1,0 +1,39 @@
+# Compiles the game rules, the Unity code (against Unity reference assemblies) and runs the tests,
+# the same as ops/scripts/verify.sh, on every push. The log is committed to the branch "ci-resultados"
+# so it can be read without the GitHub API.
+name: Verificar
+on:
+  push:
+    branches-ignore: [ci-resultados]
+permissions:
+  contents: write
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: verify.sh
+        id: verify
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          ./ops/scripts/verify.sh 2>&1 | tee verify.log
+      - name: Publicar o resultado
+        if: always()
+        run: |
+          mkdir -p /tmp/res
+          cp verify.log /tmp/res/verify.log || echo "sem log" > /tmp/res/verify.log
+          echo "${{ steps.verify.outcome }}" > /tmp/res/resultado.txt
+          echo "${GITHUB_SHA}" > /tmp/res/commit.txt
+          git config user.name "verificar-bot"
+          git config user.email "verificar-bot@users.noreply.github.com"
+          git fetch origin ci-resultados || true
+          git checkout --orphan resultados-tmp
+          git rm -rf . -q
+          cp /tmp/res/* .
+          git add verify.log resultado.txt commit.txt
+          git commit -q -m "Resultado da verificação de ${GITHUB_SHA::7} (${GITHUB_REF_NAME})"
+          git push -f origin HEAD:ci-resultados
