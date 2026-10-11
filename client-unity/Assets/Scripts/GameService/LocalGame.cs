@@ -10,6 +10,7 @@ using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Market;
+using FishingIdle.GameService.Pass;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
 using FishingIdle.GameService.Ranking;
@@ -54,6 +55,7 @@ namespace FishingIdle.GameService
             var crew = new LocalCrewService(session);
             Crew = crew;
             Upgrades = new LocalUpgradeService(session, crew);
+            Pass = new LocalPassService(session, fishing);
             DevTools = new LocalDevToolsService(session, fishing, crew);
         }
 
@@ -80,6 +82,9 @@ namespace FishingIdle.GameService
 
         /// <summary>Upgrades bought with Moedas (M24-T06): the Crew members' ×2s and the general upgrades with levels.</summary>
         public IUpgradeService Upgrades { get; }
+
+        /// <summary>The Passe do Pescador (M24-T17): milestones every 10 Fisher levels, free and premium rewards.</summary>
+        public IPassService Pass { get; }
 
         /// <summary>The owner's test tools (A-123); they refuse everything unless Session.DevToolsEnabled is on.</summary>
         public IDevToolsService DevTools { get; }

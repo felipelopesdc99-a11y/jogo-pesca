@@ -777,3 +777,48 @@ config segue o princípio da TD-038: a conversão depende do balanceamento, ent�
 **Rever se.** O proprietário quiser níveis com custo também para o peixe (OD-057), uma curva por vara, ou se a força
 extra das varas e barcos no Nv.100 adiantar demais o Pescador (a simulação mostra o Nv.1000 em ~50 dias em vez de
 ~70 com o jogo aberto e a Tripulação, e ~54 em vez de ~75 só pescando; OD-058).
+
+## TD-042 — Barcos por fragmentos e Passe do Pescador: sorteio na mesma tentativa, estado mínimo no save e Dólares antigos marcados na migração
+
+**Origem.** M24-T16 e M24-T17 (A-157 e A-158): os barcos passam a vir de fragmentos que caem pescando (1 barco por
+mapa) e entra o Passe do Pescador, com marcos a cada 10 níveis e Dólares que antes vinham sozinhos (A-111).
+
+**Decisão.**
+- **Fragmentos no `equipment.json`, por barco.** Cada barco (menos o inicial) tem `map_id`, `fragments_required` e
+  `fragment_drop_chance`; `GameConfig.TryGetBoatForMap` acha o barco de um mapa. O validador pede um mapa que exista,
+  um barco por mapa e o barco inicial sem mapa. `cost_coins` / `cost_shells` saíram dos barcos e `IGearService.BuyBoat`
+  saiu da interface (com o erro `BoatAlreadyOwned`): não existe mais caminho para comprar barco.
+- **Sorteio na mesma tentativa, depois da captura.** `Shop/BoatFragmentRules.RollOnCatch` usa o `Rng` do ciclo
+  (`Rng.For(seed, sessão, ciclo)`) depois que `CatchRules.Attempt` já usou o dele: a captura é a mesma de antes, o
+  ciclo continua idempotente e o mesmo seed dá os mesmos fragmentos. Só peixe puxado sorteia; a pesca offline sorteia
+  quando `boat_fragments.drop_on_offline_fishing` é verdadeiro; o peixe achado em Expedição (`AddFoundCatch`) e o dado
+  pelas ferramentas de teste não passam por `Attempt` e não sorteiam.
+- **Montar é automático** (`BoatFragmentRules.Add`): com `fragments_required` o barco entra em `OwnedBoatIds` (Nv.1,
+  ausente em `BoatLevels`), os fragmentos são gastos e ele vira o barco em uso só se o bônus dele no Nv.1 passar o do
+  barco em uso no nível atual. O `GameSession` monta ao carregar o que já tem fragmentos suficientes (um config que
+  baixou `fragments_required`). Fragmentos depois de montado continuam somando em `BoatFragments` (extras, OD-060), para
+  qualquer uso que o proprietário decidir valer também para o que já caiu.
+- **Passe em `config/pass.json`** (novo arquivo obrigatório em `GameConfigLoader.RequiredFiles`, validado): `pass_id`,
+  `premium_price_dollars` e a lista de marcos (nível, recompensa `free` e `premium`, cada uma com `coins`, `shells`,
+  `dollars`, `boat_id` e `fragments`). Gerado por `tools/Progressao/passe_fragmentos.py` a partir de uma simulação de
+  referência da economia do M24. Serviço `Pass/LocalPassService` (`IPassService`: `GetPass`, `IsMilestone`, `Claim`,
+  `ClaimAll`, `BuyPremium`).
+- **Save v16**: `BoatFragments` (por barco) e `Pass` (`PassId`, `Premium`, `PremiumBoughtAtMs`, `FreeClaimed`,
+  `PremiumClaimed`, `LegacyDollarsUpToLevel`). Só o que o jogador fez: as recompensas vêm do arquivo, então um ajuste
+  vale para os marcos ainda não resgatados.
+- **Dólares nunca em dobro.** `fisher.dollars_per_levels` saiu do `progression.json` e `FisherLevelRules` não paga mais
+  Dólares ao subir de nível (nem na troca de curva, TD-038). A migração da v15 grava `LegacyDollarsUpToLevel = mín(nível,
+  100)`: a regra antiga (10 a cada 10 níveis até o Nv.100) já tinha pago esses marcos, então o resgate grátis deles não
+  paga os Dólares (paga o resto). O limite 100 é a regra de todas as versões antigas, por isso fica na migração (que não
+  lê o config). Um save ainda na curva antiga é migrado antes da troca de curva: os marcos que ele cruza ao subir nunca
+  foram pagos e pagam no Passe.
+- **Temporadas: só o `pass_id`.** O config e o save guardam o id do passe; nada muda quando ele muda. É o mínimo para a
+  decisão futura (OD-059) não precisar mexer no formato do save.
+
+**Por quê.** O sorteio no mesmo `Rng` do ciclo mantém o princípio da TD-019 (o cliente nunca diz "ganhei X") e não muda
+nenhuma captura de quem já joga. Guardar só ids e listas de níveis segue a TD-039/TD-040. Marcar os Dólares antigos na
+migração atende ao pedido do proprietário (o total até o Nv.100 continua 100) sem precisar saber quanto cada jogador
+recebeu de fato.
+
+**Rever se.** O proprietário decidir os extras (OD-060), as temporadas (OD-059) ou quiser um botão "Montar"; ou se os
+fragmentos do Premium deixarem os barcos fáceis demais (OD-062).

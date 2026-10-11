@@ -153,18 +153,8 @@ namespace FishingIdle.GameService.Config
         public int XpCurveVersion { get; set; }
         public List<XpLevelConfig> XpTable { get; set; }
 
-        /// <summary>Dólares earned by playing (A-111): a few at every level milestone. Null = none.</summary>
-        public DollarsPerLevelsConfig DollarsPerLevels { get; set; }
-    }
-
-    /// <summary>A-111: <see cref="Dollars"/> Dólares each time the Fisher reaches a multiple of <see cref="EveryLevels"/>.</summary>
-    public sealed class DollarsPerLevelsConfig
-    {
-        public int EveryLevels { get; set; }
-        public long Dollars { get; set; }
-
-        /// <summary>Last level that still gives Dólares (A-153: Nv.100 while OD-055 is open); 0 = every milestone.</summary>
-        public int UpToLevel { get; set; }
+        // The Dólares of the level milestones (A-111) moved to the free track of the Passe do Pescador (pass.json,
+        // M24-T17, A-158): the old "dollars_per_levels" block is no longer read.
     }
 
     public sealed class XpLevelConfig
@@ -699,8 +689,17 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>The level curve every boat with levels shares (M24-T13).</summary>
         public BoatLevelsConfig BoatLevels { get; set; }
+
+        /// <summary>How boats come from fragments (M24-T16, A-157). Null = the defaults (offline fishing drops them too).</summary>
+        public BoatFragmentsConfig BoatFragments { get; set; }
         public List<BoatConfig> Boats { get; set; }
         public List<BaitConfig> Baits { get; set; }
+    }
+
+    public sealed class BoatFragmentsConfig
+    {
+        /// <summary>Whether offline fishing (A-034) also drops fragments, at the same chance. Expeditions never do.</summary>
+        public bool DropOnOfflineFishing { get; set; } = true;
     }
 
     public sealed class BoatLevelsConfig
@@ -725,8 +724,16 @@ namespace FishingIdle.GameService.Config
         public bool HasLevels { get; set; }
         public double CatchSuccessBonusAtMaxLevel { get; set; }
         public LevelCostConfig UpgradeCost { get; set; }
-        public long CostCoins { get; set; }
-        public long CostShells { get; set; }
+
+        /// <summary>
+        /// The map whose catches drop this boat's fragments (M24-T16, A-157); null for the starter boat. Boats are not
+        /// sold: <see cref="FragmentsRequired"/> fragments assemble one.
+        /// </summary>
+        public string MapId { get; set; }
+        public int FragmentsRequired { get; set; }
+
+        /// <summary>Chance that a fish pulled out on <see cref="MapId"/> drops 1 fragment of this boat (0 to 1).</summary>
+        public double FragmentDropChance { get; set; }
     }
 
     public sealed class BaitConfig
@@ -896,5 +903,43 @@ namespace FishingIdle.GameService.Config
         public const string FishingCoins = "fishing_coins";
 
         public static readonly IReadOnlyList<string> All = new[] { CrewCoins, FishSale, CrewOfflineHours, CrewXp, FishingCoins };
+    }
+
+    // ---------------------------------------------------------------- pass.json
+
+    /// <summary>
+    /// The Passe do Pescador (M24-T17, A-158): one permanent pass with a milestone every few Fisher levels, each with a
+    /// free and a premium reward. The premium is bought once with Dólares.
+    /// </summary>
+    public sealed class PassConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+
+        /// <summary>Which pass the save's progress belongs to. Seasons are the owner's call (OD-059); today there is one.</summary>
+        public string PassId { get; set; }
+        public long PremiumPriceDollars { get; set; }
+
+        /// <summary>In ascending level order.</summary>
+        public List<PassMilestoneConfig> Milestones { get; set; }
+    }
+
+    public sealed class PassMilestoneConfig
+    {
+        /// <summary>The Fisher level that reaches it.</summary>
+        public int Level { get; set; }
+        public PassRewardConfig Free { get; set; }
+        public PassRewardConfig Premium { get; set; }
+    }
+
+    /// <summary>One reward: any of Moedas, Conchas, Dólares and fragments of one boat (zero = none of that).</summary>
+    public sealed class PassRewardConfig
+    {
+        public long Coins { get; set; }
+        public long Shells { get; set; }
+        public long Dollars { get; set; }
+
+        /// <summary>The boat whose fragments it gives (equipment.json), or null.</summary>
+        public string BoatId { get; set; }
+        public int Fragments { get; set; }
     }
 }

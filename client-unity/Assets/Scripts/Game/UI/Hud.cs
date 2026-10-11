@@ -33,8 +33,9 @@ namespace FishingIdle.Game.UI
         private const float NavButtonHeight = 52f;  // the old menu buttons were 40
         private const float NavSpacing = 8f;
 
-        // Bell and options at the right of the bar: 20 margin + 56 + 8 + 56.
-        private const float TopRightExtent = 140f;
+        // Passe do Pescador, bell and options at the right of the bar: 20 margin + 56 + 8 + 56 + 8 + 56 (the pass button
+        // since M24-T17, A-158).
+        private const float TopRightExtent = 204f;
 
         // The player card on the right, under the bar.
         private const float CardWidth = 360f;
@@ -58,6 +59,7 @@ namespace FishingIdle.Game.UI
         private MarketWindow _market;
         private RankingWindow _ranking;
         private CrewWindow _crew;
+        private PassWindow _pass;
         private bool _cardExpanded = true;
         private bool _showNotifications;
         private bool _showSettings;
@@ -104,6 +106,7 @@ namespace FishingIdle.Game.UI
             _market = new MarketWindow(_root);
             _ranking = new RankingWindow(_root);
             _crew = new CrewWindow(_root);
+            _pass = new PassWindow(_root);
             _root.CatchesArrived += OnCatchesArrived;
             _root.MapArrived += OnMapArrived;
         }
@@ -166,9 +169,24 @@ namespace FishingIdle.Game.UI
                 _root.Toasts.Push(GameTexts.Toasts.Shells(Format.Number(update.ShellsGained)), ToastKind.Info);
             }
 
-            if (update.DollarsGained > 0)
+            _root.PushPassMilestones(update.LevelsReached);
+
+            // Boat fragments (M24-T16, A-157): a small notice per fragment; a big one when a boat is assembled.
+            foreach (var fragment in update.Fragments)
             {
-                _root.Toasts.Push(GameTexts.Toasts.Dollars(Format.Number(update.DollarsGained)), ToastKind.Important);
+                if (fragment.Assembled)
+                {
+                    _root.Toasts.Push(GameTexts.Gear.BoatAssembledToast(fragment.BoatName), ToastKind.Important, notify: true);
+                    _root.Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, fragment.BoatName, VisualTheme.Current.Reward);
+                }
+                else if (fragment.Owned)
+                {
+                    _root.Toasts.Push(GameTexts.Gear.FragmentExtraToast(fragment.BoatName), ToastKind.Info);
+                }
+                else
+                {
+                    _root.Toasts.Push(GameTexts.Gear.FragmentToast(fragment.BoatName, Format.Number(fragment.Have), Format.Number(fragment.Required)), ToastKind.Info);
+                }
             }
 
             // Escapes (docs/SISTEMA_SUCESSO_PESCA.md): a common one is told only near the bobber; a
@@ -287,6 +305,11 @@ namespace FishingIdle.Game.UI
                 {
                     Event.current.Use();
                 }
+                else if (_pass.IsOpen)
+                {
+                    _pass.Close();
+                    Event.current.Use();
+                }
                 else if (_arena.IsOpen)
                 {
                     _arena.Close();
@@ -342,7 +365,7 @@ namespace FishingIdle.Game.UI
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
             var welcomeDialog = _root.Tutorial != null && _root.Tutorial.Active && _root.Tutorial.Step == TutorialSteps.Welcome;
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _crew.IsOpen || WelcomeBackPending || welcomeDialog;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _crew.IsOpen || _pass.IsOpen || WelcomeBackPending || welcomeDialog;
             _root.WindowOpen = windowOpen;
             GUI.enabled = !windowOpen;
             DrawTopBar(skin);
@@ -375,6 +398,7 @@ namespace FishingIdle.Game.UI
             _market.Draw(skin, _width, _height);
             _ranking.Draw(skin, _width, _height);
             _crew.Draw(skin, _width, _height);
+            _pass.Draw(skin, _width, _height);
             // The "Como funciona" balloon of a window header, over the window body (A-148).
             WindowFrame.DrawInfoBalloon(skin, AnyWindowDialog());
             GUI.color = previousColor;
@@ -508,6 +532,29 @@ namespace FishingIdle.Game.UI
                 var count = _root.Toasts.Unread > 9 ? "9+" : _root.Toasts.Unread.ToString();
                 var dot = new Rect(bell.xMax - 21, bell.y + 1, 20, 20);
                 GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Danger, 0, 10);
+                GUI.Label(dot, count, skin.PillText);
+            }
+
+            // Passe do Pescador (M24-T17, A-158): an icon button left of the bell, so the nine main menus keep their room;
+            // a gold dot counts the rewards ready to claim.
+            var pass = new Rect(bell.x - 8f - 56f, NavButtonY, 56f, NavButtonHeight);
+            if (skin.NavGameButton(pass, PassWindow.NavIcon, null, _pass.IsOpen))
+            {
+                CloseAllWindows();
+                _pass.Open();
+            }
+
+            if (GUI.enabled && pass.Contains(Event.current.mousePosition))
+            {
+                GUI.Label(new Rect(pass.x - 60f, pass.yMax + 2f, pass.width + 120f, UiSkin.SmallLine), GameTexts.Pass.ButtonTip, skin.SmallMutedCenter);
+            }
+
+            var ready = _root.Pass?.ClaimableCount ?? 0;
+            if (ready > 0)
+            {
+                var count = ready > 9 ? "9+" : ready.ToString();
+                var dot = new Rect(pass.xMax - 21, pass.y + 1, 20, 20);
+                GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Gold, 0, 10);
                 GUI.Label(dot, count, skin.PillText);
             }
         }
@@ -783,6 +830,7 @@ namespace FishingIdle.Game.UI
             CloseFully(() => _market.IsOpen, _market.Close);
             CloseFully(() => _ranking.IsOpen, _ranking.Close);
             CloseFully(() => _crew.IsOpen, _crew.Close);
+            CloseFully(() => _pass.IsOpen, _pass.Close);
 
             // A panel left open would sit on top of the window and catch its clicks.
             _showNotifications = false;

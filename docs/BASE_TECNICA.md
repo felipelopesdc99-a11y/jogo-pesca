@@ -108,7 +108,8 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `ICardumeService` | `LocalCardumeService` | Posições 1–6, bônus 6/6, Força privada |
 | `IMapService` | `LocalMapService` | Mapas, requisitos, viagem de 30s (pausa e retoma a pesca) |
 | `IShopService` | `LocalShopService` | Loja: varas à venda e compra; a oferta mostra o nível da sua vara, os bônus agora e o preço do próximo nível (melhorar continua em `IProfileService.UpgradeRod`) |
-| `IGearService` | `LocalGearService` | Barcos e iscas: comprar, usar, guardar; melhorar o nível do barco (`UpgradeBoat`, M24-T13); equipamento em uso e chance de puxar por raridade |
+| `IGearService` | `LocalGearService` | Barcos e iscas: iscas compradas, usar, guardar; barcos só usar e melhorar o nível (`UpgradeBoat`, M24-T13) — desde o M24-T16 eles vêm de fragmentos (`BoatFragmentRules`, TD-042) e a oferta mostra mapa, fragmentos e chance; equipamento em uso e chance de puxar por raridade |
+| `IPassService` | `LocalPassService` | Passe do Pescador (M24-T17, A-158, TD-042): marcos de `pass.json`, resgatar um ou todos, comprar o Premium com Dólares (libera os marcos já passados); `IsMilestone` para o aviso de nível |
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
 | `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
 | `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
@@ -193,9 +194,10 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 - O jogo carrega todos os arquivos de `GameConfigLoader.RequiredFiles`: `fish_catalog`, `maps`,
   `progression`, `rods`, `economy`, `arena`, `expeditions`, `arena_bots` (adversários simulados do
   MVP local), `market_bots` (vendedores e compradores simulados do Mercado), `equipment` (barcos e
-  iscas, desde a V0.2), `crew` (a Tripulação, desde o M24) e `upgrades` (as Melhorias, desde o M24). O Painel de
-  Desenvolvimento usa a mesma lista (o `crew.json` e o `upgrades.json` ainda não têm seção própria no Painel de
-  Balanceamento: edita-se à mão e o jogo valida ao abrir).
+  iscas, desde a V0.2), `crew` (a Tripulação, desde o M24), `upgrades` (as Melhorias, desde o M24) e `pass` (o
+  Passe do Pescador, M24-T17). O Painel de Desenvolvimento usa a mesma lista (o `crew.json`, o `upgrades.json` e o
+  `pass.json` ainda não têm seção própria no Painel de Balanceamento: edita-se à mão, ou se gera de novo com o script,
+  e o jogo valida ao abrir). Os barcos (fragmentos e chance) aparecem na aba Sucesso da pesca.
 - `GameConfigLoader.LoadFromTexts` é usado tanto pelo jogo quanto pelo Painel de Desenvolvimento:
   o painel só grava se a mesma validação que o jogo usa passar.
 - `GameConfig.Version` é uma impressão digital curta do conteúdo. Mesmos arquivos, mesma versão.
@@ -246,7 +248,10 @@ antigos entram com o Barco Inicial e sem isca; v11 adiciona os Dólares (`Dollar
 id, cursor `LastCreditedAtMs`, frações guardadas e total rendido; saves antigos entram com ela vazia e o cursor é
 posto em "agora" ao carregar); v14 adiciona as Melhorias (`UpgradesState.Levels`: nível por id; saves antigos entram
 sem nenhuma); v15 adiciona o nível dos barcos (`BoatLevels`: nível por id de barco, ausente = Nv.1) e as curvas de nível
-de varas e peixes (`RodLevelCurveVersion`, `FishLevelCurveVersion`; saves antigos entram com 1, a curva Nv.1–Nv.10).
+de varas e peixes (`RodLevelCurveVersion`, `FishLevelCurveVersion`; saves antigos entram com 1, a curva Nv.1–Nv.10);
+v16 adiciona os fragmentos de barco (`BoatFragments`, por id de barco; começam vazios, os barcos comprados continuam) e
+o Passe do Pescador (`PassState`: id do passe, Premium, marcos resgatados grátis e Premium e `LegacyDollarsUpToLevel`,
+o nível até onde os Dólares do A-111 já foram pagos: mín(nível, 100) na migração).
 Cada passo está em `SaveMigrations.Upgrade`.
 - Troca de curva de nível de varas e peixes (TD-041): ao carregar, depois da curva do Pescador, o `GameSession` chama
   `LevelCurveMigration.MoveToCurrentCurves`. Um save na curva 1 tem cada vara (Inventário e Mercado) levada ao nível
@@ -259,6 +264,14 @@ Cada passo está em `SaveMigrations.Upgrade`.
   BoatUpgradeCost / BoatUpgradeShellCost`), chama `Sync` da pesca antes (os ciclos já completos ficam no nível antigo)
   e grava `BoatLevels`. O bônus em uso vem de `GearRules.BoatBonus` (nível do save), usado pela pesca
   (`SpendAttempt`), pela tela (`GetGear`) e pelo `CatchSimulator` (parâmetro `boatLevel`).
+- Barcos por fragmentos (TD-042): na pesca, depois de cada peixe puxado, `BoatFragmentRules.RollOnCatch` sorteia
+  com o `Rng` do mesmo ciclo o fragmento do barco do mapa (`GameConfig.TryGetBoatForMap`); a pesca offline também, se
+  `boat_fragments.drop_on_offline_fishing`. `BoatFragmentRules.Add` (usado também pelo Passe e pelos testes) soma e
+  monta o barco ao chegar em `fragments_required`. O `FishingUpdate.Fragments` leva cada fragmento para a tela e para
+  o "Bem-vindo de volta".
+- Passe do Pescador (TD-042): `LocalPassService` lê os marcos de `pass.json` e grava só o que foi resgatado. Resgatar
+  chama `Sync` da pesca antes (os fragmentos podem trocar o barco em uso). Subir de nível não paga nada sozinho
+  (`FisherLevelRules.AddXp` só soma XP e níveis); os Dólares do A-111 estão na faixa grátis.
 - Tripulação (TD-039): `LocalCrewService.Sync` paga a renda de `LastCreditedAtMs` até agora (relógio da sessão, que
   nunca volta) e move o cursor; um intervalo maior que `online_gap_seconds` conta como offline (100% e depois a taxa
   reduzida até o teto) e vira `CrewOfflineReport`. Só a renda grava o save no máximo a cada 30 s; contratar e fechar
@@ -431,7 +444,7 @@ Cada passo está em `SaveMigrations.Upgrade`.
   última captura. É só apresentação; o serviço pesca igual. No Editor o tamanho da janela não muda.
 - **Transição de menus:** a janela que abre faz um fade (0,18 s por padrão, `window_fade_seconds` no tema).
 - **Tripulação na tela** (M24-T08, A-154): `GameRoot` chama `Crew.Sync` a cada 1 s (`SyncCrew`: avisos de nível
-  e Dólares como na pesca) e soma o que entrou em `CrewCoinsCredited`; o `Hud` usa esse número para contar a renda
+  e dos marcos do Passe como na pesca) e soma o que entrou em `CrewCoinsCredited`; o `Hud` usa esse número para contar a renda
   na carteira sem o pulo e sem o "+N" a cada segundo, e mostra `CrewCoinsPerSecond` como "+X/s" no cartão. A janela
   `UI/CrewWindow` pede `GetCrew(modo)` a cada 0,25 s e contrata por `GameRoot.HireCrew`; o botão do menu fica logo
   depois de Pesca (posições dos botões nas constantes `Hud.Nav*`, usadas também pelo tutorial). O
@@ -440,6 +453,14 @@ Cada passo está em `SaveMigrations.Upgrade`.
 - **Melhorias na tela** (M24-T11, A-155): a `CrewWindow` tem as abas "Tripulação | Melhorias" (chips); a aba
   Melhorias é desenhada por `UI/UpgradesPanel`, que pede `GameRoot.GetUpgrades()` a cada 0,25 s e compra por
   `GameRoot.BuyUpgrade`. O "i" da janela mostra o texto da aba aberta.
+- **Passe do Pescador na tela** (M24-T17, A-158): botão só com ícone na barra de cima, à esquerda do sino
+  (`Hud.TopRightExtent` passou a 204), com o ponto dourado de `GameRoot.Pass.ClaimableCount`. A janela `UI/PassWindow`
+  pede `Game.Pass.GetPass()` a cada 0,5 s, desenha só as colunas visíveis da trilha (100 marcos) e manda os pedidos por
+  `GameRoot.ClaimPass`, `ClaimAllPass` e `BuyPassPremium` (que mostram os avisos e a comemoração de barco montado).
+  `GameRoot.PushPassMilestones` avisa os marcos alcançados (pesca e Tripulação).
+- **Fragmentos na tela** (M24-T16, A-157): o `Hud` avisa cada fragmento de `FishingUpdate.Fragments` e comemora o barco
+  montado; a `ShopWindow` mostra "12/20" na etiqueta e "Fragmentos 12/20 · Caem no mapa …" com a barra na ficha (sem
+  Comprar); o `WelcomeBackDialog` soma os fragmentos da pesca offline.
 
 ## 7. Painel de Desenvolvimento (Editor)
 

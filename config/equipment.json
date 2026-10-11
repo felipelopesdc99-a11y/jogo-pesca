@@ -2,11 +2,15 @@
   "config_file": "equipment.json",
   "config_schema_version": 1,
   "balance_status": "provisional",
-  "description": "Barcos e iscas (docs/SISTEMA_SUCESSO_PESCA.md). Os dois só aumentam a Chance de Sucesso da Captura, somando pontos percentuais à chance-base da raridade (progression.json → rarity.tiers → catch_success_base) e aos da vara (rods.json → catch_success). Desde 10/10/2026 (M24-T09, A-153) barcos e iscas não têm nível mínimo para comprar: basta ter as Moedas e as Conchas. Todos os números são provisórios.",
+  "description": "Barcos e iscas (docs/SISTEMA_SUCESSO_PESCA.md). Os dois só aumentam a Chance de Sucesso da Captura, somando pontos percentuais à chance-base da raridade (progression.json → rarity.tiers → catch_success_base) e aos da vara (rods.json → catch_success). Desde 11/10/2026 (M24-T16, A-157) os barcos não são vendidos: cada barco é ligado a um mapa (map_id) e é montado com fragmentos que caem pescando naquele mapa. Iscas continuam na Loja, sem nível mínimo (M24-T09, A-153). Todos os números são provisórios.",
   "boat_levels": {
     "max_level": 100,
     "bonus_curve_exponent": 1.2,
     "note": "Desde 10/10/2026 (M24-T13, A-156) cada barco comprado tem nível, do 1 ao max_level. catch_success_bonus é o bônus no Nv.1 (o de antes) e catch_success_bonus_at_max_level o do nível máximo (~3×); o bônus no nível N é Nv.1 + (máx − Nv.1) × ((N − 1) ÷ (max_level − 1)) ^ bonus_curve_exponent. Melhorar de N para N + 1 custa coins_first × coins_growth ^ (N − 1) Moedas e shells_first × shells_growth ^ (N − 1) Conchas, arredondados como as varas. O barco inicial não tem nível (has_levels false): o bônus dele é 0. Números gerados por tools/Progressao/niveis_100.py."
+  },
+  "boat_fragments": {
+    "drop_on_offline_fishing": true,
+    "note": "Barcos por fragmentos (M24-T16, A-157). Cada peixe pescado (puxado, não o que escapa) no mapa do barco (map_id) tem fragment_drop_chance de dar 1 fragmento daquele barco, sorteado com o Rng do serviço na mesma tentativa. Com fragments_required fragmentos o barco é montado sozinho (entra no Nv.1) e, se for melhor que o barco em uso, passa a ser usado. drop_on_offline_fishing: a pesca offline (A-034) também dá fragmentos, com a mesma chance; Expedições não dão. Depois de montado, os fragmentos daquele barco continuam caindo e ficam guardados como extras (o que fazer com eles é o OD-060). O Passe do Pescador (pass.json) também dá fragmentos. fragments_required e fragment_drop_chance gerados por tools/Progressao/passe_fragmentos.py gerar."
   },
   "boats": [
     {
@@ -16,20 +20,19 @@
       "tier": 0,
       "catch_success_bonus": 0.0,
       "has_levels": false,
-      "cost_coins": 0,
-      "cost_shells": 0,
-      "note": "Todo jogador já tem."
+      "note": "Todo jogador já tem. Não é de nenhum mapa e não tem nível."
     },
     {
       "id": "boat_01",
       "display_name": "Remo Valente",
       "description": "Mais firme e confiável para jornadas maiores.",
       "tier": 1,
+      "map_id": "map_01",
+      "fragments_required": 20,
+      "fragment_drop_chance": 0.013,
       "catch_success_bonus": 0.02,
       "has_levels": true,
       "catch_success_bonus_at_max_level": 0.06,
-      "cost_coins": 12000,
-      "cost_shells": 5,
       "upgrade_cost": {
         "coins_first": 600,
         "coins_growth": 1.14,
@@ -42,11 +45,12 @@
       "display_name": "Rastro Azul",
       "description": "Seu primeiro motor muda a forma de explorar as águas.",
       "tier": 2,
+      "map_id": "map_02",
+      "fragments_required": 25,
+      "fragment_drop_chance": 0.013,
       "catch_success_bonus": 0.04,
       "has_levels": true,
       "catch_success_bonus_at_max_level": 0.12,
-      "cost_coins": 45000,
-      "cost_shells": 15,
       "upgrade_cost": {
         "coins_first": 2250,
         "coins_growth": 1.14,
@@ -59,11 +63,12 @@
       "display_name": "Proa Selvagem",
       "description": "Feito para pescadores que já enfrentam peixes de verdade.",
       "tier": 3,
+      "map_id": "map_03",
+      "fragments_required": 35,
+      "fragment_drop_chance": 0.015,
       "catch_success_bonus": 0.06,
       "has_levels": true,
       "catch_success_bonus_at_max_level": 0.18,
-      "cost_coins": 160000,
-      "cost_shells": 25,
       "upgrade_cost": {
         "coins_first": 8000,
         "coins_growth": 1.14,
@@ -76,11 +81,12 @@
       "display_name": "Costa Nobre",
       "description": "Conforto e estabilidade para águas mais exigentes.",
       "tier": 4,
+      "map_id": "map_04",
+      "fragments_required": 45,
+      "fragment_drop_chance": 0.015,
       "catch_success_bonus": 0.08,
       "has_levels": true,
       "catch_success_bonus_at_max_level": 0.24,
-      "cost_coins": 600000,
-      "cost_shells": 120,
       "upgrade_cost": {
         "coins_first": 30000,
         "coins_growth": 1.14,
@@ -93,17 +99,113 @@
       "display_name": "Horizonte Dourado",
       "description": "O auge da pesca esportiva. Potência, controle e presença.",
       "tier": 5,
+      "map_id": "map_05",
+      "fragments_required": 55,
+      "fragment_drop_chance": 0.016,
       "catch_success_bonus": 0.1,
       "has_levels": true,
       "catch_success_bonus_at_max_level": 0.3,
-      "cost_coins": 2500000,
-      "cost_shells": 500,
       "upgrade_cost": {
         "coins_first": 125000,
         "coins_growth": 1.14,
         "shells_first": 25,
         "shells_growth": 1.03
       }
+    },
+    {
+      "id": "boat_06",
+      "display_name": "Vela do Sol",
+      "description": "Leve e veloz, feita para cruzar entre as ilhas.",
+      "tier": 6,
+      "map_id": "map_06",
+      "fragments_required": 70,
+      "fragment_drop_chance": 0.017,
+      "catch_success_bonus": 0.12,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.36,
+      "upgrade_cost": {
+        "coins_first": 375000,
+        "coins_growth": 1.14,
+        "shells_first": 40,
+        "shells_growth": 1.03
+      },
+      "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
+    },
+    {
+      "id": "boat_07",
+      "display_name": "Quilha Azul",
+      "description": "Corta a corrente forte sem perder o rumo.",
+      "tier": 7,
+      "map_id": "map_07",
+      "fragments_required": 90,
+      "fragment_drop_chance": 0.019,
+      "catch_success_bonus": 0.14,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.42,
+      "upgrade_cost": {
+        "coins_first": 1130000,
+        "coins_growth": 1.14,
+        "shells_first": 60,
+        "shells_growth": 1.03
+      },
+      "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
+    },
+    {
+      "id": "boat_08",
+      "display_name": "Canto da Baleia",
+      "description": "Grande e calma, navega entre os gigantes do mar.",
+      "tier": 8,
+      "map_id": "map_08",
+      "fragments_required": 120,
+      "fragment_drop_chance": 0.02,
+      "catch_success_bonus": 0.16,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.48,
+      "upgrade_cost": {
+        "coins_first": 3380000,
+        "coins_growth": 1.14,
+        "shells_first": 90,
+        "shells_growth": 1.03
+      },
+      "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
+    },
+    {
+      "id": "boat_09",
+      "display_name": "Farol Noturno",
+      "description": "Luzes fortes para pescar na borda escura do talude.",
+      "tier": 9,
+      "map_id": "map_09",
+      "fragments_required": 155,
+      "fragment_drop_chance": 0.023,
+      "catch_success_bonus": 0.18,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.54,
+      "upgrade_cost": {
+        "coins_first": 10100000,
+        "coins_growth": 1.14,
+        "shells_first": 135,
+        "shells_growth": 1.03
+      },
+      "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
+    },
+    {
+      "id": "boat_10",
+      "display_name": "Titã do Atlântico",
+      "description": "O maior de todos, pronto para o mar aberto e profundo.",
+      "tier": 10,
+      "map_id": "map_10",
+      "fragments_required": 200,
+      "fragment_drop_chance": 0.024,
+      "catch_success_bonus": 0.2,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.6,
+      "upgrade_cost": {
+        "coins_first": 30400000,
+        "coins_growth": 1.14,
+        "shells_first": 200,
+        "shells_growth": 1.03
+      },
+      "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
     }
   ],
   "baits_note": "Cada compra é um pacote de cargas; cada tentativa de pesca (online ou offline) gasta 1 carga da isca em uso, pegando o peixe ou não. Quando as cargas acabam, a pesca continua sem isca.",

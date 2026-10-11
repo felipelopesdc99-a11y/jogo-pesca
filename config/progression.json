@@ -21,12 +21,7 @@
       "exponent": 1.5,
       "note": "Formato dos níveis 1 a 9 (mais rápido que o original, para o Nv.10 chegar em ~1 h). A tabela abaixo é a que vale; ela é gerada por tools/Progressao/calibrar_xp.py --gravar."
     },
-    "dollars_per_levels": {
-      "note": "A-111 (decisão do proprietário, 07/10/2026): dá para juntar Dólares jogando, bem devagar. A cada 10 níveis de Pescador o jogador ganha 10 Dólares: 100 Dólares (um VIP) ao chegar no Nv.100. Com o Nv.1000 (A-153), a recompensa continua só até o Nv.100 (up_to_level); o que acontece depois é decisão pendente do proprietário (OD-055).",
-      "every_levels": 10,
-      "dollars": 10,
-      "up_to_level": 100
-    },
+    "dollars_per_levels_note": "Os 10 Dólares a cada 10 níveis até o Nv.100 (A-111) passaram para a faixa grátis do Passe do Pescador em 11/10/2026 (config/pass.json, M24-T17, A-158): subir de nível não paga Dólares sozinho; o jogador resgata no Passe. Depois do Nv.100 os Dólares também vêm do Passe (OD-055 resolvido).",
     "xp_table": [
       {
         "level": 1,

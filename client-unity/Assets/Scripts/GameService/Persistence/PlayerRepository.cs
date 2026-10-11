@@ -272,6 +272,9 @@ namespace FishingIdle.GameService.Persistence
     /// <summary>Upgrades older save formats in place. Each future format change adds one step here.</summary>
     internal static class SaveMigrations
     {
+        /// <summary>The last level whose milestone paid Dólares under the old rule (A-111 / A-153, before save version 16).</summary>
+        internal const int LegacyDollarLevelCap = 100;
+
         public static void Upgrade(PlayerSave save)
         {
             if (save.SaveVersion == 1)
@@ -408,8 +411,24 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 15;
             }
 
+            if (save.SaveVersion == 15)
+            {
+                // v16: boats by fragments and the Passe do Pescador (M24-T16/T17). Boats already bought stay, with their
+                // levels; fragments start at 0. The level milestones already reached had paid their Dólares (A-111: 10
+                // every 10 levels up to Nv.100, the rule of every older version): those milestones are claimable in the
+                // pass without the Dólares. A save still on the old XP curve moves to the new one after this (GameSession);
+                // the milestones it crosses then were never paid and pay their Dólares in the pass.
+                save.BoatFragments = new Dictionary<string, long>();
+                save.Pass = new PassState { LegacyDollarsUpToLevel = Math.Max(0, Math.Min(LegacyDollarLevelCap, save.FisherLevel)) };
+                save.SaveVersion = 16;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BoatLevels = save.BoatLevels ?? new Dictionary<string, int>();
+            save.BoatFragments = save.BoatFragments ?? new Dictionary<string, long>();
+            save.Pass = save.Pass ?? new PassState();
+            save.Pass.FreeClaimed = save.Pass.FreeClaimed ?? new List<int>();
+            save.Pass.PremiumClaimed = save.Pass.PremiumClaimed ?? new List<int>();
             save.BaitCharges = save.BaitCharges ?? new Dictionary<string, int>();
 
             save.Tutorial = save.Tutorial ?? new TutorialState { Completed = true, Step = "done" };
@@ -552,6 +571,9 @@ namespace FishingIdle.GameService.Persistence
                 if (double.IsNaN(save.Crew.CoinsCarry) || double.IsNaN(save.Crew.XpCarry)) problems.Add("crew carry is not a number");
             }
             if (save.BoatLevels != null && save.BoatLevels.Any(b => string.IsNullOrWhiteSpace(b.Key) || b.Value < 1)) problems.Add("boat levels malformed");
+            if (save.BoatFragments != null && save.BoatFragments.Any(b => string.IsNullOrWhiteSpace(b.Key) || b.Value < 0)) problems.Add("boat fragments malformed");
+            if (save.Pass == null || save.Pass.FreeClaimed == null || save.Pass.PremiumClaimed == null) problems.Add("pass missing");
+            else if (save.Pass.LegacyDollarsUpToLevel < 0 || save.Pass.PremiumBoughtAtMs < 0) problems.Add("pass negative values");
             if (save.Upgrades == null || save.Upgrades.Levels == null) problems.Add("upgrades missing");
             else if (save.Upgrades.Levels.Any(u => string.IsNullOrWhiteSpace(u.Key) || u.Value < 0)) problems.Add("upgrades have malformed levels");
 

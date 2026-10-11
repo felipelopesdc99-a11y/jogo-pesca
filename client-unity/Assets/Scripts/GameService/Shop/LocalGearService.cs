@@ -17,13 +17,18 @@ namespace FishingIdle.GameService.Shop
 
         /// <summary>The bonus now: at the boat's level when owned, at Nv.1 otherwise.</summary>
         public double Bonus { get; internal set; }
-        public long CostCoins { get; internal set; }
-        public long CostShells { get; internal set; }
         public bool Owned { get; internal set; }
         public bool InUse { get; internal set; }
 
-        /// <summary>Why buying is refused right now; None when it is possible.</summary>
-        public ServiceError BuyBlocker { get; internal set; }
+        /// <summary>
+        /// Boats are not sold (M24-T16, A-157): the map whose catches drop this boat's fragments (null for the starter
+        /// boat), the fragments the player has (extras once owned), how many assemble it and the chance per fish.
+        /// </summary>
+        public string MapId { get; internal set; }
+        public string MapName { get; internal set; }
+        public long Fragments { get; internal set; }
+        public int FragmentsRequired { get; internal set; }
+        public double FragmentChance { get; internal set; }
 
         /// <summary>Whether the boat levels up (M24-T13); the starter boat does not.</summary>
         public bool HasLevels { get; internal set; }
@@ -100,13 +105,13 @@ namespace FishingIdle.GameService.Shop
         public List<BaitOfferView> Baits { get; } = new List<BaitOfferView>();
     }
 
-    /// <summary>Boats and baits (docs/SISTEMA_SUCESSO_PESCA.md): bought with Coins and Shells, they raise the Catch Success.</summary>
+    /// <summary>
+    /// Boats and baits (docs/SISTEMA_SUCESSO_PESCA.md): they raise the Catch Success. Baits are bought with Coins and
+    /// Shells; boats are assembled from fragments (M24-T16, A-157, BoatFragmentRules) and only levelled up here.
+    /// </summary>
     public interface IGearService
     {
         GearView GetGear();
-
-        /// <summary>Buys a boat and starts using it.</summary>
-        ServiceResult<GearView> BuyBoat(string boatId);
 
         /// <summary>Switches to a boat already owned.</summary>
         ServiceResult<GearView> UseBoat(string boatId);
@@ -180,6 +185,7 @@ namespace FishingIdle.GameService.Shop
                 var owned = OwnsBoat(b);
                 var level = owned ? GearRules.BoatLevel(config, save, b) : 1;
                 var max = config.BoatMaxLevel(b);
+                var boatMap = config.TryGetMap(b.MapId, out var m) ? m : null;
                 view.Boats.Add(new BoatOfferView
                 {
                     BoatId = b.Id,
@@ -187,11 +193,13 @@ namespace FishingIdle.GameService.Shop
                     Description = b.Description,
                     Tier = b.Tier,
                     Bonus = config.BoatBonusAt(b, level),
-                    CostCoins = b.CostCoins,
-                    CostShells = b.CostShells,
                     Owned = owned,
                     InUse = b.Id == boat.Id,
-                    BuyBlocker = BoatBlocker(b),
+                    MapId = boatMap?.Id,
+                    MapName = boatMap?.DisplayName,
+                    Fragments = BoatFragmentRules.Have(save, b.Id),
+                    FragmentsRequired = b.FragmentsRequired,
+                    FragmentChance = b.FragmentDropChance,
                     HasLevels = b.HasLevels,
                     Level = level,
                     MaxLevel = max,
@@ -223,30 +231,6 @@ namespace FishingIdle.GameService.Shop
             }
 
             return view;
-        }
-
-        public ServiceResult<GearView> BuyBoat(string boatId)
-        {
-            if (!Config.TryGetBoat(boatId, out var boat))
-            {
-                return ServiceResult<GearView>.Fail(ServiceError.BoatNotFound);
-            }
-
-            var blocker = BoatBlocker(boat);
-            if (blocker != ServiceError.None)
-            {
-                return ServiceResult<GearView>.Fail(blocker);
-            }
-
-            // Cycles completed with the old boat are settled before the new one takes over.
-            _fishing.Sync();
-            Save.Coins -= boat.CostCoins;
-            Save.Shells -= boat.CostShells;
-            Save.OwnedBoatIds.Add(boat.Id);
-            Save.BoatId = boat.Id;
-            _session.Persist();
-            _session.Log("Bought boat " + boat.Id + " for " + boat.CostCoins + " coins and " + boat.CostShells + " shells.");
-            return ServiceResult<GearView>.Ok(GetGear());
         }
 
         public ServiceResult<GearView> UseBoat(string boatId)
@@ -342,16 +326,9 @@ namespace FishingIdle.GameService.Shop
             return ServiceResult<GearView>.Ok(GetGear());
         }
 
-        private bool OwnsBoat(BoatConfig boat) => boat.Id == Config.StarterBoat.Id || Save.OwnedBoatIds.Contains(boat.Id);
+        private bool OwnsBoat(BoatConfig boat) => BoatFragmentRules.Owns(Config, Save, boat);
 
-        // Boats and baits have no minimum Fisher level (M24-T09, A-153): only the money (or owning the boat) blocks.
-        private ServiceError BoatBlocker(BoatConfig boat)
-        {
-            if (OwnsBoat(boat)) return ServiceError.BoatAlreadyOwned;
-            if (Save.Coins < boat.CostCoins) return ServiceError.NotEnoughCoins;
-            if (Save.Shells < boat.CostShells) return ServiceError.NotEnoughShells;
-            return ServiceError.None;
-        }
+        // Baits have no minimum Fisher level (M24-T09, A-153): only the money blocks.
 
         private ServiceError BoatUpgradeBlocker(BoatConfig boat)
         {

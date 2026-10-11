@@ -122,8 +122,8 @@ namespace FishingIdle.GameService.Fishing
         public long VipXpGained { get; internal set; }
         public long ShellsGained { get; internal set; }
 
-        /// <summary>Dólares earned on level milestones in this update (A-111).</summary>
-        public long DollarsGained { get; internal set; }
+        /// <summary>Boat fragments the catches dropped (M24-T16, A-157), one entry per drop, in order.</summary>
+        public List<Shop.FragmentGainView> Fragments { get; } = new List<Shop.FragmentGainView>();
 
         /// <summary>Fish that bit and escaped (docs/SISTEMA_SUCESSO_PESCA.md): nothing of them was kept.</summary>
         public List<EscapeView> Escapes { get; } = new List<EscapeView>();
@@ -134,7 +134,7 @@ namespace FishingIdle.GameService.Fishing
         /// <summary>The name of the bait whose last charge was used in this update, or null.</summary>
         public string BaitRanOut { get; internal set; }
 
-        public bool HasChanges => NewCatches.Count > 0 || Escapes.Count > 0 || BaitRanOut != null;
+        public bool HasChanges => NewCatches.Count > 0 || Escapes.Count > 0 || BaitRanOut != null || Fragments.Count > 0;
     }
 
     /// <summary>

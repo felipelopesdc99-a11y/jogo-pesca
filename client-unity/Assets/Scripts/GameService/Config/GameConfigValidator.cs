@@ -24,7 +24,8 @@ namespace FishingIdle.GameService.Config
             MarketBotsConfig marketBots,
             EquipmentConfig equipment,
             CrewConfig crew,
-            UpgradesConfig upgrades)
+            UpgradesConfig upgrades,
+            PassConfig pass)
         {
             var errors = new List<string>();
 
@@ -171,17 +172,6 @@ namespace FishingIdle.GameService.Config
                 if (fisher.XpTable.Any(x => x.XpToNextLevel <= 0))
                 {
                     errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fisher.xp_table xp_to_next_level", 1));
-                }
-
-                var dollars = fisher.DollarsPerLevels;
-                if (dollars != null && (dollars.EveryLevels < 1 || dollars.Dollars < 0))
-                {
-                    errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fisher.dollars_per_levels every_levels", 1));
-                }
-
-                if (dollars != null && dollars.UpToLevel < 0)
-                {
-                    errors.Add(V.AtLeast(GameConfigLoader.ProgressionFile, "fisher.dollars_per_levels up_to_level", 0));
                 }
 
                 if (fisher.XpCurveVersion < 0)
@@ -790,11 +780,6 @@ namespace FishingIdle.GameService.Config
                         errors.Add(V.ChanceOutOfRange(GameConfigLoader.EquipmentFile, boat.Id + ".catch_success_bonus"));
                     }
 
-                    if (boat.CostCoins < 0 || boat.CostShells < 0)
-                    {
-                        errors.Add(V.NegativeValue(GameConfigLoader.EquipmentFile, boat.Id + " (custo)"));
-                    }
-
                     if (boat.HasLevels)
                     {
                         // Boat levels (M24-T13): the bonus at the max level stays a chance and never below Nv.1.
@@ -817,11 +802,7 @@ namespace FishingIdle.GameService.Config
                     errors.Add(V.LevelCurveInvalid(GameConfigLoader.EquipmentFile, "boat_levels"));
                 }
 
-                var starter = equipment.Boats.OrderBy(b => b.Tier).First();
-                if (starter.CostCoins != 0 || starter.CostShells != 0)
-                {
-                    errors.Add(V.StarterBoatNotFree(starter.Id));
-                }
+                ValidateBoatFragments(equipment, maps, errors);
             }
 
             if (equipment?.Baits == null)
@@ -857,7 +838,111 @@ namespace FishingIdle.GameService.Config
 
             ValidateCrew(crew, errors);
             ValidateUpgrades(upgrades, crew, errors);
+            ValidatePass(pass, progression, equipment, errors);
             return errors;
+        }
+
+        /// <summary>
+        /// Boats by fragments (M24-T16, A-157): the starter boat belongs to no map; every other boat to one existing map,
+        /// one boat per map, with at least 1 fragment to assemble it and a drop chance between 0 and 1.
+        /// </summary>
+        private static void ValidateBoatFragments(EquipmentConfig equipment, MapsConfig maps, List<string> errors)
+        {
+            const string file = GameConfigLoader.EquipmentFile;
+            var mapIds = new HashSet<string>((maps?.Maps ?? new List<MapConfig>()).Where(m => m != null && m.Id != null).Select(m => m.Id), StringComparer.Ordinal);
+            var starter = equipment.Boats.OrderBy(b => b.Tier).First();
+            var used = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var boat in equipment.Boats)
+            {
+                if (boat == starter)
+                {
+                    if (!string.IsNullOrEmpty(boat.MapId))
+                    {
+                        errors.Add(V.StarterBoatHasMap(boat.Id));
+                    }
+
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(boat.MapId) || !mapIds.Contains(boat.MapId))
+                {
+                    errors.Add(V.BoatMapUnknown(boat.Id, boat.MapId));
+                }
+                else if (!used.Add(boat.MapId))
+                {
+                    errors.Add(V.BoatMapRepeated(boat.MapId));
+                }
+
+                if (boat.FragmentsRequired < 1 || boat.FragmentsRequired > 1000000)
+                {
+                    errors.Add(V.AtLeast(file, boat.Id + ".fragments_required", 1));
+                }
+
+                if (!(boat.FragmentDropChance >= 0) || boat.FragmentDropChance > 1)
+                {
+                    errors.Add(V.ChanceOutOfRange(file, boat.Id + ".fragment_drop_chance"));
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Passe do Pescador (M24-T17, A-158): a price in Dólares, milestones at distinct levels from 1 to the Fisher's
+        /// max level in ascending order, and rewards with nothing negative and fragments only of boats that exist.
+        /// </summary>
+        private static void ValidatePass(PassConfig pass, ProgressionConfig progression, EquipmentConfig equipment, List<string> errors)
+        {
+            const string file = GameConfigLoader.PassFile;
+            if (pass == null || pass.Milestones == null || pass.Milestones.Count == 0)
+            {
+                errors.Add(V.Missing(file, "milestones"));
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(pass.PassId))
+            {
+                errors.Add(V.Missing(file, "pass_id"));
+            }
+
+            if (pass.PremiumPriceDollars < 1)
+            {
+                errors.Add(V.AtLeast(file, "premium_price_dollars", 1));
+            }
+
+            var maxLevel = progression?.Fisher?.MaxLevel ?? 0;
+            var starter = equipment?.Boats != null && equipment.Boats.Count > 0 ? equipment.Boats.OrderBy(b => b.Tier).First().Id : null;
+            var boatIds = new HashSet<string>((equipment?.Boats ?? new List<BoatConfig>()).Where(b => b.Id != null && b.Id != starter).Select(b => b.Id), StringComparer.Ordinal);
+            var previous = 0;
+            foreach (var milestone in pass.Milestones)
+            {
+                if (milestone == null || milestone.Level <= previous || milestone.Level > maxLevel)
+                {
+                    errors.Add(V.PassLevels(maxLevel));
+                    return;
+                }
+
+                previous = milestone.Level;
+                CheckReward(milestone.Free, milestone.Level);
+                CheckReward(milestone.Premium, milestone.Level);
+            }
+
+            void CheckReward(PassRewardConfig reward, int level)
+            {
+                if (reward == null)
+                {
+                    errors.Add(V.Missing(file, "milestones (Nv." + level + ") free / premium"));
+                    return;
+                }
+
+                if (reward.Coins < 0 || reward.Shells < 0 || reward.Dollars < 0 || reward.Fragments < 0)
+                {
+                    errors.Add(V.NegativeValue(file, "milestones (Nv." + level + ")"));
+                }
+
+                if (reward.Fragments > 0 && (reward.BoatId == null || !boatIds.Contains(reward.BoatId)))
+                {
+                    errors.Add(V.PassBoatUnknown(level, reward.BoatId));
+                }
+            }
         }
 
         /// <summary>A level price (M24-T13): something to pay, growth from 1 to 10, and the last level fits a long with room to spare.</summary>

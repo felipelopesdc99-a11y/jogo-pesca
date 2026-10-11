@@ -1318,6 +1318,9 @@ mas vai demorar". Cada vez que o Pescador chega a um nível múltiplo de 10 (Nv.
 volta". Valores em `config/progression.json` → `fisher.dollars_per_levels`. Saves que já passaram desses
 níveis não recebem os Dólares de trás.
 
+**Atualizado em 11/10/2026 (A-158):** esses Dólares passaram para a faixa grátis do Passe do Pescador (os mesmos 10
+a cada 10 níveis até o Nv.100); subir de nível não paga mais nada sozinho, o jogador resgata no Passe.
+
 ### A-112 · Ranking da Arena: pódio e páginas até o top 100
 **Seção do GDD:** 29 · **Situação:** No jogo (não aberto no Unity ainda)
 
@@ -1959,7 +1962,8 @@ Decisão do proprietário em 10/10/2026 (M24-T09 e M24-T03), primeira etapa do A
   Nv.750, 303.000; Nv.999, 408.000. Do Nv.1 ao Nv.1000 são 188.953.530 XP. A tabela sobe sem degraus grandes
   (no máximo ~5% de um nível para o seguinte), menos no Nv.10, quando o jogador vai para o Mapa 2.
 - **Dólares por nível** (A-111): continuam 10 a cada 10 níveis só até o Nv.100 (100 Dólares no total). O que acontece
-  depois do Nv.100 é decisão do proprietário (OD-055).
+  depois do Nv.100 é decisão do proprietário (OD-055). *Resolvido em 11/10/2026: os Dólares ficam no Passe do
+  Pescador (A-158).*
 - **Quem já joga** sobe para o nível que o XP total acumulado alcança na curva nova, ao abrir o jogo pela primeira vez
   depois da mudança. Ninguém perde nível: se a curva nova pedir mais, o jogador fica no nível que tinha. Os marcos de
   Dólares cruzados nessa subida (até o Nv.100) são pagos, como se tivessem sido alcançados pescando. Um jogador que
@@ -2170,7 +2174,8 @@ nível: Moedas e Conchas. Tudo que já existia continua; números em `/config`, 
   de antes em Moedas e um quarto em Conchas). O preço de compra das varas não mudou.
 - **Barcos com nível** (antes cada barco tinha um bônus fixo). Todo barco comprado começa no Nv.1, com o bônus de
   antes, e vai até o Nv.100 com 3× esse bônus, na mesma curva das varas. O **barco inicial (Água Mansa) não tem
-  nível**: o bônus dele é 0. Comprar barco continua igual (sem nível mínimo, A-153). Cada nível custa o anterior ×
+  nível**: o bônus dele é 0. Comprar barco continua igual (sem nível mínimo, A-153; *desde 11/10/2026 os barcos não
+  são mais vendidos, vêm de fragmentos, A-157*). Cada nível custa o anterior ×
   1,14 em Moedas e × 1,03 em Conchas; o 1º custa 5% do preço do barco. Exemplos:
 
   | Barco | Nv.1 | Nv.10 | Nv.30 | Nv.50 | Nv.100 | 1º nível | Do Nv.1 ao 100 |
@@ -2227,3 +2232,123 @@ nível: Moedas e Conchas. Tudo que já existia continua; números em `/config`, 
   quatro bônus e o custo (1º nível e × por nível, em Moedas e Conchas), mais o nível máximo e o expoente da curva; na
   aba Sucesso da pesca, os barcos ganharam bônus máximo e custo de nível; em XP, o bônus do peixe no nível máximo e o
   expoente.
+
+### A-157 · Barcos por fragmentos
+**Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+Decisão do proprietário em 11/10/2026 (M24-T16): "pra conseguir o barco vai ser por fragmentos que têm chance de vir
+na pesca, cada mapa dropa um tipo de fragmento de barco". 1 barco por mapa, 10 barcos (os 5 de antes ficam e entram 5
+novos); o barco **sai da Loja**. Números em `config/equipment.json`, gerados por
+`tools/Progressao/passe_fragmentos.py gerar`, para ajustar jogando.
+
+- **Os 10 barcos.** O barco inicial (Água Mansa) continua de todos, sem mapa e sem nível. Os nomes dos 5 novos são
+  **sugestões** temáticas do mapa (o proprietário pode trocar, OD-061). O bônus continua crescendo 2 pontos por
+  categoria e chega a 3× no Nv.100, na mesma curva de nível (TD-041); o teto de 95% na chance de puxar não muda.
+
+  | Barco | Mapa | Fragmentos | Chance por peixe puxado | Bônus Nv.1 | Bônus Nv.100 |
+  |---|---|---|---|---|---|
+  | Remo Valente | Lago Sereno | 20 | 1,3% | +2% | +6% |
+  | Rastro Azul | Rio Selvagem | 25 | 1,3% | +4% | +12% |
+  | Proa Selvagem | Pantanal Dourado | 35 | 1,5% | +6% | +18% |
+  | Costa Nobre | Estuário das Marés | 45 | 1,5% | +8% | +24% |
+  | Horizonte Dourado | Costa de Coral | 55 | 1,6% | +10% | +30% |
+  | Vela do Sol *(sugestão)* | Arquipélago do Sol | 70 | 1,7% | +12% | +36% |
+  | Quilha Azul *(sugestão)* | Corrente Azul | 90 | 1,9% | +14% | +42% |
+  | Canto da Baleia *(sugestão)* | Banco das Baleias | 120 | 2,0% | +16% | +48% |
+  | Farol Noturno *(sugestão)* | Talude Noturno | 155 | 2,3% | +18% | +54% |
+  | Titã do Atlântico *(sugestão)* | Abismo Atlântico | 200 | 2,4% | +20% | +60% |
+
+  O 1º nível dos barcos novos custa ~3× o do anterior (375 mil, 1,13 mi, 3,38 mi, 10,1 mi e 30,4 mi Moedas; 40, 60,
+  90, 135 e 200 Conchas), com o mesmo crescimento por nível (× 1,14 em Moedas e × 1,03 em Conchas).
+- **Como cai.** Cada peixe **puxado** (não o que escapa) no mapa do barco tem a chance da tabela de dar **1
+  fragmento** daquele barco, sorteado pelo serviço do jogo na mesma tentativa, depois da captura (a captura em si não
+  muda). Vale para a **pesca offline** (A-034) com a mesma chance (`boat_fragments.drop_on_offline_fishing`);
+  **Expedições não dão** fragmentos. Com a Caixa cheia não há captura e nem fragmento.
+- **Montar é automático.** Com todos os fragmentos o barco é montado sozinho (entra no Nv.1) e, se for melhor que o
+  barco em uso, já passa a ser usado (quem escolheu um barco melhor continua com ele). Escolhido o automático em vez
+  de um botão "Montar" por ser o mais simples: não há nada para decidir no momento de montar.
+- **Fragmentos extras.** Depois de montado, os fragmentos daquele barco continuam caindo e ficam guardados como
+  extras; ainda não servem para nada. O que fazer com eles é decisão do proprietário (OD-060).
+- **Avisos.** Cada fragmento: "+1 fragmento de barco: Remo Valente (12/20)" (ou "(extra)"). Barco montado: aviso
+  grande "Barco montado: Remo Valente! Veja na Loja." e a comemoração. No "Bem-vindo de volta": "+3 fragmentos de
+  barco: Remo Valente" e "Barco montado: …". Trocar de barco agora avisa "Barco em uso: Vela do Sol." (antes "Agora você
+  pesca com o …", que não servia para os nomes femininos).
+- **Na Loja ("Balcão do Píer"), aba Barcos.** Os 10 barcos continuam na parede, mas sem preço: a etiqueta mostra
+  "12/20" com o ícone do barco enquanto não é seu, e "JÁ É SEU" / "EM USO" depois. A ficha mostra "Fragmentos 12/20 ·
+  Caem no mapa Lago Sereno", uma barra dourada, "1,3% de chance por peixe puxado" e, no lugar do Comprar, a pílula
+  dourada "MONTE COM FRAGMENTOS". Barco seu: "Fragmentos extras: N · Caem no mapa …", nível, Melhorar e Usar / EM USO, como
+  já era (A-156). O "i" explica os fragmentos.
+- **O Passe do Pescador** (A-158) também dá fragmentos.
+- **Ritmo simulado** (`tools/Progressao/passe_fragmentos.py simular`, resultado em `docs/propostas/passe_fragmentos.json`).
+  Dias para montar cada barco **pescando no mapa dele** (online e offline), com a vara e o barco que o jogador tem ao
+  chegar lá (meta: ~1–3 dias nos primeiros mapas, ~1–2 semanas nos últimos):
+
+  | Barco | Jogo aberto o dia todo | Abre 4 vezes por dia | Abre 1 vez por dia |
+  |---|---|---|---|
+  | Remo Valente | 1,1 dia | 2,0 dias | 2,1 dias |
+  | Proa Selvagem | 1,6 dia | 2,9 dias | 3,0 dias |
+  | Horizonte Dourado | 2,2 dias | 4,1 dias | 4,3 dias |
+  | Quilha Azul | 3,1 dias | 5,7 dias | 6,0 dias |
+  | Titã do Atlântico | 5,4 dias | 10,0 dias | 10,6 dias |
+
+  Quem sempre pesca no melhor mapa liberado e nunca volta a um mapa antigo monta o Titã do Atlântico em ~5,5 dias
+  (jogo aberto), ~11 (4 vezes por dia) ou ~14 (1 vez por dia); os outros 9 chegam pelos fragmentos do Passe grátis
+  entre ~25 e ~100 dias, ou em ~3 a ~13 dias com o Premium (ver A-158 e OD-062).
+- **Quem já joga** (save versão 16): os barcos comprados continuam seus, com o nível; os fragmentos começam em 0.
+- **Arte provisória** (`ASSET_PENDENTE`): os 5 barcos novos usam o ícone do barco na Loja e a canoa inicial na cena;
+  o fragmento usa o ícone do barco. Pedidos em `docs/ASSETS_PENDENTES.md`.
+
+### A-158 · Passe do Pescador
+**Seção do GDD:** 15, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+Decisão do proprietário em 11/10/2026 (M24-T17): "vai ter um passe de jogo que vai ter recompensas a cada 10 níveis".
+Sobe com o **nível do Pescador**; faixa **Grátis** e faixa **Premium**; **um passe só, permanente** (temporadas:
+"depois vejo isso", OD-059); o Premium é comprado com **Dólares**; as recompensas são Moedas e Conchas, Dólares e
+fragmentos de barco. Números em `config/pass.json`, gerados por `tools/Progressao/passe_fragmentos.py gerar`, são
+sugestões para ajustar jogando.
+
+- **100 marcos**: Nv.10, 20, … 1000, cada um com uma recompensa grátis e uma Premium.
+  - **Moedas**: ~10 minutos da renda (Tripulação + pesca) de quem chega àquele nível abrindo o jogo 4 vezes por dia;
+    **Conchas**: ~30 minutos das Conchas da pesca. O Premium dá o dobro.
+  - **Fragmentos**: do Nv.10 ao Nv.100, do barco do mapa daquele número (Nv.10 → Remo Valente, … Nv.100 → Titã do
+    Atlântico), 15% dos que o barco pede (o Premium, 30%); depois do Nv.100 os barcos se revezam (Nv.110 → Remo
+    Valente, … Nv.200 → Titã do Atlântico, Nv.210 → Remo Valente…), 10% (o Premium, 20%). Só o Passe grátis já
+    completa cada barco uma vez até o Nv.1000.
+  - **Dólares**: os 10 a cada 10 níveis até o Nv.100 do A-111 **passaram para a faixa grátis** (os mesmos 100 Dólares;
+    subir de nível não paga mais nada sozinho). Depois do Nv.100: grátis, 10 a cada 100 níveis (+90); Premium, 10 a cada
+    50 níveis desde o Nv.50 (200 no total). Total do Passe: 190 Dólares grátis e 200 Premium. *Sugestão ajustável;
+    resolve o OD-055 (o proprietário escolheu os Dólares no Passe).*
+
+  | Marco | Grátis | Premium |
+  |---|---|---|
+  | Nv.10 | 930 Moedas, 3 Conchas, 10 Dólares, 3 frag. Remo Valente | 1.860 Moedas, 6 Conchas, 6 frag. Remo Valente |
+  | Nv.50 | 74 mil, 5 Conchas, 10 Dólares, 9 frag. Horizonte Dourado | 148 mil, 10 Conchas, 10 Dólares, 18 frag. |
+  | Nv.100 | 1,22 mi, 7 Conchas, 10 Dólares, 30 frag. Titã do Atlântico | 2,44 mi, 14 Conchas, 10 Dólares, 60 frag. |
+  | Nv.250 | 90,4 mi, 26 Conchas, 6 frag. Horizonte Dourado | 181 mi, 52 Conchas, 10 Dólares, 12 frag. |
+  | Nv.500 | 982 mi, 45 Conchas, 10 Dólares, 20 frag. Titã do Atlântico | 1,96 bi, 90 Conchas, 10 Dólares, 40 frag. |
+  | Nv.1000 | 844 bi, 69 Conchas, 10 Dólares, 20 frag. Titã do Atlântico | 1,69 tri, 138 Conchas, 10 Dólares, 40 frag. |
+
+- **Premium**: 100 Dólares (o preço do VIP), comprado uma vez, vale para sempre. Libera também as recompensas Premium
+  dos marcos que o jogador já passou (ficam "Resgatar"). Os Dólares grátis até o Nv.100 pagam exatamente um Premium
+  (ou um VIP): é escolha do jogador.
+- **Resgate**: nada é pago sozinho. Os marcos alcançados ficam com "Resgatar"; "Resgatar tudo" pega todos de uma vez.
+  Ao alcançar um marco aparece o aviso "Passe do Pescador: marco do Nv.20 alcançado. Resgate no Passe!". Aviso do
+  resgate: "Passe: +930 Moedas, +3 Conchas, +10 Dólares, +3 fragmentos de barco: Remo Valente".
+- **Tela "Passe do Pescador"**: botão novo na barra de cima, só com ícone, à esquerda do sino (os nove menus principais
+  continuam com espaço), com um ponto dourado contando as recompensas prontas. A janela usa a Placa do Píer com o "i"
+  (explica tudo) e o "Nv.37" no canto:
+  - Em cima, num quadro afundado: "Seu nível: 37", "Próximo marco: Nv.40" e a barra dourada; no meio, "Comprar
+    Premium (100 Dólares)" com "Você tem N Dólares" (ou a pílula dourada "Premium ativo"); à direita, "Resgatar tudo
+    (N)" (ou "Nada para resgatar").
+  - Embaixo, a trilha horizontal com rolagem (a roda do mouse rola para o lado), com duas fileiras, **Grátis** e
+    **Premium** (com cadeado até comprar). Cada coluna: "Nv.40" em cima (dourado quando alcançado, com brilho
+    turquesa quando é o próximo); cada célula com as linhas de Moedas, Conchas, Dólares e fragmentos e, embaixo,
+    "Resgatar", "Resgatado", o cadeado "Premium" ou o nível que falta. A janela abre na primeira recompensa pronta (ou
+    no próximo marco).
+  - Os Dólares de um marco que o jogador já recebeu pelo A-111 aparecem como "10 Dólares · já recebidos".
+- **Quem já joga** (save versão 16): pode resgatar os marcos até o nível que tem; os Dólares desses marcos até o Nv.100
+  contam como já pagos pelo A-111 (o resto da recompensa vem). Ninguém ganha os mesmos Dólares duas vezes, e o total até
+  o Nv.100 continua 100. Um save ainda na curva de XP antiga sobe de nível ao abrir (TD-038) e os marcos que ele cruza
+  nessa subida pagam os Dólares no Passe (antes eram pagos na hora).
+- **Arte provisória** (`ASSET_PENDENTE`): o botão usa a estrela (`ico_passe` pedido) e os fragmentos o ícone do barco
+  (`frag_boat_01` … `frag_boat_10` pedidos). Pedidos em `docs/ASSETS_PENDENTES.md`.

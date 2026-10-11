@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-11T05:00:00Z",
+  "updated_at": "2026-10-11T12:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -512,7 +512,9 @@
       "title": "Dólares por nível depois do Nv.100",
       "detail": "Hoje o jogador ganha 10 Dólares a cada 10 níveis até o Nv.100 (100 Dólares = 1 VIP). Com o Nv.1000, opções: (a) parar no Nv.100, como está agora; (b) continuar 10 a cada 10 até o Nv.1000 (+900 Dólares, 9 VIPs a mais); (c) continuar mais devagar, por exemplo 10 a cada 50 níveis (+180 Dólares).",
       "raised_at": "2026-10-10T23:30:00Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolved_at": "2026-10-11T12:00:00Z",
+      "resolution": "Proprietário (11/10/2026): os Dólares ficam no Passe do Pescador (M24-T17, A-158). Os 10 a cada 10 níveis até o Nv.100 passaram para a faixa grátis; depois do Nv.100, sugestão ajustável em config/pass.json: grátis 10 a cada 100 níveis (+90), Premium 10 a cada 50 níveis (200 no total)."
     },
     {
       "id": "OD-056",
@@ -536,6 +538,38 @@
       "title": "Nv.1000 do Pescador mais cedo com o equipamento no Nv.100",
       "detail": "Com varas e barcos até o Nv.100 a pesca rende mais XP. Simulado: com a Tripulação e as Melhorias, jogo aberto, o Nv.1000 chega em ~50 dias (antes ~70); só pescando, ~54 dias com o jogo aberto (antes ~75), ~101 abrindo 4 vezes por dia (antes ~144) e ~113 abrindo 1 vez por dia (antes ~168). Opções: (a) aceitar; (b) recalibrar a curva de XP do Pescador para voltar aos tempos de antes; (c) diminuir o bônus de raridade das varas no Nv.100 (hoje 3× o Nv.10 de antes).",
       "raised_at": "2026-10-11T05:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-059",
+      "task_id": "M24-T18",
+      "title": "Temporadas do Passe do Pescador",
+      "detail": "Hoje há um passe só, permanente, do Nv.10 ao Nv.1000 (\"depois vejo isso\"). Opções quando quiser: (a) fica um passe só; (b) temporadas por tempo (por exemplo 30 dias), com marcos próprios e Premium comprado de novo a cada temporada; (c) o passe permanente continua e entra um passe de temporada à parte.",
+      "raised_at": "2026-10-11T12:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-060",
+      "task_id": "M24-T19",
+      "title": "Fragmentos extras de barco",
+      "detail": "Fragmentos de um barco que o jogador já tem ficam guardados (aparecem como \"Fragmentos extras\" na Loja). Opções: (a) ficam guardados sem uso; (b) viram Conchas (por exemplo 1 fragmento = X Conchas); (c) servem para subir o nível daquele barco (no lugar de parte das Moedas e Conchas).",
+      "raised_at": "2026-10-11T12:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-061",
+      "task_id": "M24-T20",
+      "title": "Nomes dos barcos dos Mapas 6 a 10",
+      "detail": "Sugeridos: Vela do Sol (Arquipélago do Sol), Quilha Azul (Corrente Azul), Canto da Baleia (Banco das Baleias), Farol Noturno (Talude Noturno) e Titã do Atlântico (Abismo Atlântico), cada um com uma frase. Opções: (a) aprovar; (b) trocar algum nome ou descrição (é só editar config/equipment.json).",
+      "raised_at": "2026-10-11T12:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-062",
+      "task_id": "M24-T21",
+      "title": "Ritmo dos barcos fora do mapa e força do Premium",
+      "detail": "Simulado (docs/propostas/passe_fragmentos.json): pescando no mapa do barco, ~1–2 dias no Mapa 1 e ~5–11 dias no Mapa 10. Quem nunca volta a um mapa antigo depende do Passe: grátis, ~25 a ~100 dias para os barcos 1 a 9; Premium (fragmentos em dobro e retroativos), ~3 a ~13 dias. Opções: (a) fica assim (voltar a um mapa antigo para pegar o barco é escolha do jogador); (b) mais fragmentos na faixa grátis; (c) menos fragmentos no Premium; (d) os mapas também dão, com chance menor, fragmentos dos barcos de mapas anteriores.",
+      "raised_at": "2026-10-11T12:00:00Z",
       "status": "OPEN"
     }
   ],
@@ -4270,7 +4304,7 @@
     },
     {
       "id": "M24",
-      "title": "Novo escopo idle: números grandes, Tripulação e Melhorias",
+      "title": "Novo escopo idle: números grandes, Tripulação, Melhorias, barcos por fragmentos e Passe",
       "goal": "Decisão do proprietário (10/10/2026): o jogo volta a ser idle puro, no estilo de crescimento rápido. Dinheiro e XP crescem bem mais rápido, até bilhões (sem letras como \"aa\"); o Pescador vai até o Nv.1000; sem Renascer (prestígio); o crescimento vem de uma Tripulação automática (pescadores e barcos que rendem sozinhos) e de Melhorias compradas que multiplicam a renda. Primeiro a proposta com números simulados; nada muda no jogo sem a aprovação dele.",
       "completion_criteria": [
         "Proposta com números simulados aprovada pelo proprietário.",
@@ -4386,11 +4420,12 @@
           "title": "Dólares depois do Nv.100",
           "subsystem": "config",
           "description": "Com o Pescador até o Nv.1000, os 10 Dólares a cada 10 níveis (A-111) continuam só até o Nv.100 (100 Dólares no total). Decidir o que acontece depois do Nv.100: nada, a mesma recompensa até o Nv.1000 (mais 900 Dólares, 9 VIPs) ou outro ritmo (OD-055).",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M24-T03"
           ],
-          "updated_at": "2026-10-10T23:30:00Z"
+          "updated_at": "2026-10-11T12:00:00Z",
+          "completion_notes": "Resolvido pela decisão do proprietário de 11/10/2026 (OD-055): os Dólares por nível ficam no Passe do Pescador (M24-T17, A-158). Os 10 a cada 10 níveis até o Nv.100 passaram para a faixa grátis (mesmo total); depois do Nv.100, grátis 10 a cada 100 níveis (+90) e Premium 10 a cada 50 níveis (200 no total), como sugestão ajustável em config/pass.json. progression.json → fisher.dollars_per_levels saiu; subir de nível não paga Dólares sozinho."
         },
         {
           "id": "M24-T11",
@@ -4448,6 +4483,76 @@
             "M24-T13"
           ],
           "updated_at": "2026-10-11T05:00:00Z"
+        },
+        {
+          "id": "M24-T16",
+          "title": "Barcos por fragmentos",
+          "subsystem": "server",
+          "description": "Decisão do proprietário (11/10/2026): \"pra conseguir o barco vai ser por fragmentos que têm chance de vir na pesca, cada mapa dropa um tipo de fragmento de barco\". 1 barco por mapa, 10 barcos (os 5 de hoje ficam e entram 5 novos); o barco sai da Loja.",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T13"
+          ],
+          "updated_at": "2026-10-11T12:00:00Z",
+          "completion_notes": "equipment.json: 10 barcos ligados aos mapas (map_id map_01…map_10; boat_00 de todos, sem mapa e sem nível), fragments_required 20/25/35/45/55/70/90/120/155/200 e fragment_drop_chance 1,3% a 2,4% por peixe puxado, boat_fragments.drop_on_offline_fishing true; 5 barcos novos com nomes sugeridos (Vela do Sol, Quilha Azul, Canto da Baleia, Farol Noturno, Titã do Atlântico; OD-061), bônus +12% a +20% no Nv.1 e 3× no Nv.100 (teto de 95% mantido); cost_coins/cost_shells saíram dos barcos e IGearService.BuyBoat saiu (erro BoatAlreadyOwned removido). Regras em GameService/Shop/BoatFragmentRules.cs: sorteio com o Rng do mesmo ciclo depois da captura (online e offline, Expedição não), montagem automática (entra no Nv.1 e passa a ser usado se for melhor), extras guardados (OD-060), montagem ao carregar se já há fragmentos. FishingUpdate.Fragments; avisos de fragmento e de barco montado com comemoração; \"Bem-vindo de volta\" com os fragmentos offline. Loja: etiqueta \"12/20\", ficha com \"Fragmentos 12/20 · Caem no …\", barra, chance e pílula \"MONTE COM FRAGMENTOS\" no lugar do Comprar. Save v16 (BoatFragments; quem já tinha barco mantém, com o nível). Painel: fragmentos e chance na aba Sucesso da pesca e no Catálogo. Simulador C# e tools/Progressao/simular_progressao.py montam barcos por fragmentos; niveis_100.py gerar bloqueado. Números e ritmo: tools/Progressao/passe_fragmentos.py e docs/propostas/passe_fragmentos.json (no mapa: ~1–2 dias no Mapa 1 e ~5–11 no Mapa 10). Testes: BoatFragmentsAndPassTests; CatchSuccessTests, ItemLevelsTests e IdleScopeStageOneTests ajustados (TestSupport.GiveBoat). A-157, TD-042. Não compilado neste ambiente (sem .NET) nem aberto no Unity."
+        },
+        {
+          "id": "M24-T17",
+          "title": "Passe do Pescador",
+          "subsystem": "server",
+          "description": "Decisão do proprietário (11/10/2026): \"vai ter um passe de jogo que vai ter recompensas a cada 10 níveis\". Sobe com o nível do Pescador; faixa Grátis e Premium; um passe só, permanente; Premium comprado com Dólares; recompensas: Moedas e Conchas, Dólares e fragmentos de barco. Os Dólares do A-111 passam para a faixa grátis.",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T16",
+            "M24-T10"
+          ],
+          "updated_at": "2026-10-11T12:00:00Z",
+          "completion_notes": "config/pass.json (novo, validado): 100 marcos do Nv.10 ao Nv.1000, recompensa grátis e Premium (Moedas ~10 min da renda de referência, Conchas ~30 min da pesca, o Premium o dobro; fragmentos do barco do mapa do nível até o Nv.100 e em revezamento depois; Dólares: 10 a cada 10 níveis até o Nv.100 na faixa grátis, depois 10 a cada 100 grátis e 10 a cada 50 no Premium), premium_price_dollars 100, pass_id. Serviço GameService/Pass/LocalPassService.cs (GetPass, IsMilestone, Claim, ClaimAll, BuyPremium; o Premium libera os marcos já passados). FisherLevelRules não paga mais Dólares ao subir de nível (nem na troca de curva); progression.json → dollars_per_levels saiu. Save v16: PassState com LegacyDollarsUpToLevel = mín(nível, 100) na migração, para os Dólares do A-111 já pagos não virem de novo. Tela: botão com ícone à esquerda do sino (ponto dourado com as recompensas prontas), janela UI/PassWindow com a Placa do Píer e o \"i\", resumo (nível, próximo marco, Comprar Premium, Resgatar tudo) e trilha horizontal com as fileiras Grátis e Premium; avisos de marco alcançado e de resgate. Ritmo em docs/propostas/passe_fragmentos.json. Arte provisória ASSET_PENDENTE (ico_passe, frag_boat_NN, barcos 6 a 10) em docs/ASSETS_PENDENTES.md. Testes em BoatFragmentsAndPassTests (resgate, Premium, retroativo, sem Dólares em dobro, migração v15→v16, validação); VipTests e IdleScopeStageOneTests ajustados. A-158, TD-042. Não compilado neste ambiente (sem .NET) nem aberto no Unity."
+        },
+        {
+          "id": "M24-T18",
+          "title": "Temporadas do Passe do Pescador",
+          "subsystem": "config",
+          "description": "O proprietário disse sobre temporadas do passe: \"depois vejo isso\". Hoje há um passe só, permanente (Nv.10 ao Nv.1000). O config e o save guardam só o pass_id, sem nenhuma regra nem tela de temporada (OD-059).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T17"
+          ],
+          "updated_at": "2026-10-11T12:00:00Z"
+        },
+        {
+          "id": "M24-T19",
+          "title": "O que fazer com os fragmentos extras de barco",
+          "subsystem": "config",
+          "description": "Depois que o barco é montado, os fragmentos dele continuam caindo (pesca e Passe) e ficam guardados como extras, sem uso. Decidir se viram outra coisa (OD-060).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T16"
+          ],
+          "updated_at": "2026-10-11T12:00:00Z"
+        },
+        {
+          "id": "M24-T20",
+          "title": "Nomes e descrições dos 5 barcos novos",
+          "subsystem": "config",
+          "description": "Os barcos dos Mapas 6 a 10 entraram com nomes sugeridos, temáticos do mapa: Vela do Sol, Quilha Azul, Canto da Baleia, Farol Noturno e Titã do Atlântico (OD-061).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T16"
+          ],
+          "updated_at": "2026-10-11T12:00:00Z"
+        },
+        {
+          "id": "M24-T21",
+          "title": "Barcos para quem não volta aos mapas antigos",
+          "subsystem": "config",
+          "description": "Os fragmentos só caem no mapa do barco. Na simulação, quem sempre pesca no melhor mapa liberado monta o barco do último mapa em ~1–2 semanas, mas os outros 9 só chegam pelos fragmentos do Passe grátis (entre ~25 e ~100 dias); com o Premium (100 Dólares, os mesmos que o Passe grátis dá até o Nv.100) chegam em ~3 a ~13 dias (OD-062).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T16",
+            "M24-T17"
+          ],
+          "updated_at": "2026-10-11T12:00:00Z"
         }
       ]
     }

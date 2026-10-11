@@ -78,8 +78,9 @@ public sealed class VipTests
     }
 
     [Fact]
-    public void Every_10_fisher_levels_give_10_dollars()
+    public void Every_10_fisher_levels_give_10_dollars_in_the_pass()
     {
+        // A-111 moved to the free track of the Passe do Pescador (M24-T17, A-158): the level-up pays nothing by itself.
         var (game, clock, _) = TestSupport.NewGame();
         var save = game.Session.Save;
         save.FisherLevel = 9;
@@ -89,13 +90,10 @@ public sealed class VipTests
 
         var update = game.Fishing.Sync();
         Assert.Contains(10, update.LevelsReached);
-        Assert.Equal(10, update.DollarsGained);
-        Assert.Equal(10, save.Dollars);
+        Assert.Equal(0, save.Dollars);
 
-        save.FisherLevel = 10;
-        save.FisherXp = 0;
-        clock.AdvanceSeconds(60);
-        Assert.Equal(0, game.Fishing.Sync().DollarsGained);
+        Assert.True(game.Pass.Claim(10, FishingIdle.GameService.Pass.PassTrack.Free).Succeeded);
+        Assert.Equal(10, save.Dollars);
     }
 
     private static FishingIdle.GameService.Fishing.OfflineReport Offline(double vipHours, double closedHours)

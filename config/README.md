@@ -13,8 +13,9 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | `expeditions.json` | Durações, Força Recomendada, curvas de eficiência, recompensas |
 | `arena_bots.json` | Só no jogo local: como os 200 adversários simulados da Arena são montados e com que frequência atacam você |
 | `market_bots.json` | Só no jogo local: vendedores e compradores simulados do Mercado (quantos anúncios, preços de referência, chance de vender) |
-| `equipment.json` | Barcos e iscas: bônus na Chance de Sucesso da Captura, custo em Moedas e Conchas, tentativas de cada isca; níveis dos barcos (bônus no Nv.1 e no Nv.100, custo de cada nível) |
+| `equipment.json` | Barcos e iscas: bônus na Chance de Sucesso da Captura, preço e tentativas de cada isca; barcos por fragmentos (o mapa de cada barco, quantos fragmentos montam e a chance por peixe puxado; se a pesca offline também dá), níveis dos barcos (bônus no Nv.1 e no Nv.100, custo de cada nível) |
 | `crew.json` | A Tripulação automática (M24): os 10 tripulantes (nome, preço da 1ª unidade, quanto cada unidade a mais encarece, Moedas e XP por segundo), quantos do anterior liberam o próximo, marcos de quantidade e da frota, e a renda com o jogo fechado (100% nas primeiras horas, depois a taxa reduzida até o teto). Resultado da simulação em `docs/propostas/tripulacao.json` (`tools/Progressao/simular_tripulacao.py`); a renda por unidade foi recalibrada com as Melhorias (A-155) |
+| `pass.json` | O Passe do Pescador (M24-T17): o preço do Premium em Dólares e os 100 marcos (Nv.10 ao Nv.1000), cada um com a recompensa grátis e a Premium (Moedas, Conchas, Dólares e fragmentos de um barco). Gerado por `tools/Progressao/passe_fragmentos.py gerar` (resultado da simulação em `docs/propostas/passe_fragmentos.json`) |
 | `upgrades.json` | As Melhorias compradas com Moedas (M24): as de tripulante (`crew_upgrades`: com quantas unidades cada uma libera, o fator de preço sobre a unidade daquele número, o nome e o complemento do nome de cada tripulante; ×2 na renda dele, uma vez só) e as gerais com níveis (`general_upgrades`: efeito, quanto cada nível soma, quantos níveis, preço do nível 1 e quanto cada nível encarece). Resultado da simulação com a Tripulação em `docs/propostas/melhorias.json` (`tools/Progressao/simular_melhorias.py`) |
 
 ## Como editar
@@ -37,12 +38,13 @@ Onde fica cada coisa no painel:
 | Tempo de pesca | Pesca | `progression.json` |
 | Níveis do Pescador e do peixe | XP do Pescador | `progression.json` |
 | Varas (bônus, curva, nível máximo e custo de cada nível) | Varas | `rods.json` |
-| Barcos (bônus no Nv.1 e no máximo, custo de cada nível) | Sucesso da pesca → Barcos | `equipment.json` |
+| Barcos (bônus no Nv.1 e no máximo, fragmentos e chance por peixe, custo de cada nível) | Sucesso da pesca → Barcos | `equipment.json` |
 | Preço mínimo, multiplicador geral do preço de venda dos peixes, Conchas, Aquário, Mercado | Economia | `economy.json` |
 | Preço, duração e bônus do VIP | Economia → `vip` | `economy.json` |
 | Arena, Cardume, Expedições | Outros arquivos | `arena.json`, `expeditions.json`… |
 | Tripulação (preços, renda, marcos, offline) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play | `crew.json` |
 | Melhorias (preços, efeitos, níveis, nomes) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play | `upgrades.json` |
+| Passe do Pescador (recompensas, preço do Premium) | Ainda sem seção no painel: edite o arquivo ou gere de novo com o script; o jogo valida ao apertar Play | `pass.json` |
 
 ## Regras
 
@@ -129,3 +131,21 @@ Desde 10/10/2026 (M24-T13, A-156, TD-041). Os números são gerados por `tools/P
   top_fish_level` 10 → 41), peixes à venda no Mercado (`market_bots.json → max_fish_level` 6 → 26, prêmio por nível
   0,15 → 0,0337), varas à venda no Mercado (`max_rod_level` 41, novo) e o aviso de "peixe valioso" ao alimentar
   (`progression.json → feeding.valuable_feed_rules.min_level` 2 → 8).
+
+## Barcos por fragmentos e Passe do Pescador
+
+Desde 11/10/2026 (M24-T16 e M24-T17, A-157 e A-158, TD-042). Números gerados por
+`tools/Progressao/passe_fragmentos.py gerar` (os "botões" ficam no começo do script); o ritmo é simulado por
+`tools/Progressao/passe_fragmentos.py simular --gravar` (resultado em `docs/propostas/passe_fragmentos.json`).
+
+- **Barcos não são vendidos.** Cada barco (menos o inicial) tem `map_id` (o mapa cujos peixes dão os fragmentos dele;
+  um barco por mapa), `fragments_required` (quantos montam o barco: 20 no Mapa 1 até 200 no Mapa 10) e
+  `fragment_drop_chance` (a chance de um peixe puxado naquele mapa dar 1 fragmento: 1,3% a 2,4%). O barco inicial não
+  tem `map_id`. `boat_fragments.drop_on_offline_fishing` diz se a pesca offline também dá fragmentos (sim).
+- **Como a chance foi calibrada.** Para quem abre o jogo 4 vezes por dia e pesca no mapa do barco, montar leva ~2 dias
+  no Mapa 1 e ~10 no Mapa 10 (`DIAS_ALVO_PRIMEIRO` e `DIAS_ALVO_ULTIMO` no script).
+- **Passe.** `premium_price_dollars` (100) e `milestones`: `level` e as recompensas `free` e `premium`, cada uma com
+  `coins`, `shells`, `dollars`, `boat_id` e `fragments` (0 = não dá). Os níveis precisam estar em ordem crescente, até
+  o nível máximo do Pescador; `boat_id` precisa existir e não pode ser o barco inicial. Os Dólares de nível do A-111
+  (`fisher.dollars_per_levels`, que saiu do `progression.json`) estão em `free.dollars` do Nv.10 ao Nv.100.
+- `pass_id` identifica o passe no save; temporadas ainda não existem (OD-059).

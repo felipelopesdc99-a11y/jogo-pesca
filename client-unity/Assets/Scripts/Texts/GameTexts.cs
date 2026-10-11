@@ -261,7 +261,8 @@ namespace FishingIdle.Texts
             public static string Xp(string xp) => "+" + xp + " XP de Pescador";
             public static string XpWithVip(string xp, string vipXp) => "+" + xp + " XP de Pescador (+" + vipXp + " do VIP)";
             public static string Levels(int level) => "Subiu para o Nível " + level + "!";
-            public static string LevelsWithDollars(int level, string dollars) => "Subiu para o Nível " + level + "! +" + dollars + (dollars == "1" ? " Dólar" : " Dólares");
+            public static string Fragments(string amount, string boat) => "+" + amount + (amount == "1" ? " fragmento de barco: " : " fragmentos de barco: ") + boat;
+            public static string BoatAssembled(string boat) => "Barco montado: " + boat + "!";
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
             public static string Escaped(int count) => count == 1 ? "1 peixe escapou" : Format.Number(count) + " peixes escaparam";
 
@@ -817,6 +818,45 @@ namespace FishingIdle.Texts
             public static string Bought(string date) => "VIP ativo até " + date + "!";
         }
 
+        // ------------------------------------------------------------------ Passe do Pescador (M24-T17, A-158)
+
+        public static class Pass
+        {
+            public const string Title = "Passe do Pescador";
+            public const string ButtonTip = "Passe do Pescador";
+            public const string Free = "Grátis";
+            public const string PremiumRow = "Premium";
+            public const string PremiumActive = "Premium ativo";
+            public const string Claim = "Resgatar";
+            public const string Claimed = "Resgatado";
+            public const string ClaimAll = "Resgatar tudo";
+            public const string NothingToClaim = "Nada para resgatar";
+            public const string AllReached = "Todos os marcos alcançados";
+            public const string Locked = "Premium";
+            public const string Empty = "—";
+            public const string DollarsPaid = "já recebidos";
+            public static string Info(int every, string price) =>
+                "O Passe sobe com o nível do Pescador: a cada " + every + " níveis você chega a um marco, do Nv." + every + " ao Nv.1000. " +
+                "Cada marco tem uma recompensa grátis e uma Premium: Moedas, Conchas, Dólares e fragmentos de barco. " +
+                "Os marcos alcançados ficam esperando: aperte Resgatar em cada um ou Resgatar tudo. " +
+                "O Premium custa " + price + " Dólares, é comprado uma vez e vale para sempre; ele libera também as recompensas Premium dos marcos que você já passou. " +
+                "Os Dólares que antes vinham a cada 10 níveis agora estão na fileira Grátis do Passe.";
+            public static string YourLevel(int level) => "Seu nível: " + level;
+            public static string NextMilestone(int level) => "Próximo marco: Nv." + level;
+            public static string MilestoneLevel(int level) => "Nv." + level;
+            public static string BuyPremium(string price) => "Comprar Premium (" + price + " Dólares)";
+            public static string YourDollars(string dollars) => "Você tem " + dollars + " Dólares";
+            public static string ClaimAllCount(int count) => "Resgatar tudo (" + count + ")";
+            public static string Fragments(string amount, string boat) => amount + " frag. · " + boat;
+            public static string DollarsLine(string amount) => amount + " Dólares";
+            public const string BoughtPremium = "Premium do Passe comprado! As recompensas Premium dos marcos que você já passou estão prontas para resgatar.";
+            public static string ClaimedToast(int count) => count == 1 ? "Passe: 1 recompensa resgatada." : "Passe: " + count + " recompensas resgatadas.";
+            public static string ClaimedItems(string items) => "Passe: " + items;
+            public static string ItemCoins(string amount) => "+" + amount + " Moedas";
+            public static string ItemShells(string amount) => "+" + amount + " Conchas";
+            public static string ItemDollars(string amount) => "+" + amount + " Dólares";
+        }
+
         // ------------------------------------------------------------------ gear: boats, baits, Catch Success (docs/SISTEMA_SUCESSO_PESCA.md)
 
         public static class Gear
@@ -836,7 +876,7 @@ namespace FishingIdle.Texts
             public const string InUse = "Em uso";
             public const string Use = "Usar";
             public const string PutAway = "Guardar";
-            public const string BoatsNote = "O barco fica com você para sempre e aumenta a chance de puxar todo peixe. Cada nível que você melhora soma um pouco mais, até o Nível 100. Troque quando quiser.";
+            public const string BoatsNote = "Barcos não são vendidos: cada mapa tem o seu barco, montado com fragmentos que às vezes caem quando você puxa um peixe naquele mapa (também na pesca offline) ou que vêm do Passe do Pescador. Com todos os fragmentos o barco é montado sozinho e fica com você para sempre; se for melhor que o seu, já entra em uso. Ele aumenta a chance de puxar todo peixe, e cada nível que você melhora soma um pouco mais, até o Nível 100. Troque quando quiser.";
             public const string BaitsNote = "A isca dura um número de tentativas: gasta 1 por tentativa, puxando o peixe ou não, também offline. Comprar de novo soma tentativas. Só uma isca fica em uso.";
             public const string OpenDetails = "Ver equipamento e chances";
 
@@ -845,8 +885,20 @@ namespace FishingIdle.Texts
             public static string Charges(int charges) => charges == 1 ? "1 tentativa por compra" : Format.Number(charges) + " tentativas por compra";
             public static string ChargesLeft(int charges) => charges == 1 ? "Resta 1 tentativa" : "Restam " + Format.Number(charges) + " tentativas";
             public static string CostCoinsAndShells(string coins, string shells) => coins + " Moedas + " + shells + " Conchas";
-            public static string BoughtBoat(string boat) => "Barco " + boat + " comprado! Ele já está em uso.";
-            public static string UsingBoat(string boat) => "Agora você pesca com o " + boat + ".";
+            // Boats by fragments (M24-T16, A-157).
+            public static string FragmentsTag(string have, string required) => have + "/" + required;
+            public static string FragmentsLine(string have, string required) => "Fragmentos " + have + "/" + required;
+            public static string FragmentsWhere(string map) => "Caem no mapa " + map;
+            public static string FragmentsChance(string percent) => percent + " de chance por peixe puxado";
+            public static string FragmentsExtra(string amount) => "Fragmentos extras: " + amount;
+            public const string AssembleHint = "Monte com fragmentos";
+            public const string StarterBoat = "Já é seu desde o começo";
+            public static string FragmentToast(string boat, string have, string required) => "+1 fragmento de barco: " + boat + " (" + have + "/" + required + ")";
+            public static string FragmentExtraToast(string boat) => "+1 fragmento de barco: " + boat + " (extra)";
+            public static string FragmentsToast(string amount, string boat) => "+" + amount + " fragmentos de barco: " + boat;
+            public static string BoatAssembledToast(string boat) => "Barco montado: " + boat + "! Veja na Loja.";
+            public const string BoatAssembledTitle = "Barco montado!";
+            public static string UsingBoat(string boat) => "Barco em uso: " + boat + ".";
             public static string UpgradedBoat(string boat, int level) => boat + " agora está no Nível " + level + ".";
             public static string NextLevelBonus(string percent) => "Próximo nível: +" + percent + " de chance";
             public static string MaxLevelBonus(int max, string percent) => "No Nível " + max + ": +" + percent + " de chance";
@@ -1045,6 +1097,7 @@ namespace FishingIdle.Texts
             public static string LevelUp(int level) => "Você subiu para o Nível " + level + "!";
             public static string Shells(string amount) => "+" + amount + (amount == "1" ? " Concha" : " Conchas");
             public static string Dollars(string amount) => "+" + amount + (amount == "1" ? " Dólar" : " Dólares");
+            public static string PassMilestone(int level) => "Passe do Pescador: marco do Nv." + level + " alcançado. Resgate no Passe!";
             public const string FishingStarted = "Pesca iniciada.";
             public const string FishingStopped = "Pesca parada.";
             public const string ConfigReloaded = "Balanceamento recarregado.";
@@ -1126,8 +1179,7 @@ namespace FishingIdle.Texts
                 case "RodNotForSale": return "Essa vara não está à venda.";
                 case "RodAlreadyOwned": return "Você já tem esta vara no Inventário.";
                 case "BoatNotFound": return "Esse barco não existe.";
-                case "BoatAlreadyOwned": return "Você já tem este barco.";
-                case "BoatNotOwned": return "Compre este barco antes de usá-lo.";
+                case "BoatNotOwned": return "Monte este barco com fragmentos antes de usá-lo.";
                 case "BoatAtMaxLevel": return "Este barco já está no nível máximo.";
                 case "BoatHasNoLevels": return "Este barco não tem níveis para melhorar.";
                 case "BaitNotFound": return "Essa isca não existe.";
@@ -1145,6 +1197,12 @@ namespace FishingIdle.Texts
                 case "UpgradeLocked": return "Esta Melhoria ainda não está liberada. Contrate mais desse tripulante.";
                 case "UpgradeAlreadyBought": return "Você já tem esta Melhoria.";
                 case "UpgradeMaxLevel": return "Esta Melhoria já está no nível máximo.";
+                case "PassMilestoneNotFound": return "Esse marco do Passe não existe.";
+                case "PassMilestoneNotReached": return "Você ainda não chegou ao nível deste marco do Passe.";
+                case "PassAlreadyClaimed": return "Você já resgatou esta recompensa.";
+                case "PassPremiumLocked": return "Esta recompensa é do Premium. Compre o Premium para resgatar.";
+                case "PassPremiumOwned": return "Você já tem o Premium do Passe.";
+                case "PassNothingToClaim": return "Nada para resgatar agora. Suba de nível para chegar ao próximo marco.";
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
                 case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";
@@ -1221,7 +1279,11 @@ namespace FishingIdle.Texts
             public static string FishXpTableGap(int level) => "progression.json: a tabela de XP do peixe (fish_level.xp_table) não tem o nível " + level + ".";
             public static string BadBaseStats(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de base_stats com Vida e Velocidade maiores que zero e Ataque e Defesa não negativos.";
             public static string XpTableGap(int level) => "progression.json: a tabela de XP do Pescador não tem o nível " + level + ".";
-            public static string StarterBoatNotFree(string boat) => "equipment.json: o barco inicial \"" + boat + "\" (o de menor categoria) precisa custar 0 Moedas e 0 Conchas.";
+            public static string StarterBoatHasMap(string boat) => "equipment.json: o barco inicial \"" + boat + "\" (o de menor categoria) é de todos e não pode ter map_id.";
+            public static string BoatMapUnknown(string boat, string map) => "equipment.json: o barco \"" + boat + "\" precisa de um map_id que exista em maps.json (está \"" + (map ?? "") + "\").";
+            public static string BoatMapRepeated(string map) => "equipment.json: o mapa \"" + map + "\" tem mais de um barco. Cada mapa dá os fragmentos de um barco só.";
+            public static string PassLevels(int max) => "pass.json: os marcos (milestones) precisam de níveis diferentes, em ordem crescente, entre 1 e " + max + ".";
+            public static string PassBoatUnknown(int level, string boat) => "pass.json: o marco do Nv." + level + " dá fragmentos do barco \"" + (boat ?? "") + "\", que não existe em equipment.json (ou é o barco inicial).";
             public static string UnknownSizeInRarity(string rarity, string size) => "progression.json: a raridade \"" + rarity + "\" cita o tamanho \"" + (size ?? "") + "\" em size_weight_multipliers, que não existe em size.categories.";
             public static string UnknownRarity(string species, string rarity) => "fish_catalog.json: a espécie \"" + species + "\" usa a raridade \"" + (rarity ?? "") + "\", que não existe em progression.json.";
             public static string BadSizeRange(string species) => "fish_catalog.json: a espécie \"" + species + "\" precisa de size_cm com mínimo maior que zero e máximo maior que o mínimo.";
@@ -1273,6 +1335,7 @@ namespace FishingIdle.Texts
             public static string CatalogMaxLevel(int level) => "Até o Nv. " + level;
             public static string CatalogBonus(string percent) => "+" + percent + " de chance de puxar";
             public static string CatalogCharges(int charges) => charges + " tentativas por compra";
+            public static string CatalogFragments(int required, string percent, string map) => required + " fragmentos · " + percent + " por peixe · " + map;
             public static string CatalogDuration(string duration) => "Duração: " + duration;
             public static string CatalogStrength(string strength) => "Força recomendada: " + strength;
             public static string CatalogReward(string coins) => "Moedas no Mapa 1: " + coins;
@@ -1415,8 +1478,10 @@ namespace FishingIdle.Texts
             public const string GearBonus = "Bônus";
             public const string GearCoins = "Moedas";
             public const string GearShells = "Conchas";
+            public const string BoatFragments = "Fragmentos";
+            public const string BoatFragmentChance = "Chance/peixe";
             public const string GearCharges = "Tentativas";
-            public const string GearNote = "Bônus em pontos (0,05 = +5%). O barco de menor categoria é o inicial: todo jogador já tem, ele precisa custar 0 e não tem nível. Os outros barcos sobem de nível como as varas: \"Bônus\" no Nível 1, \"Bônus máx.\" no nível máximo. A isca gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline.";
+            public const string GearNote = "Bônus em pontos (0,05 = +5%). O barco de menor categoria é o inicial: todo jogador já tem, não é de nenhum mapa e não tem nível. Os outros barcos não são vendidos: cada um é de um mapa (map_id) e é montado com \"Fragmentos\"; cada peixe puxado naquele mapa tem a \"Chance/peixe\" de dar 1 (0,013 = 1,3%). Eles sobem de nível como as varas: \"Bônus\" no Nível 1, \"Bônus máx.\" no nível máximo. A isca gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline.";
             public const string SimulatorTitle = "Simulador de sucesso";
             public const string SimulatorNote = "Roda as regras do jogo com os números desta tela, mesmo os que ainda não foram salvos. A isca fica sempre ligada; o custo dela por hora é descontado das Moedas.";
             public const string SimMap = "Mapa";

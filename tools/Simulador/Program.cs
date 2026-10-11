@@ -142,8 +142,8 @@ public static class Program
 
     /// <summary>
     /// A simple, sensible player fishing online non-stop: sells everything every 10 minutes, buys each
-    /// rod as soon as allowed and affordable, buys boats with what is left (saving up when the next rod
-    /// is 3 levels away), and travels to the best map it can as soon as it opens.
+    /// rod as soon as allowed and affordable (boats arrive from fragments, M24-T16), and travels to the
+    /// best map it can as soon as it opens.
     /// </summary>
     private static ProgressionResult Progression(GameConfig config)
     {
@@ -174,6 +174,7 @@ public static class Program
             long earned = 0;
             var lastLevel = 1;
             var bought = new HashSet<string>();
+            var boatsSeen = new HashSet<string>();
             var steps = 0;
             double hours = 0;
             double rareAt = -1;
@@ -219,20 +220,13 @@ public static class Program
                         }
                     }
 
-                    // Boats with what is left: never while a rod the player could already use is not
-                    // bought, and not in the 3 levels before the next rod (saving up for it).
-                    var level = game.Player.GetPlayer().FisherLevel;
-                    var nextRod = buyable.FirstOrDefault(r => !bought.Contains(r.Id));
-                    if (nextRod == null || level < LevelThatNeeds(config, nextRod) - 3)
+                    // Boats are not sold since M24-T16 (A-157): they are assembled from the fragments the catches drop
+                    // (and the service puts a better one in use). Note when each one arrived.
+                    foreach (var boat in game.Gear.GetGear().Boats.Where(x => x.Owned && x.Tier > 0 && !boatsSeen.Contains(x.BoatId)))
                     {
-                        foreach (var boat in game.Gear.GetGear().Boats.Where(x => !x.Owned && x.BuyBlocker == ServiceError.None))
-                        {
-                            if (game.Gear.BuyBoat(boat.BoatId).Succeeded)
-                            {
-                                var t = boatTimes.TryGetValue(boat.Name, out var bt) ? bt : (0, 0);
-                                boatTimes[boat.Name] = (t.hours + hours, t.n + 1);
-                            }
-                        }
+                        boatsSeen.Add(boat.BoatId);
+                        var t = boatTimes.TryGetValue(boat.Name, out var bt) ? bt : (0, 0);
+                        boatTimes[boat.Name] = (t.hours + hours, t.n + 1);
                     }
 
                     var best = game.Maps.GetMaps().Maps
@@ -290,7 +284,7 @@ public static class Program
         r.AppendLine("## 1. Progressão do Pescador (pesca online, sem parar)");
         r.AppendLine();
         r.AppendLine("Estratégia simulada: pesca o tempo todo, vende tudo a cada 10 minutos, compra a próxima vara assim");
-        r.AppendLine("que pode, depois os barcos, e viaja para o próximo mapa assim que ele libera. Não usa isca. Offline, cada captura leva " +
+        r.AppendLine("que pode (os barcos chegam montados pelos fragmentos que caem pescando) e viaja para o próximo mapa assim que ele libera. Não usa isca. Offline, cada captura leva " +
                      Format.Duration(config.Progression.Fishing.OfflineCycleSeconds) + " em vez de " + Format.Duration(config.Progression.Fishing.OnlineCycleSeconds) + ".");
         r.AppendLine();
         r.AppendLine("| Nível | Horas de pesca online | Moedas ganhas até ali |");
@@ -319,7 +313,7 @@ public static class Program
         }
 
         r.AppendLine();
-        foreach (var boat in p.BoatsBought) r.AppendLine("- " + boat + " de pesca");
+        foreach (var boat in p.BoatsBought) r.AppendLine("- " + boat + " de pesca (montado com fragmentos)");
         r.AppendLine();
     }
 
@@ -668,31 +662,23 @@ public static class Program
         }
 
         r.AppendLine();
-        r.AppendLine("Preço dos barcos em horas de pesca no segundo mapa (Moedas e Conchas por hora da seção 1):");
+        // Boats are not sold since M24-T16 (A-157): the fragments each one needs, where they drop and the expected catches.
+        r.AppendLine("Barcos por fragmentos (tools/Progressao/passe_fragmentos.py simula os dias):");
         r.AppendLine();
-        r.AppendLine("| Barco | Bônus | Custo | Horas de pesca | Conchas |");
-        r.AppendLine("|---|---:|---:|---:|---:|");
+        r.AppendLine("| Barco | Bônus | Mapa | Fragmentos | Chance por peixe | Peixes puxados (esperado) |");
+        r.AppendLine("|---|---:|---|---:|---:|---:|");
         foreach (var boat in boats.Skip(1))
         {
-            var hours = after.CoinsPerHourMap2 > 0 ? boat.CostCoins / after.CoinsPerHourMap2 : 0;
-            var shellHours = after.ShellsPerHourMap2 > 0 ? boat.CostShells / after.ShellsPerHourMap2 : 0;
-            r.AppendLine("| " + boat.DisplayName + " | +" + Format.Percent(boat.CatchSuccessBonus, 0) + " | " + Format.Number(boat.CostCoins) + " Moedas + " + Format.Number(boat.CostShells) + " Conchas | "
-                         + Format.Decimal(hours, 1) + " h | " + (boat.CostShells > 0 ? Format.Decimal(shellHours, 1) + " h" : "—") + " |");
+            var mapName = config.TryGetMap(boat.MapId, out var boatMap) ? boatMap.DisplayName : "—";
+            var catches = boat.FragmentDropChance > 0 ? boat.FragmentsRequired / boat.FragmentDropChance : 0;
+            r.AppendLine("| " + boat.DisplayName + " | +" + Format.Percent(boat.CatchSuccessBonus, 0) + " | " + mapName + " | " + Format.Number(boat.FragmentsRequired) + " | "
+                         + Format.Percent(boat.FragmentDropChance, 1) + " | " + Format.Number((long)catches) + " |");
         }
 
         r.AppendLine();
     }
 
     // ------------------------------------------------------------------ helpers
-
-    /// <summary>
-    /// The Fisher level of the first map that asks for this rod's tier. Items have no minimum level
-    /// (M24-T09), so the player saves up for a rod when the map that needs it is near.
-    /// </summary>
-    private static int LevelThatNeeds(GameConfig config, RodConfig rod)
-    {
-        return config.Maps.Maps.Where(m => m.MinimumRodTier >= rod.Tier).Select(m => m.UnlockFisherLevel).DefaultIfEmpty(int.MaxValue).Min();
-    }
 
     private static (LocalGame Game, ManualClock Clock) NewPlayer(GameConfig config, ulong seed)
     {

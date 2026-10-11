@@ -3,6 +3,56 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.49] — 11/10/2026
+
+Etapa 5 do novo escopo idle: barcos por fragmentos (M24-T16, A-157) e o Passe do Pescador (M24-T17, A-158).
+
+### Adicionado
+
+- **Barcos por fragmentos**: 10 barcos, um por mapa (os 5 de antes e 5 novos com nomes sugeridos: Vela do Sol, Quilha
+  Azul, Canto da Baleia, Farol Noturno e Titã do Atlântico). Cada peixe puxado no mapa do barco tem 1,3% a 2,4% de
+  chance de dar 1 fragmento (também na pesca offline; Expedição não dá); 20 a 200 fragmentos montam o barco sozinho,
+  que entra no Nv.1 e passa a ser usado se for melhor. Fragmentos depois de montado ficam guardados como extras.
+  Avisos de fragmento e de barco montado (com comemoração) e linha no "Bem-vindo de volta".
+- **Passe do Pescador**: botão novo na barra de cima (à esquerda do sino, com um ponto dourado contando as recompensas
+  prontas) e janela com o nível, o próximo marco, "Comprar Premium (100 Dólares)", "Resgatar tudo" e a trilha de 100
+  marcos (Nv.10 ao Nv.1000) com as fileiras Grátis e Premium. Recompensas: Moedas, Conchas, Dólares e fragmentos de
+  barco. O Premium libera também os marcos já passados. Aviso ao alcançar cada marco.
+- `config/pass.json` (novo, validado); `config/equipment.json`: `boat_fragments` e, por barco, `map_id`,
+  `fragments_required` e `fragment_drop_chance`; 5 barcos novos.
+- `GameService/Shop/BoatFragmentRules.cs`, `GameService/Pass/LocalPassService.cs` (`IPassService`), `UI/PassWindow.cs`;
+  erros do Passe ("Você ainda não chegou ao nível deste marco do Passe.", "Você já resgatou esta recompensa.", …).
+- Save versão 16 (`BoatFragments`, `Pass`) (TD-042).
+- `tools/Progressao/passe_fragmentos.py` (gera as chances e o passe e simula o ritmo; resultado em
+  `docs/propostas/passe_fragmentos.json`).
+- Testes `BoatFragmentsAndPassTests`: os 10 barcos, fragmento por captura com o Rng do serviço (mesmo seed, mesmo
+  resultado), montar o barco, extras, pesca offline, barco fora da Loja, resgate, Premium com Dólares e retroativo,
+  sem Dólares em dobro com o A-111, migração v15→v16 e validação do config.
+- Pedidos de arte em `docs/ASSETS_PENDENTES.md`: barcos 6 a 10, ícones de fragmento e ícone do Passe.
+- Decisões pendentes OD-059 (temporadas do Passe), OD-060 (fragmentos extras), OD-061 (nomes dos barcos novos) e
+  OD-062 (ritmo dos barcos para quem não volta aos mapas e força do Premium).
+
+### Mudado
+
+- **Barcos saíram da Loja**: a aba Barcos mostra "12/20" na etiqueta e, na ficha, "Fragmentos 12/20 · Caem no mapa …",
+  a barra, a chance por peixe e "MONTE COM FRAGMENTOS" no lugar do Comprar. Barco seu: nível, Melhorar e Usar como
+  antes. `IGearService.BuyBoat` saiu; `cost_coins` e `cost_shells` saíram dos barcos.
+- **Dólares por nível no Passe**: subir de nível não paga mais Dólares sozinho; os 10 a cada 10 níveis até o Nv.100
+  (A-111) estão na faixa grátis do Passe; depois do Nv.100, 10 a cada 100 níveis (grátis) e 10 a cada 50 (Premium),
+  como sugestão. `progression.json → fisher.dollars_per_levels` saiu. OD-055 resolvido.
+- Quem já joga: os barcos comprados continuam seus, com o nível; fragmentos começam em 0; os marcos até o nível atual
+  ficam para resgatar, sem os Dólares do A-111 que já foram pagos (até o Nv.100).
+- Aviso ao trocar de barco: "Barco em uso: …" (antes "Agora você pesca com o …", que não servia para os nomes
+  femininos dos barcos novos).
+- Painel: aba Sucesso da pesca com fragmentos e chance por barco (no lugar do preço); Catálogo com os fragmentos.
+- Simulador (`tools/Simulador`) e `tools/Progressao/simular_progressao.py` montam os barcos por fragmentos;
+  `tools/Progressao/niveis_100.py gerar` foi bloqueado (gravaria os barcos de antes).
+
+### Não verificado
+
+- Não compilado (sem .NET neste ambiente) e não aberto no Editor do Unity: a Loja, a janela do Passe, o botão novo,
+  os avisos e o "Bem-vindo de volta" precisam do Play do proprietário para serem declarados verificados.
+
 ## [0.2.0-m21.48] — 10/10/2026
 
 Etapa 4 do novo escopo idle: varas, barcos e peixes até o Nv.100 (M24-T13, A-156).

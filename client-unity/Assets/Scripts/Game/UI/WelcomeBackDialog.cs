@@ -139,9 +139,22 @@ namespace FishingIdle.Game.UI
                     y += 24;
                 }
 
+                // Boat fragments (M24-T16, A-157): one line per boat, and the boats they assembled.
+                foreach (var boat in update.Fragments.GroupBy(f => f.BoatName).Take(2))
+                {
+                    GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.Fragments(Format.Number(boat.Sum(f => f.Amount)), boat.Key), skin.Body);
+                    y += 24;
+                }
+
+                foreach (var assembled in update.Fragments.Where(f => f.Assembled))
+                {
+                    GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.BoatAssembled(assembled.BoatName), skin.SmallGold);
+                    y += 24;
+                }
+
                 if (update.LevelsReached.Count > 0)
                 {
-                    GUI.Label(new Rect(x, y, w, 22), update.DollarsGained > 0 ? GameTexts.Offline.LevelsWithDollars(update.LevelsReached.Max(), Format.Number(update.DollarsGained)) : GameTexts.Offline.Levels(update.LevelsReached.Max()), skin.SmallGold);
+                    GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.Levels(update.LevelsReached.Max()), skin.SmallGold);
                     y += 24;
                 }
             }
@@ -189,7 +202,7 @@ namespace FishingIdle.Game.UI
 
             if (crew.LevelsReached.Count > 0)
             {
-                GUI.Label(new Rect(x, y, w, 22), crew.DollarsGained > 0 ? GameTexts.Offline.LevelsWithDollars(crew.LevelsReached.Max(), Format.Number(crew.DollarsGained)) : GameTexts.Offline.Levels(crew.LevelsReached.Max()), skin.SmallGold);
+                GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.Levels(crew.LevelsReached.Max()), skin.SmallGold);
                 y += 24;
             }
 

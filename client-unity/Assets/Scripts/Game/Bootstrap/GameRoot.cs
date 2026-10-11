@@ -13,6 +13,7 @@ using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Market;
+using FishingIdle.GameService.Pass;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
 using FishingIdle.GameService.Ranking;
@@ -964,12 +965,12 @@ namespace FishingIdle.Game.Bootstrap
                 Celebrations.Show(GameTexts.Celebration.LevelUp(level), GameTexts.Celebration.LevelUpLine, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
             }
 
-            if (update.DollarsGained > 0)
-            {
-                Toasts.Push(GameTexts.Toasts.Dollars(Format.Number(update.DollarsGained)), ToastKind.Important);
-            }
-
+            PushPassMilestones(update.LevelsReached);
             Player = Game.Player.GetPlayer();
+            if (update.LevelsReached.Count > 0)
+            {
+                Pass = Game.Pass.GetPass();
+            }
         }
 
         // ------------------------------------------------------------------ Map, Shop and rod intents
@@ -980,8 +981,6 @@ namespace FishingIdle.Game.Bootstrap
 
         /// <summary>Rod, boat and bait in use and the chances they give (refreshed with the player).</summary>
         public GearView Gear { get; private set; }
-
-        public void BuyBoat(string boatId) => GearIntent(() => Game.Gear.BuyBoat(boatId), gear => GameTexts.Gear.BoughtBoat(gear.BoatName), ToastKind.Important);
 
         public void UseBoat(string boatId) => GearIntent(() => Game.Gear.UseBoat(boatId), gear => GameTexts.Gear.UsingBoat(gear.BoatName), ToastKind.Info);
 
@@ -1001,6 +1000,80 @@ namespace FishingIdle.Game.Bootstrap
         }
 
         public VipView Vip { get; private set; }
+
+        // ------------------------------------------------------------------ Passe do Pescador (M24-T17)
+
+        /// <summary>The pass as the service last returned it (refreshed with the player). Presentation only.</summary>
+        public PassView Pass { get; private set; }
+
+        /// <summary>A level-up notice for each pass milestone reached (the rewards wait in the pass).</summary>
+        public void PushPassMilestones(System.Collections.Generic.IEnumerable<int> levels)
+        {
+            if (!IsRunning)
+            {
+                return;
+            }
+
+            foreach (var level in levels)
+            {
+                if (Game.Pass.IsMilestone(level))
+                {
+                    Toasts.Push(GameTexts.Toasts.PassMilestone(level), ToastKind.Important, notify: true);
+                }
+            }
+        }
+
+        public void ClaimPass(int level, PassTrack track) => PassIntent(() => Game.Pass.Claim(level, track));
+
+        public void ClaimAllPass() => PassIntent(() => Game.Pass.ClaimAll());
+
+        public void BuyPassPremium()
+        {
+            Guard(() =>
+            {
+                var result = Game.Pass.BuyPremium();
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Pass.BoughtPremium, ToastKind.Important);
+                Refresh();
+            });
+        }
+
+        private void PassIntent(Func<ServiceResult<PassClaimResult>> call)
+        {
+            Guard(() =>
+            {
+                var result = call();
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                var claim = result.Value;
+                var items = new System.Collections.Generic.List<string>();
+                if (claim.Coins > 0) items.Add(GameTexts.Pass.ItemCoins(Format.Short(claim.Coins)));
+                if (claim.Shells > 0) items.Add(GameTexts.Pass.ItemShells(Format.Number(claim.Shells)));
+                if (claim.Dollars > 0) items.Add(GameTexts.Pass.ItemDollars(Format.Number(claim.Dollars)));
+                foreach (var fragments in claim.Fragments)
+                {
+                    items.Add(GameTexts.Gear.FragmentsToast(Format.Number(fragments.Amount), fragments.BoatName));
+                }
+
+                Toasts.Push(items.Count > 0 ? GameTexts.Pass.ClaimedItems(string.Join(", ", items)) : GameTexts.Pass.ClaimedToast(claim.Claimed), ToastKind.Coins);
+                foreach (var boat in claim.BoatsAssembled)
+                {
+                    Toasts.Push(GameTexts.Gear.BoatAssembledToast(boat), ToastKind.Important, notify: true);
+                    Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, boat, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+                }
+
+                Refresh();
+            });
+        }
 
         public void BuyVip()
         {
@@ -1309,6 +1382,7 @@ namespace FishingIdle.Game.Bootstrap
             Travel = Game.Maps.GetTravel();
             Gear = Game.Gear.GetGear();
             Vip = Game.Vip.GetVip();
+            Pass = Game.Pass.GetPass();
             CrewCoinsPerSecond = Game.Crew.GetCrew(CrewBuyMode.One).CoinsPerSecond;
         }
 

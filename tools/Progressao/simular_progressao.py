@@ -9,8 +9,11 @@ O que ele faz:
   - pesca online a cada 30 s e offline a cada 60 s, com o limite de 24 h, e gasta uma carga de isca por
     tentativa, online ou offline;
   - compra como um jogador cuidadoso: a próxima vara assim que tem o dinheiro (itens não têm nível mínimo desde
-    M24-T09; guarda dinheiro para ela quando o mapa que a pede está a 8 níveis), depois barcos, níveis da vara e
-    do barco (até o Nv.100, curva_niveis.py; o mais barato primeiro) e iscas (só quando a isca se paga);
+    M24-T09; guarda dinheiro para ela quando o mapa que a pede está a 8 níveis), níveis da vara e do barco (até o
+    Nv.100, curva_niveis.py; o mais barato primeiro) e iscas (só quando a isca se paga);
+  - barcos não são comprados (M24-T16, A-157): cada peixe puxado no mapa de um barco dá, em média,
+    fragment_drop_chance fragmento dele (online e offline, se drop_on_offline_fishing); com fragments_required o barco
+    é montado e o jogador passa a usar o melhor barco que tem;
   - vende tudo o que pesca ao NPC (é o máximo de Moedas sem Mercado) e sempre pesca no melhor mapa liberado;
   - repete para quatro jeitos de jogar (perfis) e escreve os dias até cada faixa de nível.
 
@@ -54,6 +57,9 @@ class Rules:
         eq = load('equipment.json')
         self.eq_cfg = eq
         self.boats = sorted(eq['boats'], key=lambda b: b['tier'])
+        # Boats by fragments (M24-T16): the boat of each map, and whether offline fishing drops them too.
+        self.boat_of_map = {b['map_id']: b for b in self.boats if b.get('map_id')}
+        self.fragments_offline = (eq.get('boat_fragments') or {}).get('drop_on_offline_fishing', True)
         self.baits = eq['baits']
         econ = load('economy.json')
         sh = econ['shells']
@@ -119,6 +125,9 @@ class Player:
         self.rod = rules.rods[0]
         self.boat = rules.boats[0]
         self.boat_levels = {}    # boat id -> level (boats level up to Nv.100 since M24-T13)
+        self.owned_boats = {rules.boats[0]['id']}
+        self.fragments = {}      # boat id -> fragments (expected value) not yet used to assemble it
+        self.offline = False     # set by the caller while it credits offline fishing
         # Whether a level of a rod or boat that costs this many Moedas is worth it now (a simulator can limit it).
         self.upgrade_ok = lambda coins: True
         self.bait, self.bait_charges = None, 0
@@ -150,7 +159,7 @@ class Player:
             lvl = self.rods[self.rod['id']]
             # bait runs out in the middle: split the batch there
             n = attempts if not (self.bait and self.bait_charges > 0) else min(attempts, self.bait_charges)
-            xp, coins, shells, _ = self.r.per_attempt(mp, self.rod, lvl, self.gear())
+            xp, coins, shells, caught = self.r.per_attempt(mp, self.rod, lvl, self.gear())
             xp *= xp_mult
             # level ups inside the batch: stop at the next level
             need = self.r.xp_to_next[self.level] - self.xp
@@ -162,6 +171,9 @@ class Player:
             self.xp += xp * steps
             self.coins += coins * steps
             self.shells += shells * steps
+            boat = self.r.boat_of_map.get(mp['id'])
+            if boat and (not self.offline or self.r.fragments_offline):
+                self.add_fragments(boat, caught * steps * boat.get('fragment_drop_chance', 0.0))
             if self.bait and self.bait_charges > 0:
                 self.bait_charges -= steps
             attempts -= steps
@@ -170,6 +182,19 @@ class Player:
                 self.level += 1
                 self.reached[self.level] = t_days
         return attempts
+
+    # ------------------------------------------------------------- boats by fragments (M24-T16)
+    def add_fragments(self, boat, amount):
+        """Adds fragments of a boat; assembles it when they reach fragments_required (as BoatFragmentRules.cs)."""
+        self.fragments[boat['id']] = self.fragments.get(boat['id'], 0.0) + amount
+        if boat['id'] not in self.owned_boats and self.fragments[boat['id']] >= boat.get('fragments_required', 1):
+            self.fragments[boat['id']] -= boat['fragments_required']
+            self.owned_boats.add(boat['id'])
+            self.boat_levels.setdefault(boat['id'], 1)
+            self.bought[boat['id']] = getattr(self, 'now', 0.0)
+            # The new boat is used when it is better than the one in use (the service does the same).
+            if self.r.boat_bonus(boat, 1) > self.boat_bonus():
+                self.boat = boat
 
     # ------------------------------------------------------------- shopping
     def next_rod(self):
@@ -194,15 +219,7 @@ class Player:
             if nxt and r.rod_needed_at[nxt['id']] <= self.level + 8:
                 reserve_c = nxt['acquisition']['purchase_cost_coins']
                 reserve_s = nxt['acquisition'].get('purchase_cost_shells', 0)
-        # boats
-        for boat in r.boats:
-            if boat['tier'] > self.boat['tier'] \
-                    and self.coins - reserve_c >= boat['cost_coins'] and self.shells - reserve_s >= boat['cost_shells']:
-                self.coins -= boat['cost_coins']
-                self.shells -= boat['cost_shells']
-                self.boat = boat
-                self.boat_levels.setdefault(boat['id'], 1)
-                self.bought[boat['id']] = getattr(self, 'now', 0.0)
+        # boats: not sold since M24-T16; they arrive by fragments (add_fragments)
         # rod and boat levels (curva_niveis.py): the cheaper of the two next levels first
         while True:
             options = []
@@ -288,7 +305,9 @@ def play(rules, profile, max_days=400):
             start = day * 1440 + start_h * 60
             if last_end is not None:
                 away = min(start - last_end, cap_min)
+                p.offline = True
                 p.fish(int(away * offline_per_min), start / 1440, getattr(rules, 'offline_xp_mult', 1.0))
+                p.offline = False
             p.shop()
             for k in range(0, minutes, 10):
                 p.fish(int(min(10, minutes - k) * online_per_min), (start + k + 10) / 1440)

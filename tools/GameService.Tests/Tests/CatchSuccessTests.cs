@@ -134,37 +134,25 @@ public sealed class CatchSuccessTests
     }
 
     [Fact]
-    public void Boats_cost_coins_and_shells_and_raise_the_chance()
+    public void Boats_come_from_fragments_and_raise_the_chance()
     {
+        // Boats are not sold since M24-T16 (A-157): all the fragments of one assemble it and put it in use.
         var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
-        var save = game.Session.Save;
         var gear = game.Gear.GetGear();
         Assert.Equal("boat_00", gear.BoatId);
         Assert.True(gear.Boats.First().Owned);
-        Assert.Equal(ServiceError.NotEnoughCoins, game.Gear.BuyBoat("boat_01").Error);
+        Assert.All(gear.Boats.Skip(1), b => Assert.False(b.Owned));
 
-        var boat1 = gear.Boats.Single(b => b.BoatId == "boat_01");
-        save.Coins = boat1.CostCoins;
-        save.Shells = boat1.CostShells;
-        var bought = game.Gear.BuyBoat("boat_01");
-        Assert.True(bought.Succeeded);
-        Assert.Equal(0, save.Coins);
-        Assert.Equal(0, save.Shells);
-        Assert.Equal("boat_01", bought.Value.BoatId);
-        Assert.Equal(0.5 + bought.Value.BoatBonus, bought.Value.Chances.Single(c => c.RarityId == "common").Chance, 6);
-        Assert.True(bought.Value.BoatBonus > 0);
-        Assert.Equal(ServiceError.BoatAlreadyOwned, game.Gear.BuyBoat("boat_01").Error);
+        TestSupport.GiveBoat(game, "boat_01");
+        var withBoat = game.Gear.GetGear();
+        Assert.Equal("boat_01", withBoat.BoatId);
+        Assert.Equal(0.5 + withBoat.BoatBonus, withBoat.Chances.Single(c => c.RarityId == "common").Chance, 6);
+        Assert.True(withBoat.BoatBonus > 0);
 
-        save.Coins = 1_000_000;
-        var boat3Shells = gear.Boats.Single(b => b.BoatId == "boat_03").CostShells;
-        save.Shells = boat3Shells - 1;
-        Assert.Equal(ServiceError.NotEnoughShells, game.Gear.BuyBoat("boat_03").Error);
-        save.Shells = boat3Shells;
-        Assert.True(game.Gear.BuyBoat("boat_03").Succeeded);
-        Assert.Equal(0, save.Shells);
-        Assert.Equal(1_000_000 - gear.Boats.Single(b => b.BoatId == "boat_03").CostCoins, save.Coins);
+        TestSupport.GiveBoat(game, "boat_03");
+        Assert.Equal("boat_03", game.Gear.GetGear().BoatId);
 
-        // Going back to an owned boat is free; one never bought is refused.
+        // Going back to an owned boat is free; one never assembled is refused.
         Assert.True(game.Gear.UseBoat("boat_00").Succeeded);
         Assert.Equal(ServiceError.BoatNotOwned, game.Gear.UseBoat("boat_02").Error);
         Assert.Equal(0.50, game.Gear.GetGear().Chances.Single(c => c.RarityId == "common").Chance, 6);

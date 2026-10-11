@@ -272,6 +272,7 @@ namespace FishingIdle.GameService.Fishing
             update.LevelsReached.AddRange(settled.LevelsReached);
             update.XpGained += settled.XpGained;
             update.ShellsGained += settled.ShellsGained;
+            update.Fragments.AddRange(settled.Fragments);
             Save.Fishing.Active = false;
             return true;
         }
@@ -429,6 +430,14 @@ namespace FishingIdle.GameService.Fishing
             if (attempt.Caught)
             {
                 ApplyCatch(attempt.Catch, atMs, update, offline: offline);
+
+                // Boats by fragments (M24-T16): the map's boat may drop a fragment, from the same cycle's Rng, after the catch.
+                var fragment = Shop.BoatFragmentRules.RollOnCatch(Config, Save, map, rng, offline);
+                if (fragment != null)
+                {
+                    update.Fragments.Add(fragment);
+                }
+
                 return;
             }
 
@@ -519,9 +528,9 @@ namespace FishingIdle.GameService.Fishing
 
         private void AddFisherXp(long xp, FishingUpdate update)
         {
-            // Shared with the Crew (M24-T05): total XP, levels and the Dólares of the level milestones.
+            // Shared with the Crew (M24-T05): total XP and levels (the milestones' rewards are in the Passe do Pescador).
             update.XpGained += xp;
-            update.DollarsGained += FisherLevelRules.AddXp(Config, Save, xp, update.LevelsReached);
+            FisherLevelRules.AddXp(Config, Save, xp, update.LevelsReached);
         }
 
         private MapConfig CurrentMap()

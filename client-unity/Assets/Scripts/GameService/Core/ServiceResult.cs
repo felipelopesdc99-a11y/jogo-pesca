@@ -58,7 +58,6 @@ namespace FishingIdle.GameService.Core
         NoRod,
         TutorialStepMismatch,
         BoatNotFound,
-        BoatAlreadyOwned,
         BoatNotOwned,
         BoatAtMaxLevel,
         BoatHasNoLevels,
@@ -77,6 +76,12 @@ namespace FishingIdle.GameService.Core
         UpgradeLocked,
         UpgradeAlreadyBought,
         UpgradeMaxLevel,
+        PassMilestoneNotFound,
+        PassMilestoneNotReached,
+        PassAlreadyClaimed,
+        PassPremiumLocked,
+        PassPremiumOwned,
+        PassNothingToClaim,
     }
 
     /// <summary>

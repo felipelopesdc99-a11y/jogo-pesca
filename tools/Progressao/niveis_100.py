@@ -458,6 +458,10 @@ def main():
     ap.add_argument('--gravar', action='store_true')
     a = ap.parse_args()
     if a.acao == 'gerar':
+        # Since M24-T16 (TD-042) the boats have no price and there are 10 of them: "gerar" would rebuild the boats
+        # from the old prices and lose the new ones. The numbers of the 5 old boats stay as this script left them.
+        raise SystemExit('"gerar" grava o formato dos barcos de antes do M24-T16 (barcos comprados) e não deve mais ser '
+                         'rodado. Os barcos agora vêm de tools/Progressao/passe_fragmentos.py; "simular" continua valendo.')
         before = read_before()
         if not os.path.exists(OUT):
             # Keep the old tables so the script can run again on the new format.

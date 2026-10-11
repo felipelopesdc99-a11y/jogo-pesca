@@ -131,9 +131,6 @@ namespace FishingIdle.GameService.Crew
         public long XpGained { get; internal set; }
         public List<int> LevelsReached { get; } = new List<int>();
 
-        /// <summary>Dólares of the level milestones the Crew's XP reached (A-111).</summary>
-        public long DollarsGained { get; internal set; }
-
         public bool HasChanges => CoinsGained > 0 || XpGained > 0;
     }
 
@@ -154,6 +151,5 @@ namespace FishingIdle.GameService.Crew
         public long CoinsGained { get; internal set; }
         public long XpGained { get; internal set; }
         public List<int> LevelsReached { get; } = new List<int>();
-        public long DollarsGained { get; internal set; }
     }
 }

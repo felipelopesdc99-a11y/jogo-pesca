@@ -450,7 +450,7 @@ namespace FishingIdle.Editor
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField(T.BoatsTitle, EditorStyles.boldLabel);
             var boats = (JArray)_documents[equipment]["boats"];
-            Header(new[] { T.SpeciesName, T.GearBonus, T.GearBonusAtMax, T.GearCoins, T.GearShells, T.LevelCostFirst, T.LevelCostGrowth, T.LevelShellsFirst, T.LevelShellsGrowth });
+            Header(new[] { T.SpeciesName, T.GearBonus, T.GearBonusAtMax, T.BoatFragments, T.BoatFragmentChance, T.LevelCostFirst, T.LevelCostGrowth, T.LevelShellsFirst, T.LevelShellsGrowth });
             for (var i = 0; boats != null && i < boats.Count; i++)
             {
                 var prefix = "boats[" + i + "].";
@@ -459,8 +459,8 @@ namespace FishingIdle.Editor
                     Text(equipment, prefix + "display_name", 130);
                     Cell(equipment, prefix + "catch_success_bonus");
                     Cell(equipment, prefix + "catch_success_bonus_at_max_level");
-                    Cell(equipment, prefix + "cost_coins");
-                    Cell(equipment, prefix + "cost_shells");
+                    Cell(equipment, prefix + "fragments_required");
+                    Cell(equipment, prefix + "fragment_drop_chance");
                     Cell(equipment, prefix + "upgrade_cost.coins_first");
                     Cell(equipment, prefix + "upgrade_cost.coins_growth");
                     Cell(equipment, prefix + "upgrade_cost.shells_first");

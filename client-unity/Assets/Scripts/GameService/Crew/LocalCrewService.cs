@@ -274,10 +274,9 @@ namespace FishingIdle.GameService.Crew
             crew.LastCreditedAtMs = now;
             if (elapsedMs <= (long)Math.Round(config.Crew.OnlineGapSeconds * 1000.0))
             {
-                Credit(config, elapsedMs / 1000.0, update.LevelsReached, out var coins, out var xp, out var dollars);
+                Credit(config, elapsedMs / 1000.0, update.LevelsReached, out var coins, out var xp);
                 update.CoinsGained = coins;
                 update.XpGained = xp;
-                update.DollarsGained = dollars;
                 return update;
             }
 
@@ -290,14 +289,13 @@ namespace FishingIdle.GameService.Crew
                 ReducedRate = config.Crew.Offline.ReducedRate,
                 MaxHours = config.Crew.Offline.MaxHours + extraHours,
             };
-            Credit(config, share.EffectiveSeconds, report.LevelsReached, out var offlineCoins, out var offlineXp, out var offlineDollars);
+            Credit(config, share.EffectiveSeconds, report.LevelsReached, out var offlineCoins, out var offlineXp);
             report.AwayMs += elapsedMs;
             report.FullRateMs += (long)Math.Round(share.FullSeconds * 1000.0);
             report.ReducedRateMs += (long)Math.Round(share.ReducedSeconds * 1000.0);
             report.Capped |= share.Capped;
             report.CoinsGained += offlineCoins;
             report.XpGained += offlineXp;
-            report.DollarsGained += offlineDollars;
 
             // A summary only when the Crew earned something: a player with no one hired sees only the fishing one.
             if (report.CoinsGained > 0 || report.XpGained > 0)
@@ -310,11 +308,10 @@ namespace FishingIdle.GameService.Crew
         }
 
         /// <summary>Adds <paramref name="seconds"/> of income: whole Moedas and XP now, the fractions kept for later.</summary>
-        private void Credit(GameConfig config, double seconds, System.Collections.Generic.List<int> levels, out long coins, out long xp, out long dollars)
+        private void Credit(GameConfig config, double seconds, System.Collections.Generic.List<int> levels, out long coins, out long xp)
         {
             coins = 0;
             xp = 0;
-            dollars = 0;
             if (!(seconds > 0))
             {
                 return;
@@ -335,7 +332,7 @@ namespace FishingIdle.GameService.Crew
             if (xp > 0)
             {
                 crew.XpEarned = SafeAdd(crew.XpEarned, xp);
-                dollars = FisherLevelRules.AddXp(config, Save, xp, levels);
+                FisherLevelRules.AddXp(config, Save, xp, levels);
             }
         }
 

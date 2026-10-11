@@ -10,37 +10,24 @@ namespace FishingIdle.GameService.Fishing
     {
         public int LevelBefore { get; internal set; }
         public int LevelAfter { get; internal set; }
-        public long DollarsGained { get; internal set; }
     }
 
     /// <summary>
-    /// Fisher level rules shared by fishing and loading a save: the Dólares of a level milestone (A-111, capped at
-    /// <c>up_to_level</c> since A-153) and the move of an older save to the current XP curve (M24-T03, TD-038).
+    /// Fisher level rules shared by fishing, the Crew and loading a save: adding XP and the move of an older save to the
+    /// current XP curve (M24-T03, TD-038). Since M24-T17 (A-158) the level milestones pay nothing by themselves: their
+    /// Dólares (A-111) are in the free track of the Passe do Pescador, claimed there.
     /// </summary>
     public static class FisherLevelRules
     {
-        /// <summary>Dólares for reaching exactly <paramref name="level"/>: a multiple of every_levels, up to up_to_level.</summary>
-        public static long DollarsForReaching(GameConfig config, int level)
-        {
-            var reward = config.Progression.Fisher.DollarsPerLevels;
-            if (reward == null || reward.EveryLevels <= 0 || reward.Dollars <= 0 || level % reward.EveryLevels != 0)
-            {
-                return 0;
-            }
-
-            return reward.UpToLevel > 0 && level > reward.UpToLevel ? 0 : reward.Dollars;
-        }
-
         /// <summary>
-        /// Adds Fisher XP from any source (fishing, the Crew): counts it in the total (TD-038), climbs the levels it
-        /// reaches (each one added to <paramref name="levelsReached"/>) and pays the Dólares of the level milestones
-        /// (A-111). Returns the Dólares paid. At the max level the XP still counts in the total.
+        /// Adds Fisher XP from any source (fishing, the Crew): counts it in the total (TD-038) and climbs the levels it
+        /// reaches (each one added to <paramref name="levelsReached"/>). At the max level the XP still counts in the total.
         /// </summary>
-        internal static long AddXp(GameConfig config, PlayerSave save, long xp, List<int> levelsReached)
+        internal static void AddXp(GameConfig config, PlayerSave save, long xp, List<int> levelsReached)
         {
             if (xp <= 0)
             {
-                return 0;
+                return;
             }
 
             var maxLevel = config.Progression.Fisher.MaxLevel;
@@ -48,10 +35,9 @@ namespace FishingIdle.GameService.Fishing
             if (save.FisherLevel >= maxLevel)
             {
                 save.FisherXp = 0;
-                return 0;
+                return;
             }
 
-            long dollars = 0;
             save.FisherXp = xp > long.MaxValue - save.FisherXp ? long.MaxValue : save.FisherXp + xp;
             while (save.FisherLevel < maxLevel)
             {
@@ -64,22 +50,12 @@ namespace FishingIdle.GameService.Fishing
                 save.FisherXp -= needed;
                 save.FisherLevel++;
                 levelsReached?.Add(save.FisherLevel);
-
-                // A-111: a few Dólares at every level milestone, so a VIP can be saved up by playing (up to Nv.100, A-153).
-                var reward = DollarsForReaching(config, save.FisherLevel);
-                if (reward > 0)
-                {
-                    save.Dollars += reward;
-                    dollars += reward;
-                }
             }
 
             if (save.FisherLevel >= maxLevel)
             {
                 save.FisherXp = 0;
             }
-
-            return dollars;
         }
 
         /// <summary>The level and the XP inside it that a total XP reaches on the current curve.</summary>
@@ -107,7 +83,7 @@ namespace FishingIdle.GameService.Fishing
         /// Moves a save made on an older XP curve to the current one: its total XP (every XP ever earned, kept in
         /// <see cref="PlayerSave.FisherXpTotal"/>) becomes the matching level on the new table. The level never goes
         /// down: when the new curve asks for more, the player keeps the level and the XP inside it (capped just below
-        /// the next level). Level milestones crossed on the way give their Dólares, as fishing would.
+        /// the next level). The level milestones crossed on the way become claimable in the Passe do Pescador (A-158).
         /// Returns null when the save is already on the current curve.
         /// </summary>
         public static FisherCurveChange MoveToCurrentCurve(GameConfig config, PlayerSave save)
@@ -125,11 +101,6 @@ namespace FishingIdle.GameService.Fishing
 
             if (level >= before)
             {
-                for (var reached = before + 1; reached <= level; reached++)
-                {
-                    change.DollarsGained += DollarsForReaching(config, reached);
-                }
-
                 save.FisherLevel = level;
                 save.FisherXp = xpInLevel;
             }
@@ -140,7 +111,6 @@ namespace FishingIdle.GameService.Fishing
                 save.FisherXp = needed > 0 ? Math.Max(0, Math.Min(save.FisherXp, needed - 1)) : 0;
             }
 
-            save.Dollars += change.DollarsGained;
             save.FisherXpCurveVersion = curve;
             change.LevelAfter = save.FisherLevel;
             return change;

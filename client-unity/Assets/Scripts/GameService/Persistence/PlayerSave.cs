@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 15;
+        public const int CurrentVersion = 16;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -74,8 +74,17 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>The boat in use (docs/SISTEMA_SUCESSO_PESCA.md). Null = the starter boat.</summary>
         public string BoatId { get; set; }
 
-        /// <summary>Boats bought (the starter boat is always owned and not listed).</summary>
+        /// <summary>
+        /// Boats owned (the starter boat is always owned and not listed): bought before M24-T16, assembled from fragments
+        /// since (A-157).
+        /// </summary>
         public List<string> OwnedBoatIds { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Fragments of each boat not used to assemble it, by boat id (M24-T16). Assembling spends fragments_required;
+        /// after the boat is owned, new ones are kept here as extras (OD-060). Added in save version 16.
+        /// </summary>
+        public Dictionary<string, long> BoatFragments { get; set; } = new Dictionary<string, long>();
 
         /// <summary>
         /// Level of each boat bought, by boat id (M24-T13). A boat missing here is at Nv.1. Added in save version 15.
@@ -150,6 +159,9 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>The upgrades bought with Moedas, by id, with their levels (M24-T06). Added in save version 14.</summary>
         public UpgradesState Upgrades { get; set; } = new UpgradesState();
 
+        /// <summary>The Passe do Pescador: premium bought and milestones claimed (M24-T17). Added in save version 16.</summary>
+        public PassState Pass { get; set; } = new PassState();
+
         /// <summary>The equipped rod item, or null if the reference is broken.</summary>
         public InventoryItem EquippedRodItem()
         {
@@ -223,6 +235,30 @@ namespace FishingIdle.GameService.Persistence
         {
             return upgradeId != null && Levels != null && Levels.TryGetValue(upgradeId, out var level) ? level : 0;
         }
+    }
+
+    /// <summary>
+    /// The Passe do Pescador (M24-T17, A-158). Only what the player did is stored: the rewards come from pass.json, so a
+    /// balance change applies to milestones not claimed yet.
+    /// </summary>
+    public sealed class PassState
+    {
+        /// <summary>The pass this progress belongs to (pass.json → pass_id). Seasons are the owner's call (OD-059).</summary>
+        public string PassId { get; set; }
+
+        public bool Premium { get; set; }
+        public long PremiumBoughtAtMs { get; set; }
+
+        /// <summary>Levels of the milestones whose free / premium reward was claimed.</summary>
+        public List<int> FreeClaimed { get; set; } = new List<int>();
+        public List<int> PremiumClaimed { get; set; } = new List<int>();
+
+        /// <summary>
+        /// Milestones up to this level already paid their Dólares under the old rule (A-111, 10 Dólares every 10 levels up
+        /// to Nv.100): their free reward is claimed without the Dólares, so nobody gets them twice. Set by the save
+        /// version 16 migration; 0 for a new player.
+        /// </summary>
+        public int LegacyDollarsUpToLevel { get; set; }
     }
 
     /// <summary>Map travel: 30 s, fishing paused, manual only (GDD section 18).</summary>

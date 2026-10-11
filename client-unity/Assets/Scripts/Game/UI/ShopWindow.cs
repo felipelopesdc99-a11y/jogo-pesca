@@ -39,6 +39,9 @@ namespace FishingIdle.Game.UI
             Free,
             Owned,
             InUse,
+
+            /// <summary>A boat not assembled yet: "12/40" fragments (M24-T16, A-157).</summary>
+            Fragments,
         }
 
         /// <summary>One item on the hook wall, whatever the tab: only what the wall and the counter draw.</summary>
@@ -47,6 +50,9 @@ namespace FishingIdle.Game.UI
             public string Id, Name, Sub, Art, Icon, OwnedText;
             public int Tier;
             public long Coins, Shells;
+
+            /// <summary>Boats by fragments: how many the player has and how many assemble it.</summary>
+            public long FragmentsHave, FragmentsNeed;
             public TagKind Tag;
             public bool Square, Turned;
         }
@@ -224,9 +230,10 @@ namespace FishingIdle.Game.UI
                         _items.Add(new WallItem
                         {
                             Id = boat.BoatId, Name = boat.Name, Sub = GameTexts.Gear.Bonus(Format.Percent(boat.Bonus, 0)),
+                            // ASSET_PENDENTE: Barcos/boat_06 … boat_10 (the boat icon until the art arrives).
                             Art = "Barcos/" + boat.BoatId, Icon = Icons.Boat, Tier = boat.Tier,
-                            Coins = boat.CostCoins, Shells = boat.CostShells, OwnedText = GameTexts.Shop.OwnedBoat,
-                            Tag = boat.InUse ? TagKind.InUse : boat.Owned ? TagKind.Owned : TagKind.Price,
+                            FragmentsHave = boat.Fragments, FragmentsNeed = boat.FragmentsRequired, OwnedText = GameTexts.Shop.OwnedBoat,
+                            Tag = boat.InUse ? TagKind.InUse : boat.Owned ? TagKind.Owned : TagKind.Fragments,
                         });
                     }
 
@@ -559,10 +566,14 @@ namespace FishingIdle.Game.UI
                     return width;
                 case TagKind.Free:
                     return skin.SmallGoldLine.CalcSize(new GUIContent(GameTexts.Shop.Free)).x;
+                case TagKind.Fragments:
+                    return 24f + skin.SmallGoldLine.CalcSize(new GUIContent(FragmentsTag(item))).x + 4f;
                 default:
                     return 18f + 4f + skin.PillText.CalcSize(new GUIContent(TagText(item))).x;
             }
         }
+
+        private static string FragmentsTag(WallItem item) => GameTexts.Gear.FragmentsTag(Format.Number(item.FragmentsHave), Format.Number(item.FragmentsNeed));
 
         private static string TagText(WallItem item)
         {
@@ -611,6 +622,11 @@ namespace FishingIdle.Game.UI
                     break;
                 case TagKind.Free:
                     GUI.Label(line, GameTexts.Shop.Free, skin.SmallGoldLine);
+                    break;
+                case TagKind.Fragments:
+                    // ASSET_PENDENTE: the fragment icon (frag_boat_NN); the boat icon until it arrives.
+                    skin.DrawIcon(new Rect(x, line.y + 1f, 18f, 18f), Icons.Boat, UiSkin.Gold);
+                    GUI.Label(new Rect(x + 24f, line.y, line.width - 24f, 20f), FragmentsTag(item), skin.SmallGoldLine);
                     break;
                 default:
                     skin.DrawIcon(new Rect(x, line.y + 1f, 18f, 18f), Icons.Check, ink);
@@ -982,16 +998,32 @@ namespace FishingIdle.Game.UI
                 y += 22f;
             }
 
+            // Boats by fragments (M24-T16, A-157): where they drop and how many there are ("Fragmentos 12/40 · Caem no mapa
+            // Lago Sereno"), with a bar while the boat is not assembled; the extras once it is.
+            if (boat.MapName != null)
+            {
+                var fragments = boat.Owned
+                    ? GameTexts.Gear.FragmentsExtra(Format.Number(boat.Fragments))
+                    : GameTexts.Gear.FragmentsLine(Format.Number(boat.Fragments), Format.Number(boat.FragmentsRequired));
+                var style = boat.Owned ? skin.SmallMuted : skin.SmallBold;
+                GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(fragments + " · " + GameTexts.Gear.FragmentsWhere(boat.MapName), style, w), style);
+                y += 22f;
+                if (!boat.Owned)
+                {
+                    skin.Bar(new Rect(x, y + 2f, w, 10f), boat.FragmentsRequired > 0 ? boat.Fragments / (float)boat.FragmentsRequired : 0f, true);
+                    y += 18f;
+                    var chance = GameTexts.Gear.FragmentsChance(Format.Percent(boat.FragmentChance, 1));
+                    GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(chance, skin.SmallMuted, w), skin.SmallMuted);
+                    y += 22f;
+                }
+            }
+
             // Owned with levels: the Use button / "Em uso" pill sits over the upgrade row.
             var button = new Rect(x, inner.yMax - 44f, w, 44f);
             var use = owned ? new Rect(x, button.y - 50f, w, 40f) : button;
             var price = new Rect(x, use.y - 32f, w, 24f);
-            Note(skin, new Rect(x, y + 6f, w, (boat.Owned && !owned ? button.y : price.y) - 8f - y - 6f), GameTexts.Gear.BoatsNote);
-            if (!boat.Owned)
-            {
-                Cost(skin, new Rect(price.x, price.y + 1f, price.width, 22f), boat.CostCoins, boat.CostShells);
-            }
-            else if (owned && boat.NextUpgradeCoins > 0)
+            Note(skin, new Rect(x, y + 6f, w, (owned ? price.y : button.y) - 8f - y - 6f), GameTexts.Gear.BoatsNote);
+            if (owned && boat.NextUpgradeCoins > 0)
             {
                 Cost(skin, new Rect(price.x, price.y + 1f, price.width, 22f), boat.NextUpgradeCoins, boat.NextUpgradeShells);
             }
@@ -1023,13 +1055,12 @@ namespace FishingIdle.Game.UI
                     _root.UseBoat(boat.BoatId);
                 }
             }
-            else if (boat.BuyBlocker != ServiceError.None)
+            else
             {
-                Blocked(skin, button, boat.BuyBlocker);
-            }
-            else if (skin.IconButton(button, Icons.Buy, GameTexts.Shop.Buy, skin.ButtonPrimary))
-            {
-                _root.BuyBoat(boat.BoatId);
+                // Boats are not sold: a gold pill says how to get it.
+                var hint = GameTexts.Gear.AssembleHint.ToUpperInvariant();
+                var hw = skin.PillWidth(hint, true) + 6f;
+                skin.AccentPill(new Rect(button.center.x - hw / 2f, button.center.y - 13f, hw, 26f), hint, UiSkin.Gold, Icons.Boat);
             }
         }
 

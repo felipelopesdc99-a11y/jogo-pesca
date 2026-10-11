@@ -1,0 +1,693 @@
+{
+  "gerado_por": "tools/Progressao/passe_fragmentos.py",
+  "nota": "Barcos por fragmentos (M24-T16, A-157) e Passe do Pescador (M24-T17, A-158). \"no_mapa\": dias para montar o barco pescando só no mapa dele (online e offline), com a vara e o barco que o jogador de referência (4 vezes por dia) tinha ao chegar lá. \"progressao\": o jogo inteiro (pesca, Tripulação e Melhorias, sempre no melhor mapa liberado, sem voltar para pegar fragmentos), com o passe grátis resgatado na hora e, no \"premium\", o premium comprado assim que os Dólares dão. Dias contados da meia-noite do primeiro dia.",
+  "parametros": {
+    "dias_alvo_mapa_1": 2.0,
+    "dias_alvo_mapa_10": 10.0,
+    "perfil_referencia": "quatro_vezes",
+    "minutos_de_renda_moedas": 10.0,
+    "minutos_conchas": 30.0,
+    "premium_mult": 2.0,
+    "preco_premium_dolares": 100
+  },
+  "tentativas_por_dia": {
+    "sempre_aberto": 2880,
+    "quatro_vezes": 1560,
+    "uma_vez": 1470
+  },
+  "no_mapa": {
+    "boat_01": {
+      "nome": "Remo Valente",
+      "mapa": "map_01",
+      "fragmentos": 20,
+      "chance_por_peixe": 0.013,
+      "peixes_puxados_por_tentativa": 0.5,
+      "bonus_nv1": 0.02,
+      "bonus_nv100": 0.06,
+      "dias_sempre_aberto": 1.07,
+      "dias_quatro_vezes": 1.97,
+      "dias_uma_vez": 2.09
+    },
+    "boat_02": {
+      "nome": "Rastro Azul",
+      "mapa": "map_02",
+      "fragmentos": 25,
+      "chance_por_peixe": 0.013,
+      "peixes_puxados_por_tentativa": 0.514,
+      "bonus_nv1": 0.04,
+      "bonus_nv100": 0.12,
+      "dias_sempre_aberto": 1.3,
+      "dias_quatro_vezes": 2.4,
+      "dias_uma_vez": 2.55
+    },
+    "boat_03": {
+      "nome": "Proa Selvagem",
+      "mapa": "map_03",
+      "fragmentos": 35,
+      "chance_por_peixe": 0.015,
+      "peixes_puxados_por_tentativa": 0.523,
+      "bonus_nv1": 0.06,
+      "bonus_nv100": 0.18,
+      "dias_sempre_aberto": 1.55,
+      "dias_quatro_vezes": 2.86,
+      "dias_uma_vez": 3.04
+    },
+    "boat_04": {
+      "nome": "Costa Nobre",
+      "mapa": "map_04",
+      "fragmentos": 45,
+      "chance_por_peixe": 0.015,
+      "peixes_puxados_por_tentativa": 0.544,
+      "bonus_nv1": 0.08,
+      "bonus_nv100": 0.24,
+      "dias_sempre_aberto": 1.91,
+      "dias_quatro_vezes": 3.53,
+      "dias_uma_vez": 3.75
+    },
+    "boat_05": {
+      "nome": "Horizonte Dourado",
+      "mapa": "map_05",
+      "fragmentos": 55,
+      "chance_por_peixe": 0.016,
+      "peixes_puxados_por_tentativa": 0.539,
+      "bonus_nv1": 0.1,
+      "bonus_nv100": 0.3,
+      "dias_sempre_aberto": 2.21,
+      "dias_quatro_vezes": 4.09,
+      "dias_uma_vez": 4.34
+    },
+    "boat_06": {
+      "nome": "Vela do Sol",
+      "mapa": "map_06",
+      "fragmentos": 70,
+      "chance_por_peixe": 0.017,
+      "peixes_puxados_por_tentativa": 0.549,
+      "bonus_nv1": 0.12,
+      "bonus_nv100": 0.36,
+      "dias_sempre_aberto": 2.6,
+      "dias_quatro_vezes": 4.81,
+      "dias_uma_vez": 5.1
+    },
+    "boat_07": {
+      "nome": "Quilha Azul",
+      "mapa": "map_07",
+      "fragmentos": 90,
+      "chance_por_peixe": 0.019,
+      "peixes_puxados_por_tentativa": 0.533,
+      "bonus_nv1": 0.14,
+      "bonus_nv100": 0.42,
+      "dias_sempre_aberto": 3.09,
+      "dias_quatro_vezes": 5.7,
+      "dias_uma_vez": 6.05
+    },
+    "boat_08": {
+      "nome": "Canto da Baleia",
+      "mapa": "map_08",
+      "fragmentos": 120,
+      "chance_por_peixe": 0.02,
+      "peixes_puxados_por_tentativa": 0.545,
+      "bonus_nv1": 0.16,
+      "bonus_nv100": 0.48,
+      "dias_sempre_aberto": 3.83,
+      "dias_quatro_vezes": 7.06,
+      "dias_uma_vez": 7.5
+    },
+    "boat_09": {
+      "nome": "Farol Noturno",
+      "mapa": "map_09",
+      "fragmentos": 155,
+      "chance_por_peixe": 0.023,
+      "peixes_puxados_por_tentativa": 0.521,
+      "bonus_nv1": 0.18,
+      "bonus_nv100": 0.54,
+      "dias_sempre_aberto": 4.49,
+      "dias_quatro_vezes": 8.3,
+      "dias_uma_vez": 8.8
+    },
+    "boat_10": {
+      "nome": "Titã do Atlântico",
+      "mapa": "map_10",
+      "fragmentos": 200,
+      "chance_por_peixe": 0.024,
+      "peixes_puxados_por_tentativa": 0.533,
+      "bonus_nv1": 0.2,
+      "bonus_nv100": 0.6,
+      "dias_sempre_aberto": 5.43,
+      "dias_quatro_vezes": 10.03,
+      "dias_uma_vez": 10.64
+    }
+  },
+  "passe_resumo": {
+    "Nv.10": {
+      "gratis": {
+        "coins": 930,
+        "shells": 3,
+        "dollars": 10,
+        "boat_id": "boat_01",
+        "fragments": 3
+      },
+      "premium": {
+        "coins": 1860,
+        "shells": 6,
+        "dollars": 0,
+        "boat_id": "boat_01",
+        "fragments": 6
+      }
+    },
+    "Nv.50": {
+      "gratis": {
+        "coins": 74000,
+        "shells": 5,
+        "dollars": 10,
+        "boat_id": "boat_05",
+        "fragments": 9
+      },
+      "premium": {
+        "coins": 148000,
+        "shells": 10,
+        "dollars": 10,
+        "boat_id": "boat_05",
+        "fragments": 18
+      }
+    },
+    "Nv.100": {
+      "gratis": {
+        "coins": 1220000,
+        "shells": 7,
+        "dollars": 10,
+        "boat_id": "boat_10",
+        "fragments": 30
+      },
+      "premium": {
+        "coins": 2440000,
+        "shells": 14,
+        "dollars": 10,
+        "boat_id": "boat_10",
+        "fragments": 60
+      }
+    },
+    "Nv.250": {
+      "gratis": {
+        "coins": 90400000,
+        "shells": 26,
+        "dollars": 0,
+        "boat_id": "boat_05",
+        "fragments": 6
+      },
+      "premium": {
+        "coins": 181000000,
+        "shells": 52,
+        "dollars": 10,
+        "boat_id": "boat_05",
+        "fragments": 12
+      }
+    },
+    "Nv.500": {
+      "gratis": {
+        "coins": 982000000,
+        "shells": 45,
+        "dollars": 10,
+        "boat_id": "boat_10",
+        "fragments": 20
+      },
+      "premium": {
+        "coins": 1960000000,
+        "shells": 90,
+        "dollars": 10,
+        "boat_id": "boat_10",
+        "fragments": 40
+      }
+    },
+    "Nv.1000": {
+      "gratis": {
+        "coins": 844000000000,
+        "shells": 69,
+        "dollars": 10,
+        "boat_id": "boat_10",
+        "fragments": 20
+      },
+      "premium": {
+        "coins": 1690000000000,
+        "shells": 138,
+        "dollars": 10,
+        "boat_id": "boat_10",
+        "fragments": 40
+      }
+    }
+  },
+  "passe_totais": {
+    "dolares_gratis_ate_nv100": 100,
+    "dolares_gratis_total": 190,
+    "dolares_premium_total": 200,
+    "moedas_gratis_total": 4492711859130,
+    "conchas_gratis_total": 4092,
+    "moedas_premium_total": 8988986642260,
+    "conchas_premium_total": 8184
+  },
+  "progressao": {
+    "sempre_aberto_gratis": {
+      "descricao": "Deixa o jogo aberto o dia todo · só o passe grátis",
+      "barcos": {
+        "boat_01": {
+          "montado_em": "33,4 dias",
+          "dias": 33.37,
+          "fragmentos_da_pesca": 1.8,
+          "fragmentos_do_passe": 21.0
+        },
+        "boat_02": {
+          "montado_em": "26,6 dias",
+          "dias": 26.57,
+          "fragmentos_da_pesca": 1.2,
+          "fragmentos_do_passe": 31.0
+        },
+        "boat_03": {
+          "montado_em": "27,3 dias",
+          "dias": 27.28,
+          "fragmentos_da_pesca": 4.0,
+          "fragmentos_do_passe": 42.0
+        },
+        "boat_04": {
+          "montado_em": "35,8 dias",
+          "dias": 35.8,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 52.0
+        },
+        "boat_05": {
+          "montado_em": "28,7 dias",
+          "dias": 28.75,
+          "fragmentos_da_pesca": 8.6,
+          "fragmentos_do_passe": 63.0
+        },
+        "boat_06": {
+          "montado_em": "46,2 dias",
+          "dias": 46.23,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 74.0
+        },
+        "boat_07": {
+          "montado_em": "38,3 dias",
+          "dias": 38.32,
+          "fragmentos_da_pesca": 11.9,
+          "fragmentos_do_passe": 95.0
+        },
+        "boat_08": {
+          "montado_em": "48,1 dias",
+          "dias": 48.07,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 126.0
+        },
+        "boat_09": {
+          "montado_em": "24,5 dias",
+          "dias": 24.49,
+          "fragmentos_da_pesca": 46.6,
+          "fragmentos_do_passe": 168.0
+        },
+        "boat_10": {
+          "montado_em": "5,5 dias",
+          "dias": 5.5,
+          "fragmentos_da_pesca": 3061.9,
+          "fragmentos_do_passe": 210.0
+        }
+      },
+      "dias_ate_nivel": {
+        "Nv.10": 0.04,
+        "Nv.100": 1.05,
+        "Nv.500": 13.75,
+        "Nv.1000": 49.92
+      },
+      "premium_comprado_em": "—",
+      "dolares_do_passe_recebidos": 190,
+      "marcos_resgatados": 100
+    },
+    "sempre_aberto_premium": {
+      "descricao": "Deixa o jogo aberto o dia todo · compra o premium",
+      "barcos": {
+        "boat_01": {
+          "montado_em": "3,2 dias",
+          "dias": 3.22,
+          "fragmentos_da_pesca": 1.8,
+          "fragmentos_do_passe": 63.0
+        },
+        "boat_02": {
+          "montado_em": "3,4 dias",
+          "dias": 3.44,
+          "fragmentos_da_pesca": 1.2,
+          "fragmentos_do_passe": 93.0
+        },
+        "boat_03": {
+          "montado_em": "3,7 dias",
+          "dias": 3.67,
+          "fragmentos_da_pesca": 4.0,
+          "fragmentos_do_passe": 126.0
+        },
+        "boat_04": {
+          "montado_em": "3,9 dias",
+          "dias": 3.9,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 156.0
+        },
+        "boat_05": {
+          "montado_em": "4,1 dias",
+          "dias": 4.14,
+          "fragmentos_da_pesca": 8.6,
+          "fragmentos_do_passe": 189.0
+        },
+        "boat_06": {
+          "montado_em": "4,4 dias",
+          "dias": 4.39,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 222.0
+        },
+        "boat_07": {
+          "montado_em": "4,6 dias",
+          "dias": 4.64,
+          "fragmentos_da_pesca": 11.1,
+          "fragmentos_do_passe": 285.0
+        },
+        "boat_08": {
+          "montado_em": "4,9 dias",
+          "dias": 4.91,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 378.0
+        },
+        "boat_09": {
+          "montado_em": "5,2 dias",
+          "dias": 5.18,
+          "fragmentos_da_pesca": 33.1,
+          "fragmentos_do_passe": 504.0
+        },
+        "boat_10": {
+          "montado_em": "3,1 dias",
+          "dias": 3.12,
+          "fragmentos_da_pesca": 3051.1,
+          "fragmentos_do_passe": 630.0
+        }
+      },
+      "dias_ate_nivel": {
+        "Nv.10": 0.04,
+        "Nv.100": 1.05,
+        "Nv.500": 12.91,
+        "Nv.1000": 48.97
+      },
+      "premium_comprado_em": "1,1 dias",
+      "dolares_do_passe_recebidos": 390,
+      "marcos_resgatados": 100
+    },
+    "quatro_vezes_gratis": {
+      "descricao": "Abre 4 vezes por dia, 30 min de cada vez · só o passe grátis",
+      "barcos": {
+        "boat_01": {
+          "montado_em": "61,3 dias",
+          "dias": 61.33,
+          "fragmentos_da_pesca": 1.8,
+          "fragmentos_do_passe": 21.0
+        },
+        "boat_02": {
+          "montado_em": "49,3 dias",
+          "dias": 49.33,
+          "fragmentos_da_pesca": 1.2,
+          "fragmentos_do_passe": 31.0
+        },
+        "boat_03": {
+          "montado_em": "50,5 dias",
+          "dias": 50.5,
+          "fragmentos_da_pesca": 3.9,
+          "fragmentos_do_passe": 42.0
+        },
+        "boat_04": {
+          "montado_em": "65,8 dias",
+          "dias": 65.75,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 52.0
+        },
+        "boat_05": {
+          "montado_em": "53,3 dias",
+          "dias": 53.33,
+          "fragmentos_da_pesca": 7.9,
+          "fragmentos_do_passe": 63.0
+        },
+        "boat_06": {
+          "montado_em": "84,3 dias",
+          "dias": 84.33,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 74.0
+        },
+        "boat_07": {
+          "montado_em": "55,8 dias",
+          "dias": 55.75,
+          "fragmentos_da_pesca": 13.1,
+          "fragmentos_do_passe": 95.0
+        },
+        "boat_08": {
+          "montado_em": "87,3 dias",
+          "dias": 87.33,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 126.0
+        },
+        "boat_09": {
+          "montado_em": "45,5 dias",
+          "dias": 45.5,
+          "fragmentos_da_pesca": 48.5,
+          "fragmentos_do_passe": 168.0
+        },
+        "boat_10": {
+          "montado_em": "10,9 dias",
+          "dias": 10.92,
+          "fragmentos_da_pesca": 2978.5,
+          "fragmentos_do_passe": 210.0
+        }
+      },
+      "dias_ate_nivel": {
+        "Nv.10": 0.5,
+        "Nv.100": 2.33,
+        "Nv.500": 25.93,
+        "Nv.1000": 90.75
+      },
+      "premium_comprado_em": "—",
+      "dolares_do_passe_recebidos": 190,
+      "marcos_resgatados": 100
+    },
+    "quatro_vezes_premium": {
+      "descricao": "Abre 4 vezes por dia, 30 min de cada vez · compra o premium",
+      "barcos": {
+        "boat_01": {
+          "montado_em": "6,3 dias",
+          "dias": 6.33,
+          "fragmentos_da_pesca": 1.8,
+          "fragmentos_do_passe": 63.0
+        },
+        "boat_02": {
+          "montado_em": "6,8 dias",
+          "dias": 6.75,
+          "fragmentos_da_pesca": 1.2,
+          "fragmentos_do_passe": 93.0
+        },
+        "boat_03": {
+          "montado_em": "7,3 dias",
+          "dias": 7.33,
+          "fragmentos_da_pesca": 3.9,
+          "fragmentos_do_passe": 126.0
+        },
+        "boat_04": {
+          "montado_em": "7,8 dias",
+          "dias": 7.75,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 156.0
+        },
+        "boat_05": {
+          "montado_em": "8,3 dias",
+          "dias": 8.33,
+          "fragmentos_da_pesca": 7.9,
+          "fragmentos_do_passe": 189.0
+        },
+        "boat_06": {
+          "montado_em": "8,5 dias",
+          "dias": 8.5,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 222.0
+        },
+        "boat_07": {
+          "montado_em": "9,3 dias",
+          "dias": 9.33,
+          "fragmentos_da_pesca": 13.1,
+          "fragmentos_do_passe": 285.0
+        },
+        "boat_08": {
+          "montado_em": "9,5 dias",
+          "dias": 9.5,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 378.0
+        },
+        "boat_09": {
+          "montado_em": "5,5 dias",
+          "dias": 5.5,
+          "fragmentos_da_pesca": 37.4,
+          "fragmentos_do_passe": 504.0
+        },
+        "boat_10": {
+          "montado_em": "6,3 dias",
+          "dias": 6.33,
+          "fragmentos_da_pesca": 2975.2,
+          "fragmentos_do_passe": 630.0
+        }
+      },
+      "dias_ate_nivel": {
+        "Nv.10": 0.5,
+        "Nv.100": 2.33,
+        "Nv.500": 24.33,
+        "Nv.1000": 88.92
+      },
+      "premium_comprado_em": "2,3 dias",
+      "dolares_do_passe_recebidos": 390,
+      "marcos_resgatados": 100
+    },
+    "uma_vez_gratis": {
+      "descricao": "Abre 1 vez por dia, 30 min · só o passe grátis",
+      "barcos": {
+        "boat_01": {
+          "montado_em": "23,8 dias",
+          "dias": 23.83,
+          "fragmentos_da_pesca": 9.6,
+          "fragmentos_do_passe": 21.0
+        },
+        "boat_02": {
+          "montado_em": "57,8 dias",
+          "dias": 57.83,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 31.0
+        },
+        "boat_03": {
+          "montado_em": "34,8 dias",
+          "dias": 34.83,
+          "fragmentos_da_pesca": 11.2,
+          "fragmentos_do_passe": 42.0
+        },
+        "boat_04": {
+          "montado_em": "75,8 dias",
+          "dias": 75.83,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 52.0
+        },
+        "boat_05": {
+          "montado_em": "47,8 dias",
+          "dias": 47.83,
+          "fragmentos_da_pesca": 13.6,
+          "fragmentos_do_passe": 63.0
+        },
+        "boat_06": {
+          "montado_em": "96,8 dias",
+          "dias": 96.83,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 74.0
+        },
+        "boat_07": {
+          "montado_em": "64,8 dias",
+          "dias": 64.83,
+          "fragmentos_da_pesca": 14.9,
+          "fragmentos_do_passe": 95.0
+        },
+        "boat_08": {
+          "montado_em": "100,8 dias",
+          "dias": 100.83,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 126.0
+        },
+        "boat_09": {
+          "montado_em": "53,8 dias",
+          "dias": 53.83,
+          "fragmentos_da_pesca": 35.2,
+          "fragmentos_do_passe": 168.0
+        },
+        "boat_10": {
+          "montado_em": "13,8 dias",
+          "dias": 13.83,
+          "fragmentos_da_pesca": 3142.2,
+          "fragmentos_do_passe": 210.0
+        }
+      },
+      "dias_ate_nivel": {
+        "Nv.10": 1.83,
+        "Nv.100": 4.83,
+        "Nv.500": 31.83,
+        "Nv.1000": 103.83
+      },
+      "premium_comprado_em": "—",
+      "dolares_do_passe_recebidos": 190,
+      "marcos_resgatados": 100
+    },
+    "uma_vez_premium": {
+      "descricao": "Abre 1 vez por dia, 30 min · compra o premium",
+      "barcos": {
+        "boat_01": {
+          "montado_em": "4,8 dias",
+          "dias": 4.83,
+          "fragmentos_da_pesca": 9.6,
+          "fragmentos_do_passe": 63.0
+        },
+        "boat_02": {
+          "montado_em": "9,8 dias",
+          "dias": 9.83,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 93.0
+        },
+        "boat_03": {
+          "montado_em": "5,8 dias",
+          "dias": 5.83,
+          "fragmentos_da_pesca": 11.2,
+          "fragmentos_do_passe": 126.0
+        },
+        "boat_04": {
+          "montado_em": "10,8 dias",
+          "dias": 10.83,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 156.0
+        },
+        "boat_05": {
+          "montado_em": "6,8 dias",
+          "dias": 6.83,
+          "fragmentos_da_pesca": 13.6,
+          "fragmentos_do_passe": 189.0
+        },
+        "boat_06": {
+          "montado_em": "11,8 dias",
+          "dias": 11.83,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 222.0
+        },
+        "boat_07": {
+          "montado_em": "12,8 dias",
+          "dias": 12.83,
+          "fragmentos_da_pesca": 14.9,
+          "fragmentos_do_passe": 285.0
+        },
+        "boat_08": {
+          "montado_em": "12,8 dias",
+          "dias": 12.83,
+          "fragmentos_da_pesca": 0.0,
+          "fragmentos_do_passe": 378.0
+        },
+        "boat_09": {
+          "montado_em": "7,8 dias",
+          "dias": 7.84,
+          "fragmentos_da_pesca": 37.9,
+          "fragmentos_do_passe": 504.0
+        },
+        "boat_10": {
+          "montado_em": "9,8 dias",
+          "dias": 9.83,
+          "fragmentos_da_pesca": 3116.8,
+          "fragmentos_do_passe": 630.0
+        }
+      },
+      "dias_ate_nivel": {
+        "Nv.10": 1.83,
+        "Nv.100": 4.83,
+        "Nv.500": 29.83,
+        "Nv.1000": 101.83
+      },
+      "premium_comprado_em": "4,8 dias",
+      "dolares_do_passe_recebidos": 390,
+      "marcos_resgatados": 100
+    }
+  }
+}

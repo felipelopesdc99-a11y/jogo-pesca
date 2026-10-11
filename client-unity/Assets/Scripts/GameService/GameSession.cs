@@ -163,6 +163,7 @@ namespace FishingIdle.GameService
                 RodLevelCurveVersion = Config.Rods.UpgradeRules?.LevelCurveVersion ?? 0,
                 FishLevelCurveVersion = Config.Progression.FishLevel.LevelCurveVersion,
                 Crew = new CrewState { LastCreditedAtMs = now },
+                Pass = new PassState { PassId = Config.Pass.PassId },
             };
             // No rod yet: the tutorial has the player claim the free Starter Rod in the Shop (GDD section 40).
             for (var i = 0; i < Config.CardumeSize; i++)
@@ -210,7 +211,7 @@ namespace FishingIdle.GameService
             if (curve != null)
             {
                 _log("Fisher XP curve " + Save.FisherXpCurveVersion + ": level " + curve.LevelBefore + " -> " + curve.LevelAfter
-                     + ", " + curve.DollarsGained + " dollars for the milestones crossed.");
+                     + "; the pass milestones crossed are claimable in the Passe do Pescador.");
             }
 
             // Rods and fish from the old Nv.1–Nv.10 move to the current level curve, never down (M24-T13, TD-041).
@@ -250,6 +251,27 @@ namespace FishingIdle.GameService
                     var boatMax = Config.TryGetBoat(boatId, out var boat) ? Config.BoatMaxLevel(boat) : 1;
                     Save.BoatLevels[boatId] = Math.Max(1, Math.Min(boatMax, Save.BoatLevels[boatId]));
                 }
+            }
+
+            // Boats by fragments and the pass (M24-T16/T17): no negative counts; the pass progress belongs to the pass in
+            // the config (a save from before the pass gets its id).
+            if (Save.BoatFragments != null)
+            {
+                foreach (var boatId in Save.BoatFragments.Keys.ToList())
+                {
+                    Save.BoatFragments[boatId] = Math.Max(0, Save.BoatFragments[boatId]);
+                }
+            }
+
+            var assembled = Shop.BoatFragmentRules.AssembleReady(Config, Save);
+            if (assembled.Count > 0)
+            {
+                _log("Boats assembled from fragments already held: " + string.Join(", ", assembled) + ".");
+            }
+
+            if (Save.Pass != null && string.IsNullOrEmpty(Save.Pass.PassId))
+            {
+                Save.Pass.PassId = Config.Pass.PassId;
             }
 
             if (Save.BaitCharges != null)

@@ -563,6 +563,34 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 > Ícone quadrado de item para a loja de Melhorias de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: uma onda de maré cheia turquesa e branca se curvando, com um peixinho dourado pulando por cima e uma moeda dourada brilhando na espuma. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem círculo de fundo, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima, legível em 56 px. Arquivo: melhoria_good_tide.png
 
+## Barcos por fragmentos e Passe do Pescador (M24-T16/T17, A-157 e A-158, pedido em 11/10/2026)
+
+`ASSET_PENDENTE`. Enquanto os arquivos não existem: os 5 barcos novos aparecem na Loja com o ícone do barco e, na
+cena, com a canoa inicial; o fragmento usa o ícone do barco; o botão do Passe usa a estrela.
+
+| Arquivo | O quê | Tamanho | Onde aparece |
+|---|---|---|---|
+| `Arte/Barcos/boat_06.png` a `boat_10.png` | Retratos dos barcos 6 a 10 (Vela do Sol, Quilha Azul, Canto da Baleia, Farol Noturno, Titã do Atlântico — nomes sugeridos) | 1024×512 | Loja → Barcos |
+| `Arte/Barcos/Cena/boat_06.png` … `boat_10.png` e `boat_06_frente.png` … `boat_10_frente.png` | O barco na cena (fundo e frente), como os barcos 1 a 5 | como os barcos 1 a 5 (e uma entrada em `Resources/Visual/equipamento_cena.json`, feita por `tools/Arte/equipamento_na_cena.py`) | Cena de pesca |
+| `Arte/Fragmentos/frag_boat_01.png` a `frag_boat_10.png` | Ícone do fragmento de cada barco | 256×256 → o jogo desenha com 18–20 px | Passe, Loja, avisos |
+| `Arte/Icones/ico_passe.png` | Ícone do Passe do Pescador (botão da barra de cima e placa da janela) | como os outros `ico_` | Barra de cima, janela do Passe |
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Barco de pesca visto de lado, PNG 1024×512 px com fundo transparente, para a loja de um jogo idle de pesca mobile: um veleiro pequeno e leve de casco turquesa claro com faixa branca, vela triangular branca com um sol dourado desenhado e um mastro fino, feito para cruzar entre ilhas tropicais. Barco centralizado, ocupando cerca de 85% da largura, sem água, sem moldura, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: boat_06.png
+
+> Barco de pesca visto de lado, PNG 1024×512 px com fundo transparente: uma lancha de pesca robusta com quilha funda azul-royal, cabine pequena branca e para-brisa, linhas de corrente pintadas em turquesa no casco, pronta para correntes fortes. Barco centralizado, ocupando cerca de 85% da largura, sem água, sem moldura, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: boat_07.png
+
+> Barco de pesca visto de lado, PNG 1024×512 px com fundo transparente: um barco grande e calmo de observação de baleias, casco azul-acinzentado com faixa dourada, cabine larga com janelas redondas e um pequeno guindaste de pesca na popa. Barco centralizado, ocupando cerca de 85% da largura, sem água, sem moldura, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: boat_08.png
+
+> Barco de pesca visto de lado, PNG 1024×512 px com fundo transparente: um barco de pesca noturna azul-noite com faixa turquesa, cabine com um farol forte no teto e lanternas penduradas acesas em dourado ao longo do casco. Barco centralizado, ocupando cerca de 85% da largura, sem água, sem moldura, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: boat_09.png
+
+> Barco de pesca visto de lado, PNG 1024×512 px com fundo transparente: um grande barco de pesca oceânica, casco alto azul-noite profundo com detalhes dourados, ponte de comando de dois andares, antenas e um guincho de pesca de águas profundas na popa; imponente mas sem fantasia. Barco centralizado, ocupando cerca de 85% da largura, sem água, sem moldura, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: boat_10.png
+
+> Ícone quadrado de item de um jogo idle de pesca mobile, PNG 256×256 px com fundo transparente: um fragmento de barco — uma tábua curva de casco de madeira com um parafuso de latão e uma lasca quebrada — com um brilho suave na cor do barco (troque a cor para cada barco: 01 madeira clara, 02 azul, 03 verde-musgo, 04 bege, 05 dourado, 06 turquesa claro, 07 azul-royal, 08 azul-acinzentado, 09 azul-noite com turquesa, 10 azul-noite com dourado). Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 20 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivos: frag_boat_01.png … frag_boat_10.png
+
+> Ícone de menu para um jogo idle de pesca mobile, no mesmo estilo dos outros ícones do menu (traço simples, branco sobre transparente): um bilhete de passe com a borda picotada e um anzol desenhado no meio, com uma pequena estrela no canto. PNG com fundo transparente, legível em 36 px, sem texto. Arquivo: ico_passe.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

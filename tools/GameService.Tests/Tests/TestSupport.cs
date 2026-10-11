@@ -110,6 +110,23 @@ internal static class TestSupport
         return (result.Game, clock, saveDir);
     }
 
+    /// <summary>
+    /// Gives a boat the way the game does since M24-T16 (A-157): all the fragments it needs, which assemble it (and put it
+    /// in use when it is better). Boats are no longer sold.
+    /// </summary>
+    public static void GiveBoat(LocalGame game, string boatId)
+    {
+        var config = game.Session.Config;
+        config.TryGetBoat(boatId, out var boat);
+        var gain = FishingIdle.GameService.Shop.BoatFragmentRules.Add(config, game.Session.Save, boat, boat.FragmentsRequired);
+        if (gain == null || !gain.Assembled)
+        {
+            throw new InvalidOperationException("Boat " + boatId + " was not assembled.");
+        }
+
+        game.Session.Persist();
+    }
+
     /// <summary>Advances time in small steps, syncing like the running client does.</summary>
     public static List<FishingIdle.GameService.Fishing.CatchView> PlayFor(LocalGame game, ManualClock clock, double seconds, double stepSeconds = 1)
     {

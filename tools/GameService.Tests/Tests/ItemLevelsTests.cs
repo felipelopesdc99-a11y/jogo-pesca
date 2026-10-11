@@ -114,7 +114,7 @@ public class ItemLevelsTests
 
         Assert.Equal(ServiceError.BoatNotOwned, game.Gear.UpgradeBoat(boat.Id).Error);
         Assert.Equal(ServiceError.BoatHasNoLevels, game.Gear.UpgradeBoat(config.StarterBoat.Id).Error);
-        Assert.True(game.Gear.BuyBoat(boat.Id).Succeeded);
+        TestSupport.GiveBoat(game, boat.Id);
 
         var offer = game.Gear.GetGear().Boats.Single(b => b.BoatId == boat.Id);
         Assert.Equal(1, offer.Level);
@@ -145,7 +145,7 @@ public class ItemLevelsTests
         config.TryGetBoat("boat_01", out var boat);
         save.Coins = 10_000_000;
         save.Shells = 100;
-        game.Gear.BuyBoat(boat.Id);
+        TestSupport.GiveBoat(game, boat.Id);
 
         save.Shells = 0;
         Assert.Equal(ServiceError.NotEnoughShells, game.Gear.UpgradeBoat(boat.Id).Error);
@@ -166,7 +166,7 @@ public class ItemLevelsTests
         var (game, clock, dir) = TestSupport.NewGame();
         game.Session.Save.Coins = 10_000_000;
         game.Session.Save.Shells = 1_000;
-        game.Gear.BuyBoat("boat_01");
+        TestSupport.GiveBoat(game, "boat_01");
         game.Gear.UpgradeBoat("boat_01");
         game.Gear.UpgradeBoat("boat_01");
 
@@ -214,7 +214,7 @@ public class ItemLevelsTests
         save.Coins = 10_000_000;
         save.Shells = 1_000;
         game.Shop.BuyRod("rod_01");
-        game.Gear.BuyBoat("boat_01");
+        TestSupport.GiveBoat(game, "boat_01");
         save.EquippedRodItem().Level = 10;
         game.Session.DevToolsEnabled = true;
         game.DevTools.GiveFish("lambari", null, 1);

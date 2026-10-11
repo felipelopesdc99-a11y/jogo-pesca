@@ -27,6 +27,8 @@ namespace FishingIdle.GameService.Config
         private readonly Dictionary<string, BaitConfig> _baits;
         private readonly Dictionary<string, CrewMemberConfig> _crew;
         private readonly Dictionary<string, GeneralUpgradeConfig> _generalUpgrades;
+        private readonly Dictionary<string, BoatConfig> _boatByMap;
+        private readonly Dictionary<int, PassMilestoneConfig> _passMilestones;
 
         internal GameConfig(
             FishCatalogConfig fishCatalog,
@@ -41,14 +43,18 @@ namespace FishingIdle.GameService.Config
             EquipmentConfig equipment,
             CrewConfig crew,
             UpgradesConfig upgrades,
+            PassConfig pass,
             string version)
         {
+            Pass = pass;
+            _passMilestones = pass.Milestones.ToDictionary(m => m.Level);
             Equipment = equipment;
             Crew = crew;
             _crew = crew.Members.ToDictionary(m => m.Id, StringComparer.Ordinal);
             Upgrades = upgrades;
             _generalUpgrades = upgrades.GeneralUpgrades.ToDictionary(u => u.Id, StringComparer.Ordinal);
             _boats = equipment.Boats.ToDictionary(b => b.Id, StringComparer.Ordinal);
+            _boatByMap = equipment.Boats.Where(b => !string.IsNullOrEmpty(b.MapId)).ToDictionary(b => b.MapId, StringComparer.Ordinal);
             _baits = equipment.Baits.ToDictionary(b => b.Id, StringComparer.Ordinal);
             FishCatalog = fishCatalog;
             Maps = maps;
@@ -91,6 +97,18 @@ namespace FishingIdle.GameService.Config
         public UpgradesConfig Upgrades { get; }
 
         public bool TryGetGeneralUpgrade(string id, out GeneralUpgradeConfig upgrade) => _generalUpgrades.TryGetValue(id ?? string.Empty, out upgrade);
+
+        /// <summary>The Passe do Pescador (pass.json, M24-T17).</summary>
+        public PassConfig Pass { get; }
+
+        /// <summary>The pass milestone reached at exactly <paramref name="level"/>, or null.</summary>
+        public PassMilestoneConfig PassMilestoneAt(int level) => _passMilestones.TryGetValue(level, out var m) ? m : null;
+
+        /// <summary>The boat whose fragments the catches on a map drop (M24-T16), or false when the map has none.</summary>
+        public bool TryGetBoatForMap(string mapId, out BoatConfig boat) => _boatByMap.TryGetValue(mapId ?? string.Empty, out boat);
+
+        /// <summary>Whether offline fishing drops boat fragments too (equipment.json → boat_fragments).</summary>
+        public bool FragmentsDropOffline => Equipment.BoatFragments?.DropOnOfflineFishing ?? true;
 
         /// <summary>The boat every player owns from the start: the lowest tier.</summary>
         public BoatConfig StarterBoat => Equipment.Boats.OrderBy(b => b.Tier).First();

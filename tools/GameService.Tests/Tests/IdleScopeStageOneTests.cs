@@ -17,8 +17,9 @@ public sealed class IdleScopeStageOneTests
     // ------------------------------------------------------------------ M24-T09: items with no minimum level
 
     [Fact]
-    public void A_level_1_player_with_the_money_can_buy_the_best_rod_boat_and_bait()
+    public void A_level_1_player_with_the_money_can_buy_the_best_rod_and_bait()
     {
+        // Boats are not sold since M24-T16 (A-157): they come from fragments (BoatFragmentTests).
         var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
         var save = game.Session.Save;
         Assert.Equal(1, save.FisherLevel);
@@ -26,13 +27,13 @@ public sealed class IdleScopeStageOneTests
         save.Shells = 1_000_000;
 
         Assert.All(game.Shop.GetShop().Rods.Where(r => !r.Owned), r => Assert.Equal(ServiceError.None, r.BuyBlocker));
-        Assert.All(game.Gear.GetGear().Boats.Where(b => !b.Owned), b => Assert.Equal(ServiceError.None, b.BuyBlocker));
         Assert.All(game.Gear.GetGear().Baits, b => Assert.Equal(ServiceError.None, b.BuyBlocker));
 
         Assert.True(game.Shop.BuyRod("rod_05").Succeeded);
-        Assert.True(game.Gear.BuyBoat("boat_05").Succeeded);
         Assert.True(game.Gear.BuyBait("bait_03").Succeeded);
         Assert.Equal(1, game.Player.GetPlayer().FisherLevel);
+        Assert.Equal(1_000_000_000 - game.Session.Config.Rods.Rods.Single(r => r.Id == "rod_05").Acquisition.PurchaseCostCoins
+                     - game.Session.Config.Equipment.Baits.Single(b => b.Id == "bait_03").CostCoins, save.Coins);
     }
 
     [Fact]
@@ -43,13 +44,11 @@ public sealed class IdleScopeStageOneTests
         save.Coins = 0;
         save.Shells = 1_000_000;
         Assert.Equal(ServiceError.NotEnoughCoins, game.Shop.BuyRod("rod_05").Error);
-        Assert.Equal(ServiceError.NotEnoughCoins, game.Gear.BuyBoat("boat_05").Error);
         Assert.Equal(ServiceError.NotEnoughCoins, game.Gear.BuyBait("bait_03").Error);
 
         save.Coins = 1_000_000_000;
         save.Shells = 0;
         Assert.Equal(ServiceError.NotEnoughShells, game.Shop.BuyRod("rod_05").Error);
-        Assert.Equal(ServiceError.NotEnoughShells, game.Gear.BuyBoat("boat_05").Error);
         Assert.Equal(ServiceError.NotEnoughShells, game.Gear.BuyBait("bait_03").Error);
     }
 
@@ -118,27 +117,20 @@ public sealed class IdleScopeStageOneTests
     }
 
     [Fact]
-    public void Dollars_for_levels_stop_at_level_100()
+    public void Level_ups_pay_no_dollars_by_themselves_the_pass_has_them()
     {
-        // A-111 stays as it was up to Nv.100 (100 Dólares in all); after that it is the owner's call (OD-055).
+        // M24-T17 (A-158): the 10 Dólares every 10 levels up to Nv.100 (A-111) are in the pass's free track.
         var (game, clock, _) = TestSupport.NewGame();
         var save = game.Session.Save;
         var config = game.Session.Config;
-        Assert.Equal(100, Enumerable.Range(2, 999).Sum(l => FisherLevelRules.DollarsForReaching(config, l)));
+        Assert.Equal(100, config.Pass.Milestones.Where(m => m.Level <= 100).Sum(m => m.Free.Dollars));
 
         save.FisherLevel = 99;
         save.FisherXp = config.FisherXpToNextLevel(99) - 1;
         game.Fishing.StartFishing();
         clock.AdvanceSeconds(60);
-        Assert.Equal(10, game.Fishing.Sync().DollarsGained);
-
-        save.FisherLevel = 109;
-        save.FisherXp = config.FisherXpToNextLevel(109) - 1;
-        clock.AdvanceSeconds(60);
-        var update = game.Fishing.Sync();
-        Assert.Contains(110, update.LevelsReached);
-        Assert.Equal(0, update.DollarsGained);
-        Assert.Equal(10, save.Dollars);
+        Assert.Contains(100, game.Fishing.Sync().LevelsReached);
+        Assert.Equal(0, save.Dollars);
     }
 
     // ------------------------------------------------------------------ TD-038: saves move to the new curve
@@ -164,8 +156,7 @@ public sealed class IdleScopeStageOneTests
         Assert.Equal(expected, save.FisherLevel);
         Assert.Equal(rest, save.FisherXp);
         Assert.Equal(2_000_000, save.FisherXpTotal);
-        Assert.Equal(50, change.DollarsGained); // Nv.60, 70, 80, 90 and 100; nothing past Nv.100
-        Assert.Equal(100, save.Dollars);
+        Assert.Equal(50, save.Dollars); // the milestones crossed pay in the Passe do Pescador (A-158), not here
         Assert.Equal(config.Progression.Fisher.XpCurveVersion, save.FisherXpCurveVersion);
     }
 
@@ -181,7 +172,6 @@ public sealed class IdleScopeStageOneTests
         Assert.Equal(80, save.FisherLevel);
         Assert.Equal(80, change.LevelAfter);
         Assert.Equal(config.FisherXpToNextLevel(80) - 1, save.FisherXp);
-        Assert.Equal(0, change.DollarsGained);
         Assert.Equal(80, save.Dollars);
     }
 
@@ -251,12 +241,17 @@ public sealed class IdleScopeStageOneTests
         Assert.Equal(expected, reopened.Player.GetPlayer().FisherLevel);
         Assert.Equal(PlayerSave.CurrentVersion, moved.SaveVersion);
         Assert.Equal(reopened.Session.Config.Progression.Fisher.XpCurveVersion, moved.FisherXpCurveVersion);
-        Assert.Equal(100, moved.Dollars); // 40 + Nv.50 to Nv.100
+        Assert.Equal(40, moved.Dollars); // nothing paid on load: the milestones Nv.50 to Nv.100 pay in the pass (A-158)
+        Assert.Equal(40, moved.Pass.LegacyDollarsUpToLevel);
         Assert.Contains("\"save_version\": " + PlayerSave.CurrentVersion, File.ReadAllText(path));
 
         // Reopening again changes nothing: the move happens once.
         var again = TestSupport.NewGame(saveDir: dir, clock: clock).Game;
         Assert.Equal(expected, again.Player.GetPlayer().FisherLevel);
+        Assert.Equal(40, again.Session.Save.Dollars);
+
+        // The pass pays the Dólares of Nv.50 to Nv.100 (never paid) and not those of Nv.10 to Nv.40 (already paid).
+        Assert.True(again.Pass.ClaimAll().Succeeded);
         Assert.Equal(100, again.Session.Save.Dollars);
     }
 
