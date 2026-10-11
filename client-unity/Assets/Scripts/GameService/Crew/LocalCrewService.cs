@@ -240,7 +240,7 @@ namespace FishingIdle.GameService.Crew
             var now = Now;
             if (crew.LastCreditedAtMs > 0 && now > crew.LastCreditedAtMs)
             {
-                Credit(Config, (now - crew.LastCreditedAtMs) / 1000.0, new CrewUpdate().LevelsReached, out _, out _, out _);
+                Credit(Config, (now - crew.LastCreditedAtMs) / 1000.0, new CrewUpdate().LevelsReached, out _, out _);
             }
 
             crew.LastCreditedAtMs = Math.Max(crew.LastCreditedAtMs, now);
