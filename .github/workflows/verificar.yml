@@ -19,8 +19,14 @@ jobs:
         id: verify
         continue-on-error: true
         run: |
-          set -o pipefail
-          ./ops/scripts/verify.sh 2>&1 | tee verify.log
+          ok=0
+          run() { echo "==> $1" >> verify.log; (cd "$2" && dotnet $3 --nologo) >> verify.log 2>&1 || ok=1; echo >> verify.log; }
+          : > verify.log
+          run "Regras do jogo: testes" tools/GameService.Tests test
+          run "Codigo do Unity: jogo" tools/UnityCheck.Game build
+          run "Codigo do Unity: Painel (Editor)" tools/UnityCheck.Editor build
+          run "Simulador" tools/Simulador build
+          exit $ok
       - name: Publicar o resultado
         if: always()
         run: |
