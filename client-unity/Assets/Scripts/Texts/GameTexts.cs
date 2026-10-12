@@ -1283,7 +1283,22 @@ namespace FishingIdle.Texts
             public const string ConfigErrorTitle = "O jogo não pôde começar: o balanceamento tem problemas";
             public const string ConfigErrorHint = "Corrija os itens abaixo nos arquivos da pasta /config (ou pelo Painel de Desenvolvimento) e aperte Play de novo.";
             public const string UnexpectedErrorTitle = "O jogo encontrou um erro inesperado";
-            public const string UnexpectedErrorHint = "Os detalhes técnicos estão no Console do Unity.";
+            public const string UnexpectedErrorHint = "Tire um print desta tela e mande junto com o pedido de correção. Os detalhes completos também ficam no Console do Unity.";
+
+            /// <summary>The error line of the startup screen: what failed, in the exception's own words.</summary>
+            public static string ErrorLine(string kind, string message) => "Erro: " + message + " (" + kind + ")";
+
+            /// <summary>Where in the code it failed (the first lines of the stack trace).</summary>
+            public static string WhereLine(string where) => "Onde: " + where;
+
+            /// <summary>What was running when it failed (opening the game, a frame of the screen, a sync).</summary>
+            public static string StageLine(string stage) => "Momento: " + stage;
+
+            public const string StageOpening = "abertura do jogo";
+            public const string StageScene = "montagem da cena";
+            public const string StageScreen = "desenho da tela";
+            public const string StageRunning = "jogo em andamento";
+            public static string SaveLine(string path) => "Save: " + path;
             public const string SaveTooNew = "Este save foi criado por uma versão mais nova do jogo. Você está jogando com um save temporário, que não será gravado, para não estragar o original.";
             public const string SaveRecovered = "O save principal estava danificado e foi restaurado a partir do backup.";
             public const string SaveUnrecoverable = "O save estava danificado e não pôde ser recuperado. Um jogo novo começou; os arquivos danificados foram guardados na pasta do save.";

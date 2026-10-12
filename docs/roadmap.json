@@ -4795,6 +4795,18 @@
             "M24-T29"
           ],
           "updated_at": "2026-10-12T20:00:00Z"
+        },
+        {
+          "id": "M24-T38",
+          "title": "Correções na abertura do jogo",
+          "subsystem": "client",
+          "description": "O proprietário avisou (12/10/2026) que o jogo não abre no Unity 6.3 depois das últimas mudanças (pesca a cada 10 s, iscas, curva do Pescador, varas e roupas por fragmentos, Boss Mundial, Passe, Tripulação, Melhorias). Investigar a abertura com saves antigos e garantir que qualquer falha apareça numa tela com o motivo.",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T29"
+          ],
+          "updated_at": "2026-10-12T22:00:00Z",
+          "completion_notes": "O proprietário disse que o jogo \"não está abrindo\" no Unity 6.3 depois das mudanças de 11 e 12/10 (sem a mensagem de erro). Investigação: (1) GameRoot.Awake montava a cena (FishingScene.Build) e só depois acrescentava o Hud; uma exceção na cena deixava a janela sem Hud e sem tela de erro — agora a cena e o som ficam em try/catch e o Hud é sempre acrescentado; (2) Hud.OnGUI não tinha proteção: uma exceção em qualquer janela (Boss, Passe, Tripulação, Loja) se repetia a cada quadro e deixava a tela pela metade — agora Start (criação das janelas) e OnGUI ficam em try/catch e a falha vira a tela de erro (GameRoot.ReportFailure); se até o skin falhar, a tela de erro sai no estilo simples do Unity; (3) GameRoot.Update lia Status/Travel fora do Guard — agora dentro; (4) a tela de erro mostrava só exception.Message — agora mostra o tipo e a mensagem do erro, o momento (abertura, cena, tela, jogo em andamento), onde no código (3 primeiros métodos do jogo na pilha), o erro interno e a pasta do save (textos novos em GameTexts.Startup), para o proprietário mandar um print. Compilação no Unity 6: revisadas as APIs do jogo e do Editor (FindAnyObjectByType, TextureImporter, AudioImporter.defaultSampleSettings, TrueTypeFontImporter, EditorGUILayout, EditorSceneManager, BuildPipeline, PlayerSettings) — nenhuma obsoleta como erro no Unity 6; nada trocado. Regras: nenhuma mudança. Testes novos StartupWithOldSavesTests: saves das versões 11 a 18 \"sujos\" (varas Nv.10 no Inventário, no Mercado e num leilão, iscas antigas, peixes Nv.10 no Cardume, barco comprado antes dos fragmentos, Dólares pagos pela regra antiga, Expedição em andamento, pesca ligada, Tripulação contratada) abertos 3 dias depois às 19:05 de Brasília, com a sequência do GameRoot (abertura, 1º quadro, todas as janelas, 80 quadros de sincronização de Pesca, Mapas, Expedição, Arena, Tutorial, Boss, Mercado, Tripulação; resgatar o Passe), carregando sem descartar o save e em menos de 2 s; e um save novo aberto, jogado e reaberto 3 dias depois. Decisão técnica TD-050; detalhe da tela de erro no A-166. Compilado e testado no CI; o que depende do Editor só é verificado quando o proprietário apertar Play."
         }
       ]
     }

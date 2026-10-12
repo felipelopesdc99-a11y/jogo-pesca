@@ -1047,3 +1047,29 @@ Cardume com o jogo aberto, recompensas por dano e Dólares do top 1 a 10.
   o jogador (A-100) e ele seria sempre o 1º. A regra (`WorldBossRules.DollarsFor`) já está pronta e testada com a chave
   ligada; com o servidor, o ranking e o pagamento passam a ser dele.
 - **Cardume em Expedição não ataca**, a mesma trava da Arena (`AttackBlocker`), em vez de inventar outra regra.
+
+## TD-050 · A tela de erro cobre a cena e cada quadro da interface (12/10/2026)
+
+**Origem.** M24-T38 (A-166): o proprietário avisou que o jogo "não está abrindo" no Unity 6.3, sem a mensagem de erro. O
+CI (TD-044) compila contra o Unity 2021.3 e passa os testes; o problema provável é de execução dentro do Unity.
+
+**Decisão.**
+- `GameRoot.Awake` monta a cena e o som dentro de `try/catch` e **sempre** acrescenta o `Hud`, que é quem desenha a tela
+  de erro. Antes, uma exceção em `FishingScene.Build` interrompia o `Awake` antes do `Hud`: janela só com o fundo, sem
+  explicação.
+- `Hud.Start` (criação das janelas) e `Hud.OnGUI` (o desenho de cada quadro) ficam em `try/catch`; a exceção vai para
+  `GameRoot.ReportFailure`, que para o serviço (`Game = null`, como o `Guard`) e mostra a tela de erro. `ExitGUIException`
+  é relançada (é o fluxo normal do IMGUI). Uma exceção no `OnGUI` se repetiria a cada quadro e deixaria a tela pela
+  metade; parar com o motivo é melhor do que um jogo meio desenhado. Se até o `UiSkin` falhar, a lista sai no estilo
+  padrão do Unity (`DrawPlainError`).
+- `GameRoot.Update` lê `Status` e `Travel` dentro do `Guard` (estavam fora).
+- A tela mostra **tipo + mensagem, momento, os três primeiros métodos do jogo na pilha, o erro interno e a pasta do save**
+  (`GameRoot.Fail`, textos em `GameTexts.Startup`): o suficiente para achar a falha por um print, sem o Console. Fica só a
+  primeira falha (as seguintes vão só para o Console).
+- APIs do Unity 6 revisadas no jogo e no Editor (`FindAnyObjectByType`, importadores de textura, áudio e fonte,
+  `EditorGUILayout`, `EditorSceneManager`, `BuildPipeline`, `PlayerSettings`): nenhuma é obsoleta como erro no Unity 6;
+  nada foi trocado.
+- **Teste da abertura** (`StartupWithOldSavesTests`): saves das versões 11 a 18 com dados de jogador real (varas Nv.10 no
+  Inventário, no Mercado e num leilão, iscas antigas, peixes Nv.10, barco comprado, Dólares antigos, Expedição e pesca em
+  andamento, Tripulação) abertos 3 dias depois com a mesma sequência de chamadas do `GameRoot`, e um save novo. Precisam
+  carregar (nunca descartar o save), não lançar exceção e abrir em menos de 2 s.

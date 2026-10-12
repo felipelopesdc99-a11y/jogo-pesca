@@ -126,10 +126,37 @@ namespace FishingIdle.Game.Bootstrap
 
             StartGameService();
 
-            var scene = gameObject.AddComponent<FishingScene>();
-            scene.Build(this);
+            // The HUD is always added, even when the scene or the sounds fail: it is what shows the startup error screen,
+            // so a failure here never leaves the window empty (M24-T38).
+            try
+            {
+                var scene = gameObject.AddComponent<FishingScene>();
+                scene.Build(this);
+            }
+            catch (Exception exception)
+            {
+                Fail(exception, GameTexts.Startup.StageScene);
+            }
+
             gameObject.AddComponent<Hud>();
-            gameObject.AddComponent<FishingIdle.Game.Audio.GameAudio>();
+            try
+            {
+                gameObject.AddComponent<FishingIdle.Game.Audio.GameAudio>();
+            }
+            catch (Exception exception)
+            {
+                // Sound is not worth stopping the game for: the console keeps the details.
+                Debug.LogException(exception);
+            }
+        }
+
+        /// <summary>
+        /// An exception the presentation could not handle (a frame of the HUD or a window): the game stops with the error
+        /// screen and the reason, instead of an empty or frozen window (M24-T38).
+        /// </summary>
+        public void ReportFailure(Exception exception)
+        {
+            Fail(exception, GameTexts.Startup.StageScreen);
         }
 
         private void OnDestroy()
@@ -213,8 +240,11 @@ namespace FishingIdle.Game.Bootstrap
                 return;
             }
 
-            Status = Game.Fishing.GetStatus();
-            Travel = Game.Maps.GetTravel();
+            Guard(() =>
+            {
+                Status = Game.Fishing.GetStatus();
+                Travel = Game.Maps.GetTravel();
+            });
         }
 
         // Frames per second when the window is in the back: the game keeps fishing, but the PC (or the
@@ -1427,7 +1457,7 @@ namespace FishingIdle.Game.Bootstrap
             }
             catch (Exception exception)
             {
-                Fail(exception);
+                Fail(exception, GameTexts.Startup.StageOpening);
             }
         }
 
@@ -1509,16 +1539,82 @@ namespace FishingIdle.Game.Bootstrap
             }
             catch (Exception exception)
             {
-                Fail(exception);
+                Fail(exception, GameTexts.Startup.StageRunning);
             }
         }
 
-        private void Fail(Exception exception)
+        /// <summary>
+        /// Stops the game with the error screen: what failed, where in the code and when, so a screenshot is enough to
+        /// find it (M24-T38). The first failure is the one kept; what fails after it is only logged.
+        /// </summary>
+        private void Fail(Exception exception, string stage)
         {
             Debug.LogException(exception);
+            if (Game == null && StartupErrors.Count > 0)
+            {
+                return;
+            }
+
+            var savePath = Game?.Session?.SaveLocation;
             Game = null;
             StartupErrorTitle = GameTexts.Startup.UnexpectedErrorTitle;
-            StartupErrors = new[] { exception.Message };
+            var lines = new List<string>
+            {
+                GameTexts.Startup.ErrorLine(exception.GetType().Name, exception.Message),
+                GameTexts.Startup.StageLine(stage),
+            };
+
+            var where = StackSummary(exception);
+            if (!string.IsNullOrEmpty(where))
+            {
+                lines.Add(GameTexts.Startup.WhereLine(where));
+            }
+
+            if (exception.InnerException != null)
+            {
+                lines.Add(GameTexts.Startup.ErrorLine(exception.InnerException.GetType().Name, exception.InnerException.Message));
+            }
+
+            if (!string.IsNullOrEmpty(savePath))
+            {
+                lines.Add(GameTexts.Startup.SaveLine(savePath));
+            }
+
+            StartupErrors = lines;
+        }
+
+        /// <summary>The first three stack frames of the game's own code ("Type.Method"), the failing one first.</summary>
+        private static string StackSummary(Exception exception)
+        {
+            var trace = exception.StackTrace;
+            if (string.IsNullOrEmpty(trace))
+            {
+                return null;
+            }
+
+            var frames = new List<string>();
+            foreach (var raw in trace.Split('\n'))
+            {
+                var line = raw.Trim();
+                if (line.StartsWith("at ", StringComparison.Ordinal))
+                {
+                    line = line.Substring(3);
+                }
+
+                if (!line.StartsWith("FishingIdle.", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var paren = line.IndexOf('(');
+                frames.Add((paren > 0 ? line.Substring(0, paren) : line).Replace("FishingIdle.", string.Empty).Trim());
+                if (frames.Count == 3)
+                {
+                    break;
+                }
+            }
+
+            return frames.Count > 0 ? string.Join(" < ", frames) : null;
         }
     }
 }

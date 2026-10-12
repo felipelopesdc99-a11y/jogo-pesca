@@ -3,6 +3,31 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.57] — 12/10/2026
+
+Correções na abertura do jogo (M24-T38, A-166, TD-050): o proprietário avisou que o jogo "não está abrindo" no Unity 6.3.
+Compilado e testado no CI; não aberto no Unity.
+
+### Corrigido
+
+- Uma falha ao montar a cena interrompia a abertura antes da interface: a janela ficava vazia, sem explicação. Agora a
+  interface é sempre criada e mostra a tela de erro.
+- Uma falha ao desenhar a interface (qualquer janela) se repetia a cada quadro e deixava a tela pela metade. Agora o
+  jogo para com a tela de erro.
+- A leitura do estado da pesca e da viagem a cada quadro ficou protegida como as outras.
+
+### Mudado
+
+- A tela de erro mostra o erro e o tipo, o momento (abertura, cena, tela, jogo em andamento), onde no código, o erro
+  interno e a pasta do save, e pede um print.
+
+### Adicionado
+
+- Testes `StartupWithOldSavesTests`: saves das versões 11 a 18 com dados reais (varas Nv.10 no Inventário, no Mercado e
+  num leilão, iscas antigas, peixes Nv.10, barco comprado, Dólares antigos) abertos 3 dias depois, com todas as
+  sincronizações do jogo (Pesca, Tripulação, Passe, Boss, Expedição, Mercado); e um save novo. Nada lança exceção, o save
+  carrega e a abertura leva menos de 2 s.
+
 ## [0.2.0-m21.56] — 12/10/2026
 
 Boss Mundial diário (M24-T29, A-165, TD-049): pedido do proprietário de 12/10/2026 ("quero criar um Boss mundial para

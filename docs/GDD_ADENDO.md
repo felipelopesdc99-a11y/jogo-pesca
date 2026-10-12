@@ -2824,3 +2824,17 @@ Números em `config/world_boss.json`.
   ou em Expedição, se for o caso); "Boss Mundial: você chegou à Faixa 3!"; e no pagamento "Boss Mundial: +14.760 Moedas,
   +18 Conchas, +3 Fragmentos de Roupa, +3 frag. · Rastro Azul" (com a comemoração se o barco for montado).
 - **Quem já joga** (save versão 19): começa sem participação; o primeiro evento é o das 19:00 seguintes.
+
+### A-166 · Tela de erro com o motivo
+**Seção do GDD:** 5 (painel e ferramentas) · correção pedida pelo proprietário · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+O proprietário avisou em 12/10/2026 que o jogo "não está abrindo" no Unity (M24-T38). Para nunca mais ficar uma janela
+vazia ou travada sem explicação:
+
+- **Qualquer falha vira a tela de erro**, também as da montagem da cena e de um quadro da interface (antes, só as da
+  abertura do serviço e das sincronizações). O jogo para ali, sem gravar nada depois da falha.
+- A tela diz **"O jogo encontrou um erro inesperado"**, pede um print ("Tire um print desta tela e mande junto com o pedido
+  de correção") e lista: **Erro** (a mensagem e o tipo), **Momento** (abertura do jogo, montagem da cena, desenho da tela
+  ou jogo em andamento), **Onde** (os três primeiros pontos do código do jogo envolvidos) e a pasta do **Save**.
+- Se nem o visual da interface puder ser montado, a mesma lista aparece no estilo simples do Unity.
+- O erro de balanceamento (arquivos de `/config` com problemas) continua com a tela própria e a lista dos itens a corrigir.

@@ -99,6 +99,19 @@ namespace FishingIdle.Game.UI
         {
             _root = GetComponent<GameRoot>();
             _scene = GetComponent<FishingScene>();
+            try
+            {
+                CreateWindows();
+            }
+            catch (Exception exception)
+            {
+                // Without its windows the HUD can only show the error screen (M24-T38).
+                _root.ReportFailure(exception);
+            }
+        }
+
+        private void CreateWindows()
+        {
             _box = new FishingBoxWindow(_root);
             _aquarium = new AquariumWindow(_root);
             _profile = new ProfileWindow(_root);
@@ -321,16 +334,52 @@ namespace FishingIdle.Game.UI
             _height = VirtualHeight;
             GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(scale, scale, 1f));
 
-            var skin = UiSkin.Get();
-            _tipPending = false;
-            _notices.Tick(Time.unscaledTime, _root.Toasts);
-
-            if (!_root.IsRunning)
+            UiSkin skin;
+            try
             {
-                DrawStartupError(skin);
+                skin = UiSkin.Get();
+                _tipPending = false;
+                _notices.Tick(Time.unscaledTime, _root.Toasts);
+                if (!_root.IsRunning || _boss == null)
+                {
+                    DrawStartupError(skin);
+                    return;
+                }
+            }
+            catch (ExitGUIException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                // Even the interface skin failed: the reason in Unity's plain style, so the screen is never empty (M24-T38).
+                if (_root.IsRunning)
+                {
+                    _root.ReportFailure(exception);
+                }
+
+                DrawPlainError(exception);
                 return;
             }
 
+            try
+            {
+                DrawRunning(skin);
+            }
+            catch (ExitGUIException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                // An exception in a frame of the HUD would repeat every frame and leave the screen half drawn: the game
+                // stops with the error screen and the reason instead (M24-T38).
+                _root.ReportFailure(exception);
+            }
+        }
+
+        private void DrawRunning(UiSkin skin)
+        {
             if (_compact)
             {
                 DrawCompact(skin);
@@ -1614,6 +1663,25 @@ namespace FishingIdle.Game.UI
             {
                 GUILayout.Label("•  " + error, skin.Body);
                 GUILayout.Space(6);
+            }
+
+            GUILayout.EndArea();
+        }
+
+        /// <summary>The error screen without the game's skin (when the skin itself could not be built).</summary>
+        private void DrawPlainError(Exception exception)
+        {
+            GUILayout.BeginArea(new Rect(40, 40, Mathf.Max(200f, _width - 80), _height - 80));
+            GUILayout.Label(_root.StartupErrorTitle ?? GameTexts.Startup.UnexpectedErrorTitle);
+            GUILayout.Label(GameTexts.Startup.UnexpectedErrorHint);
+            foreach (var error in _root.StartupErrors)
+            {
+                GUILayout.Label("•  " + error);
+            }
+
+            if (_root.StartupErrors.Count == 0)
+            {
+                GUILayout.Label("•  " + GameTexts.Startup.ErrorLine(exception.GetType().Name, exception.Message));
             }
 
             GUILayout.EndArea();
