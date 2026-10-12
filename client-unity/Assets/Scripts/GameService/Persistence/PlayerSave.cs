@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 17;
+        public const int CurrentVersion = 18;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -85,6 +85,16 @@ namespace FishingIdle.GameService.Persistence
         /// after the boat is owned, new ones are kept here as extras (OD-060). Added in save version 16.
         /// </summary>
         public Dictionary<string, long> BoatFragments { get; set; } = new Dictionary<string, long>();
+
+        /// <summary>
+        /// Fragments of each rod not used to assemble it, by rod id (M24-T32, A-163). Assembling spends fragments_required;
+        /// while the rod is owned, new ones are kept here as extras (they assemble it again if it is sold). Added in save
+        /// version 18; rods owned before stay in the Inventory with their levels.
+        /// </summary>
+        public Dictionary<string, long> RodFragments { get; set; } = new Dictionary<string, long>();
+
+        /// <summary>The clothing pieces and the Fragmentos de Roupa (M24-T33, A-164). Added in save version 18.</summary>
+        public ClothingState Clothing { get; set; } = new ClothingState();
 
         /// <summary>
         /// Level of each boat bought, by boat id (M24-T13). A boat missing here is at Nv.1. Added in save version 15.
@@ -266,6 +276,28 @@ namespace FishingIdle.GameService.Persistence
         /// version 16 migration; 0 for a new player.
         /// </summary>
         public int LegacyDollarsUpToLevel { get; set; }
+    }
+
+    /// <summary>
+    /// Clothing (M24-T33, A-164). Only what the player has: names, bonuses and the XP each level asks come from
+    /// equipment.json → clothing, so a balance change applies to the pieces already assembled.
+    /// </summary>
+    public sealed class ClothingState
+    {
+        /// <summary>Fragmentos de Roupa not spent yet (also the extras once the five pieces are assembled).</summary>
+        public long Fragments { get; set; }
+
+        /// <summary>The assembled pieces, by piece id. A piece is worn as soon as it is assembled (one slot per piece).</summary>
+        public Dictionary<string, ClothingPieceState> Pieces { get; set; } = new Dictionary<string, ClothingPieceState>();
+    }
+
+    public sealed class ClothingPieceState
+    {
+        public int Level { get; set; } = 1;
+
+        /// <summary>Use XP inside the current level (fish pulled out while it is worn).</summary>
+        public long Xp { get; set; }
+        public long AssembledAtMs { get; set; }
     }
 
     /// <summary>Map travel: 30 s, fishing paused, manual only (GDD section 18).</summary>

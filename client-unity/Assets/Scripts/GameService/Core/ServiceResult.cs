@@ -82,6 +82,11 @@ namespace FishingIdle.GameService.Core
         PassPremiumLocked,
         PassPremiumOwned,
         PassNothingToClaim,
+
+        // Clothing (M24-T33, A-164)
+        ClothingNotFound,
+        ClothingAlreadyOwned,
+        NotEnoughClothingFragments,
     }
 
     /// <summary>

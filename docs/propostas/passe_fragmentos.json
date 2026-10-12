@@ -45,12 +45,12 @@
       "mapa": "map_03",
       "fragmentos": 35,
       "chance_por_peixe": 0.0048,
-      "peixes_puxados_por_tentativa": 0.544,
+      "peixes_puxados_por_tentativa": 0.543,
       "bonus_nv1": 0.06,
       "bonus_nv100": 0.18,
-      "dias_sempre_aberto": 1.55,
-      "dias_quatro_vezes": 2.86,
-      "dias_uma_vez": 3.04
+      "dias_sempre_aberto": 1.56,
+      "dias_quatro_vezes": 2.87,
+      "dias_uma_vez": 3.05
     },
     "boat_04": {
       "nome": "Costa Nobre",
@@ -144,94 +144,114 @@
         "shells": 9,
         "dollars": 10,
         "boat_id": "boat_01",
-        "fragments": 3
+        "fragments": 3,
+        "rod_id": "rod_01",
+        "rod_fragments": 3,
+        "clothing_fragments": 2
       },
       "premium": {
         "coins": 4920,
         "shells": 18,
         "dollars": 0,
         "boat_id": "boat_01",
-        "fragments": 6
+        "fragments": 6,
+        "rod_id": "rod_01",
+        "rod_fragments": 6,
+        "clothing_fragments": 4
       }
     },
     "Nv.50": {
       "gratis": {
-        "coins": 37200,
-        "shells": 13,
+        "coins": 99000,
+        "shells": 16,
         "dollars": 10,
         "boat_id": "boat_05",
-        "fragments": 9
+        "fragments": 9,
+        "rod_id": "rod_03",
+        "rod_fragments": 6,
+        "clothing_fragments": 2
       },
       "premium": {
-        "coins": 74400,
-        "shells": 26,
+        "coins": 198000,
+        "shells": 32,
         "dollars": 10,
         "boat_id": "boat_05",
-        "fragments": 18
+        "fragments": 18,
+        "rod_id": "rod_03",
+        "rod_fragments": 12,
+        "clothing_fragments": 4
       }
     },
     "Nv.100": {
       "gratis": {
-        "coins": 554000,
-        "shells": 23,
+        "coins": 544000,
+        "shells": 25,
         "dollars": 10,
         "boat_id": "boat_10",
-        "fragments": 30
+        "fragments": 30,
+        "clothing_fragments": 2
       },
       "premium": {
-        "coins": 1110000,
-        "shells": 46,
+        "coins": 1090000,
+        "shells": 50,
         "dollars": 10,
         "boat_id": "boat_10",
-        "fragments": 60
+        "fragments": 60,
+        "clothing_fragments": 4
       }
     },
     "Nv.250": {
       "gratis": {
-        "coins": 57900000,
-        "shells": 102,
+        "coins": 53900000,
+        "shells": 98,
         "dollars": 0,
         "boat_id": "boat_05",
-        "fragments": 6
+        "fragments": 6,
+        "clothing_fragments": 1
       },
       "premium": {
-        "coins": 116000000,
-        "shells": 204,
+        "coins": 108000000,
+        "shells": 196,
         "dollars": 10,
         "boat_id": "boat_05",
-        "fragments": 12
+        "fragments": 12,
+        "clothing_fragments": 2
       }
     },
     "Nv.500": {
       "gratis": {
-        "coins": 980000000,
+        "coins": 981000000,
         "shells": 136,
         "dollars": 10,
         "boat_id": "boat_10",
-        "fragments": 20
+        "fragments": 20,
+        "clothing_fragments": 1
       },
       "premium": {
         "coins": 1960000000,
         "shells": 272,
         "dollars": 10,
         "boat_id": "boat_10",
-        "fragments": 40
+        "fragments": 40,
+        "clothing_fragments": 2
       }
     },
     "Nv.1000": {
       "gratis": {
-        "coins": 1950000000000,
-        "shells": 206,
+        "coins": 1110000000000,
+        "shells": 236,
         "dollars": 10,
         "boat_id": "boat_10",
-        "fragments": 20
+        "fragments": 20,
+        "clothing_fragments": 1
       },
       "premium": {
-        "coins": 3900000000000,
-        "shells": 412,
+        "coins": 2220000000000,
+        "shells": 472,
         "dollars": 10,
         "boat_id": "boat_10",
-        "fragments": 40
+        "fragments": 40,
+        "clothing_fragments": 2
       }
     }
   },
@@ -239,81 +259,85 @@
     "dolares_gratis_ate_nv100": 100,
     "dolares_gratis_total": 190,
     "dolares_premium_total": 200,
-    "moedas_gratis_total": 14293256545360,
-    "conchas_gratis_total": 13276,
-    "moedas_premium_total": 28589367896720,
-    "conchas_premium_total": 26552
+    "moedas_gratis_total": 8521571532660,
+    "conchas_gratis_total": 14335,
+    "moedas_premium_total": 17045394471320,
+    "conchas_premium_total": 28670,
+    "fragmentos_de_vara_gratis_total": 29,
+    "fragmentos_de_vara_premium_total": 58,
+    "fragmentos_de_roupa_gratis_total": 110,
+    "fragmentos_de_roupa_premium_total": 220
   },
   "progressao": {
     "sempre_aberto_gratis": {
       "descricao": "Deixa o jogo aberto o dia todo · só o passe grátis",
       "barcos": {
         "boat_01": {
-          "montado_em": "49,0 dias",
-          "dias": 49.05,
-          "fragmentos_da_pesca": 0.3,
+          "montado_em": "35,1 dias",
+          "dias": 35.13,
+          "fragmentos_da_pesca": 1.4,
           "fragmentos_do_passe": 21.0
         },
         "boat_02": {
-          "montado_em": "30,3 dias",
-          "dias": 30.27,
-          "fragmentos_da_pesca": 0.5,
+          "montado_em": "27,6 dias",
+          "dias": 27.57,
+          "fragmentos_da_pesca": 0.2,
           "fragmentos_do_passe": 31.0
         },
         "boat_03": {
-          "montado_em": "31,1 dias",
-          "dias": 31.14,
-          "fragmentos_da_pesca": 1.4,
+          "montado_em": "28,4 dias",
+          "dias": 28.37,
+          "fragmentos_da_pesca": 2.5,
           "fragmentos_do_passe": 42.0
         },
         "boat_04": {
-          "montado_em": "41,6 dias",
-          "dias": 41.58,
+          "montado_em": "37,9 dias",
+          "dias": 37.87,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 52.0
         },
         "boat_05": {
-          "montado_em": "42,6 dias",
-          "dias": 42.61,
-          "fragmentos_da_pesca": 3.3,
+          "montado_em": "38,8 dias",
+          "dias": 38.82,
+          "fragmentos_da_pesca": 2.2,
           "fragmentos_do_passe": 63.0
         },
         "boat_06": {
-          "montado_em": "54,8 dias",
-          "dias": 54.76,
+          "montado_em": "49,9 dias",
+          "dias": 49.9,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 74.0
         },
         "boat_07": {
-          "montado_em": "44,7 dias",
-          "dias": 44.7,
-          "fragmentos_da_pesca": 8.7,
+          "montado_em": "40,7 dias",
+          "dias": 40.74,
+          "fragmentos_da_pesca": 6.1,
           "fragmentos_do_passe": 95.0
         },
         "boat_08": {
-          "montado_em": "57,1 dias",
-          "dias": 57.14,
+          "montado_em": "52,1 dias",
+          "dias": 52.05,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 126.0
         },
         "boat_09": {
-          "montado_em": "46,8 dias",
-          "dias": 46.85,
-          "fragmentos_da_pesca": 8.1,
+          "montado_em": "33,4 dias",
+          "dias": 33.38,
+          "fragmentos_da_pesca": 20.7,
           "fragmentos_do_passe": 168.0
         },
         "boat_10": {
-          "montado_em": "3,7 dias",
-          "dias": 3.66,
-          "fragmentos_da_pesca": 3222.7,
+          "montado_em": "3,6 dias",
+          "dias": 3.62,
+          "fragmentos_da_pesca": 2933.1,
           "fragmentos_do_passe": 210.0
         }
       },
       "dias_ate_nivel": {
         "Nv.10": 0.01,
-        "Nv.100": 0.44,
-        "Nv.500": 14.24,
-        "Nv.1000": 59.54
+        "Nv.100": 0.41,
+        "Nv.500": 13.02,
+        "Nv.1000": 54.23
       },
       "premium_comprado_em": "—",
       "dolares_do_passe_recebidos": 190,
@@ -323,73 +347,73 @@
       "descricao": "Deixa o jogo aberto o dia todo · compra o premium",
       "barcos": {
         "boat_01": {
-          "montado_em": "2,1 dias",
-          "dias": 2.13,
-          "fragmentos_da_pesca": 0.3,
+          "montado_em": "1,9 dias",
+          "dias": 1.92,
+          "fragmentos_da_pesca": 1.4,
           "fragmentos_do_passe": 63.0
         },
         "boat_02": {
-          "montado_em": "2,4 dias",
-          "dias": 2.36,
-          "fragmentos_da_pesca": 0.5,
+          "montado_em": "2,1 dias",
+          "dias": 2.12,
+          "fragmentos_da_pesca": 0.2,
           "fragmentos_do_passe": 93.0
         },
         "boat_03": {
-          "montado_em": "2,6 dias",
-          "dias": 2.6,
-          "fragmentos_da_pesca": 1.4,
+          "montado_em": "2,3 dias",
+          "dias": 2.34,
+          "fragmentos_da_pesca": 2.5,
           "fragmentos_do_passe": 126.0
         },
         "boat_04": {
-          "montado_em": "2,9 dias",
-          "dias": 2.86,
+          "montado_em": "2,6 dias",
+          "dias": 2.57,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 156.0
         },
         "boat_05": {
-          "montado_em": "3,1 dias",
-          "dias": 3.11,
-          "fragmentos_da_pesca": 3.3,
+          "montado_em": "2,8 dias",
+          "dias": 2.8,
+          "fragmentos_da_pesca": 2.2,
           "fragmentos_do_passe": 189.0
         },
         "boat_06": {
-          "montado_em": "3,4 dias",
-          "dias": 3.38,
+          "montado_em": "3,0 dias",
+          "dias": 3.04,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 222.0
         },
         "boat_07": {
-          "montado_em": "3,7 dias",
-          "dias": 3.66,
+          "montado_em": "3,3 dias",
+          "dias": 3.29,
           "fragmentos_da_pesca": 6.0,
           "fragmentos_do_passe": 285.0
         },
         "boat_08": {
-          "montado_em": "3,9 dias",
-          "dias": 3.95,
+          "montado_em": "3,6 dias",
+          "dias": 3.55,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 378.0
         },
         "boat_09": {
-          "montado_em": "4,3 dias",
-          "dias": 4.26,
-          "fragmentos_da_pesca": 3.0,
+          "montado_em": "3,8 dias",
+          "dias": 3.83,
+          "fragmentos_da_pesca": 13.4,
           "fragmentos_do_passe": 504.0
         },
         "boat_10": {
-          "montado_em": "1,9 dias",
-          "dias": 1.92,
-          "fragmentos_da_pesca": 3211.0,
+          "montado_em": "1,7 dias",
+          "dias": 1.72,
+          "fragmentos_da_pesca": 2911.6,
           "fragmentos_do_passe": 630.0
         }
       },
       "dias_ate_nivel": {
         "Nv.10": 0.01,
-        "Nv.100": 0.44,
-        "Nv.500": 13.85,
-        "Nv.1000": 59.04
+        "Nv.100": 0.41,
+        "Nv.500": 12.58,
+        "Nv.1000": 53.65
       },
-      "premium_comprado_em": "10,6 h",
+      "premium_comprado_em": "9,8 h",
       "dolares_do_passe_recebidos": 390,
       "marcos_resgatados": 100
     },
@@ -397,71 +421,71 @@
       "descricao": "Abre 4 vezes por dia, 30 min de cada vez · só o passe grátis",
       "barcos": {
         "boat_01": {
-          "montado_em": "88,9 dias",
-          "dias": 88.92,
-          "fragmentos_da_pesca": 0.3,
+          "montado_em": "64,8 dias",
+          "dias": 64.75,
+          "fragmentos_da_pesca": 1.8,
           "fragmentos_do_passe": 21.0
         },
         "boat_02": {
-          "montado_em": "55,8 dias",
-          "dias": 55.75,
-          "fragmentos_da_pesca": 0.5,
+          "montado_em": "51,3 dias",
+          "dias": 51.33,
+          "fragmentos_da_pesca": 0.1,
           "fragmentos_do_passe": 31.0
         },
         "boat_03": {
-          "montado_em": "57,3 dias",
-          "dias": 57.33,
-          "fragmentos_da_pesca": 1.2,
+          "montado_em": "52,5 dias",
+          "dias": 52.5,
+          "fragmentos_da_pesca": 3.0,
           "fragmentos_do_passe": 42.0
         },
         "boat_04": {
-          "montado_em": "75,8 dias",
-          "dias": 75.75,
-          "fragmentos_da_pesca": 0.1,
+          "montado_em": "69,5 dias",
+          "dias": 69.5,
+          "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 52.0
         },
         "boat_05": {
-          "montado_em": "77,5 dias",
-          "dias": 77.5,
-          "fragmentos_da_pesca": 3.4,
+          "montado_em": "71,3 dias",
+          "dias": 71.33,
+          "fragmentos_da_pesca": 3.0,
           "fragmentos_do_passe": 63.0
         },
         "boat_06": {
-          "montado_em": "99,3 dias",
-          "dias": 99.33,
+          "montado_em": "90,9 dias",
+          "dias": 90.92,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 74.0
         },
         "boat_07": {
-          "montado_em": "101,3 dias",
-          "dias": 101.33,
-          "fragmentos_da_pesca": 2.7,
+          "montado_em": "74,5 dias",
+          "dias": 74.5,
+          "fragmentos_da_pesca": 7.2,
           "fragmentos_do_passe": 95.0
         },
         "boat_08": {
-          "montado_em": "103,3 dias",
-          "dias": 103.33,
+          "montado_em": "94,8 dias",
+          "dias": 94.75,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 126.0
         },
         "boat_09": {
-          "montado_em": "84,9 dias",
-          "dias": 84.94,
-          "fragmentos_da_pesca": 15.3,
+          "montado_em": "61,5 dias",
+          "dias": 61.5,
+          "fragmentos_da_pesca": 26.2,
           "fragmentos_do_passe": 168.0
         },
         "boat_10": {
-          "montado_em": "7,3 dias",
-          "dias": 7.33,
-          "fragmentos_da_pesca": 3137.3,
+          "montado_em": "7,5 dias",
+          "dias": 7.51,
+          "fragmentos_da_pesca": 2863.1,
           "fragmentos_do_passe": 210.0
         }
       },
       "dias_ate_nivel": {
         "Nv.10": 0.35,
         "Nv.100": 1.33,
-        "Nv.500": 26.75,
-        "Nv.1000": 107.75
+        "Nv.500": 24.75,
+        "Nv.1000": 98.75
       },
       "premium_comprado_em": "—",
       "dolares_do_passe_recebidos": 190,
@@ -471,71 +495,71 @@
       "descricao": "Abre 4 vezes por dia, 30 min de cada vez · compra o premium",
       "barcos": {
         "boat_01": {
-          "montado_em": "4,5 dias",
-          "dias": 4.5,
-          "fragmentos_da_pesca": 0.3,
+          "montado_em": "4,3 dias",
+          "dias": 4.33,
+          "fragmentos_da_pesca": 1.8,
           "fragmentos_do_passe": 63.0
         },
         "boat_02": {
-          "montado_em": "4,9 dias",
-          "dias": 4.92,
-          "fragmentos_da_pesca": 0.5,
+          "montado_em": "4,5 dias",
+          "dias": 4.51,
+          "fragmentos_da_pesca": 0.1,
           "fragmentos_do_passe": 93.0
         },
         "boat_03": {
-          "montado_em": "5,3 dias",
-          "dias": 5.33,
-          "fragmentos_da_pesca": 1.2,
+          "montado_em": "4,9 dias",
+          "dias": 4.92,
+          "fragmentos_da_pesca": 3.0,
           "fragmentos_do_passe": 126.0
         },
         "boat_04": {
-          "montado_em": "5,8 dias",
-          "dias": 5.76,
-          "fragmentos_da_pesca": 0.1,
+          "montado_em": "5,3 dias",
+          "dias": 5.34,
+          "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 156.0
         },
         "boat_05": {
-          "montado_em": "6,3 dias",
-          "dias": 6.33,
-          "fragmentos_da_pesca": 3.4,
+          "montado_em": "5,8 dias",
+          "dias": 5.76,
+          "fragmentos_da_pesca": 3.0,
           "fragmentos_do_passe": 189.0
         },
         "boat_06": {
-          "montado_em": "6,8 dias",
-          "dias": 6.75,
+          "montado_em": "6,3 dias",
+          "dias": 6.33,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 222.0
         },
         "boat_07": {
-          "montado_em": "7,3 dias",
-          "dias": 7.33,
-          "fragmentos_da_pesca": 2.7,
+          "montado_em": "6,8 dias",
+          "dias": 6.75,
+          "fragmentos_da_pesca": 7.2,
           "fragmentos_do_passe": 285.0
         },
         "boat_08": {
-          "montado_em": "7,9 dias",
-          "dias": 7.92,
+          "montado_em": "7,3 dias",
+          "dias": 7.33,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 378.0
         },
         "boat_09": {
-          "montado_em": "8,4 dias",
-          "dias": 8.35,
-          "fragmentos_da_pesca": 7.5,
+          "montado_em": "7,8 dias",
+          "dias": 7.75,
+          "fragmentos_da_pesca": 16.2,
           "fragmentos_do_passe": 504.0
         },
         "boat_10": {
-          "montado_em": "4,3 dias",
-          "dias": 4.33,
-          "fragmentos_da_pesca": 3130.5,
+          "montado_em": "3,8 dias",
+          "dias": 3.76,
+          "fragmentos_da_pesca": 2848.1,
           "fragmentos_do_passe": 630.0
         }
       },
       "dias_ate_nivel": {
         "Nv.10": 0.35,
         "Nv.100": 1.33,
-        "Nv.500": 25.94,
-        "Nv.1000": 106.77
+        "Nv.500": 23.75,
+        "Nv.1000": 97.75
       },
       "premium_comprado_em": "1,3 dias",
       "dolares_do_passe_recebidos": 390,
@@ -545,71 +569,71 @@
       "descricao": "Abre 1 vez por dia, 30 min · só o passe grátis",
       "barcos": {
         "boat_01": {
-          "montado_em": "100,8 dias",
-          "dias": 100.83,
-          "fragmentos_da_pesca": 0.3,
+          "montado_em": "21,8 dias",
+          "dias": 21.83,
+          "fragmentos_da_pesca": 9.7,
           "fragmentos_do_passe": 21.0
         },
         "boat_02": {
-          "montado_em": "63,8 dias",
-          "dias": 63.83,
-          "fragmentos_da_pesca": 0.5,
+          "montado_em": "58,8 dias",
+          "dias": 58.83,
+          "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 31.0
         },
         "boat_03": {
-          "montado_em": "35,8 dias",
-          "dias": 35.83,
-          "fragmentos_da_pesca": 10.4,
+          "montado_em": "22,8 dias",
+          "dias": 22.84,
+          "fragmentos_da_pesca": 13.0,
           "fragmentos_do_passe": 42.0
         },
         "boat_04": {
-          "montado_em": "85,8 dias",
-          "dias": 85.84,
+          "montado_em": "79,8 dias",
+          "dias": 79.83,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 52.0
         },
         "boat_05": {
-          "montado_em": "51,8 dias",
-          "dias": 51.85,
-          "fragmentos_da_pesca": 14.9,
+          "montado_em": "48,8 dias",
+          "dias": 48.83,
+          "fragmentos_da_pesca": 14.6,
           "fragmentos_do_passe": 63.0
         },
         "boat_06": {
-          "montado_em": "112,8 dias",
-          "dias": 112.83,
+          "montado_em": "102,8 dias",
+          "dias": 102.84,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 74.0
         },
         "boat_07": {
-          "montado_em": "72,8 dias",
-          "dias": 72.83,
-          "fragmentos_da_pesca": 19.9,
+          "montado_em": "66,8 dias",
+          "dias": 66.83,
+          "fragmentos_da_pesca": 21.3,
           "fragmentos_do_passe": 95.0
         },
         "boat_08": {
-          "montado_em": "116,8 dias",
-          "dias": 116.83,
+          "montado_em": "107,8 dias",
+          "dias": 107.83,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 126.0
         },
         "boat_09": {
-          "montado_em": "119,8 dias",
-          "dias": 119.83,
-          "fragmentos_da_pesca": 0.0,
+          "montado_em": "70,8 dias",
+          "dias": 70.83,
+          "fragmentos_da_pesca": 22.9,
           "fragmentos_do_passe": 168.0
         },
         "boat_10": {
-          "montado_em": "10,8 dias",
-          "dias": 10.83,
-          "fragmentos_da_pesca": 3281.3,
+          "montado_em": "11,8 dias",
+          "dias": 11.83,
+          "fragmentos_da_pesca": 2956.1,
           "fragmentos_do_passe": 210.0
         }
       },
       "dias_ate_nivel": {
         "Nv.10": 0.85,
-        "Nv.100": 2.83,
-        "Nv.500": 31.83,
-        "Nv.1000": 121.83
+        "Nv.100": 3.83,
+        "Nv.500": 29.83,
+        "Nv.1000": 111.83
       },
       "premium_comprado_em": "—",
       "dolares_do_passe_recebidos": 190,
@@ -619,45 +643,45 @@
       "descricao": "Abre 1 vez por dia, 30 min · compra o premium",
       "barcos": {
         "boat_01": {
-          "montado_em": "6,8 dias",
-          "dias": 6.83,
-          "fragmentos_da_pesca": 0.3,
+          "montado_em": "3,8 dias",
+          "dias": 3.83,
+          "fragmentos_da_pesca": 9.7,
           "fragmentos_do_passe": 63.0
         },
         "boat_02": {
-          "montado_em": "6,8 dias",
-          "dias": 6.83,
-          "fragmentos_da_pesca": 0.5,
+          "montado_em": "7,8 dias",
+          "dias": 7.83,
+          "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 93.0
         },
         "boat_03": {
-          "montado_em": "3,8 dias",
-          "dias": 3.83,
-          "fragmentos_da_pesca": 10.4,
+          "montado_em": "4,8 dias",
+          "dias": 4.83,
+          "fragmentos_da_pesca": 13.0,
           "fragmentos_do_passe": 126.0
         },
         "boat_04": {
-          "montado_em": "7,8 dias",
-          "dias": 7.83,
+          "montado_em": "8,8 dias",
+          "dias": 8.83,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 156.0
         },
         "boat_05": {
-          "montado_em": "3,8 dias",
-          "dias": 3.83,
-          "fragmentos_da_pesca": 14.9,
+          "montado_em": "4,8 dias",
+          "dias": 4.83,
+          "fragmentos_da_pesca": 14.6,
           "fragmentos_do_passe": 189.0
         },
         "boat_06": {
-          "montado_em": "8,8 dias",
-          "dias": 8.85,
+          "montado_em": "9,8 dias",
+          "dias": 9.83,
           "fragmentos_da_pesca": 0.0,
           "fragmentos_do_passe": 222.0
         },
         "boat_07": {
-          "montado_em": "9,8 dias",
-          "dias": 9.83,
-          "fragmentos_da_pesca": 0.6,
+          "montado_em": "5,8 dias",
+          "dias": 5.83,
+          "fragmentos_da_pesca": 22.1,
           "fragmentos_do_passe": 285.0
         },
         "boat_08": {
@@ -667,25 +691,25 @@
           "fragmentos_do_passe": 378.0
         },
         "boat_09": {
-          "montado_em": "10,8 dias",
-          "dias": 10.83,
-          "fragmentos_da_pesca": 21.1,
+          "montado_em": "11,8 dias",
+          "dias": 11.83,
+          "fragmentos_da_pesca": 25.9,
           "fragmentos_do_passe": 504.0
         },
         "boat_10": {
-          "montado_em": "5,8 dias",
-          "dias": 5.83,
-          "fragmentos_da_pesca": 3253.6,
+          "montado_em": "7,8 dias",
+          "dias": 7.83,
+          "fragmentos_da_pesca": 2919.0,
           "fragmentos_do_passe": 630.0
         }
       },
       "dias_ate_nivel": {
         "Nv.10": 0.85,
-        "Nv.100": 2.83,
-        "Nv.500": 30.83,
-        "Nv.1000": 120.83
+        "Nv.100": 3.83,
+        "Nv.500": 28.83,
+        "Nv.1000": 110.83
       },
-      "premium_comprado_em": "2,8 dias",
+      "premium_comprado_em": "3,8 dias",
       "dolares_do_passe_recebidos": 390,
       "marcos_resgatados": 100
     }

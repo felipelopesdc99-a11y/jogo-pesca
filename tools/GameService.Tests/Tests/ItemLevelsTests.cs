@@ -190,7 +190,7 @@ public class ItemLevelsTests
         Assert.Equal(0, before.OwnedLevel);
         Assert.Equal(ServiceError.ItemNotFound, before.UpgradeBlocker);
 
-        game.Shop.BuyRod(rod.Id);
+        TestSupport.GiveRod(game, rod.Id);
         var offer = game.Shop.GetShop().Rods.Single(r => r.RodId == rod.Id);
         Assert.Equal(1, offer.OwnedLevel);
         Assert.Equal(config.RodUpgradeCost(rod, 1), offer.NextUpgradeCost);
@@ -213,7 +213,7 @@ public class ItemLevelsTests
         var config = game.Session.Config;
         save.Coins = 10_000_000;
         save.Shells = 1_000;
-        game.Shop.BuyRod("rod_01");
+        TestSupport.GiveRod(game, "rod_01");
         TestSupport.GiveBoat(game, "boat_01");
         save.EquippedRodItem().Level = 10;
         game.Session.DevToolsEnabled = true;

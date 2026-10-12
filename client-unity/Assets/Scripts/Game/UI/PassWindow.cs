@@ -25,6 +25,9 @@ namespace FishingIdle.Game.UI
         /// <summary>The fragment icon of each boat (Resources/Arte/Fragmentos/frag_&lt;boat id&gt;). Missing = the boat icon.</summary>
         private const string FragmentFolder = "Fragmentos/frag_";
 
+        /// <summary>The Fragmento de Roupa icon (M24-T33). Missing = the star icon.</summary>
+        private const string ClothingFragmentArt = "Fragmentos/frag_roupa";
+
         /// <summary>The pass icon (ASSET_PENDENTE: ico_passe.png; the star until it arrives).</summary>
         private const string PassIcon = "passe";
 
@@ -250,6 +253,11 @@ namespace FishingIdle.Game.UI
             var x = rect.x + 12f;
             var w = rect.width - 24f;
             var y = rect.y + 12f;
+
+            // Up to six lines (M24-T32/T33 added rod and clothing fragments): they get closer when the cell is short.
+            var lines = (reward.Coins > 0 ? 1 : 0) + (reward.Shells > 0 ? 1 : 0) + (reward.Dollars > 0 ? 1 : 0) + (reward.Fragments > 0 ? 1 : 0)
+                + (reward.RodFragments > 0 ? 1 : 0) + (reward.ClothingFragments > 0 ? 1 : 0);
+            var step = Mathf.Clamp((rect.height - 70f) / Mathf.Max(1, lines), 22f, 26f);
             if (reward.IsEmpty)
             {
                 GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Pass.Empty, skin.SmallMuted);
@@ -259,14 +267,14 @@ namespace FishingIdle.Game.UI
             {
                 skin.CoinIcon(new Rect(x, y, 20f, 20f));
                 GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), FishCard.Fit(Format.Short(reward.Coins), skin.SmallGoldLine, w - 26f), skin.SmallGoldLine);
-                y += 26f;
+                y += step;
             }
 
             if (reward.Shells > 0)
             {
                 skin.CurrencyIcon(new Rect(x, y, 20f, 20f), Icons.Shell);
                 GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), Format.Number(reward.Shells), skin.Small);
-                y += 26f;
+                y += step;
             }
 
             if (reward.Dollars > 0)
@@ -275,7 +283,7 @@ namespace FishingIdle.Game.UI
                 var text = GameTexts.Pass.DollarsLine(Format.Number(reward.Dollars)) + (reward.DollarsAlreadyPaid ? " · " + GameTexts.Pass.DollarsPaid : string.Empty);
                 var style = reward.DollarsAlreadyPaid ? skin.SmallMuted : skin.Small;
                 GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), FishCard.Fit(text, style, w - 26f), style);
-                y += 26f;
+                y += step;
             }
 
             if (reward.Fragments > 0)
@@ -292,6 +300,42 @@ namespace FishingIdle.Game.UI
                 }
 
                 var text = GameTexts.Pass.Fragments(Format.Number(reward.Fragments), reward.BoatName);
+                GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), FishCard.Fit(text, skin.Small, w - 26f), skin.Small);
+                y += step;
+            }
+
+            if (reward.RodFragments > 0)
+            {
+                // ASSET_PENDENTE: frag_rod_NN; the rod icon until it arrives.
+                var art = ArtAssets.Texture(FragmentFolder + reward.RodId);
+                if (art != null)
+                {
+                    GUI.DrawTexture(new Rect(x, y, 20f, 20f), art, ScaleMode.ScaleToFit, true);
+                }
+                else
+                {
+                    skin.DrawIcon(new Rect(x, y, 20f, 20f), Icons.Rod, UiSkin.Accent);
+                }
+
+                var text = GameTexts.Pass.RodFragments(Format.Number(reward.RodFragments), reward.RodName);
+                GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), FishCard.Fit(text, skin.Small, w - 26f), skin.Small);
+                y += step;
+            }
+
+            if (reward.ClothingFragments > 0)
+            {
+                // ASSET_PENDENTE: frag_roupa; the star icon until it arrives.
+                var art = ArtAssets.Texture(ClothingFragmentArt);
+                if (art != null)
+                {
+                    GUI.DrawTexture(new Rect(x, y, 20f, 20f), art, ScaleMode.ScaleToFit, true);
+                }
+                else
+                {
+                    skin.DrawIcon(new Rect(x, y, 20f, 20f), Icons.Star, UiSkin.Accent);
+                }
+
+                var text = GameTexts.Pass.ClothingFragments(Format.Number(reward.ClothingFragments));
                 GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), FishCard.Fit(text, skin.Small, w - 26f), skin.Small);
             }
 

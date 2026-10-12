@@ -39,8 +39,8 @@ public sealed class MapsAndRodsTests
         Assert.Equal(ServiceError.MapLocked, map2.TravelBlocker);
         Assert.Equal(ServiceError.MapLocked, game.Maps.TravelTo("map_02").Error);
         Assert.Equal(ServiceError.AlreadyOnMap, game.Maps.TravelTo("map_01").Error);
-        // No minimum level for items (M24-T09): only the money is missing.
-        Assert.Equal(ServiceError.NotEnoughCoins, game.Shop.BuyRod("rod_01").Error);
+        // Rods are not sold since M24-T32 (A-163): they are assembled from fragments.
+        Assert.Equal(ServiceError.RodNotForSale, game.Shop.BuyRod("rod_01").Error);
         Assert.Equal(ServiceError.RodAlreadyOwned, game.Shop.BuyRod("rod_00_starter").Error);
         Assert.Equal(ServiceError.RodNotForSale, game.Shop.BuyRod("rod_99").Error);
     }
@@ -55,26 +55,27 @@ public sealed class MapsAndRodsTests
     }
 
     [Fact]
-    public void Buying_rod_1_costs_its_price_equips_it_and_keeps_the_starter_rod()
+    public void Assembling_rod_1_costs_nothing_equips_it_and_keeps_the_starter_rod()
     {
         var (game, _, _) = VeteranPlayer();
         var coins = game.Player.GetPlayer().Coins;
 
-        var bought = game.Shop.BuyRod("rod_01");
+        var gain = TestSupport.GiveRod(game, "rod_01");
 
-        Assert.True(bought.Succeeded, bought.ErrorMessage);
-        Assert.Equal(coins - 2500, game.Player.GetPlayer().Coins);
+        Assert.True(gain.Equipped);
+        Assert.Equal(coins, game.Player.GetPlayer().Coins);
         var profile = game.Profile.GetProfile();
         Assert.Equal("Ponta Selvagem", profile.EquippedRod.Name);
         Assert.Equal(2, profile.Inventory.Count);
-        Assert.Equal(ServiceError.RodAlreadyOwned, game.Shop.BuyRod("rod_01").Error);
+        Assert.True(game.Shop.GetShop().Rods.Single(r => r.RodId == "rod_01").Owned);
+        Assert.Equal(ServiceError.RodNotForSale, game.Shop.BuyRod("rod_01").Error);
     }
 
     [Fact]
     public void Travel_takes_10_seconds_pauses_fishing_and_resumes_on_the_new_map()
     {
         var (game, clock, _) = VeteranPlayer();
-        game.Shop.BuyRod("rod_01");
+        TestSupport.GiveRod(game, "rod_01");
         game.Fishing.StartFishing();
         TestSupport.PlayFor(game, clock, 20);
 
@@ -111,7 +112,7 @@ public sealed class MapsAndRodsTests
     public void On_map_2_the_starter_rod_cannot_be_equipped()
     {
         var (game, clock, _) = VeteranPlayer();
-        game.Shop.BuyRod("rod_01");
+        TestSupport.GiveRod(game, "rod_01");
         game.Maps.TravelTo("map_02");
         clock.AdvanceSeconds(30);
         game.Maps.Update();
@@ -126,7 +127,7 @@ public sealed class MapsAndRodsTests
     public void A_trip_finished_while_the_game_was_closed_completes_on_start()
     {
         var (game, clock, dir) = VeteranPlayer();
-        game.Shop.BuyRod("rod_01");
+        TestSupport.GiveRod(game, "rod_01");
         game.Maps.TravelTo("map_02");
         clock.AdvanceSeconds(3600);
 
@@ -140,7 +141,7 @@ public sealed class MapsAndRodsTests
     public void Upgrading_charges_the_configured_cost_and_raises_the_bonus()
     {
         var (game, _, _) = VeteranPlayer();
-        game.Shop.BuyRod("rod_01");
+        TestSupport.GiveRod(game, "rod_01");
         var rod = game.Profile.GetProfile().EquippedRod;
         var coins = game.Player.GetPlayer().Coins;
         game.Session.Config.TryGetRod("rod_01", out var config);
@@ -160,16 +161,12 @@ public sealed class MapsAndRodsTests
     }
 
     [Fact]
-    public void Buying_and_upgrading_a_rod_ask_for_the_configured_shells()
+    public void Upgrading_a_rod_asks_for_the_configured_shells()
     {
         var (game, _, _) = VeteranPlayer();
         var save = game.Session.Save;
-        game.Session.Config.TryGetRod("rod_01", out var rod);
-        save.Shells = rod.Acquisition.PurchaseCostShells - 1;
-        Assert.Equal(ServiceError.NotEnoughShells, game.Shop.BuyRod("rod_01").Error);
-
-        save.Shells = rod.Acquisition.PurchaseCostShells + 100;
-        Assert.True(game.Shop.BuyRod("rod_01").Succeeded);
+        save.Shells = 100;
+        TestSupport.GiveRod(game, "rod_01");
         Assert.Equal(100, save.Shells);
 
         var item = game.Profile.GetProfile().EquippedRod;
@@ -182,7 +179,7 @@ public sealed class MapsAndRodsTests
     public void Upgrading_needs_coins_and_stops_at_the_max_level()
     {
         var (game, _, _) = VeteranPlayer();
-        game.Shop.BuyRod("rod_01");
+        TestSupport.GiveRod(game, "rod_01");
         var profile = game.Profile.GetProfile();
         var id = profile.EquippedRod.ItemId;
         var starterId = profile.Inventory.Single(r => r.RodId == "rod_00_starter").ItemId;
@@ -210,10 +207,10 @@ public sealed class MapsAndRodsTests
     }
 
     [Fact]
-    public void Reselling_returns_40_percent_of_the_price_plus_25_percent_of_upgrades()
+    public void Reselling_a_rod_from_fragments_returns_25_percent_of_upgrades()
     {
         var (game, _, _) = VeteranPlayer();
-        game.Shop.BuyRod("rod_01");
+        TestSupport.GiveRod(game, "rod_01");
         var rod = game.Profile.GetProfile().EquippedRod;
         game.Profile.UpgradeRod(rod.ItemId);
         var starter = game.Profile.GetProfile().Inventory.Single(r => r.RodId == "rod_00_starter");
@@ -224,7 +221,8 @@ public sealed class MapsAndRodsTests
         game.Profile.EquipRod(starter.ItemId);
         var view = game.Profile.GetProfile().Inventory.Single(r => r.ItemId == rod.ItemId);
         game.Session.Config.TryGetRod("rod_01", out var config);
-        Assert.Equal((long)Math.Round(2500 * 0.4 + game.Session.Config.RodUpgradeCost(config, 1) * 0.25), view.ResaleValue);
+        // A rod assembled from fragments cost no Moedas (M24-T32): 40% of nothing plus 25% of what went into its levels.
+        Assert.Equal((long)Math.Round(game.Session.Config.RodUpgradeCost(config, 1) * 0.25), view.ResaleValue);
         var coins = game.Player.GetPlayer().Coins;
 
         var sale = game.Profile.SellRod(rod.ItemId);
@@ -239,7 +237,7 @@ public sealed class MapsAndRodsTests
     public void Destroying_removes_the_rod_and_the_starter_rod_always_stays()
     {
         var (game, _, _) = VeteranPlayer();
-        game.Shop.BuyRod("rod_01");
+        TestSupport.GiveRod(game, "rod_01");
         var rod = game.Profile.GetProfile().EquippedRod;
         var starter = game.Profile.GetProfile().Inventory.Single(r => r.RodId == "rod_00_starter");
         game.Profile.EquipRod(starter.ItemId);
@@ -253,7 +251,7 @@ public sealed class MapsAndRodsTests
     public void Rod_1_catches_rares_on_map_2_and_generates_shells()
     {
         var (game, clock, _) = VeteranPlayer();
-        game.Shop.BuyRod("rod_01");
+        TestSupport.GiveRod(game, "rod_01");
         game.Maps.TravelTo("map_02");
         clock.AdvanceSeconds(30);
         game.Maps.Update();

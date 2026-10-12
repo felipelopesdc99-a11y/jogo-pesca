@@ -22,7 +22,7 @@ namespace FishingIdle.GameService.Shop
             return Math.Max(0, (long)Math.Round(value, MidpointRounding.AwayFromZero));
         }
 
-        /// <summary>Only rods bought in the Shop can be sold or destroyed; the free Starter Rod always stays.</summary>
-        public static bool CanDispose(GameConfig config, RodConfig rod) => config.IsPurchasable(rod);
+        /// <summary>Only rods assembled from fragments (bought in the Shop before M24-T32) can be sold or destroyed; the free Starter Rod always stays.</summary>
+        public static bool CanDispose(GameConfig config, RodConfig rod) => GameConfig.IsFragmentRod(rod);
     }
 }

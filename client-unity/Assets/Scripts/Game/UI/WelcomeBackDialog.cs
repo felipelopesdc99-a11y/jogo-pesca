@@ -38,7 +38,7 @@ namespace FishingIdle.Game.UI
                 lines = (report.Capped ? 1 : 0) + (update.Escapes.Count > 0 ? 1 : 0) + (update.SkippedBoxFull > 0 ? 1 : 0) + (update.BaitRanOut != null ? 1 : 0);
                 if (count > 0)
                 {
-                    lines += 1 + (newSpecies > 0 ? 1 : 0) + (update.ShellsGained > 0 ? 1 : 0) + (update.LevelsReached.Count > 0 ? 1 : 0);
+                    lines += 1 + (newSpecies > 0 ? 1 : 0) + (update.ShellsGained > 0 ? 1 : 0) + (update.LevelsReached.Count > 0 ? 1 : 0) + EquipmentLines(update);
                 }
             }
 
@@ -91,6 +91,14 @@ namespace FishingIdle.Game.UI
             }
 
             return openBox;
+        }
+
+        /// <summary>The lines of boat, rod and clothing fragments and of what they assembled or levelled up (24 px each).</summary>
+        private static int EquipmentLines(FishingUpdate update)
+        {
+            return update.Fragments.Select(f => f.BoatName).Distinct().Take(2).Count() + update.Fragments.Count(f => f.Assembled)
+                + update.RodFragments.Select(f => f.RodName).Distinct().Take(1).Count() + update.RodFragments.Count(f => f.Assembled)
+                + (update.ClothingFragments > 0 ? 1 : 0) + (update.ClothingLevels.Count > 0 ? 1 : 0);
         }
 
         /// <summary>The fishing part: the cap, the catches and escapes, XP, species, Conchas, levels and the best catches.</summary>
@@ -151,6 +159,33 @@ namespace FishingIdle.Game.UI
                 foreach (var assembled in update.Fragments.Where(f => f.Assembled))
                 {
                     GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.BoatAssembled(assembled.BoatName), skin.SmallGold);
+                    y += 24;
+                }
+
+                // Rod fragments (M24-T32) and Fragmentos de Roupa (M24-T33): one line each, the rods assembled and the
+                // clothing levels reached (the highest of each piece).
+                foreach (var rod in update.RodFragments.GroupBy(f => f.RodName).Take(1))
+                {
+                    GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.RodFragments(Format.Number(rod.Sum(f => f.Amount)), rod.Key), skin.Body);
+                    y += 24;
+                }
+
+                foreach (var assembled in update.RodFragments.Where(f => f.Assembled))
+                {
+                    GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.RodAssembled(assembled.RodName), skin.SmallGold);
+                    y += 24;
+                }
+
+                if (update.ClothingFragments > 0)
+                {
+                    GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.ClothingFragments(Format.Number(update.ClothingFragments)), skin.Body);
+                    y += 24;
+                }
+
+                if (update.ClothingLevels.Count > 0)
+                {
+                    var pieces = string.Join(", ", update.ClothingLevels.GroupBy(l => l.PieceName).Select(g => g.Key + " Nv." + g.Max(l => l.Level)));
+                    GUI.Label(new Rect(x, y, w, 22), FishCard.Fit(GameTexts.Offline.ClothingLevels(pieces), skin.SmallGold, w), skin.SmallGold);
                     y += 24;
                 }
 

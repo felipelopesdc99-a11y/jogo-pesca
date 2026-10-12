@@ -264,6 +264,11 @@ namespace FishingIdle.Texts
             public static string Levels(int level) => "Subiu para o Nível " + level + "!";
             public static string Fragments(string amount, string boat) => "+" + amount + (amount == "1" ? " fragmento de barco: " : " fragmentos de barco: ") + boat;
             public static string BoatAssembled(string boat) => "Barco montado: " + boat + "!";
+            // Rods and clothing by fragments (M24-T32/T33, A-163/A-164).
+            public static string RodFragments(string amount, string rod) => "+" + amount + (amount == "1" ? " fragmento de vara: " : " fragmentos de vara: ") + rod;
+            public static string RodAssembled(string rod) => "Vara montada: " + rod + "!";
+            public static string ClothingFragments(string amount) => "+" + amount + (amount == "1" ? " Fragmento de Roupa" : " Fragmentos de Roupa");
+            public static string ClothingLevels(string pieces) => "Roupas subiram de nível: " + pieces;
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
             public static string Escaped(int count) => count == 1 ? "1 peixe escapou" : Format.Number(count) + " peixes escaparam";
 
@@ -467,7 +472,7 @@ namespace FishingIdle.Texts
                     case "start_fishing": return "Clique em \"" + Fishing.Start + "\", embaixo, no centro.";
                     case "first_catch": return "A cada ciclo o pescador tira um peixe da água. Quando ele aparecer, veja no aviso a espécie, o tamanho e a categoria.";
                     case "open_box": return "Todo peixe pescado vai para a " + Box.Open + " (canto de baixo, à direita). Abra para ver os peixes. Ela tem limite: quando enche, a pesca para até você vender.";
-                    case "sell_fish": return "Na Caixa, selecione um peixe e clique em \"" + Box.SellSelected + "\". As Moedas compram varas melhores.";
+                    case "sell_fish": return "Na Caixa, selecione um peixe e clique em \"" + Box.SellSelected + "\". As Moedas melhoram sua vara, seu barco e compram iscas.";
                     case "keep_fish": return "Selecione outro peixe e clique em \"" + Aquarium.KeepSelected + "\". Peixes guardados sobem de nível e lutam por você.";
                     case "cardume": return "Abra o " + Navigation.Profile + " → " + Profile.TabCardume + " e coloque um peixe numa posição. O Cardume luta na Arena e vai em Expedições.";
                     case "expedition": return "No menu " + Navigation.Expedition + ", você envia o Cardume por 30 min a 6 h para trazer Moedas e, às vezes, um peixe. Enquanto isso, ele fica ocupado.";
@@ -739,14 +744,14 @@ namespace FishingIdle.Texts
             public const string Owned = "Já é sua";
             public const string AtLevel1 = "No Nível 1";
             public const string AtMax = "No nível máximo";
-            public const string Note = "Varas compradas ficam no Inventário (Perfil) e são equipadas na hora. Melhore o nível da sua vara aqui ou no Inventário (cada nível dá um pouco mais, até o Nível 100); lá você também vende ou destrói varas.";
+            public const string Note = "Varas não são vendidas: cada vara é montada com fragmentos que às vezes caem quando você puxa um peixe num mapa que a vara anterior já alcança (também na pesca offline) ou que vêm do Passe do Pescador. Com todos os fragmentos a vara é montada sozinha, vai para o Inventário (Perfil) e, se for de categoria maior que a sua, já entra em uso. Melhore o nível da sua vara aqui ou no Inventário (cada nível dá um pouco mais, até o Nível 100); lá você também vende ou destrói varas.";
             public const string Upgrade = "Melhorar";
             public const string SellRod = "Vender";
             public const string DestroyRod = "Destruir";
             public const string MaxLevel = "Nível máximo";
 
             public static string Price(string coins) => coins + " Moedas";
-            public static string Bought(string rod) => "Vara " + rod + " comprada e equipada!";
+            public static string Bought(string rod) => "Vara " + rod + " equipada!";
             public static string Upgraded(string rod, int level) => rod + " agora está no Nível " + level + ".";
             public static string RodSold(string coins) => "Vara vendida por " + coins + " Moedas.";
             public static string RodDestroyed(string rod) => "A vara " + rod + " foi destruída.";
@@ -768,6 +773,7 @@ namespace FishingIdle.Texts
             // "Balcão do Píer" (A-150).
             public const string OnCounter = "no balcão";
             public const string OwnedBoat = "Já é seu";
+            public const string StarterRod = "Já é sua desde o começo";
             public static string Position(int index, int total) => Format.Number(index) + " de " + Format.Number(total);
             public static string Info(string tabNote, string chanceNote) => tabNote + "\n\n" + chanceNote;
         }
@@ -839,7 +845,7 @@ namespace FishingIdle.Texts
             public const string DollarsPaid = "já recebidos";
             public static string Info(int every, string price) =>
                 "O Passe sobe com o nível do Pescador: a cada " + every + " níveis você chega a um marco, do Nv." + every + " ao Nv.1000. " +
-                "Cada marco tem uma recompensa grátis e uma Premium: Moedas, Conchas, Dólares e fragmentos de barco. " +
+                "Cada marco tem uma recompensa grátis e uma Premium: Moedas, Conchas, Dólares e fragmentos de barco, de vara (nos marcos que liberam um mapa novo) e de roupa. " +
                 "Os marcos alcançados ficam esperando: aperte Resgatar em cada um ou Resgatar tudo. " +
                 "O Premium custa " + price + " Dólares, é comprado uma vez e vale para sempre; ele libera também as recompensas Premium dos marcos que você já passou. " +
                 "Os Dólares que antes vinham a cada 10 níveis agora estão na fileira Grátis do Passe.";
@@ -850,6 +856,8 @@ namespace FishingIdle.Texts
             public static string YourDollars(string dollars) => "Você tem " + dollars + " Dólares";
             public static string ClaimAllCount(int count) => "Resgatar tudo (" + count + ")";
             public static string Fragments(string amount, string boat) => amount + " frag. · " + boat;
+            public static string RodFragments(string amount, string rod) => amount + " frag. · " + rod;
+            public static string ClothingFragments(string amount) => amount + " frag. de Roupa";
             public static string DollarsLine(string amount) => amount + " Dólares";
             public const string BoughtPremium = "Premium do Passe comprado! As recompensas Premium dos marcos que você já passou estão prontas para resgatar.";
             public static string ClaimedToast(int count) => count == 1 ? "Passe: 1 recompensa resgatada." : "Passe: " + count + " recompensas resgatadas.";
@@ -872,6 +880,7 @@ namespace FishingIdle.Texts
             public const string Bait = "Isca";
             public const string NoBait = "Nenhuma";
             public const string Total = "Bônus total";
+            public const string TotalWithGloves = "Total com Luvas";
             public const string ChanceTitle = "Chance de puxar o peixe";
             public static string ChanceNote(string min, string max) => "Depois que o peixe morde, esta é a chance de puxá-lo. Se ele escapa, nada entra na Caixa. Nunca passa de " + max + " nem fica abaixo de " + min + ".";
             public const string NotHere = "não morde aqui";
@@ -907,6 +916,67 @@ namespace FishingIdle.Texts
             public static string BoughtBait(string bait, int charges) => bait + ": +" + (charges == 1 ? "1 tentativa." : Format.Number(charges) + " tentativas.");
             public static string UsingBait(string bait) => "Isca em uso: " + bait + ".";
             public const string BaitPutAway = "Isca guardada. As tentativas que sobraram ficam para depois.";
+
+            // Rods by fragments (M24-T32, A-163).
+            public static string RodFragmentToast(string rod, string have, string required) => "+1 fragmento de vara: " + rod + " (" + have + "/" + required + ")";
+            public static string RodFragmentsToast(string amount, string rod, string have, string required) => "+" + amount + " fragmentos de vara: " + rod + " (" + have + "/" + required + ")";
+            public static string RodFragmentExtraToast(string amount, string rod) => "+" + amount + (amount == "1" ? " fragmento de vara: " : " fragmentos de vara: ") + rod + " (extra)";
+            public static string RodFragmentsPassToast(string amount, string rod) => "+" + amount + " fragmentos de vara: " + rod;
+            public static string RodAssembledToast(string rod) => "Vara montada: " + rod + "! Veja na Loja.";
+            public static string RodAssembledEquippedToast(string rod) => "Vara montada e equipada: " + rod + "!";
+            public const string RodAssembledTitle = "Vara montada!";
+            public static string BoatFragmentsGroupToast(string amount, string boat, string have, string required) => "+" + amount + " fragmentos de barco: " + boat + " (" + have + "/" + required + ")";
+            public static string BoatFragmentsExtraGroupToast(string amount, string boat) => "+" + amount + " fragmentos de barco: " + boat + " (extra)";
+
+            // Clothing (M24-T33, A-164).
+            public const string TabClothing = "Roupas";
+            public const string ClothingNote = "Roupas não são vendidas: um tipo só de fragmento, o Fragmento de Roupa, às vezes cai quando você puxa um peixe em qualquer mapa (também na pesca offline) ou vem do Passe do Pescador. Você escolhe qual peça montar; cada peça montada custa mais fragmentos que a anterior. A peça montada fica vestida para sempre (as cinco juntas) e sobe de nível sozinha com o uso: cada peixe que você puxa conta, até o Nível 100, sem gastar nada.";
+            public const string ClothingPiece = "Roupa";
+            public const string Wearing = "Vestida";
+            public static string ClothingFragmentsHave(string have) => "Fragmentos de Roupa: " + have;
+            public static string ClothingFragmentsLine(string have, string cost) => "Fragmentos de Roupa " + have + "/" + cost;
+            public const string ClothingDropsEverywhere = "Caem em todos os mapas";
+            public static string ClothingAssemble(string cost) => "Montar (" + cost + " fragmentos de roupa)";
+            public const string ClothingAllAssembled = "As 5 peças estão montadas. Os fragmentos que sobram ficam guardados.";
+            public static string ClothingUseXp(string xp, string need) => "Uso: " + xp + "/" + need + " peixes para o próximo nível";
+            public const string ClothingMaxLevel = "Nível máximo: não sobe mais";
+            public static string ClothingBonusNow(string bonus) => "Agora: " + bonus;
+            public static string ClothingBonusAtMax(int max, string bonus) => "No Nível " + max + ": " + bonus;
+            public static string ClothingNextCost(string cost) => "A próxima peça custa " + cost + " fragmentos.";
+            public static string ClothingAxis(string axis, string percent)
+            {
+                switch (axis)
+                {
+                    case "catch_success": return "+" + percent + " de chance de puxar";
+                    case "rarity_efficiency": return "+" + percent + " de raridade";
+                    case "size_quality": return "+" + percent + " de tamanho";
+                    case "shell_yield": return "+" + percent + " de Conchas";
+                    case "fisher_xp": return "+" + percent + " de XP de Pescador";
+                    default: return "+" + percent;
+                }
+            }
+
+            public static string ClothingAxisName(string axis)
+            {
+                switch (axis)
+                {
+                    case "catch_success": return "Chance de puxar o peixe";
+                    case "rarity_efficiency": return "Peixes raros";
+                    case "size_quality": return "Peixes grandes";
+                    case "shell_yield": return "Conchas";
+                    case "fisher_xp": return "XP de Pescador";
+                    default: return axis;
+                }
+            }
+
+            public static string ClothingFragmentToast(string have, string cost) => "+1 Fragmento de Roupa (" + have + "/" + cost + ")";
+            public static string ClothingFragmentsToast(string amount, string have, string cost) => "+" + amount + " Fragmentos de Roupa (" + have + "/" + cost + ")";
+            public static string ClothingFragmentsExtraToast(string amount) => "+" + amount + (amount == "1" ? " Fragmento de Roupa (extra)" : " Fragmentos de Roupa (extra)");
+            public static string ClothingFragmentsPassToast(string amount) => "+" + amount + " Fragmentos de Roupa";
+            public static string ClothingReadyToast(string cost) => "Você já pode montar uma roupa (" + cost + " Fragmentos de Roupa). Veja na Loja → Roupas.";
+            public static string ClothingAssembledToast(string piece) => "Roupa montada e vestida: " + piece + "!";
+            public const string ClothingAssembledTitle = "Roupa montada!";
+            public static string ClothingLevelToast(string piece, int level) => piece + " subiu para o Nível " + level + ".";
         }
 
         // ------------------------------------------------------------------ Cardume (GDD sections 23, 26, 31)
@@ -962,7 +1032,7 @@ namespace FishingIdle.Texts
             public const string CatchesUpToMythic = "Pesca peixes Raros, Épicos, Lendários e Míticos";
             public const string NoRare = "Não pesca peixes Raros";
             public const string NoShells = "Não gera Conchas";
-            public const string InventoryNote = "Suas varas ficam aqui. Varas novas se compram na Loja.";
+            public const string InventoryNote = "Suas varas ficam aqui. Varas novas são montadas com fragmentos que caem pescando (veja na Loja → Varas).";
             public const string Undiscovered = "???";
             public const string Largest = "Maior";
             public const string TimesCaught = "Pescados";
@@ -1176,9 +1246,9 @@ namespace FishingIdle.Texts
                 case "AlreadyOnMap": return "Você já está neste mapa.";
                 case "MapNotFound": return "Esse mapa não existe.";
                 case "MapLocked": return "Você ainda não tem nível para este mapa.";
-                case "RodTooWeakForMap": return "Sua vara não serve para este mapa. Compre uma vara melhor na Loja.";
+                case "RodTooWeakForMap": return "Sua vara não serve para este mapa. Monte uma vara melhor com os fragmentos que caem pescando (veja na Loja → Varas).";
                 case "NotEnoughCoins": return "Moedas insuficientes.";
-                case "RodNotForSale": return "Essa vara não está à venda.";
+                case "RodNotForSale": return "As varas não são vendidas: monte com fragmentos.";
                 case "RodAlreadyOwned": return "Você já tem esta vara no Inventário.";
                 case "BoatNotFound": return "Esse barco não existe.";
                 case "BoatNotOwned": return "Monte este barco com fragmentos antes de usá-lo.";
@@ -1205,6 +1275,9 @@ namespace FishingIdle.Texts
                 case "PassPremiumLocked": return "Esta recompensa é do Premium. Compre o Premium para resgatar.";
                 case "PassPremiumOwned": return "Você já tem o Premium do Passe.";
                 case "PassNothingToClaim": return "Nada para resgatar agora. Suba de nível para chegar ao próximo marco.";
+                case "ClothingNotFound": return "Essa peça de roupa não existe.";
+                case "ClothingAlreadyOwned": return "Você já montou esta peça.";
+                case "NotEnoughClothingFragments": return "Faltam Fragmentos de Roupa para montar esta peça.";
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
                 case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";
@@ -1286,6 +1359,15 @@ namespace FishingIdle.Texts
             public static string BoatMapUnknown(string boat, string map) => "equipment.json: o barco \"" + boat + "\" precisa de um map_id que exista em maps.json (está \"" + (map ?? "") + "\").";
             public static string BoatMapRepeated(string map) => "equipment.json: o mapa \"" + map + "\" tem mais de um barco. Cada mapa dá os fragmentos de um barco só.";
             public static string PassLevels(int max) => "pass.json: os marcos (milestones) precisam de níveis diferentes, em ordem crescente, entre 1 e " + max + ".";
+            public static string RodMethodUnknown(string rod, string method) => "rods.json: a vara \"" + rod + "\" tem acquisition.method \"" + (method ?? "") + "\". Use \"fragments\" (vara montada com fragmentos) ou \"free_claim_in_shop\" (a Vara Inicial).";
+            public static string RodMapUnknown(string rod, string map) => "rods.json: a vara \"" + rod + "\" precisa de um fragment_map_id que exista em maps.json (está \"" + (map ?? "") + "\").";
+            public static string RodMapTooHigh(string rod, string map) => "rods.json: os fragmentos da vara \"" + rod + "\" caem no mapa \"" + map + "\", que pede essa mesma categoria de vara (ou maior). A vara precisa cair num mapa que a vara anterior já alcança.";
+            public static string RodMapRepeated(string map) => "rods.json: o mapa \"" + map + "\" dá fragmentos de mais de uma vara. Cada mapa dá os fragmentos de uma vara só.";
+            public static string RodUnreachable(string rod) => "rods.json / maps.json: a vara \"" + rod + "\" nunca pode ser montada: o mapa dos fragmentos dela pede uma vara que o jogador não consegue ter antes. A progressão travaria.";
+            public static string MapRodUnreachable(string map, int tier) => "maps.json: o mapa \"" + map + "\" pede vara de categoria " + tier + ", e nenhuma vara dessa categoria (ou maior) pode ser montada. A progressão travaria.";
+            public static string ClothingInvalid(string what) => "equipment.json: \"clothing." + what + "\" está inválido.";
+            public static string ClothingAxisUnknown(string piece, string axis) => "equipment.json: a roupa \"" + piece + "\" tem bonus_axis \"" + (axis ?? "") + "\". Use catch_success, rarity_efficiency, size_quality, shell_yield ou fisher_xp.";
+            public static string PassRodUnknown(int level, string rod) => "pass.json: o marco do Nv." + level + " dá fragmentos da vara \"" + (rod ?? "") + "\", que não existe em rods.json (ou é a Vara Inicial).";
             public static string PassBoatUnknown(int level, string boat) => "pass.json: o marco do Nv." + level + " dá fragmentos do barco \"" + (boat ?? "") + "\", que não existe em equipment.json (ou é o barco inicial).";
             public static string UnknownSizeInRarity(string rarity, string size) => "progression.json: a raridade \"" + rarity + "\" cita o tamanho \"" + (size ?? "") + "\" em size_weight_multipliers, que não existe em size.categories.";
             public static string UnknownRarity(string species, string rarity) => "fish_catalog.json: a espécie \"" + species + "\" usa a raridade \"" + (rarity ?? "") + "\", que não existe em progression.json.";
@@ -1461,7 +1543,14 @@ namespace FishingIdle.Texts
             public const string LevelShellsGrowth = "Conchas ×";
             public const string GearBonusAtMax = "Bônus máx.";
             public const string FeedRecovery = "Recuperação do XP investido ao alimentar (0 a 1)";
-            public const string RodPrice = "Preço de compra (Moedas)";
+            public const string RodPrice = "Valor de referência no Mercado (Moedas)";
+            public const string RodFragmentsRequired = "Fragmentos para montar";
+            public const string RodFragmentChance = "Chance de fragmento por peixe (0,037 = 3,7%)";
+            public const string ClothingTitle = "Roupas";
+            public const string ClothingChance = "Chance do Fragmento de Roupa por peixe (0,0017 = 0,17%)";
+            public const string ClothingXpFirst = "XP de uso do Nv.1 para o Nv.2";
+            public const string ClothingXpGrowth = "XP de uso: × por nível";
+            public const string ClothingNote = "Um tipo só de fragmento, que cai em todos os mapas. O jogador escolhe a peça; a 1ª, a 2ª … custam os valores de clothing.fragments_to_assemble. Cada peixe puxado dá XP de uso a todas as peças montadas. Bônus em pontos (0,05 = +5%): Luvas na chance de puxar, Chapéu na raridade, Botas no tamanho, Camiseta nas Conchas, Calça no XP de Pescador de cada peixe.";
             public const string RodRarityBonus = "Raridade";
             public const string RodSizeBonus = "Tamanho";
             public const string RodShellBonus = "Conchas";

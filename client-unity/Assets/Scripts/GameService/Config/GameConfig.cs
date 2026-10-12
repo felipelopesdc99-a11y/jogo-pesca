@@ -29,6 +29,8 @@ namespace FishingIdle.GameService.Config
         private readonly Dictionary<string, GeneralUpgradeConfig> _generalUpgrades;
         private readonly Dictionary<string, BoatConfig> _boatByMap;
         private readonly Dictionary<int, PassMilestoneConfig> _passMilestones;
+        private readonly Dictionary<string, RodConfig> _rodByMap;
+        private readonly Dictionary<string, ClothingPieceConfig> _clothing;
 
         internal GameConfig(
             FishCatalogConfig fishCatalog,
@@ -70,6 +72,8 @@ namespace FishingIdle.GameService.Config
             _species = fishCatalog.Species.ToDictionary(s => s.Id, StringComparer.Ordinal);
             _maps = maps.Maps.ToDictionary(m => m.Id, StringComparer.Ordinal);
             _rods = rods.Rods.ToDictionary(r => r.Id, StringComparer.Ordinal);
+            _rodByMap = rods.Rods.Where(r => IsFragmentRod(r) && !string.IsNullOrEmpty(r.FragmentMapId)).ToDictionary(r => r.FragmentMapId, StringComparer.Ordinal);
+            _clothing = (equipment.Clothing?.Pieces ?? new List<ClothingPieceConfig>()).ToDictionary(p => p.Id, StringComparer.Ordinal);
             _sizeCategories = progression.Size.Categories.ToDictionary(c => c.Id, StringComparer.Ordinal);
             _rarities = progression.Rarity.Tiers.ToDictionary(t => t.Id, StringComparer.Ordinal);
             _fisherXpTable = progression.Fisher.XpTable.ToDictionary(x => x.Level, x => x.XpToNextLevel);
@@ -109,6 +113,60 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>Whether offline fishing drops boat fragments too (equipment.json → boat_fragments).</summary>
         public bool FragmentsDropOffline => Equipment.BoatFragments?.DropOnOfflineFishing ?? true;
+
+        /// <summary>The rod whose fragments the catches on a map drop (M24-T32), or false when the map has none.</summary>
+        public bool TryGetRodForMap(string mapId, out RodConfig rod) => _rodByMap.TryGetValue(mapId ?? string.Empty, out rod);
+
+        /// <summary>Whether offline fishing drops rod fragments too (rods.json → fragment_rules).</summary>
+        public bool RodFragmentsDropOffline => Rods.FragmentRules?.DropOnOfflineFishing ?? true;
+
+        /// <summary>A rod assembled from fragments (M24-T32): every rod but the free Starter Rod.</summary>
+        public static bool IsFragmentRod(RodConfig rod) => rod?.Acquisition != null && rod.Acquisition.Method == RodAcquisitionConfig.Fragments;
+
+        /// <summary>The free Starter Rod, claimed in the Shop during the tutorial (GDD section 40).</summary>
+        public static bool IsFreeClaimRod(RodConfig rod) => rod?.Acquisition != null && rod.Acquisition.Method == RodAcquisitionConfig.FreeClaim;
+
+        // ---------------------------------------------------------------- clothing (M24-T33, A-164)
+
+        /// <summary>equipment.json → clothing; null when the config has none.</summary>
+        public ClothingConfig Clothing => Equipment.Clothing;
+
+        /// <summary>The clothing pieces, in the config's order (empty without clothing).</summary>
+        public IReadOnlyList<ClothingPieceConfig> ClothingPieces => (IReadOnlyList<ClothingPieceConfig>)Equipment.Clothing?.Pieces ?? Array.Empty<ClothingPieceConfig>();
+
+        public bool TryGetClothingPiece(string id, out ClothingPieceConfig piece) => _clothing.TryGetValue(id ?? string.Empty, out piece);
+
+        public int ClothingMaxLevel => Math.Max(1, Equipment.Clothing?.MaxLevel ?? 1);
+
+        /// <summary>A piece's bonus at a level, on the same curve as the rods (LevelCurve.Value).</summary>
+        public double ClothingBonusAt(ClothingPieceConfig piece, int level)
+        {
+            return LevelCurve.Value(piece.BonusAtLevel1, piece.BonusAtMaxLevel, level, ClothingMaxLevel, Equipment.Clothing?.BonusCurveExponent ?? 1.0);
+        }
+
+        /// <summary>Use XP to take a piece from <paramref name="level"/> to the next; 0 at the max level.</summary>
+        public long ClothingXpToNextLevel(int level)
+        {
+            var xp = Equipment.Clothing?.LevelXp;
+            if (xp == null || level < 1 || level >= ClothingMaxLevel)
+            {
+                return 0;
+            }
+
+            return LevelCurve.Cost(xp.First, xp.Growth, level);
+        }
+
+        /// <summary>Fragmentos de Roupa to assemble the next piece when <paramref name="assembled"/> are assembled already.</summary>
+        public int ClothingAssembleCost(int assembled)
+        {
+            var costs = Equipment.Clothing?.FragmentsToAssemble;
+            if (costs == null || costs.Count == 0)
+            {
+                return 1;
+            }
+
+            return Math.Max(1, costs[Math.Max(0, Math.Min(assembled, costs.Count - 1))]);
+        }
 
         /// <summary>The boat every player owns from the start: the lowest tier.</summary>
         public BoatConfig StarterBoat => Equipment.Boats.OrderBy(b => b.Tier).First();
@@ -242,8 +300,6 @@ namespace FishingIdle.GameService.Config
             var fish = Progression.FishLevel;
             return LevelCurve.Value(0.0, fish.StatBonusAtMaxLevelPercent / 100.0, level, fish.MaxLevel, fish.StatBonusCurveExponent);
         }
-
-        public bool IsPurchasable(RodConfig rod) => rod.Acquisition != null && rod.Acquisition.Method == "coin_purchase";
 
         /// <summary>XP a fish needs to go from <paramref name="level"/> to the next; 0 at the max level.</summary>
         public long FishXpToNextLevel(int level)

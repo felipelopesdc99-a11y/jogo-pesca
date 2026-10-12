@@ -247,7 +247,16 @@ namespace FishingIdle.GameService.Config
     {
         public int ConfigSchemaVersion { get; set; }
         public RodUpgradeRulesConfig UpgradeRules { get; set; }
+
+        /// <summary>How rods come from fragments (M24-T32, A-163). Null = the defaults (offline fishing drops them too).</summary>
+        public RodFragmentRulesConfig FragmentRules { get; set; }
         public List<RodConfig> Rods { get; set; }
+    }
+
+    public sealed class RodFragmentRulesConfig
+    {
+        /// <summary>Whether offline fishing (A-034) also drops rod fragments, at the same chance. Expeditions never do.</summary>
+        public bool DropOnOfflineFishing { get; set; } = true;
     }
 
     /// <summary>The level curve every rod with levels shares (M24-T13).</summary>
@@ -286,6 +295,15 @@ namespace FishingIdle.GameService.Config
 
         public RodAcquisitionConfig Acquisition { get; set; }
 
+        /// <summary>
+        /// Rods by fragments (M24-T32, A-163): the map whose catches drop this rod's fragments (null for the starter rod),
+        /// how many assemble it and the chance per fish pulled out there. The map never asks for this rod's tier, so the
+        /// rod that opens the next map always drops on a map the player already fishes.
+        /// </summary>
+        public string FragmentMapId { get; set; }
+        public int FragmentsRequired { get; set; }
+        public double FragmentDropChance { get; set; }
+
         /// <summary>Price of each level, for rods with levels (M24-T13).</summary>
         public LevelCostConfig UpgradeCost { get; set; }
         public RodResaleConfig NpcResale { get; set; }
@@ -307,12 +325,14 @@ namespace FishingIdle.GameService.Config
 
     public sealed class RodAcquisitionConfig
     {
-        /// <summary>"coin_purchase" rods are sold in the Shop; "free_claim_in_shop" is the Starter Rod.</summary>
-        public string Method { get; set; }
-        public long PurchaseCostCoins { get; set; }
+        public const string Fragments = "fragments";
+        public const string FreeClaim = "free_claim_in_shop";
 
-        /// <summary>Conchas asked on top of the coins (A-099).</summary>
-        public long PurchaseCostShells { get; set; }
+        /// <summary>"fragments" rods are assembled from fragments (M24-T32); "free_claim_in_shop" is the Starter Rod.</summary>
+        public string Method { get; set; }
+
+        /// <summary>The rod's reference value on the Market and for the NPC resale (the price it had in the Shop before M24-T32).</summary>
+        public long MarketReferenceCoins { get; set; }
     }
 
     /// <summary>NPC resale: part of the purchase price plus part of what was spent on upgrades.</summary>
@@ -711,6 +731,69 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>The baits before M24-T30 (A-161) and how a save that still has them moves to today's. Null = nothing to move.</summary>
         public BaitMigrationConfig BaitMigration { get; set; }
+
+        /// <summary>The clothing pieces and the Fragmento de Roupa (M24-T33, A-164). Null = no clothing.</summary>
+        public ClothingConfig Clothing { get; set; }
+    }
+
+    /// <summary>
+    /// Clothing (M24-T33, A-164): five pieces, one of each, assembled with one kind of fragment that drops on every map.
+    /// Each piece adds a bonus on one axis and levels up with use (fish pulled out while it is worn), at no cost.
+    /// </summary>
+    public sealed class ClothingConfig
+    {
+        /// <summary>Chance that a fish pulled out on any map drops 1 Fragmento de Roupa (0 to 1).</summary>
+        public double FragmentDropChance { get; set; }
+        public bool DropOnOfflineFishing { get; set; } = true;
+
+        /// <summary>Fragments to assemble the 1st, 2nd … piece, whichever the player picks; past the list, the last value.</summary>
+        public List<int> FragmentsToAssemble { get; set; }
+        public int MaxLevel { get; set; } = 1;
+        public double BonusCurveExponent { get; set; } = 1.0;
+
+        /// <summary>Use XP every assembled piece gets per fish pulled out.</summary>
+        public long UseXpPerFish { get; set; } = 1;
+
+        /// <summary>Use XP from level N to N + 1: first × growth^(N − 1), rounded like the prices (LevelCurve.Cost).</summary>
+        public ClothingLevelXpConfig LevelXp { get; set; }
+        public List<ClothingPieceConfig> Pieces { get; set; }
+    }
+
+    public sealed class ClothingLevelXpConfig
+    {
+        public long First { get; set; }
+        public double Growth { get; set; } = 1.0;
+    }
+
+    public sealed class ClothingPieceConfig
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
+        public string Description { get; set; }
+
+        /// <summary>One of <see cref="ClothingAxes"/>.</summary>
+        public string BonusAxis { get; set; }
+
+        [JsonProperty("bonus_at_level_1")]
+        public double BonusAtLevel1 { get; set; }
+        public double BonusAtMaxLevel { get; set; }
+    }
+
+    /// <summary>The axes a clothing piece can add to (equipment.json → clothing → pieces → bonus_axis).</summary>
+    public static class ClothingAxes
+    {
+        /// <summary>Points on the Catch Success chance, like the rod, boat and bait (up to the 95% ceiling).</summary>
+        public const string CatchSuccess = "catch_success";
+
+        /// <summary>Added to the rod's rarity efficiency, size quality and Shell yield (rods.json → bonus_axes).</summary>
+        public const string RarityEfficiency = "rarity_efficiency";
+        public const string SizeQuality = "size_quality";
+        public const string ShellYield = "shell_yield";
+
+        /// <summary>+% Fisher XP on every fish pulled out.</summary>
+        public const string FisherXp = "fisher_xp";
+
+        public static readonly IReadOnlyList<string> All = new[] { CatchSuccess, RarityEfficiency, SizeQuality, ShellYield, FisherXp };
     }
 
     /// <summary>
@@ -958,7 +1041,7 @@ namespace FishingIdle.GameService.Config
         public PassRewardConfig Premium { get; set; }
     }
 
-    /// <summary>One reward: any of Moedas, Conchas, Dólares and fragments of one boat (zero = none of that).</summary>
+    /// <summary>One reward: any of Moedas, Conchas, Dólares, fragments of one boat, of one rod and of clothing (zero = none of that).</summary>
     public sealed class PassRewardConfig
     {
         public long Coins { get; set; }
@@ -968,5 +1051,12 @@ namespace FishingIdle.GameService.Config
         /// <summary>The boat whose fragments it gives (equipment.json), or null.</summary>
         public string BoatId { get; set; }
         public int Fragments { get; set; }
+
+        /// <summary>The rod whose fragments it gives (rods.json, M24-T32), or null.</summary>
+        public string RodId { get; set; }
+        public int RodFragments { get; set; }
+
+        /// <summary>Fragmentos de Roupa (M24-T33).</summary>
+        public int ClothingFragments { get; set; }
     }
 }

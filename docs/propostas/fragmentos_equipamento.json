@@ -1,0 +1,528 @@
+{
+  "gerado_por": "tools/Progressao/fragmentos_equipamento.py",
+  "nota": "Varas por fragmentos (M24-T32, A-163) e roupas (M24-T33, A-164). \"antes\": as varas compradas na Loja (os preços de antes) e sem roupas; \"agora\": as varas por fragmentos e as roupas. Simulação por valor esperado com a pesca, a Tripulação e as Melhorias, sem o Passe e sem VIP, sempre no melhor mapa liberado. Dias contados da meia-noite do primeiro dia.",
+  "varas": {
+    "rod_01": {
+      "nome": "Ponta Selvagem",
+      "categoria": 1,
+      "mapa": "map_01",
+      "nome_do_mapa": "Lago Sereno",
+      "fragmentos": 15,
+      "chance_por_peixe": 0.037,
+      "preco_antes": [
+        2500,
+        5
+      ]
+    },
+    "rod_02": {
+      "nome": "Maré Dourada",
+      "categoria": 2,
+      "mapa": "map_03",
+      "nome_do_mapa": "Pantanal Dourado",
+      "fragmentos": 25,
+      "chance_por_peixe": 0.0405,
+      "preco_antes": [
+        90000,
+        40
+      ]
+    },
+    "rod_03": {
+      "nome": "Corrente Mestra",
+      "categoria": 3,
+      "mapa": "map_05",
+      "nome_do_mapa": "Costa de Coral",
+      "fragmentos": 35,
+      "chance_por_peixe": 0.07,
+      "preco_antes": [
+        730000,
+        85
+      ]
+    },
+    "rod_04": {
+      "nome": "Atlântico Nobre",
+      "categoria": 4,
+      "mapa": "map_07",
+      "nome_do_mapa": "Corrente Azul",
+      "fragmentos": 45,
+      "chance_por_peixe": 0.036,
+      "preco_antes": [
+        3280000,
+        180
+      ]
+    },
+    "rod_05": {
+      "nome": "Soberana Abissal",
+      "categoria": 5,
+      "mapa": "map_09",
+      "nome_do_mapa": "Talude Noturno",
+      "fragmentos": 60,
+      "chance_por_peixe": 0.0163,
+      "preco_antes": [
+        15610000,
+        650
+      ]
+    }
+  },
+  "roupas": {
+    "chance_por_peixe": 0.0017,
+    "custo_por_ordem": [
+      15,
+      25,
+      40,
+      60,
+      80
+    ],
+    "xp_de_uso": {
+      "first": 10,
+      "growth": 1.0868
+    },
+    "ordem_simulada": [
+      "gloves",
+      "hat",
+      "pants",
+      "boots",
+      "shirt"
+    ],
+    "pecas": [
+      {
+        "id": "gloves",
+        "nome": "Luvas",
+        "eixo": "catch_success",
+        "nv1": 0.005,
+        "nv100": 0.15
+      },
+      {
+        "id": "hat",
+        "nome": "Chapéu",
+        "eixo": "rarity_efficiency",
+        "nv1": 0.02,
+        "nv100": 0.8
+      },
+      {
+        "id": "boots",
+        "nome": "Botas",
+        "eixo": "size_quality",
+        "nv1": 0.02,
+        "nv100": 0.6
+      },
+      {
+        "id": "shirt",
+        "nome": "Camiseta",
+        "eixo": "shell_yield",
+        "nv1": 0.05,
+        "nv100": 1.75
+      },
+      {
+        "id": "pants",
+        "nome": "Calça",
+        "eixo": "fisher_xp",
+        "nv1": 0.005,
+        "nv100": 0.1
+      }
+    ]
+  },
+  "xp_de_uso_total_ate_nv100": 436679,
+  "perfis": {
+    "sempre_aberto": {
+      "descricao": "Deixa o jogo aberto o dia todo",
+      "varas": {
+        "rod_01": {
+          "antes_dia": 0.058,
+          "agora_dia": 0.094
+        },
+        "rod_02": {
+          "antes_dia": 0.146,
+          "agora_dia": 0.219
+        },
+        "rod_03": {
+          "antes_dia": 0.287,
+          "agora_dia": 0.31
+        },
+        "rod_04": {
+          "antes_dia": 0.605,
+          "agora_dia": 0.526
+        },
+        "rod_05": {
+          "antes_dia": 1.118,
+          "agora_dia": 1.05
+        }
+      },
+      "primeiro_dia_em_cada_mapa": {
+        "map_01": {
+          "antes": 0.0,
+          "agora": 0.0
+        },
+        "map_02": {
+          "antes": 0.058,
+          "agora": 0.094
+        },
+        "map_03": {
+          "antes": 0.073,
+          "agora": 0.1
+        },
+        "map_04": {
+          "antes": -1,
+          "agora": -1
+        },
+        "map_05": {
+          "antes": 0.146,
+          "agora": 0.219
+        },
+        "map_06": {
+          "antes": -1,
+          "agora": -1
+        },
+        "map_07": {
+          "antes": 0.287,
+          "agora": 0.31
+        },
+        "map_08": {
+          "antes": -1,
+          "agora": -1
+        },
+        "map_09": {
+          "antes": 0.605,
+          "agora": 0.526
+        },
+        "map_10": {
+          "antes": 1.118,
+          "agora": 1.05
+        }
+      },
+      "roupas_montadas_dia": {
+        "gloves": 1.36,
+        "hat": 3.19,
+        "pants": 6.08,
+        "boots": 10.38,
+        "shirt": 16.11
+      },
+      "niveis_das_roupas_no_fim": {
+        "gloves": 100,
+        "hat": 99,
+        "pants": 98,
+        "boots": 97,
+        "shirt": 96
+      },
+      "dias_ate_nivel": {
+        "Nv.10": {
+          "antes": 0.01,
+          "agora": 0.01
+        },
+        "Nv.100": {
+          "antes": 0.49,
+          "agora": 0.48
+        },
+        "Nv.500": {
+          "antes": 14.58,
+          "agora": 13.51
+        },
+        "Nv.1000": {
+          "antes": 59.95,
+          "agora": 54.82
+        }
+      },
+      "moedas_gastas_em_varas_antes": 19712500
+    },
+    "quatro_vezes": {
+      "descricao": "Abre 4 vezes por dia, 30 min de cada vez",
+      "varas": {
+        "rod_01": {
+          "antes_dia": 0.5,
+          "agora_dia": 0.5
+        },
+        "rod_02": {
+          "antes_dia": 0.75,
+          "agora_dia": 0.75
+        },
+        "rod_03": {
+          "antes_dia": 0.917,
+          "agora_dia": 0.917
+        },
+        "rod_04": {
+          "antes_dia": 1.334,
+          "agora_dia": 1.334
+        },
+        "rod_05": {
+          "antes_dia": 2.334,
+          "agora_dia": 2.334
+        }
+      },
+      "primeiro_dia_em_cada_mapa": {
+        "map_01": {
+          "antes": 0.333,
+          "agora": 0.333
+        },
+        "map_02": {
+          "antes": 0.5,
+          "agora": 0.5
+        },
+        "map_03": {
+          "antes": 0.506,
+          "agora": 0.506
+        },
+        "map_04": {
+          "antes": -1,
+          "agora": -1
+        },
+        "map_05": {
+          "antes": 0.75,
+          "agora": 0.75
+        },
+        "map_06": {
+          "antes": -1,
+          "agora": -1
+        },
+        "map_07": {
+          "antes": 0.917,
+          "agora": 0.917
+        },
+        "map_08": {
+          "antes": -1,
+          "agora": -1
+        },
+        "map_09": {
+          "antes": 1.334,
+          "agora": 1.334
+        },
+        "map_10": {
+          "antes": 2.334,
+          "agora": 2.334
+        }
+      },
+      "roupas_montadas_dia": {
+        "gloves": 2.92,
+        "hat": 6.34,
+        "pants": 11.75,
+        "boots": 19.75,
+        "shirt": 30.33
+      },
+      "niveis_das_roupas_no_fim": {
+        "gloves": 93,
+        "hat": 92,
+        "pants": 91,
+        "boots": 89,
+        "shirt": 86
+      },
+      "dias_ate_nivel": {
+        "Nv.10": {
+          "antes": 0.35,
+          "agora": 0.35
+        },
+        "Nv.100": {
+          "antes": 1.33,
+          "agora": 1.33
+        },
+        "Nv.500": {
+          "antes": 27.33,
+          "agora": 25.33
+        },
+        "Nv.1000": {
+          "antes": null,
+          "agora": null
+        }
+      },
+      "moedas_gastas_em_varas_antes": 19712500
+    },
+    "uma_vez": {
+      "descricao": "Abre 1 vez por dia, 30 min",
+      "varas": {
+        "rod_01": {
+          "antes_dia": 1.834,
+          "agora_dia": 1.833
+        },
+        "rod_02": {
+          "antes_dia": 2.834,
+          "agora_dia": 2.833
+        },
+        "rod_03": {
+          "antes_dia": 3.834,
+          "agora_dia": 3.833
+        },
+        "rod_04": {
+          "antes_dia": 4.834,
+          "agora_dia": 4.833
+        },
+        "rod_05": {
+          "antes_dia": 5.834,
+          "agora_dia": 5.833
+        }
+      },
+      "primeiro_dia_em_cada_mapa": {
+        "map_01": {
+          "antes": 0.833,
+          "agora": 0.833
+        },
+        "map_02": {
+          "antes": -1,
+          "agora": -1
+        },
+        "map_03": {
+          "antes": 1.834,
+          "agora": 1.833
+        },
+        "map_04": {
+          "antes": -1,
+          "agora": -1
+        },
+        "map_05": {
+          "antes": 2.834,
+          "agora": 2.833
+        },
+        "map_06": {
+          "antes": -1,
+          "agora": -1
+        },
+        "map_07": {
+          "antes": 3.834,
+          "agora": 3.833
+        },
+        "map_08": {
+          "antes": -1,
+          "agora": -1
+        },
+        "map_09": {
+          "antes": 4.834,
+          "agora": 4.833
+        },
+        "map_10": {
+          "antes": 5.834,
+          "agora": 5.833
+        }
+      },
+      "roupas_montadas_dia": {
+        "gloves": 4.83,
+        "hat": 8.83,
+        "pants": 14.83,
+        "boots": 22.83,
+        "shirt": 33.83
+      },
+      "niveis_das_roupas_no_fim": {
+        "gloves": 92,
+        "hat": 91,
+        "pants": 90,
+        "boots": 88,
+        "shirt": 83
+      },
+      "dias_ate_nivel": {
+        "Nv.10": {
+          "antes": 0.85,
+          "agora": 0.85
+        },
+        "Nv.100": {
+          "antes": 3.83,
+          "agora": 3.83
+        },
+        "Nv.500": {
+          "antes": 33.83,
+          "agora": 30.83
+        },
+        "Nv.1000": {
+          "antes": null,
+          "agora": null
+        }
+      },
+      "moedas_gastas_em_varas_antes": 19712500
+    }
+  },
+  "niveis_das_roupas_por_dia": {
+    "sempre_aberto": {
+      "1": {},
+      "3": {
+        "gloves": 58
+      },
+      "7": {
+        "gloves": 72,
+        "hat": 68,
+        "pants": 51
+      },
+      "14": {
+        "gloves": 82,
+        "hat": 80,
+        "pants": 77,
+        "boots": 67
+      },
+      "30": {
+        "gloves": 92,
+        "hat": 91,
+        "pants": 90,
+        "boots": 88,
+        "shirt": 83
+      },
+      "45": {
+        "gloves": 97,
+        "hat": 97,
+        "pants": 96,
+        "boots": 94,
+        "shirt": 92
+      }
+    },
+    "quatro_vezes": {
+      "1": {},
+      "3": {
+        "gloves": 35
+      },
+      "7": {
+        "gloves": 62,
+        "hat": 44
+      },
+      "14": {
+        "gloves": 74,
+        "hat": 69,
+        "pants": 56
+      },
+      "30": {
+        "gloves": 84,
+        "hat": 83,
+        "pants": 80,
+        "boots": 73,
+        "shirt": 24
+      },
+      "45": {
+        "gloves": 89,
+        "hat": 88,
+        "pants": 87,
+        "boots": 83,
+        "shirt": 77
+      },
+      "60": {
+        "gloves": 93,
+        "hat": 92,
+        "pants": 91,
+        "boots": 89,
+        "shirt": 85
+      }
+    },
+    "uma_vez": {
+      "1": {},
+      "3": {},
+      "7": {
+        "gloves": 58
+      },
+      "14": {
+        "gloves": 71,
+        "hat": 66,
+        "pants": 42
+      },
+      "30": {
+        "gloves": 83,
+        "hat": 81,
+        "pants": 78,
+        "boots": 69
+      },
+      "45": {
+        "gloves": 88,
+        "hat": 87,
+        "pants": 85,
+        "boots": 82,
+        "shirt": 74
+      },
+      "60": {
+        "gloves": 92,
+        "hat": 91,
+        "pants": 90,
+        "boots": 88,
+        "shirt": 83
+      }
+    }
+  }
+}

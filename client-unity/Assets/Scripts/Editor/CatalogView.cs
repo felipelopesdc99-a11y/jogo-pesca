@@ -86,7 +86,12 @@ namespace FishingIdle.Editor
                     foreach (var rod in config.Rods.Rods.OrderBy(r => r.Tier))
                     {
                         var card = new Card { Title = rod.DisplayName, Subtitle = rod.Id + " · " + GameTexts.Profile.Tier(rod.Tier), Art = ArtAssets.Texture("Varas/" + rod.Id) };
-                        card.Lines.Add(T.CatalogPrice(Format.Short(rod.Acquisition?.PurchaseCostCoins ?? 0), Format.Number(rod.Acquisition?.PurchaseCostShells ?? 0)));
+                        // Rods are not sold since M24-T32: the fragments that assemble it and where they drop.
+                        if (config.TryGetMap(rod.FragmentMapId, out var rodMap))
+                        {
+                            card.Lines.Add(T.CatalogFragments(rod.FragmentsRequired, Format.Percent(rod.FragmentDropChance, rod.FragmentDropChance < 0.01 ? 2 : 1), rodMap.DisplayName));
+                        }
+
                         card.Lines.Add(T.CatalogMaxLevel(config.RodMaxLevel(rod)));
                         card.Lines.Add(T.CatalogCatches(string.Join(", ", (rod.CanCatchRarities ?? new List<string>()).Select(r => config.TryGetRarity(r, out var t) ? t.DisplayName : r))));
                         yield return card;

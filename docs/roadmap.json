@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-12T15:45:00Z",
+  "updated_at": "2026-10-12T17:30:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -595,6 +595,30 @@
       "title": "Bônus de XP do VIP junto com a pesca offline mais rápida",
       "detail": "Hoje (A-160) o VIP dá as duas coisas na pesca com o jogo fechado: 1 tentativa a cada 15 s (sem VIP, 20 s) e +50% de XP de Pescador nesses peixes (A-110). Juntos, o XP offline com VIP fica ~2× o sem VIP (1,33× peixes × 1,5× XP); simulado só pescando, abrindo 4 vezes por dia, o Nv.1000 vem em ~55 dias com VIP e ~99 sem. Opções: (a) fica assim, os dois juntos; (b) o VIP passa a ser só o ciclo de 15 s (tira o +50% de XP); (c) mantém os dois e reduz o bônus de XP (por exemplo +25%).",
       "raised_at": "2026-10-12T12:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-066",
+      "task_id": "M24-T34",
+      "title": "Varas no Mercado e na revenda",
+      "detail": "As varas agora só vêm de fragmentos (A-163), mas o Mercado continua: os vendedores simulados oferecem varas (até o Nv.41) e o jogador pode anunciar, leiloar e vender varas ao NPC (uma vara montada devolve só 25% do que foi gasto nos níveis; os fragmentos extras remontam uma vara vendida). Opções: (a) fica assim (o Mercado é um atalho pago, entre jogadores); (b) os vendedores simulados param de oferecer varas, mas o jogador ainda negocia as dele; (c) varas deixam de ser negociáveis e vendíveis (tradable_on_market false).",
+      "raised_at": "2026-10-12T17:30:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-067",
+      "task_id": "M24-T35",
+      "title": "Roupas aceleram o Pescador (Nv.1000 em ~55 dias)",
+      "detail": "Com as 5 roupas, o jogador de referência (jogo aberto, Tripulação e Melhorias, sem Passe e sem VIP) chega ao Nv.1000 em ~55 dias, não ~60 (A-162); quase tudo vem da Calça (+10% de XP no Nv.100; com +30% eram ~49 dias). Opções: (a) fica assim; (b) recalibrar a curva do Pescador para ~60 dias de novo com as roupas (curva versão 4, sem baixar nível de ninguém); (c) diminuir a Calça (por exemplo +5% no Nv.100: ~57 dias).",
+      "raised_at": "2026-10-12T17:30:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-068",
+      "task_id": "M24-T36",
+      "title": "Nível das roupas: por peixe ou por tempo",
+      "detail": "Hoje cada peixe puxado (online ou offline) dá 1 ponto de uso a cada peça montada; do Nv.1 ao Nv.100 são ~437 mil peixes (a 1ª peça chega ao Nv.100 por volta do dia 55-60 com o jogo aberto; abrindo 4 vezes por dia, Nv.93 no dia 60). Opções: (a) fica por peixe (escolhido: mais simples, segue o ritmo da pesca e não conta o tempo com a Caixa cheia); (b) por tempo pescando (online e offline).",
+      "raised_at": "2026-10-12T17:30:00Z",
       "status": "OPEN"
     }
   ],
@@ -4680,6 +4704,64 @@
           ],
           "updated_at": "2026-10-12T15:45:00Z",
           "completion_notes": "progression.json → fisher: xp_curve_version 2 → 3; xp_table do Nv.100 em diante regerada por tools/Progressao/calibrar_xp.py --gravar (os níveis 1 a 99 não mudaram). O script agora mede com a economia atual (simular_melhorias.py: pesca a cada 10 s, Tripulação, Melhorias, níveis de vara e barco, barcos por fragmentos, iscas do A-161), perfil de referência \"sempre aberto\" sem Passe e sem VIP (o do A-153/A-155/A-160), com metas 250:3,67d, 500:14,6d, 750:33,3d, 1000:60d (os tempos de antes × 1,195 do Nv.250 em diante). Jogo aberto: Nv.10 20 min e Nv.100 0,49 dia (iguais), Nv.250 3,1 → 3,7 dias, Nv.500 12,2 → 14,6, Nv.750 27,9 → 33,3, Nv.1000 50,2 → 60,0. 4×/dia: Nv.1000 90,9 → 108,3 dias; 1×/dia: 104,8 → 123,8. XP total do Nv.1 ao Nv.1000: 188.953.530 → 229.596.770; Nv.100 pede 9.750 (era 9.640), Nv.500 224.000 (178.000), Nv.999 504.000 (408.000); degrau máximo 4,5%. calibration_target e as notas reescritas (a de \"Nv.10 em 1 h\" saiu). Saves das curvas 1 e 2 convertidos pelo XP total, sem nunca baixar nível: um Nv.500 da curva 2 (39,2 mi XP) alcança só o Nv.458 e fica no Nv.500; o Nv.100 antigo da curva 1 (11,5 mi) vai para o Nv.282 (ia para o 304). config/pass.json regerado por passe_fragmentos.py gerar (o arquivo de antes já não batia com o script depois das iscas do A-161): Dólares e fragmentos iguais; Moedas e Conchas dos marcos altos sobem porque o jogador de referência chega mais tarde (Nv.500 834 mi → 980 mi; Nv.1000 838 bi → 1,95 tri). docs/propostas/melhorias.json e passe_fragmentos.json regerados. Testes: FisherCurveSixtyDaysTests (versão 3, total da curva, começo igual, cada nível ≥ curva 2 depois do Nv.100 e degraus ≤ 5%, curva 2 → 3 nunca baixa, Nv.1 a 100 da curva 2 ficam iguais, Nv.500 fica, curva 1 → 3 direto, save no disco convertido uma vez); IdleScopeStageOneTests ajustado (o total de exemplo). A-162, TD-047. Verificado no CI (GitHub) no commit 2542d49: 403 testes passando e 0 erros no jogo, no Painel e no Simulador. Não aberto no Unity."
+        },
+        {
+          "id": "M24-T32",
+          "title": "Varas por fragmentos",
+          "subsystem": "config",
+          "description": "Decisão do proprietário (12/10/2026): \"Vai dropar fragmentos de equipamentos. Então vai dropar fragmento de barco, vai dropar fragmento de vara\". Varas só por fragmentos, saem da Loja (como os barcos, A-157); o fragmento da vara que libera o próximo mapa cai num mapa que o jogador já pesca; ritmo parecido com o da compra; quem já tem varas mantém; varas continuam subindo de nível com Moedas e Conchas.",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T16",
+            "M24-T31"
+          ],
+          "updated_at": "2026-10-12T17:30:00Z",
+          "completion_notes": "rods.json: as Varas 1 a 5 saíram da Loja (acquisition.method \"fragments\"; purchase_cost_* saíram, o valor de referência no Mercado/revenda ficou em acquisition.market_reference_coins = preço de antes) e ganharam fragment_map_id, fragments_required e fragment_drop_chance, mais fragment_rules.drop_on_offline_fishing. Cada vara cai no último mapa que a vara anterior alcança: Ponta Selvagem no Lago Sereno (15 fragmentos, 3,7% por peixe puxado), Maré Dourada no Pantanal Dourado (25; 4,05%), Corrente Mestra na Costa de Coral (35; 7%), Atlântico Nobre na Corrente Azul (45; 3,6%), Soberana Abissal no Talude Noturno (60; 1,63%). Calibrado por tools/Progressao/fragmentos_equipamento.py gerar para quem abre 4×/dia montar cada vara no dia em que comprava antes (12 h, 18 h, 22 h, 1,3 e 2,3 dias, iguais); jogo aberto 1,4 h → 2,3 h, 3,5 → 5,3 h, 6,9 → 7,4 h, 14,5 → 12,6 h, 1,1 → 1,1 dia; 1×/dia igual (1,8 a 5,8 dias). Regras: Shop/RodFragmentRules (sorteio com o Rng do ciclo depois da captura e do fragmento de barco; montagem automática no Nv.1, em uso se a categoria for maior; extras remontam uma vara vendida; Owns movido da Loja), GameConfig.TryGetRodForMap/IsFragmentRod/IsFreeClaimRod (IsPurchasable saiu), validador ValidateRodFragments (mapa da vara pede categoria menor, um mapa por vara, e nenhuma vara ou mapa inalcançável: a progressão nunca trava), BuyRod só resgata a Vara Inicial (RodNotForSale), a pesca lê a vara a cada tentativa. Save v18 (RodFragments; quem tinha varas mantém com o nível). Loja → Varas no formato dos barcos (Fragmentos x/N · Caem no mapa X, barra, chance, MONTE COM FRAGMENTOS); avisos agrupados (UI/FragmentNotices), comemoração, Bem-vindo de volta; Painel (fragmentos e chance) e Catálogo; Simulador e textos que falavam em comprar vara. Passe: fragmentos de vara nos marcos Nv.10/30/50/70/90 (15%, Premium 30%). simular_progressao.py com varas por fragmentos e a pesca offline no mapa onde o jogo fechou. Testes: RodsAndClothingByFragmentsTests e ajustes (TestSupport.GiveRod; MapsAndRods, IdleScopeStageOne, MapsThreeFour/FiveSix/SevenToTen, Abuse, Tutorial, ItemLevels, ReviewFix). A-163, TD-048. Verificação no CI: ver a tarefa no commit seguinte."
+        },
+        {
+          "id": "M24-T33",
+          "title": "Roupas",
+          "subsystem": "config",
+          "description": "Decisão do proprietário (12/10/2026): \"coloca fragmento de roupa. Fragmento de roupa já vai englobar tudo isso. Vai ter luva, calça, bota, chapéu, camiseta.\" Um fragmento serve para qualquer peça (o jogador escolhe); cada peça dá um bônus diferente (luva = chance de puxar, chapéu = raridade, bota = tamanho, camiseta = Conchas, calça = XP); a roupa \"sobe usando ela, upa com o tempo, igual nível\", sem custo, Nv.1 a 100.",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T32"
+          ],
+          "updated_at": "2026-10-12T17:30:00Z",
+          "completion_notes": "equipment.json → clothing: 5 peças (Luvas catch_success +0,5% → +15%; Chapéu rarity_efficiency +2% → +80%; Botas size_quality +2% → +60%; Camiseta shell_yield +5% → +175%; Calça fisher_xp +0,5% → +10%), ~1/3 da Corrente Mestra no Nv.100 no mesmo eixo, curva das varas (expoente 1,2); um Fragmento de Roupa em todos os mapas (0,17% por peixe puxado, online e offline); custo por ordem de montagem 15/25/40/60/80 (qualquer peça); nível por uso: 1 ponto por peixe puxado para cada peça montada, 10 × 1,0868^(N−1) por nível (436.679 do Nv.1 ao Nv.100), sem custo; todas vestidas juntas; extras guardados. Regras: Shop/ClothingRules (bônus por eixo, sorteio depois dos fragmentos de barco e de vara, montar, GainUse), Shop/LocalClothingService (IClothingService: GetClothing, Assemble), CatchRules.WithClothing (raridade, tamanho e Conchas somados aos da vara; sem roupa o mesmo objeto), Luvas no bônus da tentativa e em GearView.ClothingBonus/TotalBonus, Calça no XP do peixe; teto de 95% intacto; validação (eixo, chance, custos, curva, XP). Save v18 (Clothing). Tela: aba Roupas na Loja (parede com as 5 peças, ficha com nível, barra de uso, bônus agora e no Nv.100, Montar (N fragmentos de roupa)), \"Total com Luvas\", avisos agrupados de fragmento, de roupa pronta para montar, de montagem e de nível, Bem-vindo de volta, Passe (linha de roupa), Painel (seção Roupas). Passe: 2 Fragmentos de Roupa grátis por marco até o Nv.100 e 1 depois (Premium o dobro); pass.json regerado pelo script. Simulação (docs/propostas/fragmentos_equipamento.json): 5 peças em 16,1 / 30,3 / 33,8 dias (aberto / 4×/dia / 1×/dia, sem Passe); níveis no dia 30: 92-83 / 84-24 / 83-69; no dia 60: 100-96 (dia 55) / 93-85 / 92-83. Efeito: Nv.1000 em ~55 dias com o jogo aberto (era ~60; OD-067). ASSET_PENDENTE: ícones das peças, do Fragmento de Roupa e dos fragmentos de vara (docs/ASSETS_PENDENTES.md). A-164, TD-048. Verificação no CI: ver a tarefa no commit seguinte."
+        },
+        {
+          "id": "M24-T34",
+          "title": "Varas no Mercado e na revenda",
+          "subsystem": "config",
+          "description": "Com as varas só por fragmentos, os vendedores simulados do Mercado ainda oferecem varas (market_bots.json) e o jogador ainda pode anunciar, leiloar e vender varas ao NPC. Decidir se isso continua (OD-066).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T32"
+          ],
+          "updated_at": "2026-10-12T17:30:00Z"
+        },
+        {
+          "id": "M24-T35",
+          "title": "Roupas e a curva do Pescador",
+          "subsystem": "config",
+          "description": "Com as roupas (sobretudo a Calça, +10% de XP de cada peixe no Nv.100), o Nv.1000 com o jogo aberto vem em ~55 dias em vez dos ~60 decididos em 12/10/2026 (A-162). Decidir o que fazer (OD-067).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T33"
+          ],
+          "updated_at": "2026-10-12T17:30:00Z"
+        },
+        {
+          "id": "M24-T36",
+          "title": "Regra do nível das roupas por uso",
+          "subsystem": "config",
+          "description": "O pedido foi \"sobe usando ela, upa com o tempo, igual nível\". Foi escolhido 1 ponto de uso por peixe puxado (online e offline) para cada peça montada, o mais simples. Confirmar ou trocar por tempo pescando (OD-068).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T33"
+          ],
+          "updated_at": "2026-10-12T17:30:00Z"
         }
       ]
     }

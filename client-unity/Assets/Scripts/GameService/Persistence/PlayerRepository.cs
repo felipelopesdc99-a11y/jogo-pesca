@@ -431,9 +431,21 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 17;
             }
 
+            if (save.SaveVersion == 17)
+            {
+                // v18: rods and clothing by fragments (M24-T32/T33). Rods already owned stay in the Inventory with their
+                // levels; rod and clothing fragments start at 0.
+                save.RodFragments = new Dictionary<string, long>();
+                save.Clothing = new ClothingState();
+                save.SaveVersion = 18;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BoatLevels = save.BoatLevels ?? new Dictionary<string, int>();
             save.BoatFragments = save.BoatFragments ?? new Dictionary<string, long>();
+            save.RodFragments = save.RodFragments ?? new Dictionary<string, long>();
+            save.Clothing = save.Clothing ?? new ClothingState();
+            save.Clothing.Pieces = save.Clothing.Pieces ?? new Dictionary<string, ClothingPieceState>();
             save.Pass = save.Pass ?? new PassState();
             save.Pass.FreeClaimed = save.Pass.FreeClaimed ?? new List<int>();
             save.Pass.PremiumClaimed = save.Pass.PremiumClaimed ?? new List<int>();
@@ -580,6 +592,9 @@ namespace FishingIdle.GameService.Persistence
             }
             if (save.BoatLevels != null && save.BoatLevels.Any(b => string.IsNullOrWhiteSpace(b.Key) || b.Value < 1)) problems.Add("boat levels malformed");
             if (save.BoatFragments != null && save.BoatFragments.Any(b => string.IsNullOrWhiteSpace(b.Key) || b.Value < 0)) problems.Add("boat fragments malformed");
+            if (save.RodFragments != null && save.RodFragments.Any(r => string.IsNullOrWhiteSpace(r.Key) || r.Value < 0)) problems.Add("rod fragments malformed");
+            if (save.Clothing != null && (save.Clothing.Fragments < 0 || (save.Clothing.Pieces != null
+                && save.Clothing.Pieces.Any(p => string.IsNullOrWhiteSpace(p.Key) || p.Value == null || p.Value.Level < 1 || p.Value.Xp < 0)))) problems.Add("clothing malformed");
             if (save.Pass == null || save.Pass.FreeClaimed == null || save.Pass.PremiumClaimed == null) problems.Add("pass missing");
             else if (save.Pass.LegacyDollarsUpToLevel < 0 || save.Pass.PremiumBoughtAtMs < 0) problems.Add("pass negative values");
             if (save.Upgrades == null || save.Upgrades.Levels == null) problems.Add("upgrades missing");

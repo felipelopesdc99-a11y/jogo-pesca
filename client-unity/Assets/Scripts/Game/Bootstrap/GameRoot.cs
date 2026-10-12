@@ -1001,6 +1001,38 @@ namespace FishingIdle.Game.Bootstrap
 
         public VipView Vip { get; private set; }
 
+        // ------------------------------------------------------------------ clothing (M24-T33, A-164)
+
+        /// <summary>The clothing pieces as the service last returned them (refreshed with the player). Presentation only.</summary>
+        public ClothingView Clothing { get; private set; }
+
+        /// <summary>Assembles the piece the player picked with the Fragmentos de Roupa (it is worn at once).</summary>
+        public void AssembleClothing(string pieceId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Clothing.Assemble(pieceId);
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                var name = pieceId;
+                foreach (var piece in result.Value.Pieces)
+                {
+                    if (piece.PieceId == pieceId)
+                    {
+                        name = piece.Name;
+                    }
+                }
+
+                Toasts.Push(GameTexts.Gear.ClothingAssembledToast(name), ToastKind.Important, notify: true);
+                Celebrations.Show(GameTexts.Gear.ClothingAssembledTitle, name, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+                Refresh();
+            });
+        }
+
         // ------------------------------------------------------------------ Passe do Pescador (M24-T17)
 
         /// <summary>The pass as the service last returned it (refreshed with the player). Presentation only.</summary>
@@ -1064,11 +1096,32 @@ namespace FishingIdle.Game.Bootstrap
                     items.Add(GameTexts.Gear.FragmentsToast(Format.Number(fragments.Amount), fragments.BoatName));
                 }
 
+                foreach (var fragments in claim.RodFragments)
+                {
+                    items.Add(GameTexts.Gear.RodFragmentsPassToast(Format.Number(fragments.Amount), fragments.RodName));
+                }
+
+                if (claim.ClothingFragments > 0)
+                {
+                    items.Add(GameTexts.Gear.ClothingFragmentsPassToast(Format.Number(claim.ClothingFragments)));
+                }
+
                 Toasts.Push(items.Count > 0 ? GameTexts.Pass.ClaimedItems(string.Join(", ", items)) : GameTexts.Pass.ClaimedToast(claim.Claimed), ToastKind.Coins);
                 foreach (var boat in claim.BoatsAssembled)
                 {
                     Toasts.Push(GameTexts.Gear.BoatAssembledToast(boat), ToastKind.Important, notify: true);
                     Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, boat, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+                }
+
+                foreach (var rod in claim.RodsAssembled)
+                {
+                    Toasts.Push(GameTexts.Gear.RodAssembledToast(rod), ToastKind.Important, notify: true);
+                    Celebrations.Show(GameTexts.Gear.RodAssembledTitle, rod, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+                }
+
+                if (claim.RodsAssembled.Count > 0)
+                {
+                    AquariumChanged?.Invoke();
                 }
 
                 Refresh();
@@ -1381,6 +1434,7 @@ namespace FishingIdle.Game.Bootstrap
             Status = Game.Fishing.GetStatus();
             Travel = Game.Maps.GetTravel();
             Gear = Game.Gear.GetGear();
+            Clothing = Game.Clothing.GetClothing();
             Vip = Game.Vip.GetVip();
             Pass = Game.Pass.GetPass();
             CrewCoinsPerSecond = Game.Crew.GetCrew(CrewBuyMode.One).CoinsPerSecond;

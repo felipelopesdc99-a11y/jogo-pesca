@@ -68,14 +68,16 @@ public sealed class AbuseTests
         var (game, _, _) = Player();
         game.Session.Save.FisherLevel = 10;
         game.Session.Save.Shells = 1_000;
-        Assert.True(game.Shop.BuyRod("rod_01").Succeeded);
+        TestSupport.GiveRod(game, "rod_01");
         var inventory = game.Profile.GetProfile().Inventory;
         Assert.True(game.Profile.EquipRod(inventory.Single(r => r.RodId != "rod_01").ItemId).Succeeded);
         var rod = inventory.Single(r => r.RodId == "rod_01");
 
         var listed = game.Market.ListRod(rod.ItemId, 4_000);
         Assert.True(listed.Succeeded, listed.ErrorMessage);
-        Assert.Equal(ServiceError.RodAlreadyOwned, game.Shop.BuyRod("rod_01").Error);
+        // Listed on the Market, the rod is still the player's: the Shop shows it as owned and its fragments are extras.
+        Assert.True(game.Shop.GetShop().Rods.Single(r => r.RodId == "rod_01").Owned);
+        Assert.True(FishingIdle.GameService.Shop.RodFragmentRules.Owns(game.Session.Save, "rod_01"));
 
         var goods = game.Session.Save.Market.MyListings.Single().Goods;
         Assert.Equal(2_500, MarketRules.MaxBotPrice(game.Session.Config, goods));

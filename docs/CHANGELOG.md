@@ -3,6 +3,44 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.55] — 12/10/2026
+
+Varas e roupas por fragmentos (M24-T32 e M24-T33, A-163 e A-164, TD-048): decisões do proprietário de 12/10/2026 ("Vai
+dropar fragmentos de equipamentos … coloca fragmento de roupa … Vai ter luva, calça, bota, chapéu, camiseta.").
+Verificado no CI, não aberto no Unity.
+
+### Adicionado
+
+- **Varas por fragmentos**: cada vara cai no último mapa que a vara anterior alcança (Vara 1 no Lago Sereno, 2 no
+  Pantanal Dourado, 3 na Costa de Coral, 4 na Corrente Azul, 5 no Talude Noturno), 15 a 60 fragmentos, 1,63% a 7% por
+  peixe puxado, online e offline; com todos a vara é montada sozinha no Nv.1 e entra em uso se for de categoria maior.
+  Calibrado para quem abre o jogo 4 vezes por dia montar cada vara no mesmo dia em que comprava antes. O jogo recusa um
+  config em que alguma vara ou mapa ficasse impossível (a progressão nunca trava).
+- **Roupas** (`equipment.json → clothing`): Luvas (chance de puxar, +0,5% → +15%), Chapéu (raridade, +2% → +80%), Botas
+  (tamanho, +2% → +60%), Camiseta (Conchas, +5% → +175%) e Calça (XP de Pescador, +0,5% → +10%), do Nv.1 ao Nv.100. Um
+  tipo só de Fragmento de Roupa (0,17% por peixe puxado, em todos os mapas); o jogador escolhe a peça; a 1ª custa 15, depois
+  25, 40, 60 e 80. As 5 ficam vestidas juntas e sobem de nível com o uso (1 ponto por peixe puxado, sem custo). O teto de 95%
+  não muda.
+- Loja: aba **Roupas** (entre Barcos e Iscas) com as 5 peças, nível, barra de uso, bônus agora e no Nv.100 e "Montar (N
+  fragmentos de roupa)"; "Seu equipamento" diz "Total com Luvas" quando elas contam.
+- Avisos agrupados (no máximo um por tipo a cada 8 s) de fragmentos de barco, de vara e de roupa e dos níveis das roupas;
+  aviso de "Você já pode montar uma roupa"; comemoração de vara e roupa montadas; linhas novas no "Bem-vindo de volta".
+- Save versão 18 (`rod_fragments`, `clothing`): quem já joga mantém as varas com o nível; fragmentos começam em 0.
+- Painel de Balanceamento: fragmentos e chance de cada vara (aba Varas) e a seção Roupas (Sucesso da pesca).
+- `tools/Progressao/fragmentos_equipamento.py` (gerar e simular) e `docs/propostas/fragmentos_equipamento.json`.
+- Testes `RodsAndClothingByFragmentsTests`.
+
+### Mudado
+
+- As varas **saíram da Loja**: a aba Varas mostra "Fragmentos 12/25 · Caem no mapa …", a barra, a chance e "MONTE COM
+  FRAGMENTOS"; o Caniço Manso continua "Pegar grátis" no tutorial. O valor das varas no Mercado e na revenda é o preço de
+  antes (`acquisition.market_reference_coins`); uma vara montada devolve na revenda só 25% do que foi gasto nos níveis.
+- Passe do Pescador: fragmentos de vara nos marcos Nv.10, 30, 50, 70 e 90 (15% da vara; Premium 30%) e Fragmentos de Roupa
+  em todo marco (2 grátis até o Nv.100 e 1 depois; Premium o dobro). `pass.json` regerado por `passe_fragmentos.py gerar`
+  (Moedas dos marcos altos menores: Nv.1000 1,95 tri → 1,11 tri grátis).
+- Com as roupas, o Pescador sobe mais rápido: Nv.1000 em ~55 dias com o jogo aberto (era ~60; OD-067).
+- `simular_progressao.py`: varas por fragmentos, roupas e a pesca offline no mapa onde o jogo foi fechado.
+
 ## [0.2.0-m21.54] — 12/10/2026
 
 Curva do Pescador: Nv.1000 em ~60 dias (M24-T31, A-162, TD-047): decisão do proprietário de 12/10/2026 ("60 dias pro

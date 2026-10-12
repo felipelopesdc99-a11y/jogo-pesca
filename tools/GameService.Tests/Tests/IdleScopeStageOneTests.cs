@@ -17,23 +17,22 @@ public sealed class IdleScopeStageOneTests
     // ------------------------------------------------------------------ M24-T09: items with no minimum level
 
     [Fact]
-    public void A_level_1_player_with_the_money_can_buy_the_best_rod_and_bait()
+    public void A_level_1_player_with_the_money_can_buy_the_best_bait_and_rods_come_from_fragments()
     {
-        // Boats are not sold since M24-T16 (A-157): they come from fragments (BoatFragmentTests).
+        // Boats (M24-T16, A-157) and rods (M24-T32, A-163) are not sold: they come from fragments.
         var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
         var save = game.Session.Save;
         Assert.Equal(1, save.FisherLevel);
         save.Coins = 1_000_000_000;
         save.Shells = 1_000_000;
 
-        Assert.All(game.Shop.GetShop().Rods.Where(r => !r.Owned), r => Assert.Equal(ServiceError.None, r.BuyBlocker));
+        Assert.All(game.Shop.GetShop().Rods.Where(r => !r.Owned), r => Assert.Equal(ServiceError.RodNotForSale, r.BuyBlocker));
         Assert.All(game.Gear.GetGear().Baits, b => Assert.Equal(ServiceError.None, b.BuyBlocker));
 
-        Assert.True(game.Shop.BuyRod("rod_05").Succeeded);
+        TestSupport.GiveRod(game, "rod_05");
         Assert.True(game.Gear.BuyBait("bait_03").Succeeded);
         Assert.Equal(1, game.Player.GetPlayer().FisherLevel);
-        Assert.Equal(1_000_000_000 - game.Session.Config.Rods.Rods.Single(r => r.Id == "rod_05").Acquisition.PurchaseCostCoins
-                     - game.Session.Config.Equipment.Baits.Single(b => b.Id == "bait_03").CostCoins, save.Coins);
+        Assert.Equal(1_000_000_000 - game.Session.Config.Equipment.Baits.Single(b => b.Id == "bait_03").CostCoins, save.Coins);
     }
 
     [Fact]
@@ -43,12 +42,12 @@ public sealed class IdleScopeStageOneTests
         var save = game.Session.Save;
         save.Coins = 0;
         save.Shells = 1_000_000;
-        Assert.Equal(ServiceError.NotEnoughCoins, game.Shop.BuyRod("rod_05").Error);
+        Assert.Equal(ServiceError.RodNotForSale, game.Shop.BuyRod("rod_05").Error);
         Assert.Equal(ServiceError.NotEnoughCoins, game.Gear.BuyBait("bait_03").Error);
 
         save.Coins = 1_000_000_000;
         save.Shells = 0;
-        Assert.Equal(ServiceError.NotEnoughShells, game.Shop.BuyRod("rod_05").Error);
+        Assert.Equal(ServiceError.RodNotForSale, game.Shop.BuyRod("rod_05").Error);
         Assert.Equal(ServiceError.NotEnoughShells, game.Gear.BuyBait("bait_03").Error);
     }
 
@@ -58,7 +57,7 @@ public sealed class IdleScopeStageOneTests
         var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
         game.Session.Save.Coins = 1_000_000_000;
         game.Session.Save.Shells = 1_000_000;
-        Assert.True(game.Shop.BuyRod("rod_05").Succeeded);
+        TestSupport.GiveRod(game, "rod_05");
 
         Assert.Equal(ServiceError.MapLocked, game.Maps.TravelTo("map_02").Error);
         Assert.Equal(ServiceError.MapLocked, game.Maps.TravelTo("map_10").Error);

@@ -1945,7 +1945,7 @@ Decisão do proprietário em 10/10/2026 (M24-T09 e M24-T03), primeira etapa do A
 - **Itens sem nível mínimo.** Varas, barcos e iscas podem ser comprados em qualquer nível: basta ter as Moedas e as
   Conchas. Na Loja, a etiqueta do gancho não mostra mais o cadeado com "Nv. X", a ficha não tem mais a linha
   "Disponível no Nível X" e nenhum item aparece escurecido por nível; o único motivo de bloqueio é faltar Moedas ou
-  Conchas (ou já ter o item). "Categoria · Até o Nível 10" continua: é o nível máximo de melhoria da vara. Os mapas
+  Conchas (ou já ter o item). *Desde 12/10/2026 as varas não são vendidas: vêm de fragmentos (A-163).* "Categoria · Até o Nível 10" continua: é o nível máximo de melhoria da vara. Os mapas
   continuam liberando nos mesmos níveis do Pescador (Nv.10, 20, … 90) e pedindo a categoria mínima de vara: comprar a
   Vara 5 no Nv.1 não leva ninguém ao Mapa 10 antes do Nv.90.
 - **Pescador até o Nv.1000** (antes Nv.100), com uma curva de XP nova, mais rápida no começo. Os primeiros níveis
@@ -2176,7 +2176,8 @@ nível: Moedas e Conchas. Tudo que já existia continua; números em `/config`, 
   | | 100 | +80,1% | +450% | +315% | +1.050% | — | 2 tri + 24.136 |
 
   O preço de cada nível é o do anterior × 1,14 em Moedas e × 1,03 em Conchas (o 1º nível custa um terço do 1º nível
-  de antes em Moedas e um quarto em Conchas). O preço de compra das varas não mudou.
+  de antes em Moedas e um quarto em Conchas). O preço de compra das varas não mudou. *Desde 12/10/2026 as varas não são
+  mais vendidas: vêm de fragmentos (A-163); os níveis continuam iguais.*
 - **Barcos com nível** (antes cada barco tinha um bônus fixo). Todo barco comprado começa no Nv.1, com o bônus de
   antes, e vai até o Nv.100 com 3× esse bônus, na mesma curva das varas. O **barco inicial (Água Mansa) não tem
   nível**: o bônus dele é 0. Comprar barco continua igual (sem nível mínimo, A-153; *desde 11/10/2026 os barcos não
@@ -2342,6 +2343,15 @@ sugestões para ajustar jogando.
   exatamente o que `tools/Progressao/passe_fragmentos.py gerar` produz. Antes: Nv.10 930 Moedas e 3 Conchas, Nv.100
   1,22 mi e 7 Conchas, Nv.500 982 mi e 45 Conchas. O Nv.100 dá menos Moedas porque o jogador de referência chega lá
   mais cedo (com renda menor); as Conchas dobraram junto com os peixes.*
+
+  *Atualizado em 12/10/2026 (A-163 e A-164): o Passe também dá **fragmentos de vara** e **Fragmentos de Roupa**. Vara: no
+  marco do nível que libera o primeiro mapa que pede cada vara (Nv.10 = Ponta Selvagem, Nv.30 = Maré Dourada, Nv.50 =
+  Corrente Mestra, Nv.70 = Atlântico Nobre, Nv.90 = Soberana Abissal), 15% dos fragmentos que a vara pede (o Premium, 30%):
+  3, 4, 6, 7 e 9 grátis. Roupa: em todo marco, 2 grátis até o Nv.100 e 1 depois (o Premium, o dobro): 110 grátis e 220
+  Premium no total. Arquivo regerado pelo script; com as roupas o jogador de referência chega aos níveis altos mais cedo
+  (com a renda menor), então as Moedas dos marcos altos caem (Nv.1000: 1,95 tri → 1,11 tri grátis; total grátis 14,3 tri →
+  8,5 tri); as Conchas totais ficam parecidas (13.276 → 14.335). A célula do marco mostra uma linha a mais para a vara e
+  para a roupa.*
 
   *Regerado de novo em 12/10/2026 (A-162, curva do Pescador com o Nv.1000 em ~60 dias). O arquivo de antes já não
   batia com o script depois das iscas do A-161 (Nv.250 50,5 mi, o script dava 35,1 mi). Agora o jogador de referência
@@ -2635,3 +2645,122 @@ iscas novas (A-161), o Nv.1000 chegava em ~50 dias com o jogo sempre aberto. Nú
   seguem a renda de quem chega ao nível (4 vezes por dia), e agora ele chega mais tarde, com a Tripulação maior, os
   marcos altos pagam mais: `config/pass.json` foi regerado pelo script.
 - O XP dos peixes e da Tripulação não mudou; nada mudou nas telas.
+
+### A-163 · Varas por fragmentos
+**Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Decisão do proprietário em 12/10/2026 (M24-T32): "Vai dropar fragmentos de equipamentos. Então vai dropar fragmento de
+barco, vai dropar fragmento de vara, …". As varas **saem da Loja**, como os barcos (A-157): cada vara (menos o Caniço
+Manso, que todos têm) é montada com fragmentos que caem pescando. Quem já tem varas fica com elas, com o nível. As varas
+continuam subindo de nível com Moedas e Conchas (A-156). Números em `config/rods.json`, gerados por
+`tools/Progressao/fragmentos_equipamento.py gerar`, para ajustar jogando.
+
+- **Onde cada vara cai: no último mapa que a vara anterior alcança.** Cada mapa pede uma categoria mínima de vara; a
+  vara que libera o próximo mapa cai no mapa que o jogador já pesca com a vara que tem. Assim a progressão **nunca
+  trava** (o jogo confere isso ao abrir o config e recusa um config que travaria).
+
+  | Vara | Cai no mapa | Fragmentos | Chance por peixe puxado | Preço de antes na Loja |
+  |---|---|---|---|---|
+  | Ponta Selvagem (Vara 1) | Lago Sereno (Mapa 1) | 15 | 3,7% | 2.500 Moedas + 5 Conchas |
+  | Maré Dourada (Vara 2) | Pantanal Dourado (Mapa 3) | 25 | 4,05% | 90.000 + 40 |
+  | Corrente Mestra (Vara 3) | Costa de Coral (Mapa 5) | 35 | 7% | 730.000 + 85 |
+  | Atlântico Nobre (Vara 4) | Corrente Azul (Mapa 7) | 45 | 3,6% | 3,28 mi + 180 |
+  | Soberana Abissal (Vara 5) | Talude Noturno (Mapa 9) | 60 | 1,63% | 15,6 mi + 650 |
+
+  Os Mapas 2, 4, 6, 8 e 10 não dão fragmento de vara (dão os de barco e de roupa).
+- **Mesmo ritmo de antes.** A chance foi calibrada para quem abre o jogo 4 vezes por dia montar cada vara no mesmo dia
+  em que tinha dinheiro para comprá-la na Loja. Dia em que o jogador tem cada vara (simulação com a pesca, a Tripulação e
+  as Melhorias, sem Passe; antes → agora):
+
+  | Vara | Jogo aberto o dia todo | Abre 4 vezes por dia | Abre 1 vez por dia |
+  |---|---|---|---|
+  | Ponta Selvagem | 1,4 h → 2,3 h | 12 h → 12 h | 1,8 dia → 1,8 dia |
+  | Maré Dourada | 3,5 h → 5,3 h | 18 h → 18 h | 2,8 → 2,8 dias |
+  | Corrente Mestra | 6,9 h → 7,4 h | 22 h → 22 h | 3,8 → 3,8 dias |
+  | Atlântico Nobre | 14,5 h → 12,6 h | 1,3 → 1,3 dia | 4,8 → 4,8 dias |
+  | Soberana Abissal | 1,1 → 1,1 dia | 2,3 → 2,3 dias | 5,8 → 5,8 dias |
+
+  As Moedas que iam para as varas (19,7 milhões no total) ficam para os níveis, a Tripulação e as Melhorias.
+- **Como cai.** Cada peixe **puxado** no mapa da vara tem a chance da tabela de dar **1 fragmento** dela, sorteado pelo
+  serviço do jogo na mesma tentativa, depois da captura e do fragmento de barco (a captura não muda). Vale para a pesca
+  offline (`rods.json → fragment_rules.drop_on_offline_fishing`); Expedições não dão.
+- **Montar é automático**, como o barco: com todos os fragmentos a vara vai para o Inventário no Nv.1 e, se for de
+  categoria maior que a vara em uso, já passa a ser usada. Fragmentos que caem depois ficam guardados como **extras**; se
+  a vara for vendida ou destruída, os extras montam outra.
+- **Na Loja ("Balcão do Píer"), aba Varas.** Sem preço: a etiqueta mostra "12/25" com o ícone da vara até montar, e "JÁ É
+  SUA" / "EM USO" depois. A ficha mostra "Fragmentos 12/25 · Caem no mapa Pantanal Dourado", a barra dourada, "4,05% de
+  chance por peixe puxado" e a pílula dourada "MONTE COM FRAGMENTOS" no lugar do Comprar. Vara sua: "Fragmentos extras:
+  N · Caem no mapa …", o nível e "Melhorar → Nv. 38", como já era. O Caniço Manso continua "Pegar grátis" no tutorial.
+- **Avisos.** "+1 fragmento de vara: Ponta Selvagem (12/15)"; vários seguidos viram um aviso só a cada 8 segundos ("+3
+  fragmentos de vara: …"). Vara montada: aviso grande "Vara montada e equipada: Ponta Selvagem!" (ou "… Veja na Loja.")
+  e a comemoração. No "Bem-vindo de volta": "+N fragmentos de vara: …" e "Vara montada: …!".
+- **Mercado e revenda.** A vara continua negociável no Mercado e vendível ao NPC; o valor de referência dela é o preço que
+  tinha na Loja (`acquisition.market_reference_coins`). Uma vara montada custou 0 Moedas, então a revenda ao NPC devolve
+  só 25% do que foi gasto nos níveis. Os vendedores simulados do Mercado continuam oferecendo varas (OD-066).
+- **O Passe do Pescador** também dá fragmentos de vara (A-158).
+- **Quem já joga** (save versão 18): as varas que tem continuam suas, com o nível; os fragmentos começam em 0.
+- **Arte provisória** (`ASSET_PENDENTE`): o fragmento usa o ícone da vara; pedidos em `docs/ASSETS_PENDENTES.md`.
+
+### A-164 · Roupas
+**Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Decisão do proprietário em 12/10/2026 (M24-T33): "… coloca fragmento de roupa. Fragmento de roupa já vai englobar tudo
+isso. Vai ter luva, calça, bota, chapéu, camiseta." Respostas dele: **um** fragmento de roupa serve para qualquer peça (o
+jogador escolhe qual montar); cada peça dá um **bônus diferente** (luva = chance de puxar, chapéu = raridade, bota =
+tamanho, camiseta = Conchas, calça = XP); a roupa "sobe usando ela, upa com o tempo, igual nível", sem custo. Números em
+`config/equipment.json → clothing`, gerados por `tools/Progressao/fragmentos_equipamento.py gerar`.
+
+- **As 5 peças**, uma de cada, todas vestidas ao mesmo tempo (um espaço por peça). Peça montada fica vestida para sempre.
+
+  | Peça | Bônus | Nv.1 | Nv.10 | Nv.30 | Nv.50 | Nv.75 | Nv.100 |
+  |---|---|---|---|---|---|---|---|
+  | Luvas | chance de puxar o peixe (pontos, como vara, barco e isca) | +0,5% | +1,3% | +3,8% | +6,7% | +10,7% | +15% |
+  | Chapéu | raridade (soma à da vara) | +2% | +6,4% | +19,9% | +35,5% | +57% | +80% |
+  | Botas | tamanho (soma ao da vara) | +2% | +5,3% | +15,3% | +26,9% | +42,9% | +60% |
+  | Camiseta | Conchas (soma ao da vara) | +5% | +14,6% | +44% | +78,1% | +124,9% | +175% |
+  | Calça | XP de Pescador de cada peixe pescado | +0,5% | +1% | +2,7% | +4,6% | +7,2% | +10% |
+
+  No Nv.100 cada peça dá cerca de **1/3 da Corrente Mestra (a vara do meio) no Nv.100** no mesmo eixo (ela tem +48% de
+  chance, +240% de raridade, +186% de tamanho e +525% de Conchas). O bônus segue a mesma curva das varas (TD-041). O teto
+  de **95%** na chance de puxar não muda: com a Soberana Abissal e o Titã do Atlântico no Nv.100, a melhor isca e as Luvas
+  no Nv.100, todas as raridades continuam em 95%.
+- **Fragmento de Roupa.** Um tipo só, que cai em **todos os mapas**: cada peixe puxado tem **0,17%** de chance de dar 1
+  (online e offline; Expedições não dão). Também vem do Passe.
+- **Montar.** O jogador escolhe a peça. A 1ª peça montada custa **15** fragmentos, a 2ª **25**, a 3ª **40**, a 4ª **60** e a
+  5ª **80** (crescente na ordem em que ele monta, qualquer peça: escolhido por ser o mais simples e dar uma peça logo no
+  começo). Os fragmentos que sobram depois das 5 peças ficam guardados (como os extras de barco, OD-060).
+- **Nível por uso, sem custo.** Cada peixe puxado (online ou offline) dá **1 ponto de uso** a cada peça montada. Do Nv.1
+  para o Nv.2 são 10 peixes, e cada nível pede 8,68% a mais (Nv.10: 21 peixes; Nv.30: 112; Nv.50: 591; Nv.75: 4.730; Nv.99:
+  34.900). Do Nv.1 ao Nv.100: 436.679 peixes. Escolhido "peixes pescados" em vez de "tempo pescando" por ser o mais
+  simples e seguir o mesmo ritmo da pesca (o tempo parado com a Caixa cheia não conta).
+- **Ritmo simulado** (sem Passe; o jogador da simulação monta Luvas, Chapéu, Calça, Botas e Camiseta, nessa ordem, assim
+  que tem os fragmentos):
+
+  | Jeito de jogar | 1ª peça | 2ª | 3ª | 4ª | 5ª | Níveis no dia 30 | Níveis no dia 60 |
+  |---|---|---|---|---|---|---|---|
+  | Jogo aberto o dia todo | 1,4 dia | 3,2 | 6,1 | 10,4 | 16,1 | 92 / 91 / 90 / 88 / 83 | 100 / 99 / 98 / 97 / 96 (dia 55) |
+  | Abre 4 vezes por dia | 2,9 dias | 6,3 | 11,8 | 19,8 | 30,3 | 84 / 83 / 80 / 73 / 24 | 93 / 92 / 91 / 89 / 85 |
+  | Abre 1 vez por dia | 4,8 dias | 8,8 | 14,8 | 22,8 | 33,8 | 83 / 81 / 78 / 69 / — | 92 / 91 / 90 / 88 / 83 |
+
+  Os primeiros níveis vêm em minutos (a 1ª peça de quem deixa o jogo aberto está no Nv.58 no dia 3); depois ficam cada
+  vez mais lentos.
+- **Efeito no Pescador.** Com a Calça e as outras peças, o Pescador sobe mais rápido: com o jogo aberto, a Tripulação e
+  as Melhorias, o Nv.1000 vem em **~55 dias** (era ~60, A-162) e o Nv.500 em ~13,5 (era ~14,6); abrindo 4 vezes por dia, o
+  Nv.500 em ~25,3 dias (era ~27,3). O que fazer é decisão do proprietário (OD-067).
+- **Tela: aba "Roupas" na Loja** (entre Barcos e Iscas), escolhida por ser o mais limpo: o jogador já monta barcos e varas
+  ali e vê "Seu equipamento" e a chance de puxar embaixo. As 5 peças ficam na parede de ganchos com a silhueta (ícone)
+  até a arte existir; a etiqueta mostra "Fragmentos de Roupa x/N" até montar e "VESTIDA" depois. A ficha mostra "Roupa ·
+  Nível 12/100" (ou "Até o Nível 100"), a descrição, o bônus de agora em letras grandes ("+6,7% de chance de puxar") com a
+  barra até o Nv.100, "No Nível 100: +15% de chance de puxar" e: peça montada, "Uso: 3/11 peixes para o próximo nível" com
+  a barra (ou "Nível máximo: não sobe mais") e a pílula "VESTIDA"; peça não montada, "Fragmentos de Roupa 8/15 · Caem em
+  todos os mapas", a barra, "0,17% de chance por peixe puxado" e o botão **"Montar (15 fragmentos de roupa)"** (ou "Faltam
+  Fragmentos de Roupa para montar esta peça."). O "i" explica as roupas. Em "Seu equipamento", com as Luvas o total passa a
+  dizer "Total com Luvas".
+- **Avisos.** "+1 Fragmento de Roupa (8/15)", agrupados (um aviso a cada 8 segundos, "+3 Fragmentos de Roupa (10/15)");
+  quando os fragmentos chegam ao custo da próxima peça, "Você já pode montar uma roupa (15 Fragmentos de Roupa). Veja na
+  Loja → Roupas."; ao montar, "Roupa montada e vestida: Luvas!" e a comemoração; ao subir de nível, "Luvas subiu para o
+  Nível 12." (agrupado, um por peça a cada 8 segundos). No "Bem-vindo de volta": "+N Fragmentos de Roupa" e "Roupas
+  subiram de nível: Luvas Nv.40, Chapéu Nv.22".
+- **Quem já joga** (save versão 18): fragmentos de roupa começam em 0 e nenhuma peça montada.
+- **Arte provisória** (`ASSET_PENDENTE`): as peças e o fragmento usam o ícone da estrela; pedidos em
+  `docs/ASSETS_PENDENTES.md` (ícones das 5 peças, do Fragmento de Roupa e dos fragmentos de vara).

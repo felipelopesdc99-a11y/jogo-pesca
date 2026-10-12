@@ -107,7 +107,8 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IAquariumService` | `LocalAquariumService` | Guardar capturas, ficha do peixe, alimentar, vender do Aquário |
 | `ICardumeService` | `LocalCardumeService` | Posições 1–6, bônus 6/6, Força privada |
 | `IMapService` | `LocalMapService` | Mapas, requisitos, viagem de 30s (pausa e retoma a pesca) |
-| `IShopService` | `LocalShopService` | Loja: varas à venda e compra; a oferta mostra o nível da sua vara, os bônus agora e o preço do próximo nível (melhorar continua em `IProfileService.UpgradeRod`) |
+| `IShopService` | `LocalShopService` | Loja, aba Varas: desde o M24-T32 nenhuma vara é vendida (vêm de fragmentos, `RodFragmentRules`, TD-048); `BuyRod` só resgata a Vara Inicial do tutorial. A oferta mostra o mapa onde a vara cai, os fragmentos e a chance, o nível da sua vara, os bônus agora e o preço do próximo nível (melhorar continua em `IProfileService.UpgradeRod`) |
+| `IClothingService` | `LocalClothingService` | Roupas (M24-T33, A-164, TD-048): as 5 peças com nível, XP de uso e bônus; `Assemble` monta a peça escolhida com os Fragmentos de Roupa |
 | `IGearService` | `LocalGearService` | Barcos e iscas: iscas compradas, usar, guardar; barcos só usar e melhorar o nível (`UpgradeBoat`, M24-T13) — desde o M24-T16 eles vêm de fragmentos (`BoatFragmentRules`, TD-042) e a oferta mostra mapa, fragmentos e chance; equipamento em uso e chance de puxar por raridade |
 | `IPassService` | `LocalPassService` | Passe do Pescador (M24-T17, A-158, TD-042): marcos de `pass.json`, resgatar um ou todos, comprar o Premium com Dólares (libera os marcos já passados); `IsMilestone` para o aviso de nível |
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
@@ -253,7 +254,10 @@ sem nenhuma); v15 adiciona o nível dos barcos (`BoatLevels`: nível por id de b
 de varas e peixes (`RodLevelCurveVersion`, `FishLevelCurveVersion`; saves antigos entram com 1, a curva Nv.1–Nv.10);
 v16 adiciona os fragmentos de barco (`BoatFragments`, por id de barco; começam vazios, os barcos comprados continuam) e
 o Passe do Pescador (`PassState`: id do passe, Premium, marcos resgatados grátis e Premium e `LegacyDollarsUpToLevel`,
-o nível até onde os Dólares do A-111 já foram pagos: mín(nível, 100) na migração).
+o nível até onde os Dólares do A-111 já foram pagos: mín(nível, 100) na migração); v17 marca o modelo de iscas
+(`BaitModelVersion`, TD-046); v18 adiciona os fragmentos de vara (`RodFragments`, por id de vara) e as roupas
+(`ClothingState`: `Fragments` e `Pieces` com nível, XP de uso e quando foi montada); saves antigos entram com os dois
+vazios e as varas do Inventário continuam com o nível (TD-048).
 Cada passo está em `SaveMigrations.Upgrade`.
 - Troca de curva de nível de varas e peixes (TD-041): ao carregar, depois da curva do Pescador, o `GameSession` chama
   `LevelCurveMigration.MoveToCurrentCurves`. Um save na curva 1 tem cada vara (Inventário e Mercado) levada ao nível
@@ -271,8 +275,17 @@ Cada passo está em `SaveMigrations.Upgrade`.
   `boat_fragments.drop_on_offline_fishing`. `BoatFragmentRules.Add` (usado também pelo Passe e pelos testes) soma e
   monta o barco ao chegar em `fragments_required`. O `FishingUpdate.Fragments` leva cada fragmento para a tela e para
   o "Bem-vindo de volta".
+- Varas e roupas por fragmentos (TD-048): na mesma tentativa, depois do fragmento de barco, `RodFragmentRules.RollOnCatch`
+  sorteia o fragmento da vara do mapa (`GameConfig.TryGetRodForMap`) e `ClothingRules.RollOnCatch` o Fragmento de Roupa
+  (qualquer mapa); depois `ClothingRules.GainUse` dá 1 ponto de uso por peixe a cada peça montada. `RodFragmentRules.Add`
+  monta a vara (Inventário, Nv.1, em uso se a categoria for maior); a pesca lê a vara em uso a cada tentativa. Os bônus
+  das roupas vêm de `ClothingRules.Bonuses`: Luvas no `gearBonus`, Chapéu/Botas/Camiseta em `CatchRules.WithClothing`,
+  Calça no XP em `ApplyCatch`. `FishingUpdate.RodFragments`, `ClothingFragments`/`ClothingFragmentsHave` e
+  `ClothingLevels` levam tudo para a tela. O validador (`ValidateRodFragments`) garante que nenhuma vara fique impossível
+  de montar.
 - Passe do Pescador (TD-042): `LocalPassService` lê os marcos de `pass.json` e grava só o que foi resgatado. Resgatar
-  chama `Sync` da pesca antes (os fragmentos podem trocar o barco em uso). Subir de nível não paga nada sozinho
+  chama `Sync` da pesca antes (os fragmentos podem trocar o barco ou a vara em uso). Desde o M24-T32/T33 a recompensa
+  também tem `rod_id`/`rod_fragments` e `clothing_fragments`. Subir de nível não paga nada sozinho
   (`FisherLevelRules.AddXp` só soma XP e níveis); os Dólares do A-111 estão na faixa grátis.
 - Tripulação (TD-039): `LocalCrewService.Sync` paga a renda de `LastCreditedAtMs` até agora (relógio da sessão, que
   nunca volta) e move o cursor; um intervalo maior que `online_gap_seconds` conta como offline (100% e depois a taxa
@@ -460,9 +473,12 @@ Cada passo está em `SaveMigrations.Upgrade`.
   pede `Game.Pass.GetPass()` a cada 0,5 s, desenha só as colunas visíveis da trilha (100 marcos) e manda os pedidos por
   `GameRoot.ClaimPass`, `ClaimAllPass` e `BuyPassPremium` (que mostram os avisos e a comemoração de barco montado).
   `GameRoot.PushPassMilestones` avisa os marcos alcançados (pesca e Tripulação).
-- **Fragmentos na tela** (M24-T16, A-157): o `Hud` avisa cada fragmento de `FishingUpdate.Fragments` e comemora o barco
-  montado; a `ShopWindow` mostra "12/20" na etiqueta e "Fragmentos 12/20 · Caem no mapa …" com a barra na ficha (sem
-  Comprar); o `WelcomeBackDialog` soma os fragmentos da pesca offline.
+- **Fragmentos na tela** (M24-T16, A-157; M24-T32/T33, A-163/A-164): o `Hud` avisa os fragmentos de barco, de vara e de
+  roupa e os níveis das roupas por `UI/FragmentNotices` (no máximo um aviso por tipo a cada 8 s, somando o que chega no
+  meio) e comemora barco, vara e roupa montados; a `ShopWindow` mostra "12/20" na etiqueta e "Fragmentos 12/20 · Caem no
+  mapa …" com a barra na ficha (sem Comprar) nas abas Varas e Barcos, e a aba Roupas (`DrawClothingCard`: nível, barra de
+  uso, bônus agora e no Nv.100, "Montar (N fragmentos de roupa)" por `GameRoot.AssembleClothing`); o `WelcomeBackDialog`
+  soma os fragmentos e os níveis da pesca offline; a `PassWindow` mostra as linhas de vara e de roupa.
 
 ## 7. Painel de Desenvolvimento (Editor)
 

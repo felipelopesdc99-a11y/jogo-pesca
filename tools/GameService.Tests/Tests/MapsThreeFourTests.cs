@@ -22,7 +22,7 @@ public sealed class MapsThreeFourTests
         game.Session.Save.Shells = 1_000_000;
         foreach (var rod in rods)
         {
-            Assert.True(game.Shop.BuyRod(rod).Succeeded);
+            TestSupport.GiveRod(game, rod);
         }
 
         return game;
@@ -44,10 +44,10 @@ public sealed class MapsThreeFourTests
     {
         Assert.Equal(ServiceError.MapLocked, Player(29, "rod_01").Maps.TravelTo("map_04").Error);
         Assert.Equal(ServiceError.RodTooWeakForMap, Player(30, "rod_01").Maps.TravelTo("map_04").Error);
-        Assert.True(Player(1).Shop.BuyRod("rod_02").Succeeded); // items have no minimum level (M24-T09)
+        TestSupport.GiveRod(Player(1), "rod_02"); // items have no minimum level (M24-T09)
 
         var game = Player(30, "rod_01", "rod_02");
-        Assert.Equal(10_000_000 - 2_500 - 90_000, game.Session.Save.Coins);
+        Assert.Equal(10_000_000, game.Session.Save.Coins); // rods come from fragments, for free (M24-T32)
         Assert.True(game.Maps.TravelTo("map_04").Succeeded);
     }
 

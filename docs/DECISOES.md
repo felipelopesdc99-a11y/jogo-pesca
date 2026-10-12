@@ -961,3 +961,57 @@ mudam.
 **Rever se.** Entrar no perfil de referência o Passe ou o VIP, ou uma fonte de XP que dependa do nível do Pescador
 (aí a medida precisa de mais rodadas, que o script já faz). Uma curva nova sempre sobe `xp_curve_version` e regera o
 `pass.json` (as Moedas e Conchas dos marcos seguem a renda de quem chega a cada nível).
+
+## TD-048 · Varas e roupas por fragmentos: mapa da vara validado contra a trava, roupas sem nível pago e sorteios depois do barco (12/10/2026)
+
+**Origem.** M24-T32 e M24-T33 (A-163 e A-164): as varas saem da Loja e vêm de fragmentos; entram 5 roupas montadas com
+um fragmento só, com bônus por peça e nível por uso.
+
+**Decisão.**
+- **Varas no `rods.json`, como os barcos no `equipment.json`.** `acquisition.method` passa a ser `fragments` (ou
+  `free_claim_in_shop`, a Vara Inicial); cada vara tem `fragment_map_id`, `fragments_required` e `fragment_drop_chance`,
+  e `rods.json → fragment_rules.drop_on_offline_fishing`. `purchase_cost_coins/shells` saíram (o método `coin_purchase`
+  é recusado); o valor de referência no Mercado e na revenda virou `acquisition.market_reference_coins` (o preço de antes),
+  para o Mercado não mudar. `GameConfig.IsPurchasable` saiu; `IsFragmentRod` / `IsFreeClaimRod` e `TryGetRodForMap`
+  entraram. `IShopService.BuyRod` só resgata a Vara Inicial (as outras: `RodNotForSale`).
+- **A progressão nunca trava, conferido pelo validador** (`ValidateRodFragments`): o mapa de cada vara pede categoria menor
+  que a dela, um mapa dá no máximo uma vara, e, partindo da Vara Inicial, cada vara pode ser montada com uma vara que o
+  jogador já consegue ter e todo mapa pede uma categoria alcançável. Assim um ajuste no `maps.json` ou no `rods.json` que
+  travaria o jogo nunca chega a ele. O script `fragmentos_equipamento.py` escolhe o último mapa que a vara anterior alcança.
+- **Sorteio na mesma tentativa, depois da captura e do barco** (como a TD-042): `RodFragmentRules.RollOnCatch` e
+  `ClothingRules.RollOnCatch` usam o `Rng` do ciclo depois do `BoatFragmentRules.RollOnCatch`. A captura e o fragmento de
+  barco de quem já joga não mudam; cada sorteio só acontece quando existe o que sortear (mapa com vara, config com roupa).
+  `LocalFishingService` passou a ler a vara em uso a cada tentativa (antes uma vez por `Settle`), porque uma vara montada
+  no meio da pesca entra em uso na hora; sem vara nova, a sequência é a mesma.
+- **Montar a vara é automático** (`RodFragmentRules.Add`): vira um `InventoryItem` no Nv.1 com `PurchasePriceCoins` 0 e
+  entra em uso se a categoria for maior. "Ter a vara" conta Inventário, anúncios, leilões e Itens a Retirar (a regra que
+  a Loja usava, movida para `RodFragmentRules.Owns`); fragmentos com a vara na mão são extras e remontam a vara se ela for
+  vendida. O `GameSession` monta ao carregar o que já tem fragmentos suficientes.
+- **Roupas no `equipment.json → clothing`** (sem arquivo novo): chance do fragmento, custos por ordem de montagem
+  (`fragments_to_assemble`), curva do bônus (`max_level`, `bonus_curve_exponent`, a mesma `LevelCurve.Value` das varas),
+  XP de uso (`use_xp_per_fish`, `level_xp.first/growth`, com `LevelCurve.Cost`) e as peças com `bonus_axis` de uma lista
+  fechada (`ClothingAxes`: `catch_success`, `rarity_efficiency`, `size_quality`, `shell_yield`, `fisher_xp`).
+- **Onde o bônus entra:** as Luvas somam ao `gearBonus` da tentativa (como barco e isca, com o mesmo teto); Chapéu, Botas
+  e Camiseta somam aos bônus da vara em `CatchRules.Attempt` (`CatchRules.WithClothing`, que devolve o mesmo objeto sem
+  roupa, então os sorteios de quem não tem roupa são idênticos); a Calça soma +% do XP do peixe em `ApplyCatch`
+  (arredondado, só para peixe pescado; Expedição e ferramentas de teste não). `GearView.ClothingBonus` entra no
+  `TotalBonus`, então a chance mostrada na Loja, no Perfil e no HUD já conta as Luvas.
+- **Nível por uso = peixes puxados**, online e offline, 1 ponto por peixe para cada peça montada (`ClothingRules.GainUse`),
+  sem custo. Mais simples que tempo pescando: não precisa de outro relógio e não conta o tempo com a Caixa cheia.
+- **Save versão 18**: `RodFragments` (por id de vara) e `Clothing` (`Fragments` e `Pieces` com `Level`, `Xp` e
+  `AssembledAtMs`). Só o que o jogador tem; nomes, bônus e XP por nível vêm do config. A migração da v17 cria os dois vazios;
+  as varas do Inventário continuam com o nível.
+- **Calibração em `tools/Progressao/fragmentos_equipamento.py`**: chance de cada vara = fragmentos ÷ peixes puxados no
+  mapa dela até o dia em que o jogador de referência (4 vezes por dia) comprava a vara antes (medidos com a chance quase
+  zero, sem montar); Fragmento de Roupa para as 5 peças em ~30 dias (4 vezes por dia); XP de uso para a 1ª peça no Nv.100
+  em ~60 dias com o jogo aberto. `simular_progressao.py` ganhou as varas por fragmentos, as roupas e a pesca offline no
+  mapa onde o jogo foi fechado (antes o jogador "viajava" no meio da pesca offline, o que adiantava quem abre pouco).
+- **Avisos agrupados na tela** (`Game/UI/FragmentNotices`): no máximo um aviso por tipo (barco, vara, roupa, nível de
+  cada peça) a cada 8 s; o que chega no meio é somado e mostrado no fim do intervalo. Só apresentação.
+
+**Por quê.** Seguir o modelo dos barcos (TD-042) mantém uma regra só para "item por fragmento" e o princípio de que o
+cliente nunca diz "ganhei X". A validação da trava protege a progressão de um ajuste de balanceamento, que é onde o erro
+aconteceria. Bônus por eixo somados aos que já existem reaproveitam toda a matemática da pesca e o teto de 95%.
+
+**Rever se.** O proprietário decidir sobre as varas no Mercado (OD-066), o efeito das roupas no Pescador (OD-067), a regra do
+nível por uso (OD-068) ou os extras (OD-060); ou quiser escolher quando vestir/tirar uma peça (hoje ficam sempre vestidas).

@@ -591,6 +591,34 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 > Ícone de menu para um jogo idle de pesca mobile, no mesmo estilo dos outros ícones do menu (traço simples, branco sobre transparente): um bilhete de passe com a borda picotada e um anzol desenhado no meio, com uma pequena estrela no canto. PNG com fundo transparente, legível em 36 px, sem texto. Arquivo: ico_passe.png
 
+## Varas e roupas por fragmentos (M24-T32/T33, A-163 e A-164, pedido em 12/10/2026)
+
+`ASSET_PENDENTE`. Enquanto os arquivos não existem: o fragmento de vara usa o ícone da vara; as 5 roupas e o Fragmento
+de Roupa usam o ícone da estrela (na Loja → Roupas, no Passe e nos avisos). As roupas não aparecem no pescador da cena
+(o visual do pescador é do agente visual; se o proprietário quiser, vira pedido à parte).
+
+| Arquivo | O quê | Tamanho | Onde aparece |
+|---|---|---|---|
+| `Arte/Roupas/gloves.png`, `hat.png`, `boots.png`, `shirt.png`, `pants.png` | As 5 peças (Luvas, Chapéu, Botas, Camiseta, Calça) | 512×512 → o jogo desenha com 72–190 px | Loja → Roupas (parede e balcão) |
+| `Arte/Fragmentos/frag_roupa.png` | Ícone do Fragmento de Roupa | 256×256 → 18–20 px | Loja → Roupas, Passe, avisos |
+| `Arte/Fragmentos/frag_rod_01.png` a `frag_rod_05.png` | Ícone do fragmento de cada vara | 256×256 → 18–20 px | Passe |
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Ícone quadrado de item de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um par de luvas de pesca de neoprene azul-noite com dedos cortados, palma antiderrapante cinza e uma faixa turquesa no punho. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 64 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: gloves.png
+
+> Ícone quadrado de item de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um chapéu de pescador de abas largas em lona bege, com uma fita turquesa e um anzol dourado preso na aba. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 64 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: hat.png
+
+> Ícone quadrado de item de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: um par de botas de borracha de cano alto azul-noite, sola grossa cinza e uma faixa dourada no topo do cano. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 64 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: boots.png
+
+> Ícone quadrado de item de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: uma camiseta de pescador de manga curta turquesa com bolsos no peito e um pequeno desenho de concha dourada. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 64 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: shirt.png
+
+> Ícone quadrado de item de um jogo idle de pesca mobile, PNG 512×512 px com fundo transparente: uma calça de pescador cargo em lona cinza-azulada com bolsos laterais grandes e joelhos reforçados, dobrada de pé. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 64 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: pants.png
+
+> Ícone quadrado de item de um jogo idle de pesca mobile, PNG 256×256 px com fundo transparente: um fragmento de roupa — um retalho de tecido turquesa dobrado com costura dourada aparente e um botão de latão — com um brilho suave turquesa. Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 20 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: frag_roupa.png
+
+> Ícone quadrado de item de um jogo idle de pesca mobile, PNG 256×256 px com fundo transparente: um fragmento de vara de pesca — um pedaço de vara com um passador de linha e a ponta quebrada — com um brilho suave na cor da vara (troque a cor para cada vara: 01 verde-musgo, 02 dourado, 03 turquesa, 04 azul-royal, 05 azul-noite com dourado). Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 20 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivos: frag_rod_01.png … frag_rod_05.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).
