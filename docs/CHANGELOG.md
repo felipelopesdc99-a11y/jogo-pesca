@@ -3,6 +3,15 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.4] — 12/10/2026
+
+Ícones das janelas no estilo novo. Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- As etiquetas das janelas Tripulação, Passe, Eventos e Boss Mundial usam os ícones novos do menu (mesmo desenho do
+  atalho ou da aba), no lugar dos ícones provisórios.
+
 ## [0.2.0-m24.3] — 12/10/2026
 
 Restante das artes do menu de cima, feitas pelo proprietário no ChatGPT (A-169). Verificado no CI, não aberto no Unity.

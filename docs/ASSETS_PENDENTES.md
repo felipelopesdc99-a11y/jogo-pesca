@@ -490,6 +490,8 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 ## Tripulação: retratos e ícone do menu (M24-T08, A-154, pedido em 10/10/2026)
 
+**12/10/2026:** `ico_tripulacao`, `ico_passe`, `ico_eventos` e `ico_boss` usam por enquanto cópias dos ícones novos do menu (`ico_aba_tripulacao`, `ico_atalho_passe`, `ico_atalho_eventos`, `ico_atalho_boss`), no mesmo estilo branco. Não precisam mais ser pedidos; uma arte própria pode substituir a cópia quando o proprietário quiser.
+
 A janela da Tripulação e o botão do menu já funcionam com desenhos provisórios (`ASSET_PENDENTE` em
 `Game/UI/CrewWindow.cs` e `Game/Visual/ArtAssets.cs`): cada tripulante aparece num quadradinho com o ícone de pessoa
 (os três primeiros) ou de barco (os outros) e o número da ordem; o botão do menu usa o ícone do barco. Quando um
