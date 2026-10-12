@@ -34,6 +34,38 @@ como a arquitetura definitiva.
 - **Dólares do top 10** só com `online_rewards_enabled`, desligado no jogo local (no ranking local só existe o jogador).
   Com o servidor, o ranking, o dano e o pagamento passam a ser dele.
 
+### Passe do Pescador (M24-T17, A-158, TD-042)
+
+- **Cada marco se resgata uma vez só.** O save guarda os níveis resgatados em cada faixa (`PassState.FreeClaimed` e
+  `PremiumClaimed`); um segundo pedido do mesmo marco é recusado (`PassAlreadyClaimed`) e "Resgatar tudo" passa pela
+  mesma regra. Só se resgata marco alcançado pelo nível do Pescador, que é do serviço.
+- **Premium pago com Dólares, pelo serviço.** `BuyPremium` confere o saldo (`NotEnoughDollars`) e o preço do config e
+  debita no mesmo save que liga o Premium; comprar de novo é recusado (`PassPremiumOwned`). Marco Premium sem o
+  Premium é recusado (`PassPremiumLocked`); marco acima do nível, também (`PassMilestoneNotReached`).
+- **Sem Dólares em dobro.** Os Dólares que o A-111 já pagou até o Nv.100 ficam marcados na migração
+  (`PassState.LegacyDollarsUpToLevel` = mín(nível, 100)); o resgate desses marcos entrega o resto da recompensa, mas
+  não os Dólares de novo.
+
+### Fragmentos de barco, vara e roupa (A-157, A-163, A-164, TD-042, TD-048)
+
+- **Sorteados pelo serviço, depois da captura.** Cada peixe puxado tenta o fragmento do barco do mapa, depois o da vara e
+  depois o de roupa, com o `Rng` da mesma tentativa (`BoatFragmentRules.RollOnCatch` e as regras de vara e roupa): a
+  captura nunca muda por causa do fragmento e a tela não sorteia nada. Peixe que escapa, Caixa cheia e Expedição não dão
+  fragmento. Montar é do serviço (automático para barco e vara; a roupa, por pedido, conferindo os fragmentos).
+
+### Pesca offline do VIP (A-160, TD-045)
+
+- **O ciclo de 15 s vale só enquanto o VIP vale.** O serviço calcula a pesca offline tentativa por tentativa com o
+  relógio do serviço: cada tentativa usa 15 s se termina antes do fim do VIP; dali em diante, 20 s. O limite de 24 h
+  continua; relógio voltado para trás não gera tentativas (TD-030).
+
+### Volta para 5 barcos (A-168, TD-051)
+
+- **Migração única.** O save v20 entra com `BoatModelVersion` 1; a `BoatModelMigration` converte os barcos 6 a 10
+  (fragmentos para o barco do mesmo mapa; barco montado vira Moedas e Conchas dos níveis e os fragmentos que custou) e
+  grava a versão atual no mesmo save. Abrir o jogo de novo não converte outra vez, então não dá para repetir o
+  reembolso.
+
 ## Nunca confiar no cliente para
 
 Hora atual · conclusão de ciclo de pesca · qual peixe foi capturado · tamanho ou raridade do peixe ·

@@ -260,7 +260,11 @@ o nível até onde os Dólares do A-111 já foram pagos: mín(nível, 100) na mi
 (`ClothingState`: `Fragments` e `Pieces` com nível, XP de uso e quando foi montada); saves antigos entram com os dois
 vazios e as varas do Inventário continuam com o nível (TD-048); v19 adiciona o Boss Mundial (`WorldBossState`: o dia
 do evento no fuso de Brasília, dano, ataques, último índice de ataque processado, dano máximo do dia, faixa, `Paid` e o
-que foi pago; um registro só, trocado no evento do dia seguinte depois de pago; saves antigos entram com ele vazio).
+que foi pago; um registro só, trocado no evento do dia seguinte depois de pago; saves antigos entram com ele vazio);
+v20 marca o modelo de barcos (`BoatModelVersion`; saves antigos entram com 1, os 10 barcos de antes). A conversão dos
+barcos 6 a 10 em fragmentos, Moedas e Conchas (A-168) precisa do config e por isso não fica em `SaveMigrations`: roda
+uma vez ao abrir a sessão, em `Persistence/BoatModelMigration.MoveToCurrentModel`, antes de os níveis de barco serem
+limitados ao config (TD-051), como a das iscas (`BaitModelMigration`, v17, TD-046).
 Cada passo está em `SaveMigrations.Upgrade`.
 - Troca de curva de nível de varas e peixes (TD-041): ao carregar, depois da curva do Pescador, o `GameSession` chama
   `LevelCurveMigration.MoveToCurrentCurves`. Um save na curva 1 tem cada vara (Inventário e Mercado) levada ao nível
@@ -474,15 +478,15 @@ Cada passo está em `SaveMigrations.Upgrade`.
 - **Tripulação na tela** (M24-T08, A-154): `GameRoot` chama `Crew.Sync` a cada 1 s (`SyncCrew`: avisos de nível
   e dos marcos do Passe como na pesca) e soma o que entrou em `CrewCoinsCredited`; o `Hud` usa esse número para contar a renda
   na carteira sem o pulo e sem o "+N" a cada segundo, e mostra `CrewCoinsPerSecond` como "+X/s" no cartão. A janela
-  `UI/CrewWindow` pede `GetCrew(modo)` a cada 0,25 s e contrata por `GameRoot.HireCrew`; o botão do menu fica logo
-  depois de Pesca (posições dos botões nas constantes `Hud.Nav*`, usadas também pelo tutorial). O
+  `UI/CrewWindow` pede `GetCrew(modo)` a cada 0,25 s e contrata por `GameRoot.HireCrew`; abre pela aba Tripulação do
+  menu de cima (A-169, abaixo). O
   `WelcomeBackDialog` junta `GameRoot.WelcomeBack` (pesca) e `GameRoot.CrewWelcome` (Tripulação); qualquer um
   basta para abrir.
 - **Melhorias na tela** (M24-T11, A-155): a `CrewWindow` tem as abas "Tripulação | Melhorias" (chips); a aba
   Melhorias é desenhada por `UI/UpgradesPanel`, que pede `GameRoot.GetUpgrades()` a cada 0,25 s e compra por
   `GameRoot.BuyUpgrade`. O "i" da janela mostra o texto da aba aberta.
-- **Passe do Pescador na tela** (M24-T17, A-158): botão só com ícone na barra de cima, à esquerda do sino
-  (`Hud.TopRightExtent` passou a 204), com o ponto dourado de `GameRoot.Pass.ClaimableCount`. A janela `UI/PassWindow`
+- **Passe do Pescador na tela** (M24-T17, A-158): abre pelo atalho redondo "Passe" da lateral direita (A-169), com a
+  contagem vermelha de `GameRoot.Pass.ClaimableCount`. A janela `UI/PassWindow`
   pede `Game.Pass.GetPass()` a cada 0,5 s, desenha só as colunas visíveis da trilha (100 marcos) e manda os pedidos por
   `GameRoot.ClaimPass`, `ClaimAllPass` e `BuyPassPremium` (que mostram os avisos e a comemoração de barco montado).
   `GameRoot.PushPassMilestones` avisa os marcos alcançados (pesca e Tripulação).
@@ -494,10 +498,34 @@ Cada passo está em `SaveMigrations.Upgrade`.
   soma os fragmentos e os níveis da pesca offline; a `PassWindow` mostra as linhas de vara e de roupa.
 - **Boss Mundial na tela** (M24-T29, A-165): `GameRoot.SyncWorldBoss` chama `Game.WorldBoss.Update()` na sincronização de
   0,25 s (é isso que faz o Cardume atacar com o jogo aberto, mesmo com a janela fechada), guarda `GameRoot.WorldBoss` e
-  avisa o começo, a faixa nova e o pagamento. O `Hud` desenha o botão à esquerda do Passe (`TopRightExtent` passou a 268)
-  com a pílula da contagem regressiva (dourada com o tempo restante durante o evento). A janela `UI/WorldBossWindow` só
+  avisa o começo, a faixa nova e o pagamento. Entra-se pela janela Eventos (abaixo); durante o evento, o atalho redondo
+  Eventos do `Hud` vira "Boss Mundial" (dourado, pulsando, com o tempo que falta) e abre direto a janela do Boss. A janela
+  `UI/WorldBossWindow` só
   lê `GameRoot.WorldBoss`: Cardume à esquerda (com `ArenaWindow.DrawFish`, agora `internal`), Boss à direita, números
   de dano quando a contagem de ataques sobe, faixas, ranking e Dólares do top 10; fora do horário, o último resultado.
+- **Fragmentos de barco em mais de um mapa** (M24-T42, A-168, TD-051): `equipment.json → boats[].extra_fragment_maps`
+  soma mapas de queda ao `map_id` principal. `GameConfig` monta o índice mapa → (barco, chance) (`TryGetBoatForMap`,
+  `BoatFragmentChanceOn`, `FragmentMapsOf`); a `ShopWindow` mostra "Caem nos mapas …" e a chance do mapa atual. Os
+  barcos removidos e o que eles viram ficam em `equipment.json → boat_migration` (lido pela `BoatModelMigration`).
+- **Menu Eventos** (M24-T39, A-167): `UI/EventsWindow` mostra os eventos em cartões (hoje só o Boss Mundial), lendo
+  `GameRoot.WorldBoss`; "Abrir" abre a `WorldBossWindow`, e o "‹ Eventos" dela volta. Um evento novo acrescenta o tipo
+  em `EventsWindow.EventKind` e um desenhador de cartão; nenhuma regra mora na janela.
+- **Menu de cima** (M24-T43, A-169): o `Hud` desenha a faixa escura (`DrawStrip`) com o cartão do jogador à esquerda
+  (clique abre o Perfil), as **5 abas** no centro (`GroupFishing`, `GroupCrew`, `GroupAdventure`, `GroupTrade`,
+  `GroupProfile`; rótulos em `GameTexts.Navigation`), o sino e as opções à direita (`TopRightExtent`). As sub-abas da aba
+  ativa (Expedição | Arena | Eventos e Mercado | Loja) saem em `DrawSubTabs`. Sem janela aberta, a placa pendurada
+  (`DrawIncomePlaque`) mostra a renda da Tripulação e as Moedas. Os atalhos redondos (Mapa, Aquário, Passe, Eventos,
+  Ranking) ficam em coluna na direita (`DrawShortcuts`, constantes `Shortcut*`); com uma janela aberta ficam cobertos e
+  não respondem. As peças de desenho (faixa, abas coloridas, placa, moldura redonda, contagens) estão em
+  `UI/TopMenuArt`; os ícones pendentes (`ico_aba_*`, `ico_atalho_*`, `ui_atalho_moldura`) são usados quando o arquivo
+  existir (`ASSET_PENDENTE`). O tutorial aponta para as abas pelas mesmas posições.
+- **Janelas "Diário de bordo"** (M24-T44, A-170): moldura, folha, etiqueta, lacre e marcadores em `WindowFrame`; as cores e
+  estilos no papel em `UI/UiSkinPaper` (parte do `UiSkin`). Como usar: veja "Janelas no papel" acima.
+- **Tela de erro** (M24-T38, A-166, TD-050): `GameRoot.Awake` monta a cena e o som em `try/catch` e sempre acrescenta o
+  `Hud`; `Hud.Start` e `Hud.OnGUI` também ficam em `try/catch` e mandam a exceção para `GameRoot.ReportFailure`, que
+  para o serviço e mostra `DrawStartupError` (tipo e mensagem, momento, três pontos do código, pasta do save; textos em
+  `GameTexts.Startup`). Se até o `UiSkin` falhar, `DrawPlainError` usa o estilo padrão do Unity. `ExitGUIException` é
+  relançada (fluxo normal do IMGUI).
 
 ## 7. Painel de Desenvolvimento (Editor)
 

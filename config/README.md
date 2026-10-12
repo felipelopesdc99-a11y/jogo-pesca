@@ -16,7 +16,7 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | `equipment.json` | Barcos, iscas e roupas: bônus na Chance de Sucesso da Captura, preço e tentativas de cada isca; barcos por fragmentos (o mapa de cada barco, quantos fragmentos montam e a chance por peixe puxado; se a pesca offline também dá), níveis dos barcos (bônus no Nv.1 e no Nv.100, custo de cada nível); roupas (`clothing`: chance do Fragmento de Roupa, custo de cada peça na ordem de montagem, bônus de cada peça no Nv.1 e no Nv.100 e o XP de uso de cada nível) |
 | `crew.json` | A Tripulação automática (M24): os 10 tripulantes (nome, preço da 1ª unidade, quanto cada unidade a mais encarece, Moedas e XP por segundo), quantos do anterior liberam o próximo, marcos de quantidade e da frota, e a renda com o jogo fechado (100% nas primeiras horas, depois a taxa reduzida até o teto). Resultado da simulação em `docs/propostas/tripulacao.json` (`tools/Progressao/simular_tripulacao.py`); a renda por unidade foi recalibrada com as Melhorias (A-155) |
 | `pass.json` | O Passe do Pescador (M24-T17): o preço do Premium em Dólares e os 100 marcos (Nv.10 ao Nv.1000), cada um com a recompensa grátis e a Premium (Moedas, Conchas, Dólares, fragmentos de um barco, de uma vara e de roupa). Gerado por `tools/Progressao/passe_fragmentos.py gerar` (resultado da simulação em `docs/propostas/passe_fragmentos.json`) |
-| `world_boss.json` | O Boss Mundial (M24-T29, A-165): nome (sugestão, OD-068), horário (19:00 de Brasília, UTC−3 fixo, por 10 minutos), intervalo dos ataques automáticos do Cardume (3 s), quantos ataques atrasados contam depois de um travamento, a defesa do Boss, as 6 faixas de dano (porcentagem do dano máximo do dia e a recompensa de cada uma: minutos de renda em Moedas e Conchas, Fragmentos de Roupa e fragmentos de barco), os Dólares do top 1 a 10 e a chave `online_rewards_enabled` (desligada no jogo local), e a renda de referência por nível, gerada por `tools/Progressao/boss_mundial.py` a partir do `pass.json` |
+| `world_boss.json` | O Boss Mundial (M24-T29, A-165): nome (sugestão, OD-069), horário (19:00 de Brasília, UTC−3 fixo, por 10 minutos), intervalo dos ataques automáticos do Cardume (3 s), quantos ataques atrasados contam depois de um travamento, a defesa do Boss, as 6 faixas de dano (porcentagem do dano máximo do dia e a recompensa de cada uma: minutos de renda em Moedas e Conchas, Fragmentos de Roupa e fragmentos de barco), os Dólares do top 1 a 10 e a chave `online_rewards_enabled` (desligada no jogo local), e a renda de referência por nível, gerada por `tools/Progressao/boss_mundial.py` a partir do `pass.json` |
 | `upgrades.json` | As Melhorias compradas com Moedas (M24): as de tripulante (`crew_upgrades`: com quantas unidades cada uma libera, o fator de preço sobre a unidade daquele número, o nome e o complemento do nome de cada tripulante; ×2 na renda dele, uma vez só) e as gerais com níveis (`general_upgrades`: efeito, quanto cada nível soma, quantos níveis, preço do nível 1 e quanto cada nível encarece). Resultado da simulação com a Tripulação em `docs/propostas/melhorias.json` (`tools/Progressao/simular_melhorias.py`) |
 
 ## Como editar
@@ -34,7 +34,7 @@ Onde fica cada coisa no painel:
 | Chance de cada peixe em cada mapa | Mapas e chances | `maps.json` |
 | Chance de Pequeno, Adulto, Grande e Excepcional | Distribuição de tamanho | `progression.json` |
 | Quanto o Raro vale a mais (venda, atributos, XP) e a chance de tamanho por raridade | Raridades | `progression.json` |
-| Quanto cada raridade morde na pesca (o 0,35 do A-159) | Raridades (coluna "Na pesca") | `progression.json` |
+| Quanto cada raridade morde na pesca (o 0,233333 do A-160; era 0,35 no A-159) | Raridades (coluna "Na pesca") | `progression.json` |
 | Chance de puxar o peixe (por raridade, mínimo e máximo), barcos e iscas, e o simulador | Sucesso da pesca | `progression.json`, `equipment.json` |
 | Bônus de puxar de cada vara no Nv.1 e no Nv.100 | Varas (coluna "Puxar") | `rods.json` |
 | Tempo de pesca | Pesca | `progression.json` |
@@ -101,17 +101,23 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
 
 ## Calibragem provisória registrada
 
-- O XP do Pescador do nível 1 ao 10 soma **2000 XP**, mirando cerca de 240 tentativas no Mapa 1
-  (aproximadamente 2 horas de pesca online). Desde a V0.2 só metade delas vira peixe no começo
+- *Histórico, substituído pelo A-153 e pelo A-162 (números de hoje logo abaixo, na curva do Pescador):* o XP do
+  Pescador do nível 1 ao 10 somava **2000 XP**, mirando cerca de 240 tentativas no Mapa 1
+  (aproximadamente 2 horas de pesca online). Hoje: Nv.1 → 10 = **990 XP**; até o Nv.100 = **309.220 XP**; até o
+  Nv.1000 = **229.596.770 XP** (curva versão 3). Desde a V0.2 só metade delas vira peixe no começo
   (Chance de Sucesso da Captura), e por isso o XP, o valor e o XP como alimento das espécies foram
   dobrados (30/09/2026, `docs/GDD_ADENDO.md` A-092).
 - Mapas 3 e 4 (V0.2, `docs/PROGRESSAO_MAPAS_3_4.md`): venda, XP e XP como alimento das espécies
   multiplicados por 1,75 (Pantanal Dourado) e 1,55 (Estuário das Marés) em relação ao documento, para o
   Nível 20→30 e o 30→40 ficarem perto de 3,8 h e 4,0 h online com a Chance de Sucesso (A-093).
 - Chance de Sucesso da Captura: Comum 50%, Raro 38%, Épico 24%, entre 5% e 95%.
-  Barcos de +3% a +15%, iscas de +5% a +15% por 100 tentativas, Vara 1 de +2% a +12%.
-- O XP do Pescador do nível 1 ao 100 soma **711.000 XP**, contra uma meta de cerca de 90 dias. É o
-  valor com maior chance de precisar de recalibragem quando houver dados reais de jogo.
+  *Histórico (30/09/2026), substituído pelo A-156, A-157, A-161, A-163 e A-168:* barcos de +3% a +15%, iscas de +5% a
+  +15% por 100 tentativas, Vara 1 de +2% a +12%. Hoje: 5 barcos de **+2% a +10%** no Nv.1 (3× no Nv.100), três iscas de
+  **+5%, +10% e +15%** com **999 tentativas** por compra, e varas com níveis até o Nv.100 (Vara 1: +1,5% no Nv.1, +24%
+  no Nv.100).
+- *Histórico, substituído pelo A-109, A-153 e A-162:* o XP do Pescador do nível 1 ao 100 somava **711.000 XP**,
+  contra uma meta de cerca de 90 dias. Hoje são **309.220 XP** até o Nv.100 (~0,5 dia com o jogo aberto) e
+  **229.596.770 XP** até o Nv.1000 (~60 dias).
 - O XP do peixe do nível 1 ao 10 somava **3.885 XP** (A-132). Desde 10/10/2026 (M24-T13, A-156) o peixe vai até o
   **Nv.100**: do Nv.1 ao 100 são **36.160 XP** (~930 Comuns de 39 XP); o Nv.41, que tem a força do Nv.10 de antes
   (+36%), pede **2.465 XP** (~63 Comuns).
@@ -140,7 +146,9 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
   pede subir `xp_curve_version` (os saves são convertidos pelo XP total, sem baixar nível) e regerar o `pass.json`.
 - **Todo nível custa Moedas e Conchas (M24-T30):** `upgrade_cost.shells_first` das varas e dos barcos precisa ser pelo
   menos 1; o jogo recusa um config com 0.
-- A Vara 1 custa **2.500** Moedas para comprar. Desde o M24-T13 ela vai até o **Nv.100**: o 1º nível custa **500**
+- A Vara 1 **não é mais vendida** (M24-T32, A-163): monta com **15 fragmentos** que caem no Lago Sereno (3,7% por peixe
+  puxado) e no Passe; os 2.500 Moedas de antes ficaram só como valor de referência no Mercado
+  (`acquisition.market_reference_coins`). Desde o M24-T13 ela vai até o **Nv.100**: o 1º nível custa **500**
   Moedas e 1 Concha (antes 1.500 e 2), do Nv.1 ao 30 são ~156 mil Moedas e 44 Conchas, e do 1 ao 100 ~1,5 bi Moedas
   e 588 Conchas.
 
@@ -178,13 +186,19 @@ Desde 11/10/2026 (M24-T16 e M24-T17, A-157 e A-158, TD-042). Números gerados po
 `tools/Progressao/passe_fragmentos.py gerar` (os "botões" ficam no começo do script); o ritmo é simulado por
 `tools/Progressao/passe_fragmentos.py simular --gravar` (resultado em `docs/propostas/passe_fragmentos.json`).
 
-- **Barcos não são vendidos.** Cada barco (menos o inicial) tem `map_id` (o mapa cujos peixes dão os fragmentos dele;
-  um barco por mapa), `fragments_required` (quantos montam o barco: 20 no Mapa 1 até 200 no Mapa 10) e
-  `fragment_drop_chance` (a chance de um peixe puxado naquele mapa dar 1 fragmento: 0,43% a 0,67% desde o M24-T27 com o
-  ciclo de 10 s; eram 0,64% a 1,03% com o de 15 s e 1,3% a 2,4% com o de 30 s). O script grava com 4 casas. O barco inicial não
-  tem `map_id`. `boat_fragments.drop_on_offline_fishing` diz se a pesca offline também dá fragmentos (sim).
-- **Como a chance foi calibrada.** Para quem abre o jogo 4 vezes por dia e pesca no mapa do barco, montar leva ~2 dias
-  no Mapa 1 e ~10 no Mapa 10 (`DIAS_ALVO_PRIMEIRO` e `DIAS_ALVO_ULTIMO` no script).
+- **Barcos não são vendidos.** São **5 barcos** (mais o inicial) desde o M24-T42 (A-168, TD-051); cada um cai em **dois
+  mapas**: `map_id` (um dos Mapas 1 a 5) com `fragment_drop_chance`, e `extra_fragment_maps` (lista de `{map_id,
+  fragment_drop_chance}`, hoje um dos Mapas 6 a 10). `fragments_required` diz quantos montam o barco (20 no Remo Valente
+  até 55 no Horizonte Dourado). Chance de um peixe puxado dar 1 fragmento: **0,43% a 0,52%** nos Mapas 1 a 5 e **0,53% a
+  0,67%** nos Mapas 6 a 10 (ciclo de 10 s, M24-T27; eram 0,64% a 1,03% com o de 15 s e 1,3% a 2,4% com o de 30 s). O
+  validador confere que cada mapa dá um barco só, contando os dois campos. O script grava com 4 casas e mexe só no
+  `map_id` principal; a chance dos mapas extras é a que o mapa já tinha. O barco inicial não tem `map_id`.
+  `boat_fragments.drop_on_offline_fishing` diz se a pesca offline também dá fragmentos (sim).
+- **`boat_migration`** (`boat_model_version` 2 e `removed_boats`: id, `fragments_go_to`, `fragments_required`,
+  `upgrade_cost` de cada barco 6 a 10 que saiu) é usado só para converter, uma vez, um save que ainda tinha os 10 barcos
+  (save v20, `BoatModelMigration`).
+- **Como a chance foi calibrada.** Com os 10 barcos de antes, para quem abre o jogo 4 vezes por dia e pesca no mapa do
+  barco, montar levava ~2 dias no Mapa 1 e ~10 no Mapa 10 (`DIAS_ALVO_PRIMEIRO` e `DIAS_ALVO_ULTIMO` no script).
 - **Passe.** `premium_price_dollars` (100) e `milestones`: `level` e as recompensas `free` e `premium`, cada uma com
   `coins`, `shells`, `dollars`, `boat_id` e `fragments` (0 = não dá). Os níveis precisam estar em ordem crescente, até
   o nível máximo do Pescador; `boat_id` precisa existir e não pode ser o barco inicial. Os Dólares de nível do A-111

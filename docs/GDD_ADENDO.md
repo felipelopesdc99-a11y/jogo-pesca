@@ -73,6 +73,8 @@ Seleção múltipla com **Selecionar todos** (do filtro atual) e **Limpar seleç
 ### A-006 · A Caixa de Pesca não tem limite de quantidade
 **Seção do GDD:** 11 · **Situação:** Confirmar
 
+*Atualizado em 12/10/2026 (A-117, A-159, A-160): a Caixa de Pesca tem limite, hoje 8.640 peixes (1 dia de pesca online, em `/config`); cheia, a pesca para até vender.*
+
 O GDD define o limite do Aquário (100), mas não da Caixa. Por enquanto a Caixa aceita qualquer
 quantidade. Se o proprietário quiser um limite, ele entra como um valor em `/config`.
 
@@ -255,6 +257,8 @@ Nível 10 **e** a Vara 1 equipada. No Rio Selvagem, a Vara Inicial não pode ser
 ### A-031 · Comprar vara
 **Seção do GDD:** 19 · **Situação:** Confirmar
 
+*Atualizado em 12/10/2026 (A-153, A-163): as varas não são mais compradas na Loja nem pedem nível; vêm de fragmentos que caem pescando e do Passe e montam sozinhas. A vara montada vai para o Inventário e é equipada se for de categoria maior que a vara em uso.*
+
 Na Loja. A vara comprada vai para o Inventário e **já fica equipada**. Por enquanto só dá para ter
 **uma de cada vara** (não dá para comprar a Vara 1 duas vezes); isso pode mudar quando o Mercado
 existir.
@@ -279,6 +283,8 @@ pedras com espuma e uma cachoeira ao longe com névoa. A luz é mais fria que a 
 
 ### A-034 · Pesca offline
 **Seção do GDD:** 10 · **Situação:** Em vigor
+
+*Atualizado em 12/10/2026 (A-159, A-160): a pesca offline faz 1 tentativa a cada 20 s (15 s com o VIP), não mais a cada 60 s; o limite de 24 h continua.*
 
 Se a pesca estava ligada quando o jogo fechou (ou quando o PC entrou em suspensão), o tempo fora
 vira capturas: 1 a cada 60 segundos, contando no máximo 24 horas. Tudo é calculado ao voltar. Se a
@@ -884,6 +890,8 @@ os escapes (só ficam contados no save).
 ### A-089 · Barcos
 **Seção do GDD:** 7, 19 · **Situação:** Decidido pelo proprietário (30/09/2026)
 
+*Atualizado em 12/10/2026 (A-153, A-156, A-157, A-168): os barcos não são mais vendidos nem pedem nível. São 5 (mais o inicial, sem bônus), montados com fragmentos que caem pescando (cada barco em dois mapas) e no Passe, e sobem do Nv.1 ao Nv.100 com Moedas e Conchas (+2% a +10% no Nv.1, 3× no Nv.100). A tabela abaixo é a de 30/09/2026.*
+
 Nova aba **Barcos** na Loja. O barco é para sempre, soma pontos na Chance de Sucesso e pode ser
 trocado por outro que o jogador já tem. Comprar já coloca em uso.
 
@@ -902,6 +910,8 @@ São as primeiras compras que gastam **Conchas**. O barco ainda não aparece na 
 
 ### A-090 · Iscas
 **Seção do GDD:** 7 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+*Atualizado em 12/10/2026 (A-161): são três iscas (Terra Viva +5%, Maré Viva +10%, Ouro de Maré +15%), com 999 tentativas por compra e sem nível mínimo. A tabela abaixo é a de 30/09/2026.*
 
 Nova aba **Iscas** na Loja. Cada compra dá **100 tentativas**; comprar de novo soma. A isca em uso
 gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline. Só uma fica em uso;
@@ -1784,6 +1794,8 @@ de Expedições; continuam valendo uma Expedição por vez, Cancelar sem recompe
 
 ### A-148 · Cabeçalho "Placa do Píer" em todos os menus
 
+*Atualizado em 12/10/2026 (A-170): a Placa do Píer saiu das janelas. O título fica numa etiqueta azul-noite no canto do papel (padrão "Diário de bordo"), sem cordas nem balanço; o "i" de "Como funciona" e os contadores continuam.*
+
 Escolha do proprietário (08/10/2026), o "Exemplo C — Placa do Píer", valendo para todos os menus que usam a moldura
 comum: Expedição, Ranking, Mercado, Loja, Arena, batalha da Arena, Mapa, Aquário e Caixa de Pesca. O Perfil e as
 Ferramentas de teste têm cabeçalho próprio e não mudam. Muda só a forma de mostrar; nenhum texto, número ou regra muda.
@@ -1980,6 +1992,8 @@ Decisão do proprietário em 10/10/2026 (M24-T09 e M24-T03), primeira etapa do A
 
 ### A-154 · Etapa 2 do novo escopo: a Tripulação automática
 **Seção do GDD:** 10, 17, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 12/10/2026 (A-160, A-169, A-170): a pesca offline citada abaixo faz 1 tentativa a cada 20 s (15 s com o VIP), não mais 1 por minuto. A Tripulação abre pela aba Tripulação do menu de cima e a janela usa o padrão "Diário de bordo"; a renda por segundo aparece na placa pendurada embaixo das abas.*
 
 Decisão do proprietário em 10/10/2026 (M24-T05 e M24-T08), segunda etapa do A-152. Números de partida aprovados por
 ele, em `config/crew.json`, para ajustar jogando.
@@ -2315,6 +2329,8 @@ novos); o barco **sai da Loja**. Números em `config/equipment.json`, gerados po
 ### A-158 · Passe do Pescador
 **Seção do GDD:** 15, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
 
+*Atualizado em 12/10/2026 (A-169, A-170): o Passe abre pelo atalho redondo "Passe" na lateral direita (com a contagem de recompensas prontas); o botão na barra de cima saiu. A janela usa o padrão "Diário de bordo".*
+
 > **Atualizado em 12/10/2026 (A-168):** com a volta para 5 barcos, os fragmentos do Passe são só dos barcos 1 a 5: Nv.10
 > → Remo Valente, … Nv.50 → Horizonte Dourado, Nv.60 → Remo Valente de novo (o barco que o Mapa 6 dá), … Nv.100 →
 > Horizonte Dourado, e assim por diante. `config/pass.json` foi regerado pelo script.
@@ -2475,6 +2491,8 @@ hoje** (~70%); Moedas e XP por hora **sobem junto** (o valor e o XP de cada peix
 
 ### A-160 · Pesca a cada 10 s, VIP a cada 15 s fora do jogo e Caixa para 1 dia
 **Seção do GDD:** 7, 10, 17, 22 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-161): as iscas passaram a ter 999 tentativas por compra; as 180 abaixo valeram só até o A-161.*
 
 Decisão do proprietário em 12/10/2026 (M24-T27): "Vamos mudar para pesca a cada 10 segundos on-line e 20 segundos
 off-line, mantendo o buff do vip off-line que vai ser 15 segundos cada pesca, a ideia é aumentar número de peixes
@@ -2712,6 +2730,8 @@ continuam subindo de nível com Moedas e Conchas (A-156). Números em `config/ro
 ### A-164 · Roupas
 **Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
+*Atualizado em 12/10/2026: a OD-067 foi resolvida; o proprietário manteve a Calça como está (opção a) e a curva do Pescador não muda.*
+
 Decisão do proprietário em 12/10/2026 (M24-T33): "… coloca fragmento de roupa. Fragmento de roupa já vai englobar tudo
 isso. Vai ter luva, calça, bota, chapéu, camiseta." Respostas dele: **um** fragmento de roupa serve para qualquer peça (o
 jogador escolhe qual montar); cada peça dá um **bônus diferente** (luva = chance de puxar, chapéu = raridade, bota =
@@ -2775,6 +2795,8 @@ tamanho, camiseta = Conchas, calça = XP); a roupa "sobe usando ela, upa com o t
 
 ### A-165 · Boss Mundial (todo dia às 19:00, 10 minutos)
 **Seção do GDD:** 24–30 (Cardume e Arena), 7 (HUD) · novo escopo pedido pelo proprietário · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-167, A-169): o botão do Boss e a pílula de contagem saíram da barra de cima. O Boss Mundial fica dentro do menu Eventos; durante o evento, o atalho redondo Eventos (lateral direita) vira "Boss Mundial", dourado, e abre direto a janela do Boss.*
 
 Pedido do proprietário em 12/10/2026 (M24-T29): "quero criar um Boss mundial para todos conseguirem atacar, todo dia às
 19:00, ele tem vida infinita, a ideia é todos conseguirem atacar com seu cardume e conseguir recompensas de acordo com o
@@ -2849,6 +2871,8 @@ vazia ou travada sem explicação:
 
 ### A-167 · Menu Eventos (o Boss Mundial dentro dele)
 **Seção do GDD:** 7 (menus) · pedido do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-169): o botão Eventos saiu da fileira da barra de cima. Eventos abre pela sub-aba da aba Aventura (Expedição | Arena | Eventos) e pelo atalho redondo da lateral direita.*
 
 "Boss mundial vai virar um submenu do menu EVENTOS, que vai ficar na parte superior escrito com seu próprio ícone."
 

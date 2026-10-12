@@ -780,6 +780,9 @@ extra das varas e barcos no Nv.100 adiantar demais o Pescador (a simulação mos
 
 ## TD-042 — Barcos por fragmentos e Passe do Pescador: sorteio na mesma tentativa, estado mínimo no save e Dólares antigos marcados na migração
 
+> **Atualizado por TD-051 (12/10/2026, A-168):** não vale mais "um barco por mapa". São 5 barcos; cada um cai em dois
+> mapas (`map_id` + `extra_fragment_maps`) e o validador confere "cada mapa dá um barco só". O resto desta decisão continua.
+
 **Origem.** M24-T16 e M24-T17 (A-157 e A-158): os barcos passam a vir de fragmentos que caem pescando (1 barco por
 mapa) e entra o Passe do Pescador, com marcos a cada 10 níveis e Dólares que antes vinham sozinhos (A-111).
 
@@ -824,6 +827,9 @@ recebeu de fato.
 fragmentos do Premium deixarem os barcos fáceis demais (OD-062).
 
 ## TD-043 — Mais peixes, menos raros: ciclo na metade e um multiplicador de mordida por raridade aplicado sobre a chance final
+
+> **Atualizado por TD-045 (12/10/2026, A-160):** o ciclo passou para 10 s online e 20 s offline (15 s com o VIP) e o
+> multiplicador de mordida de 0,35 para 0,233333 (0,35 × 10/15). A forma de aplicar o multiplicador continua a desta decisão.
 
 **Origem.** M24-T22 (A-159): o proprietário pediu o dobro de peixes por hora e ~70% dos raros por hora de antes, sem
 mexer no valor nem no XP de cada peixe.

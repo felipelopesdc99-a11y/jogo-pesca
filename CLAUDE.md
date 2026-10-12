@@ -115,7 +115,8 @@ Não pedir esses testes nem lembrá-lo deles antes disso; seguir o trabalho sem 
 **Não pedir permissão para seguir** (pedido do proprietário em 07/10/2026): o que ele pediu ou aprovou é feito
 direto, na ordem que fizer sentido, sem perguntar "posso seguir?". Pergunta só quando a decisão é de design e é
 dele (o que o jogo faz, quanto custa, se algo entra ou não), e aí uma pergunta direta, com opções. As
-decisões de design abertas (por exemplo OD-009, Loja da Arena, e OD-021, Dólares) continuam valendo.
+decisões de design abertas (por exemplo OD-063, ganhos da pesca no fim do jogo, e OD-069, nome do Boss Mundial)
+continuam valendo.
 
 **Propostas tiradas do GDD.** Em 05/10/2026 tudo que o GDD pede e o jogo ainda não tem entrou no roadmap
 marcado com `from_gdd_review: true` (M11-T10 a T13, M12-T16 a T26, M18, M19, M20).

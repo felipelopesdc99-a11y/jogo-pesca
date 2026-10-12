@@ -11,7 +11,7 @@
     "BLOCKED",
     "NEEDS_OWNER_DECISION"
   ],
-  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR. Desde 29/09/2026 o trabalho novo faz parte da V0.2 (a partir do M13); desde 05/10/2026, todos os testes pelo proprietário (decisões com deferred_to_end: true, e as tarefas \"Testar no Unity\") ficam para o final do jogo, a pedido dele: não pedir esses testes antes disso. As decisões de design abertas (OD-009 e OD-021) continuam valendo. Em 05/10/2026 o proprietário decidiu terminar o jogo inteiro: tudo que o GDD pede e ainda não foi feito entrou no roadmap (M11-T10 a T13, M12 de volta ao plano, M18 a M20). Os sistemas que o GDD deixa para depois da V0.1 estão no M20 como decisões futuras (future_version: true). As tarefas com from_gdd_review: true são propostas tiradas do GDD para o proprietário analisar se entram no jogo: não começar nenhuma sem a aprovação dele.",
+  "notes": "Fonte única de verdade do status de desenvolvimento, exibida pelo Painel de Desenvolvimento dentro do Unity (menu Fishing Idle → Painel de Desenvolvimento) e pelo painel web. Atualize na mesma mudança que conclui o trabalho — nunca como uma declaração separada de progresso. Os milestones seguem docs/CLAUDE_START_HERE_V0_1_1.md (MVP local primeiro). Valores de status e de subsistema são chaves técnicas em inglês; todo o texto lido por pessoas está em PT-BR. Desde 29/09/2026 o trabalho novo faz parte da V0.2 (a partir do M13); desde 05/10/2026, todos os testes pelo proprietário (decisões com deferred_to_end: true, e as tarefas \"Testar no Unity\") ficam para o final do jogo, a pedido dele: não pedir esses testes antes disso. As decisões de design abertas (por exemplo OD-063 e OD-069) continuam valendo. Em 05/10/2026 o proprietário decidiu terminar o jogo inteiro: tudo que o GDD pede e ainda não foi feito entrou no roadmap (M11-T10 a T13, M12 de volta ao plano, M18 a M20). Os sistemas que o GDD deixa para depois da V0.1 estão no M20 como decisões futuras (future_version: true). As tarefas com from_gdd_review: true são propostas tiradas do GDD para o proprietário analisar se entram no jogo: não começar nenhuma sem a aprovação dele.",
   "owner_decisions": [
     {
       "id": "OD-001",
@@ -20,6 +20,7 @@
       "detail": "O ambiente onde o código foi escrito não tem o Editor do Unity. As regras passaram em 52 testes e o código do Unity compilou contra as bibliotecas de referência, mas só você pode confirmar que o projeto abre e roda. Passo a passo no README.md: instale o Unity 6.3 LTS pelo Unity Hub, adicione a pasta client-unity, aceite atualizar para a sua versão e aperte Play. Se aparecer qualquer erro no Console, copie a mensagem e mande no chat. Depois, versione os arquivos que o Unity gerou (ProjectSettings, arquivos .meta e a cena Principal).",
       "raised_at": "2026-09-28T22:23:54Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-09-28T22:23:54Z",
       "resolution": "O proprietário abriu o projeto no Unity e viu o jogo rodando (28/09/2026)."
     },
     {
@@ -28,6 +29,7 @@
       "detail": "O painel já sabe ler o repositório direto do GitHub, então publicá-lo é só conectar a conta. Só você pode criar a conta. São cinco passos, sem instalar nada e sem custo, descritos em docs/PAINEL_ONLINE.md. Depois disso o painel passa a ter um endereço fixo que se atualiza sozinho poucos segundos depois de cada commit enviado.",
       "raised_at": "2026-09-25T00:00:00Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-09-28T15:00:00Z",
       "resolution": "Descartado pelo proprietário em 28/09/2026: o projeto não vai usar Vercel. O acompanhamento é pelo Painel de Desenvolvimento dentro do Unity. O repositório tem um vercel.json que desliga as publicações automáticas até o proprietário desconectar a Vercel do GitHub."
     },
     {
@@ -37,6 +39,7 @@
       "detail": "É o critério de conclusão do Milestone 1. Aperte Iniciar pesca, deixe rodar, abra a Caixa de Pesca, venda alguns peixes. Diga o que agradou e o que incomodou: ritmo, visual, sons que faltam, tamanho dos textos. Para testar mais rápido, o Painel de Desenvolvimento → Balanceamento → Pesca deixa o tempo por captura em 5 segundos, aplicando com o jogo rodando.",
       "raised_at": "2026-09-28T22:23:54Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "deferred_to_end": true,
       "resolution": "Proprietário (07/10/2026): jogabilidade perfeita, sem erros (vende, sobe dinheiro, peixe some). Pediu a Caixa de Pesca com cara de jogo e corrigir textos sobrepostos (A-118)."
     },
@@ -47,6 +50,7 @@
       "detail": "Junto com o teste de pesca: guarde alguns peixes pela Caixa de Pesca, abra o menu Aquário, clique num peixe para ver a ficha, alimente-o com outros peixes e veja o nível subir. Diga se os números (atributos, XP por nível) e a tela fazem sentido. Não precisa esperar: se não puder testar agora, eu sigo com o Milestone 3.",
       "raised_at": "2026-09-28T22:56:49Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "deferred_to_end": true,
       "resolution": "Proprietário (07/10/2026): Aquário testado no Unity e funcionando (guardar, ficha, alimentar, subir nível). XP de alimento por espécie, raridade, tamanho e XP investido fica como está."
     },
@@ -57,6 +61,7 @@
       "detail": "Quando puder: abra o menu Perfil, monte o Cardume com peixes do Aquário (clique numa posição e depois num peixe), veja a Força e o bônus com 6 peixes, e olhe a Enciclopédia. Diga se a tela é clara. Não bloqueia: eu sigo com o Milestone 4.",
       "raised_at": "2026-09-28T23:37:38Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "deferred_to_end": true,
       "resolution": "Proprietário (07/10/2026): Perfil testado; pediu um Perfil com cara de jogo e central de informações (A-121), feito. Cardume e Enciclopédia sem problemas relatados."
     },
@@ -94,6 +99,7 @@
       "detail": "O GDD diz que a Honra é gasta na Loja da Arena e pode dar progresso de verdade, mas não define os itens, e pede para não inventar sistemas só para encher a loja. A loja já existe (aba Loja da Arena) e lê os itens de arena.json → shop.items, que está vazio. Quando quiser, diga o que ela deve vender (por exemplo: moedas, uma vara, melhoria de vara…) e por quanta Honra.",
       "raised_at": "2026-09-29T00:11:52Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): a Loja da Arena vende Conchas e Dólares por Honra (A-115). Preços calibrados: 20 Conchas por 100 de Honra; 5 Dólares por 300 de Honra, até 2 por semana."
     },
     {
@@ -157,6 +163,7 @@
       "detail": "A Bíblia de Arte que você mandou foi guardada em docs/ART_BIBLE_V0_1.md e virou o milestone M14, com 15 tarefas nesta ordem: tema central, fontes, painéis e botões, ícones, card de peixe, peixes, Lago Sereno, níveis de intensidade, momentos especiais, telas (em dois blocos), Rio Selvagem e a lista de artes pendentes. Diga se pode começar assim ou se quer mudar a ordem — por exemplo, começar pela cena de pesca.",
       "raised_at": "2026-09-29T01:59:38Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-09-29T15:00:00Z",
       "resolution": "O proprietário aprovou o plano e mandou seguir com o desenvolvimento visual, enviando também o documento com 185 referências (29/09/2026)."
     },
     {
@@ -175,6 +182,7 @@
       "detail": "O documento de identidade por mapa fala de dois mapas que o jogo ainda não tem. Criar exige: a raridade Épico (cor, multiplicadores de venda, atributos, XP e tamanho), a Vara 2 (preço e bônus), a lista de espécies de cada mapa (o documento só cita Barbado, Camurupim e Mero; os mapas atuais têm 10 espécies cada), os níveis de liberação (20 e 30) e a arte de cada mapa (camadas, peixes, fauna, fotos) pedida ao ChatGPT como nos pedidos anteriores. Diga se é para criar agora e, se sim, se eu proponho a lista de espécies e os números para você aprovar.",
       "raised_at": "2026-09-30T14:59:37Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-09-30T15:00:00Z",
       "resolution": "30/09/2026: o proprietário pediu para seguir e preparar os pedidos de arte. Os números e as espécies propostos ficam para aprovação na OD-019."
     },
     {
@@ -184,6 +192,7 @@
       "detail": "Proposta: Pantanal Dourado (nível 20, Vara 1): Piraputanga, Piavuçu, Mandi-amarelo, Sardinha-de-água-doce, Jejum (comuns); Jurupoca, Jurupensém, Pacu-peva, Piau-flamengo (raros); Barbado (épico). Estuário das Marés (nível 30, Vara 2): Tainha, Carapeba, Bagre-do-mar, Baiacu, Corvina (comuns); Robalo-peva, Robalo-flecha, Pescada-amarela (raros); Camurupim e Mero (épicos). Raridade Épico: roxo, venda ×5, atributos ×1,35, XP do Pescador ×6, XP como alimento ×4,5, Grande ×0,7 e Excepcional ×0,45. Vara 1 passa a pegar Épico. Vara 2: 25.000 moedas, liberada no nível 25, pega Comum, Raro e Épico, bônus maiores que a Vara 1. Chance do épico: Barbado 2% no Pantanal; Camurupim e Mero 1,5% cada no Estuário. Tudo ajustável depois no painel de Balanceamento. Com o Sucesso da Captura (30/09): chance-base de puxar o Épico 24%; o XP e o valor das espécies novas devem seguir a escala já dobrada dos mapas 1 e 2.",
       "raised_at": "2026-09-30T17:58:27Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-09-30T17:58:27Z",
       "resolution": "30/09/2026: o proprietário mandou docs/PROGRESSAO_MAPAS_3_4.md, que substitui a proposta: espécies, Épico, Vara 2 e números do documento (com venda e XP ajustados pela Chance de Sucesso, A-093)."
     },
     {
@@ -193,6 +202,7 @@
       "detail": "A especificação do Sucesso da Captura sugere um som leve de linha escapando ou água. Em 29/09 você pediu som só ao subir de nível, no Excepcional e na espécie nova, então o escape está sem som. Quer um som curto e baixo só quando escapa um peixe Raro ou acima, para nenhum escape, ou para todos?",
       "raised_at": "2026-09-30T21:13:40Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-01T15:00:00Z",
       "resolution": "01/10/2026: sem som de escape."
     },
     {
@@ -202,6 +212,7 @@
       "detail": "A moeda Dólares existe (começa em zero) e aparece na tela, mas não se ganha nem se gasta. Falta decidir: como o jogador consegue Dólares, em que eles são gastos e se podem ser comprados com dinheiro real (isso mudaria o jogo e pede cuidado com regras de loja e de idade). A intenção registrada é negociar Conchas e Dólares entre jogadores. Decidido pelo proprietário em 07/10/2026: os Dólares compram o VIP (100 Dólares, 30 dias, +50% de XP na pesca offline, A-110) e podem ser comprados com dinheiro real (100 Dólares = R$ 4,99) quando houver loja (M22-T17).",
       "raised_at": "2026-10-02T22:00:38Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): Dólares compram o VIP (A-110); compra com dinheiro real (100 = R$ 4,99) quando houver loja (M22-T17); jogando, dá para juntar bem devagar: 10 Dólares a cada 10 níveis de Pescador (A-111)."
     },
     {
@@ -211,6 +222,7 @@
       "detail": "Para balancear eu preciso das suas metas, não de testes: em quanto tempo o jogador chega ao Nível 10, 20 e 40; quanto uma Expedição deve render em relação a pescar; quanto tempo uma batalha deve durar (hoje 8 a 22 s; o GDD sugere uns 60 s); e quanto deve custar a vara de cada mapa.",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): Nv.100 em ~10 dias com o jogo aberto o dia todo (A-109); batalha da Arena fica rápida, ~20 s, como está; Expedição cresce com o mapa, ~metade da pesca offline (A-114). O preço das varas segue a simulação (a vara de cada mapa fica paga quando o nível libera o mapa)."
     },
     {
@@ -220,6 +232,7 @@
       "detail": "O jogo online precisa de um servidor e de um banco de dados ligados o tempo todo. Antes de começar eu trago 2 ou 3 opções com custo mensal, o que cada uma exige de você e se há alternativa gratuita para a fase de testes. A decisão é sua; nada pago é contratado sem o seu ok.",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): tratar depois que o jogo local estiver pronto. Na hora, trazer 2 ou 3 opções de hospedagem com custo mensal e uma gratuita para testes; nada pago sem o ok dele."
     },
     {
@@ -229,6 +242,7 @@
       "detail": "O GDD diz que a derrota tira Honra, mas hoje, quando outro jogador ataca você e vence, você não perde nada (para não punir quem está offline). Mantenho assim ou passa a tirar Honra também na defesa? Se tirar, quanto?",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): perde pouco — 2 de Honra por defesa perdida (A-116)."
     },
     {
@@ -238,6 +252,7 @@
       "detail": "Hoje a Caixa de Pesca guarda peixes sem limite, inclusive da pesca offline de 24 horas. Um limite obriga o jogador a voltar e vender; sem limite, o jogo é mais relaxado. Prefere sem limite ou com um limite (por exemplo 500 peixes)?",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): limite de 1.500 peixes; cheia, a pesca para até vender. Avisar na Caixa e no tutorial (A-117)."
     },
     {
@@ -247,6 +262,7 @@
       "detail": "Publicar na Steam exige criar a conta de desenvolvedor e pagar a taxa de US$ 100 por jogo, além de montar a página. Quer preparar isso junto com o lançamento da V0.1 ou deixar para depois?",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): entrar na Steam junto do lançamento. Preparar a página e o passo a passo quando o jogo local estiver pronto; a taxa de US$ 100 é paga por ele só nessa hora."
     },
     {
@@ -328,6 +344,7 @@
       "detail": "Novos mapas, peixes e varas (§2, §17). Os mapas 3 e 4 já entraram na V0.2. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas. Proposta completa dos Mapas 5 a 10 em docs/PROGRESSAO_MAPAS_5_A_10.md; o plano está no M21.",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-05T21:22:41Z",
       "future_version": true,
       "resolution": "Decidido pelo proprietário em 05/10/2026: entram no jogo os Mapas 5 a 10 e as 60 espécies, como em docs/PROGRESSAO_MAPAS_5_A_10.md, adaptados às regras atuais em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Implementação no M21."
     },
@@ -338,6 +355,7 @@
       "detail": "As próximas varas da progressão (§19). A Vara 2 (Maré Dourada) já existe. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas. Proposta das Varas 3 a 5 (Corrente Mestra, Atlântico Nobre, Soberana Abissal) em docs/PROGRESSAO_MAPAS_5_A_10.md, seção 6.",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-05T21:22:41Z",
       "future_version": true,
       "resolution": "Decidido pelo proprietário em 05/10/2026: entram no jogo as Varas 3 a 5, como em docs/PROGRESSAO_MAPAS_5_A_10.md, adaptados às regras atuais em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Implementação no M21."
     },
@@ -375,6 +393,7 @@
       "detail": "Raridades além das atuais (§2, §15). Épico e o tamanho Perfeição já entraram na V0.2. Quando quiser tratar deste sistema, me diga como imagina e eu transformo em tarefas. Proposta: Lendário a partir do Mapa 6 e Mítico só no Mapa 10 (docs/PROGRESSAO_MAPAS_5_A_10.md, seção 2).",
       "raised_at": "2026-10-05T21:22:41Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-05T21:22:41Z",
       "future_version": true,
       "resolution": "Decidido pelo proprietário em 05/10/2026: entram no jogo Lendário (a partir do Mapa 6) e Mítico (só no Mapa 10), como em docs/PROGRESSAO_MAPAS_5_A_10.md, adaptados às regras atuais em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Implementação no M21."
     },
@@ -412,6 +431,7 @@
       "detail": "No documento, os peixes do Mapa 5 (Costa de Coral) rendem menos que os do Mapa 4 atual. Exemplos: Raro do Estuário vale 2.635 a 3.410 Moedas, Raro da Costa de Coral 2.000 a 2.300; XP de Pescador de um Comum cai de 81–112 para 70–90. O documento parece ter usado números antigos e pede para adaptar à economia real (seção 18). Proposta: manter as proporções entre as espécies do documento e reescalar tudo para bater as metas da seção 9 (~1,25 a 1,4× o Mapa 4). Aprova ou prefere outro critério?",
       "raised_at": "2026-10-05T21:36:22Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-05T21:36:22Z",
       "resolution": "Proprietário (05/10/2026): adaptar às regras atuais mantendo mapas e peixes. Venda e XP de alimento reescalados por raridade para o Mapa 5 render 1,5× e 1,3× o Mapa 4 real, mesma escada entre os mapas; XP do Pescador calibrado por faixa. Detalhes em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md."
     },
     {
@@ -421,6 +441,7 @@
       "detail": "O documento cobra só Moedas na Corrente Mestra (450.000) e nas melhorias das Varas 3 a 5; Atlântico Nobre e Soberana Abissal pedem Conchas só na compra. Hoje a regra do jogo (A-099, 02/10/2026) é que toda compra e melhoria de equipamento pede Conchas. Mantenho a regra atual e acrescento Conchas a esses custos, ou as Varas 3 a 5 ficam como o documento propõe?",
       "raised_at": "2026-10-05T21:36:22Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-05T21:36:22Z",
       "resolution": "Proprietário (05/10/2026): adaptar às regras atuais. Toda compra e melhoria das Varas 3 a 5 pede Conchas (A-099): Corrente Mestra 85; melhorias no formato da Maré Dourada. Em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md."
     },
     {
@@ -430,6 +451,7 @@
       "detail": "A Corrente Mestra Nv.1 dá +12 p.p. de chance de sucesso, mas a Maré Dourada Nv.10 já dá +13,5 p.p. (rods.json). O próprio documento diz que a vara nova deve começar um pouco acima da anterior no Nv.10. Proposta: subir a tabela de chance das Varas 3 a 5 para começar acima da anterior (por exemplo +14 p.p. na Corrente Mestra Nv.1). Aprova?",
       "raised_at": "2026-10-05T21:36:22Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-05T21:36:22Z",
       "resolution": "Proprietário (05/10/2026): adaptar às regras atuais. O documento usou a escala de chance anterior à A-095; as chances das Varas 3 a 5 ficaram um terço menores (+8 a +26,7 p.p.), no mesmo padrão em que a Maré Dourada Nv.1 começa abaixo da Ponta Selvagem Nv.10 em chance e acima nos outros bônus."
     },
     {
@@ -439,6 +461,7 @@
       "detail": "Os mapas finais têm muito mais peixes raros, e Lendário e Mítico dão ×9 e ×15 de XP. Com isso não dá para ter ao mesmo tempo: (A) o XP de um peixe nunca cair de um mapa para o outro e (B) todas as faixas de 10 níveis levarem o mesmo tempo. A adaptação usou A: até o Nv.60 cada faixa leva ~3,7 h online (como a 30–40 hoje) e depois fica mais rápida, até ~2 h no 90–100. A opção B mantém ~3,7 h em todas, mas um Comum do Abismo daria menos XP que um do Estuário. Uma terceira saída é baixar o XP de Lendário e Mítico (por exemplo ×7 e ×11). Fico com A ou prefere outra?",
       "raised_at": "2026-10-05T21:48:39Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): o jogador deve levar uns 10 dias até o Nv.100. Fica a opção A (o XP de um peixe nunca cai de um mapa para o outro); o ritmo passou a ser controlado pela tabela de XP do Pescador (A-109)."
     },
     {
@@ -448,6 +471,7 @@
       "detail": "Os compradores simulados pagam por peixe até ~5,85× o preço do NPC (anunciar caro quase sempre vende em 7 dias), e os vendedores simulados oferecem varas e peixes de qualquer nível: um jogador Nv.1 pode comprar a Soberana Abissal por ~10,6 milhões e usar no Mapa 1, ou pôr um Mítico no Cardume. Opções: (A) limitar o que os bots pagam por peixe (ex.: até 2× o NPC); (B) só equipar vara do seu nível de Pescador; (C) os bots só oferecem varas e peixes dos mapas já liberados; (D) deixar como está. Recomendo B e C, e A um pouco mais apertado. O que prefere?",
       "raised_at": "2026-10-06T18:30:00Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): o Mercado de verdade vai ser só entre jogadores; os compradores e vendedores simulados existem só para testar o jogo local e não serão ajustados. Quando o jogo for online, os bots saem do Mercado."
     },
     {
@@ -457,6 +481,7 @@
       "detail": "As faixas de 10 níveis levam 2 a 3,7 h online, mas a pesca offline rende o equivalente a 12 h online por dia. Quem entra uma vez por dia passa quase 3 faixas por dia; do Nv.40 ao Nv.100 em uns 2 dias. A literatura de jogos idle recomenda que o tempo até a próxima compra cresça até o fim. Opções: (A) alongar as faixas (mais XP por nível), principalmente do Nv.60 em diante (liga com a OD-047); (B) baixar a pesca offline; (C) deixar e medir com os testadores. Primeiro eu simulo três perfis de jogador (M21-T07) e trago os números; quer que eu siga assim?",
       "raised_at": "2026-10-06T18:30:00Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): uns 10 dias até o nível máximo. Depois, a referência ficou: ~10 dias deixando o jogo aberto o dia todo; quem joga menos leva mais (~19 dias abrindo 4 vezes por dia, ~24 abrindo 1 vez). Tabela de XP recalibrada com a simulação (A-109)."
     },
     {
@@ -466,6 +491,7 @@
       "detail": "A chance-base de puxar um Lendário é 14% e um Mítico 8%. Mesmo com vara, barco e isca, a maioria escapa, e \"o peixe raro escapou\" é a maior reclamação em jogos de pesca. Opções: (A) subir os bônus das Varas 3 a 5 para chegar a ~40–50% no mapa certo; (B) criar proteção contra azar (cada fuga aumenta a próxima chance; sistema novo); (C) deixar como está. O que prefere?",
       "raised_at": "2026-10-06T18:30:00Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-07T15:00:00Z",
       "resolution": "Proprietário (07/10/2026): deixar como está (opção C). Lendário e Mítico continuam difíceis de puxar."
     },
     {
@@ -478,23 +504,21 @@
     },
     {
       "id": "OD-052",
-      "task_id": "M23-T02",
       "title": "Visão da ilha 2D e origem da arte",
       "detail": "Decidido pelo proprietário em 09/10/2026: vista de cima, estilo \"Hora Dourada\" (luz de fim de tarde, água turquesa na beira e azul-noite no fundo), andando livre (teste jogável \"Ilha: Teste de Movimento\"). Em aberto: câmera (ilha inteira na tela ou seguindo o pescador) e de onde vem a arte, principalmente o pescador animado (~42 quadros em 3 direções desenhadas + espelho): ChatGPT (teste no Pedido 3 do documento de arte-conceito) ou pacote pronto.",
       "raised_at": "2026-10-09T16:30:00Z",
       "status": "RESOLVED",
       "resolved_at": "2026-10-10T21:05:00Z",
-      "resolution": "Descartado pelo proprietário em 10/10/2026: a ilha 2D (M23) saiu do plano; o jogo volta a ser idle, com novo escopo de crescimento rápido de dinheiro, experiência e níveis."
+      "resolution": "Descartado pelo proprietário em 10/10/2026: a ilha 2D (M23) saiu do plano; o jogo volta a ser idle, com novo escopo de crescimento rápido de dinheiro, experiência e níveis. (As tarefas M23-T02 e M23-T03 nunca chegaram a ser criadas no roadmap; o M23 ficou só com a M23-T01.)"
     },
     {
       "id": "OD-053",
-      "task_id": "M23-T03",
       "title": "Fabricação, construção e a Loja",
       "detail": "Quais recursos, de onde vêm, o que se fabrica e até que nível, o que a Loja continua vendendo, o que se constrói e para que serve, e o que os jogadores de hoje recebem na ilha.",
       "raised_at": "2026-10-09T16:30:00Z",
       "status": "RESOLVED",
       "resolved_at": "2026-10-10T21:05:00Z",
-      "resolution": "Descartado pelo proprietário em 10/10/2026: a ilha 2D (M23) saiu do plano; o jogo volta a ser idle, com novo escopo de crescimento rápido de dinheiro, experiência e níveis."
+      "resolution": "Descartado pelo proprietário em 10/10/2026: a ilha 2D (M23) saiu do plano; o jogo volta a ser idle, com novo escopo de crescimento rápido de dinheiro, experiência e níveis. (As tarefas M23-T02 e M23-T03 nunca chegaram a ser criadas no roadmap; o M23 ficou só com a M23-T01.)"
     },
     {
       "id": "OD-054",
@@ -539,6 +563,7 @@
       "detail": "Com varas e barcos até o Nv.100 a pesca rende mais XP. Simulado: com a Tripulação e as Melhorias, jogo aberto, o Nv.1000 chega em ~50 dias (antes ~70); só pescando, ~54 dias com o jogo aberto (antes ~75), ~101 abrindo 4 vezes por dia (antes ~144) e ~113 abrindo 1 vez por dia (antes ~168). Opções: (a) aceitar; (b) recalibrar a curva de XP do Pescador para voltar aos tempos de antes; (c) diminuir o bônus de raridade das varas no Nv.100 (hoje 3× o Nv.10 de antes).",
       "raised_at": "2026-10-11T05:00:00Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-12T15:00:00Z",
       "resolution": "Decisão do proprietário em 12/10/2026: \"60 dias pro lvl 1000\" (opção b, recalibrar a curva, com 60 dias em vez dos ~70 de antes). Curva versão 3: Nv.1000 em ~60 dias com o jogo aberto, a Tripulação e as Melhorias (M24-T31, A-162)."
     },
     {
@@ -564,13 +589,14 @@
       "detail": "Sugeridos: Vela do Sol (Arquipélago do Sol), Quilha Azul (Corrente Azul), Canto da Baleia (Banco das Baleias), Farol Noturno (Talude Noturno) e Titã do Atlântico (Abismo Atlântico), cada um com uma frase. Opções: (a) aprovar; (b) trocar algum nome ou descrição (é só editar config/equipment.json).",
       "raised_at": "2026-10-11T12:00:00Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-12T15:00:00Z",
       "resolution": "Proprietário 12/10/2026: voltar para 5 barcos por enquanto. Os barcos 6 a 10 saíram (M24-T42, A-168); os mapas 6 a 10 dão fragmentos dos barcos 1 a 5."
     },
     {
       "id": "OD-062",
       "task_id": "M24-T21",
       "title": "Ritmo dos barcos fora do mapa e força do Premium",
-      "detail": "Simulado (docs/propostas/passe_fragmentos.json): pescando no mapa do barco, ~1–2 dias no Mapa 1 e ~5–11 dias no Mapa 10. Quem nunca volta a um mapa antigo depende do Passe: grátis, ~25 a ~100 dias para os barcos 1 a 9; Premium (fragmentos em dobro e retroativos), ~3 a ~13 dias. Opções: (a) fica assim (voltar a um mapa antigo para pegar o barco é escolha do jogador); (b) mais fragmentos na faixa grátis; (c) menos fragmentos no Premium; (d) os mapas também dão, com chance menor, fragmentos dos barcos de mapas anteriores.",
+      "detail": "Premissa de hoje (12/10/2026, A-168): são 5 barcos, e cada um cai em dois mapas, um dos Mapas 1 a 5 e um dos Mapas 6 a 10 (Remo Valente: Lago Sereno e Arquipélago do Sol; … Horizonte Dourado: Costa de Coral e Abismo Atlântico). Quem pesca sempre no melhor mapa liberado já recebe, nos Mapas 6 a 10, fragmentos dos barcos 1 a 5, então não precisa voltar a um mapa antigo para completar todos; o Passe grátis e o Premium dão fragmentos só desses 5 barcos. Os dias simulados com 10 barcos (~25 a ~100 dias pelo Passe grátis, ~3 a ~13 com o Premium) não valem mais e serão refeitos com tools/Progressao/passe_fragmentos.py quando você decidir. O que continua em aberto é o ritmo e a força do Premium (fragmentos em dobro e retroativos). Opções: (a) fica assim; (b) mais fragmentos na faixa grátis; (c) menos fragmentos no Premium.",
       "raised_at": "2026-10-11T12:00:00Z",
       "status": "OPEN"
     },
@@ -613,6 +639,7 @@
       "detail": "Com as 5 roupas, o jogador de referência (jogo aberto, Tripulação e Melhorias, sem Passe e sem VIP) chega ao Nv.1000 em ~55 dias, não ~60 (A-162); quase tudo vem da Calça (+10% de XP no Nv.100; com +30% eram ~49 dias). Opções: (a) fica assim; (b) recalibrar a curva do Pescador para ~60 dias de novo com as roupas (curva versão 4, sem baixar nível de ninguém); (c) diminuir a Calça (por exemplo +5% no Nv.100: ~57 dias).",
       "raised_at": "2026-10-12T17:30:00Z",
       "status": "RESOLVED",
+      "resolved_at": "2026-10-12T17:30:00Z",
       "resolution": "Decisão do proprietário em 12/10/2026: \"sem problema na questão da calça, isso é pensado\" (opção a, fica assim). Nada muda na curva do Pescador (M24-T35)."
     },
     {
@@ -3701,35 +3728,38 @@
           "title": "Integração e migração de save",
           "subsystem": "server",
           "description": "Os 60 peixes funcionando em pesca online e offline, Caixa, Aquário, Enciclopédia, Cardume, Arena, Expedições, Mercado e Leilão; saves antigos migram sem perda (seções 12 e 13). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M21-T02",
             "M21-T04",
             "M21-T05"
           ],
-          "updated_at": "2026-10-05T21:48:39Z"
+          "updated_at": "2026-10-12T23:59:00Z",
+          "completion_notes": "Os 60 peixes dos Mapas 5 a 10 estão no jogo (M21-T02 a T05, A-105 e A-106), em pesca online e offline, Caixa, Aquário, Enciclopédia, Cardume, Arena, Expedições, Mercado e Leilão; os saves migram sem perda até a versão 20 (M24-T07). Substituído pelo M24 (curvas, ciclo, iscas, varas por fragmento)."
         },
         {
           "id": "M21-T07",
           "title": "Simulação de cada mapa novo",
           "subsystem": "ops",
           "description": "100 mil tentativas por cenário (vara mínima Nv.1, 5 e 10; barco da faixa; sem isca, Maré Viva, Ouro de Maré) medindo capturas, fugas, XP/h, Moedas/h, Conchas/h e tempo até a próxima vara (seção 15). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md. Feito em 07/10/2026: simulação da progressão Nv.1 → Nv.100 por perfil de jogador (docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md). Falta a medição por mapa com 100 mil tentativas e o sorteio de verdade (tools/Simulador, precisa do .NET).",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M21-T06"
           ],
-          "updated_at": "2026-10-07T16:00:00Z"
+          "updated_at": "2026-10-12T23:59:00Z",
+          "completion_notes": "Feito em 07/10/2026: simulação da progressão Nv.1 → Nv.100 por perfil (docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md). A medição por mapa com 100 mil tentativas não foi feita nesta forma: o novo escopo (M24) trocou a meta e as simulações passaram a ser as do M24 (tools/Progressao: simular_melhorias.py, niveis_100.py, passe_fragmentos.py, simular_iscas.py, fragmentos_equipamento.py). Substituído pelo M24 (curvas, ciclo, iscas, varas por fragmento)."
         },
         {
           "id": "M21-T08",
           "title": "Ajuste de economia depois da simulação",
           "subsystem": "config",
           "description": "Ajustar custos de varas e valores para bater as metas da seção 9 (cada faixa de 10 níveis rende ~1,25 a 1,5× a anterior em XP e Moedas, contando só peixes puxados). Números adaptados em docs/propostas/mapas_5_10.json; explicação em docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M21-T07"
           ],
-          "updated_at": "2026-10-05T21:48:39Z"
+          "updated_at": "2026-10-12T23:59:00Z",
+          "completion_notes": "Não feito na forma da seção 9 (faixas de 10 níveis até o Nv.100): o novo escopo (M24) levou o Pescador ao Nv.1000 e a economia passou a ser ajustada lá: curva do Pescador (A-153, A-162), ciclo de 10 s (A-160), iscas (A-161), varas por fragmento (A-163), Tripulação e Melhorias (A-154, A-155). Substituído pelo M24 (curvas, ciclo, iscas, varas por fragmento)."
         },
         {
           "id": "M21-T09",
@@ -4364,11 +4394,12 @@
     {
       "id": "M24",
       "title": "Novo escopo idle: números grandes, Tripulação, Melhorias, barcos por fragmentos e Passe",
-      "goal": "Decisão do proprietário (10/10/2026): o jogo volta a ser idle puro, no estilo de crescimento rápido. Dinheiro e XP crescem bem mais rápido, até bilhões (sem letras como \"aa\"); o Pescador vai até o Nv.1000; sem Renascer (prestígio); o crescimento vem de uma Tripulação automática (pescadores e barcos que rendem sozinhos) e de Melhorias compradas que multiplicam a renda. Primeiro a proposta com números simulados; nada muda no jogo sem a aprovação dele.",
+      "goal": "Decisão do proprietário (10/10/2026): o jogo volta a ser idle puro, no estilo de crescimento rápido. Dinheiro e XP crescem bem mais rápido, até bilhões (sem letras como \"aa\"); o Pescador vai até o Nv.1000; sem Renascer (prestígio); o crescimento vem de uma Tripulação automática (pescadores e barcos que rendem sozinhos) e de Melhorias compradas que multiplicam a renda. Como o proprietário decidiu (OD-054), tudo é implementado em etapas e ajustado depois de ele jogar, sem proposta fechada antes; os números ficam em /config.",
       "completion_criteria": [
-        "Proposta com números simulados aprovada pelo proprietário.",
+        "Cada etapa no jogo, com testes, e os números em /config para ajustar jogando (OD-054).",
         "Nv.1000, economia até bilhões, Tripulação e Melhorias funcionando, com testes.",
-        "Saves de hoje migrados sem perda."
+        "Saves de hoje migrados sem perda.",
+        "As decisões abertas do M24 respondidas pelo proprietário depois de jogar."
       ],
       "tasks": [
         {
@@ -4410,11 +4441,12 @@
           "title": "Economia até bilhões",
           "subsystem": "config",
           "description": "Preços, valores de peixe e recompensas reescalados conforme a proposta aprovada; formatação de números grandes em PT-BR (mil, mi, bi).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M24-T02"
           ],
-          "updated_at": "2026-10-10T21:15:00Z"
+          "updated_at": "2026-10-12T23:59:00Z",
+          "completion_notes": "Feito em etapas, como pediu o OD-054 (sem proposta fechada antes): números grandes no formato curto PT-BR \"mil\" (inteiro abaixo de 1 milhão), \"mi\", \"bi\" e \"tri\", e Moedas, XP e preços guardados em long (A-153); a economia chega a bilhões pela Tripulação e pelas Melhorias (A-154, A-155), pelos níveis até o Nv.100 (A-156) e pelo Passe (A-158). O valor e o XP de cada peixe não foram reescalados: o crescimento vem da Tripulação e das Melhorias. Os números são ajustados jogando."
         },
         {
           "id": "M24-T05",
@@ -4445,12 +4477,13 @@
           "title": "Migração dos saves",
           "subsystem": "server",
           "description": "Os saves de hoje passam para a nova escala sem perder progresso.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M24-T03",
             "M24-T04"
           ],
-          "updated_at": "2026-10-10T21:15:00Z"
+          "updated_at": "2026-10-12T23:59:00Z",
+          "completion_notes": "Saves migrados a cada etapa, sem perda: curva do Pescador pelo XP total sem baixar nível (v12, TD-038; curva 3 no A-162), Tripulação v13, Melhorias v14, níveis de varas, barcos e peixes v15 (LevelCurveMigration, TD-041), fragmentos de barco e Passe v16 (Dólares antigos marcados em LegacyDollarsUpToLevel), iscas v17 (BaitModelMigration, TD-046), varas e roupas por fragmentos v18, Boss Mundial v19 e volta para 5 barcos v20 (BoatModelMigration, TD-051). Testes em tools/GameService.Tests (por exemplo StartupWithOldSavesTests, ItemLevelsTests, ThreeBaitsTests e BackToFiveBoatsTests)."
         },
         {
           "id": "M24-T08",
@@ -4607,13 +4640,13 @@
           "id": "M24-T21",
           "title": "Barcos para quem não volta aos mapas antigos",
           "subsystem": "config",
-          "description": "Os fragmentos só caem no mapa do barco. Na simulação, quem sempre pesca no melhor mapa liberado monta o barco do último mapa em ~1–2 semanas, mas os outros 9 só chegam pelos fragmentos do Passe grátis (entre ~25 e ~100 dias); com o Premium (100 Dólares, os mesmos que o Passe grátis dá até o Nv.100) chegam em ~3 a ~13 dias (OD-062).",
+          "description": "Com 5 barcos (A-168), cada barco cai em dois mapas, e os Mapas 6 a 10 dão fragmentos dos barcos 1 a 5: quem nunca volta a um mapa antigo continua montando os 5. Falta decidir o ritmo e a força do Premium do Passe (OD-062); os números simulados com 10 barcos serão refeitos.",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [
             "M24-T16",
             "M24-T17"
           ],
-          "updated_at": "2026-10-11T12:00:00Z"
+          "updated_at": "2026-10-12T23:59:00Z"
         },
         {
           "id": "M24-T22",
@@ -4702,7 +4735,7 @@
             "M24-T33"
           ],
           "updated_at": "2026-10-12T20:00:00Z",
-          "completion_notes": "config/world_boss.json (novo): nome sugerido \"Leviatã do Abismo\" (OD-068), 19:00 de Brasília (UTC−3 fixo) por 10 min, ataque a cada 3 s (200 por dia), até 3 ataques atrasados após um travamento, defesa do Boss 0; 6 faixas por % do dano máximo do dia (5/15/30/50/75/95%) com 5/10/20/30/45/60 min de renda em Moedas e Conchas, 0/1/1/2/2/3 Fragmentos de Roupa e 0/0/1/1/2/3 fragmentos do barco do mapa mais alto liberado; Dólares do top 10 atrás de ranking.online_rewards_enabled (false); renda de referência por nível gerada do pass.json por tools/Progressao/boss_mundial.py (6× as Moedas e 2× as Conchas do marco). Regras: WorldBoss/WorldBossRules (dia e janela no fuso do config, dano com BattleEngine.HitDamage/RollDamage extraídos de Resolve, faixas, barco, Dólares) e LocalWorldBossService (IWorldBossService: Update credita os ataques por índice com Rng.For(seed, dia, k), só com o jogo aberto — a 1ª chamada de cada execução só ancora —, sobe de faixa e paga uma vez às 19:10 ou na próxima abertura; GetWorldBoss). Cardume vazio ou em Expedição não ataca. Save versão 19 (WorldBossState). Validação do world_boss.json. Tela: botão no HUD à esquerda do Passe com contagem regressiva e brilho durante o evento (ASSET_PENDENTE ico_boss), janela UI/WorldBossWindow (Cardume x Boss com números de dano, dano de hoje, barra com as faixas, 6 cartões, sua recompensa, Ranking de hoje com a nota do online, Dólares do top 10; fora do horário, contagem e último resultado; arte do Boss ASSET_PENDENTE), avisos de começo, faixa e pagamento em GameRoot.SyncWorldBoss. Testes WorldBossTests (13). Docs: A-165, TD-049, BASE_TECNICA, SEGURANCA, config/README, ASSETS_PENDENTES. Verificado no CI, não aberto no Unity."
+          "completion_notes": "config/world_boss.json (novo): nome sugerido \"Leviatã do Abismo\" (OD-069), 19:00 de Brasília (UTC−3 fixo) por 10 min, ataque a cada 3 s (200 por dia), até 3 ataques atrasados após um travamento, defesa do Boss 0; 6 faixas por % do dano máximo do dia (5/15/30/50/75/95%) com 5/10/20/30/45/60 min de renda em Moedas e Conchas, 0/1/1/2/2/3 Fragmentos de Roupa e 0/0/1/1/2/3 fragmentos do barco do mapa mais alto liberado; Dólares do top 10 atrás de ranking.online_rewards_enabled (false); renda de referência por nível gerada do pass.json por tools/Progressao/boss_mundial.py (6× as Moedas e 2× as Conchas do marco). Regras: WorldBoss/WorldBossRules (dia e janela no fuso do config, dano com BattleEngine.HitDamage/RollDamage extraídos de Resolve, faixas, barco, Dólares) e LocalWorldBossService (IWorldBossService: Update credita os ataques por índice com Rng.For(seed, dia, k), só com o jogo aberto — a 1ª chamada de cada execução só ancora —, sobe de faixa e paga uma vez às 19:10 ou na próxima abertura; GetWorldBoss). Cardume vazio ou em Expedição não ataca. Save versão 19 (WorldBossState). Validação do world_boss.json. Tela: botão no HUD à esquerda do Passe com contagem regressiva e brilho durante o evento (ASSET_PENDENTE ico_boss), janela UI/WorldBossWindow (Cardume x Boss com números de dano, dano de hoje, barra com as faixas, 6 cartões, sua recompensa, Ranking de hoje com a nota do online, Dólares do top 10; fora do horário, contagem e último resultado; arte do Boss ASSET_PENDENTE), avisos de começo, faixa e pagamento em GameRoot.SyncWorldBoss. Testes WorldBossTests (13). Docs: A-165, TD-049, BASE_TECNICA, SEGURANCA, config/README, ASSETS_PENDENTES. Verificado no CI, não aberto no Unity."
         },
         {
           "id": "M24-T30",
@@ -4857,7 +4890,8 @@
           "updated_at": "2026-10-12T23:50:00Z",
           "completion_notes": "WindowFrame.cs refeito: véu escuro com leve tom quente, moldura de madeira (tábuas verticais) e folha de papel (#F2E4C4 → #EFDFBB), etiqueta azul-noite com borda dourada no canto (ícone, título e o \"i\" que abre um bilhete \"Como funciona\" em papel), lacre vermelho \"✕\" (CloseSeal), marcadores de aba (Bookmarks, coloridos, o aberto para fora com borda branca), Footer (linha tracejada) e Photo (cena presa na folha). Sem cordas nem balanço (A-148 substituído). UiSkinPaper.cs (novo, UiSkin virou partial): modo papel ligado pela moldura e desligado depois das janelas (DrawInfoBalloon) e nos diálogos; paleta do papel com contraste calculado (tinta #3A2A18 10,9:1, tinta suave #6A4A2A 6,4:1, turquesa #12605D 5,8:1, dourado #7A4E0A 5,7:1, vermelho #9C3022 5,8:1, verde #17603A 6,0:1); UiSkin.Text/Muted/Gold/Accent/RarityColor/SizeColor respondem com a tinta; estilos registrados (Track) trocam texto e fundo (painéis, cartões, chips e botão secundário viram papel); NightScope para cenas escuras; OnSheet para fundos escuros atrás de texto; ícone branco vira tinta no papel (DrawIcon; DrawIconExact para ícone em fundo colorido). Janelas: Ranking (marcadores com \"Você #N\", palco como foto, \"Sua posição\" no rodapé), Mapa (arquipélago como foto), Aquário (Tanque/Cartas como marcadores, tanque e peixe em destaque como foto, cartões em papel), Caixa de Pesca, Mercado (6 marcadores; Moedas e vagas na faixa do título), Loja (5 marcadores no lugar das plaquinhas; parede como foto), Expedição (carta náutica e cartão como foto; retorno no porto em cores noturnas), Arena (4 marcadores; formações, abertura e batalha em cores noturnas), Tripulação/Melhorias (2 marcadores), Passe, Eventos, Boss Mundial (palco como foto), Perfil (5 marcadores, lacre, fundos escuros em papel, formação e Enciclopédia como foto). Pedidos para o ChatGPT em docs/ASSETS_PENDENTES.md. A-170. Verificado no CI; o visual só fica verificado quando o proprietário apertar Play."
         }
-      ]
+      ],
+      "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."
     }
   ]
 }
