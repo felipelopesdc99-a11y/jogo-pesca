@@ -4627,10 +4627,10 @@
           "id": "M24-T26",
           "title": "Teste do Leilão que falha de vez em quando",
           "subsystem": "server",
-          "description": "AuctionTests.Being_outbid_returns_the_principal_but_never_the_fee falhou uma vez (PlaceBid recusado) e passou na repetição do mesmo commit. Descobrir a fonte de aleatoriedade e deixar o teste estável.",
+          "description": "AuctionTests.Being_outbid_returns_the_principal_but_never_the_fee falhou uma vez (PlaceBid recusado) e passou na repetição do mesmo commit. Descobrir a fonte de aleatoriedade e deixar o teste estável. Em 12/10/2026 o mesmo aconteceu com AuctionTests.Bids_and_reserved_coins_survive_a_restart_and_a_retried_bid_after_it (lance recusado, 0 Moedas reservadas) no commit eed1482, que só mudava documentação; o código idêntico passou no commit 1105817.",
           "status": "TODO",
           "dependencies": [],
-          "updated_at": "2026-10-11T21:30:00Z"
+          "updated_at": "2026-10-12T15:30:00Z"
         },
         {
           "id": "M24-T27",
