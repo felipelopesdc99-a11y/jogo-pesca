@@ -285,6 +285,6 @@ public sealed class IdleScopeStageOneTests
         Assert.True(game.Player.GetPlayer().Coins > 50_000_000_000L);
         Assert.True(save.FisherXpTotal > 9_000_000_000L);
         Assert.Equal("50 bi", Format.Short(50_000_000_000L));
-        Assert.Equal("188.953.530", Format.Number(188_953_530L));
+        Assert.Equal("229.596.770", Format.Number(229_596_770L));
     }
 }

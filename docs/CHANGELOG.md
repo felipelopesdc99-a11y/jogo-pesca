@@ -3,6 +3,29 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.54] — 12/10/2026
+
+Curva do Pescador: Nv.1000 em ~60 dias (M24-T31, A-162, TD-047): decisão do proprietário de 12/10/2026 ("60 dias pro
+lvl 1000"). Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- `progression.json → fisher`: curva de XP versão 3 (`xp_curve_version` 2 → 3). Níveis 1 a 99 iguais; do Nv.100 em
+  diante cada nível pede mais (Nv.500 178.000 → 224.000 XP; Nv.999 408.000 → 504.000); do Nv.1 ao Nv.1000, 188.953.530
+  → 229.596.770 XP. Jogo aberto com a Tripulação e as Melhorias (sem Passe e sem VIP): Nv.10 em ~20 min e Nv.100 em
+  ~0,5 dia (iguais), Nv.500 em ~14,6 dias (era ~12,2), Nv.1000 em ~60 dias (era ~50); 4 vezes por dia, Nv.1000 em ~108
+  (era ~91); 1 vez por dia, ~124 (era ~105). `calibration_target` e as notas reescritos.
+- Saves das curvas 1 e 2 convertidos pelo XP total ao abrir o jogo, sem nunca baixar nível (TD-038).
+- `pass.json` regerado por `tools/Progressao/passe_fragmentos.py gerar`: Dólares e fragmentos iguais; Moedas e Conchas
+  dos marcos altos maiores (Nv.1000: 838 bi → 1,95 tri Moedas grátis), porque o jogador de referência chega mais tarde.
+- `tools/Progressao/calibrar_xp.py` mede com a economia atual (pesca a cada 10 s, Tripulação, Melhorias, níveis de vara
+  e barco, fragmentos, iscas) e mantém os níveis do começo (`--manter-ate`).
+- `docs/propostas/melhorias.json` e `docs/propostas/passe_fragmentos.json` regerados.
+
+### Adicionado
+
+- Testes `FisherCurveSixtyDaysTests` (versão 3, total da curva, começo igual, migração 1 → 3 e 2 → 3 sem baixar nível).
+
 ## [0.2.0-m21.53] — 12/10/2026
 
 Três iscas (+5%, +10%, +15%) com 999 tentativas (M24-T30, A-161, TD-046): decisão do proprietário de 12/10/2026.

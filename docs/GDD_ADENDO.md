@@ -1960,6 +1960,9 @@ Decisão do proprietário em 10/10/2026 (M24-T09 e M24-T03), primeira etapa do A
 
   \* Contado da meia-noite do primeiro dia; a primeira visita é às 8 h (4 vezes) ou às 20 h (1 vez).
 
+  *Atualizado em 12/10/2026 (A-162): a curva do Pescador foi esticada depois do Nv.100 para o Nv.1000 vir em ~60 dias
+  com o jogo aberto, a Tripulação e as Melhorias; a tabela e os números abaixo são os da curva versão 2.*
+
   XP para o próximo nível: Nv.1 pede 10; Nv.10, 715; Nv.50, 2.200; Nv.100, 9.640; Nv.250, 80.000; Nv.500, 178.000;
   Nv.750, 303.000; Nv.999, 408.000. Do Nv.1 ao Nv.1000 são 188.953.530 XP. A tabela sobe sem degraus grandes
   (no máximo ~5% de um nível para o seguinte), menos no Nv.10, quando o jogador vai para o Mapa 2.
@@ -2340,6 +2343,13 @@ sugestões para ajustar jogando.
   1,22 mi e 7 Conchas, Nv.500 982 mi e 45 Conchas. O Nv.100 dá menos Moedas porque o jogador de referência chega lá
   mais cedo (com renda menor); as Conchas dobraram junto com os peixes.*
 
+  *Regerado de novo em 12/10/2026 (A-162, curva do Pescador com o Nv.1000 em ~60 dias). O arquivo de antes já não
+  batia com o script depois das iscas do A-161 (Nv.250 50,5 mi, o script dava 35,1 mi). Agora o jogador de referência
+  chega aos níveis altos mais tarde, com a renda maior: Nv.250 57,9 mi Moedas e 102 Conchas (eram 50,5 mi e 95); Nv.500
+  980 mi e 136 (eram 834 mi e 135); Nv.750 55,8 bi e 186 (eram 10,6 bi e 165); Nv.1000 1,95 tri e 206 (eram 838 bi e
+  206); o Premium, o dobro. Até o Nv.100, Dólares e fragmentos não mudaram. Total grátis: 4,2 tri → 14,3 tri Moedas e
+  12.622 → 13.276 Conchas.*
+
 - **Premium**: 100 Dólares (o preço do VIP), comprado uma vez, vale para sempre. Libera também as recompensas Premium
   dos marcos que o jogador já passou (ficam "Resgatar"). Os Dólares grátis até o Nv.100 pagam exatamente um Premium
   (ou um VIP): é escolha do jogador.
@@ -2583,3 +2593,45 @@ dele: "coral" = **Conchas** (a moeda que já existe); as 3 iscas novas **substit
   tentativas antigas × preço antigo por tentativa ÷ preço novo por tentativa (por exemplo, 180 de Terra Viva antiga =
   1.500 Moedas → 66 da nova; 180 de Ouro de Maré antiga = 15.000 → 150 de Maré Viva). A isca em uso continua em uso (a
   nova equivalente). Não há aviso na tela: a troca aparece na aba Iscas e no Perfil.
+
+### A-162 · Curva do Pescador: Nv.1000 em ~60 dias
+**Seção do GDD:** 17, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Decisão do proprietário em 12/10/2026 (M24-T31): "60 dias pro lvl 1000". Depois da pesca a cada 10 s (A-160) e das
+iscas novas (A-161), o Nv.1000 chegava em ~50 dias com o jogo sempre aberto. Números em `config/progression.json`
+(`fisher.xp_table`, curva versão 3), gerados por `tools/Progressao/calibrar_xp.py --gravar`.
+
+- **Perfil de referência** (o mesmo do A-153, A-155 e A-160): o jogo aberto o dia todo, com a Tripulação e as
+  Melhorias, **sem o Passe do Pescador e sem VIP** (`simular_melhorias.py`, perfil "sempre aberto"). O script agora mede
+  com a economia de hoje: pesca a cada 10 s, Tripulação, Melhorias, níveis de vara e de barco, barcos por fragmentos e as
+  iscas do A-161 (antes media só a pesca).
+- **O começo não mudou**: os níveis 1 a 99 pedem o mesmo XP de antes (Nv.10 em ~20 min, Nv.100 em ~0,5 dia com o jogo
+  aberto). Do Nv.100 em diante cada nível pede um pouco mais, subindo aos poucos até os tempos ficarem ~1,2× os de antes
+  a partir do Nv.250 (o Nv.500 vem em ~14,6 dias). Sem degraus: no máximo 4,5% de um nível para o seguinte.
+- **Tempo até cada nível** (antes → agora; Tripulação e Melhorias, sem Passe e sem VIP):
+
+  | Jeito de jogar | Nv.10 | Nv.100 | Nv.250 | Nv.500 | Nv.750 | Nv.1000 |
+  |---|---|---|---|---|---|---|
+  | Jogo aberto o dia todo | ~20 min (igual) | 0,5 dia (igual) | 3,1 → 3,7 dias | 12,2 → 14,6 dias | 27,9 → 33,3 dias | 50,2 → 60,0 dias |
+  | Abre 4 vezes por dia (30 min) | 8,3 h* (igual) | 1,3 dia (igual) | 6,3 → 7,3 dias | 23,3 → 27,3 dias | 51,5 → 61,3 dias | 90,9 → 108,3 dias |
+  | Abre 1 vez por dia (30 min) | 20 h* (igual) | 3,8 dias (igual) | 9,8 → 10,8 dias | 28,8 → 33,8 dias | 59,8 → 70,8 dias | 104,8 → 123,8 dias |
+
+  \* Contado da meia-noite do primeiro dia (a primeira sessão começa às 8 h ou às 20 h). Só pescando
+  (`simular_progressao.py`, sem Tripulação): Nv.1000 em ~52 → ~63 dias com o jogo aberto, ~98 → ~118 abrindo 4 vezes
+  por dia e ~107 → ~128 abrindo 1 vez. Com o Passe grátis (que dá Moedas), o jogo aberto chega ao Nv.1000 em ~59,5 dias.
+- **XP para o próximo nível** (antes → agora): Nv.1 10, Nv.10 715, Nv.50 2.200 e Nv.99 9.330 (iguais); Nv.100
+  9.640 → 9.750; Nv.250 80.000 → 92.300; Nv.500 178.000 → 224.000; Nv.750 303.000 → 360.000; Nv.999 408.000 →
+  504.000. Do Nv.1 ao Nv.1000: 188.953.530 → **229.596.770 XP** (até o Nv.100 continua 309.220).
+- **Quem já joga** (curva versão 2 → 3, TD-038): ao abrir o jogo, o XP total já ganho vira o nível que ele alcança na
+  curva nova; **ninguém perde nível**. Até o Nv.100 nada muda. Acima, a curva nova pede mais, então quem está lá fica no
+  nível que tinha, com o XP dentro do nível (por exemplo, um Nv.500 tem 39,2 milhões de XP, que na curva nova só chegam
+  ao Nv.458: ele continua no Nv.500), e os próximos níveis pedem o XP novo. Um save da curva 1 (o Nv.1 ao Nv.100 de antes
+  do A-153) vai direto para a 3: o Nv.100 antigo (11,5 milhões de XP) vira **Nv.282** (na curva 2 virava Nv.304). Não
+  há aviso na tela.
+- **Passe do Pescador** (A-158): os marcos e os Dólares não mudaram (10 a cada 10 níveis até o Nv.100; depois, grátis
+  a cada 100 níveis e Premium a cada 50); só chegam mais tarde. Com o jogo aberto, os 100 Dólares grátis até o Nv.100
+  continuam em ~0,5 dia; os 10 do Nv.500 vêm no dia ~14,6 (era ~12,2) e os do Nv.1000 no dia ~60 (era ~50). Abrindo 4
+  vezes por dia: Nv.500 no dia ~27 (era ~23), Nv.1000 no dia ~108 (era ~91). Como as Moedas e as Conchas de cada marco
+  seguem a renda de quem chega ao nível (4 vezes por dia), e agora ele chega mais tarde, com a Tripulação maior, os
+  marcos altos pagam mais: `config/pass.json` foi regerado pelo script.
+- O XP dos peixes e da Tripulação não mudou; nada mudou nas telas.

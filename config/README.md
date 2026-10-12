@@ -129,6 +129,12 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
   do modelo de iscas (`bait_model_version`, 2) e as iscas de antes (`legacy_baits`), usadas só para converter um save
   antigo pelo valor em Moedas. Retorno de cada isca por estágio: `python3 tools/Progressao/simular_iscas.py`
   (`--precos A,B,C` testa outro custo por tentativa sem mexer no config).
+- **Curva do Pescador: Nv.1000 em ~60 dias (12/10/2026, M24-T31, A-162, TD-047):** `progression.json → fisher`
+  na curva versão 3 (`xp_curve_version`): os níveis 1 a 99 iguais aos de antes e o resto regerado por
+  `python3 tools/Progressao/calibrar_xp.py --gravar` (`--manter-ate 100`, `--metas 250:3.67d,500:14.6d,750:33.3d,1000:60d`),
+  medido com a Tripulação e as Melhorias, jogo aberto, sem Passe e sem VIP. Nv.1000 em ~60 / ~108 / ~124 dias (jogo
+  aberto / 4 vezes / 1 vez por dia; eram ~50 / ~91 / ~105); do Nv.1 ao Nv.1000, 229.596.770 XP. Trocar a curva de novo
+  pede subir `xp_curve_version` (os saves são convertidos pelo XP total, sem baixar nível) e regerar o `pass.json`.
 - **Todo nível custa Moedas e Conchas (M24-T30):** `upgrade_cost.shells_first` das varas e dos barcos precisa ser pelo
   menos 1; o jogo recusa um config com 0.
 - A Vara 1 custa **2.500** Moedas para comprar. Desde o M24-T13 ela vai até o **Nv.100**: o 1º nível custa **500**

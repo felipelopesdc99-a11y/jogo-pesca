@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-12T12:00:00Z",
+  "updated_at": "2026-10-12T15:45:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -538,7 +538,8 @@
       "title": "Nv.1000 do Pescador mais cedo com o equipamento no Nv.100",
       "detail": "Com varas e barcos até o Nv.100 a pesca rende mais XP. Simulado: com a Tripulação e as Melhorias, jogo aberto, o Nv.1000 chega em ~50 dias (antes ~70); só pescando, ~54 dias com o jogo aberto (antes ~75), ~101 abrindo 4 vezes por dia (antes ~144) e ~113 abrindo 1 vez por dia (antes ~168). Opções: (a) aceitar; (b) recalibrar a curva de XP do Pescador para voltar aos tempos de antes; (c) diminuir o bônus de raridade das varas no Nv.100 (hoje 3× o Nv.10 de antes).",
       "raised_at": "2026-10-11T05:00:00Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Decisão do proprietário em 12/10/2026: \"60 dias pro lvl 1000\" (opção b, recalibrar a curva, com 60 dias em vez dos ~70 de antes). Curva versão 3: Nv.1000 em ~60 dias com o jogo aberto, a Tripulação e as Melhorias (M24-T31, A-162)."
     },
     {
       "id": "OD-059",
@@ -576,7 +577,7 @@
       "id": "OD-063",
       "task_id": "M24-T23",
       "title": "Ganhos da pesca no fim do jogo com menos raros",
-      "detail": "Simulado: XP e Moedas da pesca por hora ficam ~1,9× no começo, ~1,5× no meio e ~0,8× no fim (Vara 5, Titã do Atlântico e isca, no Abismo Atlântico), porque lá os raros eram 84% das mordidas e valem até 15× o XP de um Comum. Com a Tripulação e as Melhorias o Nv.1000 passa de ~50 para ~57 dias (jogo aberto), ~92 para ~102 (4 vezes por dia) e ~106 para ~119 (1 vez por dia). Opções: (a) fica assim; (b) o multiplicador dos raros fica maior nos mapas finais (por exemplo 0,5: mais raros por hora que hoje lá); (c) os Comuns dos Mapas 6 a 10 valem mais (venda e XP) para o fim render pelo menos o de antes; (d) recalibrar a curva de XP do Pescador. Atualização de 12/10/2026 (A-160, ciclo de 10 s): no fim a pesca rende ×1,13 de XP e ×1,10 de Moedas por hora sobre o A-159 (~95% e ~88% do de antes do A-159); Nv.1000 em ~50 / ~91 / ~106 dias.",
+      "detail": "Simulado: XP e Moedas da pesca por hora ficam ~1,9× no começo, ~1,5× no meio e ~0,8× no fim (Vara 5, Titã do Atlântico e isca, no Abismo Atlântico), porque lá os raros eram 84% das mordidas e valem até 15× o XP de um Comum. Com a Tripulação e as Melhorias o Nv.1000 passa de ~50 para ~57 dias (jogo aberto), ~92 para ~102 (4 vezes por dia) e ~106 para ~119 (1 vez por dia). Opções: (a) fica assim; (b) o multiplicador dos raros fica maior nos mapas finais (por exemplo 0,5: mais raros por hora que hoje lá); (c) os Comuns dos Mapas 6 a 10 valem mais (venda e XP) para o fim render pelo menos o de antes; (d) recalibrar a curva de XP do Pescador. Atualização de 12/10/2026 (A-160, ciclo de 10 s): no fim a pesca rende ×1,13 de XP e ×1,10 de Moedas por hora sobre o A-159 (~95% e ~88% do de antes do A-159); Nv.1000 em ~50 / ~91 / ~106 dias. Atualização de 12/10/2026 (A-162): a curva do Pescador foi recalibrada para o Nv.1000 em ~60 dias com o jogo aberto (decisão do proprietário); o que fica em aberto aqui é só quanto a pesca rende no fim.",
       "raised_at": "2026-10-11T15:00:00Z",
       "status": "OPEN"
     },
@@ -4666,6 +4667,18 @@
           ],
           "updated_at": "2026-10-12T15:00:00Z",
           "completion_notes": "equipment.json → baits: Terra Viva +5% (era +3%), Maré Viva +10% (era +7%), Ouro de Maré +15% (era +10%), 999 tentativas por compra (eram 180), 23.000 Moedas + 13 Conchas / 100.000 + 33 / 200.000 + 55 (eram 1.500 + 1 / 6.000 + 3 / 15.000 + 5). Por tentativa: 23,02 / 100,10 / 200,20 Moedas (eram 8,33 / 33,33 / 83,33), ~10% a 20% acima do que as iscas de antes cobravam pelo mesmo bônus; Conchas +17% a +19%. Mesmo eixo de antes (chance de puxar, somada à vara e ao barco, teto 95%); sem nível nem nível mínimo; nomes de antes na mesma ordem. Save versão 17 + BaitModelVersion: Persistence/BaitModelMigration.cs converte as iscas antigas (equipment.json → bait_migration.legacy_baits) para a nova de bônus igual ou o mais próximo acima, com as tentativas pelo valor em Moedas arredondado para cima; a isca em uso continua em uso (TD-046). Todo nível de vara e de barco já custava Conchas (shells_first ≥ 1 em todos); o validador agora recusa shells_first 0. Telas sem mudança de código (a aba Iscas já mostrava bônus, tentativas por compra, preço, Comprar/Usar/Guardar e restantes). tools/Progressao/simular_iscas.py (relatório em docs/propostas/iscas_retorno.md): retorno em Moedas no começo 0,12 a 0,95 (Terra Viva) — não se paga em Moedas, como antes —, no meio 1,75 a 18 e no fim 34 a 98 sem barco; com tudo no Nv.100 a isca não muda nada (teto de 95%). Testes: ThreeBaitsTests (3 iscas, 999, preços por tentativa, compra no Nv.1, soma com vara e barco e teto, consumo online e offline, migração v16 → v17 por valor e isca em uso, jogador novo, níveis de vara e barco com Moedas e Conchas, config com shells_first 0 recusado, melhoria de barco sem Conchas recusada) e ajustes em CatchSuccessTests e TenSecondCycleTests. A-161, TD-046. Verificado no CI (GitHub) no commit 1105817: 395 testes passando e 0 erros no jogo, no Painel e no Simulador. Não aberto no Unity."
+        },
+        {
+          "id": "M24-T31",
+          "title": "Curva do Pescador: Nv.1000 em ~60 dias",
+          "subsystem": "config",
+          "description": "Decisão do proprietário (12/10/2026): \"60 dias pro lvl 1000\". Depois do A-160 (pesca a cada 10 s) e do A-161 (iscas), o Nv.1000 chegava em ~50 dias com o jogo sempre aberto (Tripulação + Melhorias, sem Passe e sem VIP). Recalibrar a curva de XP do Pescador para ~60 dias nesse perfil, mantendo o começo (Nv.10 em ~20 min, Nv.100 em ~0,5 dia), com a migração do TD-038 (nunca baixa nível).",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T30"
+          ],
+          "updated_at": "2026-10-12T15:45:00Z",
+          "completion_notes": "progression.json → fisher: xp_curve_version 2 → 3; xp_table do Nv.100 em diante regerada por tools/Progressao/calibrar_xp.py --gravar (os níveis 1 a 99 não mudaram). O script agora mede com a economia atual (simular_melhorias.py: pesca a cada 10 s, Tripulação, Melhorias, níveis de vara e barco, barcos por fragmentos, iscas do A-161), perfil de referência \"sempre aberto\" sem Passe e sem VIP (o do A-153/A-155/A-160), com metas 250:3,67d, 500:14,6d, 750:33,3d, 1000:60d (os tempos de antes × 1,195 do Nv.250 em diante). Jogo aberto: Nv.10 20 min e Nv.100 0,49 dia (iguais), Nv.250 3,1 → 3,7 dias, Nv.500 12,2 → 14,6, Nv.750 27,9 → 33,3, Nv.1000 50,2 → 60,0. 4×/dia: Nv.1000 90,9 → 108,3 dias; 1×/dia: 104,8 → 123,8. XP total do Nv.1 ao Nv.1000: 188.953.530 → 229.596.770; Nv.100 pede 9.750 (era 9.640), Nv.500 224.000 (178.000), Nv.999 504.000 (408.000); degrau máximo 4,5%. calibration_target e as notas reescritas (a de \"Nv.10 em 1 h\" saiu). Saves das curvas 1 e 2 convertidos pelo XP total, sem nunca baixar nível: um Nv.500 da curva 2 (39,2 mi XP) alcança só o Nv.458 e fica no Nv.500; o Nv.100 antigo da curva 1 (11,5 mi) vai para o Nv.282 (ia para o 304). config/pass.json regerado por passe_fragmentos.py gerar (o arquivo de antes já não batia com o script depois das iscas do A-161): Dólares e fragmentos iguais; Moedas e Conchas dos marcos altos sobem porque o jogador de referência chega mais tarde (Nv.500 834 mi → 980 mi; Nv.1000 838 bi → 1,95 tri). docs/propostas/melhorias.json e passe_fragmentos.json regerados. Testes: FisherCurveSixtyDaysTests (versão 3, total da curva, começo igual, cada nível ≥ curva 2 depois do Nv.100 e degraus ≤ 5%, curva 2 → 3 nunca baixa, Nv.1 a 100 da curva 2 ficam iguais, Nv.500 fica, curva 1 → 3 direto, save no disco convertido uma vez); IdleScopeStageOneTests ajustado (o total de exemplo). A-162, TD-047. Verificado no CI (GitHub). Não aberto no Unity."
         }
       ]
     }

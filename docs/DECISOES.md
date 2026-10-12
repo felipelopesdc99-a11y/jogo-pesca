@@ -935,3 +935,29 @@ nada; guardar a tabela antiga no config segue a regra de nenhum número de balan
 
 **Rever se.** As iscas mudarem de novo (aumentar `bait_model_version` e trocar `legacy_baits` pelas de então) ou o
 proprietário preferir devolver o valor em Moedas e Conchas.
+
+## TD-047 · Curva do Pescador calibrada pelo XP acumulado no tempo, com o começo fixo (12/10/2026)
+
+**Origem.** M24-T31 (A-162): "60 dias pro lvl 1000", sem mexer no começo (Nv.10 em ~20 min, Nv.100 em ~0,5 dia).
+
+**Decisão.**
+- `tools/Progressao/calibrar_xp.py` passou a medir com `simular_melhorias.py` (pesca, Tripulação, Melhorias, níveis de
+  vara e barco, fragmentos, iscas), perfil "sempre aberto", **sem Passe e sem VIP**. O jogador de referência fica
+  registrado em `progression.json → fisher.calibration_target`.
+- `--manter-ate 100`: os níveis abaixo dele são copiados da tabela atual; o dia em que o jogador chega a ele é medido.
+  Do nível mantido em diante, o dia planejado de cada nível sai de uma interpolação monotônica (log do tempo × log do
+  nível) pelas metas.
+- Em vez de "XP por tentativa × tentativas" (o método do A-153, que só via a pesca), a simulação mede o **XP acumulado
+  no tempo**, X(t), com a tabela estendida além do Nv.1000 (para o jogador não parar de ganhar XP), e cada nível pede
+  X(dia planejado do seguinte) − X(dia planejado dele). Depois do Nv.90 a renda não depende do nível do Pescador, então
+  uma rodada já acerta; o script repete até o erro nas metas ficar abaixo de 0,5%. Suavização e arredondamento iguais
+  aos de antes; a suavização usa os níveis mantidos como vizinhos, para não criar degrau na emenda.
+- `xp_curve_version` 2 → 3: a conversão do TD-038 não mudou e já cobre 1 → 3 e 2 → 3 (o XP total está no save).
+
+**Por quê.** A Tripulação rende XP por segundo e cresce com o tempo, não com as tentativas de pesca: medir o XP total no
+tempo é o que acerta o calendário com a economia de hoje. Manter os níveis do começo garante que as primeiras sessões não
+mudam.
+
+**Rever se.** Entrar no perfil de referência o Passe ou o VIP, ou uma fonte de XP que dependa do nível do Pescador
+(aí a medida precisa de mais rodadas, que o script já faz). Uma curva nova sempre sobe `xp_curve_version` e regera o
+`pass.json` (as Moedas e Conchas dos marcos seguem a renda de quem chega a cada nível).

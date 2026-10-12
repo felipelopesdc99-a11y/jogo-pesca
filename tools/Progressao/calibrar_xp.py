@@ -1,22 +1,30 @@
-"""Calibra a tabela de XP do Pescador (Nv.1 ao nível máximo, hoje Nv.1000) para metas de tempo.
+"""Calibra a tabela de XP do Pescador (até o nível máximo, hoje Nv.1000) para metas de tempo.
 
-Uso:  python3 tools/Progressao/calibrar_xp.py [--max 1000] [--metas 10:1h,100:1d,500:17.5d,1000:75d] [--gravar]
+Uso:  python3 tools/Progressao/calibrar_xp.py [--manter-ate 100] [--metas 250:3.67d,500:14.6d,750:33.3d,1000:60d] [--gravar]
 
-Como funciona (M24-T03, A-153):
-  1. As metas dizem em quanto tempo quem deixa o jogo aberto o dia todo chega a cada nível (padrão: Nv.10 em
-     ~1 h, Nv.100 em ~1 dia, Nv.500 em ~17,5 dias e Nv.1000 em ~75 dias). Entre as metas, o tempo segue uma curva
-     suave (logaritmo do tempo contra o logaritmo do nível, interpolação monotônica). Antes do Nv.10, o formato
-     da curva original (18 × nível^1,5) é mantido, só mais rápido.
-  2. Simula o jogador (simular_progressao.py) e mede quanto XP ele ganha por tentativa em cada nível (o mapa, a
-     vara, o barco e a isca que ele tem naquele momento). O XP de cada nível = tempo planejado para aquele nível
-     × tentativas por dia × XP por tentativa medido. Repete até o tempo simulado bater com o planejado.
-  3. Suaviza a tabela (a troca de mapa não vira um degrau) e arredonda: de 5 em 5 até 1.000 e com 3 algarismos
+Como funciona (M24-T31, A-162; a versão anterior, do M24-T03/A-153, media só a pesca):
+  1. Mede com a economia atual: o jogador de referência é o de tools/Progressao/simular_melhorias.py no perfil
+     "sempre aberto" (o jogo aberto o dia todo, só online), com a pesca no ciclo de progression.json → fishing (10 s
+     online), a Tripulação, as Melhorias, os níveis de vara e de barco, os barcos por fragmentos e as iscas de
+     config/equipment.json. Sem o Passe do Pescador e sem VIP (o mesmo perfil do A-153, A-155 e A-160).
+  2. O começo fica como está: os níveis abaixo de --manter-ate (padrão 100) não mudam, e o tempo até esse nível é o
+     que a simulação mede com eles (hoje Nv.10 em ~20 min e Nv.100 em ~0,5 dia).
+  3. Depois dele, o tempo planejado até cada nível segue uma curva suave (logaritmo do tempo contra o logaritmo do
+     nível, interpolação monotônica) que passa pelo tempo medido no nível mantido e pelas metas.
+  4. Depois do Nv.90 todos os mapas estão liberados, e a renda (Moedas e XP por segundo) depende do tempo de jogo,
+     não do nível do Pescador. Então a simulação mede o XP acumulado até cada momento, X(t), e o XP de cada nível
+     L = X(dia planejado do Nv.L+1) − X(dia planejado do Nv.L). Para medir além do fim da tabela, a simulação usa a
+     tabela com níveis a mais (o jogador não para de ganhar XP no nível máximo). Repete com a tabela nova até o tempo
+     bater com as metas.
+  5. Suaviza (média móvel do logaritmo, sem degrau na emenda) e arredonda: de 5 em 5 até 1.000 e com 3 algarismos
      significativos acima disso. A tabela nunca pede menos XP que o nível anterior.
-  4. Com --gravar, escreve a tabela, o nível máximo e os totais em config/progression.json.
+  6. Com --gravar, escreve a tabela e os totais em config/progression.json.
 
-O XP dos peixes não muda: continua subindo de mapa para mapa. O que muda é quanto cada nível pede.
+O XP dos peixes e da Tripulação não muda: o que muda é quanto cada nível pede. Trocar a curva pede subir
+fisher.xp_curve_version, para os saves serem convertidos (TD-038).
 """
 import argparse
+import bisect
 import collections
 import json
 import math
@@ -26,11 +34,16 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import simular_melhorias as M  # noqa: E402
 import simular_progressao as S  # noqa: E402
+import simular_tripulacao as T  # noqa: E402
 
 PROFILE = 'sempre_aberto'
-DEFAULT_TARGETS = '10:1h,100:1d,500:17.5d,1000:75d'
-REPORT_LEVELS = (1, 10, 50, 100, 250, 500, 750, 1000)
+DEFAULT_KEEP = 100
+DEFAULT_TARGETS = '250:3.67d,500:14.6d,750:33.3d,1000:60d'
+REPORT_LEVELS = (1, 10, 50, 100, 101, 250, 500, 750, 999)
+TIME_LEVELS = (10, 50, 100, 250, 500, 750, 1000)
+EXTRA_LEVELS = 3000   # levels added past the end while measuring, so the XP keeps being counted
 
 
 def parse_targets(text):
@@ -62,25 +75,59 @@ def pchip(xs, ys):
     return f
 
 
-def planned_days(targets, max_level):
-    """Planned day each level is reached, index = level (1..max)."""
-    first_level, first_days = targets[0]
-    curve = pchip([math.log(l) for l, _ in targets], [math.log(d) for _, d in targets])
-    original = [0.0] + [18.0 * l ** 1.5 for l in range(1, first_level)]
-    cum = np.cumsum([0.0] + original[1:])   # cum[k] = XP from Nv.1 to Nv.(k+1)
-    days = [0.0] * (max_level + 1)
-    for level in range(2, first_level):
-        days[level] = first_days * cum[level - 1] / cum[first_level - 1]
-    for level in range(first_level, max_level + 1):
-        days[level] = math.exp(curve(math.log(level)))
-    return days
-
-
-def run(table, profile=PROFILE):
+def current_table():
     r = S.Rules()
-    r.max_level = len(table)
-    r.xp_to_next = table
-    return S.play(r, profile, max_days=400)
+    return list(r.xp_to_next)   # index = level, [0] unused; len = max_level
+
+
+def run(table, profile=PROFILE, days=None, extend=False, stop_at_max=True):
+    """The reference player (Crew + Upgrades, no pass, no VIP) with this XP table."""
+    t = list(table) + ([table[-1] * 1000] * EXTRA_LEVELS if extend else [])
+    g = M.Game(M.load_json('crew.json'), M.load_json('upgrades.json'))
+    g.rules.max_level = len(t)
+    g.rules.xp_to_next = t
+    sessions = T.PROFILES[profile][1]
+    days = days or 200.0
+    end = days * 86400.0
+    top = len(table)
+    if sessions is None:
+        while g.t < end and not (stop_at_max and g.p.level >= top):
+            g.online(T.step_for(g.t) * 20, T.step_for(g.t))
+        return g
+    last_end = None
+    day = 0
+    while g.t < end and not (stop_at_max and g.p.level >= top):
+        for start_h, minutes in sessions:
+            start = day * 86400.0 + start_h * 3600.0
+            if last_end is None:
+                g.t = start
+            else:
+                g.offline(start - last_end)
+            g.online(minutes * 60.0, 5.0 if day == 0 else 30.0)
+            last_end = g.t
+        day += 1
+    return g
+
+
+def xp_by_time(table, days):
+    """(days, cumulative XP) at every level-up of a run with the table extended past its end."""
+    g = run(table, days=days, extend=True, stop_at_max=False)
+    t = list(table) + [table[-1] * 1000] * EXTRA_LEVELS
+    cum = [0.0] * (len(t) + 1)
+    for level in range(2, len(t) + 1):
+        cum[level] = cum[level - 1] + t[level - 1]
+    pts = sorted((d, cum[level]) for level, d in g.p.reached.items() if level <= len(t))
+    return [p[0] for p in pts], [p[1] for p in pts], g
+
+
+def interp(xs, ys, x):
+    i = bisect.bisect_left(xs, x)
+    if i <= 0:
+        return ys[0]
+    if i >= len(xs):
+        return ys[-1]
+    x0, x1, y0, y1 = xs[i - 1], xs[i], ys[i - 1], ys[i]
+    return y0 + (y1 - y0) * (x - x0) / (x1 - x0) if x1 > x0 else y1
 
 
 def rounded(x):
@@ -92,56 +139,58 @@ def rounded(x):
 
 
 def smooth(values, first_level, window):
-    """Moving average of the logarithm, from first_level on (the earlier levels keep their shape)."""
+    """Moving average of the logarithm from first_level on, the window anchored on the kept levels before it."""
     logs = np.log(np.maximum(values, 1.0))
     out = values[:]
     for level in range(first_level, len(values)):
-        lo, hi = max(first_level, level - window), min(len(values) - 1, level + window)
+        lo, hi = max(1, level - window), min(len(values) - 1, level + window)
         out[level] = math.exp(float(np.mean(logs[lo:hi + 1])))
     return out
 
 
-def finish(raw, first_level, window):
-    table = [0] + [rounded(x) for x in smooth(raw, first_level, window)[1:]]
-    for level in range(2, len(table)):
-        table[level] = max(table[level], table[level - 1])
-    return table
+def planned_days(anchor, targets, max_level):
+    """Planned day each level is reached, from the kept level (anchor = (level, day)) on."""
+    pts = [anchor] + [t for t in targets if t[0] > anchor[0]]
+    curve = pchip([math.log(l) for l, _ in pts], [math.log(d) for _, d in pts])
+    return {level: math.exp(curve(math.log(level))) for level in range(anchor[0], max_level + 1)}
 
 
-def calibrate(targets, max_level, window=12, rounds=40):
-    days = planned_days(targets, max_level)
-    per_day = 1440 * 60.0 / S.Rules().fishing['online_cycle_seconds']
-    raw = [0.0] + [max(5.0, 18.0 * l ** 1.5) for l in range(1, max_level)]
-    table = finish(raw, targets[0][0], window)
+def calibrate(keep, targets, window=12, rounds=6):
+    base = current_table()
+    max_level = max(len(base), targets[-1][0])
+    base = base + [base[-1]] * (max_level - len(base))
+    probe = run(base[:keep], stop_at_max=True)
+    anchor = (keep, probe.p.reached[keep])
+    plan = planned_days(anchor, targets, max_level)
+    horizon = targets[-1][1] * 1.25
+    table = base[:]
     best = None
     for _ in range(rounds):
-        p = run(table)
-        last = None
-        xpa = [0.0] * max_level
-        for level in range(1, max_level):
-            if p.att.get(level):
-                last = p.xp_at[level] / p.att[level]
-            xpa[level] = last if last is not None else 1.0
-        wanted = [0.0] + [max(1.0, (days[l + 1] - days[l]) * per_day * xpa[l]) for l in range(1, max_level)]
-        # Half a step at a time in the logarithm, so the buying (which depends on the time) settles.
-        raw = [0.0] + [math.sqrt(max(1.0, raw[l]) * wanted[l]) for l in range(1, max_level)]
-        table = finish(raw, targets[0][0], window)
-        got = run(table)
-        err = max(abs(math.log((got.reached.get(l) or 999.0) / d)) for l, d in targets)
+        xs, ys, _ = xp_by_time(table, horizon)
+        raw = [float(x) for x in table]
+        for level in range(keep, max_level):
+            raw[level] = max(1.0, interp(xs, ys, plan[level + 1]) - interp(xs, ys, plan[level]))
+        sm = smooth(raw, keep, window)
+        new = table[:keep] + [rounded(x) for x in sm[keep:]]
+        for level in range(keep, max_level):
+            new[level] = max(new[level], new[level - 1])
+        got = run(new)
+        err = max(abs(math.log((got.p.reached.get(l) or 999.0) / d)) for l, d in targets)
         if best is None or err < best[0]:
-            best = (err, table)
-        if err < 0.03:
+            best = (err, new, got)
+        table = new
+        if err < 0.005:
             break
-    return best[1]
+    return best[1], anchor
 
 
 def report(table):
-    print('Tempo até cada nível com a tabela nova:')
-    levels = [l for l in S.MILESTONES if l <= len(table)]
+    print('Tempo até cada nível (Tripulação + Melhorias, sem Passe e sem VIP):')
+    levels = [l for l in TIME_LEVELS if l <= len(table)]
     print('  %-14s' % 'perfil', ' '.join('%8s' % ('Nv.%d' % l) for l in levels))
-    for prof in S.PROFILES:
-        p = run(table, prof)
-        print('  %-14s' % prof, ' '.join('%8s' % S.fmt(p.reached.get(l)) for l in levels))
+    for prof in T.PROFILES:
+        g = run(table, prof, days=400)
+        print('  %-14s' % prof, ' '.join('%8s' % S.fmt(g.p.reached.get(l)) for l in levels))
     print('XP para o próximo nível:')
     for l in REPORT_LEVELS:
         if l < len(table):
@@ -151,24 +200,26 @@ def report(table):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--max', type=int, default=1000, help='nível máximo do Pescador')
+    ap.add_argument('--manter-ate', type=int, default=DEFAULT_KEEP, help='os níveis abaixo deste não mudam')
     ap.add_argument('--metas', default=DEFAULT_TARGETS, help='nível:tempo para quem deixa o jogo aberto (h = horas, d = dias)')
     ap.add_argument('--gravar', action='store_true')
     a = ap.parse_args()
     targets = parse_targets(a.metas)
-    table = calibrate(targets, a.max)
+    table, anchor = calibrate(a.manter_ate, targets)
+    print('Mantidos os níveis 1 a %d; Nv.%d medido em %s dia.' % (a.manter_ate - 1, anchor[0], ('%.2f' % anchor[1]).replace('.', ',')))
     report(table)
     if a.gravar:
+        max_level = len(table)
         path = os.path.join(S.CONFIG, 'progression.json')
         with open(path, encoding='utf-8') as f:
             prog = json.load(f, object_pairs_hook=collections.OrderedDict)
         fisher = prog['fisher']
-        fisher['max_level'] = a.max
-        fisher['xp_table'] = [collections.OrderedDict(level=l, xp_to_next_level=table[l]) for l in range(1, a.max)]
+        fisher['max_level'] = max_level
+        fisher['xp_table'] = [collections.OrderedDict(level=l, xp_to_next_level=table[l]) for l in range(1, max_level)]
         for key in [k for k in fisher if k.startswith('total_xp_level_1_to_')]:
             del fisher[key]
         for top in (10, 100, 500, 1000):
-            if top <= a.max:
+            if top <= max_level:
                 fisher['total_xp_level_1_to_%d' % top] = sum(table[1:top])
         # Same layout as the Dev Panel writes (DevPanelRoundTripTests): one key per line.
         with open(path, 'w', encoding='utf-8') as f:
