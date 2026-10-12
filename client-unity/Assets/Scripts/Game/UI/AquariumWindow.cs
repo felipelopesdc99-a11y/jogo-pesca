@@ -196,11 +196,11 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.enabled = !DialogOpen;
-            var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f);
-            // A-148: the fish count is a counter, next to the sign; the search (300 + 16) and, outside feeding, the
-            // Tanque | Cartas toggle (~232 + 12) keep their place.
+            var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f, true);
+            // A-148: the fish count is a counter, next to the label; the search (300 + 16) keeps its place. Tanque and
+            // Cartas are bookmarks on the side of the diary (A-180).
             if (WindowFrame.Header(skin, panel, GameTexts.Aquarium.Title, null, Icons.Aquarium,
-                    GameTexts.Aquarium.Count(_aquarium.Count, _aquarium.Capacity), _feeding ? 316f : 560f))
+                    GameTexts.Aquarium.Count(_aquarium.Count, _aquarium.Capacity), 316f))
             {
                 Close();
             }
@@ -216,10 +216,10 @@ namespace FishingIdle.Game.UI
                 RefreshShown();
             }
 
-            // Tanque | Cartas, just left of the search (A-145).
+            // Tanque | Cartas (A-145), as bookmarks (A-180).
             if (!_feeding)
             {
-                DrawVisualToggle(skin, panel.xMax - 156 - 16 - 300 - 12, panel.y + 24);
+                DrawVisualToggle(skin);
             }
 
             var detailWidth = 420f;
@@ -314,7 +314,10 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
+            // The tank is the window's own scene: a picture on the diary sheet, in night colours (A-180).
             var glass = new Rect(right.x, tank.y + 10f, right.width - 10f, tank.height - 20f);
+            WindowFrame.Photo(skin, tank);
+            using var night = UiSkin.NightScope();
             DrawTank(skin, tank, glass.x);
 
             if (_multi)
@@ -1035,19 +1038,15 @@ namespace FishingIdle.Game.UI
         // ------------------------------------------------------------------ card mode, the hero sheet (A-145)
 
         /// <summary>The two-way "Tanque | Cartas" switch, ending at <paramref name="right"/>. The choice is kept in PlayerPrefs.</summary>
-        private void DrawVisualToggle(UiSkin skin, float right, float y)
-        {
-            var tankWidth = skin.Chip.CalcSize(new GUIContent(GameTexts.Aquarium.ViewTank)).x + 34f;
-            var cardsWidth = skin.Chip.CalcSize(new GUIContent(GameTexts.Aquarium.ViewCards)).x + 34f;
-            var x = right - tankWidth - cardsWidth - 6f;
-            if (skin.IconButton(new Rect(x, y, tankWidth, 38), Icons.Waves, GameTexts.Aquarium.ViewTank, _cardsMode ? skin.Chip : skin.ChipActive) && _cardsMode)
-            {
-                SetCardsMode(false);
-            }
+        private static readonly string[] ViewLabels = { GameTexts.Aquarium.ViewTank, GameTexts.Aquarium.ViewCards };
+        private static readonly string[] ViewIcons = { Icons.Waves, Icons.Book };
 
-            if (skin.IconButton(new Rect(x + tankWidth + 6f, y, cardsWidth, 38), Icons.Book, GameTexts.Aquarium.ViewCards, _cardsMode ? skin.ChipActive : skin.Chip) && !_cardsMode)
+        private void DrawVisualToggle(UiSkin skin)
+        {
+            var clicked = WindowFrame.Bookmarks(skin, ViewLabels, ViewIcons, _cardsMode ? 1 : 0);
+            if (clicked >= 0)
             {
-                SetCardsMode(true);
+                SetCardsMode(clicked == 1);
             }
         }
 
@@ -1184,7 +1183,9 @@ namespace FishingIdle.Game.UI
             var rarity = UiSkin.RarityColor(f.RarityId);
             var low = f.RarityId == "common" || f.RarityId == "rare";
 
-            var fill = selected ? theme.PanelElevated : Color.Lerp(theme.Panel, theme.PanelElevated, hover ? 0.6f : 0.2f);
+            var fill = UiSkin.Paper
+                ? (selected || hover ? Color.white : UiSkin.PaperCard)
+                : selected ? theme.PanelElevated : Color.Lerp(theme.Panel, theme.PanelElevated, hover ? 0.6f : 0.2f);
             GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 10f);
             GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(rarity.r, rarity.g, rarity.b, (low ? 0.45f : 0.85f) + (hover ? 0.15f : 0f)), 1.5f, 10f);
             GUI.DrawTexture(new Rect(r.x + 5f, r.y + 10f, 3f, r.height - 20f), skin.White, ScaleMode.StretchToFill, true, 0, rarity, 0, 1.5f);
@@ -1262,6 +1263,9 @@ namespace FishingIdle.Game.UI
 
         private void DrawHeroStage(UiSkin skin, Rect rect, FishView fish)
         {
+            // The fish on its pedestal is a dark picture on the sheet (A-180).
+            WindowFrame.Photo(skin, rect);
+            using var night = UiSkin.NightScope();
             var rarity = UiSkin.RarityColor(fish.RarityId);
             HeroSheet.Backdrop(skin, rect);
             var index = IndexOfSelected();

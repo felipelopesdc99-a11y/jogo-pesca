@@ -29,7 +29,7 @@ namespace FishingIdle.Game.UI
         private static readonly Color Silver = new Color(0.78f, 0.82f, 0.88f);
         private static readonly Color Bronze = new Color(0.80f, 0.52f, 0.30f);
 
-        private const float TabHeight = 60f, StageHeight = 300f, RowHeight = 50f, FooterHeight = 58f, Gap = 12f;
+        private const float StageHeight = 300f, RowHeight = 50f, FooterHeight = 58f, Gap = 12f;
 
         /// <summary>Where the pedestals stand on the pier art (fraction of its height, from the top).</summary>
         private const float DeckLine = 0.6f;
@@ -78,7 +78,7 @@ namespace FishingIdle.Game.UI
                 _avatarId = _root.GetProfile()?.AvatarId;
             }
 
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Ranking.Title, GameTexts.Ranking.Subtitle, out var closed, 1200f, 840f, Icons.Ranking);
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Ranking.Title, GameTexts.Ranking.Subtitle, out var closed, 1200f, 840f, Icons.Ranking, bookmarks: true);
             if (closed)
             {
                 Close();
@@ -86,7 +86,7 @@ namespace FishingIdle.Game.UI
             }
 
             DrawTrophy(skin, area);
-            DrawTabs(skin, new Rect(area.x, area.y, area.width, TabHeight));
+            DrawBookmarks(skin);
 
             var view = _views[System.Array.IndexOf(Categories, _category)];
             if (view == null)
@@ -94,7 +94,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var stage = new Rect(area.x, area.y + TabHeight + Gap, area.width, StageHeight);
+            var stage = new Rect(area.x, area.y, area.width, StageHeight);
             var footer = new Rect(area.x, area.yMax - FooterHeight, area.width, FooterHeight);
             var list = new Rect(area.x, stage.yMax + Gap, area.width, footer.y - Gap - stage.yMax - Gap);
             DrawStage(skin, stage, view);
@@ -121,34 +121,30 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        private void DrawTabs(UiSkin skin, Rect rect)
+        /// <summary>The four lists as bookmarks on the side of the diary (A-180), each with "Você #N".</summary>
+        private void DrawBookmarks(UiSkin skin)
         {
-            const float gap = 10f;
-            var w = (rect.width - gap * (Categories.Length - 1)) / Categories.Length;
+            var labels = new string[Categories.Length];
+            var notes = new string[Categories.Length];
+            var icons = new string[Categories.Length];
+            var active = 0;
             for (var i = 0; i < Categories.Length; i++)
             {
-                var category = Categories[i];
-                var active = _category == category;
-                var tab = new Rect(rect.x + i * (w + gap), rect.y, w, rect.height);
-                if (active)
-                {
-                    skin.DrawGlow(tab, UiSkin.Accent, 0.25f);
-                }
-
-                if (GUI.Button(tab, GUIContent.none, active ? skin.ChipActive : skin.Chip) && !active)
-                {
-                    _category = category;
-                    _scroll = Vector2.zero;
-                }
-
-                DrawEmblem(skin, new Rect(tab.x + 12f, tab.center.y - 20f, 40f, 40f), category);
-                var tx = tab.x + 62f;
-                var tw = tab.xMax - 12f - tx;
-                GUI.Label(new Rect(tx, tab.y + 8f, tw, 24f), FishCard.Fit(TabName(category), skin.BodyBold, tw), skin.BodyBold);
+                labels[i] = TabName(Categories[i]);
                 var mine = _views[i]?.Entries.Find(e => e.IsYou);
-                var line = mine != null ? GameTexts.Ranking.YouAt(mine.Position) : GameTexts.Ranking.NotListed;
-                var lineStyle = active ? skin.SmallBold : skin.SmallMuted;
-                GUI.Label(new Rect(tx, tab.y + 32f, tw, 20f), FishCard.Fit(line, lineStyle, tw), lineStyle);
+                notes[i] = mine != null ? GameTexts.Ranking.YouAt(mine.Position) : GameTexts.Ranking.NotListed;
+                icons[i] = TabIcon(Categories[i]);
+                if (Categories[i] == _category)
+                {
+                    active = i;
+                }
+            }
+
+            var clicked = WindowFrame.Bookmarks(skin, labels, icons, active, notes);
+            if (clicked >= 0)
+            {
+                _category = Categories[clicked];
+                _scroll = Vector2.zero;
             }
         }
 
@@ -156,7 +152,10 @@ namespace FishingIdle.Game.UI
 
         private void DrawStage(UiSkin skin, Rect stage, RankingView view)
         {
-            GUI.DrawTexture(stage, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.45f), 0, 14);
+            // A photo of the pier pinned on the diary sheet (A-180): its own dark scene, in night colours.
+            WindowFrame.Photo(skin, stage);
+            using var night = UiSkin.NightScope();
+            GUI.DrawTexture(stage, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.97f), 0, 4);
 
             // The pier; without its art, a plain floor line.
             var pier = ArtAssets.Texture(StageArt);
@@ -316,7 +315,8 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                var fill = odd ? new Color(1f, 1f, 1f, 0.06f) : new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.45f);
+                // On the diary sheet: a light note line and a faint brown one, alternating (A-180).
+                var fill = odd ? new Color(1f, 1f, 1f, 0.45f) : new Color(UiSkin.PaperLine.r, UiSkin.PaperLine.g, UiSkin.PaperLine.b, 0.2f);
                 GUI.DrawTexture(row, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 10);
             }
 
@@ -424,6 +424,17 @@ namespace FishingIdle.Game.UI
                 case RankingCategory.Shells: skin.DrawIcon(inner, Icons.Shell, Color.white); break;
                 case RankingCategory.FishCaught: skin.DrawIcon(inner, Icons.Fish, UiSkin.Accent); break;
                 default: skin.DrawIcon(inner, Icons.Level, UiSkin.Gold); break;
+            }
+        }
+
+        private static string TabIcon(RankingCategory category)
+        {
+            switch (category)
+            {
+                case RankingCategory.Coins: return Icons.Coin;
+                case RankingCategory.Shells: return Icons.Shell;
+                case RankingCategory.FishCaught: return Icons.Fish;
+                default: return Icons.Level;
             }
         }
 

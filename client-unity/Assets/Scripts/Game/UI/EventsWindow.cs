@@ -99,10 +99,10 @@ namespace FishingIdle.Game.UI
 
             // The boss icon on a deep disc (ico_boss, or the attack icon while it is missing).
             var disc = new Rect(rect.x + 20f, rect.center.y - ArtSize / 2f, ArtSize, ArtSize);
-            GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.95f), 0, ArtSize / 2f);
+            GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.95f), 0, ArtSize / 2f);
             GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, open ? UiSkin.Gold : UiSkin.Border, 2f, ArtSize / 2f);
             var icon = WorldBossWindow.NavIcon;
-            skin.DrawIcon(new Rect(disc.center.x - 30f, disc.center.y - 30f, 60f, 60f), icon, icon == Icons.Attack ? UiSkin.Danger : Color.white);
+            skin.DrawIconExact(new Rect(disc.center.x - 30f, disc.center.y - 30f, 60f, 60f), icon, icon == Icons.Attack ? UiSkin.Danger : Color.white);
 
             var button = new Rect(rect.xMax - 20f - OpenWidth, rect.center.y - 22f, OpenWidth, 44f);
             var x = disc.xMax + 20f;

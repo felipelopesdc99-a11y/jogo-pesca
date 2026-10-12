@@ -92,6 +92,10 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
+            // The archipelago is the window's own scene: a picture pinned on the diary sheet, drawn in night colours
+            // over its dark sea (A-180).
+            WindowFrame.Photo(skin, area);
+            using var night = UiSkin.NightScope();
             EnsureStyles(skin);
             _tip = null;
 

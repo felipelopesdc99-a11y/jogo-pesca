@@ -14,32 +14,34 @@ namespace FishingIdle.Game.UI
     /// for rewards, rarity colour only as an accent. Windows use the shared pieces below (panels,
     /// buttons with icons, pills, bars, outlines) so every screen speaks the same language.
     /// </remarks>
-    public sealed class UiSkin
+    public sealed partial class UiSkin
     {
         private static VisualTheme Theme => VisualTheme.Current;
 
-        public static Color Text => Theme.Text;
-        public static Color Muted => Theme.TextMuted;
-        public static Color Accent => Theme.Action;
-        public static Color AccentHover => Theme.ActionHover;
-        public static Color Gold => Theme.Reward;
-        public static Color GoldLight => Theme.RewardLight;
-        public static Color Danger => Theme.Danger;
-        public static Color Success => Theme.Success;
-        public static Color Border => Theme.Border;
-        public static Color Night => Theme.Night;
+        // On a window sheet (Paper, A-180) each colour answers with its ink twin; see UiSkinPaper.cs.
+        public static Color Text => Paper ? Ink : Theme.Text;
+        public static Color Muted => Paper ? InkSoft : Theme.TextMuted;
+        public static Color Accent => Paper ? InkAccent : Theme.Action;
+        public static Color AccentHover => Paper ? InkAccent : Theme.ActionHover;
+        public static Color Gold => Paper ? InkReward : Theme.Reward;
+        public static Color GoldLight => Paper ? InkReward : Theme.RewardLight;
+        public static Color Danger => Paper ? InkDanger : Theme.Danger;
+        public static Color Success => Paper ? InkSuccess : Theme.Success;
+        public static Color Border => Paper ? PaperLine : Theme.Border;
+        public static Color Night => Paper ? PaperShade : Theme.Night;
 
         /// <summary>Accent of the Raro tier (kept for older call sites; prefer <see cref="RarityColor"/>).</summary>
-        public static Color Rare => Theme.Rarity("rare");
+        public static Color Rare => RarityColor("rare");
 
         /// <summary>The accent colour of a rarity id.</summary>
-        public static Color RarityColor(string rarityId) => Theme.Rarity(rarityId);
+        public static Color RarityColor(string rarityId) => Paper ? InkOf(Theme.Rarity(rarityId)) : Theme.Rarity(rarityId);
 
         /// <summary>The accent colour of a size category id (Excepcional = gold).</summary>
-        public static Color SizeColor(string sizeCategoryId) => Theme.Size(sizeCategoryId);
+        public static Color SizeColor(string sizeCategoryId) => Paper ? InkOf(Theme.Size(sizeCategoryId)) : Theme.Size(sizeCategoryId);
 
         public GUIStyle Panel, PanelSolid, Card, CardHovered, CardSelected, CardImportant, Shadow, Glow, Outline, Pill, IconTile;
         public GUIStyle Button, ButtonPrimary, ButtonDanger, ButtonReward, Chip, ChipActive, Nav, NavActive, SearchField;
+        // PillText is never tracked by paper mode: it is always tinted with GUI.contentColor or sits on a dark badge.
         public GUIStyle Title, Heading, Body, BodyBold, ChipText, Small, SmallBold, SmallMuted, SmallRight, SmallMutedRight, SmallGold, SmallGoldRight, Number, NumberRight, Center, CenterBold, SmallMutedCenter, Badge, Display, DisplaySub, PillText;
 
         public Texture2D White, Overlay, Coin, Rays;
@@ -172,6 +174,8 @@ namespace FishingIdle.Game.UI
             Badge.normal.background = Art.RoundedRectTexture(Color.white, Color.clear, 7, 0f);
             Badge.border = new RectOffset(7, 7, 7, 7);
             Badge.padding = new RectOffset(6, 6, 1, 1);
+
+            BuildPaper();
         }
 
         // Text sizes on the 1080-tall virtual canvas (A-149). The canvas is scaled to the screen, so on a 600 px
@@ -263,7 +267,7 @@ namespace FishingIdle.Game.UI
         public void Bar(Rect rect, float fraction, Color color)
         {
             var radius = rect.height / 2f;
-            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, new Color(Night.r, Night.g, Night.b, 0.75f), 0, radius);
+            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, Paper ? PaperInset : new Color(Night.r, Night.g, Night.b, 0.75f), 0, radius);
             var fill = new Rect(rect.x, rect.y, rect.width * Mathf.Clamp01(fraction), rect.height);
             if (fill.width >= rect.height)
             {
@@ -295,12 +299,12 @@ namespace FishingIdle.Game.UI
             if (icon != null)
             {
                 var s = rect.height - 8f;
-                DrawIcon(new Rect(rect.x + 7, rect.y + 4, s, s), icon, Color.Lerp(color, Color.white, 0.2f));
+                DrawIcon(new Rect(rect.x + 7, rect.y + 4, s, s), icon, Paper ? InkOf(color) : Color.Lerp(color, Color.white, 0.2f));
                 textRect = new Rect(rect.x + s + 6, rect.y, rect.width - s - 8, rect.height);
             }
 
             var prevContent = GUI.contentColor;
-            GUI.contentColor = Color.Lerp(color, Color.white, 0.45f);
+            GUI.contentColor = Paper ? InkOf(color) : Color.Lerp(color, Color.white, 0.45f);
             GUI.Label(textRect, text, PillText);
             GUI.contentColor = prevContent;
         }
@@ -343,7 +347,7 @@ namespace FishingIdle.Game.UI
             GUI.DrawTexture(new Rect(x, rect.y + (rect.height - dot) / 2f, dot, dot), White, ScaleMode.StretchToFill, true, 0, color, 0, dot / 2f);
 
             var previous = GUI.contentColor;
-            GUI.contentColor = active ? Color.Lerp(color, Color.white, 0.55f) : hovered ? Text : Muted;
+            GUI.contentColor = active ? (Paper ? InkOf(color) : Color.Lerp(color, Color.white, 0.55f)) : hovered ? Text : Muted;
             GUI.Label(new Rect(x + dot + 2f, rect.y, rect.width - dot - 16f, rect.height), text, ChipText);
             GUI.contentColor = previous;
             return clicked;
@@ -388,7 +392,7 @@ namespace FishingIdle.Game.UI
                 var width = s.CalcSize(new GUIContent(piece)).x - s.padding.horizontal;
                 if (isSize)
                 {
-                    GUI.contentColor = Color.Lerp(SizeColor(sizeId), Color.white, 0.15f);
+                    GUI.contentColor = Paper ? SizeColor(sizeId) : Color.Lerp(SizeColor(sizeId), Color.white, 0.15f);
                 }
 
                 GUI.Label(new Rect(x - s.padding.left, rect.y, Mathf.Max(0f, rect.xMax - x + s.padding.left), rect.height), piece, s);
@@ -415,7 +419,9 @@ namespace FishingIdle.Game.UI
         {
             if (!_sizeBold.TryGetValue(style, out var bold))
             {
+                // Light text tinted by the size colour (GUI.contentColor multiplies it), in both modes.
                 bold = new GUIStyle(style) { font = BodyBoldFont, wordWrap = false };
+                bold.normal.textColor = Theme.Text;
                 _sizeBold[style] = bold;
             }
 
@@ -463,8 +469,23 @@ namespace FishingIdle.Game.UI
             GUI.Box(rect, GUIContent.none, Panel);
         }
 
-        /// <summary>Draws an icon tinted with a colour. Missing icon files draw nothing.</summary>
+        /// <summary>
+        /// Draws an icon tinted with a colour. Missing icon files draw nothing. On the diary sheet (A-180) a white glyph
+        /// would vanish on the paper, so a near-white tint becomes ink (the coloured icons — Moeda, Concha, Dólar — keep
+        /// their colours). Icons on a coloured or dark face use <see cref="DrawIconExact"/>.
+        /// </summary>
         public void DrawIcon(Rect rect, string icon, Color color)
+        {
+            if (Paper && color.r > 0.85f && color.g > 0.85f && color.b > 0.85f && icon != Icons.Coin && icon != Icons.Shell && icon != Icons.Dollar)
+            {
+                color = new Color(Ink.r, Ink.g, Ink.b, color.a);
+            }
+
+            DrawIconExact(rect, icon, color);
+        }
+
+        /// <summary>Draws an icon tinted with exactly <paramref name="color"/>, in both modes (white on a coloured face).</summary>
+        public void DrawIconExact(Rect rect, string icon, Color color)
         {
             var tex = icon != null ? ArtAssets.Icon(icon) : null;
             if (tex == null)
@@ -501,7 +522,7 @@ namespace FishingIdle.Game.UI
             var gap = textWidth > 0f ? 8f : 0f;
             var total = Mathf.Min(rect.width - 16f, iconSize + gap + textWidth);
             var x = rect.center.x - total / 2f;
-            DrawIcon(new Rect(x, rect.center.y - iconSize / 2f, iconSize, iconSize), icon, color);
+            DrawIconExact(new Rect(x, rect.center.y - iconSize / 2f, iconSize, iconSize), icon, color);
             if (textWidth > 0f)
             {
                 var previous = GUI.contentColor;
@@ -634,25 +655,25 @@ namespace FishingIdle.Game.UI
         private GUIStyle _smallMutedRightLine, _smallGoldLine;
 
         /// <summary><see cref="SmallMutedRight"/> on one line, never wrapping.</summary>
-        public GUIStyle SmallMutedRightLine => _smallMutedRightLine ?? (_smallMutedRightLine = new GUIStyle(SmallMutedRight) { wordWrap = false, clipping = TextClipping.Clip });
+        public GUIStyle SmallMutedRightLine => _smallMutedRightLine ?? (_smallMutedRightLine = Track(new GUIStyle(SmallMutedRight) { wordWrap = false, clipping = TextClipping.Clip }));
 
         /// <summary><see cref="SmallGold"/> on one line, never wrapping.</summary>
-        public GUIStyle SmallGoldLine => _smallGoldLine ?? (_smallGoldLine = new GUIStyle(SmallGold) { wordWrap = false, clipping = TextClipping.Clip });
+        public GUIStyle SmallGoldLine => _smallGoldLine ?? (_smallGoldLine = Track(new GUIStyle(SmallGold) { wordWrap = false, clipping = TextClipping.Clip }));
 
         // Arena duel and VS intro styles. Made on first use.
         private GUIStyle _smallGoldCenter, _tinyMutedCenter, _numberBig, _titleCenter, _vsMark, _vsDisplay, _medalText;
 
         /// <summary><see cref="SmallGold"/> centred on one line.</summary>
-        public GUIStyle SmallGoldCenter => _smallGoldCenter ?? (_smallGoldCenter = new GUIStyle(SmallGold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
+        public GUIStyle SmallGoldCenter => _smallGoldCenter ?? (_smallGoldCenter = Track(new GUIStyle(SmallGold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip }));
 
         /// <summary>A small bold muted line, centred (short captions such as "Volta em" on the compass). 14 px since A-149 (was 10).</summary>
-        public GUIStyle TinyMutedCenter => _tinyMutedCenter ?? (_tinyMutedCenter = new GUIStyle(SmallMutedCenter) { fontSize = ChipSize, font = BodyBoldFont, wordWrap = false });
+        public GUIStyle TinyMutedCenter => _tinyMutedCenter ?? (_tinyMutedCenter = Track(new GUIStyle(SmallMutedCenter) { fontSize = ChipSize, font = BodyBoldFont, wordWrap = false }));
 
         /// <summary>A large gold number on one line (the Arena's Honor).</summary>
-        public GUIStyle NumberBig => _numberBig ?? (_numberBig = new GUIStyle(Number) { fontSize = 30, wordWrap = false });
+        public GUIStyle NumberBig => _numberBig ?? (_numberBig = Track(new GUIStyle(Number) { fontSize = 30, wordWrap = false }));
 
         /// <summary><see cref="Title"/> centred on one line.</summary>
-        public GUIStyle TitleCenter => _titleCenter ?? (_titleCenter = new GUIStyle(Title) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
+        public GUIStyle TitleCenter => _titleCenter ?? (_titleCenter = Track(new GUIStyle(Title) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip }));
 
         /// <summary>The gold "VS" between the two formations.</summary>
         public GUIStyle VsMark => _vsMark ?? (_vsMark = GoldDisplay(46));
@@ -669,6 +690,7 @@ namespace FishingIdle.Game.UI
                 {
                     _medalText = new GUIStyle(CenterBold) { wordWrap = false, clipping = TextClipping.Overflow };
                     _medalText.normal.textColor = new Color(0.23f, 0.15f, 0.02f);
+                    Track(_medalText);
                 }
 
                 return _medalText;
@@ -679,7 +701,7 @@ namespace FishingIdle.Game.UI
         {
             var style = new GUIStyle(Display) { fontSize = size, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             style.normal.textColor = Gold;
-            return style;
+            return Track(style);
         }
 
         private Texture2D _diagonal;
@@ -973,6 +995,13 @@ namespace FishingIdle.Game.UI
         /// <summary>A sunken rounded area inside a panel (the wallet of the player card).</summary>
         public void Inset(Rect rect)
         {
+            if (Paper)
+            {
+                GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, PaperInset, 0, 10);
+                GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, Alpha(PaperLine, 0.9f), 1f, 10);
+                return;
+            }
+
             var art = ArtAssets.Texture(WalletArt);
             if (art != null)
             {
