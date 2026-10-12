@@ -2777,7 +2777,7 @@ Números em `config/world_boss.json`.
 
 - **Horário.** Todo dia das **19:00 às 19:10, horário de Brasília** (UTC−3 fixo, sem horário de verão). O dia do evento
   vira à meia-noite de Brasília. O relógio é o do serviço do jogo, que nunca volta (TD-030).
-- **O Boss.** Vida infinita. Nome **sugerido** "Leviatã do Abismo" (o nome é decisão do proprietário, OD-068). Arte
+- **O Boss.** Vida infinita. Nome **sugerido** "Leviatã do Abismo" (o nome é decisão do proprietário, OD-069). Arte
   provisória (`ASSET_PENDENTE`): um disco escuro com borda vermelha e o ícone de ataque; pedido em
   `docs/ASSETS_PENDENTES.md`.
 - **Ataque automático.** Com o evento aberto e o **jogo aberto** (não precisa estar com a janela do Boss aberta), o
