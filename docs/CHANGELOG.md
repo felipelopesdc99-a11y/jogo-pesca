@@ -3,6 +3,29 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.60] — 12/10/2026
+
+Menu de cima: abas grandes com placa embaixo e atalhos redondos à direita (M24-T43, A-169). Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- A barra de cima virou uma faixa fina com **5 abas grandes coloridas**: Pesca, Tripulação, Aventura (Expedição, Arena e
+  Eventos), Comércio (Mercado e Loja) e Perfil. Com uma janela de Aventura ou Comércio aberta, as irmãs aparecem como
+  sub-abas logo abaixo da aba.
+- O **cartão do jogador** (retrato, nome, nível, Moedas, Conchas e Dólares) fica à esquerda da faixa; um clique abre o Perfil.
+- Uma **placa de madeira pendurada** no centro mostra a renda por segundo da Tripulação (dourada) e o total de Moedas.
+- **Atalhos redondos** em coluna à direita: Mapa, Aquário, Passe do Pescador, Eventos (vira o Boss Mundial dourado,
+  pulsando e com o tempo que falta, durante o evento) e Ranking, com os pontos e contagens de sempre.
+- Sino e opções à direita da faixa; avisos à direita, embaixo da faixa; tutorial à esquerda, apontando para as abas novas.
+
+### Removido
+
+- O logo, o nome do mapa e o cartão grande do jogador à direita (os dados continuam no Perfil).
+
+### Arte pendente
+
+- Ícones das 5 abas e dos atalhos e a moldura redonda (`ASSET_PENDENTE`, pedidos em `docs/ASSETS_PENDENTES.md`).
+
 ## [0.2.0-m21.59] — 12/10/2026
 
 Volta para 5 barcos; os mapas 6 a 10 dão fragmentos dos barcos 1 a 5 (M24-T42, A-168, TD-051). Verificado no CI, não aberto no Unity.

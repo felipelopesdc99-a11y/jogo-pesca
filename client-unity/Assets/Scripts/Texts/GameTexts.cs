@@ -51,6 +51,13 @@ namespace FishingIdle.Texts
             public const string Profile = "Perfil";
             public const string Crew = "Tripulação";
             public const string Events = "Eventos";
+
+            // The top menu (M24-T43, A-169): five big tabs grouping the menus, and the round shortcuts on the right.
+            public const string Adventure = "Aventura";
+            public const string Trade = "Comércio";
+            public const string PassShort = "Passe";
+            public const string IncomeTitle = "RENDA DA TRIPULAÇÃO";
+            public const string OpenProfile = "Abrir o Perfil";
         }
 
         // ------------------------------------------------------------------ fishing HUD
@@ -469,14 +476,14 @@ namespace FishingIdle.Texts
                 switch (step)
                 {
                     case "welcome": return "Você é um pescador no Lago Sereno. O barco pesca sozinho, até com o jogo fechado. Vamos dar os primeiros passos — leva uns 2 minutos.";
-                    case "claim_rod": return "Abra a " + Navigation.Shop + " (menu de cima) e pegue o Caniço Manso, a vara inicial. Ela é grátis.";
+                    case "claim_rod": return "Abra a aba " + Navigation.Trade + " (em cima) → " + Navigation.Shop + " e pegue o Caniço Manso, a vara inicial. Ela é grátis.";
                     case "start_fishing": return "Clique em \"" + Fishing.Start + "\", embaixo, no centro.";
                     case "first_catch": return "A cada ciclo o pescador tira um peixe da água. Quando ele aparecer, veja no aviso a espécie, o tamanho e a categoria.";
                     case "open_box": return "Todo peixe pescado vai para a " + Box.Open + " (canto de baixo, à direita). Abra para ver os peixes. Ela tem limite: quando enche, a pesca para até você vender.";
                     case "sell_fish": return "Na Caixa, selecione um peixe e clique em \"" + Box.SellSelected + "\". As Moedas melhoram sua vara, seu barco e compram iscas.";
                     case "keep_fish": return "Selecione outro peixe e clique em \"" + Aquarium.KeepSelected + "\". Peixes guardados sobem de nível e lutam por você.";
-                    case "cardume": return "Abra o " + Navigation.Profile + " → " + Profile.TabCardume + " e coloque um peixe numa posição. O Cardume luta na Arena e vai em Expedições.";
-                    case "expedition": return "No menu " + Navigation.Expedition + ", você envia o Cardume por 30 min a 6 h para trazer Moedas e, às vezes, um peixe. Enquanto isso, ele fica ocupado.";
+                    case "cardume": return "Abra a aba " + Navigation.Profile + " → " + Profile.TabCardume + " e coloque um peixe numa posição. O Cardume luta na Arena e vai em Expedições.";
+                    case "expedition": return "Na aba " + Navigation.Adventure + " → " + Navigation.Expedition + ", você envia o Cardume por 30 min a 6 h para trazer Moedas e, às vezes, um peixe. Enquanto isso, ele fica ocupado.";
                     default: return string.Empty;
                 }
             }
@@ -876,7 +883,7 @@ namespace FishingIdle.Texts
             public const string Info =
                 "Os eventos do jogo ficam aqui. Cada cartão mostra quando o evento acontece, se ele já começou e o que " +
                 "você conseguiu. Clique em \"Abrir\" para entrar no evento. Quando um evento está acontecendo, o botão " +
-                "Eventos da barra de cima ganha um ponto dourado.";
+                "Eventos, na coluna de atalhos à direita, fica dourado com o tempo que falta.";
             public const string Back = "‹ Eventos";
             public const string Open = "Abrir";
             public const string Now = "AGORA";

@@ -640,6 +640,57 @@ Pedido pronto para colar no ChatGPT:
 > jogo: um calendário de mesa com as duas argolas em cima e uma pequena estrela de cinco pontas no centro da folha,
 > simples e legível em 24 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_eventos.png
 
+## Menu de cima (M24-T43, A-169, pedido em 12/10/2026)
+
+`ASSET_PENDENTE`. Enquanto os arquivos não existem: as abas e os atalhos usam os ícones atuais do jogo (Pesca, Tripulação
+ou barco, Expedição, Mercado, Perfil; Mapa, Aquário, Passe, Eventos ou relógio, Boss ou ataque, Ranking), e a moldura
+redonda é um círculo com degradê azul e borda clara desenhado pelo jogo. Quando cada arquivo existir, o jogo passa a usá-lo
+sozinho. A faixa e a placa pendurada são desenhadas pelo jogo (madeira lisa, sem arquivo).
+
+| Arquivo | O quê | Tamanho | Onde aparece |
+|---|---|---|---|
+| `Arte/Icones/ico_aba_pesca.png` | Aba Pesca | 256×256, branco sobre transparente → 32 px | Faixa de cima |
+| `Arte/Icones/ico_aba_tripulacao.png` | Aba Tripulação | 256×256, branco sobre transparente → 32 px | Faixa de cima |
+| `Arte/Icones/ico_aba_aventura.png` | Aba Aventura | 256×256, branco sobre transparente → 32 px | Faixa de cima |
+| `Arte/Icones/ico_aba_comercio.png` | Aba Comércio | 256×256, branco sobre transparente → 32 px | Faixa de cima |
+| `Arte/Icones/ico_aba_perfil.png` | Aba Perfil | 256×256, branco sobre transparente → 32 px | Faixa de cima |
+| `Arte/Icones/ico_atalho_mapa.png` | Atalho Mapa | 256×256, branco sobre transparente → 36 px | Coluna de atalhos à direita |
+| `Arte/Icones/ico_atalho_aquario.png` | Atalho Aquário | 256×256, branco sobre transparente → 36 px | Coluna de atalhos à direita |
+| `Arte/Icones/ico_atalho_passe.png` | Atalho Passe do Pescador | 256×256, branco sobre transparente → 36 px | Coluna de atalhos à direita |
+| `Arte/Icones/ico_atalho_eventos.png` | Atalho Eventos (fora do evento) | 256×256, branco sobre transparente → 36 px | Coluna de atalhos à direita |
+| `Arte/Icones/ico_atalho_boss.png` | Atalho Boss Mundial (durante o evento; desenhado em marrom-escuro sobre o dourado) | 256×256, branco sobre transparente → 36 px | Coluna de atalhos à direita |
+| `Arte/Icones/ico_atalho_ranking.png` | Atalho Ranking | 256×256, branco sobre transparente → 36 px | Coluna de atalhos à direita |
+| `Arte/UI/ui_atalho_moldura.png` | Moldura redonda dos atalhos (anel), miolo transparente | 256×256 → 80 px | Por cima de cada atalho redondo |
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: um anzol pendurado numa linha curta com uma pequena gota de água ao lado, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_aba_pesca.png
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: uma âncora com uma corda enrolada no cabo, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_aba_tripulacao.png
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: uma bússola redonda com a agulha apontando para cima à direita, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_aba_aventura.png
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: uma barraca de feira com toldo listrado e um saquinho de moedas no balcão, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_aba_comercio.png
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: o busto de um pescador com chapéu de aba larga, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_aba_perfil.png
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: um mapa dobrado em três partes com um alfinete de localização, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_atalho_mapa.png
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: um aquário redondo com um peixinho e duas bolhas, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_atalho_aquario.png
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: um ingresso com a borda picotada e uma estrela no centro, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_atalho_passe.png
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: um calendário de mesa com uma estrela no centro da folha, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_atalho_eventos.png
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: a cabeça de uma criatura marinha gigante de boca aberta, vista de lado, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_atalho_boss.png
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: um troféu de duas alças com uma estrela, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_atalho_ranking.png
+
+> Moldura redonda de botão para jogo idle de pesca mobile, PNG 256×256 px com fundo transparente: um anel fino de madeira
+> clara envernizada com um aro interno dourado (#F6B93B) e quatro pequenos pregos de latão nos pontos cardeais; o miolo do
+> círculo totalmente TRANSPARENTE (o jogo pinta o fundo azul e o ícone por baixo), o anel ocupando só a borda (cerca de 10%
+> do diâmetro). Sem texto, sem ícone, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: ui_atalho_moldura.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

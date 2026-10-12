@@ -11,40 +11,48 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// The game interface on top of the scene: top bar, retractable player card, fishing controls,
-    /// Fishing Box button, notifications, and the Fishing Box window.
+    /// The game interface on top of the scene: the top menu, fishing controls, Fishing Box button,
+    /// notifications, and the windows.
     /// </summary>
     /// <remarks>
-    /// Layout follows GDD section 8: navigation on top, the living scene in the centre with a minimal
-    /// fishing overlay, quick Fishing Box access, toasts that never block. The player card, with the
-    /// wallet (Moedas, Conchas, Dólares) inside it, sits on the right under the bar and the toasts
-    /// below it; the tutorial hint uses the left side (owner request 07/10/2026). Everything is laid
-    /// out on a 1080-pixel-tall virtual canvas and scaled.
+    /// Layout follows GDD section 8 with the top menu chosen by the owner on 12/10/2026 (M24-T43, A-169): a thin
+    /// strip with the player card on the left (Moedas, Conchas, Dólares; a click opens the Perfil), five big coloured
+    /// tabs in the centre (Pesca, Tripulação, Aventura, Comércio, Perfil) and the bell and options on the right; a small
+    /// plaque with the income hanging under it; the round shortcuts (Mapa, Aquário, Passe, Eventos, Ranking) in a column
+    /// on the right, the toasts left of them; the tutorial hint on the left. Everything is laid out on a 1080-pixel-tall
+    /// virtual canvas and scaled.
     /// </remarks>
     public sealed class Hud : MonoBehaviour
     {
         private const float VirtualHeight = 1080f;
 
-        // Main bar, ~25% bigger than the old 64 px one (owner request 07/10/2026). Windows start at
-        // y 120 or lower (WindowFrame.Panel centres at most 880 px of height on the 1080 canvas), so the
-        // bar (80) and its shade (92) never reach them.
+        // The top strip (M24-T43, A-169). Windows start at y 120 or lower (WindowFrame.Panel centres at most 880 px of
+        // height on the 1080 canvas) and the ropes of their hanging sign go up to y 80 (WindowFrame.RopeAnchorY), so they
+        // hang from the strip's wooden trim (80..86).
         private const float BarHeight = 80f;
-        private const float NavButtonY = 12f;       // 52 px face + 4 px lip: 12..68 inside the 80 px bar
-        private const float NavButtonHeight = 52f;  // the old menu buttons were 40
-        private const float NavSpacing = 8f;
 
-        // Passe do Pescador, bell and options at the right of the bar: 20 margin + 3 × 56 + 2 × 8 (the pass button since
-        // M24-T17, A-158). The Boss Mundial moved into the Eventos menu (M24-T39, A-167).
-        private const float TopRightExtent = 204f;
+        // The five big tabs: 64 px tall (y 8..72; the active one grows 7%), 140 px wide or as wide as the longest label.
+        private const float TabTop = 8f, TabHeight = 64f, TabWidth = 140f, TabGap = 10f, TabIconOnlyWidth = 76f;
 
-        // A tighter menu (side padding 8, spacing 4) before falling back to icons only (A-167).
-        private const float NavSpacingTight = 4f;
+        // The bell and the options at the right end of the strip: 20 margin + 2 × 52 + 8.
+        private const float SideButton = 52f, SideButtonY = 12f;
+        private const float TopRightExtent = 20f + SideButton * 2f + 8f;
 
-        // The player card on the right, under the bar.
-        private const float CardWidth = 360f;
-        private const float CardTop = BarHeight + 16f;
-        private const float CardExpandedHeight = 356f;
-        private const float CardCollapsedHeight = 64f;
+        // The player card at the left of the strip.
+        private const float PlayerCardHeight = 64f, PortraitSize = 50f;
+
+        // The plaque with the income, hanging under the tabs (only with no window open).
+        private const float PlaqueWidth = 320f, PlaqueHeight = 90f, PlaqueTop = BarHeight + 20f;
+
+        // The sub-tabs of Aventura and Comércio, under the active tab (only with a window of the group open).
+        private const float SubTabY = BarHeight + 10f, SubTabHeight = 32f, SubTabGap = 6f;
+
+        // The round shortcuts in a column on the right (the label under each one overflows the column a little).
+        private const float ShortcutColumnWidth = 96f, ShortcutSize = 72f, ShortcutStep = 116f, ShortcutTop = BarHeight + 36f;
+
+        // The tutorial hint on the left and the toasts on the right, under the strip.
+        private const float UnderBar = BarHeight + 24f;
+
         // 480 since A-149 (was 440): two lines of the 15 px text hold what two lines of 13 px held.
         private const float ToastWidth = 480f;
 
@@ -68,7 +76,6 @@ namespace FishingIdle.Game.UI
         private PassWindow _pass;
         private WorldBossWindow _boss;
         private EventsWindow _events;
-        private bool _cardExpanded = true;
         private bool _showNotifications;
         private bool _showSettings;
         private bool _compact;
@@ -96,8 +103,10 @@ namespace FishingIdle.Game.UI
         private Rect _tipArea;
         private long _tipValue;
 
-        // Measured each frame by the top bar (logo and map name), so the main menu knows how much room it has.
-        private float _topLeftExtent = 300f;
+        // The tabs of the last frame (the sub-tabs and the tutorial point at them), and the plaque's text styles.
+        private Rect[] _tabRects;
+        private GUIStyle _plaqueCaption;
+        private GUIStyle _plaqueRate;
 
         private void Start()
         {
@@ -493,8 +502,13 @@ namespace FishingIdle.Game.UI
             var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _crew.IsOpen || _pass.IsOpen || _boss.IsOpen || _events.IsOpen || WelcomeBackPending || welcomeDialog;
             _root.WindowOpen = windowOpen;
             GUI.enabled = !windowOpen;
-            DrawTopBar(skin);
-            DrawPlayerCard(skin);
+            if (!windowOpen)
+            {
+                // With a window open, the strip is drawn above it instead (below).
+                DrawStrip(skin, false);
+            }
+
+            DrawShortcuts(skin);
             DrawFishingControls(skin);
             DrawBoxButton(skin);
             if (!windowOpen)
@@ -532,10 +546,11 @@ namespace FishingIdle.Game.UI
             GUI.enabled = true;
             if (windowOpen)
             {
-                // The navigation stays usable above the windows (not above the welcome-back summary).
+                // The strip and the sub-tabs stay usable above the windows (not above the welcome-back summary).
                 // Never while a window's own confirmation dialog is open: the dialog owns the input.
                 GUI.enabled = !WelcomeBackPending && !welcomeDialog && !AnyWindowDialog();
-                DrawNavigation(skin);
+                DrawStrip(skin, true);
+                DrawSubTabs(skin);
                 GUI.enabled = true;
             }
 
@@ -591,61 +606,95 @@ namespace FishingIdle.Game.UI
             _tipValue = value;
         }
 
-        // ------------------------------------------------------------------ pieces
+        // ------------------------------------------------------------------ top menu (M24-T43, A-169)
 
-        private void DrawTopBar(UiSkin skin)
+        // The five tabs and the menus each one groups (owner's choice of 12/10/2026, example 2 of menu_mesclas).
+        private const int GroupFishing = 0, GroupCrew = 1, GroupAdventure = 2, GroupTrade = 3, GroupProfile = 4, GroupCount = 5;
+
+        private static string GroupLabel(int group)
         {
-            skin.TopBarBackground(new Rect(0, 0, _width, BarHeight));
+            switch (group)
+            {
+                case GroupCrew: return GameTexts.Navigation.Crew;
+                case GroupAdventure: return GameTexts.Navigation.Adventure;
+                case GroupTrade: return GameTexts.Navigation.Trade;
+                case GroupProfile: return GameTexts.Navigation.Profile;
+                default: return GameTexts.Navigation.Fishing;
+            }
+        }
 
-            // Logo block on two lines (title, then the map), so the bigger menu keeps its names at 16:9.
-            // With the owner's logo (fish and "Fishing Idle" in one picture), the map goes under its lettering.
+        /// <summary>The tab icon: the painted ico_aba_* when it exists (ASSET_PENDENTE), otherwise the game's current icon.</summary>
+        private static string GroupIcon(int group)
+        {
+            switch (group)
+            {
+                case GroupCrew: return PendingIcon("aba_tripulacao", CrewWindow.NavIcon);
+                case GroupAdventure: return PendingIcon("aba_aventura", Icons.Expedition);
+                case GroupTrade: return PendingIcon("aba_comercio", Icons.Market);
+                case GroupProfile: return PendingIcon("aba_perfil", Icons.Profile);
+                default: return PendingIcon("aba_pesca", Icons.Fishing);
+            }
+        }
+
+        private static string PendingIcon(string art, string fallback) => ArtAssets.Icon(art) != null ? art : fallback;
+
+        /// <summary>The tab whose window is open; Pesca when none of the grouped windows is.</summary>
+        private int ActiveGroup()
+        {
+            if (_crew.IsOpen) return GroupCrew;
+            if (_expedition.IsOpen || _arena.IsOpen || _events.IsOpen || _boss.IsOpen) return GroupAdventure;
+            if (_market.IsOpen || _shop.IsOpen) return GroupTrade;
+            if (_profile.IsOpen) return GroupProfile;
+            return GroupFishing;
+        }
+
+        /// <summary>
+        /// The strip across the top: the player card on the left (a click opens the Perfil), the five tabs in the centre,
+        /// the bell and the options on the right; with no window open, the plaque with the income hangs under it.
+        /// </summary>
+        private void DrawStrip(UiSkin skin, bool windowOpen)
+        {
+            TopMenuArt.Strip(skin, new Rect(0, 0, _width, BarHeight));
             var player = _root.Player;
-            var logo = ArtAssets.Texture(UiSkin.LogoArt);
-            var textX = 72f;
-            if (logo != null)
+            var navEnabled = GUI.enabled;
+            var cardRight = DrawPlayerCard(skin, player);
+            _tabRects = TabLayout(skin, cardRight, out var iconsOnly);
+            var active = ActiveGroup();
+            for (var g = 0; g < GroupCount; g++)
             {
-                var logoHeight = player != null ? 44f : 58f;
-                var logoRect = new Rect(24f, player != null ? 4f : 11f, logoHeight * logo.width / logo.height, logoHeight);
-                GUI.DrawTexture(logoRect, logo, ScaleMode.ScaleToFit, true);
-                // The lettering starts about a quarter into the logo, after the fish.
-                textX = logoRect.x + logoRect.width * 0.26f;
-                _topLeftExtent = logoRect.xMax;
-            }
-            else
-            {
-                var titleWidth = skin.Title.CalcSize(new GUIContent(GameTexts.GameTitle)).x;
-                skin.DrawIcon(new Rect(22, 21, 40, 38), Icons.Fish, UiSkin.Accent);
-                _topLeftExtent = 72f + titleWidth;
-                GUI.Label(new Rect(72, player != null ? 8 : 22, titleWidth + 8, 36), GameTexts.GameTitle, skin.Title);
-            }
+                var rect = _tabRects[g];
+                if (TopMenuArt.Tab(skin, rect, g, GroupIcon(g), iconsOnly ? null : GroupLabel(g), g == active))
+                {
+                    OnTab(g, active, windowOpen);
+                }
 
-            if (player != null)
-            {
-                var mapLabel = FishCard.Fit(player.MapName, skin.SmallMuted, 200f);
-                var mapY = logo != null ? 50f : 47f;
-                skin.DrawIcon(new Rect(textX + 1f, mapY + 2f, 14, 14), Icons.Pin, UiSkin.Muted);
-                GUI.Label(new Rect(textX + 19f, mapY, 204, 20), mapLabel, skin.SmallMuted);
-                _topLeftExtent = Mathf.Max(_topLeftExtent, textX + 19f + Mathf.Min(200f, skin.SmallMuted.CalcSize(new GUIContent(mapLabel)).x));
+                if (g == GroupAdventure && _root.ExpeditionResult != null && !_expedition.IsOpen)
+                {
+                    // The Cardume is back: a red dot until the player opens the Expedition and reads the report.
+                    TopMenuArt.Badge(skin, rect, 0, UiSkin.Danger);
+                }
+                else if (g == GroupAdventure && _root.WorldBoss != null && _root.WorldBoss.Open)
+                {
+                    // An event is happening (the Boss Mundial): a gold dot, like the round shortcut.
+                    TopMenuArt.Badge(skin, rect, 0, UiSkin.Gold);
+                }
             }
-
-            // Primary navigation (GDD section 7).
-            DrawNavigation(skin);
 
             if (player == null)
             {
                 return;
             }
 
-            // Secondary menu (GDD section 7): notifications bell and settings, icons only, so the nine main
-            // menus keep their names (A-100). The wallet lives in the player card (owner request 07/10/2026).
-            var settings = new Rect(_width - 20f - 56f, NavButtonY, 56f, NavButtonHeight);
+            // The bell and the options, icons only at the right end of the strip; inert while a window is open (as before).
+            GUI.enabled = navEnabled && !windowOpen;
+            var settings = new Rect(_width - 20f - SideButton, SideButtonY, SideButton, SideButton);
             if (skin.NavGameButton(settings, Icons.Settings, null, _showSettings))
             {
                 _showSettings = !_showSettings;
                 _showNotifications = false;
             }
 
-            var bell = new Rect(settings.x - 8f - 56f, NavButtonY, 56f, NavButtonHeight);
+            var bell = new Rect(settings.x - 8f - SideButton, SideButtonY, SideButton, SideButton);
             if (skin.NavGameButton(bell, Icons.Bell, null, _showNotifications))
             {
                 _showNotifications = !_showNotifications;
@@ -655,87 +704,336 @@ namespace FishingIdle.Game.UI
 
             if (_root.Toasts.Unread > 0)
             {
-                // Red dot with the count, like a phone badge.
-                var count = _root.Toasts.Unread > 9 ? "9+" : _root.Toasts.Unread.ToString();
-                var dot = new Rect(bell.xMax - 21, bell.y + 1, 20, 20);
-                GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Danger, 0, 10);
-                GUI.Label(dot, count, skin.PillText);
+                TopMenuArt.Badge(skin, bell, _root.Toasts.Unread, UiSkin.Danger);
             }
 
-            // Passe do Pescador (M24-T17, A-158): an icon button left of the bell, so the nine main menus keep their room;
-            // a gold dot counts the rewards ready to claim.
-            var pass = new Rect(bell.x - 8f - 56f, NavButtonY, 56f, NavButtonHeight);
-            if (skin.NavGameButton(pass, PassWindow.NavIcon, null, _pass.IsOpen))
+            GUI.enabled = navEnabled;
+            if (!windowOpen)
+            {
+                DrawIncomePlaque(skin, player);
+            }
+        }
+
+        private void OnTab(int group, int active, bool windowOpen)
+        {
+            if (group == GroupFishing)
+            {
+                // Pesca: back to the scene.
+                if (windowOpen)
+                {
+                    CloseAllWindows();
+                }
+
+                return;
+            }
+
+            if (group == active)
+            {
+                // From inside an event (the Boss window), Aventura goes back to the list of events.
+                if (_boss.IsOpen)
+                {
+                    CloseAllWindows();
+                    _events.Open();
+                }
+
+                return;
+            }
+
+            CloseAllWindows();
+            switch (group)
+            {
+                case GroupCrew: _crew.Open(); break;
+                case GroupAdventure: _expedition.Open(); break;
+                case GroupTrade:
+                    // The first window of the group (Mercado); during the tutorial step of the first rod, the Loja.
+                    if (_root.Tutorial != null && _root.Tutorial.Active && _root.Tutorial.Step == TutorialSteps.ClaimRod)
+                    {
+                        _shop.Open();
+                    }
+                    else
+                    {
+                        _market.Open();
+                    }
+
+                    break;
+                case GroupProfile: _profile.Open(); break;
+            }
+        }
+
+        /// <summary>
+        /// Where the five tabs go: centred on the screen when that fits, otherwise centred between the player card and
+        /// the bell; narrower tabs when needed, and icons only when even the narrowest labels do not fit.
+        /// </summary>
+        private Rect[] TabLayout(UiSkin skin, float cardRight, out bool iconsOnly)
+        {
+            var roomLeft = cardRight + 16f;
+            var roomRight = _width - TopRightExtent - 16f;
+            var room = roomRight - roomLeft;
+            var need = 0f;
+            for (var g = 0; g < GroupCount; g++)
+            {
+                need = Mathf.Max(need, TopMenuArt.TabLabelWidth(skin, GroupLabel(g)) + 24f);
+            }
+
+            var width = Mathf.Max(TabWidth, need);
+            var total = GroupCount * width + (GroupCount - 1) * TabGap;
+            if (total > room)
+            {
+                width = (room - (GroupCount - 1) * TabGap) / GroupCount;
+            }
+
+            iconsOnly = width < need;
+            if (iconsOnly)
+            {
+                width = TabIconOnlyWidth;
+            }
+
+            total = GroupCount * width + (GroupCount - 1) * TabGap;
+            var x = _width / 2f - total / 2f;
+            if (x < roomLeft || x + total > roomRight)
+            {
+                x = Mathf.Max(roomLeft, (roomLeft + roomRight) / 2f - total / 2f);
+            }
+
+            var rects = new Rect[GroupCount];
+            for (var g = 0; g < GroupCount; g++)
+            {
+                rects[g] = new Rect(x, TabTop, width, TabHeight);
+                x += width + TabGap;
+            }
+
+            return rects;
+        }
+
+        /// <summary>
+        /// With a window of Aventura or Comércio open, its sister windows as small sub-tabs hanging under the active tab
+        /// (Expedição | Arena | Eventos, Mercado | Loja). The Tripulação keeps its own tabs inside the window.
+        /// </summary>
+        private void DrawSubTabs(UiSkin skin)
+        {
+            var group = ActiveGroup();
+            string[] labels;
+            int active;
+            if (group == GroupAdventure)
+            {
+                labels = new[] { GameTexts.Navigation.Expedition, GameTexts.Navigation.Arena, GameTexts.Navigation.Events };
+                active = _expedition.IsOpen ? 0 : _arena.IsOpen ? 1 : 2;
+            }
+            else if (group == GroupTrade)
+            {
+                labels = new[] { GameTexts.Navigation.Market, GameTexts.Navigation.Shop };
+                active = _market.IsOpen ? 0 : 1;
+            }
+            else
+            {
+                return;
+            }
+
+            var widths = new float[labels.Length];
+            var total = (labels.Length - 1) * SubTabGap;
+            for (var i = 0; i < labels.Length; i++)
+            {
+                widths[i] = skin.Chip.CalcSize(new GUIContent(labels[i])).x + 32f;
+                total += widths[i];
+            }
+
+            var tab = _tabRects != null ? _tabRects[group] : new Rect(_width / 2f, 0f, 0f, 0f);
+            var x = Mathf.Clamp(tab.center.x - total / 2f, 20f, _width - 20f - total);
+            var holder = new Rect(x - 6f, SubTabY - 6f, total + 12f, SubTabHeight + 12f);
+            GUI.DrawTexture(holder, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.04f, 0.08f, 0.14f, 0.92f), 0, 14);
+            GUI.DrawTexture(holder, skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.12f), 1.5f, 14);
+            for (var i = 0; i < labels.Length; i++)
+            {
+                var rect = new Rect(x, SubTabY, widths[i], SubTabHeight);
+                // Eventos is also the way back from the Boss window to the list.
+                if (TopMenuArt.SubTab(skin, rect, labels[i], i == active) && (i != active || _boss.IsOpen))
+                {
+                    CloseAllWindows();
+                    if (group == GroupAdventure)
+                    {
+                        if (i == 0) _expedition.Open();
+                        if (i == 1) _arena.Open();
+                        if (i == 2) _events.Open();
+                    }
+                    else
+                    {
+                        if (i == 0) _market.Open();
+                        if (i == 1) _shop.Open();
+                    }
+                }
+
+                if (group == GroupAdventure && i == 0 && _root.ExpeditionResult != null && !_expedition.IsOpen)
+                {
+                    TopMenuArt.Badge(skin, rect, 0, UiSkin.Danger);
+                }
+
+                x += widths[i] + SubTabGap;
+            }
+        }
+
+        /// <summary>
+        /// The round shortcuts in a column on the right: Mapa, Aquário, Passe do Pescador, Eventos (the Boss Mundial, gold and
+        /// breathing with the time left, while it happens) and Ranking. Under an open window they are covered and inert.
+        /// </summary>
+        private void DrawShortcuts(UiSkin skin)
+        {
+            var player = _root.Player;
+            if (player == null)
+            {
+                return;
+            }
+
+            var cx = _width - 20f - ShortcutColumnWidth / 2f;
+            var y = ShortcutTop;
+            Rect Next()
+            {
+                var r = new Rect(cx - ShortcutSize / 2f, y, ShortcutSize, ShortcutSize);
+                y += ShortcutStep;
+                return r;
+            }
+
+            var map = Next();
+            if (TopMenuArt.RoundButton(skin, map, PendingIcon("atalho_mapa", Icons.Map), GameTexts.Navigation.Map, TopMenuArt.Round.Blue, _map.IsOpen))
+            {
+                CloseAllWindows();
+                _map.Open();
+            }
+
+            var aquarium = Next();
+            if (TopMenuArt.RoundButton(skin, aquarium, PendingIcon("atalho_aquario", Icons.Aquarium), GameTexts.Navigation.Aquarium, TopMenuArt.Round.Blue, _aquarium.IsOpen))
+            {
+                CloseAllWindows();
+                _aquarium.Open();
+            }
+
+            TopMenuArt.BottomPill(skin, aquarium, player.AquariumCount + "/" + player.AquariumCapacity);
+
+            var pass = Next();
+            if (TopMenuArt.RoundButton(skin, pass, PendingIcon("atalho_passe", PassWindow.NavIcon), GameTexts.Navigation.PassShort, TopMenuArt.Round.Pass, _pass.IsOpen))
             {
                 CloseAllWindows();
                 _pass.Open();
             }
 
-            if (GUI.enabled && pass.Contains(Event.current.mousePosition))
-            {
-                GUI.Label(new Rect(pass.x - 60f, pass.yMax + 2f, pass.width + 120f, UiSkin.SmallLine), GameTexts.Pass.ButtonTip, skin.SmallMutedCenter);
-            }
-
             var ready = _root.Pass?.ClaimableCount ?? 0;
             if (ready > 0)
             {
-                var count = ready > 9 ? "9+" : ready.ToString();
-                var dot = new Rect(pass.xMax - 21, pass.y + 1, 20, 20);
-                GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Gold, 0, 10);
-                GUI.Label(dot, count, skin.PillText);
+                TopMenuArt.Badge(skin, pass, ready, UiSkin.Danger);
             }
 
-        }
-
-        /// <summary>
-        /// The wallet inside the expanded player card: Moedas on the first line (counting up, with the
-        /// "+N" of a gain at the right of that line), Conchas and Dólares side by side on the second.
-        /// Conchas buy and upgrade every item, and both are traded between players (A-098).
-        /// </summary>
-        private void DrawWallet(UiSkin skin, Rect area, PlayerView player)
-        {
-            skin.Inset(area);
-            var coinLine = DrawCoins(skin, area.x + 14f, area.y + 24f, 30f, player.Coins);
-            skin.Divider(new Rect(area.x + 14f, area.y + 45f, area.width - 28f, 1f));
-            var half = (area.width - 28f) / 2f;
-            DrawCurrency(skin, area.x + 14f, area.y + 64f, Icons.Shell, GameTexts.Player.Shells, player.Shells, true);
-            DrawCurrency(skin, area.x + 14f + half, area.y + 64f, Icons.Dollar, GameTexts.Player.Dollars, player.Dollars, true);
-            DrawCoinGain(skin, coinLine, area.xMax - 10f);
-            DrawCrewRate(skin, coinLine, area.xMax - 10f);
-        }
-
-        /// <summary>
-        /// The Crew's "+X/s" (M24-T08), small and muted at the right of the coin line; hidden while a "+N" gain shows
-        /// there, and when it does not fit beside the coins.
-        /// </summary>
-        private void DrawCrewRate(UiSkin skin, Rect coinLine, float right)
-        {
-            var rate = _root.CrewCoinsPerSecond;
-            if (rate <= 0 || (_coinsGain > 0 && Time.unscaledTime - _coinsGainAt < 1.4f))
+            var events = Next();
+            var boss = _root.WorldBoss;
+            if (boss != null && boss.Open)
             {
-                return;
-            }
+                if (TopMenuArt.RoundButton(skin, events, PendingIcon("atalho_boss", WorldBossWindow.NavIcon), GameTexts.WorldBoss.Title, TopMenuArt.Round.Gold, _boss.IsOpen))
+                {
+                    CloseAllWindows();
+                    _boss.Open();
+                }
 
-            var text = GameTexts.Crew.HudRate(Format.PerSecond(rate));
-            var w = skin.SmallMutedRightLine.CalcSize(new GUIContent(text)).x + 4f;
-            var left = coinLine.xMax + 10f;
-            if (right - left < w)
+                TopMenuArt.TimePill(skin, events, Format.Countdown(boss.SecondsLeft));
+            }
+            else if (TopMenuArt.RoundButton(skin, events, PendingIcon("atalho_eventos", EventsWindow.NavIcon), GameTexts.Navigation.Events, TopMenuArt.Round.Blue, _events.IsOpen))
             {
-                return;
+                CloseAllWindows();
+                _events.Open();
             }
 
-            GUI.Label(new Rect(right - w, coinLine.center.y - 10f, w, UiSkin.SmallLine), text, skin.SmallMutedRightLine);
+            var ranking = Next();
+            if (TopMenuArt.RoundButton(skin, ranking, PendingIcon("atalho_ranking", Icons.Ranking), GameTexts.Navigation.Ranking, TopMenuArt.Round.Blue, _ranking.IsOpen))
+            {
+                CloseAllWindows();
+                _ranking.Open();
+            }
+        }
+
+        /// <summary>The small wooden plaque hanging under the tabs: the Crew's income per second (gold) and the Moedas.</summary>
+        private void DrawIncomePlaque(UiSkin skin, PlayerView player)
+        {
+            var plaque = new Rect(_width / 2f - PlaqueWidth / 2f, PlaqueTop, PlaqueWidth, PlaqueHeight);
+            TopMenuArt.Plaque(skin, plaque, BarHeight + 4f);
+            if (_plaqueCaption == null)
+            {
+                _plaqueCaption = new GUIStyle(skin.TinyMutedCenter) { normal = { textColor = new Color32(0xF3, 0xE2, 0xBF, 0xFF) } };
+                _plaqueRate = new GUIStyle(skin.NumberBig) { alignment = TextAnchor.MiddleCenter, fontSize = 28, normal = { textColor = UiSkin.Gold } };
+            }
+
+            UiSkin.ShadowLabel(new Rect(plaque.x, plaque.y + 6f, plaque.width, 16f), GameTexts.Navigation.IncomeTitle, _plaqueCaption);
+            UiSkin.ShadowLabel(new Rect(plaque.x, plaque.y + 22f, plaque.width, 32f), GameTexts.Crew.HudRate(Format.PerSecond(_root.CrewCoinsPerSecond)), _plaqueRate);
+
+            // The coin counter (counting up, with the "+N" of a gain at its right), centred on the bottom line.
+            var textWidth = skin.Number.CalcSize(new GUIContent(Format.Short(_coinsShown > 0 ? _coinsShown : player.Coins))).x;
+            var coinLine = DrawCoins(skin, plaque.center.x - (24f + 8f + textWidth) / 2f, plaque.y + 70f, 24f, player.Coins);
+            DrawCoinGain(skin, coinLine, plaque.xMax + 120f);
         }
 
         /// <summary>
-        /// A small amount with its icon (Conchas, Dólares), vertically centred on <paramref name="centreY"/>,
+        /// The player card at the left of the strip: portrait, name and level, and Moedas, Conchas and Dólares. A click opens
+        /// the Perfil. Returns where the card ends.
+        /// </summary>
+        private float DrawPlayerCard(UiSkin skin, PlayerView player)
+        {
+            if (player == null)
+            {
+                var titleWidth = skin.Title.CalcSize(new GUIContent(GameTexts.GameTitle)).x;
+                GUI.Label(new Rect(24f, 22f, titleWidth + 8f, 36f), GameTexts.GameTitle, skin.Title);
+                return 24f + titleWidth + 8f;
+            }
+
+            var name = FishCard.Fit(player.PlayerName, skin.BodyBold, 180f);
+            var level = GameTexts.Player.LevelShort + " " + player.FisherLevel;
+            var line1 = skin.BodyBold.CalcSize(new GUIContent(name)).x + 10f + skin.SmallGold.CalcSize(new GUIContent(level)).x;
+            var line2 = CurrencyWidth(skin, player.Coins) + CurrencyWidth(skin, player.Shells) + CurrencyWidth(skin, player.Dollars) + 2f * 14f;
+            var width = Mathf.Clamp(12f + PortraitSize + 12f + Mathf.Max(line1, line2) + 14f, 220f, 400f);
+            var card = new Rect(16f, (BarHeight - PlayerCardHeight) / 2f, width, PlayerCardHeight);
+            var hover = GUI.enabled && card.Contains(Event.current.mousePosition) && !_showNotifications && !_showSettings;
+            GUI.DrawTexture(card, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, hover ? 0.35f : 0.25f), 0, 14);
+            GUI.DrawTexture(card, skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, hover ? 0.3f : 0.12f), 1.5f, 14);
+
+            // Portrait: the painted fisherman's head in the owner's ring (or the profile icon).
+            var avatar = new Rect(card.x + 8f, card.y + (card.height - PortraitSize) / 2f, PortraitSize, PortraitSize);
+            var avatarFrame = ArtAssets.Texture(UiSkin.AvatarFrameArt);
+            if (avatarFrame != null)
+            {
+                GUI.DrawTexture(new Rect(avatar.x - 1f, avatar.y - 1f, avatar.width + 2f, avatar.height + 2f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Night, 0, avatar.width / 2f + 1f);
+                AvatarArt.Draw(skin, new Rect(avatar.x + 1, avatar.y + 1, avatar.width - 2, avatar.height - 2), player.AvatarId, avatar.width / 2f - 1f);
+                GUI.DrawTexture(new Rect(avatar.x - 5f, avatar.y - 5f, avatar.width + 10f, avatar.height + 10f), avatarFrame, ScaleMode.ScaleToFit, true);
+            }
+            else
+            {
+                GUI.Box(avatar, GUIContent.none, skin.IconTile);
+                AvatarArt.Draw(skin, new Rect(avatar.x + 3, avatar.y + 3, avatar.width - 6, avatar.height - 6), player.AvatarId);
+            }
+
+            var x = avatar.xMax + 12f;
+            var nameWidth = skin.BodyBold.CalcSize(new GUIContent(name)).x + 2f;
+            GUI.Label(new Rect(x, card.y + 6f, nameWidth, 24f), name, skin.BodyBold);
+            GUI.Label(new Rect(x + nameWidth + 8f, card.y + 8f, 90f, 22f), level, skin.SmallGold);
+
+            var end = DrawCurrency(skin, x, card.y + 44f, Icons.Coin, GameTexts.Player.Coins, player.Coins, false);
+            end = DrawCurrency(skin, end + 14f, card.y + 44f, Icons.Shell, GameTexts.Player.Shells, player.Shells, false);
+            DrawCurrency(skin, end + 14f, card.y + 44f, Icons.Dollar, GameTexts.Player.Dollars, player.Dollars, false);
+
+            if (GUI.Button(card, new GUIContent(string.Empty, GameTexts.Navigation.OpenProfile), GUIStyle.none) && !_profile.IsOpen && !_showNotifications && !_showSettings)
+            {
+                CloseAllWindows();
+                _profile.Open();
+            }
+
+            return card.xMax;
+        }
+
+        private static float CurrencyWidth(UiSkin skin, long value) => 24f + skin.SmallBold.CalcSize(new GUIContent(Format.Short(value))).x + 2f;
+
+        /// <summary>
+        /// A small amount with its icon (Moedas, Conchas, Dólares), vertically centred on <paramref name="centreY"/>,
         /// optionally followed by the currency name. Returns the x where it ends.
         /// </summary>
         private float DrawCurrency(UiSkin skin, float x, float centreY, string icon, string name, long value, bool showName)
         {
             var text = Format.Short(value);
             var textWidth = skin.SmallBold.CalcSize(new GUIContent(text)).x + 2f;
-            // Coloured art (ui_currency_shell / ui_currency_dollar), never tinted; the white icon when it is missing.
+            // Coloured art (ui_currency_coin / shell / dollar), never tinted; the white icon when it is missing.
             skin.CurrencyIcon(new Rect(x - 1f, centreY - 10f, 20, 20), icon);
             GUI.Label(new Rect(x + 24f, centreY - 9f, textWidth + 2f, 20), text, skin.SmallBold);
             var end = x + 24f + textWidth;
@@ -751,8 +1049,8 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// The "+N" of a coin gain, on the coin line of the card: right-aligned at <paramref name="right"/>
-        /// (never over the coin number), on a small dark pill so it reads over anything under it.
+        /// The "+N" of a coin gain, at the right of the coin line: right-aligned at <paramref name="right"/> at most (never
+        /// over the coin number), on a small dark pill so it reads over anything under it.
         /// </summary>
         private void DrawCoinGain(UiSkin skin, Rect coinLine, float right)
         {
@@ -764,7 +1062,8 @@ namespace FishingIdle.Game.UI
 
             var text = GameTexts.Celebration.Coins(Format.Number(_coinsGain));
             var w = skin.SmallGoldLine.CalcSize(new GUIContent(text)).x + 4f;
-            var x = Mathf.Max(coinLine.xMax + 10f, right - w - 8f);
+            var x = Mathf.Min(coinLine.xMax + 10f, right - w - 8f);
+            x = Mathf.Max(coinLine.xMax + 10f, x);
             // Rises at most ~8 px, staying inside the coin line.
             var y = coinLine.center.y - 11f - since * 6f;
             var previous = GUI.color;
@@ -833,150 +1132,6 @@ namespace FishingIdle.Game.UI
             return line;
         }
 
-        /// <summary>
-        /// Where each main menu button goes: icon + label, centred on the screen when that fits, otherwise
-        /// centred in the room between the logo block and the bell; icons only when even that is too narrow.
-        /// </summary>
-        private Rect[] NavLayout(UiSkin skin, out bool iconsOnly)
-        {
-            var labels = NavLabels();
-            var widths = new float[labels.Length];
-            var roomLeft = _topLeftExtent + 16f;
-            var roomRight = _width - TopRightExtent - 16f;
-            var spacing = NavSpacing;
-            var total = NavWidths(skin, labels, widths, false, spacing);
-            if (total > roomRight - roomLeft)
-            {
-                // Eleven menus since the Eventos (A-167): first a tighter row, then icons only.
-                spacing = NavSpacingTight;
-                total = NavWidths(skin, labels, widths, true, spacing);
-            }
-
-            iconsOnly = total > roomRight - roomLeft;
-            if (iconsOnly)
-            {
-                for (var i = 0; i < widths.Length; i++)
-                {
-                    widths[i] = UiSkin.NavGameIconWidth;
-                }
-
-                spacing = NavSpacing;
-                total = labels.Length * (UiSkin.NavGameIconWidth + spacing) - spacing;
-            }
-
-            var x = _width / 2f - total / 2f;
-            if (x < roomLeft || x + total > roomRight)
-            {
-                x = Mathf.Max(roomLeft, (roomLeft + roomRight) / 2f - total / 2f);
-            }
-
-            var rects = new Rect[labels.Length];
-            for (var i = 0; i < labels.Length; i++)
-            {
-                rects[i] = new Rect(x, NavButtonY, widths[i], NavButtonHeight);
-                x += widths[i] + spacing;
-            }
-
-            return rects;
-        }
-
-        /// <summary>Fills <paramref name="widths"/> with each button's width and returns the row's total.</summary>
-        private static float NavWidths(UiSkin skin, string[] labels, float[] widths, bool tight, float spacing)
-        {
-            var total = -spacing;
-            for (var i = 0; i < labels.Length; i++)
-            {
-                widths[i] = skin.NavGameWidth(labels[i], tight);
-                total += widths[i] + spacing;
-            }
-
-            return total;
-        }
-
-        private string[] NavLabels()
-        {
-            return new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Crew, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Arena, GameTexts.Navigation.Ranking, GameTexts.Navigation.Expedition, GameTexts.Navigation.Market, GameTexts.Navigation.Shop, GameTexts.Navigation.Profile, GameTexts.Navigation.Events };
-        }
-
-        // Positions of the main menu buttons (the Tripulação, M24-T08, comes right after Pesca; Eventos, M24-T39, is last).
-        private const int NavFishing = 0, NavCrew = 1, NavMap = 2, NavAquarium = 3, NavArena = 4, NavRanking = 5, NavExpedition = 6, NavMarket = 7, NavShop = 8, NavProfile = 9, NavEvents = 10;
-
-        private static string NavIcon(int index)
-        {
-            switch (index)
-            {
-                case NavCrew: return CrewWindow.NavIcon;
-                case NavMap: return Icons.Map;
-                case NavAquarium: return Icons.Aquarium;
-                case NavArena: return Icons.Arena;
-                case NavRanking: return Icons.Ranking;
-                case NavExpedition: return Icons.Expedition;
-                case NavMarket: return Icons.Market;
-                case NavShop: return Icons.Shop;
-                case NavProfile: return Icons.Profile;
-                case NavEvents: return EventsWindow.NavIcon;
-                default: return Icons.Fishing;
-            }
-        }
-
-        /// <summary>Main menus (GDD section 7). Pesca closes any window; the others open theirs.</summary>
-        private void DrawNavigation(UiSkin skin)
-        {
-            var labels = NavLabels();
-            var rects = NavLayout(skin, out var iconsOnly);
-            var active = _events.IsOpen || _boss.IsOpen ? NavEvents : _crew.IsOpen ? NavCrew : _map.IsOpen ? NavMap : _aquarium.IsOpen ? NavAquarium : _arena.IsOpen ? NavArena : _ranking.IsOpen ? NavRanking
-                : _expedition.IsOpen ? NavExpedition : _market.IsOpen ? NavMarket : _shop.IsOpen ? NavShop : _profile.IsOpen ? NavProfile : NavFishing;
-
-            for (var i = 0; i < labels.Length; i++)
-            {
-                // Menu icons: the owner's final set (tools/Arte/processar_icones_menu.py, A-139).
-                if (i == NavEvents && _root.WorldBoss != null && _root.WorldBoss.Open)
-                {
-                    // An event is on (the Boss Mundial): a soft gold glow behind the button (A-167).
-                    skin.DrawGlow(rects[i], UiSkin.Gold, 0.22f + 0.12f * Mathf.Sin(Time.unscaledTime * 3f));
-                }
-
-                // From inside an event (the Boss window), Eventos goes back to the list.
-                var clicked = skin.NavGameButton(rects[i], NavIcon(i), iconsOnly ? null : labels[i], i == active) && (i != active || (i == NavEvents && _boss.IsOpen));
-                if (i == NavExpedition && _root.ExpeditionResult != null && !_expedition.IsOpen)
-                {
-                    // The Cardume is back: a dot until the player opens the Expedition and reads the report.
-                    var dot = new Rect(rects[i].xMax - 14, rects[i].y + 3, 11, 11);
-                    GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Danger, 0, 5.5f);
-                }
-
-                if (i == NavEvents && _root.WorldBoss != null && _root.WorldBoss.Open)
-                {
-                    // A gold dot while an event is happening, like the Passe's.
-                    var dot = new Rect(rects[i].xMax - 14, rects[i].y + 3, 11, 11);
-                    GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Gold, 0, 5.5f);
-                }
-
-                if (clicked)
-                {
-                    CloseAllWindows();
-                    if (i == NavCrew) _crew.Open();
-                    if (i == NavMap) _map.Open();
-                    if (i == NavAquarium) _aquarium.Open();
-                    if (i == NavArena) _arena.Open();
-                    if (i == NavRanking) _ranking.Open();
-                    if (i == NavExpedition) _expedition.Open();
-                    if (i == NavMarket) _market.Open();
-                    if (i == NavShop) _shop.Open();
-                    if (i == NavProfile) _profile.Open();
-                    if (i == NavEvents) _events.Open();
-                }
-            }
-        }
-
-        private string AquariumLabel()
-        {
-            var player = _root.Player;
-            return player == null
-                ? GameTexts.Navigation.Aquarium
-                : GameTexts.Navigation.Aquarium + "  " + player.AquariumCount + "/" + player.AquariumCapacity;
-        }
-
         private void CloseAllWindows()
         {
             // Close() first closes a window's inner dialog or selection: repeat until the window itself is closed.
@@ -1006,110 +1161,6 @@ namespace FishingIdle.Game.UI
             {
                 close();
             }
-        }
-
-        /// <summary>The player card: on the right, under the bar; collapsed it keeps only the wallet line.</summary>
-        private Rect CardRect => new Rect(_width - 20f - CardWidth, CardTop, CardWidth, _cardExpanded ? CardExpandedHeight : CardCollapsedHeight);
-
-        /// <summary>
-        /// The player card with the wallet inside it (owner request 07/10/2026): avatar, name, level and
-        /// XP, then Moedas, Conchas and Dólares, then gear and progress. Collapsed: one wallet line.
-        /// </summary>
-        private void DrawPlayerCard(UiSkin skin)
-        {
-            var player = _root.Player;
-            if (player == null)
-            {
-                return;
-            }
-
-            var card = CardRect;
-            skin.FloatingPanel(card);
-
-            // The notifications and options panels open over the card: its button must not catch their clicks.
-            var enabled = GUI.enabled;
-            var buttonEnabled = enabled && !_showNotifications && !_showSettings;
-
-            if (!_cardExpanded)
-            {
-                var expand = new Rect(card.xMax - 14f - 44f, card.y + 12f, 44f, 40f);
-                // Moedas big on the left; Conchas over Dólares in a small column beside them.
-                var coinLine = DrawCoins(skin, card.x + 16f, card.center.y, 26f, player.Coins);
-                DrawCurrency(skin, coinLine.xMax + 14f, card.y + 21f, Icons.Shell, GameTexts.Player.Shells, player.Shells, false);
-                DrawCurrency(skin, coinLine.xMax + 14f, card.y + 43f, Icons.Dollar, GameTexts.Player.Dollars, player.Dollars, false);
-                GUI.enabled = buttonEnabled;
-                if (skin.IconButton(expand, Icons.Profile, null, skin.Chip))
-                {
-                    _cardExpanded = true;
-                }
-
-                GUI.enabled = enabled;
-                DrawCoinGain(skin, coinLine, expand.x - 6f);
-                return;
-            }
-
-            // Avatar: the painted fisherman's head in a tile (or the profile icon).
-            var avatar = new Rect(card.x + 16, card.y + 16, 64, 64);
-            var avatarFrame = ArtAssets.Texture(UiSkin.AvatarFrameArt);
-            if (avatarFrame != null)
-            {
-                // The owner's ring (its hole is 0,866 of the picture: 76 px around the 64 px portrait), the
-                // portrait cut round inside it on a dark disc.
-                GUI.DrawTexture(new Rect(avatar.x - 1f, avatar.y - 1f, avatar.width + 2f, avatar.height + 2f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Night, 0, avatar.width / 2f + 1f);
-                AvatarArt.Draw(skin, new Rect(avatar.x + 1, avatar.y + 1, avatar.width - 2, avatar.height - 2), player.AvatarId, avatar.width / 2f - 1f);
-                GUI.DrawTexture(new Rect(avatar.x - 6f, avatar.y - 6f, avatar.width + 12f, avatar.height + 12f), avatarFrame, ScaleMode.ScaleToFit, true);
-            }
-            else
-            {
-                GUI.Box(avatar, GUIContent.none, skin.IconTile);
-                AvatarArt.Draw(skin, new Rect(avatar.x + 3, avatar.y + 3, avatar.width - 6, avatar.height - 6), player.AvatarId);
-            }
-
-            GUI.Label(new Rect(avatar.xMax + 14, card.y + 16, 200, 28), FishCard.Fit(player.PlayerName, skin.Heading, 200), skin.Heading);
-            GUI.enabled = buttonEnabled;
-            if (skin.IconButton(new Rect(card.xMax - 50, card.y + 14, 36, 32), Icons.Chevron, null, skin.Chip))
-            {
-                _cardExpanded = false;
-            }
-
-            GUI.enabled = enabled;
-            GUI.Label(new Rect(avatar.xMax + 14, card.y + 44, 200, 22), GameTexts.Player.Level + " " + player.FisherLevel, skin.SmallMuted);
-            var xpRect = new Rect(avatar.xMax + 14, card.y + 66, card.xMax - avatar.xMax - 30, 10);
-            if (player.FisherXpToNext > 0)
-            {
-                skin.Bar(xpRect, player.FisherXp / (float)player.FisherXpToNext);
-                GUI.Label(new Rect(xpRect.x, card.y + 80, xpRect.width, 20),
-                    GameTexts.Player.Xp(Format.Number(player.FisherXp), Format.Number(player.FisherXpToNext)), skin.SmallMuted);
-            }
-            else
-            {
-                skin.Bar(xpRect, 1f, true);
-                GUI.Label(new Rect(xpRect.x, card.y + 80, xpRect.width, 20), GameTexts.Player.MaxLevel, skin.SmallMuted);
-            }
-
-            // Wallet: y 110..194 of the card.
-            DrawWallet(skin, new Rect(card.x + 16, card.y + 110, card.width - 32, 84), player);
-
-            skin.Divider(new Rect(card.x + 16, card.y + 206, card.width - 32, 1));
-            var rod = player.RodName == null ? GameTexts.Player.NoRod
-                : player.RodHasLevels ? player.RodName + " (" + GameTexts.Player.LevelShort + " " + player.RodLevel + ")" : player.RodName;
-            var y = card.y + 218;
-            Row(skin, card, ref y, Icons.Rod, GameTexts.Player.Rod, rod);
-            Row(skin, card, ref y, Icons.Pin, GameTexts.Player.Map, player.MapName);
-            Row(skin, card, ref y, Icons.Fish, GameTexts.Player.TotalCatches, Format.Number(player.TotalCatches));
-            Row(skin, card, ref y, Icons.Book, GameTexts.Player.SpeciesDiscovered, player.SpeciesDiscovered.ToString());
-        }
-
-        private static void Row(UiSkin skin, Rect card, ref float y, string icon, string label, string value)
-        {
-            skin.DrawIcon(new Rect(card.x + 18, y + 1, 18, 18), icon, UiSkin.Muted);
-            // The label keeps its width; the value takes the rest of the line, shortened with "…" (A-149).
-            var labelWidth = skin.SmallMuted.CalcSize(new GUIContent(label)).x + 2f;
-            GUI.Label(new Rect(card.x + 46, y, labelWidth, 22), label, skin.SmallMuted);
-            var valueX = card.x + 46 + labelWidth + 10f;
-            var valueWidth = Mathf.Max(0f, card.xMax - 18f - valueX);
-            GUI.Label(new Rect(valueX, y, valueWidth, 22), FishCard.Fit(value, skin.SmallRight, valueWidth), skin.SmallRight);
-            y += 32;
         }
 
         /// <summary>The fishing panel at the bottom centre (the toasts column keeps clear of it).</summary>
@@ -1319,9 +1370,15 @@ namespace FishingIdle.Game.UI
         private void DrawToasts(UiSkin skin)
         {
             var items = _root.Toasts.Items;
-            // Under the player card, aligned with its right edge (owner request 07/10/2026).
-            var y = _root.Player != null ? CardRect.yMax + 16f : CardTop;
-            var left = _width - 20f - ToastWidth;
+            // On the right under the strip, left of the round shortcuts (A-169); under the plaque when a narrow screen
+            // puts them in line.
+            var y = UnderBar;
+            var left = _width - 20f - ShortcutColumnWidth - 16f - ToastWidth;
+            if (left < _width / 2f + PlaqueWidth / 2f + 12f)
+            {
+                y = PlaqueTop + PlaqueHeight + 16f;
+            }
+
             // The column stops above the Fishing Box button and, when a narrow screen puts them in line,
             // above the fishing panel; the oldest toasts wait (they still expire on time).
             var bottom = BoxButtonRect.y - 12f;
@@ -1444,10 +1501,10 @@ namespace FishingIdle.Game.UI
             }
 
             // With a window open the hint moves to a strip under it; otherwise it sits on the left under the
-            // bar (the player card and the toasts are on the right).
+            // strip (the round shortcuts and the toasts are on the right).
             var rect = windowOpen
                 ? new Rect(_width / 2f - 440, _height - 88, 880, 76)
-                : new Rect(20, CardTop, 340, 200);
+                : new Rect(20, UnderBar, 340, 200);
             skin.DrawShadow(rect);
             GUI.Box(rect, GUIContent.none, skin.PanelSolid);
             skin.DrawOutline(rect, UiSkin.Accent);
@@ -1491,9 +1548,10 @@ namespace FishingIdle.Game.UI
             Rect target;
             switch (step)
             {
-                case TutorialSteps.ClaimRod: target = NavRect(NavShop); break;
-                case TutorialSteps.Cardume: target = NavRect(NavProfile); break;
-                case TutorialSteps.Expedition: target = NavRect(NavExpedition); break;
+                // The tabs of the top menu (A-169): Comércio (it opens the Loja during this step), Perfil, Aventura.
+                case TutorialSteps.ClaimRod: target = TabRect(GroupTrade); break;
+                case TutorialSteps.Cardume: target = TabRect(GroupProfile); break;
+                case TutorialSteps.Expedition: target = TabRect(GroupAdventure); break;
                 case TutorialSteps.StartFishing: target = new Rect(_width / 2f - 130, _height - 70, 260, 38); break;
                 case TutorialSteps.OpenBox:
                 case TutorialSteps.SellFish:
@@ -1515,9 +1573,9 @@ namespace FishingIdle.Game.UI
             GUI.color = previous;
         }
 
-        private Rect NavRect(int index)
+        private Rect TabRect(int group)
         {
-            return NavLayout(UiSkin.Get(), out _)[index];
+            return _tabRects != null ? _tabRects[group] : new Rect(_width / 2f, TabTop, 0f, TabHeight);
         }
 
         // ------------------------------------------------------------------ notifications and settings

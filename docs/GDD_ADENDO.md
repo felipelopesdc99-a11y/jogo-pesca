@@ -2895,3 +2895,39 @@ vazia ou travada sem explicação:
     fragmentos que ele custou para montar (70, 90, 120, 155 ou 200) viram fragmentos do barco do mesmo mapa, como acima;
   - se esses fragmentos completam um barco, ele é montado na hora (e passa a ser usado se for melhor);
   - se o barco removido estava em uso, o jogador passa a usar o **melhor barco que tem**.
+
+### A-169 · Menu de cima: abas grandes, placa embaixo e atalhos redondos à direita
+**Seção do GDD:** 7 e 8 (menus e tela) · escolha do proprietário em 12/10/2026 (exemplo 2, "Abas em cima, placa embaixo
+delas") · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Muda o A-100, o A-139 e o A-167 (a fileira de 11 botões da barra de cima). Nenhum menu, moeda ou regra nova.
+
+- **Faixa de cima** (escura, 80 px, com acabamento de madeira embaixo): à esquerda o **cartão do jogador** (retrato, nome,
+  Nv., Moedas, Conchas e Dólares; passar o mouse num valor grande mostra o número exato; clicar no cartão abre o
+  **Perfil**). No centro, **5 abas grandes coloridas** (ícone em cima, nome embaixo): **Pesca** (turquesa), **Tripulação**
+  (azul), **Aventura** (roxo), **Comércio** (laranja), **Perfil** (cinza-azulado). A aba ativa cresce um pouco e ganha
+  borda branca. À direita, o **sino** e as **opções** (só ícones, como antes), o lugar mais limpo para eles.
+- **O que cada aba abre:** Pesca fecha as janelas e mostra a cena. Tripulação abre a janela Tripulação (Tripulantes e
+  Melhorias são as abas de dentro dela). Aventura abre a **Expedição**; Comércio abre o **Mercado** (durante o passo
+  "Pegue sua primeira vara" do tutorial, abre a **Loja**). Perfil abre o Perfil.
+- **Sub-abas** (a forma mais simples): com uma janela de Aventura ou Comércio aberta, as janelas irmãs aparecem como
+  botões pequenos pendurados logo abaixo da aba ativa: **Expedição | Arena | Eventos** e **Mercado | Loja**. Dentro da
+  janela do Boss, Eventos (na aba ou na sub-aba) volta à lista de eventos.
+- **Placa pendurada** (madeira, por duas cordas, no centro, embaixo da faixa; só sem janela aberta): "RENDA DA
+  TRIPULAÇÃO", a renda por segundo grande em dourado e o total de Moedas (contando, com o "+N" de um ganho). Com uma
+  janela aberta, a placa some (a janela ocupa esse espaço) e a faixa continua visível e clicável.
+- **Atalhos redondos** em coluna na lateral direita: **Mapa**, **Aquário** (com "ocupados/capacidade" numa pílula),
+  **Passe** (verde-água, com a contagem de recompensas prontas em vermelho), **Eventos** e **Ranking**. Durante o Boss
+  Mundial, o atalho Eventos vira **Boss Mundial**: dourado, pulsando, com o tempo que falta em cima, e abre direto a
+  janela do Boss. Com uma janela aberta, eles ficam cobertos e não respondem. Nada novo na lateral esquerda.
+- **Sinais:** ponto vermelho na aba Aventura (e na sub-aba Expedição) quando o Cardume voltou da Expedição; ponto
+  dourado na aba Aventura durante um evento; contagem vermelha no Passe e no sino. São os sinais que já existiam.
+- **Saíram da faixa:** o logo e o nome do mapa (o mapa continua no Perfil, na janela Mapa e no título de chegada) e o
+  cartão grande do jogador à direita (vara, mapa, capturas e espécies continuam no Perfil).
+- **Avisos** à direita, embaixo da faixa, à esquerda dos atalhos; o **tutorial** à esquerda, embaixo da faixa. Os
+  destaques do tutorial apontam para a aba Comércio (primeira vara), Perfil (Cardume) e Aventura (Expedição); os textos
+  do tutorial dizem "aba Comércio → Loja", "aba Perfil → Cardume" e "aba Aventura → Expedição".
+- **Tela pequena:** se as 5 abas não couberem entre o cartão e o sino, ficam mais estreitas; se nem assim, só ícones.
+- **Arte:** ícones das abas e dos atalhos e a moldura redonda são provisórios (os ícones atuais do jogo e um desenho
+  limpo), `ASSET_PENDENTE`, com pedidos em `docs/ASSETS_PENDENTES.md`. Quando cada arquivo existir, o jogo passa a usá-lo.
+
