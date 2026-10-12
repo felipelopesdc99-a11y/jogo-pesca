@@ -32,6 +32,21 @@ peixes, vender ou guardar no Aquário. Os outros menus ficam no alto da tela.
 
 > Se aparecer algum erro vermelho no **Console** do Unity, copie a mensagem e mande no chat.
 
+## Se o Unity não deixar dar Play
+
+**"Internal build system error" com "Uma política de Controle de Aplicativo bloqueou este arquivo" (Bee.DotNet.dll).**
+Não é erro do jogo: o Windows bloqueou um arquivo do próprio Unity, e sem ele o Unity não compila os scripts (aparece o
+aviso de Safe Mode e o Play não faz nada). Em ordem:
+
+1. Reinicie o computador e abra o projeto de novo.
+2. No Unity Hub, em **Installs**, desinstale e instale de novo a versão do Unity (ou uma versão 6.3 mais nova).
+3. Se voltar a acontecer: **Segurança do Windows → Controle de aplicativos e do navegador → Controle Inteligente de
+   Aplicativos** e desative. Atenção: depois de desligado, o Windows normalmente não deixa religar sem reinstalar o
+   sistema; o antivírus continua funcionando.
+
+Qualquer outro erro: abra a **Console** (Window → General → Console), clique na primeira linha vermelha e mande o
+print.
+
 ## Painel de Desenvolvimento
 
 No menu do Unity: **Fishing Idle → Painel de Desenvolvimento**.
