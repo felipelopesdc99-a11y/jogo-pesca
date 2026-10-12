@@ -27,8 +27,8 @@ namespace FishingIdle.Game.UI
         private const float VirtualHeight = 1080f;
 
         // The top strip (M24-T43, A-169). Windows start at y 120 or lower (WindowFrame.Panel centres at most 880 px of
-        // height on the 1080 canvas) and the ropes of their hanging sign go up to y 80 (WindowFrame.RopeAnchorY), so they
-        // hang from the strip's wooden trim (80..86).
+        // height on the 1080 canvas); since A-170 they are logbook pages whose label and seal sit just under the strip's
+        // wooden trim (80..86).
         private const float BarHeight = 80f;
 
         // The five big tabs: 64 px tall (y 8..72; the active one grows 7%), 140 px wide or as wide as the longest label.
