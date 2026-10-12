@@ -2242,6 +2242,10 @@ nível: Moedas e Conchas. Tudo que já existia continua; números em `/config`, 
 ### A-157 · Barcos por fragmentos
 **Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
 
+> **Atualizado em 12/10/2026 (A-168):** o jogo voltou para **5 barcos**. Os barcos 6 a 10 (Vela do Sol, Quilha Azul, Canto
+> da Baleia, Farol Noturno, Titã do Atlântico) saíram; os mapas 6 a 10 dão fragmentos dos barcos 1 a 5. A regra do
+> fragmento por barco continua a mesma. O texto abaixo é o de 11/10/2026.
+
 Decisão do proprietário em 11/10/2026 (M24-T16): "pra conseguir o barco vai ser por fragmentos que têm chance de vir
 na pesca, cada mapa dropa um tipo de fragmento de barco". 1 barco por mapa, 10 barcos (os 5 de antes ficam e entram 5
 novos); o barco **sai da Loja**. Números em `config/equipment.json`, gerados por
@@ -2310,6 +2314,10 @@ novos); o barco **sai da Loja**. Números em `config/equipment.json`, gerados po
 
 ### A-158 · Passe do Pescador
 **Seção do GDD:** 15, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+> **Atualizado em 12/10/2026 (A-168):** com a volta para 5 barcos, os fragmentos do Passe são só dos barcos 1 a 5: Nv.10
+> → Remo Valente, … Nv.50 → Horizonte Dourado, Nv.60 → Remo Valente de novo (o barco que o Mapa 6 dá), … Nv.100 →
+> Horizonte Dourado, e assim por diante. `config/pass.json` foi regerado pelo script.
 
 Decisão do proprietário em 11/10/2026 (M24-T17): "vai ter um passe de jogo que vai ter recompensas a cada 10 níveis".
 Sobe com o **nível do Pescador**; faixa **Grátis** e faixa **Premium**; **um passe só, permanente** (temporadas:
@@ -2857,3 +2865,33 @@ vazia ou travada sem explicação:
 - **Avisos do Boss:** continuam iguais (os avisos do jogo não têm ação de clique).
 - **Ícone:** provisório (o relógio) até existir `ico_eventos.png` (`ASSET_PENDENTE`, pedido em `docs/ASSETS_PENDENTES.md`).
 - Nenhuma regra do Boss mudou; nenhum evento novo foi criado.
+
+### A-168 · Volta para 5 barcos (os mapas 6 a 10 dão os barcos 1 a 5)
+**Seção do GDD:** 7, 13, 19 · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+"Vamos voltar para 5 barcos por enquanto." "Só voltar a 5 barcos." Muda o A-157 e o A-158; o fragmento por barco continua.
+
+- **Os barcos:** o inicial (Água Mansa) e os 5 de sempre: Remo Valente, Rastro Azul, Proa Selvagem, Costa Nobre e
+  Horizonte Dourado. Os barcos 6 a 10 saíram do jogo (OD-061 resolvido).
+- **Onde caem os fragmentos:** cada barco cai em dois mapas. Os mapas 1 a 5 continuam com a chance de antes; os mapas 6 a
+  10 ficaram com a chance que já tinham (era a do barco 6 a 10 daquele mapa).
+
+  | Barco | Mapas | Chance por peixe puxado |
+  |---|---|---|
+  | Remo Valente | Lago Sereno · Arquipélago do Sol | 0,43% · 0,53% |
+  | Rastro Azul | Rio Selvagem · Corrente Azul | 0,43% · 0,58% |
+  | Proa Selvagem | Pantanal Dourado · Banco das Baleias | 0,48% · 0,61% |
+  | Costa Nobre | Estuário das Marés · Talude Noturno | 0,51% · 0,66% |
+  | Horizonte Dourado | Costa de Coral · Abismo Atlântico | 0,52% · 0,67% |
+
+- **Loja:** a ficha do barco diz "Caem nos mapas Lago Sereno e Arquipélago do Sol" (os nomes dos mapas do jogo) e mostra a
+  chance do mapa em que o jogador está, se ele dá aquele barco; senão, a do primeiro mapa.
+- **Passe e Boss:** o Passe só dá fragmentos dos 5 barcos (veja a nota no A-158). O Boss Mundial dá fragmentos do barco que
+  o mapa mais alto liberado dá (no Mapa 10, o Horizonte Dourado).
+- **Quem já tinha os barcos 6 a 10** (ao abrir o jogo, uma vez só):
+  - os fragmentos de um barco removido viram fragmentos do barco que aquele mapa passa a dar (6→Remo Valente, 7→Rastro
+    Azul, 8→Proa Selvagem, 9→Costa Nobre, 10→Horizonte Dourado);
+  - um barco removido já montado vira **Moedas e Conchas** no valor do que custou subir do Nv.1 ao nível dele, e os
+    fragmentos que ele custou para montar (70, 90, 120, 155 ou 200) viram fragmentos do barco do mesmo mapa, como acima;
+  - se esses fragmentos completam um barco, ele é montado na hora (e passa a ser usado se for melhor);
+  - se o barco removido estava em uso, o jogador passa a usar o **melhor barco que tem**.

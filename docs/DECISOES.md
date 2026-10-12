@@ -1073,3 +1073,25 @@ CI (TD-044) compila contra o Unity 2021.3 e passa os testes; o problema prováve
   Inventário, no Mercado e num leilão, iscas antigas, peixes Nv.10, barco comprado, Dólares antigos, Expedição e pesca em
   andamento, Tripulação) abertos 3 dias depois com a mesma sequência de chamadas do `GameRoot`, e um save novo. Precisam
   carregar (nunca descartar o save), não lançar exceção e abrir em menos de 2 s.
+
+## TD-051 · Um barco com mais de um mapa de queda e a migração dos barcos removidos (12/10/2026)
+
+**Origem.** M24-T42 (A-168): o proprietário voltou para 5 barcos; os mapas 6 a 10 dão fragmentos dos barcos 1 a 5.
+
+**Decisão.**
+- `equipment.json → boats[].extra_fragment_maps`: lista de `{map_id, fragment_drop_chance}` além do `map_id` principal.
+  `map_id` + `fragment_drop_chance` ficam como estavam (o Painel de Balanceamento, o simulador C# e o
+  `passe_fragmentos.py` continuam editando/gerando o principal); a chance dos mapas extras é a que o mapa tinha e o script
+  não a muda. `GameConfig` monta um índice mapa → (barco, chance): `TryGetBoatForMap`, `BoatFragmentChanceOn(mapa)` e
+  `FragmentMapsOf(barco)`. O sorteio (`BoatFragmentRules.RollOnCatch`) usa a chance do mapa. O validador continua com
+  "cada mapa dá um barco só", agora contando `map_id` e `extra_fragment_maps`.
+- **Migração pelo config, como a das iscas (TD de A-161):** os barcos removidos ficam em `equipment.json →
+  boat_migration.removed_boats` (id, `fragments_go_to`, `fragments_required`, `upgrade_cost`), com
+  `boat_model_version` 2. Save v20 marca os saves antigos com `BoatModelVersion` 1; `Persistence/BoatModelMigration`
+  roda na abertura da sessão, **antes** de os níveis de barco serem limitados ao config (um barco desconhecido cairia
+  para o Nv.1 e perderia o valor). Reembolso = soma do preço de cada nível do Nv.1 ao nível do barco, pela mesma
+  `LevelCurve.Cost` (TD-041); os fragmentos entram por `BoatFragmentRules.Add`, que monta o barco e o põe em uso se
+  for melhor (a regra de sempre). Um barco removido em uso → o melhor barco que o jogador tem (por bônus no nível dele).
+- Os fragmentos que o barco removido custou para montar também voltam (como fragmentos do barco do mesmo mapa): sem
+  isso, o esforço de montar um barco 6 a 10 se perderia; as Moedas e Conchas cobrem só os níveis.
+

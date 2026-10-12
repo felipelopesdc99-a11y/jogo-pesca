@@ -987,6 +987,11 @@ namespace FishingIdle.Texts
             public static string FragmentsTag(string have, string required) => have + "/" + required;
             public static string FragmentsLine(string have, string required) => "Fragmentos " + have + "/" + required;
             public static string FragmentsWhere(string map) => "Caem no mapa " + map;
+
+            /// <summary>"Caem nos mapas Lago Sereno e Ilha do Sol" (a boat dropped on more than one map, M24-T42).</summary>
+            public static string FragmentsWhereMany(string maps) => "Caem nos mapas " + maps;
+
+            public const string ListAnd = " e ";
             public static string FragmentsChance(string percent) => percent + " de chance por peixe puxado";
             public static string FragmentsExtra(string amount) => "Fragmentos extras: " + amount;
             public const string AssembleHint = "Monte com fragmentos";
@@ -1447,6 +1452,7 @@ namespace FishingIdle.Texts
             public static string DuplicateOrEmptyId(string file, string section, string id) => file + ": em \"" + section + "\" existe um id vazio ou repetido (\"" + (id ?? "") + "\").";
             public static string NegativeValue(string file, string what) => file + ": \"" + what + "\" não pode ter valor negativo.";
             public static string AtLeast(string file, string what, int min) => file + ": \"" + what + "\" precisa ser pelo menos " + min + ".";
+            public static string BoatMigrationInvalid(string what) => "equipment.json: \"boat_migration." + what + "\" está inválido (versão de pelo menos 1; cada barco removido com id que nenhum barco de hoje usa, fragments_go_to de um barco de hoje que não seja o inicial e upgrade_cost válido).";
             public static string BaitMigrationInvalid(string what) => "equipment.json: \"bait_migration." + what + "\" está inválido (versão de pelo menos 1; cada isca antiga com id, bônus entre 0 e 1, pelo menos 1 tentativa e custo não negativo).";
             public static string BadPercentileBand(string category) => "progression.json: a categoria de tamanho \"" + category + "\" precisa de percentis entre 0 e 1, com o mínimo menor que o máximo.";
             public static string WeightsSumToZero(string file, string what) => file + ": os pesos de \"" + what + "\" somam zero — nada poderia ser sorteado.";
@@ -1459,7 +1465,7 @@ namespace FishingIdle.Texts
             public static string XpTableGap(int level) => "progression.json: a tabela de XP do Pescador não tem o nível " + level + ".";
             public static string StarterBoatHasMap(string boat) => "equipment.json: o barco inicial \"" + boat + "\" (o de menor categoria) é de todos e não pode ter map_id.";
             public static string BoatMapUnknown(string boat, string map) => "equipment.json: o barco \"" + boat + "\" precisa de um map_id que exista em maps.json (está \"" + (map ?? "") + "\").";
-            public static string BoatMapRepeated(string map) => "equipment.json: o mapa \"" + map + "\" tem mais de um barco. Cada mapa dá os fragmentos de um barco só.";
+            public static string BoatMapRepeated(string map) => "equipment.json: o mapa \"" + map + "\" tem mais de um barco (em map_id ou extra_fragment_maps). Cada mapa dá os fragmentos de um barco só.";
             public static string PassLevels(int max) => "pass.json: os marcos (milestones) precisam de níveis diferentes, em ordem crescente, entre 1 e " + max + ".";
             public static string RodMethodUnknown(string rod, string method) => "rods.json: a vara \"" + rod + "\" tem acquisition.method \"" + (method ?? "") + "\". Use \"fragments\" (vara montada com fragmentos) ou \"free_claim_in_shop\" (a Vara Inicial).";
             public static string RodMapUnknown(string rod, string map) => "rods.json: a vara \"" + rod + "\" precisa de um fragment_map_id que exista em maps.json (está \"" + (map ?? "") + "\").";

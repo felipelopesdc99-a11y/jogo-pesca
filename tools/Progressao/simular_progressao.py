@@ -13,7 +13,8 @@ O que ele faz:
     M24-T09; guarda dinheiro para ela quando o mapa que a pede está a 8 níveis), níveis da vara e do barco (até o
     Nv.100, curva_niveis.py; o mais barato primeiro) e iscas (só quando a isca se paga);
   - barcos não são comprados (M24-T16, A-157): cada peixe puxado no mapa de um barco dá, em média,
-    fragment_drop_chance fragmento dele (online e offline, se drop_on_offline_fishing); com fragments_required o barco
+    fragment_drop_chance fragmento dele (online e offline, se drop_on_offline_fishing; nos extra_fragment_maps, com a chance
+    de lá, M24-T42); com fragments_required o barco
     é montado e o jogador passa a usar o melhor barco que tem;
   - varas também não são compradas (M24-T32, A-163): cada peixe puxado no fragment_map_id de uma vara dá, em média,
     fragment_drop_chance fragmento dela; com fragments_required ela é montada e passa a ser usada se for de categoria maior
@@ -71,7 +72,13 @@ class Rules:
         self.eq_cfg = eq
         self.boats = sorted(eq['boats'], key=lambda b: b['tier'])
         # Boats by fragments (M24-T16): the boat of each map, and whether offline fishing drops them too.
-        self.boat_of_map = {b['map_id']: b for b in self.boats if b.get('map_id')}
+        # {map id: (boat, chance)}: map_id and, since M24-T42 (A-168), extra_fragment_maps (maps 6 to 10 drop boats 1 to 5).
+        self.boat_of_map = {}
+        for b in self.boats:
+            if b.get('map_id'):
+                self.boat_of_map.setdefault(b['map_id'], (b, b.get('fragment_drop_chance', 0.0)))
+            for extra in b.get('extra_fragment_maps') or []:
+                self.boat_of_map.setdefault(extra['map_id'], (b, extra.get('fragment_drop_chance', 0.0)))
         self.fragments_offline = (eq.get('boat_fragments') or {}).get('drop_on_offline_fishing', True)
         self.baits = eq['baits']
         # Rods by fragments (M24-T32): the rod of each map, and whether offline fishing drops them too.
@@ -262,9 +269,9 @@ class Player:
             self.xp += xp * steps
             self.coins += coins * steps
             self.shells += shells * steps
-            boat = self.r.boat_of_map.get(mp['id'])
+            boat, boat_chance = self.r.boat_of_map.get(mp['id'], (None, 0.0))
             if boat and (not self.offline or self.r.fragments_offline):
-                self.add_fragments(boat, caught * steps * boat.get('fragment_drop_chance', 0.0))
+                self.add_fragments(boat, caught * steps * boat_chance)
             rod = self.r.rod_of_map.get(mp['id'])
             if rod and self.r.legacy_rod_prices is None and (not self.offline or self.r.rod_fragments_offline):
                 self.add_rod_fragments(rod, caught * steps * rod.get('fragment_drop_chance', 0.0))

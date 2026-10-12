@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using FishingIdle.Game.Bootstrap;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Shop;
@@ -234,7 +235,6 @@ namespace FishingIdle.Game.UI
                         _items.Add(new WallItem
                         {
                             Id = boat.BoatId, Name = boat.Name, Sub = GameTexts.Gear.Bonus(Format.Percent(boat.Bonus, 0)),
-                            // ASSET_PENDENTE: Barcos/boat_06 … boat_10 (the boat icon until the art arrives).
                             Art = "Barcos/" + boat.BoatId, Icon = Icons.Boat, Tier = boat.Tier,
                             FragmentsHave = boat.Fragments, FragmentsNeed = boat.FragmentsRequired, OwnedText = GameTexts.Shop.OwnedBoat,
                             Tag = boat.InUse ? TagKind.InUse : boat.Owned ? TagKind.Owned : TagKind.Fragments,
@@ -1150,7 +1150,12 @@ namespace FishingIdle.Game.UI
             // Lago Sereno"), with a bar while the boat is not assembled; the extras once it is.
             if (boat.MapName != null)
             {
-                FragmentLines(skin, x, ref y, w, boat.Owned, boat.Fragments, boat.FragmentsRequired, GameTexts.Gear.FragmentsWhere(boat.MapName), boat.FragmentChance);
+                // A boat dropped on more than one map (M24-T42, A-168): "Caem nos mapas Lago Sereno e Ilha do Sol".
+                var names = boat.MapNames ?? new List<string>();
+                var dropText = names.Count > 1
+                    ? GameTexts.Gear.FragmentsWhereMany(string.Join(", ", names.Take(names.Count - 1)) + GameTexts.Gear.ListAnd + names[names.Count - 1])
+                    : GameTexts.Gear.FragmentsWhere(boat.MapName);
+                FragmentLines(skin, x, ref y, w, boat.Owned, boat.Fragments, boat.FragmentsRequired, dropText, boat.FragmentChance);
             }
 
             // Owned with levels: the Use button / "Em uso" pill sits over the upgrade row.

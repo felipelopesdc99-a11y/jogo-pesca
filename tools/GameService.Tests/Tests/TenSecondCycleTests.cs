@@ -215,7 +215,7 @@ public sealed class TenSecondCycleTests
     {
         new object[] { "map_02", "rod_01", 10, "boat_01", 1, null },
         new object[] { "map_05", "rod_03", 30, "boat_05", 10, "bait_02" },
-        new object[] { "map_10", "rod_05", 100, "boat_10", 100, "bait_03" },
+        new object[] { "map_10", "rod_05", 100, "boat_05", 100, "bait_03" },
         new object[] { "map_10", "rod_05", 1, null, 1, null },
     };
 
@@ -257,7 +257,7 @@ public sealed class TenSecondCycleTests
         {
             c.TryGetMap("map_10", out var map);
             c.TryGetRod("rod_05", out var rod);
-            c.TryGetBoat("boat_10", out var boat);
+            c.TryGetBoat("boat_05", out var boat);
             c.TryGetBait("bait_03", out var bait);
             return CatchSimulator.Run(c, map, rod, 100, boat, bait, 200_000, 2212, 100);
         }).ToList();

@@ -9,7 +9,8 @@ Uso:
       # docs/propostas/passe_fragmentos.json
 
 Regras (as mesmas do jogo, GameService/Shop/BoatFragmentRules.cs e GameService/Pass/LocalPassService.cs):
-  - cada peixe puxado no mapa de um barco tem fragment_drop_chance de dar 1 fragmento dele, online e offline
+  - cada peixe puxado no mapa de um barco tem fragment_drop_chance de dar 1 fragmento dele (nos extra_fragment_maps, a
+    chance de lá, que este script não muda), online e offline
     (equipment.json → boat_fragments.drop_on_offline_fishing); Expedições não dão;
   - com fragments_required fragmentos o barco é montado (Nv.1) e passa a ser usado se for melhor;
   - o passe tem um marco a cada 10 níveis do Pescador; cada marco tem a recompensa grátis e a premium. O premium é
@@ -24,8 +25,8 @@ Como os números são gerados (ajuste as constantes abaixo e rode "gerar" de nov
     online; o premium dá PREMIUM_MULT vezes isso;
   - Dólares: os 10 a cada 10 níveis até o Nv.100 do A-111 passam para a faixa grátis (mesmo total); depois, 10 a cada
     100 níveis (grátis) e 10 a cada 50 níveis (premium);
-  - fragmentos: no Nv.10·X (X = 1 a 10) do barco do Mapa X; depois do Nv.100 os barcos se revezam (Nv.110 = Mapa 1,
-    Nv.120 = Mapa 2, … Nv.200 = Mapa 10, Nv.210 = Mapa 1 …). Grátis: FRAG_GRATIS_ATE_100 dos fragmentos que o barco
+  - fragmentos: no Nv.10·X (X = 1 a 5) do barco X; depois os 5 barcos se revezam (Nv.60 = barco 1, … Nv.100 = barco 5,
+    Nv.110 = barco 1 …), o mesmo que dar o barco que cada mapa dá (M24-T42, A-168: os mapas 6 a 10 dão os barcos 1 a 5). Grátis: FRAG_GRATIS_ATE_100 dos fragmentos que o barco
     pede até o Nv.100 e FRAG_GRATIS_DEPOIS depois; o premium, o dobro (arredondado para cima);
   - fragmentos de vara (M24-T32, A-163): no marco do nível que libera o primeiro mapa que pede cada vara (Nv.10 = Vara 1,
     Nv.30 = Vara 2, Nv.50 = Vara 3, Nv.70 = Vara 4, Nv.90 = Vara 5), FRAG_VARA_GRATIS dos fragmentos que a vara pede; o
@@ -51,7 +52,7 @@ CONFIG = S.CONFIG
 OUT = os.path.join(ROOT, 'docs', 'propostas', 'passe_fragmentos.json')
 
 # ---------------------------------------------------------------- knobs
-FRAGMENTOS = [20, 25, 35, 45, 55, 70, 90, 120, 155, 200]   # fragments_required, barco do Mapa 1 ao Mapa 10
+FRAGMENTOS = [20, 25, 35, 45, 55]   # fragments_required, barco 1 ao 5 (M24-T42: 5 barcos; os mapas 6 a 10 dão os barcos 1 a 5)
 DIAS_ALVO_PRIMEIRO = 2.0       # 4 vezes por dia, pescando no Mapa 1
 DIAS_ALVO_ULTIMO = 10.0        # 4 vezes por dia, pescando no Mapa 10
 PERFIL_REFERENCIA = 'quatro_vezes'
@@ -301,7 +302,9 @@ def gerar(days):
     reference = play(PERFIL_REFERENCIA, days)
     rates = catch_rates(rules, reference)
     per_day = attempts_per_day(rules, PERFIL_REFERENCIA)
-    n = len(boats)
+    # The target days grow across the maps (Mapa 1 → Mapa 10), not across the boats: since M24-T42 (A-168) there are 5
+    # boats, and maps 6 to 10 drop boats 1 to 5 again with the chance they already had (extra_fragment_maps, kept as is).
+    n = len(rules.maps)
     for b in boats:
         i = b['tier'] - 1
         target = DIAS_ALVO_PRIMEIRO * (DIAS_ALVO_ULTIMO / DIAS_ALVO_PRIMEIRO) ** (i / float(max(1, n - 1)))
@@ -313,6 +316,7 @@ def gerar(days):
               % (b['id'], b['map_id'], b['fragments_required'], pct(b['fragment_drop_chance'], 2), dec(target, 1), pct(rate, 0)))
     save('equipment.json', eq)
 
+    # Milestones take turns over the 5 boats (Nv.10·X → boat X, Nv.60 → boat 1 again: the boat map 6 drops, A-168).
     boats_by_map = {int(b['map_id'][-2:]): b for b in boats}
     pass_cfg = collections.OrderedDict([
         ('config_file', 'pass.json'),

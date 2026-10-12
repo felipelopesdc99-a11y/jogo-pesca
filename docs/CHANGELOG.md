@@ -3,6 +3,28 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.59] — 12/10/2026
+
+Volta para 5 barcos; os mapas 6 a 10 dão fragmentos dos barcos 1 a 5 (M24-T42, A-168, TD-051). Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- Os barcos são de novo 5 (Remo Valente, Rastro Azul, Proa Selvagem, Costa Nobre, Horizonte Dourado), além da canoa
+  inicial. Cada um cai em dois mapas: o de antes (mesma chance) e um dos mapas 6 a 10 (com a chance que o mapa já tinha).
+- A Loja diz "Caem nos mapas X e Y" e mostra a chance do mapa em que você está.
+- Passe do Pescador: fragmentos só dos 5 barcos, revezando (Nv.60 volta ao Remo Valente). Algumas recompensas em Moedas
+  mudaram um pouco com o arquivo regerado.
+
+### Removido
+
+- Os barcos Vela do Sol, Quilha Azul, Canto da Baleia, Farol Noturno e Titã do Atlântico (e os pedidos de arte deles).
+
+### Migração
+
+- Save v20. Quem tinha fragmentos dos barcos 6 a 10 recebe fragmentos do barco 1 a 5 do mesmo mapa; um barco 6 a 10 já
+  montado vira as Moedas e Conchas que os níveis dele custaram, mais os fragmentos que ele custou; se estava em uso, o
+  jogo passa a usar o seu melhor barco.
+
 ## [0.2.0-m21.58] — 12/10/2026
 
 Menu Eventos na barra de cima, com o Boss Mundial dentro (M24-T39, A-167). Verificado no CI, não aberto no Unity.

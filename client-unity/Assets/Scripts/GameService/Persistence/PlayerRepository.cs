@@ -447,6 +447,14 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 19;
             }
 
+            if (save.SaveVersion == 19)
+            {
+                // v20: back to 5 boats (M24-T42, A-168). The boats and fragments held are of the 10-boat model (model 1):
+                // GameSession converts boats 6 to 10 when it loads the save (BoatModelMigration, it needs the config).
+                save.BoatModelVersion = 1;
+                save.SaveVersion = 20;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BoatLevels = save.BoatLevels ?? new Dictionary<string, int>();
             save.BoatFragments = save.BoatFragments ?? new Dictionary<string, long>();

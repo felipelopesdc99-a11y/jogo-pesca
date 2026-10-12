@@ -25,7 +25,8 @@ namespace FishingIdle.GameService.Shop
     }
 
     /// <summary>
-    /// Boats by fragments (M24-T16, A-157): each boat belongs to a map; a fish pulled out there may drop one of its
+    /// Boats by fragments (M24-T16, A-157): each boat belongs to one or more maps (M24-T42, A-168: maps 6 to 10 drop boats
+    /// 1 to 5); a fish pulled out there may drop one of its
     /// fragments; fragments_required of them assemble the boat, which is then owned at Nv.1 and put in use when it is
     /// better than the boat in use. Fragments that arrive after the boat is owned are kept as extras (OD-060).
     /// </summary>
@@ -43,13 +44,14 @@ namespace FishingIdle.GameService.Shop
         }
 
         /// <summary>
-        /// The roll after a fish is pulled out on <paramref name="map"/>: with the map boat's chance, 1 fragment of it.
+        /// The roll after a fish is pulled out on <paramref name="map"/>: with that map's chance for its boat, 1 fragment of it.
         /// Draws from the cycle's own <see cref="Rng"/> after the catch, so the catch itself never changes. Offline catches
         /// drop only when the config allows it (equipment.json → boat_fragments). Returns the gain, or null.
         /// </summary>
         internal static FragmentGainView RollOnCatch(GameConfig config, PlayerSave save, MapConfig map, Rng rng, bool offline)
         {
-            if (map == null || !config.TryGetBoatForMap(map.Id, out var boat) || boat.FragmentDropChance <= 0)
+            var chance = map == null ? 0.0 : config.BoatFragmentChanceOn(map.Id);
+            if (map == null || !config.TryGetBoatForMap(map.Id, out var boat) || chance <= 0)
             {
                 return null;
             }
@@ -59,7 +61,7 @@ namespace FishingIdle.GameService.Shop
                 return null;
             }
 
-            return rng.NextDouble() < boat.FragmentDropChance ? Add(config, save, boat, 1) : null;
+            return rng.NextDouble() < chance ? Add(config, save, boat, 1) : null;
         }
 
         /// <summary>

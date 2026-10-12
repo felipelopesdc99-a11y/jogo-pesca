@@ -28,6 +28,7 @@ namespace FishingIdle.GameService.Config
         private readonly Dictionary<string, CrewMemberConfig> _crew;
         private readonly Dictionary<string, GeneralUpgradeConfig> _generalUpgrades;
         private readonly Dictionary<string, BoatConfig> _boatByMap;
+        private readonly Dictionary<string, double> _boatChanceByMap;
         private readonly Dictionary<int, PassMilestoneConfig> _passMilestones;
         private readonly Dictionary<string, RodConfig> _rodByMap;
         private readonly Dictionary<string, ClothingPieceConfig> _clothing;
@@ -58,7 +59,21 @@ namespace FishingIdle.GameService.Config
             Upgrades = upgrades;
             _generalUpgrades = upgrades.GeneralUpgrades.ToDictionary(u => u.Id, StringComparer.Ordinal);
             _boats = equipment.Boats.ToDictionary(b => b.Id, StringComparer.Ordinal);
-            _boatByMap = equipment.Boats.Where(b => !string.IsNullOrEmpty(b.MapId)).ToDictionary(b => b.MapId, StringComparer.Ordinal);
+            // Each map drops the fragments of one boat: its own map_id or one of its extra_fragment_maps (M24-T42, A-168).
+            _boatByMap = new Dictionary<string, BoatConfig>(StringComparer.Ordinal);
+            _boatChanceByMap = new Dictionary<string, double>(StringComparer.Ordinal);
+            foreach (var boat in equipment.Boats)
+            {
+                foreach (var (mapId, chance) in FragmentMapsOf(boat))
+                {
+                    if (!_boatByMap.ContainsKey(mapId))
+                    {
+                        _boatByMap[mapId] = boat;
+                        _boatChanceByMap[mapId] = chance;
+                    }
+                }
+            }
+
             _baits = equipment.Baits.ToDictionary(b => b.Id, StringComparer.Ordinal);
             FishCatalog = fishCatalog;
             Maps = maps;
@@ -115,6 +130,31 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>The boat whose fragments the catches on a map drop (M24-T16), or false when the map has none.</summary>
         public bool TryGetBoatForMap(string mapId, out BoatConfig boat) => _boatByMap.TryGetValue(mapId ?? string.Empty, out boat);
+
+        /// <summary>The chance that a fish pulled out on a map drops 1 fragment of the boat that map drops; 0 when it drops none.</summary>
+        public double BoatFragmentChanceOn(string mapId) => _boatChanceByMap.TryGetValue(mapId ?? string.Empty, out var chance) ? chance : 0.0;
+
+        /// <summary>The maps whose catches drop a boat's fragments, in order (map_id first, then extra_fragment_maps), with their chances.</summary>
+        public static IEnumerable<(string MapId, double Chance)> FragmentMapsOf(BoatConfig boat)
+        {
+            if (boat == null)
+            {
+                yield break;
+            }
+
+            if (!string.IsNullOrEmpty(boat.MapId))
+            {
+                yield return (boat.MapId, boat.FragmentDropChance);
+            }
+
+            foreach (var extra in boat.ExtraFragmentMaps ?? new List<BoatFragmentMapConfig>())
+            {
+                if (extra != null && !string.IsNullOrEmpty(extra.MapId))
+                {
+                    yield return (extra.MapId, extra.FragmentDropChance);
+                }
+            }
+        }
 
         /// <summary>Whether offline fishing drops boat fragments too (equipment.json → boat_fragments).</summary>
         public bool FragmentsDropOffline => Equipment.BoatFragments?.DropOnOfflineFishing ?? true;
@@ -181,6 +221,9 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>The version of today's baits (equipment.json → bait_migration, M24-T30); 0 when the config names none.</summary>
         public int BaitModelVersion => Equipment.BaitMigration?.BaitModelVersion ?? 0;
+
+        /// <summary>The version of today's boats (equipment.json → boat_migration, M24-T42); 0 when the config names none.</summary>
+        public int BoatModelVersion => Equipment.BoatMigration?.BoatModelVersion ?? 0;
         public MarketFixedPriceConfig Market => Economy.MarketFixedPrice;
         public AuctionConfig Auction => Economy.Auction;
 

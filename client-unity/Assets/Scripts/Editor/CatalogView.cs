@@ -104,9 +104,13 @@ namespace FishingIdle.Editor
                         var card = new Card { Title = boat.DisplayName, Subtitle = boat.Id, Art = ArtAssets.Texture("Barcos/" + boat.Id) };
                         card.Lines.Add(T.CatalogBonus(Format.Percent(boat.CatchSuccessBonus, 0)));
                         // Boats are not sold since M24-T16: the fragments that assemble it and where they drop.
-                        if (config.TryGetMap(boat.MapId, out var boatMap))
+                        // One line per map that drops it (M24-T42: maps 6 to 10 drop boats 1 to 5).
+                        foreach (var (mapId, chance) in GameConfig.FragmentMapsOf(boat))
                         {
-                            card.Lines.Add(T.CatalogFragments(boat.FragmentsRequired, Format.Percent(boat.FragmentDropChance, boat.FragmentDropChance < 0.01 ? 2 : 1), boatMap.DisplayName));
+                            if (config.TryGetMap(mapId, out var boatMap))
+                            {
+                                card.Lines.Add(T.CatalogFragments(boat.FragmentsRequired, Format.Percent(chance, chance < 0.01 ? 2 : 1), boatMap.DisplayName));
+                            }
                         }
                         yield return card;
                     }

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-12T20:00:00Z",
+  "updated_at": "2026-10-12T23:30:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -563,7 +563,8 @@
       "title": "Nomes dos barcos dos Mapas 6 a 10",
       "detail": "Sugeridos: Vela do Sol (Arquipélago do Sol), Quilha Azul (Corrente Azul), Canto da Baleia (Banco das Baleias), Farol Noturno (Talude Noturno) e Titã do Atlântico (Abismo Atlântico), cada um com uma frase. Opções: (a) aprovar; (b) trocar algum nome ou descrição (é só editar config/equipment.json).",
       "raised_at": "2026-10-11T12:00:00Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Proprietário 12/10/2026: voltar para 5 barcos por enquanto. Os barcos 6 a 10 saíram (M24-T42, A-168); os mapas 6 a 10 dão fragmentos dos barcos 1 a 5."
     },
     {
       "id": "OD-062",
@@ -4818,7 +4819,19 @@
             "M24-T29"
           ],
           "updated_at": "2026-10-12T23:00:00Z",
-          "completion_notes": "Barra de cima: botão \"Eventos\" (ícone + texto, último do menu, constante NavEvents = 10; os índices dos outros e o destaque do tutorial não mudaram); ponto dourado e brilho suave quando o Boss está acontecendo; o botão de ícone do Boss com a pílula de contagem saiu (TopRightExtent 268 → 204). Para caber 11 menus: se a fileira normal não couber, uma fileira mais justa (laterais 8 px, espaço 4 px, UiSkin.NavGameWidth(label, tight)); se nem assim, só ícones (como antes). Janela Eventos (Game/UI/EventsWindow.cs, Placa do Píer com \"i\", contador \"1 acontecendo agora\" durante o evento): lista rolável de cartões; o cartão Boss Mundial mostra o nome do Boss (config), \"Todo dia às 19:00 (Brasília), 10 minutos\", o estado (\"Começa em hh:mm:ss\" ou \"Acontecendo agora · faltam mm:ss\" com o selo AGORA e brilho dourado), \"Sua faixa de hoje\", o último resultado fora do evento e \"Abrir\", que abre a janela do Boss. Janela do Boss: botão \"‹ Eventos\" no cabeçalho volta à lista; Eventos na barra também volta. Esc fecha. Avisos do Boss continuam iguais (os avisos não têm ação de clique no jogo; nada novo criado). Ícone provisório: o relógio (ico_relogio) até existir ico_eventos.png (pedido em docs/ASSETS_PENDENTES.md). Regras do Boss: nenhuma mudança. Detalhe no A-167. Verificado no CI; o visual só fica verificado quando o proprietário apertar Play."
+          "completion_notes": "Barra de cima: botão \"Eventos\" (ícone + texto, último do menu, constante NavEvents = 10; os índices dos outros e o destaque do tutorial não mudaram); ponto dourado e brilho suave quando o Boss está acontecendo; o botão de ícone do Boss com a pílula de contagem saiu (TopRightExtent 268 → 204). Para caber 11 menus: se a fileira normal não couber, uma fileira mais justa (laterais 8 px, espaço 4 px, UiSkin.NavGameWidth(label, tight)); se nem assim, só ícones (como antes). Janela Eventos (Game/UI/EventsWindow.cs, Placa do Píer com \"i\", contador \"1 acontecendo agora\" durante o evento): lista rolável de cartões; o cartão Boss Mundial mostra o nome do Boss (config), \"Todo dia às 19:00 (Brasília), 10 minutos\", o estado (\"Começa em hh:mm:ss\" ou \"Acontecendo agora · faltam mm:ss\" com o selo AGORA e brilho dourado), \"Sua faixa de hoje\", o último resultado fora do evento e \"Abrir\", que abre a janela do Boss. Janela do Boss: botão \"‹ Eventos\" no cabeçalho volta à lista; Eventos na barra também volta. Esc fecha. Avisos do Boss continuam iguais (os avisos não têm ação de clique no jogo; nada novo criado). Ícone provisório: o relógio (ico_relogio) até existir ico_eventos.png (pedido em docs/ASSETS_PENDENTES.md). Regras do Boss: nenhuma mudança. Detalhe no A-167. Verificado no CI; o visual só fica verificado quando o proprietário apertar Play."        },
+        {
+          "id": "M24-T42",
+          "title": "Volta para 5 barcos (mapas 6 a 10 dropam os barcos 1 a 5)",
+          "subsystem": "config",
+          "description": "Decisão do proprietário (12/10/2026): \"vamos voltar para 5 barcos por enquanto\" e \"Só voltar a 5 barcos\": mantém o fragmento por barco (A-157) e os mapas 6 a 10 dropam fragmentos dos barcos 1 a 5 (6→1, 7→2, 8→3, 9→4, 10→5). Quem tinha barcos 6 a 10 recebe o valor de volta.",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T16",
+            "M24-T17"
+          ],
+          "updated_at": "2026-10-12T23:30:00Z",
+          "completion_notes": "config/equipment.json: só o barco inicial e os 5 barcos (Remo Valente, Rastro Azul, Proa Selvagem, Costa Nobre, Horizonte Dourado); cada um com map_id (mapas 1 a 5, chances de hoje: 0,43/0,43/0,48/0,51/0,52%) e extra_fragment_maps (mapa 6 a 10 com a chance que o mapa já tinha: 0,53/0,58/0,61/0,66/0,67%). Novo boat_migration (boat_model_version 2, removed_boats com fragments_go_to, fragments_required e upgrade_cost dos barcos 6 a 10). GameConfig: TryGetBoatForMap com os mapas extras, BoatFragmentChanceOn(mapa), FragmentMapsOf(barco); BoatFragmentRules usa a chance do mapa; validador aceita mais de um mapa por barco (cada mapa com um barco só) e valida boat_migration. Loja: \"Caem nos mapas X e Y\" e a chance do mapa em que o jogador está; Catálogo do Painel com uma linha por mapa. Save v20 (BoatModelVersion) e Persistence/BoatModelMigration.cs: fragmentos dos barcos 6 a 10 viram fragmentos do barco 1 a 5 do mesmo mapa; barco 6 a 10 montado vira Moedas e Conchas do que custou subir do Nv.1 ao nível dele (curva TD-041) + os fragmentos que ele custou; se estava em uso, passa a usar o melhor barco; uma vez só. config/pass.json regerado por tools/Progressao/passe_fragmentos.py gerar (fragmentos só dos 5 barcos, revezando a cada 50 níveis; Moedas de alguns marcos mudaram um pouco porque o jogador de referência não monta mais os barcos 6 a 10); simular_progressao.py com os mapas extras; docs/propostas/passe_fragmentos.json regerado; world_boss.json: texto e reference_income regerado por tools/Progressao/boss_mundial.py (segue o pass.json). ASSETS_PENDENTES sem os barcos 6 a 10. Testes: BackToFiveBoatsTests (novo) e BoatFragmentsAndPassTests (5 barcos, mapas 6 a 10, mapa 6 dá barco 1, passe), cenários com boat_10 trocados por boat_05. OD-061 resolvido. A-168, TD-051. Verificado no CI, não aberto no Unity."
         }
       ]
     }

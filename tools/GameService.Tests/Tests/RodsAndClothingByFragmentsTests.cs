@@ -568,7 +568,7 @@ public sealed class RodsAndClothingByFragmentsTests
     {
         var config = Real;
         config.TryGetRod("rod_05", out var rod);
-        config.TryGetBoat("boat_10", out var boat);
+        config.TryGetBoat("boat_05", out var boat);
         var bait = config.Equipment.Baits.OrderByDescending(b => b.CatchSuccessBonus).First();
         var gloves = config.ClothingBonusAt(config.ClothingPieces.Single(p => p.BonusAxis == ClothingAxes.CatchSuccess), 100);
         var bonus = config.RodBonusesAt(rod, 100).CatchSuccess + config.BoatBonusAt(boat, 100) + bait.CatchSuccessBonus + gloves;

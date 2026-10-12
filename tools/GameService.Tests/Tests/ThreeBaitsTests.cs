@@ -122,8 +122,8 @@ public sealed class ThreeBaitsTests
         Assert.Equal(System.Math.Min(0.95, 0.38 + gear.TotalBonus), gear.Chances.Single(c => c.RarityId == "rare").Chance, 6);
 
         // With the best boat at its top level, everything stops at the ceiling.
-        TestSupport.GiveBoat(game, "boat_10");
-        save.BoatLevels["boat_10"] = Config.BoatMaxLevel(Config.Equipment.Boats.Single(b => b.Id == "boat_10"));
+        TestSupport.GiveBoat(game, "boat_05");
+        save.BoatLevels["boat_05"] = Config.BoatMaxLevel(Config.Equipment.Boats.Single(b => b.Id == "boat_05"));
         gear = game.Gear.GetGear();
         Assert.Equal(gear.RodBonus + gear.BoatBonus + 0.15, gear.TotalBonus, 6);
         Assert.True(0.50 + gear.TotalBonus > 0.95);

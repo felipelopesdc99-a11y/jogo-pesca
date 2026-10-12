@@ -10,7 +10,7 @@
   },
   "boat_fragments": {
     "drop_on_offline_fishing": true,
-    "note": "Barcos por fragmentos (M24-T16, A-157). Cada peixe pescado (puxado, não o que escapa) no mapa do barco (map_id) tem fragment_drop_chance de dar 1 fragmento daquele barco, sorteado com o Rng do serviço na mesma tentativa. Com fragments_required fragmentos o barco é montado sozinho (entra no Nv.1) e, se for melhor que o barco em uso, passa a ser usado. drop_on_offline_fishing: a pesca offline (A-034) também dá fragmentos, com a mesma chance; Expedições não dão. Depois de montado, os fragmentos daquele barco continuam caindo e ficam guardados como extras (o que fazer com eles é o OD-060). O Passe do Pescador (pass.json) também dá fragmentos. fragments_required e fragment_drop_chance gerados por tools/Progressao/passe_fragmentos.py gerar."
+    "note": "Barcos por fragmentos (M24-T16, A-157). Cada peixe pescado (puxado, não o que escapa) no mapa do barco (map_id, ou um dos extra_fragment_maps, com a chance de lá) tem fragment_drop_chance de dar 1 fragmento daquele barco, sorteado com o Rng do serviço na mesma tentativa. Com fragments_required fragmentos o barco é montado sozinho (entra no Nv.1) e, se for melhor que o barco em uso, passa a ser usado. drop_on_offline_fishing: a pesca offline (A-034) também dá fragmentos, com a mesma chance; Expedições não dão. Depois de montado, os fragmentos daquele barco continuam caindo e ficam guardados como extras (o que fazer com eles é o OD-060). O Passe do Pescador (pass.json) também dá fragmentos. fragments_required e fragment_drop_chance gerados por tools/Progressao/passe_fragmentos.py gerar."
   },
   "boats": [
     {
@@ -38,7 +38,14 @@
         "coins_growth": 1.14,
         "shells_first": 1,
         "shells_growth": 1.03
-      }
+      },
+      "extra_fragment_maps": [
+        {
+          "map_id": "map_06",
+          "fragment_drop_chance": 0.0053
+        }
+      ],
+      "extra_fragment_maps_note": "Desde 12/10/2026 (M24-T42, A-168) o map_06 também dá fragmentos deste barco, com a chance que o mapa já tinha para o barco Vela do Sol (removido). Esta chance não é gerada pelo passe_fragmentos.py: fica como está."
     },
     {
       "id": "boat_02",
@@ -56,7 +63,14 @@
         "coins_growth": 1.14,
         "shells_first": 1,
         "shells_growth": 1.03
-      }
+      },
+      "extra_fragment_maps": [
+        {
+          "map_id": "map_07",
+          "fragment_drop_chance": 0.0058
+        }
+      ],
+      "extra_fragment_maps_note": "Desde 12/10/2026 (M24-T42, A-168) o map_07 também dá fragmentos deste barco, com a chance que o mapa já tinha para o barco Quilha Azul (removido). Esta chance não é gerada pelo passe_fragmentos.py: fica como está."
     },
     {
       "id": "boat_03",
@@ -74,7 +88,14 @@
         "coins_growth": 1.14,
         "shells_first": 1,
         "shells_growth": 1.03
-      }
+      },
+      "extra_fragment_maps": [
+        {
+          "map_id": "map_08",
+          "fragment_drop_chance": 0.0061
+        }
+      ],
+      "extra_fragment_maps_note": "Desde 12/10/2026 (M24-T42, A-168) o map_08 também dá fragmentos deste barco, com a chance que o mapa já tinha para o barco Canto da Baleia (removido). Esta chance não é gerada pelo passe_fragmentos.py: fica como está."
     },
     {
       "id": "boat_04",
@@ -92,7 +113,14 @@
         "coins_growth": 1.14,
         "shells_first": 6,
         "shells_growth": 1.03
-      }
+      },
+      "extra_fragment_maps": [
+        {
+          "map_id": "map_09",
+          "fragment_drop_chance": 0.0066
+        }
+      ],
+      "extra_fragment_maps_note": "Desde 12/10/2026 (M24-T42, A-168) o map_09 também dá fragmentos deste barco, com a chance que o mapa já tinha para o barco Farol Noturno (removido). Esta chance não é gerada pelo passe_fragmentos.py: fica como está."
     },
     {
       "id": "boat_05",
@@ -110,102 +138,14 @@
         "coins_growth": 1.14,
         "shells_first": 25,
         "shells_growth": 1.03
-      }
-    },
-    {
-      "id": "boat_06",
-      "display_name": "Vela do Sol",
-      "description": "Leve e veloz, feita para cruzar entre as ilhas.",
-      "tier": 6,
-      "map_id": "map_06",
-      "fragments_required": 70,
-      "fragment_drop_chance": 0.0053,
-      "catch_success_bonus": 0.12,
-      "has_levels": true,
-      "catch_success_bonus_at_max_level": 0.36,
-      "upgrade_cost": {
-        "coins_first": 375000,
-        "coins_growth": 1.14,
-        "shells_first": 40,
-        "shells_growth": 1.03
       },
-      "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
-    },
-    {
-      "id": "boat_07",
-      "display_name": "Quilha Azul",
-      "description": "Corta a corrente forte sem perder o rumo.",
-      "tier": 7,
-      "map_id": "map_07",
-      "fragments_required": 90,
-      "fragment_drop_chance": 0.0058,
-      "catch_success_bonus": 0.14,
-      "has_levels": true,
-      "catch_success_bonus_at_max_level": 0.42,
-      "upgrade_cost": {
-        "coins_first": 1130000,
-        "coins_growth": 1.14,
-        "shells_first": 60,
-        "shells_growth": 1.03
-      },
-      "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
-    },
-    {
-      "id": "boat_08",
-      "display_name": "Canto da Baleia",
-      "description": "Grande e calma, navega entre os gigantes do mar.",
-      "tier": 8,
-      "map_id": "map_08",
-      "fragments_required": 120,
-      "fragment_drop_chance": 0.0061,
-      "catch_success_bonus": 0.16,
-      "has_levels": true,
-      "catch_success_bonus_at_max_level": 0.48,
-      "upgrade_cost": {
-        "coins_first": 3380000,
-        "coins_growth": 1.14,
-        "shells_first": 90,
-        "shells_growth": 1.03
-      },
-      "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
-    },
-    {
-      "id": "boat_09",
-      "display_name": "Farol Noturno",
-      "description": "Luzes fortes para pescar na borda escura do talude.",
-      "tier": 9,
-      "map_id": "map_09",
-      "fragments_required": 155,
-      "fragment_drop_chance": 0.0066,
-      "catch_success_bonus": 0.18,
-      "has_levels": true,
-      "catch_success_bonus_at_max_level": 0.54,
-      "upgrade_cost": {
-        "coins_first": 10100000,
-        "coins_growth": 1.14,
-        "shells_first": 135,
-        "shells_growth": 1.03
-      },
-      "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
-    },
-    {
-      "id": "boat_10",
-      "display_name": "Titã do Atlântico",
-      "description": "O maior de todos, pronto para o mar aberto e profundo.",
-      "tier": 10,
-      "map_id": "map_10",
-      "fragments_required": 200,
-      "fragment_drop_chance": 0.0067,
-      "catch_success_bonus": 0.2,
-      "has_levels": true,
-      "catch_success_bonus_at_max_level": 0.6,
-      "upgrade_cost": {
-        "coins_first": 30400000,
-        "coins_growth": 1.14,
-        "shells_first": 200,
-        "shells_growth": 1.03
-      },
-      "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
+      "extra_fragment_maps": [
+        {
+          "map_id": "map_10",
+          "fragment_drop_chance": 0.0067
+        }
+      ],
+      "extra_fragment_maps_note": "Desde 12/10/2026 (M24-T42, A-168) o map_10 também dá fragmentos deste barco, com a chance que o mapa já tinha para o barco Titã do Atlântico (removido). Esta chance não é gerada pelo passe_fragmentos.py: fica como está."
     }
   ],
   "clothing": {
@@ -331,5 +271,71 @@
       }
     ],
     "note": "Iscas de antes de 12/10/2026 (M24-T30, A-161). Um save com bait_model_version menor que este troca, ao abrir, cada isca de legacy_baits que ainda tem tentativas pela isca de hoje de bônus igual ou o mais próximo acima (a de maior bônus, se nenhuma for maior), com as tentativas convertidas pelo valor em Moedas: tentativas novas = tentativas antigas × (cost_coins ÷ charges antigos) ÷ (cost_coins ÷ charges de hoje), arredondado para cima. A isca em uso continua em uso (a nova). legacy_baits guarda os números de antes só para essa conta: não muda nada no jogo de hoje."
+  },
+  "boat_migration": {
+    "boat_model_version": 2,
+    "note": "Barcos de antes de 12/10/2026 (M24-T42, A-168): o jogo teve 10 barcos (um por mapa) e voltou para 5; os mapas 6 a 10 dão fragmentos dos barcos 1 a 5. Um save com boat_model_version menor que este troca, ao abrir: os fragmentos de um barco removido viram fragmentos do barco fragments_go_to; um barco removido já montado vira Moedas e Conchas (o que custou subir do Nv.1 ao nível dele, pela upgrade_cost abaixo e a curva de boat_levels) e os fragments_required que ele custou viram fragmentos do barco fragments_go_to; se ele estava em uso, o jogador passa a usar o melhor barco que tem. Fica guardado para converter saves antigos.",
+    "removed_boats": [
+      {
+        "id": "boat_06",
+        "display_name": "Vela do Sol",
+        "fragments_go_to": "boat_01",
+        "fragments_required": 70,
+        "upgrade_cost": {
+          "coins_first": 375000,
+          "coins_growth": 1.14,
+          "shells_first": 40,
+          "shells_growth": 1.03
+        }
+      },
+      {
+        "id": "boat_07",
+        "display_name": "Quilha Azul",
+        "fragments_go_to": "boat_02",
+        "fragments_required": 90,
+        "upgrade_cost": {
+          "coins_first": 1130000,
+          "coins_growth": 1.14,
+          "shells_first": 60,
+          "shells_growth": 1.03
+        }
+      },
+      {
+        "id": "boat_08",
+        "display_name": "Canto da Baleia",
+        "fragments_go_to": "boat_03",
+        "fragments_required": 120,
+        "upgrade_cost": {
+          "coins_first": 3380000,
+          "coins_growth": 1.14,
+          "shells_first": 90,
+          "shells_growth": 1.03
+        }
+      },
+      {
+        "id": "boat_09",
+        "display_name": "Farol Noturno",
+        "fragments_go_to": "boat_04",
+        "fragments_required": 155,
+        "upgrade_cost": {
+          "coins_first": 10100000,
+          "coins_growth": 1.14,
+          "shells_first": 135,
+          "shells_growth": 1.03
+        }
+      },
+      {
+        "id": "boat_10",
+        "display_name": "Titã do Atlântico",
+        "fragments_go_to": "boat_05",
+        "fragments_required": 200,
+        "upgrade_cost": {
+          "coins_first": 30400000,
+          "coins_growth": 1.14,
+          "shells_first": 200,
+          "shells_growth": 1.03
+        }
+      }
+    ]
   }
 }

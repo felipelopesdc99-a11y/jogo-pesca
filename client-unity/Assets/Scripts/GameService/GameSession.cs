@@ -222,6 +222,15 @@ namespace FishingIdle.GameService
                 _log("Level curves: " + levels.RodsMoved + " rods and " + levels.FishMoved + " fish moved to the current curve.");
             }
 
+            // Boats 6 to 10 from before M24-T42 become Moedas, Conchas and fragments of boats 1 to 5 (A-168), before the levels
+            // below are clamped (an unknown boat would drop to Nv.1).
+            var boats = Persistence.BoatModelMigration.MoveToCurrentModel(Config, Save);
+            if (boats.BoatsRefunded > 0 || boats.FragmentsMoved > 0)
+            {
+                _log("Boat model " + Config.BoatModelVersion + ": " + boats.BoatsRefunded + " removed boats refunded (" + boats.CoinsRefunded + " coins, "
+                     + boats.ShellsRefunded + " shells), " + boats.FragmentsMoved + " fragments moved to today's boats.");
+            }
+
             // Levels and charges stay inside what the config allows (an edited save, or a config that
             // lowered a maximum, cannot leave a fish or a rod above the top level).
             var fishMax = Config.Progression.FishLevel.MaxLevel;

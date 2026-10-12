@@ -852,6 +852,7 @@ namespace FishingIdle.GameService.Config
                 }
 
                 ValidateBaitMigration(equipment.BaitMigration, errors);
+                ValidateBoatMigration(equipment, errors);
             }
 
             ValidateCrew(crew, errors);
@@ -999,8 +1000,8 @@ namespace FishingIdle.GameService.Config
         }
 
         /// <summary>
-        /// Boats by fragments (M24-T16, A-157): the starter boat belongs to no map; every other boat to one existing map,
-        /// one boat per map, with at least 1 fragment to assemble it and a drop chance between 0 and 1.
+        /// Boats by fragments (M24-T16, A-157): the starter boat belongs to no map; every other boat to one existing map
+        /// (map_id) and maybe more (extra_fragment_maps, M24-T42), one boat per map, with at least 1 fragment to assemble it and a drop chance between 0 and 1.
         /// </summary>
         private static void ValidateBoatFragments(EquipmentConfig equipment, MapsConfig maps, List<string> errors)
         {
@@ -1027,6 +1028,26 @@ namespace FishingIdle.GameService.Config
                 else if (!used.Add(boat.MapId))
                 {
                     errors.Add(V.BoatMapRepeated(boat.MapId));
+                }
+
+                // More maps that drop this boat (M24-T42, A-168): each one existing, not taken by another boat, with its chance.
+                foreach (var extra in boat.ExtraFragmentMaps ?? new List<BoatFragmentMapConfig>())
+                {
+                    if (extra == null || string.IsNullOrWhiteSpace(extra.MapId) || !mapIds.Contains(extra.MapId))
+                    {
+                        errors.Add(V.BoatMapUnknown(boat.Id, extra?.MapId));
+                        continue;
+                    }
+
+                    if (!used.Add(extra.MapId))
+                    {
+                        errors.Add(V.BoatMapRepeated(extra.MapId));
+                    }
+
+                    if (!(extra.FragmentDropChance >= 0) || extra.FragmentDropChance > 1)
+                    {
+                        errors.Add(V.ChanceOutOfRange(file, boat.Id + ".extra_fragment_maps." + extra.MapId + ".fragment_drop_chance"));
+                    }
                 }
 
                 if (boat.FragmentsRequired < 1 || boat.FragmentsRequired > 1000000)
@@ -1127,6 +1148,38 @@ namespace FishingIdle.GameService.Config
                     || bait.Charges < 1 || bait.CostCoins < 0 || bait.CostShells < 0)
                 {
                     errors.Add(V.BaitMigrationInvalid("legacy_baits (" + (bait?.Id ?? "") + ")"));
+                }
+            }
+        }
+
+        /// <summary>
+        /// The boats removed in M24-T42 (A-168), kept to convert old saves: a version, and each removed boat with an id no boat
+        /// of today uses, fragments going to a boat of today and a valid level price.
+        /// </summary>
+        private static void ValidateBoatMigration(EquipmentConfig equipment, List<string> errors)
+        {
+            var migration = equipment.BoatMigration;
+            if (migration == null)
+            {
+                return;
+            }
+
+            if (migration.BoatModelVersion < 1)
+            {
+                errors.Add(V.BoatMigrationInvalid("boat_model_version"));
+            }
+
+            var today = new HashSet<string>(equipment.Boats.Where(b => b != null && b.Id != null).Select(b => b.Id), StringComparer.Ordinal);
+            var starter = equipment.Boats.OrderBy(b => b.Tier).First();
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var boat in migration.RemovedBoats ?? new List<RemovedBoatConfig>())
+            {
+                if (boat == null || string.IsNullOrWhiteSpace(boat.Id) || !ids.Add(boat.Id) || today.Contains(boat.Id)
+                    || boat.FragmentsGoTo == null || !today.Contains(boat.FragmentsGoTo) || boat.FragmentsGoTo == starter.Id
+                    || boat.FragmentsRequired < 0 || boat.UpgradeCost == null || boat.UpgradeCost.CoinsFirst < 0 || boat.UpgradeCost.ShellsFirst < 0
+                    || boat.UpgradeCost.CoinsGrowth < 1 || boat.UpgradeCost.CoinsGrowth > 10 || boat.UpgradeCost.ShellsGrowth < 1 || boat.UpgradeCost.ShellsGrowth > 10)
+                {
+                    errors.Add(V.BoatMigrationInvalid("removed_boats (" + (boat?.Id ?? "") + ")"));
                 }
             }
         }

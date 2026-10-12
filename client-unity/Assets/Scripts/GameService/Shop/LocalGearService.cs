@@ -26,8 +26,16 @@ namespace FishingIdle.GameService.Shop
         /// </summary>
         public string MapId { get; internal set; }
         public string MapName { get; internal set; }
+
+        /// <summary>
+        /// Every map that drops this boat's fragments, in order (M24-T42, A-168: maps 6 to 10 drop boats 1 to 5), so the
+        /// Shop says "Caem nos mapas X e Y". Empty for the starter boat.
+        /// </summary>
+        public List<string> MapNames { get; internal set; } = new List<string>();
         public long Fragments { get; internal set; }
         public int FragmentsRequired { get; internal set; }
+
+        /// <summary>The chance per fish on the map the player is on when it drops this boat; otherwise on <see cref="MapId"/>.</summary>
         public double FragmentChance { get; internal set; }
 
         /// <summary>Whether the boat levels up (M24-T13); the starter boat does not.</summary>
@@ -190,6 +198,21 @@ namespace FishingIdle.GameService.Shop
                 var level = owned ? GearRules.BoatLevel(config, save, b) : 1;
                 var max = config.BoatMaxLevel(b);
                 var boatMap = config.TryGetMap(b.MapId, out var m) ? m : null;
+                var mapNames = new List<string>();
+                var chance = b.FragmentDropChance;
+                foreach (var (mapId, mapChance) in GameConfig.FragmentMapsOf(b))
+                {
+                    if (config.TryGetMap(mapId, out var dropMap))
+                    {
+                        mapNames.Add(dropMap.DisplayName);
+                    }
+
+                    if (mapId == save.CurrentMapId)
+                    {
+                        chance = mapChance;
+                    }
+                }
+
                 view.Boats.Add(new BoatOfferView
                 {
                     BoatId = b.Id,
@@ -201,9 +224,10 @@ namespace FishingIdle.GameService.Shop
                     InUse = b.Id == boat.Id,
                     MapId = boatMap?.Id,
                     MapName = boatMap?.DisplayName,
+                    MapNames = mapNames,
                     Fragments = BoatFragmentRules.Have(save, b.Id),
                     FragmentsRequired = b.FragmentsRequired,
-                    FragmentChance = b.FragmentDropChance,
+                    FragmentChance = chance,
                     HasLevels = b.HasLevels,
                     Level = level,
                     MaxLevel = max,

@@ -29,9 +29,9 @@ SCENARIOS = (
     ('começo', 'map_01', 'rod_01', 1, None, 1),
     ('começo', 'map_02', 'rod_01', 10, 'boat_01', 1),
     ('meio', 'map_05', 'rod_03', 30, 'boat_05', 10),
-    ('meio', 'map_07', 'rod_04', 30, 'boat_07', 10),
+    ('meio', 'map_07', 'rod_04', 30, 'boat_05', 10),  # M24-T42: 5 barcos
     ('fim', 'map_10', 'rod_05', 1, None, 1),
-    ('fim', 'map_10', 'rod_05', 100, 'boat_10', 100),
+    ('fim', 'map_10', 'rod_05', 100, 'boat_05', 100),
 )
 
 

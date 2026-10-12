@@ -732,6 +732,9 @@ namespace FishingIdle.GameService.Config
         /// <summary>The baits before M24-T30 (A-161) and how a save that still has them moves to today's. Null = nothing to move.</summary>
         public BaitMigrationConfig BaitMigration { get; set; }
 
+        /// <summary>The boats removed in M24-T42 (A-168) and how a save that has them moves to today's. Null = nothing to move.</summary>
+        public BoatMigrationConfig BoatMigration { get; set; }
+
         /// <summary>The clothing pieces and the Fragmento de Roupa (M24-T33, A-164). Null = no clothing.</summary>
         public ClothingConfig Clothing { get; set; }
     }
@@ -844,6 +847,41 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>Chance that a fish pulled out on <see cref="MapId"/> drops 1 fragment of this boat (0 to 1).</summary>
         public double FragmentDropChance { get; set; }
+
+        /// <summary>
+        /// Other maps whose catches also drop this boat's fragments, each with its own chance (M24-T42, A-168: back to 5
+        /// boats, maps 6 to 10 drop boats 1 to 5). Null or empty = only <see cref="MapId"/>.
+        /// </summary>
+        public List<BoatFragmentMapConfig> ExtraFragmentMaps { get; set; }
+    }
+
+    public sealed class BoatFragmentMapConfig
+    {
+        public string MapId { get; set; }
+        public double FragmentDropChance { get; set; }
+    }
+
+    /// <summary>
+    /// The boats removed on 12/10/2026 (M24-T42, A-168), kept to convert old saves: their fragments go to another boat and,
+    /// when one was assembled, the Coins and Shells its levels cost come back.
+    /// </summary>
+    public sealed class BoatMigrationConfig
+    {
+        public int BoatModelVersion { get; set; } = 1;
+        public List<RemovedBoatConfig> RemovedBoats { get; set; }
+    }
+
+    public sealed class RemovedBoatConfig
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
+
+        /// <summary>The boat whose fragments this one's become (the boat its map drops now).</summary>
+        public string FragmentsGoTo { get; set; }
+
+        /// <summary>Fragments it took to assemble it; given back as fragments of <see cref="FragmentsGoTo"/> when it was assembled.</summary>
+        public int FragmentsRequired { get; set; }
+        public LevelCostConfig UpgradeCost { get; set; }
     }
 
     public sealed class BaitConfig

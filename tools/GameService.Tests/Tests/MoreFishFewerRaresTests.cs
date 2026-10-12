@@ -38,7 +38,7 @@ public sealed class MoreFishFewerRaresTests
     {
         new object[] { "map_02", "rod_01", 10, "boat_01", 1, null },
         new object[] { "map_05", "rod_03", 30, "boat_05", 10, "bait_02" },
-        new object[] { "map_10", "rod_05", 100, "boat_10", 100, "bait_03" },
+        new object[] { "map_10", "rod_05", 100, "boat_05", 100, "bait_03" },
         new object[] { "map_10", "rod_05", 1, null, 1, null },
     };
 
@@ -131,7 +131,7 @@ public sealed class MoreFishFewerRaresTests
 
     [Theory]
     [InlineData("map_02", "rod_01", 10, "boat_01", 1, null, 400_000, 0.58, 0.82)]
-    [InlineData("map_10", "rod_05", 100, "boat_10", 100, "bait_03", 200_000, 0.66, 0.74)]
+    [InlineData("map_10", "rod_05", 100, "boat_05", 100, "bait_03", 200_000, 0.66, 0.74)]
     public void Simulated_with_a_fixed_seed_rarer_fish_per_hour_fall_to_about_70_percent(string mapId, string rodId, int rodLevel, string boatId, int boatLevel, string baitId, int attempts, double min, double max)
     {
         var before = ConfigBefore();

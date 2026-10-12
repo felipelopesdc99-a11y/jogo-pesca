@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 19;
+        public const int CurrentVersion = 20;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -121,6 +121,13 @@ namespace FishingIdle.GameService.Persistence
         /// Added in save version 17.
         /// </summary>
         public int BaitModelVersion { get; set; }
+
+        /// <summary>
+        /// The boat model of the boats and fragments above (equipment.json → boat_migration.boat_model_version). 1 = the 10
+        /// boats of M24-T16 (one per map); the game converts boats 6 to 10 on load (M24-T42, A-168). 0 = a new player.
+        /// Added in save version 20.
+        /// </summary>
+        public int BoatModelVersion { get; set; }
 
         /// <summary>
         /// The one Cardume: six positions (index 0 = position 1), each an Aquarium fish id or 0 when
