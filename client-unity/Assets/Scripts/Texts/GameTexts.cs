@@ -493,6 +493,10 @@ namespace FishingIdle.Texts
 
         public static class Hud
         {
+            /// <summary>The PC clock is behind the saved game time: the game waits until it catches up (TD-030, TD-052).</summary>
+            public const string ClockFrozenTitle = "Relógio do computador atrasado";
+            public static string ClockFrozenBody(string left) =>
+                "O relógio do computador está atrás do horário salvo; o jogo fica parado até ele alcançar esse horário (faltam " + left + "). Confira a data e a hora do computador.";
             public const string Notifications = "Notificações";
             public const string NoNotifications = "Nada por aqui ainda.";
             public const string ClearNotifications = "Limpar";

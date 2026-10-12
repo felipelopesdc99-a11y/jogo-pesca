@@ -64,6 +64,9 @@ namespace FishingIdle.Game.UI
         // the Fishing Box button, the hint left of the toast, never narrower than this (else the toast waits).
         private const float BottomHintMinWidth = 600f, BottomHintMaxWidth = 880f;
 
+        // The clock note at the bottom left, above the test tools' button.
+        private const float ClockNoteWidth = 480f, ClockNoteHeight = 96f;
+
         // The test tools' button at the bottom left (Editor and development builds only): 12 + 130.
         private const float DevButtonRight = 142f;
 
@@ -284,10 +287,8 @@ namespace FishingIdle.Game.UI
                         : GameTexts.Gear.ClothingFragmentsToast(Format.Number(n), Format.Number(have), Format.Number(cost)),
                     ToastKind.Info, now, _root.Toasts);
 
-                // The moment the fragments reach the next piece: say once that it can be assembled.
-                // TODO(regras): this comparison belongs to the game service; use the service's "roupa pode ser montada"
-                // signal on the update once it exists (revisão de integridade das telas, 12/10/2026).
-                if (cost > 0 && have >= cost && have - update.ClothingFragments < cost)
+                // The moment the fragments reach the next piece: the service says so once (update.ClothingReady).
+                if (update.ClothingReady && cost > 0)
                 {
                     _root.Toasts.Push(GameTexts.Gear.ClothingReadyToast(Format.Number(cost)), ToastKind.Important, notify: true);
                 }
@@ -552,6 +553,7 @@ namespace FishingIdle.Game.UI
             if (!windowOpen)
             {
                 DrawEscapeMessage(skin);
+                DrawClockFrozen(skin);
             }
 
             GUI.enabled = true;
@@ -1611,6 +1613,31 @@ namespace FishingIdle.Game.UI
             {
                 DrawTutorialHighlight(tutorial.Step);
             }
+        }
+
+        /// <summary>
+        /// A quiet note at the bottom left while the PC clock is behind the saved game time (the service's signal,
+        /// TD-030/TD-052): the game stays still until the clock catches up, so the player knows why nothing moves.
+        /// </summary>
+        private void DrawClockFrozen(UiSkin skin)
+        {
+            var session = _root.Game?.Session;
+            if (session == null || !session.ClockFrozen)
+            {
+                return;
+            }
+
+            var rect = new Rect(20f, _height - 24f - 30f - 20f - ClockNoteHeight, ClockNoteWidth, ClockNoteHeight);
+            if (rect.xMax > FishingPanelRect.x - 12f)
+            {
+                rect.width = Mathf.Max(300f, FishingPanelRect.x - 12f - rect.x);
+            }
+
+            skin.FloatingPanel(rect);
+            GUI.DrawTexture(new Rect(rect.x + 6, rect.y + 10, 4, rect.height - 20), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Gold, 0, 2);
+            skin.DrawIcon(new Rect(rect.x + 20, rect.y + 14, 22, 22), Icons.Clock, UiSkin.Gold);
+            GUI.Label(new Rect(rect.x + 52, rect.y + 10, rect.width - 64, 22), GameTexts.Hud.ClockFrozenTitle, skin.SmallBold);
+            GUI.Label(new Rect(rect.x + 52, rect.y + 32, rect.width - 64, rect.height - 38), GameTexts.Hud.ClockFrozenBody(Format.Duration(session.ClockFrozenSeconds)), skin.Small);
         }
 
         /// <summary>Free strip under an open window: from the test tools' button (or the edge) to the Fishing Box button.</summary>
