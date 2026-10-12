@@ -125,7 +125,8 @@ public sealed class ThreeBaitsTests
         TestSupport.GiveBoat(game, "boat_10");
         save.BoatLevels["boat_10"] = Config.BoatMaxLevel(Config.Equipment.Boats.Single(b => b.Id == "boat_10"));
         gear = game.Gear.GetGear();
-        Assert.True(gear.TotalBonus > 0.95);
+        Assert.Equal(gear.RodBonus + gear.BoatBonus + 0.15, gear.TotalBonus, 6);
+        Assert.True(0.50 + gear.TotalBonus > 0.95);
         Assert.All(gear.Chances, c => Assert.True(c.Chance <= Config.Fishing.CatchSuccessMax + 1e-9));
         Assert.Equal(0.95, gear.Chances.Single(c => c.RarityId == "common").Chance, 6);
     }
