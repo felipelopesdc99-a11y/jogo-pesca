@@ -38,7 +38,8 @@ Pesca a cada 10 s, VIP a cada 15 s fora do jogo e Caixa para 1 dia (M24-T27, A-1
 
 ### Verificação
 
-- Verificado no CI (GitHub): testes das regras, jogo, Painel e Simulador. Não aberto no Unity: a pesca a cada 10 s na
+- Verificado no CI (GitHub) no commit dc5e45c: 383 testes passando e 0 erros no jogo, no Painel e no Simulador. Não
+  aberto no Unity: a pesca a cada 10 s na
   cena e as telas da Loja e do "Bem-vindo de volta" precisam do Play do proprietário.
 
 ## [0.2.0-m21.51] — 11/10/2026
