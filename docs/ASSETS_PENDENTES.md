@@ -646,6 +646,8 @@ Pedido pronto para colar no ChatGPT:
 
 ## Menu de cima (M24-T43, A-169, pedido em 12/10/2026)
 
+**Chegaram em 12/10/2026 e estão no jogo:** os 5 ícones das abas (`ico_aba_*`). Faltam os 6 ícones dos atalhos (`ico_atalho_*`) e a moldura `ui_atalho_moldura`.
+
 `ASSET_PENDENTE`. Enquanto os arquivos não existem: as abas e os atalhos usam os ícones atuais do jogo (Pesca, Tripulação
 ou barco, Expedição, Mercado, Perfil; Mapa, Aquário, Passe, Eventos ou relógio, Boss ou ataque, Ranking), e a moldura
 redonda é um círculo com degradê azul e borda clara desenhado pelo jogo. Quando cada arquivo existir, o jogo passa a usá-lo
@@ -696,6 +698,8 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > do diâmetro). Sem texto, sem ícone, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: ui_atalho_moldura.png
 
 ## Janelas "Diário de bordo" (M24-T44, A-170, escolha do proprietário em 12/10/2026)
+
+**Chegaram em 12/10/2026 e estão no jogo:** as 5 peças. As margens transparentes foram cortadas; a moldura de madeira veio com 70 px de borda (o jogo usa 76 px como parte fixa) e a etiqueta com a ponta em "V" de 30 px (44 px fixos à direita). O marcador veio deitado (114×72); funciona igual, porque o jogo estica o miolo.
 
 `ASSET_PENDENTE`. Todas as janelas já funcionam com desenhos provisórios feitos pelo código (`Game/UI/WindowFrame.cs`):
 moldura de madeira, folha de papel, etiqueta do título, lacre de fechar e marcadores das abas. Quando um arquivo

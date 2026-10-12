@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.2] — 12/10/2026
+
+Primeiras artes do novo visual, feitas pelo proprietário no ChatGPT (A-169, A-170). Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- As janelas "Diário de bordo" usam as artes de verdade: moldura de madeira, folha de papel, etiqueta azul do título,
+  lacre de cera de fechar e marcador das abas (tingido com a cor de cada aba).
+- As 5 abas do menu de cima (Pesca, Tripulação, Aventura, Comércio, Perfil) ganharam os ícones novos.
+- Faltam os ícones dos atalhos redondos e a moldura deles; até chegarem, ficam os ícones atuais.
+
 ## [0.2.0-m24.1] — 12/10/2026
 
 Revisão de integridade do jogo inteiro (M24-T45), pedida pelo proprietário. A versão passa a seguir o milestone atual

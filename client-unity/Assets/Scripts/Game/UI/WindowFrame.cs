@@ -47,12 +47,12 @@ namespace FishingIdle.Game.UI
         // The "i" on the label and its note.
         private const float InfoSize = 28f, TipWidth = 460f, TipPad = 16f;
 
-        // Art (Resources/Arte/UI). ASSET_PENDENTE: every file below; the drawing is the fallback.
+        // Art (Resources/Arte/UI), delivered 12/10/2026; the drawing below each one is the fallback if a file is removed.
         private const string WoodArt = "UI/ui_diario_madeira", PaperArt = "UI/ui_diario_papel", LabelArt = "UI/ui_diario_etiqueta",
             SealArt = "UI/ui_diario_lacre", BookmarkArt = "UI/ui_diario_marcador";
 
         /// <summary>Borders kept whole by the 9-slice files (texture pixels; see docs/ASSETS_PENDENTES.md).</summary>
-        private const float WoodArtBorder = 56f, PaperArtBorder = 32f, LabelArtSide = 40f, LabelArtCap = 24f, BookmarkArtSide = 24f;
+        private const float WoodArtBorder = 76f, PaperArtBorder = 32f, LabelArtSide = 40f, LabelArtTail = 44f, LabelArtCap = 24f, BookmarkArtSide = 24f;
 
         // Colours of the drawn fallback (the example the owner chose).
         private static readonly Color WoodFill = Rgb(0x9B673D), WoodSeam = Rgb(0x8A5A33), WoodEdge = Rgb(0x4B301A);
@@ -483,7 +483,7 @@ namespace FishingIdle.Game.UI
             var art = ArtAssets.Texture(LabelArt);
             if (art != null)
             {
-                UiSkin.NineSlice(r, art, LabelArtSide, LabelArtSide, LabelArtCap, LabelArtCap, r.height / art.height);
+                UiSkin.NineSlice(r, art, LabelArtSide, LabelArtTail, LabelArtCap, LabelArtCap, r.height / art.height);
                 return;
             }
 
