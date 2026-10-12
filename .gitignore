@@ -43,3 +43,6 @@ client-unity/.vsconfig
 client-unity/Assets/StreamingAssets/config/
 client-unity/Assets/StreamingAssets/config.meta
 __pycache__/
+
+# Cópias temporárias dos agentes (worktrees)
+.claude/worktrees/
