@@ -120,7 +120,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Market.Title, GameTexts.Market.Note, out var closed, 1500f, 880f, Icons.Market);
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Market.Title, GameTexts.Market.Note, out var closed, 1500f, 880f, Icons.Market, bookmarks: true);
             if (closed)
             {
                 _selectedListing = 0;
@@ -131,8 +131,8 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            DrawTabs(skin, area);
-            var content = new Rect(area.x, area.y + 52, area.width, area.height - 52);
+            DrawTabs(skin);
+            var content = area;
             switch (_tab)
             {
                 case Tab.Sell: DrawSell(skin, content); break;
@@ -169,42 +169,51 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        private void DrawTabs(UiSkin skin, Rect area)
+        private static readonly Tab[] TabOrder = { Tab.Buy, Tab.Sell, Tab.Mine, Tab.Auction, Tab.Withdraw, Tab.Currency };
+        private static readonly string[] TabIcons = { Icons.Market, Icons.Sell, Icons.Box, Icons.Hourglass, Icons.Arrow, Icons.Dollar };
+
+        /// <summary>The six tabs as bookmarks on the side of the diary (A-170).</summary>
+        private void DrawTabs(UiSkin skin)
         {
-            var tabs = new[]
+            var labels = new[]
             {
-                (Tab.Buy, GameTexts.Market.TabBuy),
-                (Tab.Sell, GameTexts.Market.TabSell),
-                (Tab.Mine, GameTexts.Market.TabMineCount(_market.MyListings.Count, _market.MaxListings)),
-                (Tab.Auction, GameTexts.Market.TabAuction),
-                (Tab.Withdraw, GameTexts.Market.TabWithdrawCount(_market.Withdrawals.Count)),
-                (Tab.Currency, GameTexts.Market.TabCurrency),
+                GameTexts.Market.TabBuy,
+                GameTexts.Market.TabSell,
+                GameTexts.Market.TabMineCount(_market.MyListings.Count, _market.MaxListings),
+                GameTexts.Market.TabAuction,
+                GameTexts.Market.TabWithdrawCount(_market.Withdrawals.Count),
+                GameTexts.Market.TabCurrency,
             };
 
-            var x = area.x;
-            foreach (var (tab, label) in tabs)
+            var clicked = WindowFrame.Bookmarks(skin, labels, TabIcons, System.Array.IndexOf(TabOrder, _tab));
+            if (clicked >= 0 && TabOrder[clicked] != _tab)
             {
-                var w = skin.Chip.CalcSize(new GUIContent(label)).x + 12;
-                if (GUI.Button(new Rect(x, area.y, w, 34), label, _tab == tab ? skin.ChipActive : skin.Chip) && _tab != tab)
-                {
-                    _tab = tab;
-                    _scroll = Vector2.zero;
-                    _search = string.Empty;
-                    _selectedListing = 0;
-                    _selectedCandidate = 0;
-                    _selectedAuction = 0;
-                    _creatingAuction = false;
-                    _nextRefresh = 0f;
-                }
-
-                x += w + 8;
+                _tab = TabOrder[clicked];
+                _scroll = Vector2.zero;
+                _search = string.Empty;
+                _selectedListing = 0;
+                _selectedCandidate = 0;
+                _selectedAuction = 0;
+                _creatingAuction = false;
+                _nextRefresh = 0f;
             }
 
+            // The Moedas and the Aquarium slots, in the free strip of the header.
             var coins = Format.Number(_market.Coins);
             var cw = skin.Number.CalcSize(new GUIContent(coins)).x + 4f;
-            GUI.Label(new Rect(area.xMax - cw, area.y + 2, cw, 30), coins, skin.Number);
-            skin.CoinIcon(new Rect(area.xMax - cw - 32, area.y + 4, 24, 24));
-            GUI.Label(new Rect(area.xMax - cw - 250, area.y + 8, 200, 20), GameTexts.Market.AquariumSlots(_market.AquariumCount, _market.AquariumCapacity), skin.SmallMutedRight);
+            if (WindowFrame.Side.width >= cw + 32f)
+            {
+                var piece = WindowFrame.TakeSide(cw + 32f);
+                skin.CoinIcon(new Rect(piece.x, piece.center.y - 12f, 24, 24));
+                GUI.Label(new Rect(piece.x + 32f, piece.center.y - 15f, cw, 30), coins, skin.Number);
+            }
+
+            if (WindowFrame.Side.width >= 120f)
+            {
+                var slots = GameTexts.Market.AquariumSlots(_market.AquariumCount, _market.AquariumCapacity);
+                var piece = WindowFrame.TakeSide(Mathf.Min(WindowFrame.Side.width, skin.SmallMuted.CalcSize(new GUIContent(slots)).x + 4f));
+                GUI.Label(new Rect(piece.x, piece.center.y - 10f, piece.width, 20), FishCard.Fit(slots, skin.SmallMuted, piece.width), skin.SmallMuted);
+            }
         }
 
         // ------------------------------------------------------------------ Buy

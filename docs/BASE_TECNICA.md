@@ -423,6 +423,16 @@ Cada passo está em `SaveMigrations.Upgrade`.
   - **Peças da interface** (`UiSkin`): `FloatingPanel` (painel com sombra), `IconButton`,
     `AccentPill`, `Tag`, `Bar(rect, fração, cor)`, `DrawOutline`, `DrawGlow`, `IconBadge`, `CoinAmount`,
     e as janelas via `WindowFrame.Panel` + `WindowFrame.Header(…, ícone)`.
+  - **Janelas no papel ("Diário de bordo", A-170):** `WindowFrame.Panel` desenha a moldura de madeira e a folha e
+    liga o **modo papel** do `UiSkin` (`UiSkin.Paper`); o `Hud` desliga ao chamar `WindowFrame.DrawInfoBalloon` depois
+    das janelas, e `WindowFrame.Dialog` desliga para os diálogos (que continuam no painel noturno). No modo papel as
+    cores (`UiSkin.Text`, `Muted`, `Gold`, `Accent`, `RarityColor`…) respondem com a tinta escura e os estilos
+    registrados com `skin.Track(estilo)` trocam texto e fundo na hora; um estilo copiado do skin numa janela
+    (`new GUIStyle(skin.X)`) precisa de `skin.Track(...)` para acompanhar. Cena escura dentro da janela (tanque,
+    arquipélago, carta náutica, parede da Loja, batalha) vai num `using var night = UiSkin.NightScope();` depois de
+    `WindowFrame.Photo(skin, rect)`. Um preenchimento escuro atrás de texto usa `UiSkin.OnSheet(cor)`. Sub-abas:
+    `Panel(…, bookmarks: true)` (ou `Draw(…, bookmarks: true)`) e `WindowFrame.Bookmarks(...)`; rodapé com
+    `WindowFrame.Footer`; fechar com `WindowFrame.CloseSeal` (o `Header` já desenha).
   - **Dois cuidados com texto:** os rótulos do `UiSkin` quebram linha, então um rótulo da largura
     exata do texto (`CalcSize`) pode jogar o último dígito para uma linha invisível. Dê folga (+4 px)
     ou use `CoinAmountWidth` para moedas. E um texto que cita um número de `/config` (tempos, taxas,

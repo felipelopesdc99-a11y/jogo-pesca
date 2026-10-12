@@ -3,6 +3,23 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.61] — 12/10/2026
+
+Janelas no padrão "Diário de bordo", escolhido pelo proprietário (M24-T44, A-170). Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- Todas as janelas viram uma página de caderno: moldura de madeira com papel claro, título numa etiqueta azul com borda
+  dourada, lacre vermelho "✕" para fechar e a cena escurecida atrás. O "i" de "Como funciona" fica na etiqueta.
+- As sub-abas viram marcadores coloridos na lateral direita (Ranking, Aquário, Arena, Tripulação, Mercado, Loja e
+  Perfil).
+- Texto escuro no papel, com contraste de pelo menos 4,5:1 (tinta 10,9:1; secundário 6,4:1; turquesa 5,8:1; dourado
+  5,7:1). Cartões, chips e botões secundários viram papel; o botão principal continua turquesa.
+- Cenas próprias (tanque, arquipélago, carta náutica, parede da Loja, palco do Ranking, formações, batalha, Boss)
+  ficam como uma foto presa na folha, com a arte e o texto claro de antes.
+- Arte provisória da moldura, do papel, da etiqueta, do lacre e dos marcadores (`ASSET_PENDENTE`), com os pedidos para o
+  ChatGPT em `docs/ASSETS_PENDENTES.md`.
+
 ## [0.2.0-m21.60] — 12/10/2026
 
 Menu de cima: abas grandes com placa embaixo e atalhos redondos à direita (M24-T43, A-169). Verificado no CI, não aberto no Unity.

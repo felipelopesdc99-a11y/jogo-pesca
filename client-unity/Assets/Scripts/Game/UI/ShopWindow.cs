@@ -63,7 +63,7 @@ namespace FishingIdle.Game.UI
 
         // Layout (virtual canvas). The window is the common 1320×840 frame: the content is 1264×736 on any screen of
         // 4:3 or wider (the HUD scales a 1080-tall canvas), a little narrower on 5:4.
-        private const float BeamHeight = 14f, TabRope = 10f, TabHeight = 40f, TabGap = 10f, BodyTop = BeamHeight + TabRope + TabHeight + 12f;
+        private const float BeamHeight = 14f, BodyTop = BeamHeight + 12f;
         private const float Gap = 16f, DockHeight = 184f, LidHeight = 14f;
         private const float RowGap = 6f, MinRow = 92f, MaxRow = 124f, PlateWidth = 146f, ShelfBoard = 6f;
         private const float CardPad = 32f, CardPadTop = 34f;
@@ -88,8 +88,7 @@ namespace FishingIdle.Game.UI
 
         // Colours of the Mescla B page the owner approved (Art Bible palette: night blues and turquoise).
         private static readonly Color PlankA = Rgb(0x132A45), PlankB = Rgb(0x15304E), PlankSeam = Rgb(0x0B1D33);
-        private static readonly Color BeamTop = Rgb(0x2A8B98), BeamBottom = Rgb(0x1B5D68), Rope = Rgb(0xC9A77A);
-        private static readonly Color TabTop = Rgb(0x1D4266), TabBottom = Rgb(0x173757), TabSeam = Rgb(0x0D2440), TabEdge = Rgb(0x2A5480);
+        private static readonly Color BeamTop = Rgb(0x2A8B98), BeamBottom = Rgb(0x1B5D68);
         private static readonly Color PlateTop = Rgb(0x20435F), PlateBottom = Rgb(0x152F47), PlateEdge = Rgb(0x2F5F86);
         private static readonly Color Shelf = Rgb(0x25476B), Brass = Rgb(0xC9A45A), TagString = Rgb(0xD8CDB6), TagHole = Rgb(0x173244);
         private static readonly Color TagDark = Rgb(0x0E3A40), TealLight = Rgb(0x3AD6D2), TealInk = Rgb(0x06313A);
@@ -163,7 +162,7 @@ namespace FishingIdle.Game.UI
 
             // The long sentences go behind the "i": what the tab is about, then how the chance works (A-150).
             var chanceNote = GameTexts.Gear.ChanceNote(Format.Percent(gear.ChanceMin, 0), Format.Percent(gear.ChanceMax, 0));
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Shop.Title, GameTexts.Shop.Info(TabNote(), chanceNote), out var closed, 1320f, 840f, Icons.Shop);
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Shop.Title, GameTexts.Shop.Info(TabNote(), chanceNote), out var closed, 1320f, 840f, Icons.Shop, bookmarks: true);
             if (closed)
             {
                 Close();
@@ -176,9 +175,13 @@ namespace FishingIdle.Game.UI
                 _animStart = Time.unscaledTime;
             }
 
+            // The five tabs are bookmarks on the side of the diary; the pier wall is the window's own scene, a picture on
+            // the sheet in night colours (A-170).
+            DrawTabs(skin);
+            WindowFrame.Photo(skin, area);
+            using var night = UiSkin.NightScope();
             DrawWallBackground(skin, area);
             DrawBeam(skin, new Rect(area.x, area.y, area.width, BeamHeight));
-            DrawTabs(skin, area.x + 14f, area.y + BeamHeight);
 
             var body = new Rect(area.x, area.y + BodyTop, area.width, area.height - BodyTop);
             if (_tab == Tab.Vip)
@@ -381,47 +384,18 @@ namespace FishingIdle.Game.UI
             Fill(skin, new Rect(r.x + 6f, r.y + 2f, r.width - 12f, 1f), new Color(1f, 1f, 1f, 0.15f), 0f);
         }
 
-        /// <summary>The five tabs as small plaques hanging from the beam by two ropes; the active one with a turquoise edge.</summary>
-        private void DrawTabs(UiSkin skin, float x, float beamBottom)
+        private static readonly Tab[] TabOrder = { Tab.Rods, Tab.Boats, Tab.Clothing, Tab.Baits, Tab.Vip };
+        private static readonly string[] TabLabels = { GameTexts.Gear.TabRods, GameTexts.Gear.TabBoats, GameTexts.Gear.TabClothing, GameTexts.Gear.TabBaits, GameTexts.Vip.Tab };
+        private static readonly string[] TabIcons = { Icons.Rod, Icons.Boat, Icons.Star, Icons.Bait, Icons.Dollar };
+
+        /// <summary>The five tabs as bookmarks on the side of the diary (A-170; they were plaques on the beam).</summary>
+        private void DrawTabs(UiSkin skin)
         {
-            var tabs = new[]
+            var clicked = WindowFrame.Bookmarks(skin, TabLabels, TabIcons, System.Array.IndexOf(TabOrder, _tab));
+            if (clicked >= 0 && TabOrder[clicked] != _tab)
             {
-                (Tab.Rods, GameTexts.Gear.TabRods, Icons.Rod), (Tab.Boats, GameTexts.Gear.TabBoats, Icons.Boat), (Tab.Clothing, GameTexts.Gear.TabClothing, Icons.Star),
-                (Tab.Baits, GameTexts.Gear.TabBaits, Icons.Bait), (Tab.Vip, GameTexts.Vip.Tab, Icons.Dollar),
-            };
-            foreach (var (tab, label, icon) in tabs)
-            {
-                var active = _tab == tab;
-                var width = 16f + 20f + 8f + _plaque.CalcSize(new GUIContent(label)).x + 18f;
-                var r = new Rect(x, beamBottom + TabRope, width, TabHeight);
-                var hover = GUI.enabled && r.Contains(Event.current.mousePosition);
-
-                Fill(skin, new Rect(r.x + width * 0.22f - 1.5f, beamBottom - 2f, 3f, TabRope + 4f), Rope, 0f);
-                Fill(skin, new Rect(r.x + width * 0.78f - 1.5f, beamBottom - 2f, 3f, TabRope + 4f), Rope, 0f);
-                if (active)
-                {
-                    skin.DrawGlow(r, UiSkin.Accent, 0.3f);
-                }
-
-                Fill(skin, new Rect(r.x + 1f, r.y + 5f, r.width, r.height), new Color(0f, 0f, 0f, 0.35f), 6f);
-                Fill(skin, r, TabBottom, 6f);
-                GUI.DrawTexture(new Rect(r.x, r.y, r.width, r.height * 0.48f), skin.White, ScaleMode.StretchToFill, true, 0, TabTop, Vector4.zero, new Vector4(6f, 6f, 0f, 0f));
-                Fill(skin, new Rect(r.x + 2f, r.y + r.height * 0.48f, r.width - 4f, 2f), TabSeam, 0f);
-                GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, active ? UiSkin.Accent : hover ? UiSkin.AccentHover : TabEdge, 2f, 6f);
-
-                skin.DrawIcon(new Rect(r.x + 16f, r.y + 10f, 20f, 20f), icon, active ? Color.white : UiSkin.Muted);
-                var previous = GUI.contentColor;
-                GUI.contentColor = active ? Color.white : UiSkin.Muted;
-                GUI.Label(new Rect(r.x + 44f, r.y, r.width - 50f, r.height), label, _plaque);
-                GUI.contentColor = previous;
-
-                if (GUI.Button(r, GUIContent.none, GUIStyle.none) && !active)
-                {
-                    _tab = tab;
-                    _animStart = Time.unscaledTime;
-                }
-
-                x += width + TabGap;
+                _tab = TabOrder[clicked];
+                _animStart = Time.unscaledTime;
             }
         }
 

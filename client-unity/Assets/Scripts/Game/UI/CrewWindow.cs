@@ -20,7 +20,7 @@ namespace FishingIdle.Game.UI
     /// </remarks>
     public sealed class CrewWindow
     {
-        private const float SummaryHeight = 104f, ModeHeight = 44f, RowHeight = 100f, Gap = 12f, TabHeight = 40f, TabWidth = 170f;
+        private const float SummaryHeight = 104f, ModeHeight = 44f, RowHeight = 100f, Gap = 12f;
         private const float RefreshSeconds = 0.25f;
 
         /// <summary>The members' portraits (Resources/Arte/Tripulacao), by member id. Missing = the drawn placeholder.</summary>
@@ -77,7 +77,7 @@ namespace FishingIdle.Game.UI
                 Format.Factor(view.MilestoneMultiplier), Format.Factor(view.FleetMilestoneMultiplier),
                 GameTexts.Offline.Hours(view.OfflineFullRateHours), Format.Percent(view.OfflineReducedRate, 0), GameTexts.Offline.Hours(view.OfflineMaxHours));
             var counter = view == null ? null : GameTexts.Crew.HudRate(Format.PerSecond(view.CoinsPerSecond));
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Crew.Title, info, out var closed, 1200f, 840f, NavIcon, counter);
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Crew.Title, info, out var closed, 1200f, 840f, NavIcon, counter, true);
             if (closed)
             {
                 Close();
@@ -89,8 +89,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            DrawTabs(skin, new Rect(area.x, area.y, area.width, TabHeight));
-            area = new Rect(area.x, area.y + TabHeight + Gap, area.width, area.height - TabHeight - Gap);
+            DrawTabs(skin);
             if (_tab == Tab.Upgrades)
             {
                 _upgrades.Draw(skin, area);
@@ -114,21 +113,18 @@ namespace FishingIdle.Game.UI
             _nextRefresh = Time.unscaledTime + RefreshSeconds;
         }
 
-        /// <summary>"Tripulação | Melhorias" as chips, like the Market's tabs.</summary>
-        private void DrawTabs(UiSkin skin, Rect rect)
-        {
-            var x = rect.x;
-            foreach (var (tab, label) in new[] { (Tab.Crew, GameTexts.Crew.TabCrew), (Tab.Upgrades, GameTexts.Crew.TabUpgrades) })
-            {
-                var active = _tab == tab;
-                if (GUI.Button(new Rect(x, rect.y, TabWidth, rect.height), label, active ? skin.ChipActive : skin.Chip) && !active)
-                {
-                    _tab = tab;
-                    _nextRefresh = 0f;
-                    _upgrades.Invalidate();
-                }
+        private static readonly string[] TabLabels = { GameTexts.Crew.TabCrew, GameTexts.Crew.TabUpgrades };
+        private static readonly string[] TabIcons = { Icons.Boat, Icons.Level };
 
-                x += TabWidth + 10f;
+        /// <summary>"Tripulação | Melhorias" as bookmarks on the side of the diary (A-170).</summary>
+        private void DrawTabs(UiSkin skin)
+        {
+            var clicked = WindowFrame.Bookmarks(skin, TabLabels, TabIcons, _tab == Tab.Upgrades ? 1 : 0);
+            if (clicked >= 0)
+            {
+                _tab = clicked == 1 ? Tab.Upgrades : Tab.Crew;
+                _nextRefresh = 0f;
+                _upgrades.Invalidate();
             }
         }
 
@@ -152,7 +148,7 @@ namespace FishingIdle.Game.UI
 
             // Fleet milestone.
             var divider = rect.x + half;
-            GUI.DrawTexture(new Rect(divider, rect.y + 14f, 1f, rect.height - 28f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.12f), 0, 0);
+            GUI.DrawTexture(new Rect(divider, rect.y + 14f, 1f, rect.height - 28f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Paper ? UiSkin.PaperLine : new Color(1f, 1f, 1f, 0.12f), 0, 0);
             var fx = divider + 24f;
             var fw = rect.xMax - fx - 20f;
             GUI.Label(new Rect(fx, rect.y + 12f, fw - 120f, UiSkin.SmallLine), GameTexts.Crew.Fleet, skin.SmallMuted);
@@ -342,7 +338,7 @@ namespace FishingIdle.Game.UI
                 // ASSET_PENDENTE: trip_crew_NN. Fishers on foot first, then the boats.
                 skin.IconBadge(rect, member.Position <= 3 ? Icons.Profile : Icons.Boat, locked ? UiSkin.Muted : UiSkin.Accent);
                 var badge = new Rect(rect.xMax - 22f, rect.yMax - 22f, 24f, 24f);
-                GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Night, 0, 12f);
+                GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Paper ? UiSkin.Ink : UiSkin.Night, 0, 12f);
                 GUI.Label(badge, member.Position.ToString(), skin.PillText);
             }
 

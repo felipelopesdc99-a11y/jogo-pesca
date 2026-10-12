@@ -2931,3 +2931,47 @@ Muda o A-100, o A-139 e o A-167 (a fileira de 11 botões da barra de cima). Nenh
 - **Arte:** ícones das abas e dos atalhos e a moldura redonda são provisórios (os ícones atuais do jogo e um desenho
   limpo), `ASSET_PENDENTE`, com pedidos em `docs/ASSETS_PENDENTES.md`. Quando cada arquivo existir, o jogo passa a usá-lo.
 
+### A-170 · Janelas no padrão "Diário de bordo"
+**Seção do GDD:** 21 (interface) · Bíblia de Arte, seções 3 e 13 · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+O proprietário escolheu o padrão 3 "Diário de bordo" para todas as janelas internas. **Isto troca, nas janelas, o painel
+azul-marinho da Bíblia de Arte (seções 3 e 13) por papel claro numa moldura de madeira** — decisão dele, registrada
+aqui porque a Bíblia não se edita. A barra de cima, a cena, os avisos e os diálogos de confirmação continuam como a
+Bíblia pede.
+
+- **Moldura:** madeira em tábuas verticais com uma folha de papel claro por dentro (#F2E4C4 → #EFDFBB). A cena fica
+  atrás, escurecida por um véu escuro com um leve tom quente (desfoque de verdade ficou de fora: custa caro no IMGUI).
+- **Título:** numa etiqueta azul-noite (#16304E) com borda dourada, presa no canto de cima à esquerda, com o ícone do
+  menu e o "i" de "Como funciona" (que abre um bilhete de papel). Não há mais cordas nem balanço (A-148 substituído).
+- **Fechar:** um lacre vermelho redondo com "✕" no canto de cima à direita. Esc continua fechando.
+- **Sub-abas viram marcadores** coloridos saindo da lateral direita (turquesa, azul, âmbar, roxo, vermelho, verde, na
+  ordem das abas); o aberto fica para fora e com borda branca. Ranking (Nível, Moedas, Conchas, Peixes pescados, com
+  "Você #N"), Aquário (Tanque, Cartas), Arena (Oponentes, Ranking, Histórico, Loja), Tripulação (Tripulação,
+  Melhorias), Mercado (as 6 abas; as Moedas e as vagas do Aquário foram para a faixa do título), Loja (Varas, Barcos,
+  Roupas, Iscas, VIP; antes eram plaquinhas na viga) e Perfil (Resumo, Inventário, Cardume, Enciclopédia, Recordes).
+  Os filtros de raridade da Caixa de Pesca continuam no topo: são filtros, não sub-abas.
+- **Contador** (peixes, tempo) fica num rebaixo do papel ao lado da etiqueta. **Rodapé:** linha tracejada acima da
+  ação principal (no Ranking, a faixa "Sua posição").
+- **Texto no papel** (legibilidade, A-149): tinta escura no lugar do texto claro. Contrastes calculados (WCAG) sobre o
+  papel #F2E4C4 e sobre o rebaixo #E8D7B2:
+
+  | Uso | Cor | No papel | No rebaixo |
+  |---|---|---|---|
+  | Tinta (texto) | #3A2A18 | 10,9:1 | 9,7:1 |
+  | Tinta suave (texto secundário) | #6A4A2A | 6,4:1 | 5,6:1 |
+  | Turquesa escurecido (ações) | #12605D | 5,8:1 | 5,2:1 |
+  | Dourado escurecido (só recompensa) | #7A4E0A | 5,7:1 | 5,1:1 |
+  | Vermelho escurecido | #9C3022 | 5,8:1 | 5,2:1 |
+  | Verde escurecido | #17603A | 6,0:1 | 5,3:1 |
+
+  As cores de raridade e de tamanho, quando viram texto no papel, são escurecidas no mesmo tom até 5:1. Fichas e
+  cartões viram papel branco (#FFFAF0, tinta a 13,2:1); botões secundários e chips viram papel; o botão principal
+  continua turquesa. Título branco na etiqueta: 13,4:1; texto branco nos marcadores: 4,8:1 ou mais.
+- **Cenas próprias** continuam com a sua arte, como uma foto presa na folha (borda branca e sombra) e com texto claro
+  dentro: tanque do Aquário e o peixe em destaque das Cartas, arquipélago do Mapa, carta náutica da Expedição, parede da
+  Loja, palco do Ranking, formações da Arena e do Cardume, batalha, Boss Mundial contra o Cardume e o peixe da
+  Enciclopédia.
+- **Arte provisória** (`ASSET_PENDENTE`): madeira, papel, etiqueta, lacre e marcador são desenhados pelo código até
+  chegarem `ui_diario_madeira`, `ui_diario_papel`, `ui_diario_etiqueta`, `ui_diario_lacre` e `ui_diario_marcador`
+  (pedidos em `docs/ASSETS_PENDENTES.md`).
+

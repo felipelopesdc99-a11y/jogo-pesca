@@ -181,6 +181,8 @@ namespace FishingIdle.Game.UI
             _sealStyle.normal.textColor = Ink;
             _dialStyle = new GUIStyle(skin.Number) { font = skin.TitleBoldFont, fontSize = 19, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _dialStyle.normal.textColor = UiSkin.Text;
+            skin.Track(_nameStyle);
+            skin.Track(_dialStyle);
         }
 
         // ------------------------------------------------------------------ nautical chart (A-147)
@@ -199,6 +201,12 @@ namespace FishingIdle.Game.UI
                     GUI.Label(new Rect(note.x + 28, note.center.y - 11f, note.width - 28, 22), FishCard.Fit(GameTexts.Expedition.NoCardume, skin.SmallGoldLine, note.width - 28), skin.SmallGoldLine);
                 }
             }
+
+            // The nautical chart and its card are the window's own scene: a picture on the diary sheet, in night
+            // colours (A-170).
+            WindowFrame.Photo(skin, area);
+            using var night = UiSkin.NightScope();
+            GUI.Box(area, GUIContent.none, skin.PanelSolid);
 
             // The Cardume strength moved up into the header (A-148): the chart starts at the top of the content.
             var top = area.y;
@@ -660,7 +668,7 @@ namespace FishingIdle.Game.UI
                 var t = k / (float)dots;
                 var angle = (t * 360f - 90f) * Mathf.Deg2Rad;
                 var p = new Vector2(center.x + Mathf.Cos(angle) * radius, center.y + Mathf.Sin(angle) * radius);
-                var color = t < progress ? UiSkin.Accent : new Color(1f, 1f, 1f, 0.18f);
+                var color = t < progress ? UiSkin.Accent : UiSkin.Paper ? UiSkin.PaperLine : new Color(1f, 1f, 1f, 0.18f);
                 GUI.DrawTexture(new Rect(p.x - size / 2f, p.y - size / 2f, size, size), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, size / 2f);
             }
         }
@@ -788,6 +796,7 @@ namespace FishingIdle.Game.UI
             {
                 // The harbour fills the window; the report sits on it on a dark, slightly see-through panel.
                 var scene = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 760f);
+                UiSkin.SetPaper(false);
                 var inset = new Rect(scene.x + 4f, scene.y + 4f, scene.width - 8f, scene.height - 8f);
                 GUI.DrawTexture(inset, harbour, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 16f);
                 GUI.DrawTexture(inset, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.3f), 0, 16f);

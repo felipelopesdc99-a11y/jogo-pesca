@@ -160,7 +160,7 @@ namespace FishingIdle.Game.UI
             // While an opponent's profile is open, the window under it is shown but inert.
             var wasEnabled = GUI.enabled;
             GUI.enabled = wasEnabled && _viewing == null;
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Arena.Title, GameTexts.Arena.Note, out var closed, icon: Icons.Arena);
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Arena.Title, GameTexts.Arena.Note, out var closed, icon: Icons.Arena, bookmarks: true);
             if (closed)
             {
                 Close();
@@ -170,22 +170,16 @@ namespace FishingIdle.Game.UI
             // Summary: the player, rank, Energy, Honor.
             DrawHeader(skin, new Rect(area.x, area.y, area.width, 64));
 
-            var tabs = new[] { (Tab.Opponents, GameTexts.Arena.TabOpponents), (Tab.Ranking, GameTexts.Arena.TabRanking), (Tab.History, GameTexts.Arena.TabHistory), (Tab.Shop, GameTexts.Arena.TabShop) };
-            var x = area.x;
-            foreach (var (tab, label) in tabs)
+            // The four tabs are bookmarks on the side of the diary (A-170).
+            var clicked = WindowFrame.Bookmarks(skin, TabLabels, TabIcons, System.Array.IndexOf(TabOrder, _tab));
+            if (clicked >= 0)
             {
-                var w = skin.Chip.CalcSize(new GUIContent(label)).x + 12;
-                if (GUI.Button(new Rect(x, area.y + 76, w, 32), label, _tab == tab ? skin.ChipActive : skin.Chip))
-                {
-                    _tab = tab;
-                    _scroll = Vector2.zero;
-                    _rankPage = 0;
-                }
-
-                x += w + 8;
+                _tab = TabOrder[clicked];
+                _scroll = Vector2.zero;
+                _rankPage = 0;
             }
 
-            var content = new Rect(area.x, area.y + 120, area.width, area.height - 120);
+            var content = new Rect(area.x, area.y + 76, area.width, area.height - 76);
             switch (_tab)
             {
                 case Tab.Ranking: DrawRanking(skin, content); break;
@@ -200,6 +194,10 @@ namespace FishingIdle.Game.UI
                 DrawOpponentProfile(skin, screenWidth, screenHeight);
             }
         }
+
+        private static readonly Tab[] TabOrder = { Tab.Opponents, Tab.Ranking, Tab.History, Tab.Shop };
+        private static readonly string[] TabLabels = { GameTexts.Arena.TabOpponents, GameTexts.Arena.TabRanking, GameTexts.Arena.TabHistory, GameTexts.Arena.TabShop };
+        private static readonly string[] TabIcons = { Icons.Attack, Icons.Ranking, Icons.Book, Icons.Shop };
 
         // ------------------------------------------------------------------ header: player, rank, Energy, Honor
 
@@ -342,12 +340,16 @@ namespace FishingIdle.Game.UI
             var left = new Rect(area.x, panelY, panelW, panelH);
             var right = new Rect(area.xMax - panelW, panelY, panelW, panelH);
 
-            DrawFormation(skin, left, _mine, false, headerH, slotW, slotH, rowGap);
-            FormationHeader(skin, left, headerH, _profile?.AvatarId, PlayerName, _arena.Rank, null);
-            DrawFormation(skin, right, _theirs, true, headerH, slotW, slotH, rowGap);
-            if (selected != null)
+            // The formations are dark water panels: night colours inside them (A-170).
+            using (UiSkin.NightScope())
             {
-                FormationHeader(skin, right, headerH, null, selected.Name, selected.Rank, selected);
+                DrawFormation(skin, left, _mine, false, headerH, slotW, slotH, rowGap);
+                FormationHeader(skin, left, headerH, _profile?.AvatarId, PlayerName, _arena.Rank, null);
+                DrawFormation(skin, right, _theirs, true, headerH, slotW, slotH, rowGap);
+                if (selected != null)
+                {
+                    FormationHeader(skin, right, headerH, null, selected.Name, selected.Rank, selected);
+                }
             }
 
             DrawVsColumn(skin, new Rect(left.xMax, panelY, right.x - left.xMax, panelH));
@@ -985,6 +987,7 @@ namespace FishingIdle.Game.UI
 
             var t = Mathf.Clamp01((Time.unscaledTime - _introStart) / IntroSeconds);
             var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f);
+            using var night = UiSkin.NightScope();
 
             // The diagonal split: blue on the left, red on the right, a slanted border in the middle.
             var blue = Color.Lerp(UiSkin.Night, UiSkin.Accent, 0.38f);
@@ -1089,6 +1092,11 @@ namespace FishingIdle.Game.UI
                 Close();
                 return;
             }
+
+            // The battle is a scene on the diary sheet, in night colours (A-170).
+            WindowFrame.Photo(skin, area);
+            using var night = UiSkin.NightScope();
+            GUI.Box(area, GUIContent.none, skin.PanelSolid);
 
             var cx = area.x + area.width / 2f;
             var cy = area.y + area.height / 2f - 40f;
