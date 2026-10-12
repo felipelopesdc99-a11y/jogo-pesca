@@ -8,7 +8,7 @@ namespace FishingIdle.Game.UI
     /// the small hanging plaque, the round shortcuts on the right and their red badges. Presentation only.
     /// </summary>
     /// <remarks>
-    /// ASSET_PENDENTE (docs/ASSETS_PENDENTES.md, "Menu de cima"): tab icons ico_aba_*.png, shortcut icons ico_atalho_*.png and
+    /// Art delivered 12/10/2026 (docs/ASSETS_PENDENTES.md, "Menu de cima"): tab icons ico_aba_*.png, shortcut icons ico_atalho_*.png and
     /// the round frame UI/ui_atalho_moldura.png. Until each file exists, the game's current icons and the drawing below are used.
     /// </remarks>
     internal static class TopMenuArt

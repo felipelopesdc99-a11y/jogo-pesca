@@ -646,7 +646,7 @@ Pedido pronto para colar no ChatGPT:
 
 ## Menu de cima (M24-T43, A-169, pedido em 12/10/2026)
 
-**Chegaram em 12/10/2026 e estão no jogo:** os 5 ícones das abas (`ico_aba_*`). Faltam os 6 ícones dos atalhos (`ico_atalho_*`) e a moldura `ui_atalho_moldura`.
+**Chegaram em 12/10/2026 e estão no jogo:** todos os 12 arquivos desta seção (5 ícones das abas, 6 ícones dos atalhos e a moldura redonda, com a margem transparente cortada).
 
 `ASSET_PENDENTE`. Enquanto os arquivos não existem: as abas e os atalhos usam os ícones atuais do jogo (Pesca, Tripulação
 ou barco, Expedição, Mercado, Perfil; Mapa, Aquário, Passe, Eventos ou relógio, Boss ou ataque, Ranking), e a moldura

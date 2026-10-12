@@ -3,6 +3,15 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.3] — 12/10/2026
+
+Restante das artes do menu de cima, feitas pelo proprietário no ChatGPT (A-169). Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- Os 6 atalhos redondos da direita (Mapa, Aquário, Passe, Eventos, Boss Mundial, Ranking) ganharam os ícones novos e a
+  moldura de madeira com aro dourado. Com isso, todas as 17 artes do novo visual estão no jogo.
+
 ## [0.2.0-m24.2] — 12/10/2026
 
 Primeiras artes do novo visual, feitas pelo proprietário no ChatGPT (A-169, A-170). Verificado no CI, não aberto no Unity.
