@@ -2,7 +2,7 @@
   "config_file": "rods",
   "config_schema_version": 1,
   "balance_status": "PROVISÓRIO",
-  "description": "Definições das varas e custos de melhoria. Vara Inicial (Tier 0), Vara 1 (Tier 1) e, desde a V0.2, Vara 2 (Tier 2, docs/PROGRESSAO_MAPAS_3_4.md). A escada de tiers de longo prazo fica registrada como referência.",
+  "description": "Definições das varas e custos de melhoria. A Vara Inicial (Tier 0) é de todos (resgatada de graça no tutorial); desde 12/10/2026 (M24-T32, A-163) as outras varas não são vendidas: cada uma é montada com fragmentos que caem pescando num mapa que a vara anterior já alcança (fragment_map_id). A escada de tiers de longo prazo fica registrada como referência.",
   "upgrade_rules": {
     "internal_levels": {
       "min": 1,
@@ -34,8 +34,12 @@
       "formula": "pontos percentuais somados à Chance de Sucesso da Captura (0,05 = +5%), junto com a chance-base da raridade, o barco e a isca."
     }
   },
+  "fragment_rules": {
+    "drop_on_offline_fishing": true,
+    "note": "Varas por fragmentos (M24-T32, A-163). Cada vara (menos a inicial) tem fragment_map_id, fragments_required e fragment_drop_chance. Cada peixe puxado (não o que escapa) no mapa fragment_map_id tem fragment_drop_chance de dar 1 fragmento daquela vara, sorteado com o Rng do serviço na mesma tentativa, depois da captura (e depois do fragmento de barco). Com fragments_required a vara é montada sozinha (entra no Inventário no Nv.1) e passa a ser usada se for de categoria maior que a vara em uso. O mapa de cada vara pede no máximo a categoria anterior (maps.json → minimum_rod_tier menor que o tier da vara): assim a vara que libera o próximo mapa sempre cai num mapa que o jogador já pesca e a progressão nunca trava (o validador confere). drop_on_offline_fishing: a pesca offline também dá fragmentos; Expedições não. Depois de montada, os fragmentos daquela vara continuam caindo e ficam guardados como extras (se a vara for vendida, eles montam outra). acquisition.market_reference_coins é o valor de referência da vara no Mercado e na revenda (o preço que ela tinha na Loja). Chances geradas por tools/Progressao/fragmentos_equipamento.py gerar."
+  },
   "tier_ladder_reference": {
-    "note": "Escada de progressão da seção 19 do GDD. As Varas 3 a 5 seguem docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md e entram junto com os mapas delas. Desde 10/10/2026 (M24-T09, A-153) nenhuma vara tem nível mínimo para comprar: basta ter as Moedas e as Conchas. O nível do Pescador continua liberando os mapas (maps.json → unlock_fisher_level), e cada mapa pede uma categoria mínima de vara."
+    "note": "Escada de progressão da seção 19 do GDD. O nível do Pescador libera os mapas (maps.json → unlock_fisher_level), e cada mapa pede uma categoria mínima de vara. Desde 12/10/2026 (M24-T32, A-163) as varas vêm de fragmentos: a Vara k cai no último mapa que a Vara k − 1 alcança."
   },
   "rods": [
     {
@@ -69,10 +73,12 @@
       "tier": 1,
       "implemented_in_v0_1": true,
       "acquisition": {
-        "method": "coin_purchase",
-        "purchase_cost_coins": 2500,
-        "purchase_cost_shells": 5
+        "method": "fragments",
+        "market_reference_coins": 2500
       },
+      "fragment_map_id": "map_01",
+      "fragments_required": 15,
+      "fragment_drop_chance": 0.037,
       "has_internal_levels": true,
       "can_catch_rarities": [
         "common",
@@ -125,10 +131,12 @@
       "tier": 2,
       "implemented_in_v0_1": false,
       "acquisition": {
-        "method": "coin_purchase",
-        "purchase_cost_coins": 90000,
-        "purchase_cost_shells": 40
+        "method": "fragments",
+        "market_reference_coins": 90000
       },
+      "fragment_map_id": "map_03",
+      "fragments_required": 25,
+      "fragment_drop_chance": 0.0405,
       "has_internal_levels": true,
       "can_catch_rarities": [
         "common",
@@ -181,10 +189,12 @@
       "tier": 3,
       "implemented_in_v0_1": false,
       "acquisition": {
-        "method": "coin_purchase",
-        "purchase_cost_coins": 730000,
-        "purchase_cost_shells": 85
+        "method": "fragments",
+        "market_reference_coins": 730000
       },
+      "fragment_map_id": "map_05",
+      "fragments_required": 35,
+      "fragment_drop_chance": 0.07,
       "has_internal_levels": true,
       "can_catch_rarities": [
         "common",
@@ -238,10 +248,12 @@
       "tier": 4,
       "implemented_in_v0_1": false,
       "acquisition": {
-        "method": "coin_purchase",
-        "purchase_cost_coins": 3280000,
-        "purchase_cost_shells": 180
+        "method": "fragments",
+        "market_reference_coins": 3280000
       },
+      "fragment_map_id": "map_07",
+      "fragments_required": 45,
+      "fragment_drop_chance": 0.036,
       "has_internal_levels": true,
       "can_catch_rarities": [
         "common",
@@ -295,10 +307,12 @@
       "tier": 5,
       "implemented_in_v0_1": false,
       "acquisition": {
-        "method": "coin_purchase",
-        "purchase_cost_coins": 15610000,
-        "purchase_cost_shells": 650
+        "method": "fragments",
+        "market_reference_coins": 15610000
       },
+      "fragment_map_id": "map_09",
+      "fragments_required": 60,
+      "fragment_drop_chance": 0.0163,
       "has_internal_levels": true,
       "can_catch_rarities": [
         "common",

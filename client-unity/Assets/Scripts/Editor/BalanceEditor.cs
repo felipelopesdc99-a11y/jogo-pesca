@@ -490,6 +490,27 @@ namespace FishingIdle.Editor
             }
 
             EditorGUILayout.HelpBox(T.GearNote, MessageType.None);
+
+            // Clothing (M24-T33, A-164): the Fragmento de Roupa, the use XP and each piece's bonus at Nv.1 and at the max level.
+            EditorGUILayout.Space(8);
+            EditorGUILayout.LabelField(T.ClothingTitle, EditorStyles.boldLabel);
+            Number(equipment, "clothing.fragment_drop_chance", T.ClothingChance, 0);
+            Number(equipment, "clothing.level_xp.first", T.ClothingXpFirst, 1);
+            Number(equipment, "clothing.level_xp.growth", T.ClothingXpGrowth, 1);
+            var pieces = (JArray)_documents[equipment].SelectToken("clothing.pieces");
+            Header(new[] { T.SpeciesName, T.RodAtLevel1, T.RodAtMaxLevel });
+            for (var i = 0; pieces != null && i < pieces.Count; i++)
+            {
+                var prefix = "clothing.pieces[" + i + "].";
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    Text(equipment, prefix + "display_name", 130);
+                    Cell(equipment, prefix + "bonus_at_level_1");
+                    Cell(equipment, prefix + "bonus_at_max_level");
+                }
+            }
+
+            EditorGUILayout.HelpBox(T.ClothingNote, MessageType.None);
             EditorGUILayout.Space(10);
             DrawSimulator();
         }
@@ -635,7 +656,10 @@ namespace FishingIdle.Editor
                 var rod = rods[r];
                 var prefix = "rods[" + r + "].";
                 EditorGUILayout.LabelField(rod.Value<string>("display_name"), EditorStyles.boldLabel);
-                Number(file, prefix + "acquisition.purchase_cost_coins", T.RodPrice, 0);
+                Number(file, prefix + "acquisition.market_reference_coins", T.RodPrice, 0);
+                // Rods by fragments (M24-T32): how many assemble it and the chance per fish on its map (fragment_map_id).
+                Number(file, prefix + "fragments_required", T.RodFragmentsRequired, 1);
+                Number(file, prefix + "fragment_drop_chance", T.RodFragmentChance, 0);
                 Number(file, prefix + "bonuses.catch_success", T.RodStarterCatchBonus, 0);
 
                 if (rod["bonuses_at_level_1"] != null)

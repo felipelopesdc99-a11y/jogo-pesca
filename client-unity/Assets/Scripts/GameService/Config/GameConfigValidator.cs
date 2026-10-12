@@ -380,9 +380,13 @@ namespace FishingIdle.GameService.Config
                     {
                         errors.Add(V.Missing(GameConfigLoader.RodsFile, rod.Id + ".acquisition"));
                     }
-                    else if (rod.Acquisition.PurchaseCostCoins < 0 || rod.Acquisition.PurchaseCostShells < 0)
+                    else if (!GameConfig.IsFragmentRod(rod) && !GameConfig.IsFreeClaimRod(rod))
                     {
-                        errors.Add(V.NegativeValue(GameConfigLoader.RodsFile, rod.Id + ".acquisition"));
+                        errors.Add(V.RodMethodUnknown(rod.Id, rod.Acquisition.Method));
+                    }
+                    else if (rod.Acquisition.MarketReferenceCoins < 0)
+                    {
+                        errors.Add(V.NegativeValue(GameConfigLoader.RodsFile, rod.Id + ".acquisition.market_reference_coins"));
                     }
 
                     if (rod.HasInternalLevels)
@@ -414,6 +418,8 @@ namespace FishingIdle.GameService.Config
                     }
                 }
             }
+
+            ValidateRodFragments(rods, maps, errors);
 
             // ---- maps × rods: every rod allowed on a map must have something to catch there, or fishing
             // would have no species to draw from (the game would stop with an error).
@@ -850,8 +856,146 @@ namespace FishingIdle.GameService.Config
 
             ValidateCrew(crew, errors);
             ValidateUpgrades(upgrades, crew, errors);
-            ValidatePass(pass, progression, equipment, errors);
+            ValidateClothing(equipment?.Clothing, errors);
+            ValidatePass(pass, progression, equipment, rods, errors);
             return errors;
+        }
+
+        /// <summary>
+        /// Rods by fragments (M24-T32, A-163): every rod but the free one drops on one existing map that asks for a lower
+        /// tier than its own, one rod per map, with at least 1 fragment and a chance from 0 to 1. And the progression never
+        /// locks: starting from the free rod, each rod can be assembled with a rod the player can already have, and every
+        /// map's minimum tier is reachable.
+        /// </summary>
+        private static void ValidateRodFragments(RodsConfig rods, MapsConfig maps, List<string> errors)
+        {
+            const string file = GameConfigLoader.RodsFile;
+            if (rods?.Rods == null || maps?.Maps == null)
+            {
+                return;
+            }
+
+            var mapById = maps.Maps.Where(m => m?.Id != null).GroupBy(m => m.Id, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+            var used = new HashSet<string>(StringComparer.Ordinal);
+            var fragmentRods = rods.Rods.Where(r => r != null && GameConfig.IsFragmentRod(r)).ToList();
+            foreach (var rod in fragmentRods)
+            {
+                if (string.IsNullOrWhiteSpace(rod.FragmentMapId) || !mapById.TryGetValue(rod.FragmentMapId, out var map))
+                {
+                    errors.Add(V.RodMapUnknown(rod.Id, rod.FragmentMapId));
+                }
+                else if (map.MinimumRodTier >= rod.Tier)
+                {
+                    errors.Add(V.RodMapTooHigh(rod.Id, map.Id));
+                }
+                else if (!used.Add(rod.FragmentMapId))
+                {
+                    errors.Add(V.RodMapRepeated(rod.FragmentMapId));
+                }
+
+                if (rod.FragmentsRequired < 1 || rod.FragmentsRequired > 1000000)
+                {
+                    errors.Add(V.AtLeast(file, rod.Id + ".fragments_required", 1));
+                }
+
+                if (!(rod.FragmentDropChance >= 0) || rod.FragmentDropChance > 1)
+                {
+                    errors.Add(V.ChanceOutOfRange(file, rod.Id + ".fragment_drop_chance"));
+                }
+            }
+
+            // Reachability: the best tier the player can hold grows as the rods that drop within it are assembled.
+            var best = rods.Rods.Where(r => r != null && GameConfig.IsFreeClaimRod(r)).Select(r => r.Tier).DefaultIfEmpty(0).Max();
+            var reached = new HashSet<string>(StringComparer.Ordinal);
+            for (var changed = true; changed;)
+            {
+                changed = false;
+                foreach (var rod in fragmentRods.Where(r => !reached.Contains(r.Id ?? string.Empty)))
+                {
+                    if (rod.Id != null && rod.FragmentMapId != null && mapById.TryGetValue(rod.FragmentMapId, out var map) && map.MinimumRodTier <= best)
+                    {
+                        reached.Add(rod.Id);
+                        best = Math.Max(best, rod.Tier);
+                        changed = true;
+                    }
+                }
+            }
+
+            foreach (var rod in fragmentRods.Where(r => r.Id != null && !reached.Contains(r.Id)))
+            {
+                errors.Add(V.RodUnreachable(rod.Id));
+            }
+
+            foreach (var map in maps.Maps.Where(m => m != null && m.MinimumRodTier > best))
+            {
+                errors.Add(V.MapRodUnreachable(map.Id, map.MinimumRodTier));
+            }
+        }
+
+        /// <summary>
+        /// Clothing (M24-T33, A-164): a drop chance, the fragments of each piece, the level curve and the use XP, and pieces
+        /// with distinct ids, a known axis and bonuses that never go down.
+        /// </summary>
+        private static void ValidateClothing(ClothingConfig clothing, List<string> errors)
+        {
+            if (clothing == null)
+            {
+                return;
+            }
+
+            if (!(clothing.FragmentDropChance >= 0) || clothing.FragmentDropChance > 1)
+            {
+                errors.Add(V.ChanceOutOfRange(GameConfigLoader.EquipmentFile, "clothing.fragment_drop_chance"));
+            }
+
+            if (clothing.FragmentsToAssemble == null || clothing.FragmentsToAssemble.Count == 0 || clothing.FragmentsToAssemble.Any(n => n < 1 || n > 1000000))
+            {
+                errors.Add(V.ClothingInvalid("fragments_to_assemble"));
+            }
+
+            if (clothing.MaxLevel < 1 || clothing.MaxLevel > 1000 || clothing.BonusCurveExponent < 0.1 || clothing.BonusCurveExponent > 10)
+            {
+                errors.Add(V.LevelCurveInvalid(GameConfigLoader.EquipmentFile, "clothing (max_level / bonus_curve_exponent)"));
+            }
+
+            if (clothing.UseXpPerFish < 1)
+            {
+                errors.Add(V.AtLeast(GameConfigLoader.EquipmentFile, "clothing.use_xp_per_fish", 1));
+            }
+
+            var xp = clothing.LevelXp;
+            if (xp == null || xp.First < 1 || xp.Growth < 1 || xp.Growth > 10
+                || LevelCurve.Cost(xp.First, xp.Growth, Math.Max(1, clothing.MaxLevel - 1)) >= 1_000_000_000_000_000_000L)
+            {
+                errors.Add(V.ClothingInvalid("level_xp"));
+            }
+
+            if (clothing.Pieces == null || clothing.Pieces.Count == 0)
+            {
+                errors.Add(V.Missing(GameConfigLoader.EquipmentFile, "clothing.pieces"));
+                return;
+            }
+
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var piece in clothing.Pieces)
+            {
+                if (piece == null || string.IsNullOrWhiteSpace(piece.Id) || !ids.Add(piece.Id))
+                {
+                    errors.Add(V.DuplicateOrEmptyId(GameConfigLoader.EquipmentFile, "clothing.pieces", piece?.Id));
+                    continue;
+                }
+
+                if (!ClothingAxes.All.Contains(piece.BonusAxis))
+                {
+                    errors.Add(V.ClothingAxisUnknown(piece.Id, piece.BonusAxis));
+                }
+
+                if (piece.BonusAtLevel1 < 0 || piece.BonusAtMaxLevel < piece.BonusAtLevel1
+                    || (piece.BonusAxis == ClothingAxes.CatchSuccess && piece.BonusAtMaxLevel > 1))
+                {
+                    errors.Add(V.LevelBonusInvalid(GameConfigLoader.EquipmentFile, "clothing." + piece.Id));
+                }
+            }
         }
 
         /// <summary>
@@ -901,7 +1045,7 @@ namespace FishingIdle.GameService.Config
         /// The Passe do Pescador (M24-T17, A-158): a price in Dólares, milestones at distinct levels from 1 to the Fisher's
         /// max level in ascending order, and rewards with nothing negative and fragments only of boats that exist.
         /// </summary>
-        private static void ValidatePass(PassConfig pass, ProgressionConfig progression, EquipmentConfig equipment, List<string> errors)
+        private static void ValidatePass(PassConfig pass, ProgressionConfig progression, EquipmentConfig equipment, RodsConfig rods, List<string> errors)
         {
             const string file = GameConfigLoader.PassFile;
             if (pass == null || pass.Milestones == null || pass.Milestones.Count == 0)
@@ -923,6 +1067,7 @@ namespace FishingIdle.GameService.Config
             var maxLevel = progression?.Fisher?.MaxLevel ?? 0;
             var starter = equipment?.Boats != null && equipment.Boats.Count > 0 ? equipment.Boats.OrderBy(b => b.Tier).First().Id : null;
             var boatIds = new HashSet<string>((equipment?.Boats ?? new List<BoatConfig>()).Where(b => b.Id != null && b.Id != starter).Select(b => b.Id), StringComparer.Ordinal);
+            var rodIds = new HashSet<string>((rods?.Rods ?? new List<RodConfig>()).Where(r => r?.Id != null && GameConfig.IsFragmentRod(r)).Select(r => r.Id), StringComparer.Ordinal);
             var previous = 0;
             foreach (var milestone in pass.Milestones)
             {
@@ -945,9 +1090,14 @@ namespace FishingIdle.GameService.Config
                     return;
                 }
 
-                if (reward.Coins < 0 || reward.Shells < 0 || reward.Dollars < 0 || reward.Fragments < 0)
+                if (reward.Coins < 0 || reward.Shells < 0 || reward.Dollars < 0 || reward.Fragments < 0 || reward.RodFragments < 0 || reward.ClothingFragments < 0)
                 {
                     errors.Add(V.NegativeValue(file, "milestones (Nv." + level + ")"));
+                }
+
+                if (reward.RodFragments > 0 && (reward.RodId == null || !rodIds.Contains(reward.RodId)))
+                {
+                    errors.Add(V.PassRodUnknown(level, reward.RodId));
                 }
 
                 if (reward.Fragments > 0 && (reward.BoatId == null || !boatIds.Contains(reward.BoatId)))

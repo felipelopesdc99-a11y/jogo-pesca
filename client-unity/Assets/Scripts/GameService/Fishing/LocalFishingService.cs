@@ -273,6 +273,10 @@ namespace FishingIdle.GameService.Fishing
             update.XpGained += settled.XpGained;
             update.ShellsGained += settled.ShellsGained;
             update.Fragments.AddRange(settled.Fragments);
+            update.RodFragments.AddRange(settled.RodFragments);
+            update.ClothingFragments += settled.ClothingFragments;
+            update.ClothingFragmentsHave = Math.Max(update.ClothingFragmentsHave, settled.ClothingFragmentsHave);
+            update.ClothingLevels.AddRange(settled.ClothingLevels);
             Save.Fishing.Active = false;
             return true;
         }
@@ -366,8 +370,6 @@ namespace FishingIdle.GameService.Fishing
             if (cycleMs > 0)
             {
                 var map = CurrentMap();
-                var rod = CurrentRod();
-                var rodLevel = Save.EquippedRodItem()?.Level ?? 1;
                 var t = fromMs;
                 while (cycles < MaxCyclesPerSettle)
                 {
@@ -386,7 +388,8 @@ namespace FishingIdle.GameService.Fishing
                     }
 
                     var rng = Rng.For(Save.RngSeed, fishing.SessionIndex, fishing.CyclesProcessed + cycles);
-                    Attempt(map, rod, rodLevel, rng, t, update, offline: true);
+                    // The rod is read every attempt: one assembled from fragments (M24-T32) may take over in between.
+                    Attempt(map, CurrentRod(), Save.EquippedRodItem()?.Level ?? 1, rng, t, update, offline: true);
                 }
 
                 fishing.CyclesProcessed += cycles;
@@ -430,13 +433,13 @@ namespace FishingIdle.GameService.Fishing
             var toProcess = Math.Min(eligible - fishing.CyclesProcessed, MaxCyclesPerSettle);
 
             var map = CurrentMap();
-            var rod = CurrentRod();
             for (long i = 0; i < toProcess; i++)
             {
                 var cycle = fishing.CyclesProcessed + 1;
                 var completedAt = fishing.StartedAtMs + cycle * fishing.CycleMs;
                 var rng = Rng.For(Save.RngSeed, fishing.SessionIndex, cycle);
-                Attempt(map, rod, Save.EquippedRodItem()?.Level ?? 1, rng, completedAt, update);
+                // The rod is read every attempt: one assembled from fragments (M24-T32) may take over in between.
+                Attempt(map, CurrentRod(), Save.EquippedRodItem()?.Level ?? 1, rng, completedAt, update);
                 fishing.CyclesProcessed = cycle;
             }
         }
@@ -457,10 +460,12 @@ namespace FishingIdle.GameService.Fishing
             }
 
             var gear = Shop.GearRules.SpendAttempt(Config, Save, update);
-            var attempt = CatchRules.Attempt(Config, map, rod, rodLevel, gear, rng);
+            // Clothing (M24-T33): the Luvas add to the chance like the boat and bait; the rest adds to the rod's bonuses.
+            var clothing = Shop.ClothingRules.Bonuses(Config, Save);
+            var attempt = CatchRules.Attempt(Config, map, rod, rodLevel, gear + clothing.CatchSuccess, rng, clothing);
             if (attempt.Caught)
             {
-                ApplyCatch(attempt.Catch, atMs, update, offline: offline);
+                ApplyCatch(attempt.Catch, atMs, update, offline: offline, clothingXp: clothing.FisherXp);
 
                 // Boats by fragments (M24-T16): the map's boat may drop a fragment, from the same cycle's Rng, after the catch.
                 var fragment = Shop.BoatFragmentRules.RollOnCatch(Config, Save, map, rng, offline);
@@ -469,6 +474,21 @@ namespace FishingIdle.GameService.Fishing
                     update.Fragments.Add(fragment);
                 }
 
+                // Rods by fragments (M24-T32) and the Fragmento de Roupa (M24-T33): the same Rng, after the boat's roll.
+                var rodFragment = Shop.RodFragmentRules.RollOnCatch(Config, Save, map, rng, offline, atMs);
+                if (rodFragment != null)
+                {
+                    update.RodFragments.Add(rodFragment);
+                }
+
+                if (Shop.ClothingRules.RollOnCatch(Config, Save, rng, offline))
+                {
+                    update.ClothingFragments++;
+                    update.ClothingFragmentsHave = Save.Clothing.Fragments;
+                }
+
+                // Clothing levels up with use: every fish pulled out gives use XP to every assembled piece.
+                Shop.ClothingRules.GainUse(Config, Save, Config.Clothing?.UseXpPerFish ?? 0, update.ClothingLevels);
                 return;
             }
 
@@ -495,7 +515,7 @@ namespace FishingIdle.GameService.Fishing
             Save.Fishing.LastSeenAtMs = Math.Max(Save.Fishing.LastSeenAtMs, Now);
         }
 
-        private void ApplyCatch(RolledCatch rolled, long caughtAtMs, FishingUpdate update, bool grantXp = true, bool offline = false)
+        private void ApplyCatch(RolledCatch rolled, long caughtAtMs, FishingUpdate update, bool grantXp = true, bool offline = false, double clothingXp = 0)
         {
             var speciesId = rolled.Species.Id;
             var flags = 0;
@@ -545,7 +565,9 @@ namespace FishingIdle.GameService.Fishing
                 // per catch, at its own time, so a VIP that ends during the absence counts only until then.
                 var vipXp = offline ? Vip.VipRules.OfflineBonusXp(Config, Save, rolled.FisherXp, caughtAtMs) : 0;
                 update.VipXpGained += vipXp;
-                AddFisherXp(rolled.FisherXp + vipXp, update);
+                // The Calça (M24-T33, A-164): +% of the fish's own XP, rounded to the nearest point.
+                var clothesXp = clothingXp > 0 ? (long)Math.Round(rolled.FisherXp * clothingXp, MidpointRounding.AwayFromZero) : 0;
+                AddFisherXp(rolled.FisherXp + vipXp + clothesXp, update);
             }
             var view = CatchViews.Create(Config, entry, BoxSaleMultiplier);
             view.PreviousRecordCm = previousRecordMm / 10.0;

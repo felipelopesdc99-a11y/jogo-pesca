@@ -33,6 +33,12 @@ namespace FishingIdle.GameService.Pass
         public string BoatName { get; internal set; }
         public int Fragments { get; internal set; }
 
+        /// <summary>Fragments of one rod (M24-T32) and Fragmentos de Roupa (M24-T33).</summary>
+        public string RodId { get; internal set; }
+        public string RodName { get; internal set; }
+        public int RodFragments { get; internal set; }
+        public int ClothingFragments { get; internal set; }
+
         public bool Claimed { get; internal set; }
 
         /// <summary>Reached, not claimed and (premium) bought: the "Resgatar" button works.</summary>
@@ -41,7 +47,7 @@ namespace FishingIdle.GameService.Pass
         /// <summary>A premium reward while the premium is not bought (the padlock).</summary>
         public bool Locked { get; internal set; }
 
-        public bool IsEmpty => Coins <= 0 && Shells <= 0 && Dollars <= 0 && Fragments <= 0;
+        public bool IsEmpty => Coins <= 0 && Shells <= 0 && Dollars <= 0 && Fragments <= 0 && RodFragments <= 0 && ClothingFragments <= 0;
     }
 
     public sealed class PassMilestoneView
@@ -90,6 +96,13 @@ namespace FishingIdle.GameService.Pass
 
         /// <summary>Names of the boats the fragments assembled.</summary>
         public List<string> BoatsAssembled { get; } = new List<string>();
+
+        /// <summary>Rod fragments received, one entry per rod (summed), and the rods they assembled (M24-T32).</summary>
+        public List<RodFragmentGainView> RodFragments { get; } = new List<RodFragmentGainView>();
+        public List<string> RodsAssembled { get; } = new List<string>();
+
+        /// <summary>Fragmentos de Roupa received (M24-T33).</summary>
+        public long ClothingFragments { get; internal set; }
         public PassView Pass { get; internal set; }
     }
 
@@ -180,7 +193,7 @@ namespace FishingIdle.GameService.Pass
                 return ServiceResult<PassClaimResult>.Fail(blocker);
             }
 
-            // Fragments may assemble a boat and change the boat in use: cycles completed before go with the old one.
+            // Fragments may assemble a boat or a rod and change what is in use: cycles completed before go with the old one.
             _fishing.Sync();
             var result = new PassClaimResult();
             Give(milestone, track, result);
@@ -240,6 +253,7 @@ namespace FishingIdle.GameService.Pass
             var claimed = Claimed(track).Contains(level);
             var locked = track == PassTrack.Premium && !State.Premium;
             Config.TryGetBoat(reward?.BoatId, out var boat);
+            var rod = reward != null && Config.TryGetRod(reward.RodId, out var r) && GameConfig.IsFragmentRod(r) ? r : null;
             return new PassRewardView
             {
                 Coins = reward?.Coins ?? 0,
@@ -249,6 +263,10 @@ namespace FishingIdle.GameService.Pass
                 BoatId = boat?.Id,
                 BoatName = boat?.DisplayName,
                 Fragments = boat != null ? reward.Fragments : 0,
+                RodId = rod?.Id,
+                RodName = rod?.DisplayName,
+                RodFragments = rod != null ? reward.RodFragments : 0,
+                ClothingFragments = Config.Clothing != null ? Math.Max(0, reward?.ClothingFragments ?? 0) : 0,
                 Claimed = claimed,
                 Locked = locked,
                 Claimable = reached && !claimed && !locked,
@@ -334,6 +352,38 @@ namespace FishingIdle.GameService.Pass
                     }
                 }
             }
+
+            if (reward.RodFragments > 0 && Config.TryGetRod(reward.RodId, out var rod))
+            {
+                var gain = RodFragmentRules.Add(Config, Save, rod, reward.RodFragments, _session.Clock.UtcNowMs);
+                if (gain != null)
+                {
+                    var same = result.RodFragments.FirstOrDefault(f => f.RodId == gain.RodId);
+                    if (same != null)
+                    {
+                        same.Amount += gain.Amount;
+                        same.Have = gain.Have;
+                        same.Owned = gain.Owned;
+                        same.Assembled |= gain.Assembled;
+                        same.Equipped |= gain.Equipped;
+                    }
+                    else
+                    {
+                        result.RodFragments.Add(gain);
+                    }
+
+                    if (gain.Assembled)
+                    {
+                        result.RodsAssembled.Add(gain.RodName);
+                    }
+                }
+            }
+
+            if (reward.ClothingFragments > 0 && Config.Clothing != null)
+            {
+                ClothingRules.AddFragments(Save, reward.ClothingFragments);
+                result.ClothingFragments = SafeAdd(result.ClothingFragments, reward.ClothingFragments);
+            }
         }
 
         private ServiceResult<PassClaimResult> Done(PassClaimResult result)
@@ -342,7 +392,8 @@ namespace FishingIdle.GameService.Pass
             State.PremiumClaimed.Sort();
             _session.Persist();
             _session.Log("Pass: claimed " + result.Claimed + " rewards (" + result.Coins + " coins, " + result.Shells + " shells, "
-                         + result.Dollars + " dollars, " + result.Fragments.Sum(f => f.Amount) + " boat fragments).");
+                         + result.Dollars + " dollars, " + result.Fragments.Sum(f => f.Amount) + " boat fragments, "
+                         + result.RodFragments.Sum(f => f.Amount) + " rod fragments, " + result.ClothingFragments + " clothing fragments).");
             result.Pass = GetPass();
             return ServiceResult<PassClaimResult>.Ok(result);
         }

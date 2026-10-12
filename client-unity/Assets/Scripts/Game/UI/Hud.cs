@@ -55,6 +55,9 @@ namespace FishingIdle.Game.UI
         private AdminWindow _admin;
         private ExpeditionWindow _expedition;
         private readonly ArrivalTitle _arrival = new ArrivalTitle();
+
+        // Fragments and clothing levels can arrive many at a time: one notice per kind every few seconds (A-163, A-164).
+        private readonly FragmentNotices _notices = new FragmentNotices();
         private ArenaWindow _arena;
         private MarketWindow _market;
         private RankingWindow _ranking;
@@ -171,22 +174,67 @@ namespace FishingIdle.Game.UI
 
             _root.PushPassMilestones(update.LevelsReached);
 
-            // Boat fragments (M24-T16, A-157): a small notice per fragment; a big one when a boat is assembled.
+            // Boat fragments (M24-T16, A-157), rod fragments (M24-T32, A-163) and Fragmentos de Roupa (M24-T33, A-164): small
+            // notices grouped by kind (FragmentNotices); a big one when a boat or a rod is assembled.
+            var now = Time.unscaledTime;
             foreach (var fragment in update.Fragments)
             {
-                if (fragment.Assembled)
+                var f = fragment;
+                if (f.Assembled)
                 {
-                    _root.Toasts.Push(GameTexts.Gear.BoatAssembledToast(fragment.BoatName), ToastKind.Important, notify: true);
-                    _root.Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, fragment.BoatName, VisualTheme.Current.Reward);
-                }
-                else if (fragment.Owned)
-                {
-                    _root.Toasts.Push(GameTexts.Gear.FragmentExtraToast(fragment.BoatName), ToastKind.Info);
+                    _root.Toasts.Push(GameTexts.Gear.BoatAssembledToast(f.BoatName), ToastKind.Important, notify: true);
+                    _root.Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, f.BoatName, VisualTheme.Current.Reward);
                 }
                 else
                 {
-                    _root.Toasts.Push(GameTexts.Gear.FragmentToast(fragment.BoatName, Format.Number(fragment.Have), Format.Number(fragment.Required)), ToastKind.Info);
+                    _notices.Add("boat:" + f.BoatId, f.Amount, n => f.Owned
+                        ? (n == 1 ? GameTexts.Gear.FragmentExtraToast(f.BoatName) : GameTexts.Gear.BoatFragmentsExtraGroupToast(Format.Number(n), f.BoatName))
+                        : n == 1 ? GameTexts.Gear.FragmentToast(f.BoatName, Format.Number(f.Have), Format.Number(f.Required))
+                            : GameTexts.Gear.BoatFragmentsGroupToast(Format.Number(n), f.BoatName, Format.Number(f.Have), Format.Number(f.Required)),
+                        ToastKind.Info, now, _root.Toasts);
                 }
+            }
+
+            foreach (var fragment in update.RodFragments)
+            {
+                var f = fragment;
+                if (f.Assembled)
+                {
+                    _root.Toasts.Push(f.Equipped ? GameTexts.Gear.RodAssembledEquippedToast(f.RodName) : GameTexts.Gear.RodAssembledToast(f.RodName), ToastKind.Important, notify: true);
+                    _root.Celebrations.Show(GameTexts.Gear.RodAssembledTitle, f.RodName, VisualTheme.Current.Reward);
+                }
+                else
+                {
+                    _notices.Add("rod:" + f.RodId, f.Amount, n => f.Owned
+                        ? GameTexts.Gear.RodFragmentExtraToast(Format.Number(n), f.RodName)
+                        : n == 1 ? GameTexts.Gear.RodFragmentToast(f.RodName, Format.Number(f.Have), Format.Number(f.Required))
+                            : GameTexts.Gear.RodFragmentsToast(Format.Number(n), f.RodName, Format.Number(f.Have), Format.Number(f.Required)),
+                        ToastKind.Info, now, _root.Toasts);
+                }
+            }
+
+            if (update.ClothingFragments > 0)
+            {
+                var clothing = _root.Clothing;
+                var cost = clothing != null ? clothing.NextCost : 0;
+                var have = update.ClothingFragmentsHave;
+                _notices.Add("clothing", update.ClothingFragments, n => cost <= 0
+                    ? GameTexts.Gear.ClothingFragmentsExtraToast(Format.Number(n))
+                    : n == 1 ? GameTexts.Gear.ClothingFragmentToast(Format.Number(have), Format.Number(cost))
+                        : GameTexts.Gear.ClothingFragmentsToast(Format.Number(n), Format.Number(have), Format.Number(cost)),
+                    ToastKind.Info, now, _root.Toasts);
+
+                // The moment the fragments reach the next piece: say once that it can be assembled.
+                if (cost > 0 && have >= cost && have - update.ClothingFragments < cost)
+                {
+                    _root.Toasts.Push(GameTexts.Gear.ClothingReadyToast(Format.Number(cost)), ToastKind.Important, notify: true);
+                }
+            }
+
+            foreach (var level in update.ClothingLevels)
+            {
+                var l = level;
+                _notices.Add("clothing-level:" + l.PieceId, 1, _ => GameTexts.Gear.ClothingLevelToast(l.PieceName, l.Level), ToastKind.LevelUp, now, _root.Toasts);
             }
 
             // Escapes (docs/SISTEMA_SUCESSO_PESCA.md): a common one is told only near the bobber; a
@@ -273,6 +321,7 @@ namespace FishingIdle.Game.UI
 
             var skin = UiSkin.Get();
             _tipPending = false;
+            _notices.Tick(Time.unscaledTime, _root.Toasts);
 
             if (!_root.IsRunning)
             {

@@ -22,7 +22,7 @@ public sealed class MapsFiveSixTests
         game.Session.Save.Shells = 1_000_000;
         foreach (var rod in rods)
         {
-            Assert.True(game.Shop.BuyRod(rod).Succeeded);
+            TestSupport.GiveRod(game, rod);
         }
 
         return game;
@@ -41,10 +41,10 @@ public sealed class MapsFiveSixTests
     {
         Assert.Equal(ServiceError.MapLocked, Player(49, "rod_01", "rod_02").Maps.TravelTo("map_06").Error);
         Assert.Equal(ServiceError.RodTooWeakForMap, Player(50, "rod_01", "rod_02").Maps.TravelTo("map_06").Error);
-        Assert.True(Player(1, "rod_01", "rod_02").Shop.BuyRod("rod_03").Succeeded); // items have no minimum level (M24-T09)
+        TestSupport.GiveRod(Player(1, "rod_01", "rod_02"), "rod_03"); // items have no minimum level (M24-T09)
 
         var game = Player(50, "rod_01", "rod_02", "rod_03");
-        Assert.Equal(10_000_000 - 2_500 - 90_000 - 730_000, game.Session.Save.Coins);
+        Assert.Equal(10_000_000, game.Session.Save.Coins); // rods come from fragments, for free (M24-T32)
         Assert.True(game.Maps.TravelTo("map_06").Succeeded);
     }
 

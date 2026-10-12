@@ -454,7 +454,7 @@ namespace FishingIdle.GameService.Market
                         RodId = rod.Id,
                         Level = level,
                         AcquiredAtMs = at,
-                        PurchasePriceCoins = rod.Acquisition?.PurchaseCostCoins ?? 0,
+                        PurchasePriceCoins = rod.Acquisition?.MarketReferenceCoins ?? 0,
                         UpgradeCoinsInvested = MarketRules.RodUpgradeSpend(Config, rod, level),
                     },
                 };

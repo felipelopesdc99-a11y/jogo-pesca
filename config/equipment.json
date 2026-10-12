@@ -2,7 +2,7 @@
   "config_file": "equipment.json",
   "config_schema_version": 1,
   "balance_status": "provisional",
-  "description": "Barcos e iscas (docs/SISTEMA_SUCESSO_PESCA.md). Os dois só aumentam a Chance de Sucesso da Captura, somando pontos percentuais à chance-base da raridade (progression.json → rarity.tiers → catch_success_base) e aos da vara (rods.json → catch_success). Desde 11/10/2026 (M24-T16, A-157) os barcos não são vendidos: cada barco é ligado a um mapa (map_id) e é montado com fragmentos que caem pescando naquele mapa. Iscas continuam na Loja, sem nível mínimo (M24-T09, A-153). Todos os números são provisórios.",
+  "description": "Barcos e iscas (docs/SISTEMA_SUCESSO_PESCA.md). Os dois só aumentam a Chance de Sucesso da Captura, somando pontos percentuais à chance-base da raridade (progression.json → rarity.tiers → catch_success_base) e aos da vara (rods.json → catch_success). Desde 11/10/2026 (M24-T16, A-157) os barcos não são vendidos: cada barco é ligado a um mapa (map_id) e é montado com fragmentos que caem pescando naquele mapa. Iscas continuam na Loja, sem nível mínimo (M24-T09, A-153). Todos os números são provisórios. Desde 12/10/2026 (M24-T33, A-164) existem também as roupas (clothing): 5 peças montadas com Fragmentos de Roupa, que caem em todos os mapas.",
   "boat_levels": {
     "max_level": 100,
     "bonus_curve_exponent": 1.2,
@@ -208,6 +208,67 @@
       "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
     }
   ],
+  "clothing": {
+    "fragment_drop_chance": 0.0017,
+    "drop_on_offline_fishing": true,
+    "fragments_to_assemble": [
+      15,
+      25,
+      40,
+      60,
+      80
+    ],
+    "max_level": 100,
+    "bonus_curve_exponent": 1.2,
+    "use_xp_per_fish": 1,
+    "level_xp": {
+      "first": 10,
+      "growth": 1.0868
+    },
+    "pieces": [
+      {
+        "id": "gloves",
+        "display_name": "Luvas",
+        "description": "Firmeza na linha na hora de puxar o peixe.",
+        "bonus_axis": "catch_success",
+        "bonus_at_level_1": 0.005,
+        "bonus_at_max_level": 0.15
+      },
+      {
+        "id": "hat",
+        "display_name": "Chapéu",
+        "description": "Sombra nos olhos para enxergar os peixes raros.",
+        "bonus_axis": "rarity_efficiency",
+        "bonus_at_level_1": 0.02,
+        "bonus_at_max_level": 0.8
+      },
+      {
+        "id": "boots",
+        "display_name": "Botas",
+        "description": "Pé firme no barco para segurar os peixes grandes.",
+        "bonus_axis": "size_quality",
+        "bonus_at_level_1": 0.02,
+        "bonus_at_max_level": 0.6
+      },
+      {
+        "id": "shirt",
+        "display_name": "Camiseta",
+        "description": "Bolsos para guardar as Conchas que aparecem.",
+        "bonus_axis": "shell_yield",
+        "bonus_at_level_1": 0.05,
+        "bonus_at_max_level": 1.75
+      },
+      {
+        "id": "pants",
+        "display_name": "Calça",
+        "description": "Confortável para pescar o dia todo e aprender mais.",
+        "bonus_axis": "fisher_xp",
+        "bonus_at_level_1": 0.005,
+        "bonus_at_max_level": 0.1
+      }
+    ],
+    "note": "Roupas (M24-T33, A-164). Um tipo só de fragmento, o Fragmento de Roupa: cada peixe puxado em qualquer mapa tem fragment_drop_chance de dar 1, sorteado com o Rng do serviço na mesma tentativa, depois da captura e dos fragmentos de barco e de vara; drop_on_offline_fishing: a pesca offline também dá. O jogador escolhe qual peça montar; a 1ª peça montada custa fragments_to_assemble[0], a 2ª [1] … (crescente na ordem em que ele monta, qualquer peça). Peça montada fica equipada (um espaço por peça, as 5 juntas). Cada peça soma um bônus num eixo (bonus_axis): catch_success = pontos na Chance de Sucesso da Captura (como vara, barco e isca, até o teto de 95%); rarity_efficiency, size_quality e shell_yield somam aos da vara (rods.json → bonus_axes); fisher_xp = +% no XP de Pescador de cada peixe pescado. O bônus no nível N segue a curva das varas: Nv.1 + (máx − Nv.1) × ((N − 1) ÷ (max_level − 1)) ^ bonus_curve_exponent. O nível sobe com o uso, sem custo: cada peixe puxado (online ou offline) dá use_xp_per_fish de XP a cada peça montada; do nível N para N + 1 são level_xp.first × level_xp.growth ^ (N − 1), arredondado como os preços. Fragmentos que sobram depois das 5 peças ficam guardados (como os extras de barco, OD-060). Números gerados por tools/Progressao/fragmentos_equipamento.py gerar."
+  },
   "baits_note": "Desde 12/10/2026 (M24-T30, A-161, decisão do proprietário) são exatamente 3 iscas: +5%, +10% e +15% de chance de puxar o peixe (o mesmo eixo de antes: somam pontos à Chance de Sucesso da Captura, com a vara e o barco, até o máximo de progression.json → fishing → catch_success_max). Cada compra é um pacote de charges = 999 tentativas; cada tentativa de pesca (online ou offline) gasta 1, pegando o peixe ou não. Quando acabam, a pesca continua sem isca. Iscas não têm nível nem nível mínimo (A-153). Preço: o custo POR TENTATIVA fica ~10% a 20% acima do que as iscas de antes cobravam pelo mesmo bônus (antes: +3% = 8,33 Moedas, +7% = 33,33, +10% = 83,33 por tentativa; +5% ficava em ~20,8 entre as duas primeiras; +15% segue a reta da última). Os nomes são os de antes, na mesma ordem de categoria. Retorno por estágio: tools/Progressao/simular_iscas.py.",
   "baits": [
     {

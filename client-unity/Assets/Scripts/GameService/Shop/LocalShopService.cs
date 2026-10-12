@@ -14,8 +14,16 @@ namespace FishingIdle.GameService.Shop
         public string Name { get; internal set; }
         public string Description { get; internal set; }
         public int Tier { get; internal set; }
-        public long PriceCoins { get; internal set; }
-        public long PriceShells { get; internal set; }
+
+        /// <summary>
+        /// Rods are not sold (M24-T32, A-163): the map whose catches drop this rod's fragments (null for the Starter Rod),
+        /// the fragments the player has (extras once owned), how many assemble it and the chance per fish.
+        /// </summary>
+        public string MapId { get; internal set; }
+        public string MapName { get; internal set; }
+        public long Fragments { get; internal set; }
+        public int FragmentsRequired { get; internal set; }
+        public double FragmentChance { get; internal set; }
         public int MaxLevel { get; internal set; }
         public double RarityBonus { get; internal set; }
         public double SizeBonus { get; internal set; }
@@ -37,7 +45,7 @@ namespace FishingIdle.GameService.Shop
         /// <summary>The free Starter Rod, claimed rather than bought (GDD section 40).</summary>
         public bool IsFree { get; internal set; }
 
-        /// <summary>Why buying is refused right now; None when it is possible.</summary>
+        /// <summary>Why claiming is refused right now (only the free Starter Rod can be claimed); None when it is possible.</summary>
         public ServiceError BuyBlocker { get; internal set; }
 
         /// <summary>The player's copy in the Inventory (the highest level, if more than one); 0 when none (M24-T13).</summary>
@@ -66,12 +74,15 @@ namespace FishingIdle.GameService.Shop
         public List<RodOfferView> Rods { get; } = new List<RodOfferView>();
     }
 
-    /// <summary>The Shop (GDD section 7). V0.1 sells only rods.</summary>
+    /// <summary>
+    /// The Shop's rods (GDD section 7). Since M24-T32 (A-163) no rod is sold: the free Starter Rod is claimed here in the
+    /// tutorial and the others are assembled from fragments (RodFragmentRules); the Shop shows where each one drops.
+    /// </summary>
     public interface IShopService
     {
         ShopView GetShop();
 
-        /// <summary>Buys a rod (or claims the free Starter Rod), adds it to the Inventory and equips it.</summary>
+        /// <summary>Claims the free Starter Rod, adds it to the Inventory and equips it. Any other rod: RodNotForSale.</summary>
         ServiceResult<RodOfferView> BuyRod(string rodId);
     }
 
@@ -92,7 +103,7 @@ namespace FishingIdle.GameService.Shop
         public ShopView GetShop()
         {
             var view = new ShopView { Coins = Save.Coins };
-            foreach (var rod in Config.Rods.Rods.Where(r => Config.IsPurchasable(r) || (IsClaimable(r) && !Owns(r))).OrderBy(r => r.Tier))
+            foreach (var rod in Config.Rods.Rods.Where(r => GameConfig.IsFragmentRod(r) || (IsClaimable(r) && !Owns(r))).OrderBy(r => r.Tier))
             {
                 view.Rods.Add(Offer(rod));
             }
@@ -102,7 +113,7 @@ namespace FishingIdle.GameService.Shop
 
         public ServiceResult<RodOfferView> BuyRod(string rodId)
         {
-            if (!Config.TryGetRod(rodId, out var rod) || !(Config.IsPurchasable(rod) || IsClaimable(rod)))
+            if (!Config.TryGetRod(rodId, out var rod) || !IsClaimable(rod))
             {
                 return ServiceResult<RodOfferView>.Fail(ServiceError.RodNotForSale);
             }
@@ -115,10 +126,6 @@ namespace FishingIdle.GameService.Shop
 
             // Catches completed with the old rod are settled before the new one takes over.
             _fishing.Sync();
-            var price = rod.Acquisition.PurchaseCostCoins;
-            var shells = rod.Acquisition.PurchaseCostShells;
-            Save.Coins -= price;
-            Save.Shells -= shells;
             var item = new InventoryItem
             {
                 Id = Save.NextItemId++,
@@ -126,12 +133,11 @@ namespace FishingIdle.GameService.Shop
                 RodId = rod.Id,
                 Level = 1,
                 AcquiredAtMs = _session.Clock.UtcNowMs,
-                PurchasePriceCoins = price,
             };
             Save.Inventory.Add(item);
             Save.EquippedRodItemId = item.Id;
             _session.Persist();
-            _session.Log("Bought rod " + rod.Id + " for " + price + " coins and " + shells + " shells (item " + item.Id + ").");
+            _session.Log("Claimed the free rod " + rod.Id + " (item " + item.Id + ").");
             return ServiceResult<RodOfferView>.Ok(Offer(rod));
         }
 
@@ -144,14 +150,18 @@ namespace FishingIdle.GameService.Shop
             var now = Config.RodBonusesAt(rod, copy?.Level ?? 1);
             var nextCoins = copy != null && rod.HasInternalLevels ? Config.RodUpgradeCost(rod, copy.Level) : 0;
             var nextShells = copy != null && rod.HasInternalLevels ? Config.RodUpgradeShellCost(rod, copy.Level) : 0;
+            var fragmentMap = GameConfig.IsFragmentRod(rod) && Config.TryGetMap(rod.FragmentMapId, out var m) ? m : null;
             return new RodOfferView
             {
                 RodId = rod.Id,
                 Name = rod.DisplayName,
                 Description = rod.Description,
                 Tier = rod.Tier,
-                PriceCoins = rod.Acquisition.PurchaseCostCoins,
-                PriceShells = rod.Acquisition.PurchaseCostShells,
+                MapId = fragmentMap?.Id,
+                MapName = fragmentMap?.DisplayName,
+                Fragments = RodFragmentRules.Have(Save, rod.Id),
+                FragmentsRequired = rod.FragmentsRequired,
+                FragmentChance = rod.FragmentDropChance,
                 MaxLevel = max,
                 RarityBonus = at1.RarityEfficiency,
                 SizeBonus = at1.SizeQuality,
@@ -192,29 +202,16 @@ namespace FishingIdle.GameService.Shop
             return ServiceError.None;
         }
 
-        private static bool IsClaimable(RodConfig rod) => rod.Acquisition != null && rod.Acquisition.Method == "free_claim_in_shop";
+        private static bool IsClaimable(RodConfig rod) => GameConfig.IsFreeClaimRod(rod);
 
-        /// <summary>
-        /// Whether the player already has this rod: in the Inventory, but also on the Market, in one of
-        /// their auctions or waiting in Items to Withdraw. Otherwise a listed rod could be bought again
-        /// in the Shop, over and over.
-        /// </summary>
-        private bool Owns(RodConfig rod)
-        {
-            bool Same(MarketGoods g) => g != null && g.Kind == MarketGoods.KindRod && g.Rod != null && g.Rod.RodId == rod.Id;
-            var market = Save.Market;
-            return Save.Inventory.Any(i => i.Kind == InventoryItem.KindRod && i.RodId == rod.Id)
-                || (market != null && (market.MyListings.Any(l => Same(l.Goods))
-                    || market.Withdrawals.Any(w => Same(w.Goods))
-                    || market.Auctions.Any(a => a.SellerName == null && Same(a.Goods))));
-        }
+        /// <summary>Whether the player already has this rod (Inventory, Market, auctions or Items to Withdraw).</summary>
+        private bool Owns(RodConfig rod) => RodFragmentRules.Owns(Save, rod.Id);
 
-        /// <summary>Items have no minimum Fisher level (M24-T09, A-153): only owning it or the money can block.</summary>
+        /// <summary>Only the free Starter Rod is claimed here; the others come from fragments (M24-T32).</summary>
         private ServiceError Blocker(RodConfig rod)
         {
             if (Owns(rod)) return ServiceError.RodAlreadyOwned;
-            if (Save.Coins < rod.Acquisition.PurchaseCostCoins) return ServiceError.NotEnoughCoins;
-            if (Save.Shells < rod.Acquisition.PurchaseCostShells) return ServiceError.NotEnoughShells;
+            if (!IsClaimable(rod)) return ServiceError.RodNotForSale;
             return ServiceError.None;
         }
     }

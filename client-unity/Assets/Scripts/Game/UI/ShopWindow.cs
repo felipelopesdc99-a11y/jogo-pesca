@@ -31,6 +31,9 @@ namespace FishingIdle.Game.UI
             Boats,
             Baits,
             Vip,
+
+            /// <summary>The five clothing pieces (M24-T33, A-164).</summary>
+            Clothing,
         }
 
         private enum TagKind
@@ -40,7 +43,7 @@ namespace FishingIdle.Game.UI
             Owned,
             InUse,
 
-            /// <summary>A boat not assembled yet: "12/40" fragments (M24-T16, A-157).</summary>
+            /// <summary>A boat, rod or clothing piece not assembled yet: "12/40" fragments (M24-T16/T32/T33).</summary>
             Fragments,
         }
 
@@ -51,7 +54,7 @@ namespace FishingIdle.Game.UI
             public int Tier;
             public long Coins, Shells;
 
-            /// <summary>Boats by fragments: how many the player has and how many assemble it.</summary>
+            /// <summary>Boats, rods and clothing by fragments: how many the player has and how many assemble it.</summary>
             public long FragmentsHave, FragmentsNeed;
             public TagKind Tag;
             public bool Square, Turned;
@@ -98,7 +101,7 @@ namespace FishingIdle.Game.UI
 
         private readonly GameRoot _root;
         private readonly List<WallItem> _items = new List<WallItem>();
-        private readonly string[] _selected = new string[4];
+        private readonly string[] _selected = new string[5];
         private ShopView _shop;
         private bool _dirty = true;
         private Tab _tab;
@@ -213,6 +216,7 @@ namespace FishingIdle.Game.UI
                 case Tab.Boats: return GameTexts.Gear.BoatsNote;
                 case Tab.Baits: return GameTexts.Gear.BaitsNote;
                 case Tab.Vip: return GameTexts.Vip.Note;
+                case Tab.Clothing: return GameTexts.Gear.ClothingNote;
                 default: return GameTexts.Shop.Note;
             }
         }
@@ -238,6 +242,22 @@ namespace FishingIdle.Game.UI
                     }
 
                     break;
+                case Tab.Clothing:
+                    var clothing = _root.Clothing;
+                    foreach (var piece in clothing != null ? clothing.Pieces : new List<ClothingPieceView>())
+                    {
+                        _items.Add(new WallItem
+                        {
+                            Id = piece.PieceId, Name = piece.Name,
+                            Sub = piece.Owned ? GameTexts.Shop.LevelOf(piece.Level, piece.MaxLevel) : GameTexts.Gear.ClothingAxisName(piece.Axis),
+                            // ASSET_PENDENTE: Roupas/gloves … Roupas/shirt (the star icon until the art arrives).
+                            Art = "Roupas/" + piece.PieceId, Icon = Icons.Star, Tier = 0, Square = true,
+                            FragmentsHave = clothing.Fragments, FragmentsNeed = clothing.NextCost, OwnedText = GameTexts.Gear.Wearing,
+                            Tag = piece.Owned ? TagKind.Owned : TagKind.Fragments,
+                        });
+                    }
+
+                    break;
                 case Tab.Baits:
                     foreach (var bait in gear.Baits)
                     {
@@ -259,8 +279,9 @@ namespace FishingIdle.Game.UI
                         {
                             Id = rod.RodId, Name = rod.Name, Sub = GameTexts.Profile.Tier(rod.Tier),
                             Art = "Varas/" + rod.RodId, Icon = Icons.Rod, Tier = rod.Tier,
-                            Coins = rod.PriceCoins, Shells = rod.PriceShells, OwnedText = GameTexts.Shop.Owned, Turned = true,
-                            Tag = inUse ? TagKind.InUse : rod.Owned ? TagKind.Owned : rod.IsFree ? TagKind.Free : TagKind.Price,
+                            // Rods by fragments (M24-T32, A-163): "12/25" until assembled; the Starter Rod is claimed for free.
+                            FragmentsHave = rod.Fragments, FragmentsNeed = rod.FragmentsRequired, OwnedText = GameTexts.Shop.Owned, Turned = true,
+                            Tag = inUse ? TagKind.InUse : rod.Owned ? TagKind.Owned : rod.IsFree ? TagKind.Free : TagKind.Fragments,
                         });
                     }
 
@@ -360,10 +381,14 @@ namespace FishingIdle.Game.UI
             Fill(skin, new Rect(r.x + 6f, r.y + 2f, r.width - 12f, 1f), new Color(1f, 1f, 1f, 0.15f), 0f);
         }
 
-        /// <summary>The four tabs as small plaques hanging from the beam by two ropes; the active one with a turquoise edge.</summary>
+        /// <summary>The five tabs as small plaques hanging from the beam by two ropes; the active one with a turquoise edge.</summary>
         private void DrawTabs(UiSkin skin, float x, float beamBottom)
         {
-            var tabs = new[] { (Tab.Rods, GameTexts.Gear.TabRods, Icons.Rod), (Tab.Boats, GameTexts.Gear.TabBoats, Icons.Boat), (Tab.Baits, GameTexts.Gear.TabBaits, Icons.Bait), (Tab.Vip, GameTexts.Vip.Tab, Icons.Dollar) };
+            var tabs = new[]
+            {
+                (Tab.Rods, GameTexts.Gear.TabRods, Icons.Rod), (Tab.Boats, GameTexts.Gear.TabBoats, Icons.Boat), (Tab.Clothing, GameTexts.Gear.TabClothing, Icons.Star),
+                (Tab.Baits, GameTexts.Gear.TabBaits, Icons.Bait), (Tab.Vip, GameTexts.Vip.Tab, Icons.Dollar),
+            };
             foreach (var (tab, label, icon) in tabs)
             {
                 var active = _tab == tab;
@@ -624,8 +649,8 @@ namespace FishingIdle.Game.UI
                     GUI.Label(line, GameTexts.Shop.Free, skin.SmallGoldLine);
                     break;
                 case TagKind.Fragments:
-                    // ASSET_PENDENTE: the fragment icon (frag_boat_NN); the boat icon until it arrives.
-                    skin.DrawIcon(new Rect(x, line.y + 1f, 18f, 18f), Icons.Boat, UiSkin.Gold);
+                    // ASSET_PENDENTE: the fragment icons (frag_boat_NN, frag_rod_NN, frag_roupa); the item's icon until they arrive.
+                    skin.DrawIcon(new Rect(x, line.y + 1f, 18f, 18f), item.Icon, UiSkin.Gold);
                     GUI.Label(new Rect(x + 24f, line.y, line.width - 24f, 20f), FragmentsTag(item), skin.SmallGoldLine);
                     break;
                 default:
@@ -820,6 +845,16 @@ namespace FishingIdle.Game.UI
                     }
 
                     break;
+                case Tab.Clothing:
+                    foreach (var piece in _root.Clothing != null ? _root.Clothing.Pieces : new List<ClothingPieceView>())
+                    {
+                        if (piece.PieceId == id)
+                        {
+                            DrawClothingCard(skin, inner, piece, _root.Clothing);
+                        }
+                    }
+
+                    break;
                 case Tab.Baits:
                     foreach (var bait in gear.Baits)
                     {
@@ -874,6 +909,14 @@ namespace FishingIdle.Game.UI
             y += 24f;
             var catches = rod.CanCatchMythic ? GameTexts.Profile.CatchesUpToMythic : rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare;
             y = WrappedLabel(new Rect(x, y, w, 0f), catches, skin.Small) + 4f;
+
+            // Rods by fragments (M24-T32, A-163): "Fragmentos 12/25 · Caem no mapa Pantanal Dourado", a bar and the chance
+            // while the rod is not assembled; the extras once it is.
+            if (rod.MapName != null)
+            {
+                FragmentLines(skin, x, ref y, w, rod.Owned, rod.Fragments, rod.FragmentsRequired, GameTexts.Gear.FragmentsWhere(rod.MapName), rod.FragmentChance);
+            }
+
             y += 8f;
 
             // Bottom: price (of the rod, or of your copy's next level), then the button row.
@@ -884,16 +927,9 @@ namespace FishingIdle.Game.UI
             {
                 Cost(skin, new Rect(price.x, price.y + 1f, price.width, 22f), rod.NextUpgradeCost, rod.NextUpgradeShells);
             }
-            else if (!rod.Owned)
+            else if (!rod.Owned && rod.IsFree)
             {
-                if (rod.IsFree)
-                {
-                    GUI.Label(price, GameTexts.Shop.Free, skin.BodyBold);
-                }
-                else
-                {
-                    Cost(skin, new Rect(price.x, price.y + 1f, price.width, 22f), rod.PriceCoins, rod.PriceShells);
-                }
+                GUI.Label(price, GameTexts.Shop.Free, skin.BodyBold);
             }
 
             // Bonuses at level 1 → at the maximum level, each bar scaled by the biggest of the tab (only the drawing).
@@ -952,13 +988,125 @@ namespace FishingIdle.Game.UI
             {
                 OwnedPill(skin, button, GameTexts.Shop.Owned);
             }
+            else if (!rod.IsFree)
+            {
+                // Rods are not sold (M24-T32): a gold pill says how to get it.
+                AssemblePill(skin, button, Icons.Rod);
+            }
             else if (rod.BuyBlocker != ServiceError.None)
             {
                 Blocked(skin, button, rod.BuyBlocker);
             }
-            else if (skin.IconButton(button, Icons.Buy, rod.IsFree ? GameTexts.Shop.ClaimFree : GameTexts.Shop.Buy, skin.ButtonPrimary))
+            else if (skin.IconButton(button, Icons.Buy, GameTexts.Shop.ClaimFree, skin.ButtonPrimary))
             {
                 _root.BuyRod(rod.RodId);
+                _dirty = true;
+            }
+        }
+
+        /// <summary>
+        /// "Fragmentos 12/25 · Caem no mapa …" with a bar and "x% de chance por peixe puxado" while the item is not
+        /// assembled; "Fragmentos extras: N · Caem no mapa …" once it is (boats and rods, M24-T16/T32).
+        /// </summary>
+        private static void FragmentLines(UiSkin skin, float x, ref float y, float w, bool owned, long have, int required, string where, double chance)
+        {
+            var fragments = owned
+                ? GameTexts.Gear.FragmentsExtra(Format.Number(have))
+                : GameTexts.Gear.FragmentsLine(Format.Number(have), Format.Number(required));
+            var style = owned ? skin.SmallMuted : skin.SmallBold;
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(fragments + " · " + where, style, w), style);
+            y += 22f;
+            if (owned)
+            {
+                return;
+            }
+
+            skin.Bar(new Rect(x, y + 2f, w, 10f), required > 0 ? have / (float)required : 0f, true);
+            y += 18f;
+            var text = GameTexts.Gear.FragmentsChance(Format.Percent(chance, chance < 0.01 ? 2 : 1));
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(text, skin.SmallMuted, w), skin.SmallMuted);
+            y += 22f;
+        }
+
+        /// <summary>The gold "MONTE COM FRAGMENTOS" pill in the button's place (boats and rods are not sold).</summary>
+        private static void AssemblePill(UiSkin skin, Rect button, string icon)
+        {
+            var hint = GameTexts.Gear.AssembleHint.ToUpperInvariant();
+            var hw = skin.PillWidth(hint, true) + 6f;
+            skin.AccentPill(new Rect(button.center.x - hw / 2f, button.center.y - 13f, hw, 26f), hint, UiSkin.Gold, icon);
+        }
+
+        /// <summary>
+        /// A clothing piece (M24-T33, A-164): its level and use XP, the bonus now and at the top level, and, while it is
+        /// not assembled, the Fragmentos de Roupa and "Montar (N fragmentos de roupa)".
+        /// </summary>
+        private void DrawClothingCard(UiSkin skin, Rect inner, ClothingPieceView piece, ClothingView clothing)
+        {
+            var x = inner.x;
+            var w = inner.width;
+            var y = inner.y;
+            GUI.Label(new Rect(x, y, w, 30f), FishCard.Fit(piece.Name, skin.Heading, w), skin.Heading);
+            y += 30f;
+            var levelText = piece.Owned ? GameTexts.Shop.LevelOf(piece.Level, piece.MaxLevel) : GameTexts.Shop.MaxLevelOf(piece.MaxLevel);
+            var levelStyle = piece.Owned ? skin.SmallGold : skin.SmallMuted;
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Gear.ClothingPiece + " · " + levelText, levelStyle, w), levelStyle);
+            y += 24f;
+            if (!string.IsNullOrEmpty(piece.Description))
+            {
+                y = WrappedLabel(new Rect(x, y, w, 0f), piece.Description, skin.SmallMuted) + 6f;
+            }
+
+            // The bonus now (Nv.1 before assembling) in big letters, its bar against the top level, then the top level.
+            GUI.Label(new Rect(x, y, w, 28f), FishCard.Fit(GameTexts.Gear.ClothingAxis(piece.Axis, Format.PercentShort(piece.Bonus)), _bonusBig, w), _bonusBig);
+            y += 30f;
+            var bar = new Rect(x, y, w, 6f);
+            Fill(skin, bar, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.9f), 3f);
+            var fill = piece.BonusAtMax > 0 ? bar.width * Mathf.Clamp01((float)(piece.Bonus / piece.BonusAtMax)) : 0f;
+            if (fill >= 6f)
+            {
+                Fill(skin, new Rect(bar.x, bar.y, fill, bar.height), UiSkin.Accent, 3f);
+            }
+
+            y += 14f;
+            var atMax = GameTexts.Gear.ClothingBonusAtMax(piece.MaxLevel, GameTexts.Gear.ClothingAxis(piece.Axis, Format.Percent(piece.BonusAtMax, 0)));
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(atMax, skin.Small, w), skin.Small);
+            y += 24f;
+
+            if (piece.Owned)
+            {
+                // It goes up by itself with use: the XP bar of the level (one point per fish pulled out).
+                if (piece.Level >= piece.MaxLevel)
+                {
+                    GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Gear.ClothingMaxLevel, skin.SmallGold, w), skin.SmallGold);
+                    y += 22f;
+                }
+                else
+                {
+                    var use = GameTexts.Gear.ClothingUseXp(Format.Number(piece.Xp), Format.Number(piece.XpToNext));
+                    GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(use, skin.SmallBold, w), skin.SmallBold);
+                    y += 22f;
+                    skin.Bar(new Rect(x, y + 2f, w, 10f), piece.XpToNext > 0 ? piece.Xp / (float)piece.XpToNext : 0f, true);
+                    y += 18f;
+                }
+            }
+            else if (clothing != null)
+            {
+                FragmentLines(skin, x, ref y, w, false, clothing.Fragments, clothing.NextCost, GameTexts.Gear.ClothingDropsEverywhere, clothing.FragmentChance);
+            }
+
+            var button = new Rect(x, inner.yMax - 44f, w, 44f);
+            Note(skin, new Rect(x, y + 6f, w, button.y - 8f - y - 6f), GameTexts.Gear.ClothingNote);
+            if (piece.Owned)
+            {
+                OwnedPill(skin, button, GameTexts.Gear.Wearing);
+            }
+            else if (piece.AssembleBlocker != ServiceError.None)
+            {
+                Blocked(skin, button, piece.AssembleBlocker);
+            }
+            else if (skin.IconButton(button, Icons.Check, GameTexts.Gear.ClothingAssemble(Format.Number(clothing?.NextCost ?? 0)), skin.ButtonPrimary))
+            {
+                _root.AssembleClothing(piece.PieceId);
                 _dirty = true;
             }
         }
@@ -1002,20 +1150,7 @@ namespace FishingIdle.Game.UI
             // Lago Sereno"), with a bar while the boat is not assembled; the extras once it is.
             if (boat.MapName != null)
             {
-                var fragments = boat.Owned
-                    ? GameTexts.Gear.FragmentsExtra(Format.Number(boat.Fragments))
-                    : GameTexts.Gear.FragmentsLine(Format.Number(boat.Fragments), Format.Number(boat.FragmentsRequired));
-                var style = boat.Owned ? skin.SmallMuted : skin.SmallBold;
-                GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(fragments + " · " + GameTexts.Gear.FragmentsWhere(boat.MapName), style, w), style);
-                y += 22f;
-                if (!boat.Owned)
-                {
-                    skin.Bar(new Rect(x, y + 2f, w, 10f), boat.FragmentsRequired > 0 ? boat.Fragments / (float)boat.FragmentsRequired : 0f, true);
-                    y += 18f;
-                    var chance = GameTexts.Gear.FragmentsChance(Format.Percent(boat.FragmentChance, boat.FragmentChance < 0.01 ? 2 : 1));
-                    GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(chance, skin.SmallMuted, w), skin.SmallMuted);
-                    y += 22f;
-                }
+                FragmentLines(skin, x, ref y, w, boat.Owned, boat.Fragments, boat.FragmentsRequired, GameTexts.Gear.FragmentsWhere(boat.MapName), boat.FragmentChance);
             }
 
             // Owned with levels: the Use button / "Em uso" pill sits over the upgrade row.
@@ -1058,9 +1193,7 @@ namespace FishingIdle.Game.UI
             else
             {
                 // Boats are not sold: a gold pill says how to get it.
-                var hint = GameTexts.Gear.AssembleHint.ToUpperInvariant();
-                var hw = skin.PillWidth(hint, true) + 6f;
-                skin.AccentPill(new Rect(button.center.x - hw / 2f, button.center.y - 13f, hw, 26f), hint, UiSkin.Gold, Icons.Boat);
+                AssemblePill(skin, button, Icons.Boat);
             }
         }
 
@@ -1250,10 +1383,12 @@ namespace FishingIdle.Game.UI
             var total = "+" + Format.Percent(gear.TotalBonus, 0);
             var totalWidth = skin.Heading.CalcSize(new GUIContent(total)).x + 4f;
             GUI.Label(new Rect(body.xMax - 12f - totalWidth, y - 3f, totalWidth, 26f), total, skin.Heading);
-            var labelWidth = skin.SmallBold.CalcSize(new GUIContent(GameTexts.Gear.Total)).x + 4f;
+            // With the Luvas (M24-T33) the total is more than the three compartments: the label says so.
+            var totalLabel = gear.ClothingBonus > 0 ? GameTexts.Gear.TotalWithGloves : GameTexts.Gear.Total;
+            var labelWidth = skin.SmallBold.CalcSize(new GUIContent(totalLabel)).x + 4f;
             var lx = body.xMax - 12f - totalWidth - 8f - labelWidth;
             GUI.contentColor = BoxInk;
-            GUI.Label(new Rect(lx, y, labelWidth, UiSkin.SmallLine), GameTexts.Gear.Total, skin.SmallBold);
+            GUI.Label(new Rect(lx, y, labelWidth, UiSkin.SmallLine), totalLabel, skin.SmallBold);
             GUI.contentColor = previous;
             if (gear.BaitName != null)
             {

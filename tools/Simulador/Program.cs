@@ -141,9 +141,9 @@ public static class Program
     }
 
     /// <summary>
-    /// A simple, sensible player fishing online non-stop: sells everything every 10 minutes, buys each
-    /// rod as soon as allowed and affordable (boats arrive from fragments, M24-T16), and travels to the
-    /// best map it can as soon as it opens.
+    /// A simple, sensible player fishing online non-stop: sells everything every 10 minutes (rods and boats arrive from
+    /// fragments, M24-T16 and M24-T32, and the service puts the better one in use), and travels to the best map it can as
+    /// soon as it opens.
     /// </summary>
     private static ProgressionResult Progression(GameConfig config)
     {
@@ -152,7 +152,6 @@ public static class Program
         double catches = 0, totalHours = 0, firstRare = 0, escapes = 0;
         var boatTimes = new Dictionary<string, (double hours, int n)>();
         var rodTimes = new Dictionary<string, (double hours, int n)>();
-        var buyable = config.Rods.Rods.Where(config.IsPurchasable).OrderBy(r => r.Tier).ToList();
         var mapOrder = config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel).Select(m => m.Id).ToList();
         const double capHours = 150;
 
@@ -210,14 +209,12 @@ public static class Program
                         }
                     }
 
-                    foreach (var rod in buyable.Where(r => !bought.Contains(r.Id)))
+                    // Rods are not sold since M24-T32 (A-163): they are assembled from the fragments the catches drop.
+                    foreach (var rod in game.Shop.GetShop().Rods.Where(x => x.Owned && x.Tier > 0 && !bought.Contains(x.RodId)))
                     {
-                        if (game.Shop.BuyRod(rod.Id).Succeeded)
-                        {
-                            bought.Add(rod.Id);
-                            var t = rodTimes.TryGetValue(rod.DisplayName, out var rt) ? rt : (0, 0);
-                            rodTimes[rod.DisplayName] = (t.hours + hours, t.n + 1);
-                        }
+                        bought.Add(rod.RodId);
+                        var t = rodTimes.TryGetValue(rod.Name, out var rt) ? rt : (0, 0);
+                        rodTimes[rod.Name] = (t.hours + hours, t.n + 1);
                     }
 
                     // Boats are not sold since M24-T16 (A-157): they are assembled from the fragments the catches drop
@@ -262,7 +259,8 @@ public static class Program
             result.Levels[level] = new LevelMark { Hours = v.hours / v.n, CoinsEarned = v.coins / v.n };
         }
 
-        result.RodBoughtAtHours = buyable.Count > 0 && rodTimes.TryGetValue(buyable[0].DisplayName, out var first) ? first.hours / first.n : 0;
+        var firstRod = config.Rods.Rods.Where(GameConfig.IsFragmentRod).OrderBy(r => r.Tier).FirstOrDefault();
+        result.RodBoughtAtHours = firstRod != null && rodTimes.TryGetValue(firstRod.DisplayName, out var first) ? first.hours / first.n : 0;
         foreach (var (name, t) in rodTimes)
         {
             result.RodsBought.Add(name + " com " + Format.Decimal(t.hours / t.n, 1) + " h" + (t.n < Players ? " (" + t.n + " de " + Players + " jogadores)" : ""));
@@ -283,8 +281,8 @@ public static class Program
     {
         r.AppendLine("## 1. Progressão do Pescador (pesca online, sem parar)");
         r.AppendLine();
-        r.AppendLine("Estratégia simulada: pesca o tempo todo, vende tudo a cada 10 minutos, compra a próxima vara assim");
-        r.AppendLine("que pode (os barcos chegam montados pelos fragmentos que caem pescando) e viaja para o próximo mapa assim que ele libera. Não usa isca. Offline, cada captura leva " +
+        r.AppendLine("Estratégia simulada: pesca o tempo todo, vende tudo a cada 10 minutos (as varas e os barcos chegam");
+        r.AppendLine("montados pelos fragmentos que caem pescando) e viaja para o próximo mapa assim que ele libera. Não usa isca. Offline, cada captura leva " +
                      Format.Duration(config.Progression.Fishing.OfflineCycleSeconds) + " em vez de " + Format.Duration(config.Progression.Fishing.OnlineCycleSeconds) + ".");
         r.AppendLine();
         r.AppendLine("| Nível | Horas de pesca online | Moedas ganhas até ali |");
@@ -387,20 +385,20 @@ public static class Program
         }
         if (p.CoinsPerHourMap2 > 0)
         {
-            r.AppendLine("- Moedas por hora vendendo tudo, segundo mapa (com a vara comprada, Nv.1): " + Format.Number((long)p.CoinsPerHourMap2));
+            r.AppendLine("- Moedas por hora vendendo tudo, segundo mapa (com a vara montada, Nv.1): " + Format.Number((long)p.CoinsPerHourMap2));
             r.AppendLine("- Conchas por hora no segundo mapa: " + Format.Decimal(p.ShellsPerHourMap2, 1));
         }
 
         r.AppendLine();
-        r.AppendLine("| Vara | Preço | Todas as melhorias | Horas de pesca para pagar a vara | Horas para pagar as melhorias |");
-        r.AppendLine("|---|---:|---:|---:|---:|");
-        foreach (var rod in config.Rods.Rods.Where(config.IsPurchasable).OrderBy(x => x.Tier))
+        r.AppendLine("| Vara | Fragmentos | Chance por peixe | Caem no mapa | Todas as melhorias | Horas para pagar as melhorias |");
+        r.AppendLine("|---|---:|---:|---|---:|---:|");
+        foreach (var rod in config.Rods.Rods.Where(GameConfig.IsFragmentRod).OrderBy(x => x.Tier))
         {
-            var price = rod.Acquisition.PurchaseCostCoins;
             var upgrades = MarketRules.RodUpgradeSpend(config, rod, config.RodMaxLevel(rod));
-            var before = p.CoinsPerHourMap1 > 0 ? price / p.CoinsPerHourMap1 : 0;
             var after = p.CoinsPerHourMap2 > 0 ? upgrades / p.CoinsPerHourMap2 : 0;
-            r.AppendLine("| " + rod.DisplayName + " | " + Format.Number(price) + " | " + Format.Number(upgrades) + " | " + Format.Decimal(before, 1) + " h | " + Format.Decimal(after, 1) + " h |");
+            var map = config.TryGetMap(rod.FragmentMapId, out var m) ? m.DisplayName : rod.FragmentMapId;
+            r.AppendLine("| " + rod.DisplayName + " | " + Format.Number(rod.FragmentsRequired) + " | " + Format.Percent(rod.FragmentDropChance, 2) + " | " + map
+                         + " | " + Format.Number(upgrades) + " | " + Format.Decimal(after, 1) + " h |");
         }
 
         r.AppendLine();
@@ -610,7 +608,7 @@ public static class Program
         r.AppendLine("| Moedas por hora, segundo mapa | " + Format.Number((long)before.CoinsPerHourMap2) + " | " + Format.Number((long)after.CoinsPerHourMap2) + " |");
         r.AppendLine("| Conchas por hora, segundo mapa | " + Format.Decimal(before.ShellsPerHourMap2, 1) + " | " + Format.Decimal(after.ShellsPerHourMap2, 1) + " |");
         r.AppendLine("| Primeiro peixe Raro | " + Format.Decimal(before.FirstRareAtHours, 1) + " h | " + Format.Decimal(after.FirstRareAtHours, 1) + " h |");
-        r.AppendLine("| Vara 1 comprada | " + Format.Decimal(before.RodBoughtAtHours, 1) + " h | " + Format.Decimal(after.RodBoughtAtHours, 1) + " h |");
+        r.AppendLine("| Vara 1 montada | " + Format.Decimal(before.RodBoughtAtHours, 1) + " h | " + Format.Decimal(after.RodBoughtAtHours, 1) + " h |");
         r.AppendLine();
         if (before.Levels.TryGetValue(10, out var b10) && after.Levels.TryGetValue(10, out var a10))
         {

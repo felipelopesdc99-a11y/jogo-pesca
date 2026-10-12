@@ -45,9 +45,9 @@ internal static class TestSupport
     private static GameConfig _certain;
 
     /// <summary>
-    /// The real config with every bite pulled out (Catch Success 100%). Tests about timing, the box,
-    /// sales and the other systems use it so they keep counting one fish per cycle; the Catch
-    /// Success tests use <see cref="RealConfig"/>.
+    /// The real config with every bite pulled out (Catch Success 100%) and no rod fragments (M24-T32). Tests about timing,
+    /// the box, sales and the other systems use it so they keep counting one fish per cycle with the rod they were given;
+    /// the Catch Success tests use <see cref="RealConfig"/>.
     /// </summary>
     public static GameConfig CertainCatchConfig()
     {
@@ -79,6 +79,20 @@ internal static class TestSupport
 
             root["fishing"]!["catch_success_max"] = 1.0;
             texts[GameConfigLoader.ProgressionFile] = root.ToString();
+
+            // Rods by fragments (M24-T32): with every bite pulled out, a long test on a map would assemble its rod by
+            // itself and change the rod in use. These tests give rods with TestSupport.GiveRod; the rod drops are
+            // tested in RodsAndClothingByFragmentsTests with their own config.
+            var rods = Newtonsoft.Json.Linq.JObject.Parse(texts[GameConfigLoader.RodsFile]);
+            foreach (var rod in rods["rods"]!)
+            {
+                if (rod["fragment_drop_chance"] != null)
+                {
+                    rod["fragment_drop_chance"] = 0.0;
+                }
+            }
+
+            texts[GameConfigLoader.RodsFile] = rods.ToString();
         }
 
         texts[file] = edit(texts[file]);
@@ -125,6 +139,24 @@ internal static class TestSupport
         }
 
         game.Session.Persist();
+    }
+
+    /// <summary>
+    /// Gives a rod the way the game does since M24-T32 (A-163): all the fragments it needs, which assemble it (and put it in
+    /// use when its tier is higher than the rod in use). Rods are no longer sold.
+    /// </summary>
+    public static FishingIdle.GameService.Shop.RodFragmentGainView GiveRod(LocalGame game, string rodId)
+    {
+        var config = game.Session.Config;
+        config.TryGetRod(rodId, out var rod);
+        var gain = FishingIdle.GameService.Shop.RodFragmentRules.Add(config, game.Session.Save, rod, rod.FragmentsRequired, game.Session.Clock.UtcNowMs);
+        if (gain == null || !gain.Assembled)
+        {
+            throw new InvalidOperationException("Rod " + rodId + " was not assembled.");
+        }
+
+        game.Session.Persist();
+        return gain;
     }
 
     /// <summary>Advances time in small steps, syncing like the running client does.</summary>

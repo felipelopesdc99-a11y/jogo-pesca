@@ -38,6 +38,7 @@ namespace FishingIdle.GameService
             Maps = new LocalMapService(session, fishing);
             Shop = new LocalShopService(session, fishing);
             Gear = new LocalGearService(session, fishing);
+            Clothing = new LocalClothingService(session, fishing);
             Player = new LocalPlayerService(session);
             var aquarium = new LocalAquariumService(session);
             Aquarium = aquarium;
@@ -64,6 +65,9 @@ namespace FishingIdle.GameService
         public IMapService Maps { get; }
         public IShopService Shop { get; }
         public IGearService Gear { get; }
+
+        /// <summary>The clothing pieces and the Fragmentos de Roupa (M24-T33).</summary>
+        public IClothingService Clothing { get; }
         public IPlayerService Player { get; }
         public IAquariumService Aquarium { get; }
         public ICardumeService Cardume { get; }

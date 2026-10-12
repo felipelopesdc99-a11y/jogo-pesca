@@ -45,11 +45,14 @@ namespace FishingIdle.GameService.Fishing
         /// <summary>
         /// One fishing attempt, in the order of the design: the fish that bit (species, with the rarities'
         /// fishing_bite_multiplier, A-159), then the Catch Success roll with the rod's bonus plus
-        /// <paramref name="gearBonus"/> (boat + bait), and only when it is pulled out, its size, XP and Shells.
+        /// <paramref name="gearBonus"/> (boat + bait + the Luvas), and only when it is pulled out, its size, XP and Shells.
+        /// <paramref name="clothing"/> (M24-T33, A-164) adds the worn clothing's rarity, size and Shell bonuses to the rod's;
+        /// without clothing the bonuses, and so every draw, are exactly the rod's.
         /// </summary>
-        public static CatchAttempt Attempt(GameConfig config, MapConfig map, RodConfig rod, int rodLevel, double gearBonus, Rng rng)
+        public static CatchAttempt Attempt(GameConfig config, MapConfig map, RodConfig rod, int rodLevel, double gearBonus, Rng rng,
+            Shop.ClothingBonuses clothing = null)
         {
-            var bonuses = config.RodBonusesAt(rod, rodLevel);
+            var bonuses = WithClothing(config.RodBonusesAt(rod, rodLevel), clothing);
             var species = RollBite(config, map, rod, bonuses, rng);
             var chance = SuccessChance(config, species.Rarity, bonuses.CatchSuccess + gearBonus);
             var attempt = new CatchAttempt { Species = species, Chance = chance };
@@ -59,6 +62,23 @@ namespace FishingIdle.GameService.Fishing
             }
 
             return attempt;
+        }
+
+        /// <summary>The rod's bonuses plus the clothing's rarity, size and Shell bonuses (the same object when there is none).</summary>
+        public static RodBonusesConfig WithClothing(RodBonusesConfig rod, Shop.ClothingBonuses clothing)
+        {
+            if (clothing == null || (clothing.RarityEfficiency == 0 && clothing.SizeQuality == 0 && clothing.ShellYield == 0))
+            {
+                return rod;
+            }
+
+            return new RodBonusesConfig
+            {
+                RarityEfficiency = rod.RarityEfficiency + clothing.RarityEfficiency,
+                SizeQuality = rod.SizeQuality + clothing.SizeQuality,
+                ShellYield = rod.ShellYield + clothing.ShellYield,
+                CatchSuccess = rod.CatchSuccess,
+            };
         }
 
         /// <summary>

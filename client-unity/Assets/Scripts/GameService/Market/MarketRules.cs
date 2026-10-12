@@ -50,7 +50,7 @@ namespace FishingIdle.GameService.Market
                     return 0;
                 }
 
-                value = (rod.Acquisition?.PurchaseCostCoins ?? 0) + RodUpgradeSpend(config, rod, goods.Rod.Level);
+                value = (rod.Acquisition?.MarketReferenceCoins ?? 0) + RodUpgradeSpend(config, rod, goods.Rod.Level);
                 value *= val.RodReferenceRatio;
             }
 
@@ -69,7 +69,7 @@ namespace FishingIdle.GameService.Market
                 return long.MaxValue;
             }
 
-            return (rod.Acquisition?.PurchaseCostCoins ?? 0) + RodUpgradeSpend(config, rod, goods.Rod.Level);
+            return (rod.Acquisition?.MarketReferenceCoins ?? 0) + RodUpgradeSpend(config, rod, goods.Rod.Level);
         }
 
         /// <summary>

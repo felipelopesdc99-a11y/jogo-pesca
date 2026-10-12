@@ -125,6 +125,16 @@ namespace FishingIdle.GameService.Fishing
         /// <summary>Boat fragments the catches dropped (M24-T16, A-157), one entry per drop, in order.</summary>
         public List<Shop.FragmentGainView> Fragments { get; } = new List<Shop.FragmentGainView>();
 
+        /// <summary>Rod fragments the catches dropped (M24-T32, A-163), one entry per drop, in order.</summary>
+        public List<Shop.RodFragmentGainView> RodFragments { get; } = new List<Shop.RodFragmentGainView>();
+
+        /// <summary>Fragmentos de Roupa the catches dropped (M24-T33, A-164) and how many the player has after them.</summary>
+        public long ClothingFragments { get; internal set; }
+        public long ClothingFragmentsHave { get; internal set; }
+
+        /// <summary>Clothing pieces that went up a level by being used, in order.</summary>
+        public List<Shop.ClothingLevelView> ClothingLevels { get; } = new List<Shop.ClothingLevelView>();
+
         /// <summary>Fish that bit and escaped (docs/SISTEMA_SUCESSO_PESCA.md): nothing of them was kept.</summary>
         public List<EscapeView> Escapes { get; } = new List<EscapeView>();
 
@@ -134,7 +144,8 @@ namespace FishingIdle.GameService.Fishing
         /// <summary>The name of the bait whose last charge was used in this update, or null.</summary>
         public string BaitRanOut { get; internal set; }
 
-        public bool HasChanges => NewCatches.Count > 0 || Escapes.Count > 0 || BaitRanOut != null || Fragments.Count > 0;
+        public bool HasChanges => NewCatches.Count > 0 || Escapes.Count > 0 || BaitRanOut != null || Fragments.Count > 0
+            || RodFragments.Count > 0 || ClothingFragments > 0 || ClothingLevels.Count > 0;
     }
 
     /// <summary>

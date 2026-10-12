@@ -95,7 +95,10 @@ namespace FishingIdle.GameService.Shop
         public string BaitName { get; internal set; }
         public double BaitBonus { get; internal set; }
         public int BaitChargesLeft { get; internal set; }
-        public double TotalBonus => RodBonus + BoatBonus + BaitBonus;
+
+        /// <summary>The Luvas' points on the chance (M24-T33, A-164); 0 without them.</summary>
+        public double ClothingBonus { get; internal set; }
+        public double TotalBonus => RodBonus + BoatBonus + BaitBonus + ClothingBonus;
 
         /// <summary>Floor and ceiling of the chance (config).</summary>
         public double ChanceMin { get; internal set; }
@@ -164,6 +167,7 @@ namespace FishingIdle.GameService.Shop
                 BaitName = bait?.DisplayName,
                 BaitBonus = bait?.CatchSuccessBonus ?? 0.0,
                 BaitChargesLeft = bait != null ? GearRules.Charges(save, bait.Id) : 0,
+                ClothingBonus = ClothingRules.Bonuses(config, save).CatchSuccess,
                 ChanceMin = config.Fishing.CatchSuccessMin,
                 ChanceMax = config.Fishing.CatchSuccessMax,
             };

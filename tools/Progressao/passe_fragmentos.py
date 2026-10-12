@@ -26,7 +26,12 @@ Como os números são gerados (ajuste as constantes abaixo e rode "gerar" de nov
     100 níveis (grátis) e 10 a cada 50 níveis (premium);
   - fragmentos: no Nv.10·X (X = 1 a 10) do barco do Mapa X; depois do Nv.100 os barcos se revezam (Nv.110 = Mapa 1,
     Nv.120 = Mapa 2, … Nv.200 = Mapa 10, Nv.210 = Mapa 1 …). Grátis: FRAG_GRATIS_ATE_100 dos fragmentos que o barco
-    pede até o Nv.100 e FRAG_GRATIS_DEPOIS depois; o premium, o dobro (arredondado para cima).
+    pede até o Nv.100 e FRAG_GRATIS_DEPOIS depois; o premium, o dobro (arredondado para cima);
+  - fragmentos de vara (M24-T32, A-163): no marco do nível que libera o primeiro mapa que pede cada vara (Nv.10 = Vara 1,
+    Nv.30 = Vara 2, Nv.50 = Vara 3, Nv.70 = Vara 4, Nv.90 = Vara 5), FRAG_VARA_GRATIS dos fragmentos que a vara pede; o
+    premium, o dobro (arredondado para cima). Só esses 5 marcos: depois do Nv.90 todas as varas já liberaram o mapa delas;
+  - Fragmentos de Roupa (M24-T33, A-164): em todo marco, ROUPA_ATE_100 (grátis, até o Nv.100) e ROUPA_DEPOIS (grátis,
+    depois); o premium, o dobro.
 """
 import argparse
 import collections
@@ -62,6 +67,9 @@ DOLARES_GRATIS_DEPOIS = (100, 10)    # grátis depois do Nv.100: a cada 100 nív
 DOLARES_PREMIUM = (50, 10)           # premium: a cada 50 níveis, 10 Dólares
 FRAG_GRATIS_ATE_100 = 0.15
 FRAG_GRATIS_DEPOIS = 0.10
+FRAG_VARA_GRATIS = 0.15
+ROUPA_ATE_100 = 2
+ROUPA_DEPOIS = 1
 
 PROFILES = T.PROFILES
 
@@ -126,7 +134,7 @@ class Game(M.Game):
 
     def fishing_shells_per_second(self):
         p = self.p
-        _, _, shells, _ = self.rules.per_attempt(p.map(), p.rod, p.rods[p.rod['id']], p.gear())
+        _, _, shells, _ = p.stats()
         return shells / self.rules.fishing['online_cycle_seconds']
 
     def observe(self):
@@ -138,7 +146,7 @@ class Game(M.Game):
             self.at_level[lvl] = {
                 'renda_moedas_s': self.crew.coins_rate() + self.fishing_coins_per_second(),
                 'conchas_s': self.fishing_shells_per_second(),
-                'vara': p.rod['id'], 'nivel_vara': p.rods[p.rod['id']], 'bonus_barco': p.boat_bonus(),
+                'vara': p.rod['id'], 'nivel_vara': p.rods[p.rod['id']], 'bonus_barco': p.boat_bonus() + p.gloves(), 'roupas': p.extra(),
                 'dia': self.t / 86400.0,
             }
         for bid in p.owned_boats:
@@ -154,6 +162,11 @@ class Game(M.Game):
         if reward.get('boat_id') and reward.get('fragments'):
             boat = next(b for b in self.rules.boats if b['id'] == reward['boat_id'])
             p.add_fragments(boat, reward['fragments'], 'pass')
+        if reward.get('rod_id') and reward.get('rod_fragments'):
+            rod = next(r for r in self.rules.rods if r['id'] == reward['rod_id'])
+            p.add_rod_fragments(rod, reward['rod_fragments'])
+        if reward.get('clothing_fragments') and self.rules.clothing:
+            p.add_clothing_fragments(reward['clothing_fragments'])
 
     def claim(self):
         p = self.p
@@ -217,7 +230,7 @@ def catch_rates(rules, reference):
         rod = next(r for r in rules.rods if r['id'] == snap['vara'])
         if rod['tier'] < mp['minimum_rod_tier']:
             rod = next(r for r in rules.rods if r['tier'] >= mp['minimum_rod_tier'])
-        _, _, _, caught = rules.per_attempt(mp, rod, snap['nivel_vara'] if rod['id'] == snap['vara'] else 1, snap['bonus_barco'])
+        _, _, _, caught = rules.per_attempt(mp, rod, snap['nivel_vara'] if rod['id'] == snap['vara'] else 1, snap['bonus_barco'], snap.get('roupas'))
         out[mp['id']] = {'por_tentativa': caught, 'vara': rod['id'], 'nivel_vara': snap['nivel_vara'], 'bonus_barco': round(snap['bonus_barco'], 4)}
     return out
 
@@ -232,7 +245,19 @@ def smooth(values):
     return out
 
 
-def build_pass(reference, boats_by_map):
+def rods_by_level(rules):
+    """The milestone of each rod (M24-T32): the Fisher level that unlocks the first map asking for its tier."""
+    out = {}
+    for rod in rules.rods:
+        if rod['tier'] == 0:
+            continue
+        first = min((m['unlock_fisher_level'] for m in rules.maps if m['minimum_rod_tier'] == rod['tier']), default=None)
+        if first:
+            out[max(MARCO_A_CADA, int(math.ceil(first / float(MARCO_A_CADA))) * MARCO_A_CADA)] = rod
+    return out
+
+
+def build_pass(reference, boats_by_map, rod_at=None):
     levels = list(range(MARCO_A_CADA, NIVEL_MAXIMO + 1, MARCO_A_CADA))
     known = sorted(reference.at_level)
     incomes = smooth([reference.at_level[min(known, key=lambda k: abs(k - l))]['renda_moedas_s'] for l in levels])
@@ -251,6 +276,16 @@ def build_pass(reference, boats_by_map):
                                         ('boat_id', boat['id']), ('fragments', frags)])
         premium = collections.OrderedDict([('coins', C.nice_round(coins * PREMIUM_MULT)), ('shells', int(math.ceil(shells * PREMIUM_MULT))),
                                            ('dollars', prem_dollars), ('boat_id', boat['id']), ('fragments', int(math.ceil(frags * PREMIUM_MULT)))])
+        rod = (rod_at or {}).get(lvl)
+        if rod:
+            rod_frags = max(1, int(math.ceil(rod['fragments_required'] * FRAG_VARA_GRATIS)))
+            free['rod_id'] = rod['id']
+            free['rod_fragments'] = rod_frags
+            premium['rod_id'] = rod['id']
+            premium['rod_fragments'] = int(math.ceil(rod_frags * PREMIUM_MULT))
+        clothes = ROUPA_ATE_100 if lvl <= 100 else ROUPA_DEPOIS
+        free['clothing_fragments'] = clothes
+        premium['clothing_fragments'] = int(math.ceil(clothes * PREMIUM_MULT))
         milestones.append(collections.OrderedDict([('level', lvl), ('free', free), ('premium', premium)]))
     return milestones
 
@@ -293,10 +328,12 @@ def gerar(days):
                          'hoje existe um passe só, e um pass_id diferente não zera nada.'),
         ('premium_price_dollars', PRECO_PREMIUM_DOLARES),
         ('rewards_note', 'coins = Moedas, shells = Conchas, dollars = Dólares, fragments = fragmentos do barco boat_id '
-                         '(equipment.json). Moedas: ~%d min da renda de quem chega ao nível abrindo o jogo 4 vezes por '
-                         'dia; Conchas: ~%d min de Conchas da pesca; premium: ~%g× e Dólares a cada %d níveis.'
+                         '(equipment.json), rod_fragments = fragmentos da vara rod_id (rods.json, M24-T32), '
+                         'clothing_fragments = Fragmentos de Roupa (equipment.json → clothing, M24-T33). Moedas: ~%d min da '
+                         'renda de quem chega ao nível abrindo o jogo 4 vezes por dia; Conchas: ~%d min de Conchas da pesca; '
+                         'premium: ~%g× e Dólares a cada %d níveis.'
                          % (MINUTOS_MOEDAS, MINUTOS_CONCHAS, PREMIUM_MULT, DOLARES_PREMIUM[0])),
-        ('milestones', build_pass(reference, boats_by_map)),
+        ('milestones', build_pass(reference, boats_by_map, rods_by_level(rules))),
     ])
     save('pass.json', pass_cfg)
     print('config/equipment.json e config/pass.json gravados.')
@@ -373,6 +410,8 @@ def simular(days, gravar):
         ('dolares_premium_total', tot('dollars', 'premium')),
         ('moedas_gratis_total', tot('coins', 'free')), ('conchas_gratis_total', tot('shells', 'free')),
         ('moedas_premium_total', tot('coins', 'premium')), ('conchas_premium_total', tot('shells', 'premium')),
+        ('fragmentos_de_vara_gratis_total', tot('rod_fragments', 'free')), ('fragmentos_de_vara_premium_total', tot('rod_fragments', 'premium')),
+        ('fragmentos_de_roupa_gratis_total', tot('clothing_fragments', 'free')), ('fragmentos_de_roupa_premium_total', tot('clothing_fragments', 'premium')),
     ])
 
     prog = collections.OrderedDict()

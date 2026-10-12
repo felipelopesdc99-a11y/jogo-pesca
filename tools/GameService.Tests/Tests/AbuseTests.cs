@@ -68,7 +68,7 @@ public sealed class AbuseTests
         var (game, _, _) = Player();
         game.Session.Save.FisherLevel = 10;
         game.Session.Save.Shells = 1_000;
-        Assert.True(game.Shop.BuyRod("rod_01").Succeeded);
+        TestSupport.GiveRod(game, "rod_01");
         var inventory = game.Profile.GetProfile().Inventory;
         Assert.True(game.Profile.EquipRod(inventory.Single(r => r.RodId != "rod_01").ItemId).Succeeded);
         var rod = inventory.Single(r => r.RodId == "rod_01");

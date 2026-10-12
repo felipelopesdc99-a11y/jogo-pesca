@@ -22,7 +22,7 @@ public sealed class MapsSevenToTenTests
         game.Session.Save.Shells = 1_000_000;
         foreach (var rod in rods)
         {
-            Assert.True(game.Shop.BuyRod(rod).Succeeded);
+            TestSupport.GiveRod(game, rod);
         }
 
         return game;
@@ -48,8 +48,8 @@ public sealed class MapsSevenToTenTests
     public void Rods_4_and_5_can_be_bought_at_any_level_with_the_money()
     {
         // M24-T09: no minimum level; the map still asks for its level (Each_map_needs_its_level_and_its_rod).
-        Assert.True(Player(1, "rod_01", "rod_02", "rod_03").Shop.BuyRod("rod_04").Succeeded);
-        Assert.True(Player(1, "rod_01", "rod_02", "rod_03", "rod_04").Shop.BuyRod("rod_05").Succeeded);
+        TestSupport.GiveRod(Player(1, "rod_01", "rod_02", "rod_03"), "rod_04");
+        TestSupport.GiveRod(Player(1, "rod_01", "rod_02", "rod_03", "rod_04"), "rod_05");
     }
 
     [Fact]

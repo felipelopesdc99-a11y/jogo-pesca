@@ -155,7 +155,7 @@ class Game:
 
     def fishing_coins_per_second(self):
         p = self.p
-        _, coins, _, _ = self.rules.per_attempt(p.map(), p.rod, p.rods[p.rod['id']], p.gear())
+        _, coins, _, _ = p.stats()
         return coins / self.rules.fishing['online_cycle_seconds']
 
     def buy(self):
