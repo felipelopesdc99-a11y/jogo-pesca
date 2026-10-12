@@ -4596,11 +4596,12 @@
           "title": "Nomes e descrições dos 5 barcos novos",
           "subsystem": "config",
           "description": "Os barcos dos Mapas 6 a 10 entraram com nomes sugeridos, temáticos do mapa: Vela do Sol, Quilha Azul, Canto da Baleia, Farol Noturno e Titã do Atlântico (OD-061).",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M24-T16"
           ],
-          "updated_at": "2026-10-11T12:00:00Z"
+          "updated_at": "2026-10-12T23:30:00Z",
+          "completion_notes": "Resolvido sem nomes novos: o proprietário decidiu em 12/10/2026 voltar para 5 barcos por enquanto (OD-061 resolvido). Os barcos 6 a 10 saíram do jogo; os mapas 6 a 10 dão fragmentos dos barcos 1 a 5 (M24-T42, A-168)."
         },
         {
           "id": "M24-T21",

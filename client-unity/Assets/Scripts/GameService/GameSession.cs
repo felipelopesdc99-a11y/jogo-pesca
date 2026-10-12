@@ -163,6 +163,7 @@ namespace FishingIdle.GameService
                 RodLevelCurveVersion = Config.Rods.UpgradeRules?.LevelCurveVersion ?? 0,
                 FishLevelCurveVersion = Config.Progression.FishLevel.LevelCurveVersion,
                 BaitModelVersion = Config.BaitModelVersion,
+                BoatModelVersion = Config.BoatModelVersion,
                 Crew = new CrewState { LastCreditedAtMs = now },
                 Pass = new PassState { PassId = Config.Pass.PassId },
             };

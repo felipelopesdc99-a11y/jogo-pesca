@@ -352,7 +352,7 @@ public sealed class WorldBossTests
         File.WriteAllText(path, json.ToString());
 
         var reopened = TestSupport.NewGame(game.Session.Config, dir, clock).Game;
-        Assert.Equal(19, PlayerSave.CurrentVersion);
+        Assert.True(PlayerSave.CurrentVersion >= 19);
         Assert.Equal(PlayerSave.CurrentVersion, reopened.Session.Save.SaveVersion);
         Assert.NotNull(reopened.Session.Save.WorldBoss);
         Assert.Equal(0, reopened.Session.Save.WorldBoss.Day);

@@ -124,7 +124,8 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>
         /// The boat model of the boats and fragments above (equipment.json → boat_migration.boat_model_version). 1 = the 10
-        /// boats of M24-T16 (one per map); the game converts boats 6 to 10 on load (M24-T42, A-168). 0 = a new player.
+        /// boats of M24-T16 (one per map); the game converts boats 6 to 10 on load (M24-T42, A-168). A new player starts
+        /// at the config's version.
         /// Added in save version 20.
         /// </summary>
         public int BoatModelVersion { get; set; }
