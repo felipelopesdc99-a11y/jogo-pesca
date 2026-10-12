@@ -77,7 +77,7 @@ Onde fica cada coisa no painel:
 - **Ciclo de pesca (M24-T27, A-160):** `progression.json → fishing.online_cycle_seconds` (10) e
   `offline_cycle_seconds` (20); com o VIP ativo, a pesca offline usa `economy.json → vip.offline_cycle_seconds` (15; 0 =
   o VIP não muda o ciclo). A Caixa de Pesca (`economy.json → fishing_box.capacity`, 8.640) guarda 1 dia de pesca online;
-  as iscas (`equipment.json → baits[].charges`, 180) duram 30 min online.
+  as iscas (`equipment.json → baits[].charges`, 999 desde o M24-T30) duram 2,8 h online.
 - Todo arquivo carrega `config_schema_version`. Aumente-o quando o *formato* do arquivo mudar, não
   quando um número mudar.
 
@@ -123,6 +123,14 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
   2/3); Caixa de Pesca 3.000 → 8.640 (1 dia de pesca online); iscas 120 → 180 tentativas pelo mesmo preço; chance de
   fragmento ÷1,5 (0,43% a 0,67%) e o Passe regerado. Nv.10 em ~20 min online; Nv.1000 com a Tripulação e as Melhorias em
   ~50 / ~91 / ~106 dias (eram ~57 / ~102 / ~119).
+- **Três iscas (12/10/2026, M24-T30, A-161, TD-046):** `equipment.json → baits` tem exatamente Terra Viva (+5%),
+  Maré Viva (+10%) e Ouro de Maré (+15%), 999 tentativas por compra, 23.000 / 100.000 / 200.000 Moedas e 13 / 33 / 55
+  Conchas: por tentativa, ~10% a 20% mais caro que as iscas de antes pelo mesmo bônus. `bait_migration` guarda a versão
+  do modelo de iscas (`bait_model_version`, 2) e as iscas de antes (`legacy_baits`), usadas só para converter um save
+  antigo pelo valor em Moedas. Retorno de cada isca por estágio: `python3 tools/Progressao/simular_iscas.py`
+  (`--precos A,B,C` testa outro custo por tentativa sem mexer no config).
+- **Todo nível custa Moedas e Conchas (M24-T30):** `upgrade_cost.shells_first` das varas e dos barcos precisa ser pelo
+  menos 1; o jogo recusa um config com 0.
 - A Vara 1 custa **2.500** Moedas para comprar. Desde o M24-T13 ela vai até o **Nv.100**: o 1º nível custa **500**
   Moedas e 1 Concha (antes 1.500 e 2), do Nv.1 ao 30 são ~156 mil Moedas e 44 Conchas, e do 1 ao 100 ~1,5 bi Moedas
   e 588 Conchas.

@@ -423,6 +423,14 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 16;
             }
 
+            if (save.SaveVersion == 16)
+            {
+                // v17: the three baits of M24-T30 (A-161). The charges held are of the old baits (model 1): GameSession
+                // converts them to today's, by value, when it loads the save (BaitModelMigration, it needs the config).
+                save.BaitModelVersion = 1;
+                save.SaveVersion = 17;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BoatLevels = save.BoatLevels ?? new Dictionary<string, int>();
             save.BoatFragments = save.BoatFragments ?? new Dictionary<string, long>();

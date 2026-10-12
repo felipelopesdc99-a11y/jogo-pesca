@@ -2527,3 +2527,59 @@ de pesca online". Números em `/config`.
 - **Quem já joga**: nada a migrar. O que foi pescado com o jogo aberto antes de fechar conta no ritmo antigo; o tempo
   fechado conta no ritmo novo (20 s, ou 15 s com VIP); dali em diante, 10 s. A Caixa passa a aceitar 8.640; as iscas
   compradas antes mantêm as tentativas que têm.
+
+### A-161 · Três iscas (+5%, +10%, +15%) com 999 tentativas
+**Seção do GDD:** 7, 22 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Decisão do proprietário em 12/10/2026 (M24-T30): "A ideia é o jogador conseguir ir aumentando essa chance de pesca com
+barco, vara, equipamentos e iscas, todo nível precisa ser gasto moedas e coral, iscas vai ter 3 modelos 5-10-15% de
+chance a mais de capturar/morder, vão ser 999x por compra e vão ficar um pouquinho mais caro, não tanto". Respostas
+dele: "coral" = **Conchas** (a moeda que já existe); as 3 iscas novas **substituem** as de antes. Números em
+`config/equipment.json`.
+
+- **O que a isca faz.** Continua somando pontos à **chance de puxar o peixe** depois que ele morde (Chance de Sucesso da
+  Captura, A-090), junto com a vara e o barco, até o teto de 95%. É o "capturar/morder" do proprietário: não existe outro
+  eixo de chance de mordida que a isca pudesse mexer (a mordida de cada raridade vem do mapa, da vara e do
+  `fishing_bite_multiplier`, A-159), e a isca nunca traz raridade nova.
+- **As três iscas** (Loja → Iscas, no Balcão do Píer). Os nomes são os de antes, na mesma ordem de categoria; nenhum
+  nome novo.
+
+  | Isca | Bônus | Tentativas por compra | Preço | Por tentativa (antes → agora) |
+  |---|---|---|---|---|
+  | Terra Viva | +5% (era +3%) | 999 (eram 180) | 23.000 Moedas + 13 Conchas (era 1.500 + 1) | 8,33 → 23,02 Moedas; 0,0056 → 0,0130 Concha |
+  | Maré Viva | +10% (era +7%) | 999 | 100.000 Moedas + 33 Conchas (era 6.000 + 3) | 33,33 → 100,10 Moedas; 0,0167 → 0,0330 Concha |
+  | Ouro de Maré | +15% (era +10%) | 999 | 200.000 Moedas + 55 Conchas (era 15.000 + 5) | 83,33 → 200,20 Moedas; 0,0278 → 0,0551 Concha |
+
+- **"Um pouquinho mais caro, não tanto".** Pelo mesmo bônus, a tentativa ficou **~10% a 20% mais cara** que antes: +10%
+  custava 83,33 Moedas por tentativa (Ouro de Maré) e agora custa 100,10 (Maré Viva, +20%); +5% ficava em ~20,8 entre as
+  duas primeiras de antes e agora custa 23,02 (+11%); +15% não existia: segue a reta das duas de cima de antes (166,7) +
+  20%. Conchas: +17% a +19% pelo mesmo bônus. Como cada compra rende 999 tentativas, o pacote custa mais (o de Terra Viva
+  ~15× o de antes), mas dura **2,8 h de pesca online** ou **5,5 h offline**.
+- **Sem nível.** Iscas não têm nível nem nível mínimo (A-153): basta ter as Moedas e as Conchas. Comprar de novo soma
+  999 tentativas; só uma isca fica em uso; Usar/Guardar e as tentativas restantes como antes. A pesca offline gasta as
+  tentativas do mesmo jeito; quando acabam, a pesca continua sem isca e o aviso "A isca … acabou" aparece.
+- **"Todo nível custa Moedas e Conchas".** Já era assim: cada nível de cada vara (Nv.1 a 100) e de cada barco com nível
+  custa Moedas e pelo menos 1 Concha (A-099, A-156). Agora isso é regra do config: um `upgrade_cost` com
+  `shells_first` 0 é recusado. Iscas e peixes não ganharam níveis (o nível do peixe vem da alimentação, OD-057).
+- **Vale a pena comprar?** (`tools/Progressao/simular_iscas.py`, relatório em `docs/propostas/iscas_retorno.md`;
+  "retorno" = Moedas a mais da pesca ÷ Moedas gastas na isca, por hora online; não conta o XP a mais nem a Tripulação):
+
+  | Momento | Terra Viva | Maré Viva | Ouro de Maré |
+  |---|---|---|---|
+  | Começo: Lago Sereno, Ponta Selvagem Nv.1, sem barco (~10,6 mil Moedas/h) | 0,12 | 0,06 | 0,04 |
+  | Começo: Rio Selvagem, Ponta Selvagem Nv.10, Remo Valente Nv.1 | 0,95 | 0,44 | 0,33 |
+  | Meio: Costa de Coral, Corrente Mestra Nv.30, Horizonte Dourado Nv.10 | 5,1 | 2,3 | 1,75 |
+  | Meio: Corrente Azul, Atlântico Nobre Nv.30, Quilha Azul Nv.10 | 18 | 6,5 | 4,3 |
+  | Fim: Abismo Atlântico, Soberana Abissal Nv.1, sem barco | 98 | 45 | 34 |
+  | Fim: tudo no Nv.100 | 0 | 0 | 0 |
+
+  No começo a isca não se paga em Moedas (com as iscas de antes também não: Terra Viva dava 0,21 no Lago Sereno); ela
+  dá peixes e XP a mais (+18 a +54 peixes por hora). Do meio em diante as três se pagam várias vezes; a melhor isca traz
+  ~+2 raros ou melhores por hora no meio (8,7 → 10,7) e +8 no fim sem barco (26 → 34). Com a vara e o barco no Nv.100
+  todas as raridades já estão no teto de 95% e a isca não muda nada.
+- **Quem já tinha isca** (save versão 17): ao abrir o jogo atualizado, cada isca antiga com tentativas vira a isca nova
+  de **bônus igual ou o mais próximo acima**: Terra Viva +3% → Terra Viva +5%; Maré Viva +7% → Maré Viva +10%; Ouro de
+  Maré +10% → **Maré Viva +10%**. As tentativas mantêm o **valor em Moedas**, arredondado para cima: tentativas novas =
+  tentativas antigas × preço antigo por tentativa ÷ preço novo por tentativa (por exemplo, 180 de Terra Viva antiga =
+  1.500 Moedas → 66 da nova; 180 de Ouro de Maré antiga = 15.000 → 150 de Maré Viva). A isca em uso continua em uso (a
+  nova equivalente). Não há aviso na tela: a troca aparece na aba Iscas e no Perfil.

@@ -87,20 +87,21 @@ public sealed class CatchSuccessTests
         var dir = TestSupport.NewTempDirectory();
         var clock = new ManualClock(TestSupport.StartMs);
         var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock);
-        game.Session.Save.Coins = 10_000;
+        game.Session.Save.Coins = 100_000;
         game.Session.Save.Shells = 1_000; // every item asks for Conchas (A-099)
         Assert.True(game.Gear.BuyBait("bait_01").Succeeded);
         game.Fishing.StartFishing();
 
-        // Closed for 3 hours: 540 offline attempts (one every 20 s, M24-T27); the bait's 180 charges run out on the way.
-        clock.AdvanceSeconds(3 * 3600);
+        // Closed for 6 hours: 1.080 offline attempts (one every 20 s, M24-T27); the bait's 999 charges (M24-T30) run out on the way.
+        clock.AdvanceSeconds(6 * 3600);
         var (back, _, _) = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock, skipTutorial: false);
         var report = back.Fishing.TakeOfflineReport();
 
         Assert.NotNull(report);
         var update = report.Update;
-        Assert.Equal(540, update.NewCatches.Count + update.Escapes.Count);
-        Assert.InRange(update.Escapes.Count, 210, 322);
+        Assert.Equal(1080, update.NewCatches.Count + update.Escapes.Count);
+        // ~45% escape while the +5% bait lasts (999 attempts), ~50% after it (81).
+        Assert.InRange(update.Escapes.Count, 420, 560);
         Assert.Equal("Terra Viva", update.BaitRanOut);
         Assert.Equal(0, back.Session.Save.BaitCharges["bait_01"]);
         Assert.Null(back.Gear.GetGear().BaitId);
@@ -110,7 +111,7 @@ public sealed class CatchSuccessTests
     public void A_bait_spends_one_charge_per_attempt_caught_or_not()
     {
         var (game, clock, _) = TestSupport.NewGame(TestSupport.RealConfig());
-        game.Session.Save.Coins = 10_000;
+        game.Session.Save.Coins = 1_000_000;
         game.Session.Save.Shells = 1_000; // every item asks for Conchas (A-099)
         var bought = game.Gear.BuyBait("bait_01");
         Assert.True(bought.Succeeded);

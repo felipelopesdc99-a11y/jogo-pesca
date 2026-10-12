@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 16;
+        public const int CurrentVersion = 17;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -104,6 +104,13 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>The bait in use, or null. It spends one charge per fishing attempt while it has any.</summary>
         public string ActiveBaitId { get; set; }
+
+        /// <summary>
+        /// The bait model the charges above belong to (equipment.json → bait_migration.bait_model_version). 1 = the baits before
+        /// M24-T30 (+3/+7/+10%); the game converts them to today's on load (A-161). 0 = nothing to convert (a new player).
+        /// Added in save version 17.
+        /// </summary>
+        public int BaitModelVersion { get; set; }
 
         /// <summary>
         /// The one Cardume: six positions (index 0 = position 1), each an Aquarium fish id or 0 when

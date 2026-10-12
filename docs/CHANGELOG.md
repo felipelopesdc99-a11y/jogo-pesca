@@ -3,6 +3,28 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.53] — 12/10/2026
+
+Três iscas (+5%, +10%, +15%) com 999 tentativas (M24-T30, A-161, TD-046): decisão do proprietário de 12/10/2026.
+Verificado no CI, não aberto no Unity.
+
+### Adicionado
+
+- `equipment.json → bait_migration`: versão do modelo de iscas (2) e as iscas de antes, só para converter saves antigos.
+- Save versão 17 (`bait_model_version`): ao abrir, cada isca antiga com tentativas vira a nova de bônus igual ou o mais
+  próximo acima, com as tentativas pelo valor em Moedas (arredondado para cima); a isca em uso continua em uso.
+- `tools/Progressao/simular_iscas.py` e `docs/propostas/iscas_retorno.md`: custo por hora e retorno de cada isca no
+  começo, no meio e no fim.
+- Testes `ThreeBaitsTests`.
+
+### Mudado
+
+- Iscas: Terra Viva **+5%** (era +3%), Maré Viva **+10%** (era +7%), Ouro de Maré **+15%** (era +10%); **999
+  tentativas** por compra (eram 180); **23.000 Moedas + 13 Conchas**, **100.000 + 33** e **200.000 + 55** (eram 1.500 + 1,
+  6.000 + 3 e 15.000 + 5): por tentativa, ~10% a 20% mais caro que antes pelo mesmo bônus.
+- Validação: todo nível de vara e de barco precisa custar Conchas (`upgrade_cost.shells_first` ≥ 1; já era assim em
+  todos).
+
 ## [0.2.0-m21.52] — 12/10/2026
 
 Pesca a cada 10 s, VIP a cada 15 s fora do jogo e Caixa para 1 dia (M24-T27, A-160, TD-045): decisão do proprietário de

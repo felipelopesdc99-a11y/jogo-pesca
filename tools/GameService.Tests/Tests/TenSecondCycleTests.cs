@@ -280,15 +280,7 @@ public sealed class TenSecondCycleTests
         Assert.Equal(86400 / Config.Fishing.OnlineCycleSeconds, Config.Economy.FishingBox.Capacity, 6);
     }
 
-    [Fact]
-    public void A_bait_pack_has_180_charges_and_lasts_the_same_30_minutes_online()
-    {
-        foreach (var bait in Config.Equipment.Baits)
-        {
-            Assert.Equal(180, bait.Charges);
-            Assert.Equal(120 * OnlineCycleBefore, bait.Charges * Config.Fishing.OnlineCycleSeconds, 6);
-        }
-    }
+    // The 180-charge bait packs of M24-T27 became the 999-attempt baits of M24-T30 (A-161): ThreeBaitsTests.
 
     [Fact]
     public void Boat_fragments_per_hour_stay_about_the_same_as_with_the_15_second_cycle()

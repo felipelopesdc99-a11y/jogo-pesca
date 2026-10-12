@@ -115,6 +115,9 @@ namespace FishingIdle.GameService.Config
 
         public bool TryGetBoat(string id, out BoatConfig boat) => _boats.TryGetValue(id ?? string.Empty, out boat);
         public bool TryGetBait(string id, out BaitConfig bait) => _baits.TryGetValue(id ?? string.Empty, out bait);
+
+        /// <summary>The version of today's baits (equipment.json → bait_migration, M24-T30); 0 when the config names none.</summary>
+        public int BaitModelVersion => Equipment.BaitMigration?.BaitModelVersion ?? 0;
         public MarketFixedPriceConfig Market => Economy.MarketFixedPrice;
         public AuctionConfig Auction => Economy.Auction;
 

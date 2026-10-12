@@ -15,7 +15,7 @@
       "display_name": "Conchas",
       "is_primary": false,
       "spendable_in_v0_1": false,
-      "note": "Na V0.1 não tinham onde ser gastas. Desde a V0.2 compram barcos e iscas (equipment.json, docs/SISTEMA_SUCESSO_PESCA.md). Continuam sem melhorar varas nem peixes."
+      "note": "Na V0.1 não tinham onde ser gastas. Desde a V0.2 compram iscas (equipment.json, docs/SISTEMA_SUCESSO_PESCA.md) e, desde 02/10/2026 (A-099), compram e melhoram varas; todo nível de vara e de barco custa Moedas e Conchas (A-156, regra do proprietário reforçada em 12/10/2026, M24-T30). Não melhoram peixes."
     },
     {
       "id": "honor",

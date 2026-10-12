@@ -844,6 +844,8 @@ namespace FishingIdle.GameService.Config
                         errors.Add(V.NegativeValue(GameConfigLoader.EquipmentFile, bait.Id + " (custo)"));
                     }
                 }
+
+                ValidateBaitMigration(equipment.BaitMigration, errors);
             }
 
             ValidateCrew(crew, errors);
@@ -955,10 +957,37 @@ namespace FishingIdle.GameService.Config
             }
         }
 
-        /// <summary>A level price (M24-T13): something to pay, growth from 1 to 10, and the last level fits a long with room to spare.</summary>
+        /// <summary>The baits before M24-T30 (A-161), kept to convert old saves: a version, and each old bait a usable price.</summary>
+        private static void ValidateBaitMigration(BaitMigrationConfig migration, List<string> errors)
+        {
+            if (migration == null)
+            {
+                return;
+            }
+
+            if (migration.BaitModelVersion < 1)
+            {
+                errors.Add(V.BaitMigrationInvalid("bait_model_version"));
+            }
+
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var bait in migration.LegacyBaits ?? new List<BaitConfig>())
+            {
+                if (bait == null || string.IsNullOrWhiteSpace(bait.Id) || !ids.Add(bait.Id) || bait.CatchSuccessBonus < 0 || bait.CatchSuccessBonus > 1
+                    || bait.Charges < 1 || bait.CostCoins < 0 || bait.CostShells < 0)
+                {
+                    errors.Add(V.BaitMigrationInvalid("legacy_baits (" + (bait?.Id ?? "") + ")"));
+                }
+            }
+        }
+
+        /// <summary>
+        /// A level price (M24-T13): Coins and at least 1 Shell for every level (the owner's rule, M24-T30: every level costs Moedas and
+        /// Conchas), growth from 1 to 10, and the last level fits a long with room to spare.
+        /// </summary>
         private static bool LevelCostValid(LevelCostConfig cost, int maxLevel)
         {
-            if (cost == null || cost.CoinsFirst <= 0 || cost.ShellsFirst < 0
+            if (cost == null || cost.CoinsFirst <= 0 || cost.ShellsFirst < 1
                 || cost.CoinsGrowth < 1 || cost.CoinsGrowth > 10 || cost.ShellsGrowth < 1 || cost.ShellsGrowth > 10)
             {
                 return false;

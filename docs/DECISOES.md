@@ -909,3 +909,29 @@ cenários; andar tentativa por tentativa no offline é o jeito mais simples de o
 
 **Rever se.** O proprietário decidir sobre o bônus de XP do VIP junto com o ciclo mais rápido (OD-065), os ganhos do fim
 do jogo (OD-063) ou os tamanhos especiais por hora (OD-064).
+
+## TD-046 · Iscas antigas convertidas pelo valor, com a tabela antiga no config (12/10/2026)
+
+**Origem.** M24-T30 (A-161): as três iscas novas (+5/+10/+15%, 999 tentativas) substituem as de antes (+3/+7/+10%, 180).
+
+**Decisão.**
+- **Mesmos ids** (`bait_01` a `bait_03`), com os números novos: o save, as telas, a arte (`Iscas/bait_0N`) e os testes
+  continuam apontando para as mesmas chaves. O que muda o significado de um id é a **versão do modelo de iscas**:
+  `equipment.json → bait_migration.bait_model_version` (2) e `PlayerSave.BaitModelVersion`.
+- **Save versão 17**: `SaveMigrations` marca os saves antigos com `BaitModelVersion = 1` (só forma do arquivo); a
+  conversão precisa do config e fica em `Persistence/BaitModelMigration.cs`, chamada pelo `GameSession` ao carregar
+  (como `LevelCurveMigration`, TD-038/TD-041). Jogador novo nasce na versão do config (0 = nada a converter).
+- **Os números antigos ficam no config** (`bait_migration.legacy_baits`: bônus, tentativas e preço de cada isca de
+  antes), não no código: são só para a conta da conversão.
+- **Conversão pelo valor em Moedas** em vez de devolver Moedas e Conchas: assim a isca em uso continua em uso (pedido),
+  ninguém perde valor (arredonda para cima) e não aparece dinheiro que o jogador não pediu. As Conchas não entram na
+  conta porque o preço em Conchas por tentativa subiu na mesma proporção (+17% a +19%) que o de Moedas (+11% a +20%).
+  Alvo = a isca de hoje com bônus igual ou o menor acima (a maior, se nenhuma for maior); várias antigas que vão para a
+  mesma nova somam.
+- **Todo nível custa Conchas**: o validador passou a recusar `upgrade_cost.shells_first` menor que 1 (varas e barcos).
+
+**Por quê.** A conversão por valor é a mais simples que respeita "a isca equipada continua equipada" sem dar nem tirar
+nada; guardar a tabela antiga no config segue a regra de nenhum número de balanceamento no código.
+
+**Rever se.** As iscas mudarem de novo (aumentar `bait_model_version` e trocar `legacy_baits` pelas de então) ou o
+proprietário preferir devolver o valor em Moedas e Conchas.

@@ -208,37 +208,67 @@
       "note": "Nome e descrição sugeridos em 11/10/2026 (M24-T16), temáticos do mapa; o proprietário pode trocar. Bônus: +2 pontos por categoria além do Horizonte Dourado (3× no Nv.100, como os outros); o 1º nível custa ~3× o do barco anterior."
     }
   ],
-  "baits_note": "Cada compra é um pacote de cargas; cada tentativa de pesca (online ou offline) gasta 1 carga da isca em uso, pegando o peixe ou não. Quando as cargas acabam, a pesca continua sem isca. Desde 11/10/2026 (M24-T22, A-159) cada pacote tem 120 cargas (eram 60) pelo mesmo preço: com o ciclo de pesca na metade, a isca dura o mesmo tempo (30 min online) e custa o mesmo por hora. Desde 12/10/2026 (M24-T27, A-160) são 180 cargas (ciclo online de 10 s), pelo mesmo preço: continuam durando 30 min online.",
+  "baits_note": "Desde 12/10/2026 (M24-T30, A-161, decisão do proprietário) são exatamente 3 iscas: +5%, +10% e +15% de chance de puxar o peixe (o mesmo eixo de antes: somam pontos à Chance de Sucesso da Captura, com a vara e o barco, até o máximo de progression.json → fishing → catch_success_max). Cada compra é um pacote de charges = 999 tentativas; cada tentativa de pesca (online ou offline) gasta 1, pegando o peixe ou não. Quando acabam, a pesca continua sem isca. Iscas não têm nível nem nível mínimo (A-153). Preço: o custo POR TENTATIVA fica ~10% a 20% acima do que as iscas de antes cobravam pelo mesmo bônus (antes: +3% = 8,33 Moedas, +7% = 33,33, +10% = 83,33 por tentativa; +5% ficava em ~20,8 entre as duas primeiras; +15% segue a reta da última). Os nomes são os de antes, na mesma ordem de categoria. Retorno por estágio: tools/Progressao/simular_iscas.py.",
   "baits": [
     {
       "id": "bait_01",
       "display_name": "Terra Viva",
       "description": "Simples, barata e eficiente. Um clássico que nunca sai de moda.",
       "tier": 1,
-      "catch_success_bonus": 0.03,
-      "charges": 180,
-      "cost_coins": 1500,
-      "cost_shells": 1
+      "catch_success_bonus": 0.05,
+      "charges": 999,
+      "cost_coins": 23000,
+      "cost_shells": 13
     },
     {
       "id": "bait_02",
       "display_name": "Maré Viva",
       "description": "Um atrativo melhor para peixes mais exigentes.",
       "tier": 2,
-      "catch_success_bonus": 0.07,
-      "charges": 180,
-      "cost_coins": 6000,
-      "cost_shells": 3
+      "catch_success_bonus": 0.1,
+      "charges": 999,
+      "cost_coins": 100000,
+      "cost_shells": 33
     },
     {
       "id": "bait_03",
       "display_name": "Ouro de Maré",
       "description": "Isca artificial de alto nível para maximizar suas chances.",
       "tier": 3,
-      "catch_success_bonus": 0.1,
-      "charges": 180,
-      "cost_coins": 15000,
-      "cost_shells": 5
+      "catch_success_bonus": 0.15,
+      "charges": 999,
+      "cost_coins": 200000,
+      "cost_shells": 55
     }
-  ]
+  ],
+  "bait_migration": {
+    "bait_model_version": 2,
+    "legacy_baits": [
+      {
+        "id": "bait_01",
+        "display_name": "Terra Viva",
+        "catch_success_bonus": 0.03,
+        "charges": 180,
+        "cost_coins": 1500,
+        "cost_shells": 1
+      },
+      {
+        "id": "bait_02",
+        "display_name": "Maré Viva",
+        "catch_success_bonus": 0.07,
+        "charges": 180,
+        "cost_coins": 6000,
+        "cost_shells": 3
+      },
+      {
+        "id": "bait_03",
+        "display_name": "Ouro de Maré",
+        "catch_success_bonus": 0.1,
+        "charges": 180,
+        "cost_coins": 15000,
+        "cost_shells": 5
+      }
+    ],
+    "note": "Iscas de antes de 12/10/2026 (M24-T30, A-161). Um save com bait_model_version menor que este troca, ao abrir, cada isca de legacy_baits que ainda tem tentativas pela isca de hoje de bônus igual ou o mais próximo acima (a de maior bônus, se nenhuma for maior), com as tentativas convertidas pelo valor em Moedas: tentativas novas = tentativas antigas × (cost_coins ÷ charges antigos) ÷ (cost_coins ÷ charges de hoje), arredondado para cima. A isca em uso continua em uso (a nova). legacy_baits guarda os números de antes só para essa conta: não muda nada no jogo de hoje."
+  }
 }

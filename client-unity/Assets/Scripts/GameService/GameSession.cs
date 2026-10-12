@@ -162,6 +162,7 @@ namespace FishingIdle.GameService
                 FisherXpCurveVersion = Config.Progression.Fisher.XpCurveVersion,
                 RodLevelCurveVersion = Config.Rods.UpgradeRules?.LevelCurveVersion ?? 0,
                 FishLevelCurveVersion = Config.Progression.FishLevel.LevelCurveVersion,
+                BaitModelVersion = Config.BaitModelVersion,
                 Crew = new CrewState { LastCreditedAtMs = now },
                 Pass = new PassState { PassId = Config.Pass.PassId },
             };
@@ -272,6 +273,13 @@ namespace FishingIdle.GameService
             if (Save.Pass != null && string.IsNullOrEmpty(Save.Pass.PassId))
             {
                 Save.Pass.PassId = Config.Pass.PassId;
+            }
+
+            // Baits from before M24-T30 become today's, by value; the one in use stays in use (A-161).
+            var baits = Persistence.BaitModelMigration.MoveToCurrentModel(Config, Save);
+            if (baits.BaitsConverted > 0)
+            {
+                _log("Bait model " + Config.BaitModelVersion + ": " + baits.BaitsConverted + " old baits converted to today's.");
             }
 
             if (Save.BaitCharges != null)

@@ -1272,9 +1272,10 @@ namespace FishingIdle.Texts
             public static string DuplicateOrEmptyId(string file, string section, string id) => file + ": em \"" + section + "\" existe um id vazio ou repetido (\"" + (id ?? "") + "\").";
             public static string NegativeValue(string file, string what) => file + ": \"" + what + "\" não pode ter valor negativo.";
             public static string AtLeast(string file, string what, int min) => file + ": \"" + what + "\" precisa ser pelo menos " + min + ".";
+            public static string BaitMigrationInvalid(string what) => "equipment.json: \"bait_migration." + what + "\" está inválido (versão de pelo menos 1; cada isca antiga com id, bônus entre 0 e 1, pelo menos 1 tentativa e custo não negativo).";
             public static string BadPercentileBand(string category) => "progression.json: a categoria de tamanho \"" + category + "\" precisa de percentis entre 0 e 1, com o mínimo menor que o máximo.";
             public static string WeightsSumToZero(string file, string what) => file + ": os pesos de \"" + what + "\" somam zero — nada poderia ser sorteado.";
-            public static string LevelCostInvalid(string file, string item) => file + ": \"" + item + ".upgrade_cost\" precisa de coins_first maior que zero, shells_first ≥ 0 e crescimentos entre 1 e 10, e o último nível precisa custar menos de 1 quintilhão.";
+            public static string LevelCostInvalid(string file, string item) => file + ": \"" + item + ".upgrade_cost\" precisa de coins_first maior que zero, shells_first de pelo menos 1 (todo nível custa Moedas e Conchas) e crescimentos entre 1 e 10, e o último nível precisa custar menos de 1 quintilhão.";
             public static string LevelBonusInvalid(string file, string item) => file + ": os bônus de \"" + item + "\" não podem ser negativos, o do nível máximo precisa ser maior ou igual ao do Nv.1, e a chance de sucesso fica entre 0 e 1.";
             public static string LegacyLevelsInvalid(string file, string item) => file + ": \"" + item + ".legacy_levels_v1\" precisa ter 10 níveis (os níveis 1 a 10 antigos), em ordem crescente, entre 1 e o nível máximo.";
             public static string LevelCurveInvalid(string file, string what) => file + ": \"" + what + "\" precisa de nível máximo entre 1 e 1.000 e expoente da curva entre 0,1 e 10.";

@@ -708,6 +708,19 @@ namespace FishingIdle.GameService.Config
         public BoatFragmentsConfig BoatFragments { get; set; }
         public List<BoatConfig> Boats { get; set; }
         public List<BaitConfig> Baits { get; set; }
+
+        /// <summary>The baits before M24-T30 (A-161) and how a save that still has them moves to today's. Null = nothing to move.</summary>
+        public BaitMigrationConfig BaitMigration { get; set; }
+    }
+
+    /// <summary>
+    /// M24-T30 (A-161): the bait model version of today's baits and the baits of the version before, kept only to convert
+    /// the charges a save still holds (Persistence.BaitModelMigration).
+    /// </summary>
+    public sealed class BaitMigrationConfig
+    {
+        public int BaitModelVersion { get; set; } = 1;
+        public List<BaitConfig> LegacyBaits { get; set; }
     }
 
     public sealed class BoatFragmentsConfig
