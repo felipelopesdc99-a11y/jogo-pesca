@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-12T23:59:00Z",
+  "updated_at": "2026-10-12T21:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -4698,9 +4698,10 @@
           "title": "Teste do Leilão que falha de vez em quando",
           "subsystem": "server",
           "description": "AuctionTests.Being_outbid_returns_the_principal_but_never_the_fee falhou uma vez (PlaceBid recusado) e passou na repetição do mesmo commit. Descobrir a fonte de aleatoriedade e deixar o teste estável. Em 12/10/2026 o mesmo aconteceu com AuctionTests.Bids_and_reserved_coins_survive_a_restart_and_a_retried_bid_after_it (lance recusado, 0 Moedas reservadas) no commit eed1482, que só mudava documentação; o código idêntico passou no commit 1105817.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [],
-          "updated_at": "2026-10-12T15:30:00Z"
+          "updated_at": "2026-10-12T21:00:00Z",
+          "completion_notes": "Causa: semente aleatória do sorteio e leilões de vara de bot acima do orçamento do teste. LocalGame/GameSession aceitam rngSeed; os testes de Leilão e Mercado usam TestSupport.FixedSeed e só escolhem leilões em que lance + taxa cabem no orçamento (commit 24735f1)."
         },
         {
           "id": "M24-T27",
@@ -4889,6 +4890,16 @@
           "dependencies": [],
           "updated_at": "2026-10-12T23:50:00Z",
           "completion_notes": "WindowFrame.cs refeito: véu escuro com leve tom quente, moldura de madeira (tábuas verticais) e folha de papel (#F2E4C4 → #EFDFBB), etiqueta azul-noite com borda dourada no canto (ícone, título e o \"i\" que abre um bilhete \"Como funciona\" em papel), lacre vermelho \"✕\" (CloseSeal), marcadores de aba (Bookmarks, coloridos, o aberto para fora com borda branca), Footer (linha tracejada) e Photo (cena presa na folha). Sem cordas nem balanço (A-148 substituído). UiSkinPaper.cs (novo, UiSkin virou partial): modo papel ligado pela moldura e desligado depois das janelas (DrawInfoBalloon) e nos diálogos; paleta do papel com contraste calculado (tinta #3A2A18 10,9:1, tinta suave #6A4A2A 6,4:1, turquesa #12605D 5,8:1, dourado #7A4E0A 5,7:1, vermelho #9C3022 5,8:1, verde #17603A 6,0:1); UiSkin.Text/Muted/Gold/Accent/RarityColor/SizeColor respondem com a tinta; estilos registrados (Track) trocam texto e fundo (painéis, cartões, chips e botão secundário viram papel); NightScope para cenas escuras; OnSheet para fundos escuros atrás de texto; ícone branco vira tinta no papel (DrawIcon; DrawIconExact para ícone em fundo colorido). Janelas: Ranking (marcadores com \"Você #N\", palco como foto, \"Sua posição\" no rodapé), Mapa (arquipélago como foto), Aquário (Tanque/Cartas como marcadores, tanque e peixe em destaque como foto, cartões em papel), Caixa de Pesca, Mercado (6 marcadores; Moedas e vagas na faixa do título), Loja (5 marcadores no lugar das plaquinhas; parede como foto), Expedição (carta náutica e cartão como foto; retorno no porto em cores noturnas), Arena (4 marcadores; formações, abertura e batalha em cores noturnas), Tripulação/Melhorias (2 marcadores), Passe, Eventos, Boss Mundial (palco como foto), Perfil (5 marcadores, lacre, fundos escuros em papel, formação e Enciclopédia como foto). Pedidos para o ChatGPT em docs/ASSETS_PENDENTES.md. A-170. Verificado no CI; o visual só fica verificado quando o proprietário apertar Play."
+        },
+        {
+          "id": "M24-T45",
+          "title": "Revisão de integridade do jogo inteiro",
+          "subsystem": "repo",
+          "description": "Pedido do proprietário (12/10/2026): \"faça uma revisão em todo o jogo para ver a integridade das coisas\". Três revisões (regras/config/save, telas, documentação) e as correções do que foi encontrado.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-12T21:00:00Z",
+          "completion_notes": "Regras: lucro garantido com peixe de bot fechado (MarketRules.BotFloor, TD-052); somas protegidas contra estouro (SafeMath); save sem versão lido como v1, anúncio de moeda com quantidade ≤ 0 recusado, backup com milissegundos; sinais ClockFrozen e ClothingReady no serviço; textos de config atualizados (Expedições 12% a 45%, balance_status PROVISÓRIO). Telas: atalhos clicáveis com janela aberta, cores de selos/rótulos legíveis no papel, Mercado 1320×840, Bem-vindo de volta com rolagem, nota do relógio atrasado, menos alocação por quadro. Documentação: README, BASE_TECNICA (save v20), config/README, roadmap (tarefas e datas de decisões), SEGURANCA e VERSIONAMENTO. 460 testes passando no CI. Verificado no CI, não aberto no Unity."
         }
       ],
       "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."

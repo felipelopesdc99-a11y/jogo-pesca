@@ -2999,3 +2999,21 @@ Bíblia pede.
   chegarem `ui_diario_madeira`, `ui_diario_papel`, `ui_diario_etiqueta`, `ui_diario_lacre` e `ui_diario_marcador`
   (pedidos em `docs/ASSETS_PENDENTES.md`).
 
+
+*Atualizado em 12/10/2026 (A-171, revisão de integridade): os atalhos redondos da direita ficam clicáveis com uma janela aberta, em vez de cobertos — o clique fecha a janela e abre a do atalho. As janelas nunca cobrem a coluna de atalhos.*
+
+### A-171 · Revisão de integridade: regras da tela com janela aberta
+
+Decidido na revisão de integridade de 12/10/2026 (M24-T45).
+
+- **Atalhos com janela aberta:** continuam clicáveis (trocam de janela). Ficam inertes só quando a janela tem um
+  diálogo próprio aberto, no "Bem-vindo de volta" e na tela de boas-vindas do tutorial. A largura das janelas é
+  limitada para não cobrir a coluna de atalhos.
+- **Faixa de baixo com janela aberta:** o último aviso fica à esquerda do botão da Caixa; a dica do tutorial, à esquerda
+  do aviso. Se não couberem os dois, o aviso espera e continua no histórico do sino.
+- **Faixa de comemoração:** sem janela, os avisos começam abaixo dela; com janela aberta, ela desce para baixo das
+  sub-abas e da etiqueta.
+- **Relógio atrasado:** quando o relógio do computador está mais de 5 minutos atrás do horário salvo, aparece uma nota
+  discreta no canto de baixo à esquerda (só sem janela aberta) dizendo quanto falta para o jogo voltar a andar.
+- **Selos** ("Nv. X", "NOVA ESPÉCIE", "RECORDE", posição no Cardume) usam sempre as cores da noite, com texto escuro
+  sobre o turquesa (cerca de 9:1), para ficarem legíveis tanto no papel quanto nas cenas.

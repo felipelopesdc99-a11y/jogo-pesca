@@ -3,6 +3,29 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.1] — 12/10/2026
+
+Revisão de integridade do jogo inteiro (M24-T45), pedida pelo proprietário. A versão passa a seguir o milestone atual
+(M24), como registrado em `docs/VERSIONAMENTO.md`. Verificado no CI (460 testes), não aberto no Unity.
+
+### Corrigido
+
+- **Mercado:** comprar peixe de bot e vender ao NPC não dá mais lucro garantido. O preço mínimo dos bots é a venda ao
+  NPC com a Freguesia na Feira no máximo + 1 Moeda (TD-052); os peixes de nível baixo dos bots ficam um pouco mais caros.
+- **Somas grandes** (Conchas da pesca, Expedição, revenda de vara, Loja da Arena, anúncio de moeda cancelado, cargas de
+  isca) não estouram mais.
+- **Save:** arquivo sem `save_version` é lido como versão 1; anúncio de Conchas/Dólares com quantidade zero ou negativa é
+  recusado; a cópia de segurança leva milissegundos no nome.
+- **Teste do Leilão** que falhava às vezes (M24-T26) ficou estável.
+- **Telas:** os atalhos redondos continuam clicáveis com uma janela aberta (o clique troca de janela); selos e rótulos
+  coloridos ficam legíveis no papel; Mercado no tamanho das outras janelas; "Bem-vindo de volta" com rolagem; avisos e
+  dica do tutorial não cobrem mais as janelas; "+1 Fragmento de Roupa" no singular; menos trabalho por quadro.
+- **Documentação:** README, base técnica, regras de config, roadmap e segurança descrevem o jogo de hoje.
+
+### Adicionado
+
+- Nota discreta quando o relógio do computador está atrás do horário salvo (o jogo fica parado até ele alcançar).
+
 ## [0.2.0-m21.61] — 12/10/2026
 
 Janelas no padrão "Diário de bordo", escolhido pelo proprietário (M24-T44, A-170). Verificado no CI, não aberto no Unity.
@@ -115,7 +138,7 @@ todos conseguirem atacar, todo dia às 19:00 …"). Verificado no CI, não abert
 ### Adicionado
 
 - **Boss Mundial** (`config/world_boss.json`): todo dia das 19:00 às 19:10, horário de Brasília. Vida infinita; nome
-  sugerido "Leviatã do Abismo" (OD-068). Com o jogo aberto o Cardume ataca sozinho a cada 3 s (até 200 ataques), com a
+  sugerido "Leviatã do Abismo" (OD-069). Com o jogo aberto o Cardume ataca sozinho a cada 3 s (até 200 ataques), com a
   regra de dano da Arena; com o jogo fechado nada conta. Cardume vazio ou em Expedição não ataca.
 - 6 faixas de dano (5% a 95% do dano máximo do dia) com 5 a 60 minutos de renda em Moedas e Conchas, até 3 Fragmentos
   de Roupa e até 3 fragmentos do barco do mapa mais alto liberado; pagas uma vez, às 19:10 ou na próxima abertura.

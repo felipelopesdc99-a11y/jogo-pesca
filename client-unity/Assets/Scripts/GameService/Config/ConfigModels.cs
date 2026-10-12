@@ -1106,7 +1106,7 @@ namespace FishingIdle.GameService.Config
     {
         public int ConfigSchemaVersion { get; set; }
 
-        /// <summary>The boss's name (a suggestion until the owner decides, OD-068).</summary>
+        /// <summary>The boss's name (a suggestion until the owner decides, OD-069).</summary>
         public string DisplayName { get; set; }
         public WorldBossScheduleConfig Schedule { get; set; }
         public WorldBossAttackConfig Attack { get; set; }
