@@ -95,7 +95,8 @@ namespace FishingIdle.Game.UI
             }
 
             var stage = new Rect(area.x, area.y, area.width, StageHeight);
-            var footer = new Rect(area.x, area.yMax - FooterHeight, area.width, FooterHeight);
+            // "Sua posição" is the sheet's footer, under a dashed line (A-169).
+            var footer = WindowFrame.Footer(skin, area, FooterHeight);
             var list = new Rect(area.x, stage.yMax + Gap, area.width, footer.y - Gap - stage.yMax - Gap);
             DrawStage(skin, stage, view);
             DrawList(skin, list, view);
@@ -121,7 +122,7 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>The four lists as bookmarks on the side of the diary (A-180), each with "Você #N".</summary>
+        /// <summary>The four lists as bookmarks on the side of the diary (A-169), each with "Você #N".</summary>
         private void DrawBookmarks(UiSkin skin)
         {
             var labels = new string[Categories.Length];
@@ -152,7 +153,7 @@ namespace FishingIdle.Game.UI
 
         private void DrawStage(UiSkin skin, Rect stage, RankingView view)
         {
-            // A photo of the pier pinned on the diary sheet (A-180): its own dark scene, in night colours.
+            // A photo of the pier pinned on the diary sheet (A-169): its own dark scene, in night colours.
             WindowFrame.Photo(skin, stage);
             using var night = UiSkin.NightScope();
             GUI.DrawTexture(stage, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.97f), 0, 4);
@@ -315,7 +316,7 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                // On the diary sheet: a light note line and a faint brown one, alternating (A-180).
+                // On the diary sheet: a light note line and a faint brown one, alternating (A-169).
                 var fill = odd ? new Color(1f, 1f, 1f, 0.45f) : new Color(UiSkin.PaperLine.r, UiSkin.PaperLine.g, UiSkin.PaperLine.b, 0.2f);
                 GUI.DrawTexture(row, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 10);
             }

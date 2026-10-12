@@ -198,7 +198,7 @@ namespace FishingIdle.Game.UI
             GUI.enabled = !DialogOpen;
             var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f, true);
             // A-148: the fish count is a counter, next to the label; the search (300 + 16) keeps its place. Tanque and
-            // Cartas are bookmarks on the side of the diary (A-180).
+            // Cartas are bookmarks on the side of the diary (A-169).
             if (WindowFrame.Header(skin, panel, GameTexts.Aquarium.Title, null, Icons.Aquarium,
                     GameTexts.Aquarium.Count(_aquarium.Count, _aquarium.Capacity), 316f))
             {
@@ -216,7 +216,7 @@ namespace FishingIdle.Game.UI
                 RefreshShown();
             }
 
-            // Tanque | Cartas (A-145), as bookmarks (A-180).
+            // Tanque | Cartas (A-145), as bookmarks (A-169).
             if (!_feeding)
             {
                 DrawVisualToggle(skin);
@@ -314,7 +314,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // The tank is the window's own scene: a picture on the diary sheet, in night colours (A-180).
+            // The tank is the window's own scene: a picture on the diary sheet, in night colours (A-169).
             var glass = new Rect(right.x, tank.y + 10f, right.width - 10f, tank.height - 20f);
             WindowFrame.Photo(skin, tank);
             using var night = UiSkin.NightScope();
@@ -1263,7 +1263,7 @@ namespace FishingIdle.Game.UI
 
         private void DrawHeroStage(UiSkin skin, Rect rect, FishView fish)
         {
-            // The fish on its pedestal is a dark picture on the sheet (A-180).
+            // The fish on its pedestal is a dark picture on the sheet (A-169).
             WindowFrame.Photo(skin, rect);
             using var night = UiSkin.NightScope();
             var rarity = UiSkin.RarityColor(fish.RarityId);

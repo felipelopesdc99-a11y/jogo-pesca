@@ -166,7 +166,7 @@ namespace FishingIdle.Game.UI
             if (!string.IsNullOrEmpty(m.Footer))
             {
                 var fw = w - coinsWidth - (coinsWidth > 0f ? 8f : 0f);
-                // On the diary sheet (A-180) the bold line is already ink: no tint, so it never goes darker than the ink.
+                // On the diary sheet (A-169) the bold line is already ink: no tint, so it never goes darker than the ink.
                 GUI.contentColor = UiSkin.Paper ? Color.white : Color.Lerp(accent, Color.white, 0.35f);
                 GUI.Label(new Rect(x, bottomRowY, fw, 21), Fit(m.Footer, skin.SmallBold, fw), skin.SmallBold);
                 GUI.contentColor = Color.white;

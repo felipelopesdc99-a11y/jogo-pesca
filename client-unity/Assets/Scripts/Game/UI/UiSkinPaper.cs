@@ -5,7 +5,7 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// The "no papel" variants of the skin: inside a window ("Diário de bordo", addendum A-180) the content sits on
+    /// The "no papel" variants of the skin: inside a window ("Diário de bordo", addendum A-169) the content sits on
     /// light paper, so text turns to dark ink and panels, cards, chips and secondary buttons turn to paper tones.
     /// </summary>
     /// <remarks>
@@ -15,11 +15,11 @@ namespace FishingIdle.Game.UI
     /// answer with the ink palette, and every style registered with <see cref="Track"/> has its text colours and
     /// backgrounds swapped in place, so window styles copied from the skin follow too. Art drawn over a dark scene
     /// inside a window (the aquarium tank, the shop wall, the battle) opens a <see cref="NightScope"/>.
-    /// Every ink colour keeps at least 4.5:1 against the paper (contrasts in docs/GDD_ADENDO.md, A-180).
+    /// Every ink colour keeps at least 4.5:1 against the paper (contrasts in docs/GDD_ADENDO.md, A-169).
     /// </remarks>
     public sealed partial class UiSkin
     {
-        // ------------------------------------------------------------------ the paper palette (A-180)
+        // ------------------------------------------------------------------ the paper palette (A-169)
 
         /// <summary>The sheet: #F2E4C4 at the top, #EFDFBB at the bottom.</summary>
         public static readonly Color PaperFill = Hex(0xF2E4C4), PaperFillBottom = Hex(0xEFDFBB);

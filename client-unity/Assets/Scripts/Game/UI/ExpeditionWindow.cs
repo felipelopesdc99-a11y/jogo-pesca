@@ -203,7 +203,7 @@ namespace FishingIdle.Game.UI
             }
 
             // The nautical chart and its card are the window's own scene: a picture on the diary sheet, in night
-            // colours (A-180).
+            // colours (A-169).
             WindowFrame.Photo(skin, area);
             using var night = UiSkin.NightScope();
             GUI.Box(area, GUIContent.none, skin.PanelSolid);

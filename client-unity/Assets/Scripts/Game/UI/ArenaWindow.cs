@@ -170,7 +170,7 @@ namespace FishingIdle.Game.UI
             // Summary: the player, rank, Energy, Honor.
             DrawHeader(skin, new Rect(area.x, area.y, area.width, 64));
 
-            // The four tabs are bookmarks on the side of the diary (A-180).
+            // The four tabs are bookmarks on the side of the diary (A-169).
             var clicked = WindowFrame.Bookmarks(skin, TabLabels, TabIcons, System.Array.IndexOf(TabOrder, _tab));
             if (clicked >= 0)
             {
@@ -340,7 +340,7 @@ namespace FishingIdle.Game.UI
             var left = new Rect(area.x, panelY, panelW, panelH);
             var right = new Rect(area.xMax - panelW, panelY, panelW, panelH);
 
-            // The formations are dark water panels: night colours inside them (A-180).
+            // The formations are dark water panels: night colours inside them (A-169).
             using (UiSkin.NightScope())
             {
                 DrawFormation(skin, left, _mine, false, headerH, slotW, slotH, rowGap);
@@ -1093,7 +1093,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // The battle is a scene on the diary sheet, in night colours (A-180).
+            // The battle is a scene on the diary sheet, in night colours (A-169).
             WindowFrame.Photo(skin, area);
             using var night = UiSkin.NightScope();
             GUI.Box(area, GUIContent.none, skin.PanelSolid);

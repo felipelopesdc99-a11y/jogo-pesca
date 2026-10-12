@@ -7,14 +7,14 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// The shared look of a full window, the "Diário de bordo" pattern the owner chose on 12/10/2026 (addendum A-180):
+    /// The shared look of a full window, the "Diário de bordo" pattern the owner chose on 12/10/2026 (addendum A-169):
     /// the scene dimmed behind a dark, slightly warm veil; a wooden frame with a sheet of light paper inside; the
     /// title on a navy label with a gold border pinned to the top-left corner; a red seal "✕" on the top-right corner
     /// to close; the window's sub-tabs as coloured bookmarks sticking out of the right side.
     /// </summary>
     /// <remarks>
     /// The sheet turns the skin's paper mode on (<see cref="UiSkin.Paper"/>): everything a window draws on it uses
-    /// dark ink (contrasts in A-180). What used to be the subtitle is split by what it is:
+    /// dark ink (contrasts in A-169). What used to be the subtitle is split by what it is:
     /// <list type="bullet">
     /// <item><b>info</b> — a sentence that explains the menu, behind a round turquoise "i" on the label; clicking it
     /// opens the "Como funciona" note, drawn over the window body by <see cref="DrawInfoBalloon"/>.</item>
@@ -34,11 +34,11 @@ namespace FishingIdle.Game.UI
         private const float ContentTop = 80f, ContentBottom = 24f;
         private const float LabelLeft = -12f, LabelTop = -10f, LabelHeight = 56f;
         private const float LabelPadLeft = 18f, LabelPadRight = 16f, LabelIcon = 32f, LabelIconGap = 10f;
-        private const float SealSize = 54f, SealInset = 20f;
+        private const float SealSize = 54f, SealInset = 24f;
         private const float SideTop = 18f, SideHeight = 46f, SideGap = 12f;
 
         // The bookmarks: how far they stick out of the frame, and their size.
-        private const float BookmarkOut = 72f, BookmarkUnder = 8f, BookmarkTop = 92f, BookmarkGap = 8f, BookmarkIcon = 28f, BookmarkTuck = 8f;
+        private const float BookmarkOut = 96f, BookmarkUnder = 8f, BookmarkTop = 92f, BookmarkGap = 8f, BookmarkIcon = 28f, BookmarkTuck = 8f;
 
         // The "i" on the label and its note.
         private const float InfoSize = 28f, TipWidth = 460f, TipPad = 16f;
@@ -48,7 +48,7 @@ namespace FishingIdle.Game.UI
             SealArt = "UI/ui_diario_lacre", BookmarkArt = "UI/ui_diario_marcador";
 
         /// <summary>Borders kept whole by the 9-slice files (texture pixels; see docs/ASSETS_PENDENTES.md).</summary>
-        private const float WoodArtBorder = 48f, PaperArtBorder = 32f, LabelArtSide = 40f, LabelArtCap = 24f, BookmarkArtSide = 24f;
+        private const float WoodArtBorder = 56f, PaperArtBorder = 32f, LabelArtSide = 40f, LabelArtCap = 24f, BookmarkArtSide = 24f;
 
         // Colours of the drawn fallback (the example the owner chose).
         private static readonly Color WoodFill = Rgb(0x9B673D), WoodSeam = Rgb(0x8A5A33), WoodEdge = Rgb(0x4B301A);
@@ -264,7 +264,7 @@ namespace FishingIdle.Game.UI
             {
                 var icon = icons != null && i < icons.Count ? icons[i] : null;
                 var note = notes != null && i < notes.Count ? notes[i] : null;
-                var textWidth = width - BookmarkUnder - 12f;
+                var textWidth = width - BookmarkUnder - 8f;
                 var labelHeight = _bookmark.CalcHeight(new GUIContent(labels[i]), textWidth);
                 var noteHeight = string.IsNullOrEmpty(note) ? 0f : 16f;
                 var height = 12f + (icon != null ? BookmarkIcon + 2f : 0f) + labelHeight + noteHeight + 10f;
@@ -298,7 +298,7 @@ namespace FishingIdle.Game.UI
                 }
 
                 var cy = tab.y + 12f;
-                var textX = tab.x + BookmarkUnder + 6f;
+                var textX = tab.x + BookmarkUnder + 4f;
                 if (icon != null)
                 {
                     skin.DrawIconExact(new Rect(textX + textWidth / 2f - BookmarkIcon / 2f, cy, BookmarkIcon, BookmarkIcon), icon, Color.white);
@@ -436,7 +436,7 @@ namespace FishingIdle.Game.UI
             var art = ArtAssets.Texture(WoodArt);
             if (art != null)
             {
-                UiSkin.NineSlice(r, art, WoodArtBorder, WoodArtBorder, WoodArtBorder, WoodArtBorder, 0.5f);
+                UiSkin.NineSlice(r, art, WoodArtBorder, WoodArtBorder, WoodArtBorder, WoodArtBorder, Wood / WoodArtBorder);
                 return;
             }
 

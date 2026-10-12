@@ -176,7 +176,7 @@ namespace FishingIdle.Game.UI
             }
 
             // The five tabs are bookmarks on the side of the diary; the pier wall is the window's own scene, a picture on
-            // the sheet in night colours (A-180).
+            // the sheet in night colours (A-169).
             DrawTabs(skin);
             WindowFrame.Photo(skin, area);
             using var night = UiSkin.NightScope();
@@ -388,7 +388,7 @@ namespace FishingIdle.Game.UI
         private static readonly string[] TabLabels = { GameTexts.Gear.TabRods, GameTexts.Gear.TabBoats, GameTexts.Gear.TabClothing, GameTexts.Gear.TabBaits, GameTexts.Vip.Tab };
         private static readonly string[] TabIcons = { Icons.Rod, Icons.Boat, Icons.Star, Icons.Bait, Icons.Dollar };
 
-        /// <summary>The five tabs as bookmarks on the side of the diary (A-180; they were plaques on the beam).</summary>
+        /// <summary>The five tabs as bookmarks on the side of the diary (A-169; they were plaques on the beam).</summary>
         private void DrawTabs(UiSkin skin)
         {
             var clicked = WindowFrame.Bookmarks(skin, TabLabels, TabIcons, System.Array.IndexOf(TabOrder, _tab));

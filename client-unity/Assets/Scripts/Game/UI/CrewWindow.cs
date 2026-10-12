@@ -116,7 +116,7 @@ namespace FishingIdle.Game.UI
         private static readonly string[] TabLabels = { GameTexts.Crew.TabCrew, GameTexts.Crew.TabUpgrades };
         private static readonly string[] TabIcons = { Icons.Boat, Icons.Level };
 
-        /// <summary>"Tripulação | Melhorias" as bookmarks on the side of the diary (A-180).</summary>
+        /// <summary>"Tripulação | Melhorias" as bookmarks on the side of the diary (A-169).</summary>
         private void DrawTabs(UiSkin skin)
         {
             var clicked = WindowFrame.Bookmarks(skin, TabLabels, TabIcons, _tab == Tab.Upgrades ? 1 : 0);

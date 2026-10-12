@@ -172,7 +172,7 @@ namespace FishingIdle.Game.UI
         private static readonly Tab[] TabOrder = { Tab.Buy, Tab.Sell, Tab.Mine, Tab.Auction, Tab.Withdraw, Tab.Currency };
         private static readonly string[] TabIcons = { Icons.Market, Icons.Sell, Icons.Box, Icons.Hourglass, Icons.Arrow, Icons.Dollar };
 
-        /// <summary>The six tabs as bookmarks on the side of the diary (A-180).</summary>
+        /// <summary>The six tabs as bookmarks on the side of the diary (A-169).</summary>
         private void DrawTabs(UiSkin skin)
         {
             var labels = new[]

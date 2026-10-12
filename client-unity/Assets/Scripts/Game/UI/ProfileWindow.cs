@@ -146,7 +146,7 @@ namespace FishingIdle.Game.UI
                 Close();
             }
 
-            // The tabs are bookmarks on the side of the diary (A-180).
+            // The tabs are bookmarks on the side of the diary (A-169).
             var tabIndex = System.Array.IndexOf(TabOrder, _tab == Tab.Equipment ? Tab.Inventory : _tab);
             var clicked = WindowFrame.Bookmarks(skin, TabLabels, TabIcons, tabIndex);
             if (clicked >= 0)
@@ -1157,7 +1157,7 @@ namespace FishingIdle.Game.UI
 
             // A battle line, not a form (owner's request, A-129): one panel like water, a header with the
             // Strength and the 6 places, then the front row and the back row, slightly shifted for depth.
-            // On the diary sheet it is a dark picture in night colours (A-180); the fish list beside it stays on paper.
+            // On the diary sheet it is a dark picture in night colours (A-169); the fish list beside it stays on paper.
             WindowFrame.Photo(skin, formation);
             var nightScope = UiSkin.NightScope();
             GUI.DrawTexture(formation, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.05f, 0.16f, 0.24f, 1f), 0, 16);
@@ -1785,7 +1785,7 @@ namespace FishingIdle.Game.UI
             var rarity = UiSkin.RarityColor(e.RarityId);
 
             // Water backdrop, like the Cardume formation (shared with the Aquarium's card mode, A-145): a dark picture on
-            // the diary sheet, in night colours (A-180).
+            // the diary sheet, in night colours (A-169).
             WindowFrame.Photo(skin, rect);
             using var night = UiSkin.NightScope();
             HeroSheet.Backdrop(skin, rect);

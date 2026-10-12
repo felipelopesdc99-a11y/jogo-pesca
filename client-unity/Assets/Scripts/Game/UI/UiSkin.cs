@@ -18,7 +18,7 @@ namespace FishingIdle.Game.UI
     {
         private static VisualTheme Theme => VisualTheme.Current;
 
-        // On a window sheet (Paper, A-180) each colour answers with its ink twin; see UiSkinPaper.cs.
+        // On a window sheet (Paper, A-169) each colour answers with its ink twin; see UiSkinPaper.cs.
         public static Color Text => Paper ? Ink : Theme.Text;
         public static Color Muted => Paper ? InkSoft : Theme.TextMuted;
         public static Color Accent => Paper ? InkAccent : Theme.Action;
@@ -470,7 +470,7 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// Draws an icon tinted with a colour. Missing icon files draw nothing. On the diary sheet (A-180) a white glyph
+        /// Draws an icon tinted with a colour. Missing icon files draw nothing. On the diary sheet (A-169) a white glyph
         /// would vanish on the paper, so a near-white tint becomes ink (the coloured icons — Moeda, Concha, Dólar — keep
         /// their colours). Icons on a coloured or dark face use <see cref="DrawIconExact"/>.
         /// </summary>

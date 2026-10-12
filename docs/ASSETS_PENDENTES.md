@@ -640,6 +640,57 @@ Pedido pronto para colar no ChatGPT:
 > jogo: um calendário de mesa com as duas argolas em cima e uma pequena estrela de cinco pontas no centro da folha,
 > simples e legível em 24 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_eventos.png
 
+## Janelas "Diário de bordo" (M24-T44, A-169, escolha do proprietário em 12/10/2026)
+
+`ASSET_PENDENTE`. Todas as janelas já funcionam com desenhos provisórios feitos pelo código (`Game/UI/WindowFrame.cs`):
+moldura de madeira, folha de papel, etiqueta do título, lacre de fechar e marcadores das abas. Quando um arquivo
+existir, o jogo passa a usá-lo sozinho. O ícone, o título, o "i", o "✕", os textos dos marcadores e as sombras são do
+código — a arte não deve trazer nada disso. Os arquivos `ui_hdr_placa`, `ui_hdr_corda` e `ui_hdr_argola` (A-148)
+**não são mais usados** e saem do pedido acima.
+
+| Arquivo | O quê | Tamanho | 9 partes (bordas que não esticam) | Desenhado com |
+|---|---|---|---|---|
+| `Arte/UI/ui_diario_madeira.png` | Moldura de madeira | 512×512 | 56 px nos quatro lados | 14 px de borda |
+| `Arte/UI/ui_diario_papel.png` | Folha de papel | 512×512 | 32 px nos quatro lados | cantos de 16 px |
+| `Arte/UI/ui_diario_etiqueta.png` | Etiqueta do título | 512×128 | 40 px dos lados, 24 px em cima e embaixo | 56 px de altura |
+| `Arte/UI/ui_diario_lacre.png` | Lacre de fechar | 128×128 | — (inteiro) | 54×54 px |
+| `Arte/UI/ui_diario_marcador.png` | Marcador de aba (tingido pelo jogo) | 128×192 | 24 px nos quatro lados | 104 px de largura |
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Moldura de madeira para janela de jogo mobile, 512×512 px em PNG com fundo transparente, vista de frente, cantos
+> arredondados (raio 32 px). Tábuas verticais de madeira castanha (#9B673D) com frestas finas mais escuras (#8A5A33),
+> veios suaves, uma borda externa escura (#4B301A) de 6 px e um filete de luz clara no alto. O MIOLO (de 56 a 456 px nas
+> duas direções) pode ser liso, porque fica coberto pelo papel; as faixas das bordas precisam ter veio só na vertical
+> nas laterais e na horizontal em cima e embaixo, porque vão esticar. Sem texto, sem pregos grandes, sem sombra
+> projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, luz suave de cima, aconchegante.
+> Arquivo: ui_diario_madeira.png
+
+> Folha de papel de caderno de pescador para jogo mobile, 512×512 px em PNG com fundo transparente, ocupando a imagem
+> inteira com cantos levemente arredondados (raio 20 px). Papel creme (#F2E4C4 no alto, #EFDFBB embaixo), textura de
+> fibra muito sutil e uniforme, uma sombra marrom bem suave (#7A5A36 a 25%) só nos 12 px das bordas, como se a folha
+> estivesse um pouco por baixo da moldura. Sem linhas pautadas, sem manchas fortes, sem texto, sem dobras. A textura
+> precisa ser uniforme no miolo, porque vai esticar. Estilo "Lago Dourado — Clean Premium": limpo, quente.
+> Arquivo: ui_diario_papel.png
+
+> Etiqueta de título para jogo mobile, 512×128 px em PNG com fundo transparente: uma faixa azul-noite (#16304E, um
+> pouco mais clara no alto, #1D3D60) com borda dourada contínua (#F6B93B) de 5 px e cantos arredondados (raio 18 px);
+> a ponta direita pode ter um pequeno corte em "V" de fita. O miolo (de 40 a 472 px na largura) precisa ser uniforme,
+> porque vai esticar. Sem texto, sem ícone, sem sombra projetada. Estilo "Lago Dourado — Clean Premium".
+> Arquivo: ui_diario_etiqueta.png
+
+> Lacre de cera vermelho visto de cima para jogo mobile, 128×128 px em PNG com fundo transparente: um disco de cera
+> (#B83A2E) com a borda levemente irregular, um brilho mais claro (#E0675A) no alto à esquerda, uma borda fina clara
+> (#FFD2CB) e uma base mais escura (#6B1D16) embaixo dando volume. O centro fica liso: o jogo desenha o "✕" branco
+> por cima. Sem letras, sem símbolos, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": limpo, brilhante.
+> Arquivo: ui_diario_lacre.png
+
+> Marcador de página (aba de caderno) para jogo mobile, 128×192 px em PNG com fundo transparente: uma aba de papel
+> grosso em tons de BRANCO e cinza bem claro (o jogo pinta cada aba de uma cor), reta do lado esquerdo e com os dois
+> cantos do lado direito arredondados (raio 24 px), um filete de luz no alto e uma leve textura de papel. O miolo (de 24
+> a 104 px na largura e de 24 a 168 px na altura) precisa ser uniforme, porque vai esticar. Sem texto, sem ícone, sem
+> sombra projetada. Arquivo: ui_diario_marcador.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).
