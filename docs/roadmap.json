@@ -4503,11 +4503,12 @@
           "title": "Pescador chega ao Nv.1000 mais cedo com varas e barcos no Nv.100",
           "subsystem": "config",
           "description": "Com varas e barcos até 3× mais fortes, a pesca rende mais XP: o Pescador chega ao Nv.1000 em ~50 dias com o jogo aberto, a Tripulação e as Melhorias (antes ~70) e em ~54/101/113 dias só pescando (aberto / 4 vezes / 1 vez por dia; antes ~75/144/168). Decidir se fica assim, se a curva de XP do Pescador fica mais lenta ou se os bônus do Nv.100 diminuem (OD-058).",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M24-T13"
           ],
-          "updated_at": "2026-10-11T05:00:00Z"
+          "updated_at": "2026-10-12T15:45:00Z",
+          "completion_notes": "Resolvido pela decisão do proprietário de 12/10/2026 (\"60 dias pro lvl 1000\", OD-058): em vez de voltar aos ~70 dias de antes, a curva do Pescador foi recalibrada para o Nv.1000 em ~60 dias com o jogo aberto, a Tripulação e as Melhorias (M24-T31, A-162, TD-047). O bônus das varas no Nv.100 não mudou."
         },
         {
           "id": "M24-T16",

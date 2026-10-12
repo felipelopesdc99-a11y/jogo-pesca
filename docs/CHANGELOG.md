@@ -21,6 +21,7 @@ lvl 1000"). Verificado no CI, não aberto no Unity.
 - `tools/Progressao/calibrar_xp.py` mede com a economia atual (pesca a cada 10 s, Tripulação, Melhorias, níveis de vara
   e barco, fragmentos, iscas) e mantém os níveis do começo (`--manter-ate`).
 - `docs/propostas/melhorias.json` e `docs/propostas/passe_fragmentos.json` regerados.
+- OD-058 resolvido (M24-T15 concluída pela curva nova).
 
 ### Adicionado
 
