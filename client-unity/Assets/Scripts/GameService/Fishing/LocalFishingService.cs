@@ -276,6 +276,7 @@ namespace FishingIdle.GameService.Fishing
             update.RodFragments.AddRange(settled.RodFragments);
             update.ClothingFragments += settled.ClothingFragments;
             update.ClothingFragmentsHave = Math.Max(update.ClothingFragmentsHave, settled.ClothingFragmentsHave);
+            update.ClothingReady |= settled.ClothingReady;
             update.ClothingLevels.AddRange(settled.ClothingLevels);
             Save.Fishing.Active = false;
             return true;
@@ -485,6 +486,13 @@ namespace FishingIdle.GameService.Fishing
                 {
                     update.ClothingFragments++;
                     update.ClothingFragmentsHave = Save.Clothing.Fragments;
+
+                    // The moment the fragments reach the next piece: the screen says once that it can be assembled.
+                    var clothingCost = Shop.ClothingRules.NextCost(Config, Save);
+                    if (clothingCost > 0 && Save.Clothing.Fragments >= clothingCost && Save.Clothing.Fragments - 1 < clothingCost)
+                    {
+                        update.ClothingReady = true;
+                    }
                 }
 
                 // Clothing levels up with use: every fish pulled out gives use XP to every assembled piece.
@@ -556,8 +564,8 @@ namespace FishingIdle.GameService.Fishing
             if (rolled.SizeCategory.Id == "exceptional") Save.Stats.ExceptionalCatches++;
             if (rolled.SizeCategory.Id == "perfect") Save.Stats.PerfectCatches++;
             if (!CatchRules.IsCommon(rolled.Species)) Save.Stats.RareCatches++;
-            Save.Shells += rolled.Shells;
-            update.ShellsGained += rolled.Shells;
+            Save.Shells = SafeAdd(Save.Shells, rolled.Shells);
+            update.ShellsGained = SafeAdd(update.ShellsGained, rolled.Shells);
 
             if (grantXp)
             {

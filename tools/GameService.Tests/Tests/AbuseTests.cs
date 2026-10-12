@@ -16,7 +16,7 @@ public sealed class AbuseTests
 {
     private static (LocalGame Game, ManualClock Clock, string Dir) Player(GameConfig config = null, int keep = 6)
     {
-        var (game, clock, dir) = TestSupport.NewGame(config);
+        var (game, clock, dir) = TestSupport.NewGame(config, seed: TestSupport.FixedSeed);
         game.Fishing.StartFishing();
         TestSupport.PlayFor(game, clock, 900, stepSeconds: 30);
         game.Fishing.StopFishing();
@@ -61,10 +61,10 @@ public sealed class AbuseTests
     }
 
     [Fact]
-    public void A_rod_on_the_market_still_counts_as_owned_and_bots_never_pay_more_than_a_new_one()
+    public void A_rod_on_the_market_still_counts_as_owned_and_bots_never_pay_more_than_its_market_reference()
     {
-        // Buying a rod in the Shop and reselling it to the simulated buyers above the Shop price used to
-        // create coins, and a listed rod could be bought again right away.
+        // Rods come from fragments (M24-T32); the simulated buyers pay at most the rod's market reference plus the
+        // upgrades already done, and a listed rod is still the player's (its fragments stay extras).
         var (game, _, _) = Player();
         game.Session.Save.FisherLevel = 10;
         game.Session.Save.Shells = 1_000;
@@ -209,8 +209,10 @@ public sealed class AbuseTests
         game.Market.ListFish(ids[3], 12345);
         game.Market.Buy(game.Market.Search(new MarketQuery()).First().ListingId);
         game.Auctions.StartAuction(true, ids[4], 50);
-        var open = game.Auctions.GetAuctions().Open.First();
-        game.Auctions.PlaceBid(open.AuctionId, open.MinNextBidCoins);
+        // Rod auctions of the simulated sellers can start above the budget: bid on one that fits (M24-T26).
+        var open = game.Auctions.GetAuctions().Open.First(a => a.MinNextBidCoins * 2 <= game.Player.GetPlayer().Coins);
+        var placed = game.Auctions.PlaceBid(open.AuctionId, open.MinNextBidCoins);
+        Assert.True(placed.Succeeded, placed.ErrorMessage);
         game.Expeditions.Start(game.Expeditions.GetExpeditions().Expeditions.First().ExpeditionId);
         game.Fishing.StartFishing();
         TestSupport.PlayFor(game, clock, 60, stepSeconds: 30);

@@ -396,8 +396,8 @@ namespace FishingIdle.GameService.Market
             var seller = RandomTraderName(rng);
             var goods = NewBotGoods(rng, supply.RodListingChance, listedAt);
 
-            // Never below what the game pays, so buying a simulated listing to resell it to the game never profits.
-            var floor = MarketRules.NpcValue(Config, goods) + 1;
+            // Never below what the game could pay, so buying a simulated listing to resell it to the game never profits (TD-052).
+            var floor = MarketRules.BotFloor(Config, goods);
             var reference = MarketRules.ReferenceValue(Config, goods);
             var ratio = supply.PriceRatio.Min + rng.NextDouble() * (supply.PriceRatio.Max - supply.PriceRatio.Min);
             var price = Math.Max(floor, (long)Math.Round(reference * ratio, MidpointRounding.AwayFromZero));

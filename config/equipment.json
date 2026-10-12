@@ -1,7 +1,7 @@
 {
   "config_file": "equipment.json",
   "config_schema_version": 1,
-  "balance_status": "provisional",
+  "balance_status": "PROVISÓRIO",
   "description": "Barcos e iscas (docs/SISTEMA_SUCESSO_PESCA.md). Os dois só aumentam a Chance de Sucesso da Captura, somando pontos percentuais à chance-base da raridade (progression.json → rarity.tiers → catch_success_base) e aos da vara (rods.json → catch_success). Desde 11/10/2026 (M24-T16, A-157) os barcos não são vendidos: cada barco é ligado a um mapa (map_id) e é montado com fragmentos que caem pescando naquele mapa. Iscas continuam na Loja, sem nível mínimo (M24-T09, A-153). Todos os números são provisórios. Desde 12/10/2026 (M24-T33, A-164) existem também as roupas (clothing): 5 peças montadas com Fragmentos de Roupa, que caem em todos os mapas.",
   "boat_levels": {
     "max_level": 100,

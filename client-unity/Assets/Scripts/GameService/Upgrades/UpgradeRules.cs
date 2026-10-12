@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Crew;
 using FishingIdle.GameService.Persistence;
@@ -160,6 +161,24 @@ namespace FishingIdle.GameService.Upgrades
 
         /// <summary>The Freguesia na Feira: what the NPC sale price of every fish (Fishing Box and Aquarium) is multiplied by.</summary>
         public static double FishSaleMultiplier(GameConfig config, UpgradesState upgrades) => 1.0 + EffectTotal(config, upgrades, UpgradeEffects.FishSale);
+
+        /// <summary>
+        /// The Freguesia na Feira at its max level: the most any player's NPC sale of an Aquarium fish can be multiplied by.
+        /// The simulated Market and Auctions never sell below it (TD-052).
+        /// </summary>
+        public static double MaxFishSaleMultiplier(GameConfig config)
+        {
+            var total = 0.0;
+            foreach (var upgrade in config.Upgrades?.GeneralUpgrades ?? new List<GeneralUpgradeConfig>())
+            {
+                if (string.Equals(upgrade.Effect, UpgradeEffects.FishSale, StringComparison.Ordinal))
+                {
+                    total += Math.Max(0, upgrade.MaxLevel) * upgrade.ValuePerLevel;
+                }
+            }
+
+            return 1.0 + Math.Max(0.0, total);
+        }
 
         /// <summary>The Maré Boa: what the Moedas of selling the Fishing Box are multiplied by.</summary>
         public static double FishingCoinsMultiplier(GameConfig config, UpgradesState upgrades) => 1.0 + EffectTotal(config, upgrades, UpgradeEffects.FishingCoins);

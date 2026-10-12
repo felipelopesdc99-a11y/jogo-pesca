@@ -1101,3 +1101,28 @@ CI (TD-044) compila contra o Unity 2021.3 e passa os testes; o problema prováve
 - Os fragmentos que o barco removido custou para montar também voltam (como fragmentos do barco do mesmo mapa): sem
   isso, o esforço de montar um barco 6 a 10 se perderia; as Moedas e Conchas cobrem só os níveis.
 
+
+## TD-052 · Revisão de integridade das regras e do save (12/10/2026)
+
+**Origem.** Revisão de integridade das regras, do config e do save de 12/10/2026.
+
+**Decisão.**
+- **Piso dos bots no Mercado e no Leilão.** O preço de um anúncio de bot e o lance inicial de um leilão de bot nunca
+  ficam abaixo de `MarketRules.BotFloor`: para um peixe, o preço de venda ao NPC com a Freguesia na Feira no **nível
+  máximo** (`UpgradeRules.MaxFishSaleMultiplier`, hoje ×2) + 1 Moeda; para uma vara, o valor de revenda + 1. Antes o
+  piso ignorava as Melhorias, e comprar um peixe de bot e vendê-lo no Aquário dava lucro. Usar o máximo (e não o nível
+  atual do jogador) fecha também o caso de comprar agora e melhorar depois; o custo é que os peixes de nível baixo dos
+  bots ficam um pouco mais caros. Anúncios já criados num save antigo seguem até vencer (48 h).
+- **Somas que não estouram.** `Core/SafeMath` (`Add` para long, `AddCount` para as cargas de isca em int): uma soma que
+  passaria do topo para no topo, em vez de virar negativa (o validador recusaria gravar o save).
+- **Save sem `save_version`.** Lido como versão 1 (`DefaultValue(1)` + `DefaultValueHandling.Populate`), então passa
+  por todas as migrações em vez de pular todas. Um save novo continua nascendo na versão atual. O validador recusa
+  anúncios de Conchas/Dólares com quantidade ≤ 0. As cópias postas de lado levam milissegundos no nome.
+- **Sinal de relógio congelado.** O TD-030 continua (o tempo do jogo nunca volta). `GameSession.ClockFrozenSeconds` diz
+  quantos segundos o tempo do jogo está à frente do relógio do PC, e `GameSession.ClockFrozen` fica verdadeiro acima de
+  5 minutos (`ClockFrozenWarningSeconds`, um limite de aviso, não de balanceamento), para a tela avisar o jogador.
+- **Sinal de roupa pronta.** `FishingUpdate.ClothingReady` (um fragmento desta atualização alcançou o custo da próxima
+  peça) e `ClothingView.CanAssemble` (os fragmentos pagam a próxima peça): a regra sai da tela e fica no serviço.
+- **Semente fixa nos testes.** `LocalGame.Start(..., rngSeed)` e `TestSupport.NewGame(seed:)` aceitam uma semente para um
+  jogador novo; os testes do Mercado e do Leilão usam `TestSupport.FixedSeed` e escolhem leilões que cabem no orçamento
+  (M24-T26: o teste falhava às vezes quando a semente sorteava leilões de vara acima dos 10 milhões).

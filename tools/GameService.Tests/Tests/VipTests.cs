@@ -87,7 +87,7 @@ public sealed class VipTests
     }
 
     [Fact]
-    public void Every_10_fisher_levels_give_10_dollars_in_the_pass()
+    public void Fisher_level_10_gives_its_10_dollars_in_the_free_track_of_the_pass()
     {
         // A-111 moved to the free track of the Passe do Pescador (M24-T17, A-158): the level-up pays nothing by itself.
         var (game, clock, _) = TestSupport.NewGame();

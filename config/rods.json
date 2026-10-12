@@ -11,9 +11,10 @@
     "purchase_model": "Pagar Moedas e Conchas para comprar o próximo nível diretamente.",
     "has_xp_bar": false,
     "has_failure_chance": false,
+    "reference_keys_note": "Referência: o jogo não lê has_failure_chance nem uses_shells (melhorar não falha, e cada nível pede as Conchas de upgrade_cost).",
     "requires_materials": false,
     "uses_shells": true,
-    "uses_shells_note": "Desde 02/10/2026 (A-099) comprar e melhorar varas pede Conchas além das Moedas.",
+    "uses_shells_note": "Desde 02/10/2026 (A-099) melhorar varas pede Conchas além das Moedas. Desde 12/10/2026 (M24-T32) as varas não são compradas: vêm de fragmentos.",
     "bonus_curve_exponent": 1.2,
     "level_curve_version": 2,
     "level_curve_note": "Desde 10/10/2026 (M24-T13, A-156) as varas vão até o Nv.100. Cada vara guarda o bônus do Nv.1 (bonuses_at_level_1, o de antes) e o do Nv.100 (bonuses_at_max_level, ~3× o Nv.10 de antes); o bônus no nível N é Nv.1 + (Nv.100 − Nv.1) × ((N − 1) ÷ 99) ^ bonus_curve_exponent. Melhorar de N para N + 1 custa coins_first × coins_growth ^ (N − 1) Moedas e shells_first × shells_growth ^ (N − 1) Conchas, arredondados (abaixo de 1.000 para o inteiro; acima, para 3 algarismos). legacy_levels_v1 diz para qual nível novo vai uma vara que estava no nível 1 a 10 da curva antiga (o menor com bônus maior ou igual; level_curve_version 1). Números gerados por tools/Progressao/niveis_100.py."
@@ -107,7 +108,7 @@
       "npc_resale": {
         "base_value_ratio": 0.4,
         "upgrade_investment_ratio": 0.25,
-        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
+        "note": "A revenda ao NPC devolve 40% do que a vara custou (0 numa vara montada com fragmentos, desde 12/10/2026, M24-T32; só as compradas antes têm custo) mais 25% do total de Moedas gasto nas melhorias de nível interno."
       },
       "tradable_on_market": true,
       "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus.",
@@ -165,7 +166,7 @@
       "npc_resale": {
         "base_value_ratio": 0.4,
         "upgrade_investment_ratio": 0.25,
-        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
+        "note": "A revenda ao NPC devolve 40% do que a vara custou (0 numa vara montada com fragmentos, desde 12/10/2026, M24-T32; só as compradas antes têm custo) mais 25% do total de Moedas gasto nas melhorias de nível interno."
       },
       "tradable_on_market": true,
       "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus.",
@@ -224,7 +225,7 @@
       "npc_resale": {
         "base_value_ratio": 0.4,
         "upgrade_investment_ratio": 0.25,
-        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
+        "note": "A revenda ao NPC devolve 40% do que a vara custou (0 numa vara montada com fragmentos, desde 12/10/2026, M24-T32; só as compradas antes têm custo) mais 25% do total de Moedas gasto nas melhorias de nível interno."
       },
       "tradable_on_market": true,
       "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus.",
@@ -283,7 +284,7 @@
       "npc_resale": {
         "base_value_ratio": 0.4,
         "upgrade_investment_ratio": 0.25,
-        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
+        "note": "A revenda ao NPC devolve 40% do que a vara custou (0 numa vara montada com fragmentos, desde 12/10/2026, M24-T32; só as compradas antes têm custo) mais 25% do total de Moedas gasto nas melhorias de nível interno."
       },
       "tradable_on_market": true,
       "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus.",
@@ -343,7 +344,7 @@
       "npc_resale": {
         "base_value_ratio": 0.4,
         "upgrade_investment_ratio": 0.25,
-        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
+        "note": "A revenda ao NPC devolve 40% do que a vara custou (0 numa vara montada com fragmentos, desde 12/10/2026, M24-T32; só as compradas antes têm custo) mais 25% do total de Moedas gasto nas melhorias de nível interno."
       },
       "tradable_on_market": true,
       "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus.",

@@ -266,7 +266,7 @@ namespace FishingIdle.GameService.Persistence
 
     internal sealed class UtcTimestamp : IClockTimestamp
     {
-        public string Now() => DateTime.UtcNow.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture);
+        public string Now() => DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     /// <summary>Upgrades older save formats in place. Each future format change adds one step here.</summary>
@@ -556,6 +556,7 @@ namespace FishingIdle.GameService.Persistence
 
                 if (save.Market.MyListings.Concat(save.Market.BotListings).Any(l => l != null && l.PriceCoins < 0)) problems.Add("market negative price");
                 if (save.Market.Auctions.Any(a => a != null && (a.HighestBidCoins < 0 || a.StartingBidCoins < 0))) problems.Add("auction negative bid");
+                if (save.Market.CurrencyListings != null && save.Market.CurrencyListings.Any(l => l == null || l.Amount <= 0 || l.PriceCoins < 0)) problems.Add("currency listing without amount");
             }
 
             if (save.Expedition == null) problems.Add("expedition missing");

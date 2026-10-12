@@ -17,6 +17,11 @@ import sys
 
 from PIL import Image
 
+
+def br(value, digits):
+    """Number with a decimal comma, for the messages the owner reads (PT-BR)."""
+    return ("%.*f" % (digits, value)).replace(".", ",")
+
 OUT = os.path.join(os.path.dirname(__file__), "..", "..", "client-unity", "Assets", "Resources", "Arte", "UI")
 ALPHA_MIN = 8
 
@@ -116,14 +121,14 @@ def main():
     medallion = square(load(folder, "medalhao"), 256)
     save(medallion, "ui_exp_medalhao")
     a, b = hole(medallion, 128, 128)
-    print("  medallion hole: %.3f of the frame (diameter)" % ((b - a + 1) / 256))
+    print("  furo do medalhão: %s da moldura (diâmetro)" % br((b - a + 1) / 256, 3))
 
     # Mission card frame: about 400 x 600, real proportion.
     card = by_height(trimmed(load(folder, "moldura_carta")), 600)
     save(card, "ui_exp_moldura_carta")
     a, b = hole(card, card.width // 2, card.height // 2)
     c, d = hole(card, card.width // 2, card.height // 2, horizontal=False)
-    print("  card inset: left %.3f right %.3f top %.3f bottom %.3f" % (a / card.width, 1 - (b + 1) / card.width, c / card.height, 1 - (d + 1) / card.height))
+    print("  margem da carta: esquerda %s, direita %s, topo %s, base %s" % (br(a / card.width, 3), br(1 - (b + 1) / card.width, 3), br(c / card.height, 3), br(1 - (d + 1) / card.height, 3)))
 
     # Compass: 320 px tall, real proportion. The dial (dark disc) and the seal's plain face were measured by eye
     # (ExpeditionWindow.CompassDial and SealFace): check them if this art changes.

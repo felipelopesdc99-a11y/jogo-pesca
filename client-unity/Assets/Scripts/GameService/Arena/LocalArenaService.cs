@@ -556,11 +556,11 @@ namespace FishingIdle.GameService.Arena
             State.Honor -= item.PriceHonor;
             if (item.Reward.Currency == "dollars")
             {
-                Save.Dollars += item.Reward.Amount;
+                Save.Dollars = SafeMath.Add(Save.Dollars, item.Reward.Amount);
             }
             else
             {
-                Save.Shells += item.Reward.Amount;
+                Save.Shells = SafeMath.Add(Save.Shells, item.Reward.Amount);
             }
 
             State.ShopPurchasesMs = State.ShopPurchasesMs ?? new Dictionary<string, List<long>>();

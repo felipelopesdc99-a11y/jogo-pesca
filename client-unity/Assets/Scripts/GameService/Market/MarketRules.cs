@@ -27,6 +27,28 @@ namespace FishingIdle.GameService.Market
         }
 
         /// <summary>
+        /// The lowest price a simulated seller asks (listing or starting bid): one coin above the most the game could ever
+        /// pay for the goods. For a fish that is the NPC price with the Freguesia na Feira at its max level, so buying from
+        /// a simulated seller and selling to the game never profits, whatever upgrades the player has now or later (TD-052).
+        /// </summary>
+        public static long BotFloor(GameConfig config, MarketGoods goods)
+        {
+            long npc;
+            if (goods.Kind == MarketGoods.KindFish)
+            {
+                npc = config.TryGetSpecies(goods.Fish.SpeciesId, out var species)
+                    ? CatchRules.SalePrice(config, species, goods.Fish.SizeMm, FishingIdle.GameService.Upgrades.UpgradeRules.MaxFishSaleMultiplier(config))
+                    : 0;
+            }
+            else
+            {
+                npc = NpcValue(config, goods);
+            }
+
+            return npc >= long.MaxValue - 1 ? long.MaxValue : npc + 1;
+        }
+
+        /// <summary>
         /// What the local simulated market considers fair (market_bots.json → valuation). Only the
         /// simulation uses it; real players will set their own prices.
         /// </summary>
@@ -58,9 +80,9 @@ namespace FishingIdle.GameService.Market
         }
 
         /// <summary>
-        /// The most a simulated buyer pays: for a rod, what the same rod costs new in the Shop plus the
-        /// upgrades already done (nobody pays more for a used rod than for a new one; otherwise buying in
-        /// the Shop and reselling would create coins). Fish have no such limit.
+        /// The most a simulated buyer pays: for a rod, its market reference (acquisition.market_reference_coins)
+        /// plus the upgrades already done. Rods come from fragments (M24-T32); the ceiling keeps the simulated
+        /// buyers from paying more than the rod is worth. Fish have no such limit.
         /// </summary>
         public static long MaxBotPrice(GameConfig config, MarketGoods goods)
         {

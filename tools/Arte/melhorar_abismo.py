@@ -18,6 +18,11 @@ import numpy as np
 from PIL import Image
 from scipy import ndimage
 
+
+def br(value, digits):
+    """Number with a decimal comma, for the messages the owner reads (PT-BR)."""
+    return ("%.*f" % (digits, value)).replace(".", ",")
+
 FOLDER = os.path.join(os.path.dirname(__file__), "..", "..", "client-unity", "Assets", "Resources", "Arte", "Mapas", "AbismoAtlantico")
 PREFIX = "map_abismo_atlantico_"
 
@@ -102,7 +107,7 @@ def fix_sky():
 
     a[..., :3] = rgb
     Image.fromarray(a.astype(np.uint8), "RGBA").save(path("bg_sky"), optimize=True)
-    print("sky: top rows rebuilt =", top, "· seams =", cuts)
+    print("céu: linhas do topo refeitas =", top, "· emendas =", cuts)
 
 
 def fix_layer(layer, gamma, gain, glow_top=None):
@@ -115,7 +120,7 @@ def fix_layer(layer, gamma, gain, glow_top=None):
         rgb = np.clip(rgb + np.array(glow_top, dtype=np.float32) * rows ** 3, 0, 255)
     a[..., :3] = rgb
     Image.fromarray(a.astype(np.uint8), "RGBA").save(path(layer), optimize=True)
-    print(layer, "lifted")
+    print(layer, "clareada")
 
 
 def main():

@@ -315,7 +315,7 @@ namespace FishingIdle.GameService.Profile
 
             var value = RodRules.ResaleValue(rod, item);
             Save.Inventory.Remove(item);
-            Save.Coins += value;
+            Save.Coins = SafeMath.Add(Save.Coins, value);
             _session.Persist();
             _session.Log("Sold rod item " + item.Id + " for " + value + " coins.");
             return ServiceResult<SaleResult>.Ok(new SaleResult { Count = 1, CoinsGained = value, NewBalance = Save.Coins });

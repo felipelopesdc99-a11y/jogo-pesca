@@ -193,6 +193,22 @@ public sealed class MoreFishFewerRaresTests
             Assert.InRange(now / before, 0.9, 1.1);
             Assert.InRange(boat.FragmentDropChance, FragmentChanceBefore[boat.Id] * 0.25, FragmentChanceBefore[boat.Id] * 0.37);
         }
+
+        // Maps 6 to 10 drop the fragments of boats 1 to 5 (extra_fragment_maps, M24-T42) with the chance the removed boat
+        // of that map had: the same pace per hour.
+        foreach (var extra in Config.Equipment.Boats.Where(b => b.ExtraFragmentMaps != null).SelectMany(b => b.ExtraFragmentMaps))
+        {
+            var map = Map(extra.MapId);
+            var removed = "boat_" + extra.MapId.Substring("map_".Length);
+            var rod = Config.Rods.Rods.OrderBy(r => r.Tier).First(r => r.Tier >= map.MinimumRodTier);
+            var pulledBefore = PulledPerAttempt(map, rod, 1, 0, fishing: false).Values.Sum();
+            var pulledNow = PulledPerAttempt(map, rod, 1, 0, fishing: true).Values.Sum();
+            var before = 3600 / OnlineCycleBefore * pulledBefore * FragmentChanceBefore[removed];
+            var now = 3600 / Config.Fishing.OnlineCycleSeconds * pulledNow * extra.FragmentDropChance;
+
+            Assert.InRange(now / before, 0.9, 1.1);
+            Assert.InRange(extra.FragmentDropChance, FragmentChanceBefore[removed] * 0.25, FragmentChanceBefore[removed] * 0.37);
+        }
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Market;
 using FishingIdle.GameService.Persistence;
 using Xunit;
 
@@ -73,6 +74,52 @@ public sealed class SaveTests
         Assert.Equal(SaveLoadStatus.Unrecoverable, reopened.Session.LoadStatus);
         Assert.Equal(0, reopened.Player.GetPlayer().Coins);
         Assert.Equal(2, Directory.GetFiles(saveDir, "*.corrupt-*.json").Length);
+    }
+
+    [Fact]
+    public void A_save_without_save_version_runs_every_migration_instead_of_skipping_them()
+    {
+        // Review of 12/10/2026: a missing save_version used to read as the current version and skip every migration.
+        var read = Newtonsoft.Json.JsonConvert.DeserializeObject<PlayerSave>("{ \"player_id\": \"x\" }", FishingIdle.GameService.Config.JsonSettings.Default);
+        Assert.Equal(1, read!.SaveVersion);
+        Assert.Equal(PlayerSave.CurrentVersion, new PlayerSave().SaveVersion);
+
+        var (game, clock, saveDir) = TestSupport.NewGame();
+        game.Session.Persist();
+        var path = Path.Combine(saveDir, JsonFilePlayerRepository.SaveFileName);
+        var json = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(path));
+        json.Remove("save_version");
+        File.WriteAllText(path, json.ToString());
+
+        var (reopened, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
+
+        Assert.NotEqual(SaveLoadStatus.Unrecoverable, reopened.Session.LoadStatus);
+        Assert.Equal(PlayerSave.CurrentVersion, reopened.Session.Save.SaveVersion);
+    }
+
+    [Fact]
+    public void A_currency_listing_without_an_amount_is_not_trusted()
+    {
+        var (game, clock, saveDir) = TestSupport.NewGame();
+        game.Session.Save.Shells = 100;
+        Assert.True(game.CurrencyTrade.ListCurrency(CurrencyKind.Shells, 30, 6000).Succeeded);
+        foreach (var file in new[] { JsonFilePlayerRepository.SaveFileName, JsonFilePlayerRepository.BackupFileName })
+        {
+            var path = Path.Combine(saveDir, file);
+            var json = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(path));
+            json["market"]!["currency_listings"] = Newtonsoft.Json.Linq.JArray.Parse("[{ \"id\": 1, \"currency\": \"shells\", \"amount\": 0, \"price_coins\": 10 }]");
+            File.WriteAllText(path, json.ToString());
+        }
+
+        var (reopened, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
+
+        Assert.Equal(SaveLoadStatus.Unrecoverable, reopened.Session.LoadStatus);
+    }
+
+    [Fact]
+    public void The_name_of_a_copy_set_aside_carries_milliseconds()
+    {
+        Assert.Matches(@"^\d{8}-\d{6}-\d{3}$", new UtcTimestamp().Now());
     }
 
     [Fact]

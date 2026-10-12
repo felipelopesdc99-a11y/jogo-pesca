@@ -16,6 +16,12 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
         public const int CurrentVersion = 20;
 
+        /// <remarks>
+        /// A file without save_version is read as version 1, so it runs every migration instead of skipping them all
+        /// (review of 12/10/2026). A new save still starts at <see cref="CurrentVersion"/>.
+        /// </remarks>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [System.ComponentModel.DefaultValue(1)]
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
         public string PlayerName { get; set; }

@@ -8,7 +8,7 @@
     "xp_curve_version": 3,
     "xp_curve_version_note": "Sobe a cada troca de curva que muda o nível de quem já joga. Ao abrir um save de uma curva mais antiga, o jogo converte o XP total acumulado para o nível equivalente na curva atual, sem nunca baixar o nível (M24-T03, TD-038). Versão 1: Nv.1 ao Nv.100 (A-109). Versão 2: Nv.1 ao Nv.1000 (A-153). Versão 3: os níveis 1 a 99 iguais aos da versão 2 e o resto esticado para o Nv.1000 em ~60 dias (M24-T31, A-162).",
     "calibration_target": {
-      "profile": "quem deixa o jogo aberto o dia todo (só online), com a Tripulação e as Melhorias, sem o Passe do Pescador e sem VIP (tools/Progressao/simular_melhorias.py, perfil sempre_aberto)",
+      "profile": "quem deixa o jogo aberto o dia todo (só online), com a Tripulação e as Melhorias, sem roupas, sem o Passe do Pescador e sem VIP (tools/Progressao/simular_melhorias.py, perfil sempre_aberto). Com as roupas (M24-T33), o Nv.1000 vem em ~55 dias; o proprietário decidiu manter assim (OD-067).",
       "kept_levels_below": 100,
       "level_10_online_minutes": 20,
       "level_100_days": 0.5,
@@ -4039,7 +4039,8 @@
       "formula": "máximo(minimo, base × nível^expoente), arredondado para o múltiplo de 5 mais próximo",
       "base": 0.11,
       "exponent": 2.0,
-      "minimum": 5
+      "minimum": 5,
+      "note": "Referência do formato original. A tabela xp_table abaixo é a que vale: o jogo lê só ela, e esta fórmula não a reproduz."
     },
     "total_xp_level_1_to_max": 36160,
     "legacy_levels_v1": [

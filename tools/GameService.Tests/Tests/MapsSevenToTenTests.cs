@@ -45,11 +45,19 @@ public sealed class MapsSevenToTenTests
     }
 
     [Fact]
-    public void Rods_4_and_5_can_be_bought_at_any_level_with_the_money()
+    public void Rods_4_and_5_are_assembled_from_their_fragments_at_any_level()
     {
-        // M24-T09: no minimum level; the map still asks for its level (Each_map_needs_its_level_and_its_rod).
-        TestSupport.GiveRod(Player(1, "rod_01", "rod_02", "rod_03"), "rod_04");
-        TestSupport.GiveRod(Player(1, "rod_01", "rod_02", "rod_03", "rod_04"), "rod_05");
+        // M24-T09 / M24-T32: no minimum level; the map still asks for its level (Each_map_needs_its_level_and_its_rod).
+        var four = Player(1, "rod_01", "rod_02", "rod_03");
+        var gainFour = TestSupport.GiveRod(four, "rod_04");
+        var five = Player(1, "rod_01", "rod_02", "rod_03", "rod_04");
+        var gainFive = TestSupport.GiveRod(five, "rod_05");
+
+        Assert.True(gainFour.Assembled);
+        Assert.True(gainFive.Assembled);
+        Assert.True(FishingIdle.GameService.Shop.RodFragmentRules.Owns(four.Session.Save, "rod_04"));
+        Assert.True(FishingIdle.GameService.Shop.RodFragmentRules.Owns(five.Session.Save, "rod_05"));
+        Assert.Equal(1, four.Player.GetPlayer().FisherLevel);
     }
 
     [Fact]

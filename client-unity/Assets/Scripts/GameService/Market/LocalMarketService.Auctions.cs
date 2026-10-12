@@ -242,8 +242,8 @@ namespace FishingIdle.GameService.Market
             var goods = NewBotGoods(rng, bots.RodAuctionChance, startedAt);
             var ratio = bots.StartingBidRatio.Min + rng.NextDouble() * (bots.StartingBidRatio.Max - bots.StartingBidRatio.Min);
 
-            // Never below what the game pays, so winning at the starting bid cannot be resold to the game at a profit.
-            var start = Math.Max(MarketRules.NpcValue(Config, goods) + 1, (long)Math.Round(MarketRules.ReferenceValue(Config, goods) * ratio, MidpointRounding.AwayFromZero));
+            // Never below what the game could pay, so winning at the starting bid cannot be resold to the game at a profit (TD-052).
+            var start = Math.Max(MarketRules.BotFloor(Config, goods), (long)Math.Round(MarketRules.ReferenceValue(Config, goods) * ratio, MidpointRounding.AwayFromZero));
             return new Auction
             {
                 Id = State.NextAuctionId++,

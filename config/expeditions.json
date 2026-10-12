@@ -77,5 +77,5 @@
     "offline": "pending_completion_on_next_login",
     "highlight_found_fish": true
   },
-  "reward_scaling_note": "A-114 (decisão do proprietário, 07/10/2026): reward_coins é o valor no Mapa 1; a recompensa é multiplicada pelo expedition_reward_multiplier do mapa de onde o Cardume saiu (maps.json). Na Força Recomendada, uma Expedição rende cerca de metade do que o mesmo tempo de pesca offline renderia no mapa. Multiplicadores calculados com tools/Progressao/simular_progressao.py (valor esperado da venda por tentativa com a vara mínima do mapa)."
+  "reward_scaling_note": "A-114 (decisão do proprietário, 07/10/2026): reward_coins é o valor no Mapa 1; a recompensa é multiplicada pelo expedition_reward_multiplier do mapa de onde o Cardume saiu (maps.json). Na Força Recomendada, uma Expedição rende de ~12% (Mapa 1, 30 min) a ~45% (Mapa 10, 6 h) das Moedas que o mesmo tempo de pesca offline renderia no mapa com a vara mínima dele (recalculado em 12/10/2026 com o ciclo offline de 20 s; as Expedições longas e os mapas altos ficam na ponta de cima). Multiplicadores calculados com tools/Progressao/simular_progressao.py (valor esperado da venda por tentativa com a vara mínima do mapa)."
 }

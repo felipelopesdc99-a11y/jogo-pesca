@@ -1,7 +1,7 @@
 {
   "config_file": "pass.json",
   "config_schema_version": 1,
-  "balance_status": "provisional",
+  "balance_status": "PROVISÓRIO",
   "description": "Passe do Pescador (M24-T17, A-158): um passe permanente, um marco a cada 10 níveis do Pescador (Nv.10 ao Nv.1000), cada um com a recompensa grátis e a premium. O premium é comprado uma vez com Dólares (premium_price_dollars) e libera também as recompensas premium dos marcos já passados. Os 10 Dólares a cada 10 níveis até o Nv.100 (A-111) estão na faixa grátis. Números gerados por tools/Progressao/passe_fragmentos.py gerar; são sugestões para ajustar jogando.",
   "pass_id": "pescador",
   "pass_id_note": "Identifica este passe no save. Temporadas (passes que trocam) ficaram para depois (OD-059): hoje existe um passe só, e um pass_id diferente não zera nada.",

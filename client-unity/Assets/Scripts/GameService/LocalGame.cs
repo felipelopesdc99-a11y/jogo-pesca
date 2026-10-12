@@ -99,7 +99,7 @@ namespace FishingIdle.GameService
         public IDevToolsService DevTools { get; }
 
         /// <summary>Starts the game service, or explains in PT-BR why it cannot.</summary>
-        public static LocalGameStartResult Start(string configDirectory, string saveDirectory, IClock clock, Action<string> log)
+        public static LocalGameStartResult Start(string configDirectory, string saveDirectory, IClock clock, Action<string> log, ulong? rngSeed = null)
         {
             var configResult = GameConfigLoader.LoadFromDirectory(configDirectory);
             if (!configResult.Succeeded)
@@ -107,12 +107,13 @@ namespace FishingIdle.GameService
                 return new LocalGameStartResult(null, configResult.Errors);
             }
 
-            return Start(configResult.Config, new JsonFilePlayerRepository(saveDirectory), clock, log);
+            return Start(configResult.Config, new JsonFilePlayerRepository(saveDirectory), clock, log, rngSeed);
         }
 
-        public static LocalGameStartResult Start(GameConfig config, IPlayerRepository repository, IClock clock, Action<string> log)
+        /// <param name="rngSeed">A fixed seed for a new player (tests); null draws one at random.</param>
+        public static LocalGameStartResult Start(GameConfig config, IPlayerRepository repository, IClock clock, Action<string> log, ulong? rngSeed = null)
         {
-            var session = new GameSession(config, repository, clock ?? new SystemClock(), log);
+            var session = new GameSession(config, repository, clock ?? new SystemClock(), log, rngSeed);
             return new LocalGameStartResult(new LocalGame(session), Array.Empty<string>());
         }
     }

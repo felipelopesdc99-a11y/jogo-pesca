@@ -21,6 +21,11 @@ import sys
 
 import numpy as np
 
+
+def br(value, digits):
+    """Number with a decimal comma, for the messages the owner reads (PT-BR)."""
+    return ("%.*f" % (digits, value)).replace(".", ",")
+
 RATE = 44100
 LENGTH_S = 150
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "client-unity", "Assets", "Resources", "Sons", "Ambiente")
@@ -127,7 +132,7 @@ def main():
         out = os.path.join(OUT_DIR, name + "_01.ogg")
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(RATE), "-ac", "2", "-i", "-",
                         "-c:a", "libvorbis", "-q:a", "2", out], input=track.astype(np.float32).tobytes(), check=True)
-        print("%-12s -> %s (%.1f MB)" % (name, os.path.basename(out), os.path.getsize(out) / 1e6))
+        print("%-12s -> %s (%s MB)" % (name, os.path.basename(out), br(os.path.getsize(out) / 1e6, 1)))
 
 
 if __name__ == "__main__":

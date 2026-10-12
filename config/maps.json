@@ -3,8 +3,10 @@
   "config_schema_version": 1,
   "balance_status": "PROVISÓRIO",
   "description": "Mapas jogáveis, seus pools de peixes com pesos de captura, requisitos de desbloqueio e regras de viagem. Mapas 1 e 2 desde a V0.1; mapas 3 e 4 desde a V0.2 (docs/PROGRESSAO_MAPAS_3_4.md). A escada dos Mapas 5 a 10 fica registrada apenas como referência.",
+  "fish_pool_weight_total_note": "Referência: o jogo não lê fish_pool_weight_total. A chance de cada espécie é o catch_weight dela ÷ a soma dos catch_weight do mapa.",
   "catch_success_rebalance_note": "30/09/2026: o peso do Aruanã no Rio Selvagem foi de 5 para 10 com a Chance de Sucesso da Captura (docs/SISTEMA_SUCESSO_PESCA.md). Ele morde 1% das vezes, mas só é puxado em cerca de 40% delas, e o primeiro Raro continua chegando perto do tempo de antes.",
   "travel": {
+    "note": "O jogo lê só duration_seconds. As outras chaves de travel são referência, o jogo não lê (a pesca para durante a viagem e o jogador sempre confirma a viagem, pelo código).",
     "duration_seconds": 10,
     "fishing_paused_during_travel": true,
     "requires_manual_confirmation": true,
@@ -14,7 +16,7 @@
     "cooldown_seconds": 0
   },
   "unlock_ladder_reference": {
-    "note": "Escada de progressão da seção 17 do GDD. Os Mapas 5 a 10 seguem docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md e entram no jogo aos poucos.",
+    "note": "Escada de progressão da seção 17 do GDD. Os Mapas 5 a 10 seguem docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md e entram no jogo aos poucos. Referência: o jogo não lê esta seção (o nível e a vara de cada mapa vêm de maps).",
     "fisher_level_per_map": {
       "map_01": 1,
       "map_02": 10,
@@ -159,7 +161,7 @@
           "catch_weight": 10
         }
       ],
-      "fish_pool_weight_total": 1000,
+      "fish_pool_weight_total": 1005,
       "expedition_reward_multiplier": 8.5
     },
     {

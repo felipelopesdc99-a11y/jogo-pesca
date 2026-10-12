@@ -43,6 +43,9 @@ namespace FishingIdle.GameService.Shop
 
         /// <summary>Fragments the next piece costs, whichever it is; 0 when all are assembled.</summary>
         public int NextCost { get; internal set; }
+
+        /// <summary>True when the fragments pay for the next piece and a piece is still missing.</summary>
+        public bool CanAssemble { get; internal set; }
         public int Assembled { get; internal set; }
         public double FragmentChance { get; internal set; }
         public ClothingBonuses Bonuses { get; internal set; }
@@ -80,6 +83,7 @@ namespace FishingIdle.GameService.Shop
             {
                 Fragments = save.Clothing?.Fragments ?? 0,
                 NextCost = ClothingRules.NextCost(config, save),
+                CanAssemble = ClothingRules.NextCost(config, save) > 0 && (save.Clothing?.Fragments ?? 0) >= ClothingRules.NextCost(config, save),
                 Assembled = ClothingRules.AssembledCount(config, save),
                 FragmentChance = config.Clothing?.FragmentDropChance ?? 0,
                 Bonuses = ClothingRules.Bonuses(config, save),

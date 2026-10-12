@@ -13,6 +13,11 @@ import sys
 
 from PIL import Image
 
+
+def br(value, digits):
+    """Number with a decimal comma, for the messages the owner reads (PT-BR)."""
+    return ("%.*f" % (digits, value)).replace(".", ",")
+
 OUT = os.path.join(os.path.dirname(__file__), "..", "..", "client-unity", "Assets", "Resources", "Arte", "UI")
 ALPHA_MIN = 8
 
@@ -100,7 +105,7 @@ def main():
     half = max(hx - box[0], box[2] - hx, hy - box[1], box[3] - hy) + 2
     framed = ring.crop((round(hx - half), round(hy - half), round(hx + half), round(hy + half)))
     save(resize(framed, (192, 192)), "ui_avatar_frame")
-    print("  hole: %.3f of the frame" % ((hole_x[0] - hole_x[1]) / (2 * half)))
+    print("  furo: %s da moldura" % br((hole_x[0] - hole_x[1]) / (2 * half), 3))
 
     # Currencies: coloured, 128 px square with a 4 px margin.
     for src, name in (("06A_Moeda", "ui_currency_coin"), ("06B_Concha", "ui_currency_shell"), ("06C_Dolar", "ui_currency_dollar")):

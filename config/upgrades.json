@@ -1,7 +1,7 @@
 {
   "config_file": "upgrades.json",
   "config_schema_version": 1,
-  "balance_status": "provisional",
+  "balance_status": "PROVISÓRIO",
   "description": "Melhorias compradas com Moedas (M24-T06, A-155): as de tripulante (×2 na renda de um tripulante, uma vez cada) e as gerais (com níveis). Nenhuma pede nível do Pescador. Os números são o ponto de partida, simulados por tools/Progressao/simular_melhorias.py (resultado em docs/propostas/melhorias.json), e serão ajustados depois que o proprietário jogar.",
   "crew_upgrades": {
     "multiplier": 2.0,

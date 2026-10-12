@@ -7,6 +7,7 @@
     "max": 24,
     "regeneration_seconds_per_point": 3600,
     "cost_per_initiated_attack": 1,
+    "reference_keys_note": "Referência: o jogo não lê charged_on_defeat nem daily_attack_cap (todo ataque iniciado gasta Energia, vença ou perca, e não há limite diário além da Energia).",
     "charged_on_defeat": true,
     "daily_attack_cap": null
   },

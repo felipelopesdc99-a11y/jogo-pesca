@@ -132,6 +132,12 @@ namespace FishingIdle.GameService.Fishing
         public long ClothingFragments { get; internal set; }
         public long ClothingFragmentsHave { get; internal set; }
 
+        /// <summary>
+        /// True when a Fragmento de Roupa of this update made the fragments reach the next piece's cost: the screen says
+        /// once that a piece can be assembled (the rule lives here, not in the screen).
+        /// </summary>
+        public bool ClothingReady { get; internal set; }
+
         /// <summary>Clothing pieces that went up a level by being used, in order.</summary>
         public List<Shop.ClothingLevelView> ClothingLevels { get; } = new List<Shop.ClothingLevelView>();
 

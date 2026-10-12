@@ -202,7 +202,7 @@ namespace FishingIdle.GameService.Expeditions
                 result.Efficiency = ExpeditionRules.Efficiency(Config, state.Strength, e.RecommendedStrength);
                 // A-114: the reward grows with the map the Cardume left from (snapshot at departure).
                 result.Coins = ExpeditionRules.Coins(e, result.Efficiency, ExpeditionRules.MapMultiplier(Config, state.MapId));
-                Save.Coins += result.Coins;
+                Save.Coins = SafeMath.Add(Save.Coins, result.Coins);
 
                 if (rng.NextDouble() < ExpeditionRules.FishChance(e, result.Efficiency)
                     && (Config.TryGetMap(state.MapId, out var map) || (map = Config.StartingMap) != null))

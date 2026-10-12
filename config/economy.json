@@ -15,7 +15,7 @@
       "display_name": "Conchas",
       "is_primary": false,
       "spendable_in_v0_1": false,
-      "note": "Na V0.1 não tinham onde ser gastas. Desde a V0.2 compram iscas (equipment.json, docs/SISTEMA_SUCESSO_PESCA.md) e, desde 02/10/2026 (A-099), compram e melhoram varas; todo nível de vara e de barco custa Moedas e Conchas (A-156, regra do proprietário reforçada em 12/10/2026, M24-T30). Não melhoram peixes."
+      "note": "Na V0.1 não tinham onde ser gastas. Desde a V0.2 compram iscas (equipment.json, docs/SISTEMA_SUCESSO_PESCA.md) e, desde 02/10/2026 (A-099), melhoram varas (desde 12/10/2026 as varas vêm de fragmentos, M24-T32, e não são compradas); todo nível de vara e de barco custa Moedas e Conchas (A-156, regra do proprietário reforçada em 12/10/2026, M24-T30). Não melhoram peixes."
     },
     {
       "id": "honor",
@@ -50,6 +50,7 @@
     "minimum_price_coins": 1
   },
   "market_fixed_price": {
+    "reference_keys_note": "O jogo lê max_active_listings_per_player, max_listing_duration_days, listing_fee_coins, completed_sale_fee_ratio e minimum_listing_price_coins. As outras chaves são referência, o jogo não lê (withdrawal_expiry_days, os booleanos).",
     "max_active_listings_per_player": 5,
     "max_listing_duration_days": 7,
     "listing_fee_coins": 0,
@@ -62,6 +63,7 @@
     "withdrawal_expiry_days": null
   },
   "auction": {
+    "reference_keys_note": "O jogo lê max_active_auctions_per_seller, duration_hours, min_bid_increment_ratio, bid_fee_ratio, anti_snipe_window_seconds, anti_snipe_reset_to_seconds, seller_early_close_fee_ratio e timed_completion_fee_ratio. Os booleanos e max_auctions_a_buyer_can_join são referência, o jogo não lê (as regras deles estão no código).",
     "max_active_auctions_per_seller": 1,
     "duration_hours": 6,
     "seller_defines_starting_bid": true,

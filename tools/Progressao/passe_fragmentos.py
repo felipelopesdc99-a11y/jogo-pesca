@@ -321,7 +321,7 @@ def gerar(days):
     pass_cfg = collections.OrderedDict([
         ('config_file', 'pass.json'),
         ('config_schema_version', 1),
-        ('balance_status', 'provisional'),
+        ('balance_status', 'PROVISÓRIO'),
         ('description', 'Passe do Pescador (M24-T17, A-158): um passe permanente, um marco a cada 10 níveis do Pescador '
                         '(Nv.10 ao Nv.1000), cada um com a recompensa grátis e a premium. O premium é comprado uma vez com '
                         'Dólares (premium_price_dollars) e libera também as recompensas premium dos marcos já passados. '

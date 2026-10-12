@@ -298,6 +298,21 @@ public sealed class TenSecondCycleTests
             Assert.InRange(perHourNow / perHourBefore, 0.95, 1.05);
             Assert.InRange(boat.FragmentDropChance / FragmentChanceBefore[boat.Id], 0.6, 0.7);
         }
+
+        // Maps 6 to 10 (extra_fragment_maps, M24-T42): the chance the removed boat of that map had, the same pace per hour.
+        foreach (var extra in Config.Equipment.Boats.Where(b => b.ExtraFragmentMaps != null).SelectMany(b => b.ExtraFragmentMaps))
+        {
+            Config.TryGetMap(extra.MapId, out var map);
+            var removed = "boat_" + extra.MapId.Substring("map_".Length);
+            var rod = Config.Rods.Rods.OrderBy(r => r.Tier).First(r => r.Tier >= map.MinimumRodTier);
+            var pulledBefore = PulledPerAttempt(before, map.Id, rod.Id, 1, 0).Values.Sum();
+            var pulledNow = PulledPerAttempt(Config, map.Id, rod.Id, 1, 0).Values.Sum();
+            var perHourBefore = 3600 / OnlineCycleBefore * pulledBefore * FragmentChanceBefore[removed];
+            var perHourNow = 3600 / Config.Fishing.OnlineCycleSeconds * pulledNow * extra.FragmentDropChance;
+
+            Assert.InRange(perHourNow / perHourBefore, 0.95, 1.05);
+            Assert.InRange(extra.FragmentDropChance / FragmentChanceBefore[removed], 0.6, 0.7);
+        }
     }
 
     // ------------------------------------------------------------------ helpers

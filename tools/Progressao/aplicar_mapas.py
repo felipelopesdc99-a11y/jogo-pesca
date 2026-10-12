@@ -122,7 +122,7 @@ def main(wanted):
                                fish_pool_weight_total=sum(s['catch_weight'] for s in fish),
                                fish_pool=[od(species_id=s['id'], catch_weight=s['catch_weight']) for s in fish]))
         print('   mapa', meta['display_name'])
-    maps['unlock_ladder_reference']['note'] = 'Escada de progressão da seção 17 do GDD. Os Mapas 5 a 10 seguem docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md e entram no jogo aos poucos.'
+    maps['unlock_ladder_reference']['note'] = 'Escada de progressão da seção 17 do GDD. Os Mapas 5 a 10 seguem docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md e entram no jogo aos poucos. Referência: o jogo não lê esta seção (o nível e a vara de cada mapa vêm de maps).'
 
     # ---- varas mínimas dos mapas novos
     have_rods = {r['id'] for r in rods['rods']}

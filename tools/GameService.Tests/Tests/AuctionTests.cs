@@ -21,7 +21,7 @@ public sealed class AuctionTests
 
     private static (LocalGame Game, ManualClock Clock, string Dir) Bidder(GameConfig config = null, string dir = null, ManualClock clock = null)
     {
-        var (game, c, saveDir) = TestSupport.NewGame(config, dir, clock);
+        var (game, c, saveDir) = TestSupport.NewGame(config, dir, clock, seed: TestSupport.FixedSeed);
         game.Fishing.StartFishing();
         TestSupport.PlayFor(game, c, 600, stepSeconds: 30);
         game.Fishing.StopFishing();
@@ -31,6 +31,13 @@ public sealed class AuctionTests
     }
 
     private static long Fee(long bid) => (long)Math.Round(bid * 0.01, MidpointRounding.AwayFromZero);
+
+    /// <summary>
+    /// The simulated auctions the test player can bid on: rod auctions of the simulated sellers can start above the
+    /// 10 million budget, so a test that picks "the first one" must pick among those that fit (M24-T26).
+    /// </summary>
+    private static IEnumerable<AuctionView> Affordable(LocalGame game) =>
+        game.Auctions.GetAuctions().Open.Where(a => a.MinNextBidCoins + Fee(a.MinNextBidCoins) <= Budget);
 
     private static long AnyFish(LocalGame game) => game.Aquarium.GetAquarium(AquariumSort.Newest).Fish.Last().FishId;
 
@@ -56,7 +63,7 @@ public sealed class AuctionTests
     public void A_bid_pays_a_1_percent_fee_locks_the_principal_and_a_retry_charges_nothing()
     {
         var (game, _, _) = Bidder(Bidders(0));
-        var auction = game.Auctions.GetAuctions().Open.First();
+        var auction = Affordable(game).First();
 
         Assert.Equal(ServiceError.BidTooLow, game.Auctions.PlaceBid(auction.AuctionId, auction.MinNextBidCoins - 1).Error);
         var bid = game.Auctions.PlaceBid(auction.AuctionId, auction.MinNextBidCoins);
@@ -77,7 +84,7 @@ public sealed class AuctionTests
     public void Being_outbid_returns_the_principal_but_never_the_fee()
     {
         var (game, clock, _) = Bidder(Bidders(1));
-        var auction = game.Auctions.GetAuctions().Open.OrderByDescending(a => a.RemainingSeconds).First();
+        var auction = Affordable(game).OrderByDescending(a => a.RemainingSeconds).First();
         var bid = auction.MinNextBidCoins;
         Assert.True(game.Auctions.PlaceBid(auction.AuctionId, bid).Succeeded);
 
@@ -95,9 +102,9 @@ public sealed class AuctionTests
     public void The_highest_bid_wins_at_the_end_and_the_goods_wait_in_withdrawal()
     {
         var (game, clock, _) = Bidder(Bidders(0));
-        var auction = game.Auctions.GetAuctions().Open.First();
+        var auction = Affordable(game).First();
         var bid = auction.MinNextBidCoins;
-        game.Auctions.PlaceBid(auction.AuctionId, bid);
+        Assert.True(game.Auctions.PlaceBid(auction.AuctionId, bid).Succeeded);
 
         clock.AdvanceSeconds(auction.RemainingSeconds + 1);
         var news = game.Market.Update();
@@ -114,7 +121,7 @@ public sealed class AuctionTests
     public void A_bid_in_the_last_minute_puts_the_clock_back_to_one_minute()
     {
         var (game, clock, _) = Bidder(Bidders(0));
-        var auction = game.Auctions.GetAuctions().Open.First();
+        var auction = Affordable(game).First();
         clock.AdvanceSeconds(auction.RemainingSeconds - 30);
 
         Assert.True(game.Auctions.PlaceBid(auction.AuctionId, auction.MinNextBidCoins).Succeeded);
@@ -201,8 +208,8 @@ public sealed class AuctionTests
     public void Bids_and_reserved_coins_survive_a_restart_and_a_retried_bid_after_it()
     {
         var (game, clock, dir) = Bidder(Bidders(0));
-        var auction = game.Auctions.GetAuctions().Open.First();
-        game.Auctions.PlaceBid(auction.AuctionId, auction.MinNextBidCoins);
+        var auction = Affordable(game).First();
+        Assert.True(game.Auctions.PlaceBid(auction.AuctionId, auction.MinNextBidCoins).Succeeded);
         var coins = game.Player.GetPlayer().Coins;
 
         var reopened = TestSupport.NewGame(Bidders(0), dir, clock).Game;
@@ -217,7 +224,7 @@ public sealed class AuctionTests
     public void Bidding_needs_the_bid_plus_the_fee()
     {
         var (game, _, _) = Bidder(Bidders(0));
-        var auction = game.Auctions.GetAuctions().Open.First();
+        var auction = Affordable(game).First();
         var short1 = auction.MinNextBidCoins + Fee(auction.MinNextBidCoins) - 1;
         game.Session.Save.Coins = short1; // one coin short of bid + fee
 

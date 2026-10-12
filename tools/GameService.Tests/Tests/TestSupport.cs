@@ -10,6 +10,9 @@ internal static class TestSupport
 {
     public const long StartMs = 1_790_000_000_000;
 
+    /// <summary>The fixed seed the Market and Auction tests use (M24-T26: no test depends on a lucky draw).</summary>
+    public const ulong FixedSeed = 0x5EED_2026_1012UL;
+
     public static string RepositoryRoot
     {
         get
@@ -111,11 +114,13 @@ internal static class TestSupport
     /// equipped, and every bite is pulled out (<see cref="CertainCatchConfig"/>); pass
     /// <see cref="RealConfig"/> to play with the real Catch Success.
     /// </summary>
-    public static (LocalGame Game, ManualClock Clock, string SaveDir) NewGame(GameConfig config = null, string saveDir = null, ManualClock clock = null, bool skipTutorial = true)
+    /// <param name="seed">A fixed random seed for a new player, so a test that depends on the draws (Market, Auctions)
+    /// plays the same game every run; null draws one at random like the real game.</param>
+    public static (LocalGame Game, ManualClock Clock, string SaveDir) NewGame(GameConfig config = null, string saveDir = null, ManualClock clock = null, bool skipTutorial = true, ulong? seed = null)
     {
         saveDir ??= NewTempDirectory();
         clock ??= new ManualClock(StartMs);
-        var result = LocalGame.Start(config ?? CertainCatchConfig(), new JsonFilePlayerRepository(saveDir), clock, _ => { });
+        var result = LocalGame.Start(config ?? CertainCatchConfig(), new JsonFilePlayerRepository(saveDir), clock, _ => { }, seed);
         if (skipTutorial)
         {
             result.Game.Tutorial.Skip();

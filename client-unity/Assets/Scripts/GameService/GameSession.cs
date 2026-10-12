@@ -18,9 +18,15 @@ namespace FishingIdle.GameService
     {
         private readonly IPlayerRepository _repository;
         private readonly Action<string> _log;
+        private readonly IClock _rawClock;
+        private readonly ulong? _fixedSeed;
 
-        public GameSession(GameConfig config, IPlayerRepository repository, IClock clock, Action<string> log)
+        /// <summary>How far ahead of the PC clock the game time may be before the screen warns (5 minutes, TD-052).</summary>
+        public const long ClockFrozenWarningSeconds = 300;
+
+        public GameSession(GameConfig config, IPlayerRepository repository, IClock clock, Action<string> log, ulong? rngSeed = null)
         {
+            _fixedSeed = rngSeed;
             Config = config ?? throw new ArgumentNullException(nameof(config));
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             if (clock == null)
@@ -29,7 +35,8 @@ namespace FishingIdle.GameService
             }
 
             // Rules never see time going backwards (TD-030).
-            Clock = new SteadyClock(new OffsetClock(clock, () => Save?.DevTimeOffsetMs ?? 0), () => Save?.ClockHighWaterMs ?? 0, ms =>
+            _rawClock = new OffsetClock(clock, () => Save?.DevTimeOffsetMs ?? 0);
+            Clock = new SteadyClock(_rawClock, () => Save?.ClockHighWaterMs ?? 0, ms =>
             {
                 if (Save != null)
                 {
@@ -43,6 +50,23 @@ namespace FishingIdle.GameService
         public GameConfig Config { get; private set; }
 
         public IClock Clock { get; }
+
+        /// <summary>
+        /// Seconds the game time is ahead of the PC clock (TD-030 keeps it from going back, so the game time stays
+        /// frozen until the PC clock catches up). 0 when the PC clock is at or past the game time (TD-052).
+        /// </summary>
+        public long ClockFrozenSeconds
+        {
+            get
+            {
+                var highest = Save?.ClockHighWaterMs ?? 0;
+                var ahead = highest - _rawClock.UtcNowMs;
+                return ahead > 0 ? ahead / 1000 : 0;
+            }
+        }
+
+        /// <summary>True when the game time is frozen for more than 5 minutes: the screen shows a warning (TD-052).</summary>
+        public bool ClockFrozen => ClockFrozenSeconds > ClockFrozenWarningSeconds;
 
         /// <summary>
         /// The owner's test tools (A-123). Set by the game client only in the Unity Editor or a development
@@ -157,7 +181,7 @@ namespace FishingIdle.GameService
                 PlayerName = FishingIdle.Texts.GameTexts.Player.DefaultName,
                 CreatedAtMs = now,
                 UpdatedAtMs = now,
-                RngSeed = Rng.NewSeed(),
+                RngSeed = _fixedSeed ?? Rng.NewSeed(),
                 CurrentMapId = Config.StartingMap.Id,
                 FisherXpCurveVersion = Config.Progression.Fisher.XpCurveVersion,
                 RodLevelCurveVersion = Config.Rods.UpgradeRules?.LevelCurveVersion ?? 0,

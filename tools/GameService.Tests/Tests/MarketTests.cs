@@ -12,7 +12,7 @@ public sealed class MarketTests
     /// <summary>A player with a few Aquarium fish and plenty of Coins.</summary>
     private static (LocalGame Game, ManualClock Clock, string Dir) Trader(GameConfig config = null, int keep = 5, string dir = null)
     {
-        var (game, clock, saveDir) = TestSupport.NewGame(config, dir);
+        var (game, clock, saveDir) = TestSupport.NewGame(config, dir, seed: TestSupport.FixedSeed);
         game.Fishing.StartFishing();
         TestSupport.PlayFor(game, clock, 600, stepSeconds: 30);
         game.Fishing.StopFishing();
@@ -42,6 +42,51 @@ public sealed class MarketTests
             Assert.True(l.RemainingSeconds > 0);
         });
         Assert.Equal(listings.Select(l => l.PriceCoins).OrderBy(p => p), listings.Select(l => l.PriceCoins));
+    }
+
+    [Fact]
+    public void A_simulated_fish_never_sells_to_the_game_for_more_than_it_cost_even_with_the_max_Freguesia_na_Feira()
+    {
+        // Review of 12/10/2026: the bots' floor ignored the Freguesia na Feira (up to ×2 on the Aquarium sale), so buying
+        // a simulated fish and selling it to the game gave a profit (TD-052).
+        var (game, clock, _) = Trader();
+        var config = game.Session.Config;
+        var max = FishingIdle.GameService.Upgrades.UpgradeRules.MaxFishSaleMultiplier(config);
+        Assert.True(max > 1.0);
+        clock.AdvanceSeconds(3 * 3600);
+        game.Market.Update();
+
+        var state = game.Session.Save.Market;
+        var fishListings = state.BotListings.Where(l => l.Goods.Kind == MarketGoods.KindFish).ToList();
+        var fishAuctions = state.Auctions.Where(a => a.Goods.Kind == MarketGoods.KindFish).ToList();
+        Assert.NotEmpty(fishListings);
+        Assert.NotEmpty(fishAuctions);
+        long Best(MarketGoods g)
+        {
+            config.TryGetSpecies(g.Fish.SpeciesId, out var species);
+            return FishingIdle.GameService.Fishing.CatchRules.SalePrice(config, species, g.Fish.SizeMm, max);
+        }
+
+        Assert.All(fishListings, l => Assert.True(l.PriceCoins > Best(l.Goods)));
+        Assert.All(fishAuctions, a => Assert.True(a.StartingBidCoins > Best(a.Goods)));
+
+        // End to end: with the Freguesia na Feira at its max level, buy the cheapest simulated fish and sell it back.
+        foreach (var upgrade in config.Upgrades.GeneralUpgrades.Where(u => u.Effect == UpgradeEffects.FishSale))
+        {
+            game.Session.Save.Upgrades.Levels[upgrade.Id] = upgrade.MaxLevel;
+        }
+
+        game.Session.Save.Coins = 100_000_000;
+        var cheapest = game.Market.Search(new MarketQuery()).Where(l => l.Goods.IsFish).OrderBy(l => l.PriceCoins).First();
+        var before = game.Player.GetPlayer().Coins;
+        var had = game.Aquarium.GetAquarium(AquariumSort.Newest).Fish.Select(f => f.FishId).ToHashSet();
+        var bought = game.Market.Buy(cheapest.ListingId);
+        Assert.True(bought.Succeeded, bought.ErrorMessage);
+        game.Market.WithdrawAll();
+        var fish = game.Aquarium.GetAquarium(AquariumSort.Newest).Fish.Single(f => !had.Contains(f.FishId)).FishId;
+        var sold = game.Aquarium.SellFish(new[] { fish });
+        Assert.True(sold.Succeeded, sold.ErrorMessage);
+        Assert.True(game.Player.GetPlayer().Coins < before);
     }
 
     [Fact]

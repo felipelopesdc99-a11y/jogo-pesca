@@ -322,7 +322,7 @@ namespace FishingIdle.GameService.Shop
             _fishing.Sync();
             Save.Coins -= bait.CostCoins;
             Save.Shells -= bait.CostShells;
-            Save.BaitCharges[bait.Id] = GearRules.Charges(Save, bait.Id) + bait.Charges;
+            Save.BaitCharges[bait.Id] = SafeMath.AddCount(GearRules.Charges(Save, bait.Id), bait.Charges);
             if (GearRules.ActiveBait(Config, Save) == null)
             {
                 Save.ActiveBaitId = bait.Id;

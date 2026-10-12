@@ -150,11 +150,11 @@ namespace FishingIdle.GameService.Market
             Save.Market.CurrencyListings.Remove(listing);
             if (listing.Currency == KindKey(CurrencyKind.Dollars))
             {
-                Save.Dollars += listing.Amount;
+                Save.Dollars = SafeMath.Add(Save.Dollars, listing.Amount);
             }
             else
             {
-                Save.Shells += listing.Amount;
+                Save.Shells = SafeMath.Add(Save.Shells, listing.Amount);
             }
 
             _session.Persist();

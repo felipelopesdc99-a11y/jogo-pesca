@@ -4,7 +4,7 @@
   "balance_status": "PROVISÓRIO",
   "description": "Mercado simulado do MVP local: anúncios de outros jogadores (bots) e compradores para os seus anúncios. Os nomes vêm de arena_bots.json. Sai de cena quando o Mercado for online.",
   "valuation": {
-    "note": "Valor de referência de um peixe = preço de venda ao NPC × fish_reference_ratio × (1 + fish_level_premium_per_level × (nível − 1)). De uma vara = (preço na Loja + melhorias do nível) × rod_reference_ratio. Os bots nunca vendem abaixo do que o NPC pagaria.",
+    "note": "Valor de referência de um peixe = preço de venda ao NPC × fish_reference_ratio × (1 + fish_level_premium_per_level × (nível − 1)). De uma vara = (market_reference_coins da vara + melhorias do nível) × rod_reference_ratio (as varas não são vendidas na Loja desde 12/10/2026, M24-T32). Os bots nunca vendem abaixo do que o NPC pagaria a quem tem a Freguesia na Feira no nível máximo (TD-052), então comprar de um bot e vender ao NPC nunca dá lucro.",
     "fish_reference_ratio": 1.5,
     "fish_level_premium_per_level": 0.0337,
     "rod_reference_ratio": 0.8
