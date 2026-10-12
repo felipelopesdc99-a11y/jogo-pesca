@@ -623,7 +623,7 @@
       "status": "OPEN"
     },
     {
-      "id": "OD-068",
+      "id": "OD-069",
       "task_id": "M24-T37",
       "title": "Nome do Boss Mundial",
       "detail": "O Boss Mundial está com o nome sugerido \"Leviatã do Abismo\" (world_boss.json → display_name; a arte pedida em docs/ASSETS_PENDENTES.md segue esse nome). Opções: (a) fica \"Leviatã do Abismo\"; (b) outro nome que você escolher; (c) um Boss diferente por dia da semana (seria um sistema novo, só com sua aprovação).",
@@ -4789,7 +4789,7 @@
           "id": "M24-T37",
           "title": "Nome do Boss Mundial",
           "subsystem": "config",
-          "description": "O Boss Mundial (M24-T29, A-165) usa o nome sugerido \"Leviatã do Abismo\" (world_boss.json → display_name). O nome e a arte são decisão do proprietário (OD-068).",
+          "description": "O Boss Mundial (M24-T29, A-165) usa o nome sugerido \"Leviatã do Abismo\" (world_boss.json → display_name). O nome e a arte são decisão do proprietário (OD-069).",
           "status": "NEEDS_OWNER_DECISION",
           "dependencies": [
             "M24-T29"

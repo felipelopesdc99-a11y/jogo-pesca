@@ -4,7 +4,7 @@
   "balance_status": "provisional",
   "description": "Boss Mundial (M24-T29, A-165): todo dia às 19:00 (horário de Brasília) abre por 10 minutos um Boss com vida infinita. Com o jogo aberto, o Cardume ataca sozinho a cada poucos segundos; nada conta com o jogo fechado. O dano do dia dá uma faixa de recompensa (Moedas, Conchas, Fragmentos de Roupa e fragmentos do barco do mapa mais alto liberado), paga uma vez, às 19:10 ou na próxima abertura do jogo. O top 1 a 10 do dia ganha Dólares só quando o jogo estiver online (ranking.online_rewards_enabled). Números provisórios, para o proprietário ajustar jogando.",
   "display_name": "Leviatã do Abismo",
-  "display_name_note": "SUGESTÃO: o nome do Boss é decisão do proprietário (OD-068). Trocar aqui muda o nome em todas as telas.",
+  "display_name_note": "SUGESTÃO: o nome do Boss é decisão do proprietário (OD-069). Trocar aqui muda o nome em todas as telas.",
   "schedule": {
     "utc_offset_minutes": -180,
     "start_minute_of_day": 1140,
