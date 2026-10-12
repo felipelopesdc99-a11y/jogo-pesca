@@ -622,11 +622,12 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 ## Boss Mundial (M24-T29, A-165, pedido em 12/10/2026)
 
 `ASSET_PENDENTE`. Enquanto os arquivos não existem: o botão do HUD usa o ícone de ataque (`ico_atacar`) e a janela
-desenha o Boss como um disco escuro com borda vermelha e o ícone de ataque no meio.
+desenha o Boss como um disco escuro com borda vermelha e o ícone de ataque no meio. Desde o A-167 o Boss fica dentro do
+menu Eventos (o ícone aparece no cartão do Boss e na placa da janela).
 
 | Arquivo | O quê | Tamanho | Onde aparece |
 |---|---|---|---|
-| `Arte/Icones/ico_boss.png` | Ícone do Boss Mundial | 256×256 → 40 px | Botão do HUD (à esquerda do Passe) e cabeçalho da janela |
+| `Arte/Icones/ico_boss.png` | Ícone do Boss Mundial | 256×256 → 40 px | Cartão do Boss na janela Eventos e cabeçalho da janela do Boss |
 | `Arte/Boss/boss_mundial.png` | O Boss (o nome sugerido é "Leviatã do Abismo", OD-068), virado para a esquerda | 1024×768 → até ~520×230 px | Janela "Boss Mundial", à direita |
 
 Pedidos prontos para colar no ChatGPT (um por imagem):
@@ -634,6 +635,22 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > Ícone quadrado de interface de um jogo idle de pesca mobile, PNG 256×256 px com fundo transparente: a silhueta da cabeça de uma enorme criatura marinha abissal (um leviatã com mandíbula aberta e dentes finos) em azul-noite, com olho brilhante dourado e um contorno turquesa. Centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 40 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: ico_boss.png
 
 > Ilustração de um chefe de um jogo idle de pesca mobile, PNG 1024×768 px com fundo transparente: o "Leviatã do Abismo", uma criatura marinha gigantesca e elegante, meio peixe e meio serpente, de corpo azul-noite com escamas em degradê para turquesa, barbatanas longas translúcidas, olhos dourados e pequenas luzes bioluminescentes ao longo do corpo, virado para a esquerda em posição de ataque. Corpo inteiro visível, ocupando cerca de 85% da imagem, sem cenário, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: boss_mundial.png
+
+## Menu Eventos (M24-T39, A-167, pedido em 12/10/2026)
+
+`ASSET_PENDENTE`. Enquanto o arquivo não existe, o botão "Eventos" da barra de cima e a placa da janela usam o relógio
+(`ico_relogio`). Quando o arquivo existir, o jogo passa a usá-lo sozinho.
+
+| Arquivo | O quê | Tamanho | Onde aparece |
+|---|---|---|---|
+| `Arte/Icones/ico_eventos.png` | Ícone do botão "Eventos" na barra de cima | 96×96, branco sobre transparente (como os outros ícones do menu, A-139) | Barra de cima e placa da janela Eventos |
+
+Pedido pronto para colar no ChatGPT:
+
+> Ícone de menu para jogo mobile, PNG 96×96 px (pode ser 1024×1024) com fundo transparente, desenho BRANCO chapado
+> (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do
+> jogo: um calendário de mesa com as duas argolas em cima e uma pequena estrela de cinco pontas no centro da folha,
+> simples e legível em 24 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_eventos.png
 
 ## Som ambiente dos mapas
 

@@ -38,7 +38,10 @@ namespace FishingIdle.Game.UI
 
         public bool IsOpen { get; private set; }
 
-        /// <summary>The boss button's icon: ico_boss when it exists, otherwise the attack icon.</summary>
+        /// <summary>"‹ Eventos" in the header: the Hud closes this window and opens the Eventos list (M24-T39, A-167).</summary>
+        public Action BackToEvents { get; set; }
+
+        /// <summary>The boss icon (window sign, Eventos card): ico_boss when it exists, otherwise the attack icon.</summary>
         public static string NavIcon => ArtAssets.Icon(BossIcon) != null ? BossIcon : Icons.Attack;
 
         public void Open()
@@ -67,6 +70,17 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
+            // Back to the Eventos list, in the free strip of the header (after the counter, left of Fechar).
+            if (BackToEvents != null && WindowFrame.Side.width >= 120f)
+            {
+                var back = WindowFrame.TakeSide(Mathf.Min(170f, WindowFrame.Side.width));
+                if (GUI.Button(new Rect(back.x, back.y + 2f, back.width, back.height - 4f), GameTexts.Events.Back, skin.Button))
+                {
+                    BackToEvents();
+                    return;
+                }
+            }
+
             if (view == null)
             {
                 return;
@@ -89,7 +103,7 @@ namespace FishingIdle.Game.UI
             DrawRanking(skin, side, view);
         }
 
-        private static string StartTime(WorldBossView view) => Format.Time(new DateTime(2000, 1, 1, view.StartHour, view.StartMinute, 0));
+        internal static string StartTime(WorldBossView view) => Format.Time(new DateTime(2000, 1, 1, view.StartHour, view.StartMinute, 0));
 
         /// <summary>A new attack (the count went up) makes every fish's share float up from the boss.</summary>
         private void TrackHits(WorldBossView view)
@@ -312,7 +326,7 @@ namespace FishingIdle.Game.UI
             return y + UiSkin.SmallLine + 2f;
         }
 
-        private static string RewardItems(long coins, long shells, long clothing, long boatFragments, string boat, long dollars)
+        internal static string RewardItems(long coins, long shells, long clothing, long boatFragments, string boat, long dollars)
         {
             var items = new List<string>();
             if (coins > 0) items.Add(GameTexts.WorldBoss.ItemCoins(Format.Short(coins)));

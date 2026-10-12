@@ -50,6 +50,7 @@ namespace FishingIdle.Texts
             public const string Market = "Mercado";
             public const string Profile = "Perfil";
             public const string Crew = "Tripulação";
+            public const string Events = "Eventos";
         }
 
         // ------------------------------------------------------------------ fishing HUD
@@ -867,12 +868,32 @@ namespace FishingIdle.Texts
             public static string ItemDollars(string amount) => "+" + amount + " Dólares";
         }
 
+        // ------------------------------------------------------------------ Eventos (M24-T39, A-167)
+
+        public static class Events
+        {
+            public const string Title = "Eventos";
+            public const string Info =
+                "Os eventos do jogo ficam aqui. Cada cartão mostra quando o evento acontece, se ele já começou e o que " +
+                "você conseguiu. Clique em \"Abrir\" para entrar no evento. Quando um evento está acontecendo, o botão " +
+                "Eventos da barra de cima ganha um ponto dourado.";
+            public const string Back = "‹ Eventos";
+            public const string Open = "Abrir";
+            public const string Now = "AGORA";
+            public static string Schedule(string time, int minutes) => "Todo dia às " + time + " (Brasília), " + minutes + " minutos";
+            public static string StartsIn(string countdown) => "Começa em " + countdown;
+            public static string Happening(string countdown) => "Acontecendo agora · faltam " + countdown;
+            public static string BandToday(int band) => band > 0 ? "Sua faixa de hoje: Faixa " + band : "Sua faixa de hoje: nenhuma ainda";
+            public static string LastResult(string date, string band, string items) => "Último (" + date + "): " + band + " · " + items;
+            public const string NoLastResult = "Você ainda não participou.";
+            public static string Counter(int happening) => happening > 0 ? (happening == 1 ? "1 acontecendo agora" : happening + " acontecendo agora") : null;
+        }
+
         // ------------------------------------------------------------------ Boss Mundial (M24-T29, A-165)
 
         public static class WorldBoss
         {
             public const string Title = "Boss Mundial";
-            public const string ButtonTip = "Boss Mundial";
             public const string NowOpen = "AGORA";
             public static string Info(string time, int minutes, string interval) =>
                 "Todo dia às " + time + " (horário de Brasília) o Boss Mundial aparece por " + minutes + " minutos. Ele tem vida infinita: " +

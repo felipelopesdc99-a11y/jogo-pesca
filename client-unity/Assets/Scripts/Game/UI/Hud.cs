@@ -33,9 +33,12 @@ namespace FishingIdle.Game.UI
         private const float NavButtonHeight = 52f;  // the old menu buttons were 40
         private const float NavSpacing = 8f;
 
-        // Boss Mundial, Passe do Pescador, bell and options at the right of the bar: 20 margin + 4 × 56 + 3 × 8 (the pass
-        // button since M24-T17, A-158; the boss button since M24-T29, A-165).
-        private const float TopRightExtent = 268f;
+        // Passe do Pescador, bell and options at the right of the bar: 20 margin + 3 × 56 + 2 × 8 (the pass button since
+        // M24-T17, A-158). The Boss Mundial moved into the Eventos menu (M24-T39, A-167).
+        private const float TopRightExtent = 204f;
+
+        // A tighter menu (side padding 8, spacing 4) before falling back to icons only (A-167).
+        private const float NavSpacingTight = 4f;
 
         // The player card on the right, under the bar.
         private const float CardWidth = 360f;
@@ -64,6 +67,7 @@ namespace FishingIdle.Game.UI
         private CrewWindow _crew;
         private PassWindow _pass;
         private WorldBossWindow _boss;
+        private EventsWindow _events;
         private bool _cardExpanded = true;
         private bool _showNotifications;
         private bool _showSettings;
@@ -125,6 +129,17 @@ namespace FishingIdle.Game.UI
             _crew = new CrewWindow(_root);
             _pass = new PassWindow(_root);
             _boss = new WorldBossWindow(_root);
+            _events = new EventsWindow(_root);
+            _events.OpenBoss = () =>
+            {
+                CloseAllWindows();
+                _boss.Open();
+            };
+            _boss.BackToEvents = () =>
+            {
+                CloseAllWindows();
+                _events.Open();
+            };
             _root.CatchesArrived += OnCatchesArrived;
             _root.MapArrived += OnMapArrived;
         }
@@ -410,6 +425,11 @@ namespace FishingIdle.Game.UI
                     _boss.Close();
                     Event.current.Use();
                 }
+                else if (_events.IsOpen)
+                {
+                    _events.Close();
+                    Event.current.Use();
+                }
                 else if (_pass.IsOpen)
                 {
                     _pass.Close();
@@ -470,7 +490,7 @@ namespace FishingIdle.Game.UI
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
             var welcomeDialog = _root.Tutorial != null && _root.Tutorial.Active && _root.Tutorial.Step == TutorialSteps.Welcome;
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _crew.IsOpen || _pass.IsOpen || _boss.IsOpen || WelcomeBackPending || welcomeDialog;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _crew.IsOpen || _pass.IsOpen || _boss.IsOpen || _events.IsOpen || WelcomeBackPending || welcomeDialog;
             _root.WindowOpen = windowOpen;
             GUI.enabled = !windowOpen;
             DrawTopBar(skin);
@@ -505,6 +525,7 @@ namespace FishingIdle.Game.UI
             _crew.Draw(skin, _width, _height);
             _pass.Draw(skin, _width, _height);
             _boss.Draw(skin, _width, _height);
+            _events.Draw(skin, _width, _height);
             // The "Como funciona" balloon of a window header, over the window body (A-148).
             WindowFrame.DrawInfoBalloon(skin, AnyWindowDialog());
             GUI.color = previousColor;
@@ -664,48 +685,6 @@ namespace FishingIdle.Game.UI
                 GUI.Label(dot, count, skin.PillText);
             }
 
-            DrawBossButton(skin, new Rect(pass.x - 8f - 56f, NavButtonY, 56f, NavButtonHeight));
-        }
-
-        /// <summary>
-        /// Boss Mundial (M24-T29, A-165): an icon button left of the pass with the countdown to 19:00 on a small pill over its
-        /// bottom edge; during the event the button glows and the pill turns gold with the time left. Shows what the service
-        /// returned in the last sync (GameRoot.WorldBoss); decides nothing.
-        /// </summary>
-        private void DrawBossButton(UiSkin skin, Rect rect)
-        {
-            var view = _root.WorldBoss;
-            var open = view != null && view.Open;
-            if (open)
-            {
-                skin.DrawGlow(rect, UiSkin.Gold, 0.35f + 0.25f * Mathf.Sin(Time.unscaledTime * 4f));
-            }
-
-            if (skin.NavGameButton(rect, WorldBossWindow.NavIcon, null, _boss.IsOpen || open))
-            {
-                CloseAllWindows();
-                _boss.Open();
-            }
-
-            if (GUI.enabled && rect.Contains(Event.current.mousePosition))
-            {
-                GUI.Label(new Rect(rect.x - 60f, rect.yMax + 14f, rect.width + 120f, UiSkin.SmallLine), GameTexts.WorldBoss.ButtonTip, skin.SmallMutedCenter);
-            }
-
-            if (view == null)
-            {
-                return;
-            }
-
-            var text = open ? Format.Countdown(view.SecondsLeft) : Format.Countdown(view.SecondsToStart);
-            var pill = new Rect(rect.center.x - 36f, rect.yMax - 8f, 72f, 18f);
-            GUI.DrawTexture(pill, skin.White, ScaleMode.StretchToFill, true, 0, open ? UiSkin.Gold : new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.92f), 0, 9f);
-            if (!open)
-            {
-                GUI.DrawTexture(pill, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Border, 1f, 9f);
-            }
-
-            GUI.Label(pill, text, open ? skin.PillText : skin.TinyMutedCenter);
         }
 
         /// <summary>
@@ -862,15 +841,17 @@ namespace FishingIdle.Game.UI
         {
             var labels = NavLabels();
             var widths = new float[labels.Length];
-            var total = -NavSpacing;
-            for (var i = 0; i < labels.Length; i++)
-            {
-                widths[i] = skin.NavGameWidth(labels[i]);
-                total += widths[i] + NavSpacing;
-            }
-
             var roomLeft = _topLeftExtent + 16f;
             var roomRight = _width - TopRightExtent - 16f;
+            var spacing = NavSpacing;
+            var total = NavWidths(skin, labels, widths, false, spacing);
+            if (total > roomRight - roomLeft)
+            {
+                // Eleven menus since the Eventos (A-167): first a tighter row, then icons only.
+                spacing = NavSpacingTight;
+                total = NavWidths(skin, labels, widths, true, spacing);
+            }
+
             iconsOnly = total > roomRight - roomLeft;
             if (iconsOnly)
             {
@@ -879,7 +860,8 @@ namespace FishingIdle.Game.UI
                     widths[i] = UiSkin.NavGameIconWidth;
                 }
 
-                total = labels.Length * (UiSkin.NavGameIconWidth + NavSpacing) - NavSpacing;
+                spacing = NavSpacing;
+                total = labels.Length * (UiSkin.NavGameIconWidth + spacing) - spacing;
             }
 
             var x = _width / 2f - total / 2f;
@@ -892,19 +874,32 @@ namespace FishingIdle.Game.UI
             for (var i = 0; i < labels.Length; i++)
             {
                 rects[i] = new Rect(x, NavButtonY, widths[i], NavButtonHeight);
-                x += widths[i] + NavSpacing;
+                x += widths[i] + spacing;
             }
 
             return rects;
         }
 
-        private string[] NavLabels()
+        /// <summary>Fills <paramref name="widths"/> with each button's width and returns the row's total.</summary>
+        private static float NavWidths(UiSkin skin, string[] labels, float[] widths, bool tight, float spacing)
         {
-            return new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Crew, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Arena, GameTexts.Navigation.Ranking, GameTexts.Navigation.Expedition, GameTexts.Navigation.Market, GameTexts.Navigation.Shop, GameTexts.Navigation.Profile };
+            var total = -spacing;
+            for (var i = 0; i < labels.Length; i++)
+            {
+                widths[i] = skin.NavGameWidth(labels[i], tight);
+                total += widths[i] + spacing;
+            }
+
+            return total;
         }
 
-        // Positions of the main menu buttons (the Tripulação, M24-T08, comes right after Pesca).
-        private const int NavFishing = 0, NavCrew = 1, NavMap = 2, NavAquarium = 3, NavArena = 4, NavRanking = 5, NavExpedition = 6, NavMarket = 7, NavShop = 8, NavProfile = 9;
+        private string[] NavLabels()
+        {
+            return new[] { GameTexts.Navigation.Fishing, GameTexts.Navigation.Crew, GameTexts.Navigation.Map, AquariumLabel(), GameTexts.Navigation.Arena, GameTexts.Navigation.Ranking, GameTexts.Navigation.Expedition, GameTexts.Navigation.Market, GameTexts.Navigation.Shop, GameTexts.Navigation.Profile, GameTexts.Navigation.Events };
+        }
+
+        // Positions of the main menu buttons (the Tripulação, M24-T08, comes right after Pesca; Eventos, M24-T39, is last).
+        private const int NavFishing = 0, NavCrew = 1, NavMap = 2, NavAquarium = 3, NavArena = 4, NavRanking = 5, NavExpedition = 6, NavMarket = 7, NavShop = 8, NavProfile = 9, NavEvents = 10;
 
         private static string NavIcon(int index)
         {
@@ -919,6 +914,7 @@ namespace FishingIdle.Game.UI
                 case NavMarket: return Icons.Market;
                 case NavShop: return Icons.Shop;
                 case NavProfile: return Icons.Profile;
+                case NavEvents: return EventsWindow.NavIcon;
                 default: return Icons.Fishing;
             }
         }
@@ -928,18 +924,32 @@ namespace FishingIdle.Game.UI
         {
             var labels = NavLabels();
             var rects = NavLayout(skin, out var iconsOnly);
-            var active = _crew.IsOpen ? NavCrew : _map.IsOpen ? NavMap : _aquarium.IsOpen ? NavAquarium : _arena.IsOpen ? NavArena : _ranking.IsOpen ? NavRanking
+            var active = _events.IsOpen || _boss.IsOpen ? NavEvents : _crew.IsOpen ? NavCrew : _map.IsOpen ? NavMap : _aquarium.IsOpen ? NavAquarium : _arena.IsOpen ? NavArena : _ranking.IsOpen ? NavRanking
                 : _expedition.IsOpen ? NavExpedition : _market.IsOpen ? NavMarket : _shop.IsOpen ? NavShop : _profile.IsOpen ? NavProfile : NavFishing;
 
             for (var i = 0; i < labels.Length; i++)
             {
                 // Menu icons: the owner's final set (tools/Arte/processar_icones_menu.py, A-139).
-                var clicked = skin.NavGameButton(rects[i], NavIcon(i), iconsOnly ? null : labels[i], i == active) && i != active;
+                if (i == NavEvents && _root.WorldBoss != null && _root.WorldBoss.Open)
+                {
+                    // An event is on (the Boss Mundial): a soft gold glow behind the button (A-167).
+                    skin.DrawGlow(rects[i], UiSkin.Gold, 0.22f + 0.12f * Mathf.Sin(Time.unscaledTime * 3f));
+                }
+
+                // From inside an event (the Boss window), Eventos goes back to the list.
+                var clicked = skin.NavGameButton(rects[i], NavIcon(i), iconsOnly ? null : labels[i], i == active) && (i != active || (i == NavEvents && _boss.IsOpen));
                 if (i == NavExpedition && _root.ExpeditionResult != null && !_expedition.IsOpen)
                 {
                     // The Cardume is back: a dot until the player opens the Expedition and reads the report.
                     var dot = new Rect(rects[i].xMax - 14, rects[i].y + 3, 11, 11);
                     GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Danger, 0, 5.5f);
+                }
+
+                if (i == NavEvents && _root.WorldBoss != null && _root.WorldBoss.Open)
+                {
+                    // A gold dot while an event is happening, like the Passe's.
+                    var dot = new Rect(rects[i].xMax - 14, rects[i].y + 3, 11, 11);
+                    GUI.DrawTexture(dot, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Gold, 0, 5.5f);
                 }
 
                 if (clicked)
@@ -954,6 +964,7 @@ namespace FishingIdle.Game.UI
                     if (i == NavMarket) _market.Open();
                     if (i == NavShop) _shop.Open();
                     if (i == NavProfile) _profile.Open();
+                    if (i == NavEvents) _events.Open();
                 }
             }
         }
@@ -981,6 +992,7 @@ namespace FishingIdle.Game.UI
             CloseFully(() => _crew.IsOpen, _crew.Close);
             CloseFully(() => _pass.IsOpen, _pass.Close);
             CloseFully(() => _boss.IsOpen, _boss.Close);
+            CloseFully(() => _events.IsOpen, _events.Close);
 
             // A panel left open would sit on top of the window and catch its clicks.
             _showNotifications = false;

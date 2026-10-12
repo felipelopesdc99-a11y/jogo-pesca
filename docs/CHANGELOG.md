@@ -3,6 +3,23 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.58] — 12/10/2026
+
+Menu Eventos na barra de cima, com o Boss Mundial dentro (M24-T39, A-167). Verificado no CI, não aberto no Unity.
+
+### Adicionado
+
+- Botão **Eventos** (ícone + texto) no menu da barra de cima, com um ponto dourado e um brilho suave quando um evento
+  está acontecendo (o Boss das 19:00 às 19:10).
+- Janela **Eventos**: lista rolável de cartões. O cartão do Boss Mundial mostra o nome do Boss, o horário, a contagem
+  regressiva ou "Acontecendo agora · faltam mm:ss", a sua faixa de hoje, o último resultado e o botão "Abrir".
+- Na janela do Boss, o botão **‹ Eventos** volta à lista.
+
+### Mudado
+
+- O botão só de ícone do Boss (com a contagem) saiu da barra; a contagem fica dentro do menu Eventos.
+- Com 11 menus, a barra primeiro aperta os botões (menos margem e espaço) e só depois passa a mostrar só ícones.
+
 ## [0.2.0-m21.57] — 12/10/2026
 
 Correções na abertura do jogo (M24-T38, A-166, TD-050): o proprietário avisou que o jogo "não está abrindo" no Unity 6.3.

@@ -843,14 +843,15 @@ namespace FishingIdle.Game.UI
             Color.white, 17));
 
         /// <summary>Width a main-menu button needs for its label (icon, gap, label and side padding).</summary>
-        public float NavGameWidth(string label)
+        /// <param name="tight">Half the side padding, for a crowded bar (A-167).</param>
+        public float NavGameWidth(string label, bool tight = false)
         {
             if (string.IsNullOrEmpty(label))
             {
                 return NavGameIconWidth;
             }
 
-            return LabelOf(NavGame).CalcSize(new GUIContent(label)).x + NavGameIconSize + NavGameGap + NavGamePadding * 2f;
+            return LabelOf(NavGame).CalcSize(new GUIContent(label)).x + NavGameIconSize + NavGameGap + (tight ? NavGamePadding : NavGamePadding * 2f);
         }
 
         /// <summary>

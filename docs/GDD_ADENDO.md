@@ -2838,3 +2838,22 @@ vazia ou travada sem explicação:
   ou jogo em andamento), **Onde** (os três primeiros pontos do código do jogo envolvidos) e a pasta do **Save**.
 - Se nem o visual da interface puder ser montado, a mesma lista aparece no estilo simples do Unity.
 - O erro de balanceamento (arquivos de `/config` com problemas) continua com a tela própria e a lista dos itens a corrigir.
+
+### A-167 · Menu Eventos (o Boss Mundial dentro dele)
+**Seção do GDD:** 7 (menus) · pedido do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+"Boss mundial vai virar um submenu do menu EVENTOS, que vai ficar na parte superior escrito com seu próprio ícone."
+
+- **Barra de cima:** o botão **Eventos** (ícone + texto) é o último do menu, depois de Perfil. Quando um evento está
+  acontecendo, ele ganha um **ponto dourado** e um brilho dourado suave. O botão só de ícone do Boss e a pílula de
+  contagem (A-165) saíram da barra; à direita ficam Passe, avisos e opções.
+- **Espaço:** com 11 menus, se a fileira não couber, os botões ficam mais justos (menos margem e espaço entre eles); se
+  ainda não couber, aparecem só os ícones, como antes.
+- **Janela Eventos** (Placa do Píer com "i"; durante um evento o cabeçalho diz "1 acontecendo agora"): os eventos em
+  cartões, numa lista rolável. Hoje só existe o **Boss Mundial**: ícone do Boss, nome do Boss (do config), "Todo dia às
+  19:00 (Brasília), 10 minutos", o estado ("Começa em hh:mm:ss" ou, dourado com o selo AGORA, "Acontecendo agora ·
+  faltam mm:ss"), "Sua faixa de hoje", o último resultado (fora do evento) e **Abrir**, que abre a janela do Boss.
+- **Janela do Boss:** o botão **‹ Eventos** no cabeçalho volta à lista; o botão Eventos da barra também. Esc fecha.
+- **Avisos do Boss:** continuam iguais (os avisos do jogo não têm ação de clique).
+- **Ícone:** provisório (o relógio) até existir `ico_eventos.png` (`ASSET_PENDENTE`, pedido em `docs/ASSETS_PENDENTES.md`).
+- Nenhuma regra do Boss mudou; nenhum evento novo foi criado.
