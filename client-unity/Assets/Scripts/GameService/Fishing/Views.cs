@@ -161,7 +161,15 @@ namespace FishingIdle.GameService.Fishing
         public long CountedMs { get; internal set; }
 
         public bool Capped { get; internal set; }
+
+        /// <summary>The ordinary offline cycle (fishing.offline_cycle_seconds).</summary>
         public double CycleSeconds { get; internal set; }
+
+        /// <summary>The VIP's offline cycle (A-160) when some of the attempts used it; 0 otherwise.</summary>
+        public double VipCycleSeconds { get; internal set; }
+
+        /// <summary>How many of the offline attempts ran at the VIP's cycle (A-160).</summary>
+        public long VipAttempts { get; internal set; }
 
         /// <summary>How many hours away count for offline fishing at most (config).</summary>
         public double CapHours { get; internal set; }

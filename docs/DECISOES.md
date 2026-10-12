@@ -880,3 +880,32 @@ Cada etapa roda mesmo que outra falhe. O log e o resultado são gravados na bran
 
 **Regra.** Uma mudança só é dada como pronta depois que o `resultado.txt` do seu commit disser `success`.
 
+
+## TD-045 · Ciclo de 10 s, ciclo offline do VIP e o multiplicador proporcional ao ciclo (12/10/2026)
+
+**Origem.** M24-T27 (A-160): pesca a cada 10 s online e 20 s offline, 15 s offline com o VIP, menos raros por peixe e a
+Caixa de Pesca para 1 dia de pesca online.
+
+**Decisão.**
+- **Ciclo do VIP no config do VIP**: `economy.json → vip.offline_cycle_seconds` (15; 0 ou ausente = o VIP não muda o
+  ciclo; validado ≥ 1 quando presente). Fica junto do preço, da duração e do bônus de XP do VIP, e não em
+  `progression.json → fishing`, porque é um benefício do VIP.
+- **`CatchUpOffline` anda tentativa por tentativa** em vez de dividir o tempo por um ciclo fixo: cada tentativa usa o
+  ciclo do VIP quando `VipRules.IsActive` vale no fim dela (o mesmo teste do bônus de XP, que é conferido na hora de
+  cada peixe), e o ciclo normal depois. Assim um VIP que acaba no meio da ausência conta 15 s só até o fim, sem
+  tentativa parcial, e o XP do VIP e o ciclo do VIP valem para os mesmos peixes. O limite de 24 h e o
+  `MaxCyclesPerSettle` (10.000, acima das 5.760 tentativas de um dia com VIP) continuam. A sequência do `Rng`
+  (`Rng.For(seed, sessão, ciclo)`) não mudou de formato. `OfflineReport` ganhou `VipCycleSeconds` e `VipAttempts`, e
+  `VipView` ganhou `OfflineCycleSeconds` e `NormalOfflineCycleSeconds`, para as telas mostrarem os dois ritmos.
+- **Multiplicador proporcional ao ciclo**: `fishing_bite_multiplier` = 0,35 × 10/15 = 0,233333 (6 casas; a diferença
+  para 7/30 é de 0,0001% dos raros). Como o multiplicador é aplicado sobre a chance final (TD-043), os raros por hora
+  ficam exatamente iguais aos do ciclo de 15 s em qualquer mapa e equipamento.
+- **Fragmentos e Passe pelo script**, como no TD-043: `tools/Progressao/passe_fragmentos.py gerar` recalcula a chance
+  pelo alvo de dias e regera `config/pass.json` (o arquivo é exatamente a saída do script).
+- **`simular_progressao.py --vip`** passou a simular também o ciclo offline do VIP.
+
+**Por quê.** Medir pela chance final mantém a meta "mais peixes, os mesmos raros por hora" verdadeira em todos os
+cenários; andar tentativa por tentativa no offline é o jeito mais simples de o VIP terminar no meio sem regras extras.
+
+**Rever se.** O proprietário decidir sobre o bônus de XP do VIP junto com o ciclo mais rápido (OD-065), os ganhos do fim
+do jogo (OD-063) ou os tamanhos especiais por hora (OD-064).

@@ -341,8 +341,11 @@ namespace FishingIdle.GameService.Fishing
         }
 
         /// <summary>
-        /// Offline fishing (GDD section 10): one catch per offline cycle (60 s) for the time between
-        /// <paramref name="fromMs"/> and <paramref name="toMs"/>, never more than the cap (24 h).
+        /// Offline fishing (GDD section 10): one attempt per offline cycle (fishing.offline_cycle_seconds) for
+        /// the time between <paramref name="fromMs"/> and <paramref name="toMs"/>, never more than the cap (24 h).
+        /// While the VIP is active the cycle is vip.offline_cycle_seconds instead (M24-T27, A-160): a VIP cycle is
+        /// used only when it ends before the VIP does, so a VIP that ends while the player is away counts only
+        /// until it ends and the rest of the time runs at the ordinary cycle.
         /// Computed in one pass from timestamps; no timer ran while the player was away. The catches
         /// continue the current run's RNG stream, and the caller starts a new run right after, so
         /// the same offline period can never be credited twice.
@@ -351,27 +354,46 @@ namespace FishingIdle.GameService.Fishing
         {
             var away = Math.Max(0, toMs - fromMs);
             var cycleMs = (long)Math.Round(Config.Fishing.OfflineCycleSeconds * 1000.0);
+            var vipCycleMs = OfflineVipCycleMs();
             var capMs = (long)Math.Round(Config.Fishing.OfflineAccumulationCapHours * 3600000.0);
             var counted = Math.Min(away, capMs);
-            var cycles = cycleMs > 0 ? Math.Min(counted / cycleMs, MaxCyclesPerSettle) : 0;
+            var endMs = fromMs + counted;
             var fishing = Save.Fishing;
 
             var update = new FishingUpdate();
-            if (cycles > 0)
+            long cycles = 0;
+            long vipCycles = 0;
+            if (cycleMs > 0)
             {
                 var map = CurrentMap();
                 var rod = CurrentRod();
                 var rodLevel = Save.EquippedRodItem()?.Level ?? 1;
-                for (long k = 1; k <= cycles; k++)
+                var t = fromMs;
+                while (cycles < MaxCyclesPerSettle)
                 {
-                    var rng = Rng.For(Save.RngSeed, fishing.SessionIndex, fishing.CyclesProcessed + k);
-                    Attempt(map, rod, rodLevel, rng, fromMs + k * cycleMs, update, offline: true);
+                    var vip = vipCycleMs > 0 && Vip.VipRules.IsActive(Save, t + vipCycleMs);
+                    var step = vip ? vipCycleMs : cycleMs;
+                    if (t + step > endMs)
+                    {
+                        break;
+                    }
+
+                    t += step;
+                    cycles++;
+                    if (vip)
+                    {
+                        vipCycles++;
+                    }
+
+                    var rng = Rng.For(Save.RngSeed, fishing.SessionIndex, fishing.CyclesProcessed + cycles);
+                    Attempt(map, rod, rodLevel, rng, t, update, offline: true);
                 }
 
                 fishing.CyclesProcessed += cycles;
             }
 
-            if (away >= cycleMs && cycleMs > 0)
+            var shortest = vipCycleMs > 0 && Vip.VipRules.IsActive(Save, fromMs + vipCycleMs) ? vipCycleMs : cycleMs;
+            if (away >= shortest && shortest > 0)
             {
                 _pendingOffline = new OfflineReport
                 {
@@ -379,11 +401,20 @@ namespace FishingIdle.GameService.Fishing
                     CountedMs = counted,
                     Capped = away > capMs,
                     CycleSeconds = cycleMs / 1000.0,
+                    VipCycleSeconds = vipCycles > 0 ? vipCycleMs / 1000.0 : 0,
+                    VipAttempts = vipCycles,
                     CapHours = Config.Fishing.OfflineAccumulationCapHours,
                     Update = update,
                 };
-                _session.Log("Offline fishing: " + cycles + " catches for " + (counted / 1000) + " s away.");
+                _session.Log("Offline fishing: " + cycles + " attempts (" + vipCycles + " at the VIP cycle) for " + (counted / 1000) + " s away.");
             }
+        }
+
+        /// <summary>The VIP's offline cycle in ms (A-160), or 0 when the config gives none.</summary>
+        private long OfflineVipCycleMs()
+        {
+            var vip = Config.Economy.Vip;
+            return vip != null && vip.OfflineCycleSeconds >= 1 ? (long)Math.Round(vip.OfflineCycleSeconds * 1000.0) : 0;
         }
 
         /// <summary>Produces the catch of every cycle completed by <paramref name="horizonMs"/>.</summary>

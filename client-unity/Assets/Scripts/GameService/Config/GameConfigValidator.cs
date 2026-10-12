@@ -606,6 +606,10 @@ namespace FishingIdle.GameService.Config
             {
                 errors.Add(V.NegativeValue(GameConfigLoader.EconomyFile, "vip.offline_fisher_xp_bonus"));
             }
+            else if (vip.OfflineCycleSeconds != 0 && (vip.OfflineCycleSeconds < 1 || double.IsNaN(vip.OfflineCycleSeconds)))
+            {
+                errors.Add(V.AtLeast(GameConfigLoader.EconomyFile, "vip.offline_cycle_seconds", 1));
+            }
 
             // ---- economy.json → market_fixed_price (Milestone 8)
             var market = economy.MarketFixedPrice;

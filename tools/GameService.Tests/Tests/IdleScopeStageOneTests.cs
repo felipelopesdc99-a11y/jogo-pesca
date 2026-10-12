@@ -93,8 +93,8 @@ public sealed class IdleScopeStageOneTests
     [Fact]
     public void The_first_levels_come_several_per_session()
     {
-        // A-153: Nv.10 in about 1 hour of online fishing; 30 minutes since M24-T22 (A-159), with the same XP and twice
-        // the fish per hour (FishingServiceTests checks the real pace).
+        // A-153: Nv.10 in about 1 hour of online fishing; 30 minutes since M24-T22 (A-159) and 20 minutes since
+        // M24-T27 (A-160), with the same XP and 1,5× the fish per hour (FishingServiceTests checks the real pace).
         var config = TestSupport.RealConfig();
         var toLevel10 = Enumerable.Range(1, 9).Sum(l => config.FisherXpToNextLevel(l));
         Assert.InRange(toLevel10, 500L, 1500L);

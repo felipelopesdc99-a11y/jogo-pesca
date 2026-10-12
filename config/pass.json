@@ -11,15 +11,15 @@
     {
       "level": 10,
       "free": {
-        "coins": 1950,
-        "shells": 6,
+        "coins": 2460,
+        "shells": 9,
         "dollars": 10,
         "boat_id": "boat_01",
         "fragments": 3
       },
       "premium": {
-        "coins": 3900,
-        "shells": 12,
+        "coins": 4920,
+        "shells": 18,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 6
@@ -28,15 +28,15 @@
     {
       "level": 20,
       "free": {
-        "coins": 21700,
-        "shells": 9,
+        "coins": 28800,
+        "shells": 13,
         "dollars": 10,
         "boat_id": "boat_02",
         "fragments": 4
       },
       "premium": {
-        "coins": 43400,
-        "shells": 18,
+        "coins": 57600,
+        "shells": 26,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 8
@@ -45,15 +45,15 @@
     {
       "level": 30,
       "free": {
-        "coins": 21700,
-        "shells": 9,
+        "coins": 37200,
+        "shells": 13,
         "dollars": 10,
         "boat_id": "boat_03",
         "fragments": 6
       },
       "premium": {
-        "coins": 43400,
-        "shells": 18,
+        "coins": 74400,
+        "shells": 26,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 12
@@ -62,15 +62,15 @@
     {
       "level": 40,
       "free": {
-        "coins": 21700,
-        "shells": 9,
+        "coins": 37200,
+        "shells": 13,
         "dollars": 10,
         "boat_id": "boat_04",
         "fragments": 7
       },
       "premium": {
-        "coins": 43400,
-        "shells": 18,
+        "coins": 74400,
+        "shells": 26,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 14
@@ -79,15 +79,15 @@
     {
       "level": 50,
       "free": {
-        "coins": 110000,
-        "shells": 11,
+        "coins": 37200,
+        "shells": 13,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 9
       },
       "premium": {
-        "coins": 220000,
-        "shells": 22,
+        "coins": 74400,
+        "shells": 26,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 18
@@ -96,15 +96,15 @@
     {
       "level": 60,
       "free": {
-        "coins": 110000,
-        "shells": 11,
+        "coins": 156000,
+        "shells": 16,
         "dollars": 10,
         "boat_id": "boat_06",
         "fragments": 11
       },
       "premium": {
-        "coins": 220000,
-        "shells": 22,
+        "coins": 312000,
+        "shells": 32,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 22
@@ -113,15 +113,15 @@
     {
       "level": 70,
       "free": {
-        "coins": 182000,
-        "shells": 11,
+        "coins": 156000,
+        "shells": 16,
         "dollars": 10,
         "boat_id": "boat_07",
         "fragments": 14
       },
       "premium": {
-        "coins": 364000,
-        "shells": 22,
+        "coins": 312000,
+        "shells": 32,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 28
@@ -130,15 +130,15 @@
     {
       "level": 80,
       "free": {
-        "coins": 182000,
-        "shells": 11,
+        "coins": 554000,
+        "shells": 23,
         "dollars": 10,
         "boat_id": "boat_08",
         "fragments": 18
       },
       "premium": {
-        "coins": 364000,
-        "shells": 22,
+        "coins": 1110000,
+        "shells": 46,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 36
@@ -147,15 +147,15 @@
     {
       "level": 90,
       "free": {
-        "coins": 592000,
-        "shells": 15,
+        "coins": 554000,
+        "shells": 23,
         "dollars": 10,
         "boat_id": "boat_09",
         "fragments": 24
       },
       "premium": {
-        "coins": 1180000,
-        "shells": 30,
+        "coins": 1110000,
+        "shells": 46,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 48
@@ -164,15 +164,15 @@
     {
       "level": 100,
       "free": {
-        "coins": 822000,
-        "shells": 15,
+        "coins": 554000,
+        "shells": 23,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 30
       },
       "premium": {
-        "coins": 1640000,
-        "shells": 30,
+        "coins": 1110000,
+        "shells": 46,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 60
@@ -181,15 +181,15 @@
     {
       "level": 110,
       "free": {
-        "coins": 2120000,
-        "shells": 21,
+        "coins": 1990000,
+        "shells": 32,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 2
       },
       "premium": {
-        "coins": 4240000,
-        "shells": 42,
+        "coins": 3980000,
+        "shells": 64,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 4
@@ -198,15 +198,15 @@
     {
       "level": 120,
       "free": {
-        "coins": 2300000,
-        "shells": 21,
+        "coins": 2630000,
+        "shells": 32,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 3
       },
       "premium": {
-        "coins": 4600000,
-        "shells": 42,
+        "coins": 5260000,
+        "shells": 64,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 6
@@ -215,15 +215,15 @@
     {
       "level": 130,
       "free": {
-        "coins": 3960000,
-        "shells": 21,
+        "coins": 4010000,
+        "shells": 32,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 4
       },
       "premium": {
-        "coins": 7920000,
-        "shells": 42,
+        "coins": 8020000,
+        "shells": 64,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 8
@@ -232,15 +232,15 @@
     {
       "level": 140,
       "free": {
-        "coins": 5470000,
-        "shells": 21,
+        "coins": 4010000,
+        "shells": 32,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 5
       },
       "premium": {
-        "coins": 10900000,
-        "shells": 42,
+        "coins": 8020000,
+        "shells": 64,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 10
@@ -249,15 +249,15 @@
     {
       "level": 150,
       "free": {
-        "coins": 8060000,
-        "shells": 28,
+        "coins": 6610000,
+        "shells": 49,
         "dollars": 0,
         "boat_id": "boat_05",
         "fragments": 6
       },
       "premium": {
-        "coins": 16100000,
-        "shells": 56,
+        "coins": 13200000,
+        "shells": 98,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 12
@@ -266,15 +266,15 @@
     {
       "level": 160,
       "free": {
-        "coins": 9440000,
-        "shells": 38,
+        "coins": 9100000,
+        "shells": 54,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 7
       },
       "premium": {
-        "coins": 18900000,
-        "shells": 76,
+        "coins": 18200000,
+        "shells": 108,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 14
@@ -283,15 +283,15 @@
     {
       "level": 170,
       "free": {
-        "coins": 9440000,
-        "shells": 38,
+        "coins": 11000000,
+        "shells": 70,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 9
       },
       "premium": {
-        "coins": 18900000,
-        "shells": 76,
+        "coins": 22000000,
+        "shells": 140,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 18
@@ -300,15 +300,15 @@
     {
       "level": 180,
       "free": {
-        "coins": 13700000,
-        "shells": 40,
+        "coins": 11000000,
+        "shells": 70,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 12
       },
       "premium": {
-        "coins": 27400000,
-        "shells": 80,
+        "coins": 22000000,
+        "shells": 140,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 24
@@ -317,15 +317,15 @@
     {
       "level": 190,
       "free": {
-        "coins": 17800000,
-        "shells": 52,
+        "coins": 15900000,
+        "shells": 83,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 16
       },
       "premium": {
-        "coins": 35600000,
-        "shells": 104,
+        "coins": 31800000,
+        "shells": 166,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 32
@@ -334,15 +334,15 @@
     {
       "level": 200,
       "free": {
-        "coins": 21600000,
-        "shells": 52,
+        "coins": 20800000,
+        "shells": 86,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 20
       },
       "premium": {
-        "coins": 43200000,
-        "shells": 104,
+        "coins": 41600000,
+        "shells": 172,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 40
@@ -351,15 +351,15 @@
     {
       "level": 210,
       "free": {
-        "coins": 29600000,
-        "shells": 59,
+        "coins": 23000000,
+        "shells": 88,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 2
       },
       "premium": {
-        "coins": 59200000,
-        "shells": 118,
+        "coins": 46000000,
+        "shells": 176,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 4
@@ -368,15 +368,15 @@
     {
       "level": 220,
       "free": {
-        "coins": 32800000,
-        "shells": 59,
+        "coins": 30500000,
+        "shells": 92,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 3
       },
       "premium": {
-        "coins": 65600000,
-        "shells": 118,
+        "coins": 61000000,
+        "shells": 184,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 6
@@ -385,15 +385,15 @@
     {
       "level": 230,
       "free": {
-        "coins": 32800000,
-        "shells": 59,
+        "coins": 33600000,
+        "shells": 92,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 4
       },
       "premium": {
-        "coins": 65600000,
-        "shells": 118,
+        "coins": 67200000,
+        "shells": 184,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 8
@@ -402,15 +402,15 @@
     {
       "level": 240,
       "free": {
-        "coins": 48800000,
-        "shells": 59,
+        "coins": 34600000,
+        "shells": 94,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 5
       },
       "premium": {
-        "coins": 97600000,
-        "shells": 118,
+        "coins": 69200000,
+        "shells": 188,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 10
@@ -419,15 +419,15 @@
     {
       "level": 250,
       "free": {
-        "coins": 61900000,
-        "shells": 65,
+        "coins": 50500000,
+        "shells": 95,
         "dollars": 0,
         "boat_id": "boat_05",
         "fragments": 6
       },
       "premium": {
-        "coins": 124000000,
-        "shells": 130,
+        "coins": 101000000,
+        "shells": 190,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 12
@@ -436,15 +436,15 @@
     {
       "level": 260,
       "free": {
-        "coins": 73000000,
-        "shells": 67,
+        "coins": 57500000,
+        "shells": 101,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 7
       },
       "premium": {
-        "coins": 146000000,
-        "shells": 134,
+        "coins": 115000000,
+        "shells": 202,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 14
@@ -453,15 +453,15 @@
     {
       "level": 270,
       "free": {
-        "coins": 86100000,
-        "shells": 67,
+        "coins": 66700000,
+        "shells": 106,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 9
       },
       "premium": {
-        "coins": 172000000,
-        "shells": 134,
+        "coins": 133000000,
+        "shells": 212,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 18
@@ -470,15 +470,15 @@
     {
       "level": 280,
       "free": {
-        "coins": 92900000,
-        "shells": 67,
+        "coins": 75300000,
+        "shells": 108,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 12
       },
       "premium": {
-        "coins": 186000000,
-        "shells": 134,
+        "coins": 151000000,
+        "shells": 216,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 24
@@ -487,15 +487,15 @@
     {
       "level": 290,
       "free": {
-        "coins": 134000000,
-        "shells": 75,
+        "coins": 88700000,
+        "shells": 109,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 16
       },
       "premium": {
-        "coins": 268000000,
-        "shells": 150,
+        "coins": 177000000,
+        "shells": 218,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 32
@@ -504,15 +504,15 @@
     {
       "level": 300,
       "free": {
-        "coins": 153000000,
-        "shells": 76,
+        "coins": 96200000,
+        "shells": 109,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 20
       },
       "premium": {
-        "coins": 306000000,
-        "shells": 152,
+        "coins": 192000000,
+        "shells": 218,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 40
@@ -521,15 +521,15 @@
     {
       "level": 310,
       "free": {
-        "coins": 170000000,
-        "shells": 77,
+        "coins": 99700000,
+        "shells": 111,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 2
       },
       "premium": {
-        "coins": 340000000,
-        "shells": 154,
+        "coins": 199000000,
+        "shells": 222,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 4
@@ -538,15 +538,15 @@
     {
       "level": 320,
       "free": {
-        "coins": 170000000,
-        "shells": 77,
+        "coins": 135000000,
+        "shells": 113,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 3
       },
       "premium": {
-        "coins": 340000000,
-        "shells": 154,
+        "coins": 270000000,
+        "shells": 226,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 6
@@ -555,15 +555,15 @@
     {
       "level": 330,
       "free": {
-        "coins": 170000000,
-        "shells": 78,
+        "coins": 154000000,
+        "shells": 114,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 4
       },
       "premium": {
-        "coins": 340000000,
-        "shells": 156,
+        "coins": 308000000,
+        "shells": 228,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 8
@@ -573,14 +573,14 @@
       "level": 340,
       "free": {
         "coins": 170000000,
-        "shells": 78,
+        "shells": 116,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 5
       },
       "premium": {
         "coins": 340000000,
-        "shells": 156,
+        "shells": 232,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 10
@@ -589,15 +589,15 @@
     {
       "level": 350,
       "free": {
-        "coins": 170000000,
-        "shells": 78,
+        "coins": 171000000,
+        "shells": 117,
         "dollars": 0,
         "boat_id": "boat_05",
         "fragments": 6
       },
       "premium": {
-        "coins": 340000000,
-        "shells": 156,
+        "coins": 342000000,
+        "shells": 234,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 12
@@ -606,15 +606,15 @@
     {
       "level": 360,
       "free": {
-        "coins": 264000000,
-        "shells": 80,
+        "coins": 171000000,
+        "shells": 117,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 7
       },
       "premium": {
-        "coins": 528000000,
-        "shells": 160,
+        "coins": 342000000,
+        "shells": 234,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 14
@@ -623,15 +623,15 @@
     {
       "level": 370,
       "free": {
-        "coins": 314000000,
-        "shells": 83,
+        "coins": 171000000,
+        "shells": 117,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 9
       },
       "premium": {
-        "coins": 628000000,
-        "shells": 166,
+        "coins": 342000000,
+        "shells": 234,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 18
@@ -640,15 +640,15 @@
     {
       "level": 380,
       "free": {
-        "coins": 326000000,
-        "shells": 83,
+        "coins": 262000000,
+        "shells": 121,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 12
       },
       "premium": {
-        "coins": 652000000,
-        "shells": 166,
+        "coins": 524000000,
+        "shells": 242,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 24
@@ -657,15 +657,15 @@
     {
       "level": 390,
       "free": {
-        "coins": 328000000,
-        "shells": 83,
+        "coins": 294000000,
+        "shells": 122,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 16
       },
       "premium": {
-        "coins": 656000000,
-        "shells": 166,
+        "coins": 588000000,
+        "shells": 244,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 32
@@ -674,15 +674,15 @@
     {
       "level": 400,
       "free": {
-        "coins": 333000000,
-        "shells": 83,
+        "coins": 311000000,
+        "shells": 122,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 20
       },
       "premium": {
-        "coins": 666000000,
-        "shells": 166,
+        "coins": 622000000,
+        "shells": 244,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 40
@@ -691,15 +691,15 @@
     {
       "level": 410,
       "free": {
-        "coins": 444000000,
-        "shells": 85,
+        "coins": 328000000,
+        "shells": 124,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 2
       },
       "premium": {
-        "coins": 888000000,
-        "shells": 170,
+        "coins": 656000000,
+        "shells": 248,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 4
@@ -708,15 +708,15 @@
     {
       "level": 420,
       "free": {
-        "coins": 490000000,
-        "shells": 85,
+        "coins": 331000000,
+        "shells": 124,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 3
       },
       "premium": {
-        "coins": 980000000,
-        "shells": 170,
+        "coins": 662000000,
+        "shells": 248,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 6
@@ -725,15 +725,15 @@
     {
       "level": 430,
       "free": {
-        "coins": 539000000,
-        "shells": 86,
+        "coins": 335000000,
+        "shells": 124,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 4
       },
       "premium": {
-        "coins": 1080000000,
-        "shells": 172,
+        "coins": 670000000,
+        "shells": 248,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 8
@@ -742,15 +742,15 @@
     {
       "level": 440,
       "free": {
-        "coins": 564000000,
-        "shells": 87,
+        "coins": 421000000,
+        "shells": 127,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 5
       },
       "premium": {
-        "coins": 1130000000,
-        "shells": 174,
+        "coins": 842000000,
+        "shells": 254,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 10
@@ -759,15 +759,15 @@
     {
       "level": 450,
       "free": {
-        "coins": 748000000,
-        "shells": 89,
+        "coins": 502000000,
+        "shells": 128,
         "dollars": 0,
         "boat_id": "boat_05",
         "fragments": 6
       },
       "premium": {
-        "coins": 1500000000,
-        "shells": 178,
+        "coins": 1000000000,
+        "shells": 256,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 12
@@ -776,15 +776,15 @@
     {
       "level": 460,
       "free": {
-        "coins": 832000000,
-        "shells": 90,
+        "coins": 540000000,
+        "shells": 130,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 7
       },
       "premium": {
-        "coins": 1660000000,
-        "shells": 180,
+        "coins": 1080000000,
+        "shells": 260,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 14
@@ -793,15 +793,15 @@
     {
       "level": 470,
       "free": {
-        "coins": 832000000,
-        "shells": 90,
+        "coins": 561000000,
+        "shells": 130,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 9
       },
       "premium": {
-        "coins": 1660000000,
-        "shells": 180,
+        "coins": 1120000000,
+        "shells": 260,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 18
@@ -810,15 +810,15 @@
     {
       "level": 480,
       "free": {
-        "coins": 979000000,
-        "shells": 91,
+        "coins": 749000000,
+        "shells": 133,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 12
       },
       "premium": {
-        "coins": 1960000000,
-        "shells": 182,
+        "coins": 1500000000,
+        "shells": 266,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 24
@@ -827,15 +827,15 @@
     {
       "level": 490,
       "free": {
-        "coins": 979000000,
-        "shells": 91,
+        "coins": 749000000,
+        "shells": 133,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 16
       },
       "premium": {
-        "coins": 1960000000,
-        "shells": 182,
+        "coins": 1500000000,
+        "shells": 266,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 32
@@ -844,15 +844,15 @@
     {
       "level": 500,
       "free": {
-        "coins": 979000000,
-        "shells": 91,
+        "coins": 834000000,
+        "shells": 135,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 20
       },
       "premium": {
-        "coins": 1960000000,
-        "shells": 182,
+        "coins": 1670000000,
+        "shells": 270,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 40
@@ -861,15 +861,15 @@
     {
       "level": 510,
       "free": {
-        "coins": 979000000,
-        "shells": 91,
+        "coins": 834000000,
+        "shells": 135,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 2
       },
       "premium": {
-        "coins": 1960000000,
-        "shells": 182,
+        "coins": 1670000000,
+        "shells": 270,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 4
@@ -878,15 +878,15 @@
     {
       "level": 520,
       "free": {
-        "coins": 979000000,
-        "shells": 91,
+        "coins": 980000000,
+        "shells": 136,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 3
       },
       "premium": {
         "coins": 1960000000,
-        "shells": 182,
+        "shells": 272,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 6
@@ -895,15 +895,15 @@
     {
       "level": 530,
       "free": {
-        "coins": 1390000000,
-        "shells": 94,
+        "coins": 980000000,
+        "shells": 136,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 4
       },
       "premium": {
-        "coins": 2780000000,
-        "shells": 188,
+        "coins": 1960000000,
+        "shells": 272,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 8
@@ -912,15 +912,15 @@
     {
       "level": 540,
       "free": {
-        "coins": 1530000000,
-        "shells": 95,
+        "coins": 980000000,
+        "shells": 136,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 5
       },
       "premium": {
-        "coins": 3060000000,
-        "shells": 190,
+        "coins": 1960000000,
+        "shells": 272,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 10
@@ -929,15 +929,15 @@
     {
       "level": 550,
       "free": {
-        "coins": 1570000000,
-        "shells": 95,
+        "coins": 980000000,
+        "shells": 136,
         "dollars": 0,
         "boat_id": "boat_05",
         "fragments": 6
       },
       "premium": {
-        "coins": 3140000000,
-        "shells": 190,
+        "coins": 1960000000,
+        "shells": 272,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 12
@@ -946,15 +946,15 @@
     {
       "level": 560,
       "free": {
-        "coins": 1590000000,
-        "shells": 95,
+        "coins": 980000000,
+        "shells": 136,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 7
       },
       "premium": {
-        "coins": 3180000000,
-        "shells": 190,
+        "coins": 1960000000,
+        "shells": 272,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 14
@@ -963,15 +963,15 @@
     {
       "level": 570,
       "free": {
-        "coins": 1610000000,
-        "shells": 95,
+        "coins": 1460000000,
+        "shells": 141,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 9
       },
       "premium": {
-        "coins": 3220000000,
-        "shells": 190,
+        "coins": 2920000000,
+        "shells": 282,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 18
@@ -980,15 +980,15 @@
     {
       "level": 580,
       "free": {
-        "coins": 2010000000,
-        "shells": 97,
+        "coins": 1540000000,
+        "shells": 142,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 12
       },
       "premium": {
-        "coins": 4020000000,
-        "shells": 194,
+        "coins": 3080000000,
+        "shells": 284,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 24
@@ -997,15 +997,15 @@
     {
       "level": 590,
       "free": {
-        "coins": 2130000000,
-        "shells": 97,
+        "coins": 1580000000,
+        "shells": 142,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 16
       },
       "premium": {
-        "coins": 4260000000,
-        "shells": 194,
+        "coins": 3160000000,
+        "shells": 284,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 32
@@ -1014,15 +1014,15 @@
     {
       "level": 600,
       "free": {
-        "coins": 2310000000,
-        "shells": 98,
+        "coins": 1600000000,
+        "shells": 142,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 20
       },
       "premium": {
-        "coins": 4620000000,
-        "shells": 196,
+        "coins": 3200000000,
+        "shells": 284,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 40
@@ -1031,15 +1031,15 @@
     {
       "level": 610,
       "free": {
-        "coins": 2360000000,
-        "shells": 98,
+        "coins": 1610000000,
+        "shells": 142,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 2
       },
       "premium": {
-        "coins": 4720000000,
-        "shells": 196,
+        "coins": 3220000000,
+        "shells": 284,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 4
@@ -1048,15 +1048,15 @@
     {
       "level": 620,
       "free": {
-        "coins": 2400000000,
-        "shells": 98,
+        "coins": 2030000000,
+        "shells": 146,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 3
       },
       "premium": {
-        "coins": 4800000000,
-        "shells": 196,
+        "coins": 4060000000,
+        "shells": 292,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 6
@@ -1065,15 +1065,15 @@
     {
       "level": 630,
       "free": {
-        "coins": 2430000000,
-        "shells": 98,
+        "coins": 2140000000,
+        "shells": 146,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 4
       },
       "premium": {
-        "coins": 4860000000,
-        "shells": 196,
+        "coins": 4280000000,
+        "shells": 292,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 8
@@ -1082,15 +1082,15 @@
     {
       "level": 640,
       "free": {
-        "coins": 2460000000,
-        "shells": 98,
+        "coins": 2320000000,
+        "shells": 147,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 5
       },
       "premium": {
-        "coins": 4920000000,
-        "shells": 196,
+        "coins": 4640000000,
+        "shells": 294,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 10
@@ -1099,15 +1099,15 @@
     {
       "level": 650,
       "free": {
-        "coins": 2480000000,
-        "shells": 98,
+        "coins": 2370000000,
+        "shells": 147,
         "dollars": 0,
         "boat_id": "boat_05",
         "fragments": 6
       },
       "premium": {
-        "coins": 4960000000,
-        "shells": 196,
+        "coins": 4740000000,
+        "shells": 294,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 12
@@ -1116,15 +1116,15 @@
     {
       "level": 660,
       "free": {
-        "coins": 2500000000,
-        "shells": 98,
+        "coins": 2400000000,
+        "shells": 147,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 7
       },
       "premium": {
-        "coins": 5000000000,
-        "shells": 196,
+        "coins": 4800000000,
+        "shells": 294,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 14
@@ -1133,15 +1133,15 @@
     {
       "level": 670,
       "free": {
-        "coins": 6640000000,
-        "shells": 107,
+        "coins": 2430000000,
+        "shells": 147,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 9
       },
       "premium": {
-        "coins": 13300000000,
-        "shells": 214,
+        "coins": 4860000000,
+        "shells": 294,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 18
@@ -1150,15 +1150,15 @@
     {
       "level": 680,
       "free": {
-        "coins": 7660000000,
-        "shells": 108,
+        "coins": 2450000000,
+        "shells": 147,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 12
       },
       "premium": {
-        "coins": 15300000000,
-        "shells": 216,
+        "coins": 4900000000,
+        "shells": 294,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 24
@@ -1167,15 +1167,15 @@
     {
       "level": 690,
       "free": {
-        "coins": 9970000000,
-        "shells": 110,
+        "coins": 2480000000,
+        "shells": 147,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 16
       },
       "premium": {
-        "coins": 19900000000,
-        "shells": 220,
+        "coins": 4960000000,
+        "shells": 294,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 32
@@ -1184,15 +1184,15 @@
     {
       "level": 700,
       "free": {
-        "coins": 10500000000,
-        "shells": 110,
+        "coins": 2500000000,
+        "shells": 147,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 20
       },
       "premium": {
-        "coins": 21000000000,
-        "shells": 220,
+        "coins": 5000000000,
+        "shells": 294,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 40
@@ -1201,15 +1201,15 @@
     {
       "level": 710,
       "free": {
-        "coins": 10800000000,
-        "shells": 110,
+        "coins": 6560000000,
+        "shells": 158,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 2
       },
       "premium": {
-        "coins": 21600000000,
-        "shells": 220,
+        "coins": 13100000000,
+        "shells": 316,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 4
@@ -1218,15 +1218,15 @@
     {
       "level": 720,
       "free": {
-        "coins": 11000000000,
-        "shells": 111,
+        "coins": 7620000000,
+        "shells": 161,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 3
       },
       "premium": {
-        "coins": 22000000000,
-        "shells": 222,
+        "coins": 15200000000,
+        "shells": 322,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 6
@@ -1235,15 +1235,15 @@
     {
       "level": 730,
       "free": {
-        "coins": 11300000000,
-        "shells": 111,
+        "coins": 9800000000,
+        "shells": 165,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 4
       },
       "premium": {
-        "coins": 22600000000,
-        "shells": 222,
+        "coins": 19600000000,
+        "shells": 330,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 8
@@ -1252,15 +1252,15 @@
     {
       "level": 740,
       "free": {
-        "coins": 11400000000,
-        "shells": 111,
+        "coins": 10300000000,
+        "shells": 165,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 5
       },
       "premium": {
-        "coins": 22800000000,
-        "shells": 222,
+        "coins": 20600000000,
+        "shells": 330,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 10
@@ -1269,15 +1269,15 @@
     {
       "level": 750,
       "free": {
-        "coins": 11600000000,
-        "shells": 111,
+        "coins": 10600000000,
+        "shells": 165,
         "dollars": 0,
         "boat_id": "boat_05",
         "fragments": 6
       },
       "premium": {
-        "coins": 23200000000,
-        "shells": 222,
+        "coins": 21200000000,
+        "shells": 330,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 12
@@ -1286,15 +1286,15 @@
     {
       "level": 760,
       "free": {
-        "coins": 31800000000,
-        "shells": 120,
+        "coins": 11000000000,
+        "shells": 166,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 7
       },
       "premium": {
-        "coins": 63600000000,
-        "shells": 240,
+        "coins": 22000000000,
+        "shells": 332,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 14
@@ -1303,15 +1303,15 @@
     {
       "level": 770,
       "free": {
-        "coins": 55800000000,
-        "shells": 124,
+        "coins": 11100000000,
+        "shells": 166,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 9
       },
       "premium": {
-        "coins": 112000000000,
-        "shells": 248,
+        "coins": 22200000000,
+        "shells": 332,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 18
@@ -1320,15 +1320,15 @@
     {
       "level": 780,
       "free": {
-        "coins": 68500000000,
-        "shells": 126,
+        "coins": 11400000000,
+        "shells": 166,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 12
       },
       "premium": {
-        "coins": 137000000000,
-        "shells": 252,
+        "coins": 22800000000,
+        "shells": 332,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 24
@@ -1337,15 +1337,15 @@
     {
       "level": 790,
       "free": {
-        "coins": 83300000000,
-        "shells": 127,
+        "coins": 11500000000,
+        "shells": 166,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 16
       },
       "premium": {
-        "coins": 167000000000,
-        "shells": 254,
+        "coins": 23000000000,
+        "shells": 332,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 32
@@ -1354,15 +1354,15 @@
     {
       "level": 800,
       "free": {
-        "coins": 86200000000,
-        "shells": 127,
+        "coins": 11700000000,
+        "shells": 166,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 20
       },
       "premium": {
-        "coins": 172000000000,
-        "shells": 254,
+        "coins": 23400000000,
+        "shells": 332,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 40
@@ -1371,15 +1371,15 @@
     {
       "level": 810,
       "free": {
-        "coins": 87700000000,
-        "shells": 129,
+        "coins": 31800000000,
+        "shells": 179,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 2
       },
       "premium": {
-        "coins": 175000000000,
-        "shells": 258,
+        "coins": 63600000000,
+        "shells": 358,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 4
@@ -1388,15 +1388,15 @@
     {
       "level": 820,
       "free": {
-        "coins": 130000000000,
-        "shells": 132,
+        "coins": 55800000000,
+        "shells": 186,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 3
       },
       "premium": {
-        "coins": 260000000000,
-        "shells": 264,
+        "coins": 112000000000,
+        "shells": 372,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 6
@@ -1405,15 +1405,15 @@
     {
       "level": 830,
       "free": {
-        "coins": 148000000000,
-        "shells": 132,
+        "coins": 76800000000,
+        "shells": 189,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 4
       },
       "premium": {
-        "coins": 296000000000,
-        "shells": 264,
+        "coins": 154000000000,
+        "shells": 378,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 8
@@ -1422,15 +1422,15 @@
     {
       "level": 840,
       "free": {
-        "coins": 150000000000,
-        "shells": 133,
+        "coins": 83300000000,
+        "shells": 191,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 5
       },
       "premium": {
-        "coins": 300000000000,
-        "shells": 266,
+        "coins": 167000000000,
+        "shells": 382,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 10
@@ -1439,15 +1439,15 @@
     {
       "level": 850,
       "free": {
-        "coins": 196000000000,
-        "shells": 135,
+        "coins": 85900000000,
+        "shells": 191,
         "dollars": 0,
         "boat_id": "boat_05",
         "fragments": 6
       },
       "premium": {
-        "coins": 392000000000,
-        "shells": 270,
+        "coins": 172000000000,
+        "shells": 382,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 12
@@ -1456,15 +1456,15 @@
     {
       "level": 860,
       "free": {
-        "coins": 216000000000,
-        "shells": 135,
+        "coins": 88100000000,
+        "shells": 193,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 7
       },
       "premium": {
-        "coins": 432000000000,
-        "shells": 270,
+        "coins": 176000000000,
+        "shells": 386,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 14
@@ -1473,15 +1473,15 @@
     {
       "level": 870,
       "free": {
-        "coins": 227000000000,
-        "shells": 137,
+        "coins": 130000000000,
+        "shells": 198,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 9
       },
       "premium": {
-        "coins": 454000000000,
-        "shells": 274,
+        "coins": 260000000000,
+        "shells": 396,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 18
@@ -1490,15 +1490,15 @@
     {
       "level": 880,
       "free": {
-        "coins": 235000000000,
-        "shells": 137,
+        "coins": 149000000000,
+        "shells": 200,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 12
       },
       "premium": {
-        "coins": 470000000000,
-        "shells": 274,
+        "coins": 298000000000,
+        "shells": 400,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 24
@@ -1507,15 +1507,15 @@
     {
       "level": 890,
       "free": {
-        "coins": 241000000000,
-        "shells": 137,
+        "coins": 150000000000,
+        "shells": 200,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 16
       },
       "premium": {
-        "coins": 482000000000,
-        "shells": 274,
+        "coins": 300000000000,
+        "shells": 400,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 32
@@ -1524,15 +1524,15 @@
     {
       "level": 900,
       "free": {
-        "coins": 246000000000,
-        "shells": 137,
+        "coins": 193000000000,
+        "shells": 200,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 20
       },
       "premium": {
-        "coins": 492000000000,
-        "shells": 274,
+        "coins": 386000000000,
+        "shells": 400,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 40
@@ -1541,15 +1541,15 @@
     {
       "level": 910,
       "free": {
-        "coins": 251000000000,
-        "shells": 138,
+        "coins": 215000000000,
+        "shells": 203,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 2
       },
       "premium": {
-        "coins": 502000000000,
-        "shells": 276,
+        "coins": 430000000000,
+        "shells": 406,
         "dollars": 0,
         "boat_id": "boat_01",
         "fragments": 4
@@ -1558,15 +1558,15 @@
     {
       "level": 920,
       "free": {
-        "coins": 254000000000,
-        "shells": 138,
+        "coins": 226000000000,
+        "shells": 205,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 3
       },
       "premium": {
-        "coins": 508000000000,
-        "shells": 276,
+        "coins": 452000000000,
+        "shells": 410,
         "dollars": 0,
         "boat_id": "boat_02",
         "fragments": 6
@@ -1575,15 +1575,15 @@
     {
       "level": 930,
       "free": {
-        "coins": 257000000000,
-        "shells": 138,
+        "coins": 234000000000,
+        "shells": 205,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 4
       },
       "premium": {
-        "coins": 514000000000,
-        "shells": 276,
+        "coins": 468000000000,
+        "shells": 410,
         "dollars": 0,
         "boat_id": "boat_03",
         "fragments": 8
@@ -1592,15 +1592,15 @@
     {
       "level": 940,
       "free": {
-        "coins": 260000000000,
-        "shells": 138,
+        "coins": 240000000000,
+        "shells": 205,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 5
       },
       "premium": {
-        "coins": 520000000000,
-        "shells": 276,
+        "coins": 480000000000,
+        "shells": 410,
         "dollars": 0,
         "boat_id": "boat_04",
         "fragments": 10
@@ -1609,15 +1609,15 @@
     {
       "level": 950,
       "free": {
-        "coins": 844000000000,
-        "shells": 138,
+        "coins": 245000000000,
+        "shells": 205,
         "dollars": 0,
         "boat_id": "boat_05",
         "fragments": 6
       },
       "premium": {
-        "coins": 1690000000000,
-        "shells": 276,
+        "coins": 490000000000,
+        "shells": 410,
         "dollars": 10,
         "boat_id": "boat_05",
         "fragments": 12
@@ -1626,15 +1626,15 @@
     {
       "level": 960,
       "free": {
-        "coins": 1010000000000,
-        "shells": 138,
+        "coins": 249000000000,
+        "shells": 205,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 7
       },
       "premium": {
-        "coins": 2020000000000,
-        "shells": 276,
+        "coins": 498000000000,
+        "shells": 410,
         "dollars": 0,
         "boat_id": "boat_06",
         "fragments": 14
@@ -1643,15 +1643,15 @@
     {
       "level": 970,
       "free": {
-        "coins": 1110000000000,
-        "shells": 138,
+        "coins": 252000000000,
+        "shells": 206,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 9
       },
       "premium": {
-        "coins": 2220000000000,
-        "shells": 276,
+        "coins": 504000000000,
+        "shells": 412,
         "dollars": 0,
         "boat_id": "boat_07",
         "fragments": 18
@@ -1660,15 +1660,15 @@
     {
       "level": 980,
       "free": {
-        "coins": 1110000000000,
-        "shells": 138,
+        "coins": 255000000000,
+        "shells": 206,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 12
       },
       "premium": {
-        "coins": 2220000000000,
-        "shells": 276,
+        "coins": 510000000000,
+        "shells": 412,
         "dollars": 0,
         "boat_id": "boat_08",
         "fragments": 24
@@ -1677,15 +1677,15 @@
     {
       "level": 990,
       "free": {
-        "coins": 1110000000000,
-        "shells": 138,
+        "coins": 259000000000,
+        "shells": 206,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 16
       },
       "premium": {
-        "coins": 2220000000000,
-        "shells": 276,
+        "coins": 518000000000,
+        "shells": 412,
         "dollars": 0,
         "boat_id": "boat_09",
         "fragments": 32
@@ -1694,15 +1694,15 @@
     {
       "level": 1000,
       "free": {
-        "coins": 1110000000000,
-        "shells": 138,
+        "coins": 838000000000,
+        "shells": 206,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 20
       },
       "premium": {
-        "coins": 2220000000000,
-        "shells": 276,
+        "coins": 1680000000000,
+        "shells": 412,
         "dollars": 10,
         "boat_id": "boat_10",
         "fragments": 40

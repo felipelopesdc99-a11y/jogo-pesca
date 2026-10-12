@@ -4516,7 +4516,7 @@
   },
   "rarity": {
     "note": "A raridade é uma hierarquia de poder e é diferente da categoria de tamanho. Um peixe Comum pode ser de tamanho Excepcional.",
-    "fishing_bite_note": "fishing_bite_multiplier (M24-T22, A-159): na pesca (online e offline), a chance de um peixe dessa raridade morder é multiplicada por este número, depois dos pesos do mapa e do bônus de raridade da vara; os Comuns completam o resto. 0,35 com o ciclo na metade (fishing.online_cycle_seconds) dá ~70% dos peixes dessa raridade por hora de antes. Expedições e os vendedores do Mercado usam o sorteio sem este número. 1 (ou ausente) = sem mudança; não vale para o Comum.",
+    "fishing_bite_note": "fishing_bite_multiplier (M24-T22, A-159): na pesca (online e offline), a chance de um peixe dessa raridade morder é multiplicada por este número, depois dos pesos do mapa e do bônus de raridade da vara; os Comuns completam o resto. Era 0,35 com o ciclo de 15 s (A-159, ~70% dos peixes dessa raridade por hora do ciclo de 30 s); desde 12/10/2026 (M24-T27, A-160) é 0,233333 = 0,35 × 10/15: com 1,5× tentativas por hora (ciclo de 10 s), cada raridade continua com os mesmos peixes por hora online de antes, e a chance por peixe cai para 2/3. Expedições e os vendedores do Mercado usam o sorteio sem este número. 1 (ou ausente) = sem mudança; não vale para o Comum.",
     "size_note": "size_weight_multipliers: quanto mais rara a raridade, um pouco menos de chance de o peixe vir Grande ou Excepcional (multiplica o draw_weight do tamanho; o que não estiver listado fica 1). Raro: Grande × 0,85, Excepcional × 0,7 e Perfeição × 0,7, o que dá Pequeno 20,7%, Adulto 62,0%, Grande 16,7%, Excepcional 0,72% e Perfeição 0,007% (o Comum fica 20%, 60%, 19%, 0,99% e 0,01%).",
     "tiers": [
       {
@@ -4532,7 +4532,7 @@
         "id": "rare",
         "display_name": "Raro",
         "catch_success_base": 0.38,
-        "fishing_bite_multiplier": 0.35,
+        "fishing_bite_multiplier": 0.233333,
         "stat_multiplier": 1.15,
         "fisher_xp_multiplier": 2.5,
         "feed_xp_multiplier": 2.0,
@@ -4547,7 +4547,7 @@
         "id": "epic",
         "display_name": "Épico",
         "catch_success_base": 0.24,
-        "fishing_bite_multiplier": 0.35,
+        "fishing_bite_multiplier": 0.233333,
         "stat_multiplier": 1.3,
         "fisher_xp_multiplier": 5.0,
         "feed_xp_multiplier": 3.5,
@@ -4562,7 +4562,7 @@
         "id": "legendary",
         "display_name": "Lendário",
         "catch_success_base": 0.14,
-        "fishing_bite_multiplier": 0.35,
+        "fishing_bite_multiplier": 0.233333,
         "stat_multiplier": 1.55,
         "fisher_xp_multiplier": 9.0,
         "feed_xp_multiplier": 6.0,
@@ -4577,7 +4577,7 @@
         "id": "mythic",
         "display_name": "Mítico",
         "catch_success_base": 0.08,
-        "fishing_bite_multiplier": 0.35,
+        "fishing_bite_multiplier": 0.233333,
         "stat_multiplier": 1.85,
         "fisher_xp_multiplier": 15.0,
         "feed_xp_multiplier": 10.0,
@@ -4608,11 +4608,11 @@
     }
   },
   "fishing": {
-    "online_cycle_seconds": 15,
-    "offline_cycle_seconds": 30,
+    "online_cycle_seconds": 10,
+    "offline_cycle_seconds": 20,
     "offline_accumulation_cap_hours": 24,
     "offline_note": "Depois do limite, nenhuma captura offline a mais se acumula até o jogador voltar.",
-    "cycle_note": "Desde 11/10/2026 (M24-T22, A-159, decisão do proprietário: \"aumentar a quantidade de peixes pescados e diminuir a chance de pegar mais raros\") o ciclo é a metade do de antes (online 30 → 15 s, offline 60 → 30 s): o dobro de peixes por hora, com a mesma chance de puxar cada um. O limite offline continua em horas. A chance de cada raridade morder na pesca fica em rarity.tiers → fishing_bite_multiplier.",
+    "cycle_note": "Desde 11/10/2026 (M24-T22, A-159, decisão do proprietário: \"aumentar a quantidade de peixes pescados e diminuir a chance de pegar mais raros\") o ciclo é a metade do de antes (online 30 → 15 s, offline 60 → 30 s): o dobro de peixes por hora, com a mesma chance de puxar cada um. Desde 12/10/2026 (M24-T27, A-160, decisão do proprietário: \"pesca a cada 10 segundos on-line e 20 segundos off-line\") o ciclo passou para online 10 s e offline 20 s (1,5× peixes por hora); com o VIP ativo a pesca offline usa economy.json → vip.offline_cycle_seconds (15 s). O limite offline continua em horas. A chance de cada raridade morder na pesca fica em rarity.tiers → fishing_bite_multiplier.",
     "catch_success_min": 0.05,
     "catch_success_max": 0.95,
     "catch_success_note": "Chance de Sucesso da Captura = chance-base da raridade (rarity.tiers → catch_success_base) + vara + barco + isca, limitada entre catch_success_min e catch_success_max. Se o peixe escapa, nada entra na Caixa: sem XP, sem Conchas, sem descoberta, sem recorde."

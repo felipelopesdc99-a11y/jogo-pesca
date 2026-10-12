@@ -10,6 +10,9 @@ namespace FishingIdle.GameService.Tests;
 /// M24-T22 (A-159), the owner's decision of 11/10/2026: twice the fish per hour (the fishing cycle cut in half), the
 /// rarer fish per hour at ~70% of before (each rarity bites 35% as often per fish), and the boats' fragments per hour
 /// about the same (the chance per fish cut in half and recalibrated).
+/// M24-T27 (A-160, 12/10/2026) went further: the cycle is a third of the original (10 s online, 20 s offline) and each
+/// rarity bites 0,35 × 2/3 as often per fish, so the rarer fish per hour are still 70% of the original (the same as
+/// A-159) and the fragments per hour still about the same. TenSecondCycleTests compares with A-159.
 /// </summary>
 public sealed class MoreFishFewerRaresTests
 {
@@ -89,25 +92,25 @@ public sealed class MoreFishFewerRaresTests
         (boatId != null ? Config.BoatBonusAt(Boat(boatId), boatLevel) : 0) + (baitId != null ? Bait(baitId).CatchSuccessBonus : 0);
 
     [Fact]
-    public void The_fishing_cycle_is_half_of_what_it_was_online_and_offline_with_the_same_cap()
+    public void The_fishing_cycle_is_a_third_of_what_it_was_online_and_offline_with_the_same_cap()
     {
-        Assert.Equal(OnlineCycleBefore / 2, Config.Fishing.OnlineCycleSeconds);
-        Assert.Equal(OfflineCycleBefore / 2, Config.Fishing.OfflineCycleSeconds);
+        Assert.Equal(OnlineCycleBefore / 3, Config.Fishing.OnlineCycleSeconds);
+        Assert.Equal(OfflineCycleBefore / 3, Config.Fishing.OfflineCycleSeconds);
         Assert.Equal(24, Config.Fishing.OfflineAccumulationCapHours);
     }
 
     [Fact]
-    public void Every_rarity_above_common_bites_35_percent_as_often_while_fishing()
+    public void Every_rarity_above_common_bites_35_percent_times_two_thirds_as_often_while_fishing()
     {
         foreach (var tier in Config.Progression.Rarity.Tiers.Where(t => t.Id != "common"))
         {
-            Assert.Equal(0.35, tier.FishingBiteMultiplier, 6);
+            Assert.Equal(0.35 * 10 / 15, tier.FishingBiteMultiplier, 5);
         }
     }
 
     [Theory]
     [MemberData(nameof(Scenarios))]
-    public void Rarer_fish_per_hour_stay_at_70_percent_and_all_fish_per_hour_about_double(string mapId, string rodId, int rodLevel, string boatId, int boatLevel, string baitId)
+    public void Rarer_fish_per_hour_stay_at_70_percent_and_all_fish_per_hour_about_triple(string mapId, string rodId, int rodLevel, string boatId, int boatLevel, string baitId)
     {
         var gear = Gear(boatId, boatLevel, baitId);
         var before = PulledPerAttempt(Map(mapId), Rod(rodId), rodLevel, gear, fishing: false);
@@ -121,9 +124,9 @@ public sealed class MoreFishFewerRaresTests
             Assert.InRange(ratio, 0.699, 0.701);
         }
 
-        // Commons fill what the rarer fish left, and they are pulled out more easily: a little more than double.
+        // Commons fill what the rarer fish left, and they are pulled out more easily: a little more than triple.
         var allRatio = now.Values.Sum() * perHourNow / (before.Values.Sum() * perHourBefore);
-        Assert.InRange(allRatio, 1.99, 2.4);
+        Assert.InRange(allRatio, 2.99, 3.6);
     }
 
     [Theory]
@@ -144,13 +147,13 @@ public sealed class MoreFishFewerRaresTests
             r.ByRarity.Where(x => x.RarityId != "common").Sum(x => x.Caught) / (double)r.Attempts * r.AttemptsPerHour;
 
         Assert.Equal(120, old.AttemptsPerHour, 6);
-        Assert.Equal(240, now.AttemptsPerHour, 6);
+        Assert.Equal(360, now.AttemptsPerHour, 6);
         Assert.InRange(RarePerHour(now) / RarePerHour(old), min, max);
-        Assert.InRange(now.CatchesPerHour / old.CatchesPerHour, 1.9, 2.5);
+        Assert.InRange(now.CatchesPerHour / old.CatchesPerHour, 2.85, 3.75);
     }
 
     [Fact]
-    public void One_hour_online_is_240_attempts_and_one_day_offline_is_2880()
+    public void One_hour_online_is_360_attempts_and_one_day_offline_is_4320()
     {
         var (game, clock, dir) = TestSupport.NewGame(TestSupport.RealConfig());
         game.Fishing.StartFishing();
@@ -162,21 +165,22 @@ public sealed class MoreFishFewerRaresTests
             attempts += update.NewCatches.Count + update.Escapes.Count;
         }
 
-        Assert.Equal(240, attempts);
+        Assert.Equal(360, attempts);
 
         game.Fishing.MarkSeen();
         clock.AdvanceSeconds(30 * 3600);
         var (reopened, _, _) = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock);
         var report = reopened.Fishing.TakeOfflineReport();
         Assert.True(report.Capped);
-        Assert.Equal(2880, report.Update.NewCatches.Count + report.Update.Escapes.Count);
+        Assert.Equal(4320, report.Update.NewCatches.Count + report.Update.Escapes.Count);
     }
 
     [Fact]
     public void Boat_fragments_per_hour_stay_about_the_same_on_every_map()
     {
         // With the minimum rod of the map at Nv.1 and no boat or bait: fragments per hour = attempts per hour ×
-        // fish pulled out per attempt × chance per fish (A-157). The chance was halved and recalibrated (A-159).
+        // fish pulled out per attempt × chance per fish (A-157). The chance was halved and recalibrated (A-159), then
+        // cut by 1,5 and recalibrated again (A-160): about a third of A-157.
         foreach (var boat in Config.Equipment.Boats.Where(b => b.MapId != null))
         {
             var map = Map(boat.MapId);
@@ -187,7 +191,7 @@ public sealed class MoreFishFewerRaresTests
             var now = 3600 / Config.Fishing.OnlineCycleSeconds * pulledNow * boat.FragmentDropChance;
 
             Assert.InRange(now / before, 0.9, 1.1);
-            Assert.InRange(boat.FragmentDropChance, FragmentChanceBefore[boat.Id] * 0.4, FragmentChanceBefore[boat.Id] * 0.55);
+            Assert.InRange(boat.FragmentDropChance, FragmentChanceBefore[boat.Id] * 0.25, FragmentChanceBefore[boat.Id] * 0.37);
         }
     }
 
@@ -205,7 +209,7 @@ public sealed class MoreFishFewerRaresTests
         var expected = 1 - PulledShareOfCommons(map, rod);
 
         Assert.InRange(plain / (double)draws, expected - 0.02, expected + 0.02);
-        Assert.InRange(fishing / (double)plain, 0.31, 0.39);
+        Assert.InRange(fishing / (double)plain, 0.20, 0.27);
     }
 
     private static double PulledShareOfCommons(MapConfig map, RodConfig rod)
@@ -225,10 +229,10 @@ public sealed class MoreFishFewerRaresTests
             Assert.Equal(1.0, shares.Sum(), 6);
         }
 
-        // Map 2: the Aruanã (the only Rare, 10 of the pool's weight) bites 35% as often as its plain share.
+        // Map 2: the Aruanã (the only Rare, 10 of the pool's weight) bites 0,233333 × as often as its plain share (A-160).
         var map2 = Map("map_02");
         var plainShare = map2.FishPool.Single(p => p.SpeciesId == "aruana").CatchWeight / map2.FishPool.Sum(p => p.CatchWeight);
-        Assert.Equal(plainShare * 0.35, CatchRules.BiteShare(Config, map2, "aruana"), 6);
+        Assert.Equal(plainShare * 0.233333, CatchRules.BiteShare(Config, map2, "aruana"), 6);
     }
 
     [Fact]

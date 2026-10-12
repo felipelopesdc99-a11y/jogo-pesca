@@ -6,7 +6,7 @@ O que ele faz:
   - joga, por valor esperado (sem sorte), cada tentativa de pesca como o serviço do jogo faz: espécie pelo
     peso do mapa (raridade da vara), chance de puxar (raridade + vara + barco + isca, entre 5% e 95%),
     tamanho (qualidade da vara e raridade), XP do Pescador, venda ao NPC e Conchas;
-  - pesca online e offline no ciclo de progression.json → fishing (hoje 15 s e 30 s, M24-T22), com o limite de
+  - pesca online e offline no ciclo de progression.json → fishing (hoje 10 s e 20 s, M24-T27; com --vip, a pesca offline usa o ciclo do VIP, 15 s), com o limite de
     24 h, e gasta uma carga de isca por tentativa, online ou offline; na pesca, cada raridade morde com o
     fishing_bite_multiplier dela (os Comuns completam o resto, A-159);
   - compra como um jogador cuidadoso: a próxima vara assim que tem o dinheiro (itens não têm nível mínimo desde
@@ -296,7 +296,7 @@ SMOOTH = 'quatro_vezes'
 def play(rules, profile, max_days=400):
     p = Player(rules)
     online_per_min = 60.0 / rules.fishing['online_cycle_seconds']
-    offline_per_min = 60.0 / rules.fishing['offline_cycle_seconds']
+    offline_per_min = 60.0 / getattr(rules, 'offline_cycle_seconds', rules.fishing['offline_cycle_seconds'])
     cap_min = rules.fishing['offline_accumulation_cap_hours'] * 60
     if profile == 'continuo':
         per_day = 2 * 60 * online_per_min + 22 * 60 * offline_per_min
@@ -355,13 +355,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--escala-xp')
     ap.add_argument('--saida')
-    ap.add_argument('--vip', action='store_true', help='simula o VIP: XP offline multiplicado por 1 + economy.json vip.offline_fisher_xp_bonus (A-110)')
+    ap.add_argument('--vip', action='store_true', help='simula o VIP o tempo todo: XP offline multiplicado por 1 + economy.json vip.offline_fisher_xp_bonus (A-110) e a pesca offline no ciclo vip.offline_cycle_seconds (A-160)')
     a = ap.parse_args()
     scale = json.load(open(a.escala_xp)) if a.escala_xp else None
     rules = Rules(scale)
     if a.vip:
         econ = json.load(open(os.path.join(CONFIG, 'economy.json'), encoding='utf-8'))
         rules.offline_xp_mult = 1.0 + econ['vip']['offline_fisher_xp_bonus']
+        if econ['vip'].get('offline_cycle_seconds', 0) >= 1:
+            rules.offline_cycle_seconds = econ['vip']['offline_cycle_seconds']
     rows = []
     for name, (desc, _) in PROFILES.items():
         p = play(rules, name)

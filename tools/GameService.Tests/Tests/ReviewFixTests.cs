@@ -42,7 +42,7 @@ public sealed class ReviewFixTests
         Assert.Equal("map_02", reopened.Player.GetPlayer().MapId);
         Assert.True(reopened.Fishing.GetStatus().IsFishing);
         var offline = reopened.Player.GetPlayer().TotalCatches - before;
-        Assert.InRange(offline, 230, 241); // 2 h at one catch per 30 s (M24-T22)
+        Assert.InRange(offline, 355, 361); // 2 h at one catch per 20 s (M24-T27)
         Assert.NotNull(reopened.Fishing.TakeOfflineReport());
     }
 
@@ -53,7 +53,7 @@ public sealed class ReviewFixTests
         game.Maps.TravelTo("map_02");
         var before = game.Player.GetPlayer().TotalCatches;
 
-        // The 10 s trip plus 1 s on the new map: shorter than one 15 s fishing cycle (M24-T22), so no catch yet.
+        // The 10 s trip plus 1 s on the new map: shorter than one 10 s fishing cycle (M24-T27), so no catch yet.
         TestSupport.PlayFor(game, clock, 11, stepSeconds: 0.25);
         game.Maps.Update();
 

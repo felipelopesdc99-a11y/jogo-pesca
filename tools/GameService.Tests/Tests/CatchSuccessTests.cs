@@ -92,15 +92,15 @@ public sealed class CatchSuccessTests
         Assert.True(game.Gear.BuyBait("bait_01").Succeeded);
         game.Fishing.StartFishing();
 
-        // Closed for 3 hours: 360 offline attempts (one every 30 s, M24-T22); the bait's 120 charges run out on the way.
+        // Closed for 3 hours: 540 offline attempts (one every 20 s, M24-T27); the bait's 180 charges run out on the way.
         clock.AdvanceSeconds(3 * 3600);
         var (back, _, _) = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock, skipTutorial: false);
         var report = back.Fishing.TakeOfflineReport();
 
         Assert.NotNull(report);
         var update = report.Update;
-        Assert.Equal(360, update.NewCatches.Count + update.Escapes.Count);
-        Assert.InRange(update.Escapes.Count, 140, 215);
+        Assert.Equal(540, update.NewCatches.Count + update.Escapes.Count);
+        Assert.InRange(update.Escapes.Count, 210, 322);
         Assert.Equal("Terra Viva", update.BaitRanOut);
         Assert.Equal(0, back.Session.Save.BaitCharges["bait_01"]);
         Assert.Null(back.Gear.GetGear().BaitId);

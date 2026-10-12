@@ -3,6 +3,44 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.52] — 12/10/2026
+
+Pesca a cada 10 s, VIP a cada 15 s fora do jogo e Caixa para 1 dia (M24-T27, A-160, TD-045): decisão do proprietário de
+12/10/2026.
+
+### Adicionado
+
+- `economy.json → vip.offline_cycle_seconds` (15): com o VIP ativo, a pesca com o jogo fechado faz 1 tentativa a cada
+  15 s em vez de 20 s; um VIP que acaba enquanto o jogador está fora conta 15 s só até o fim. O +50% de XP offline do
+  VIP continua (decisão pendente OD-065). Validação (≥ 1 quando presente).
+- A aba VIP da Loja e o "Bem-vindo de volta" mostram o ritmo da pesca offline com e sem VIP.
+- Testes `TenSecondCycleTests`: ciclos de 10/20/15 s, VIP terminando no meio do tempo fora, um dia fora com VIP (5.760)
+  cabendo na Caixa, config sem ciclo de VIP, validação, tela do VIP, raros por hora iguais aos de antes em 4 cenários
+  (online e offline), simulação com semente fixa, Caixa de 8.640, iscas de 180 e fragmentos por hora.
+- Decisão pendente OD-065 (M24-T28): o bônus de XP do VIP continua junto com o ciclo mais rápido?
+
+### Mudado
+
+- **1,5× peixes por hora**: uma tentativa a cada 10 s online (era 15 s) e a cada 20 s offline (era 30 s).
+- **Raros por peixe a 2/3, os mesmos por hora**: `fishing_bite_multiplier` de 0,35 para 0,233333 (por exemplo, o Raro
+  no fim do jogo morde 10,2% das vezes, era 15,2%, e continua 34,7 por hora).
+- Caixa de Pesca de 3.000 para **8.640** peixes (1 dia de pesca online); iscas de 120 para **180** tentativas por
+  compra (mesmo preço, mesmos 30 min online).
+- Chance de fragmento de barco de 0,64%–1,03% para **0,43%–0,67%** por peixe puxado (mesmo ritmo de montagem).
+- `config/pass.json` regerado pelo script: Nv.10 2.460 Moedas e 9 Conchas (era 1.950 e 6), Nv.1000 838 bi e 206
+  Conchas (era 1,11 tri e 138).
+- Ganhos por hora de pesca: XP ×1,49 / ×1,42 / ×1,13 e Moedas ×1,48 / ×1,40 / ×1,10 (começo / meio / fim).
+- Tempos simulados com a Tripulação e as Melhorias (aberto / 4 vezes / 1 vez por dia): Nv.100 em 0,5 / 1,3 / 3,8 dias
+  (era 0,7 / 1,8 / 3,8), Nv.500 em 12,5 / 23,5 / 29,8 (era 14,3 / 26,9 / 33,8), Nv.1000 em 50,5 / 91,3 / 105,8 dias
+  (era 56,6 / 102,3 / 118,8).
+- `tools/Progressao/simular_progressao.py --vip` simula também o ciclo offline do VIP; `docs/propostas/` (melhorias,
+  tripulação, níveis e passe) regerados.
+
+### Verificação
+
+- Verificado no CI (GitHub): testes das regras, jogo, Painel e Simulador. Não aberto no Unity: a pesca a cada 10 s na
+  cena e as telas da Loja e do "Bem-vindo de volta" precisam do Play do proprietário.
+
 ## [0.2.0-m21.51] — 11/10/2026
 
 ### Corrigido

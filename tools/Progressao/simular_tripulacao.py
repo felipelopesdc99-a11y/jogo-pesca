@@ -4,7 +4,7 @@ Uso:  python3 tools/Progressao/simular_tripulacao.py [--dias 75] [--gravar]
 
 O que ele faz:
   - joga a pesca como tools/Progressao/simular_progressao.py (valor esperado, sem sorte): pesca online e offline no
-    ciclo de progression.json → fishing (hoje 15 s e 30 s), offline até 24 h, compra varas, melhorias e iscas, monta barcos com fragmentos, vende tudo ao NPC;
+    ciclo de progression.json → fishing (hoje 10 s e 20 s, M24-T27), offline até 24 h, compra varas, melhorias e iscas, monta barcos com fragmentos, vende tudo ao NPC;
   - a Tripulação (config/crew.json) rende Moedas e XP de Pescador por segundo, com o jogo aberto e fechado
     (offline: 100% nas primeiras horas, depois a taxa reduzida, até o teto), exatamente como o serviço do jogo:
     custo b·r^k·(r^n−1)/(r−1), cada marco de quantidade ×2 para aquele tripulante, marco da frota ×2 para todos;

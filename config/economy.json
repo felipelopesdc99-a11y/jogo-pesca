@@ -80,8 +80,8 @@
     "max_auctions_a_buyer_can_join": null
   },
   "fishing_box": {
-    "capacity": 3000,
-    "capacity_note": "OD-025 (decisão do proprietário, 07/10/2026): a Caixa de Pesca guarda até capacity peixes (cabe um dia inteiro de pesca offline). Cheia, a pesca não puxa mais peixes (nem gasta isca) até o jogador vender ou guardar algum. Peixes achados em Expedição ou retirados do Mercado ainda entram. 0 = sem limite. Era 1.500; dobrou para 3.000 em 11/10/2026 (M24-T22, A-159) junto com o ciclo de pesca na metade, para continuar cabendo um dia inteiro de pesca offline (24 h a cada 30 s = 2.880 tentativas) e as mesmas horas de pesca online.",
+    "capacity": 8640,
+    "capacity_note": "OD-025 (decisão do proprietário, 07/10/2026): a Caixa de Pesca guarda até capacity peixes (cabe um dia inteiro de pesca offline). Cheia, a pesca não puxa mais peixes (nem gasta isca) até o jogador vender ou guardar algum. Peixes achados em Expedição ou retirados do Mercado ainda entram. 0 = sem limite. Era 1.500; dobrou para 3.000 em 11/10/2026 (M24-T22, A-159) junto com o ciclo de pesca na metade, para continuar cabendo um dia inteiro de pesca offline (24 h a cada 30 s = 2.880 tentativas) e as mesmas horas de pesca online. Desde 12/10/2026 (M24-T27, A-160, decisão do proprietário: \"caixa de pesca comporta 1 dia de pesca online\") são 8.640 peixes = 24 h de pesca online a cada 10 s; cabe também um dia inteiro de pesca offline (24 h a cada 20 s = 4.320 tentativas, ou 5.760 com o VIP a cada 15 s).",
     "bulk_sale_protection": {
       "note": "Peixes que disparam a confirmação única \"Revisar peixes / Confirmar\" quando entram numa venda da Caixa de Pesca (seção 11 do GDD). Por raridade e por categoria de tamanho.",
       "rarities": [
@@ -102,10 +102,12 @@
     "fishing_box_keeps_receiving_when_full": true
   },
   "vip": {
-    "note": "VIP (A-110, decisão do proprietário em 07/10/2026): comprado com Dólares do jogo, dá XP de Pescador a mais na pesca offline por um tempo. Comprar de novo com o VIP ativo soma os dias ao fim do atual.",
+    "note": "VIP (A-110, decisão do proprietário em 07/10/2026): comprado com Dólares do jogo, dá XP de Pescador a mais e uma tentativa mais frequente na pesca offline por um tempo. Comprar de novo com o VIP ativo soma os dias ao fim do atual.",
     "price_dollars": 100,
     "duration_days": 30,
     "offline_fisher_xp_bonus": 0.5,
+    "offline_cycle_seconds": 15,
+    "offline_cycle_note": "M24-T27 (A-160, decisão do proprietário em 12/10/2026): com o VIP ativo, a pesca offline faz 1 tentativa a cada offline_cycle_seconds (15 s) em vez de progression.json → fishing.offline_cycle_seconds (20 s). O bônus de XP offline continua junto (OD-065). Um VIP que acaba enquanto o jogador está fora conta 15 s só até o fim dele. 0 = o VIP não muda o ciclo.",
     "dollars_real_money_reference": {
       "dollars": 100,
       "price_brl": 4.99,

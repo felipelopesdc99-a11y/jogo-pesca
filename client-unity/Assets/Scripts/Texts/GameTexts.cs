@@ -253,6 +253,7 @@ namespace FishingIdle.Texts
             public const string Best = "Destaques";
             public const string NothingCaught = "Nenhum peixe desta vez.";
             public static string Note(string cycle, string cap) => "Enquanto o jogo fica fechado, o pescador continua: 1 tentativa a cada " + cycle + ", por até " + cap + ", com a mesma chance de puxar. Os peixes esperam na Caixa de Pesca.";
+            public static string NoteWithVip(string vipCycle, string cycle, string cap) => "Enquanto o jogo fica fechado, o pescador continua: 1 tentativa a cada " + vipCycle + " com o VIP (" + cycle + " sem ele), por até " + cap + ", com a mesma chance de puxar. Os peixes esperam na Caixa de Pesca.";
 
             public static string Away(string duration) => "Você ficou fora por " + duration + ".";
             public static string Hours(double hours) => hours == 1 ? "1 hora" : Format.Decimal(hours, 0) + " horas";
@@ -810,6 +811,7 @@ namespace FishingIdle.Texts
             public const string Buy = "Comprar VIP";
             public const string Extend = "Renovar VIP";
             public const string Note = "Comprar com o VIP ativo soma os dias ao fim do atual. O VIP não muda a pesca com o jogo aberto, as chances nem as vendas.";
+            public static string NoteWithCycle(string vipCycle, string normalCycle) => "Com o VIP, a pesca com o jogo fechado faz 1 tentativa a cada " + vipCycle + " (sem VIP, a cada " + normalCycle + "). Comprar com o VIP ativo soma os dias ao fim do atual. O VIP não muda a pesca com o jogo aberto, as chances nem as vendas.";
             public static string Benefit(string percent) => "+" + percent + " de XP de Pescador na pesca offline";
             public static string Duration(string days) => "Dura " + days + " dias";
             public static string Price(string dollars) => dollars + " Dólares";

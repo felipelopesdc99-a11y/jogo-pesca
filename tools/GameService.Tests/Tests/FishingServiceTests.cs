@@ -30,18 +30,18 @@ public sealed class FishingServiceTests
     }
 
     [Fact]
-    public void One_catch_arrives_every_15_seconds_while_fishing()
+    public void One_catch_arrives_every_10_seconds_while_fishing()
     {
-        // M24-T22 (A-159): the cycle is half of what it was (30 s), so twice the fish per hour.
+        // M24-T22 (A-159): the cycle went from 30 s to 15 s; M24-T27 (A-160): 10 s, 1.5× the fish per hour.
         var (game, clock, _) = TestSupport.NewGame();
         Assert.True(game.Fishing.StartFishing().Succeeded);
 
-        Assert.Empty(TestSupport.PlayFor(game, clock, 14));
+        Assert.Empty(TestSupport.PlayFor(game, clock, 9));
         Assert.Single(TestSupport.PlayFor(game, clock, 1));
         var tenMinutes = TestSupport.PlayFor(game, clock, 600);
 
-        Assert.Equal(40, tenMinutes.Count);
-        Assert.Equal(41, game.Fishing.GetFishingBox().Count);
+        Assert.Equal(60, tenMinutes.Count);
+        Assert.Equal(61, game.Fishing.GetFishingBox().Count);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public sealed class FishingServiceTests
         var first = game.Fishing.Sync().NewCatches.Count;
         var again = Enumerable.Range(0, 50).Sum(_ => game.Fishing.Sync().NewCatches.Count);
 
-        Assert.Equal(6, first);
+        Assert.Equal(9, first);
         Assert.Equal(0, again);
     }
 
@@ -84,7 +84,7 @@ public sealed class FishingServiceTests
         var stop = game.Fishing.StopFishing();
         clock.AdvanceSeconds(300);
 
-        Assert.Equal(4, stop.Value.NewCatches.Count);
+        Assert.Equal(6, stop.Value.NewCatches.Count);
         Assert.Empty(game.Fishing.Sync().NewCatches);
         Assert.False(game.Fishing.GetStatus().IsFishing);
     }
@@ -94,18 +94,18 @@ public sealed class FishingServiceTests
     {
         var (game, clock, _) = TestSupport.NewGame();
         game.Fishing.StartFishing();
-        clock.AdvanceSeconds(40);
+        clock.AdvanceSeconds(45);
         game.Fishing.Sync();
 
         var status = game.Fishing.GetStatus();
 
         Assert.True(status.IsFishing);
-        Assert.Equal(TestSupport.StartMs + 45_000, status.NextCatchAtMs);
-        Assert.InRange(status.CycleProgress, 0.66, 0.67);
+        Assert.Equal(TestSupport.StartMs + 50_000, status.NextCatchAtMs);
+        Assert.InRange(status.CycleProgress, 0.49, 0.51);
     }
 
     [Fact]
-    public void Time_the_game_was_closed_counts_as_offline_fishing_at_30_seconds()
+    public void Time_the_game_was_closed_counts_as_offline_fishing_at_20_seconds()
     {
         var saveDir = TestSupport.NewTempDirectory();
         var clock = new ManualClock(TestSupport.StartMs);
@@ -118,12 +118,14 @@ public sealed class FishingServiceTests
         var (reopened, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
         var report = reopened.Fishing.TakeOfflineReport();
 
-        Assert.Equal(4 + 360, reopened.Fishing.GetFishingBox().Count);
-        Assert.Equal(360, report.Update.NewCatches.Count);
+        Assert.Equal(6 + 540, reopened.Fishing.GetFishingBox().Count);
+        Assert.Equal(540, report.Update.NewCatches.Count);
+        Assert.Equal(20, report.CycleSeconds);
+        Assert.Equal(0, report.VipCycleSeconds);
         Assert.False(report.Capped);
         Assert.Null(reopened.Fishing.TakeOfflineReport());
         Assert.True(reopened.Fishing.GetStatus().IsFishing); // still fishing, from now on
-        Assert.Single(TestSupport.PlayFor(reopened, clock, 15));
+        Assert.Single(TestSupport.PlayFor(reopened, clock, 10));
     }
 
     [Fact]
@@ -139,7 +141,7 @@ public sealed class FishingServiceTests
         var (reopened, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
         var report = reopened.Fishing.TakeOfflineReport();
 
-        Assert.Equal(2880, reopened.Fishing.GetFishingBox().Count); // 24 h at the 30 s offline rate (fits the 3.000-fish box)
+        Assert.Equal(4320, reopened.Fishing.GetFishingBox().Count); // 24 h at the 20 s offline rate (fits the 8.640-fish box)
         Assert.True(report.Capped);
         Assert.Equal(24 * 3600 * 1000L, report.CountedMs);
     }
@@ -157,8 +159,8 @@ public sealed class FishingServiceTests
         var (first, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
         var (second, _, _) = TestSupport.NewGame(saveDir: saveDir, clock: clock);
 
-        Assert.Equal(120, first.Fishing.GetFishingBox().Count);
-        Assert.Equal(120, second.Fishing.GetFishingBox().Count);
+        Assert.Equal(180, first.Fishing.GetFishingBox().Count);
+        Assert.Equal(180, second.Fishing.GetFishingBox().Count);
         Assert.Null(second.Fishing.TakeOfflineReport());
     }
 
@@ -189,9 +191,9 @@ public sealed class FishingServiceTests
         var afterJump = game.Fishing.Sync().NewCatches.Count;
         var report = game.Fishing.TakeOfflineReport();
 
-        Assert.Equal(0, afterJump); // nothing counted at the 15 s online rate
-        Assert.Equal(2880, report.Update.NewCatches.Count); // 24 h at the 30 s offline rate
-        Assert.Equal(2 + 2880, game.Fishing.GetFishingBox().Count);
+        Assert.Equal(0, afterJump); // nothing counted at the 10 s online rate
+        Assert.Equal(4320, report.Update.NewCatches.Count); // 24 h at the 20 s offline rate
+        Assert.Equal(3 + 4320, game.Fishing.GetFishingBox().Count);
     }
 
     [Fact]
@@ -227,7 +229,7 @@ public sealed class FishingServiceTests
         var sale = game.Fishing.SellCatches(ids);
 
         Assert.False(sale.Succeeded);
-        Assert.Equal(4, game.Fishing.GetFishingBox().Count);
+        Assert.Equal(6, game.Fishing.GetFishingBox().Count);
         Assert.Equal(0, game.Player.GetPlayer().Coins);
     }
 
@@ -268,17 +270,17 @@ public sealed class FishingServiceTests
     }
 
     [Fact]
-    public void Level_10_takes_roughly_half_an_hour_of_online_fishing()
+    public void Level_10_takes_roughly_20_minutes_of_online_fishing()
     {
         // A-153 (M24-T03): the first levels are quick, Lv.1→10 in about 1 hour online, on average, with the
         // real Catch Success and no bait (about half of the 120 bites pulled out). It was 2 hours (GDD section 17).
-        // M24-T22 (A-159): the same 120 bites now take 30 minutes (one every 15 s).
+        // M24-T22 (A-159): the same 120 bites took 30 minutes (one every 15 s); M24-T27 (A-160): 20 minutes (one every 10 s).
         var levels = new List<int>();
         for (var run = 0; run < 5; run++)
         {
             var (game, clock, _) = TestSupport.NewGame(TestSupport.RealConfig());
             game.Fishing.StartFishing();
-            TestSupport.PlayFor(game, clock, 1800, stepSeconds: 15);
+            TestSupport.PlayFor(game, clock, 1200, stepSeconds: 10);
             levels.Add(game.Player.GetPlayer().FisherLevel);
         }
 
@@ -293,7 +295,7 @@ public sealed class FishingServiceTests
         var levels = new List<int>();
         for (var i = 0; i < 20; i++)
         {
-            clock.AdvanceSeconds(15);
+            clock.AdvanceSeconds(10);
             levels.AddRange(game.Fishing.Sync().LevelsReached);
         }
 
@@ -311,7 +313,7 @@ public sealed class FishingServiceTests
         TestSupport.PlayFor(game, clock, 45);
 
         var faster = TestSupport.ConfigWith(GameConfigLoader.ProgressionFile,
-            json => json.Replace("\"online_cycle_seconds\": 15", "\"online_cycle_seconds\": 5"), certainCatch: true);
+            json => json.Replace("\"online_cycle_seconds\": 10", "\"online_cycle_seconds\": 5"), certainCatch: true);
         game.Session.ReplaceConfig(faster.Config);
 
         Assert.Equal(6, TestSupport.PlayFor(game, clock, 30).Count);

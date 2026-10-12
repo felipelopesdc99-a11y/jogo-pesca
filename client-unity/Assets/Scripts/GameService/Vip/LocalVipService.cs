@@ -16,6 +16,12 @@ namespace FishingIdle.GameService.Vip
         public long PriceDollars { get; internal set; }
         public double DurationDays { get; internal set; }
         public double OfflineFisherXpBonus { get; internal set; }
+
+        /// <summary>Seconds per offline attempt with the VIP (A-160); 0 when the VIP does not change it.</summary>
+        public double OfflineCycleSeconds { get; internal set; }
+
+        /// <summary>Seconds per offline attempt without the VIP (fishing.offline_cycle_seconds).</summary>
+        public double NormalOfflineCycleSeconds { get; internal set; }
         public long Dollars { get; internal set; }
 
         /// <summary>Why buying is refused right now; None when it is possible.</summary>
@@ -40,7 +46,7 @@ namespace FishingIdle.GameService.Vip
         }
     }
 
-    /// <summary>The VIP (A-110): 100 Dólares buy 30 days of +50% Fisher XP on offline fishing (values in economy.json).</summary>
+    /// <summary>The VIP (A-110, A-160): 100 Dólares buy 30 days of +50% Fisher XP and a faster cycle on offline fishing (values in economy.json).</summary>
     public interface IVipService
     {
         VipView GetVip();
@@ -74,6 +80,8 @@ namespace FishingIdle.GameService.Vip
                 PriceDollars = vip?.PriceDollars ?? 0,
                 DurationDays = vip?.DurationDays ?? 0,
                 OfflineFisherXpBonus = vip?.OfflineFisherXpBonus ?? 0,
+                OfflineCycleSeconds = vip != null && vip.OfflineCycleSeconds >= 1 ? vip.OfflineCycleSeconds : 0,
+                NormalOfflineCycleSeconds = Config.Fishing.OfflineCycleSeconds,
                 Dollars = Save.Dollars,
                 BuyBlocker = Blocker(),
             };

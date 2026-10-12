@@ -70,9 +70,11 @@ namespace FishingIdle.Game.UI
                 DrawCrew(skin, crew, x, w, y + 16f);
             }
 
-            var note = report != null
-                ? GameTexts.Offline.Note(Format.Duration(report.CycleSeconds), GameTexts.Offline.Hours(report.CapHours))
-                : string.Empty;
+            var note = report == null
+                ? string.Empty
+                : report.VipCycleSeconds > 0
+                    ? GameTexts.Offline.NoteWithVip(Format.Duration(report.VipCycleSeconds), Format.Duration(report.CycleSeconds), GameTexts.Offline.Hours(report.CapHours))
+                    : GameTexts.Offline.Note(Format.Duration(report.CycleSeconds), GameTexts.Offline.Hours(report.CapHours));
             GUI.Label(new Rect(x, rect.yMax - 114, w, 44), note, skin.SmallMuted);
             var openBox = false;
             if (count > 0 && skin.IconButton(new Rect(x, rect.yMax - 62, 280, 42), Icons.Box, GameTexts.Offline.OpenBox, skin.Button))

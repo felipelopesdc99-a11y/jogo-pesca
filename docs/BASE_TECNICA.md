@@ -150,7 +150,8 @@ não gera peixe a mais; chamar cedo não gera nada.
 **Tempo com o jogo fechado não é pesca online; é pesca offline.** Se o jogo ficou mais de
 `max(3 ciclos, 2 minutos)` sem ser visto (fechado, PC dormindo, relógio adiantado), o serviço entrega
 o que foi pescado até `last_seen_at_ms`, credita o intervalo no ritmo offline (`CatchUpOffline`: uma
-tentativa a cada `offline_cycle_seconds`, hoje 30 s, no máximo 24h, numa passada só, continuando a mesma sequência de sorteio) e recomeça o
+tentativa a cada `offline_cycle_seconds`, hoje 20 s, ou `vip.offline_cycle_seconds` (15 s) enquanto o VIP está ativo e o ciclo
+termina antes do fim do VIP (A-160), no máximo 24h, numa passada só, continuando a mesma sequência de sorteio) e recomeça o
 ciclo online a partir de agora. O resumo fica disponível uma vez em `TakeOfflineReport()`.
 
 ### Sorteio determinístico

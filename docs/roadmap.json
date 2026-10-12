@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-11T21:30:00Z",
+  "updated_at": "2026-10-12T12:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -576,7 +576,7 @@
       "id": "OD-063",
       "task_id": "M24-T23",
       "title": "Ganhos da pesca no fim do jogo com menos raros",
-      "detail": "Simulado: XP e Moedas da pesca por hora ficam ~1,9× no começo, ~1,5× no meio e ~0,8× no fim (Vara 5, Titã do Atlântico e isca, no Abismo Atlântico), porque lá os raros eram 84% das mordidas e valem até 15× o XP de um Comum. Com a Tripulação e as Melhorias o Nv.1000 passa de ~50 para ~57 dias (jogo aberto), ~92 para ~102 (4 vezes por dia) e ~106 para ~119 (1 vez por dia). Opções: (a) fica assim; (b) o multiplicador dos raros fica maior nos mapas finais (por exemplo 0,5: mais raros por hora que hoje lá); (c) os Comuns dos Mapas 6 a 10 valem mais (venda e XP) para o fim render pelo menos o de antes; (d) recalibrar a curva de XP do Pescador.",
+      "detail": "Simulado: XP e Moedas da pesca por hora ficam ~1,9× no começo, ~1,5× no meio e ~0,8× no fim (Vara 5, Titã do Atlântico e isca, no Abismo Atlântico), porque lá os raros eram 84% das mordidas e valem até 15× o XP de um Comum. Com a Tripulação e as Melhorias o Nv.1000 passa de ~50 para ~57 dias (jogo aberto), ~92 para ~102 (4 vezes por dia) e ~106 para ~119 (1 vez por dia). Opções: (a) fica assim; (b) o multiplicador dos raros fica maior nos mapas finais (por exemplo 0,5: mais raros por hora que hoje lá); (c) os Comuns dos Mapas 6 a 10 valem mais (venda e XP) para o fim render pelo menos o de antes; (d) recalibrar a curva de XP do Pescador. Atualização de 12/10/2026 (A-160, ciclo de 10 s): no fim a pesca rende ×1,13 de XP e ×1,10 de Moedas por hora sobre o A-159 (~95% e ~88% do de antes do A-159); Nv.1000 em ~50 / ~91 / ~106 dias.",
       "raised_at": "2026-10-11T15:00:00Z",
       "status": "OPEN"
     },
@@ -584,8 +584,16 @@
       "id": "OD-064",
       "task_id": "M24-T24",
       "title": "Excepcional e Perfeição por hora",
-      "detail": "Com o dobro de peixes por hora, os tamanhos Excepcional (~1% dos peixes) e Perfeição (~0,01%) vêm o dobro por hora, porque o tamanho é sorteado por peixe. Opções: (a) fica assim (são tamanho, não raridade); (b) cortar a chance deles pela metade (o mesmo por hora de antes); (c) cortar para ~35% como as raridades (~70% por hora).",
+      "detail": "Com o dobro de peixes por hora, os tamanhos Excepcional (~1% dos peixes) e Perfeição (~0,01%) vêm o dobro por hora, porque o tamanho é sorteado por peixe. Opções: (a) fica assim (são tamanho, não raridade); (b) cortar a chance deles pela metade (o mesmo por hora de antes); (c) cortar para ~35% como as raridades (~70% por hora). Atualização de 12/10/2026 (A-160, ciclo de 10 s): agora vêm 1,5× por hora sobre o A-159 (3× o de antes do A-159).",
       "raised_at": "2026-10-11T15:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-065",
+      "task_id": "M24-T28",
+      "title": "Bônus de XP do VIP junto com a pesca offline mais rápida",
+      "detail": "Hoje (A-160) o VIP dá as duas coisas na pesca com o jogo fechado: 1 tentativa a cada 15 s (sem VIP, 20 s) e +50% de XP de Pescador nesses peixes (A-110). Juntos, o XP offline com VIP fica ~2× o sem VIP (1,33× peixes × 1,5× XP); simulado só pescando, abrindo 4 vezes por dia, o Nv.1000 vem em ~55 dias com VIP e ~99 sem. Opções: (a) fica assim, os dois juntos; (b) o VIP passa a ser só o ciclo de 15 s (tira o +50% de XP); (c) mantém os dois e reduz o bônus de XP (por exemplo +25%).",
+      "raised_at": "2026-10-12T12:00:00Z",
       "status": "OPEN"
     }
   ],
@@ -4623,6 +4631,29 @@
           "status": "TODO",
           "dependencies": [],
           "updated_at": "2026-10-11T21:30:00Z"
+        },
+        {
+          "id": "M24-T27",
+          "title": "Pesca a cada 10 s (VIP 15 s fora do jogo) e Caixa para 1 dia",
+          "subsystem": "config",
+          "description": "Decisão do proprietário (12/10/2026): \"Vamos mudar para pesca a cada 10 segundos on-line e 20 segundos off-line, mantendo o buff do vip off-line que vai ser 15 segundos cada pesca, a ideia é aumentar número de peixes pescados e diminuir porcentagem de chance deles morderem, de vir peixes mais raros, etc, caixa de pesca comporta 1 dia de pesca online\".",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T22"
+          ],
+          "updated_at": "2026-10-12T12:00:00Z",
+          "completion_notes": "Ciclo em progression.json: online 15 → 10 s, offline 30 → 20 s (limite de 24 h, chance de puxar e teto iguais). VIP: novo economy.json → vip.offline_cycle_seconds = 15; LocalFishingService.CatchUpOffline anda tentativa por tentativa e usa 15 s enquanto o VIP vale no fim da tentativa (um VIP que acaba fora conta 15 s só até o fim); o +50% de XP offline do A-110 continua junto (OD-065); validação (≥ 1 quando presente). OfflineReport com VipCycleSeconds/VipAttempts e VipView com os dois ciclos; textos novos em GameTexts (aba VIP da Loja e Bem-vindo de volta). fishing_bite_multiplier 0,35 → 0,233333 (0,35 × 10/15): raros por hora online iguais aos de antes, chance por peixe 2/3 (ex.: Raro no começo 0,36% → 0,24% por peixe, 0,37/h igual; no fim Raro 15,2% → 10,2%, Mítico 0,12% → 0,08%, todos os peixes 228 → 342/h). Caixa de Pesca 3.000 → 8.640 (1 dia online; cabe 24 h offline: 4.320, ou 5.760 com VIP). Iscas 120 → 180 tentativas pelo mesmo preço. Fragmentos por tools/Progressao/passe_fragmentos.py gerar: 0,43% a 0,67% por peixe (eram 0,64% a 1,03%), montagem em 2,0 a 10,0 dias (4x/dia) como antes; config/pass.json regerado (exatamente a saída do script). Ganhos por hora de pesca: XP ×1,49 / ×1,42 / ×1,13 e Moedas ×1,48 / ×1,40 / ×1,10 (começo / meio / fim), Conchas ×1,5. Tempos (simular_melhorias.py, aberto / 4x / 1x): Nv.100 0,5 / 1,3 / 3,8 dias (eram 0,7 / 1,8 / 3,8), Nv.500 12,5 / 23,5 / 29,8 (eram 14,3 / 26,9 / 33,8), Nv.1000 50,5 / 91,3 / 105,8 (eram 56,6 / 102,3 / 118,8); renda da pesca no fim ~22 mil/s (era ~20 mil/s). simular_progressao.py --vip simula o ciclo do VIP. Animação: a sequência mais longa (~7 s) cabe nos 10 s, sem mudança. Testes: TenSecondCycleTests (ciclos 10/20/15, VIP terminando fora, 5.760 com VIP na Caixa, sem ciclo de VIP no config, validação, tela do VIP, raros por hora iguais em 4 cenários online e offline, simulação com semente fixa, Caixa 8.640, iscas 180, fragmentos por hora) e ajustes em MoreFishFewerRares, FishingService, CatchSuccess, FishingBoxLimit, DevTools, ReviewFix, Config, MapsAndRods, BoatFragmentsAndPass e IdleScopeStageOne. A-160, TD-045. Verificado no CI (GitHub), não aberto no Unity."
+        },
+        {
+          "id": "M24-T28",
+          "title": "Bônus de XP do VIP junto com a pesca offline mais rápida",
+          "subsystem": "config",
+          "description": "O proprietário disse \"mantendo o buff do vip off-line que vai ser 15 segundos cada pesca\". O A-160 manteve o +50% de XP offline do VIP e acrescentou o ciclo de 15 s. Confirmar se os dois ficam juntos (OD-065).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T27"
+          ],
+          "updated_at": "2026-10-12T12:00:00Z"
         }
       ]
     }

@@ -22,75 +22,75 @@
   },
   "ritmo_jogo_aberto": {
     "vara rod_01": {
-      "comprada_em": "1,8 h",
-      "Nv.10": "1,9 h (6 min depois da compra)"
+      "comprada_em": "1,4 h",
+      "Nv.10": "1,5 h (4 min depois da compra)"
     },
     "vara rod_05": {
-      "comprada_em": "1,3 dias",
-      "Nv.10": "1,6 dias (7,2 h depois da compra)",
-      "Nv.30": "2,7 dias (1,4 dias depois da compra)",
-      "Nv.50": "11,4 dias (10,2 dias depois da compra)",
-      "Nv.100": "58,4 dias (57,1 dias depois da compra)"
+      "comprada_em": "1,1 dias",
+      "Nv.10": "1,2 dias (58 min depois da compra)",
+      "Nv.30": "2,4 dias (1,3 dias depois da compra)",
+      "Nv.50": "11,1 dias (10,0 dias depois da compra)",
+      "Nv.100": "58,1 dias (56,9 dias depois da compra)"
     },
     "barco boat_10": {
-      "comprada_em": "5,2 dias",
-      "Nv.10": "5,3 dias (48 min depois da compra)",
-      "Nv.30": "19,4 dias (14,2 dias depois da compra)",
-      "Nv.50": "40,6 dias (35,3 dias depois da compra)"
+      "comprada_em": "5,0 dias",
+      "Nv.10": "5,0 dias (0 min depois da compra)",
+      "Nv.30": "19,1 dias (14,1 dias depois da compra)",
+      "Nv.50": "40,2 dias (35,2 dias depois da compra)"
     }
   },
   "cada_vara_sozinha": {
     "rod_01": {
-      "comprada_em": "1,8 h",
-      "Nv.10": "1,9 h (6 min depois da compra)",
-      "Nv.30": "3,5 h (1,8 h depois da compra)",
-      "Nv.50": "18,1 h (16,3 h depois da compra)",
-      "Nv.100": "11,0 dias (10,9 dias depois da compra)"
+      "comprada_em": "1,4 h",
+      "Nv.10": "1,5 h (4 min depois da compra)",
+      "Nv.30": "2,4 h (1,0 h depois da compra)",
+      "Nv.50": "15,9 h (14,5 h depois da compra)",
+      "Nv.100": "10,9 dias (10,8 dias depois da compra)"
     },
     "rod_02": {
-      "comprada_em": "4,8 h",
-      "Nv.10": "6,2 h (1,4 h depois da compra)",
-      "Nv.30": "10,1 h (5,3 h depois da compra)",
-      "Nv.50": "1,3 dias (1,1 dias depois da compra)",
-      "Nv.100": "21,5 dias (21,3 dias depois da compra)"
+      "comprada_em": "3,5 h",
+      "Nv.10": "4,2 h (42 min depois da compra)",
+      "Nv.30": "6,7 h (3,1 h depois da compra)",
+      "Nv.50": "1,1 dias (22,9 h depois da compra)",
+      "Nv.100": "21,3 dias (21,2 dias depois da compra)"
     },
     "rod_03": {
-      "comprada_em": "8,7 h",
-      "Nv.10": "10,3 h (1,6 h depois da compra)",
-      "Nv.30": "17,8 h (9,0 h depois da compra)",
-      "Nv.50": "3,5 dias (3,1 dias depois da compra)",
-      "Nv.100": "42,1 dias (41,7 dias depois da compra)"
+      "comprada_em": "6,9 h",
+      "Nv.10": "7,3 h (25 min depois da compra)",
+      "Nv.30": "14,6 h (7,7 h depois da compra)",
+      "Nv.50": "3,2 dias (3,0 dias depois da compra)",
+      "Nv.100": "41,8 dias (41,5 dias depois da compra)"
     },
     "rod_04": {
-      "comprada_em": "17,2 h",
-      "Nv.10": "18,0 h (46 min depois da compra)",
-      "Nv.30": "1,3 dias (13,0 h depois da compra)",
-      "Nv.50": "5,7 dias (5,0 dias depois da compra)",
-      "Nv.100": "42,9 dias (42,2 dias depois da compra)"
+      "comprada_em": "14,5 h",
+      "Nv.10": "14,7 h (9 min depois da compra)",
+      "Nv.30": "1,1 dias (11,4 h depois da compra)",
+      "Nv.50": "5,4 dias (4,7 dias depois da compra)",
+      "Nv.100": "42,6 dias (42,0 dias depois da compra)"
     },
     "rod_05": {
-      "comprada_em": "1,3 dias",
-      "Nv.10": "1,6 dias (7,2 h depois da compra)",
-      "Nv.30": "2,7 dias (1,4 dias depois da compra)",
-      "Nv.50": "11,4 dias (10,2 dias depois da compra)",
-      "Nv.100": "58,4 dias (57,1 dias depois da compra)"
+      "comprada_em": "1,1 dias",
+      "Nv.10": "1,2 dias (58 min depois da compra)",
+      "Nv.30": "2,4 dias (1,3 dias depois da compra)",
+      "Nv.50": "11,1 dias (10,0 dias depois da compra)",
+      "Nv.100": "58,1 dias (56,9 dias depois da compra)"
     }
   },
   "conchas_ganhas_acumulado": {
-    "dia 1": 697,
-    "dia 2": 2327,
-    "dia 3": 5027,
-    "dia 7": 18255,
-    "dia 14": 45912,
-    "dia 30": 118532,
-    "dia 45": 200247,
-    "dia 60": 274255,
-    "dia 75": 274255
+    "dia 1": 1140,
+    "dia 2": 4519,
+    "dia 3": 8857,
+    "dia 7": 29346,
+    "dia 14": 71118,
+    "dia 30": 180298,
+    "dia 45": 303645,
+    "dia 60": 355112,
+    "dia 75": 355112
   },
   "dias_ate_nivel_do_pescador": {
-    "Nv.100": 0.67,
-    "Nv.500": 14.28,
-    "Nv.1000": 56.55
+    "Nv.100": 0.49,
+    "Nv.500": 12.5,
+    "Nv.1000": 50.45
   },
   "varas": {
     "rod_01": {

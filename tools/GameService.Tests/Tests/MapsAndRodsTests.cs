@@ -262,7 +262,7 @@ public sealed class MapsAndRodsTests
         var catches = TestSupport.PlayFor(game, clock, 12 * 3600, stepSeconds: 30);
 
         Assert.True(game.Player.GetPlayer().Shells > 0);
-        // 2880 catches (one every 15 s, M24-T22) at ~0.35% rares (A-159): expect a few; allow the rare unlucky run.
+        // 4320 catches (one every 10 s, M24-T27) at ~0.24% rare bites (A-160): expect a few; allow the rare unlucky run.
         Assert.InRange(catches.Count(c => c.RarityId == "rare"), 0, 30);
     }
 }

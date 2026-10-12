@@ -8,7 +8,7 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | `maps.json` | Mapas, pools de peixes por mapa com pesos de captura, nível de desbloqueio, vara mínima, regras de viagem |
 | `progression.json` | Curva de XP do Pescador, curva de XP do peixe (até o Nv.100) e bônus de atributo por nível do peixe, distribuição de tamanho, regras de modificador de raridade/tamanho/nível, regras de alimentação, intervalos de pesca |
 | `rods.json` | Definições das varas, bônus no Nv.1 e no Nv.100 (com a curva entre eles), custos de compra e de cada nível (Moedas e Conchas), regras de revenda |
-| `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário, VIP (preço em Dólares, dias e bônus de XP offline) |
+| `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário, VIP (preço em Dólares, dias, bônus de XP offline e o ciclo da pesca offline com VIP, `offline_cycle_seconds`) |
 | `arena.json` | Energia, seleção de oponentes, Honra, constantes de combate, formação, regras de Cardume, métrica de Força, Loja da Arena |
 | `expeditions.json` | Durações, Força Recomendada, curvas de eficiência, recompensas |
 | `arena_bots.json` | Só no jogo local: como os 200 adversários simulados da Arena são montados e com que frequência atacam você |
@@ -41,7 +41,7 @@ Onde fica cada coisa no painel:
 | Varas (bônus, curva, nível máximo e custo de cada nível) | Varas | `rods.json` |
 | Barcos (bônus no Nv.1 e no máximo, fragmentos e chance por peixe, custo de cada nível) | Sucesso da pesca → Barcos | `equipment.json` |
 | Preço mínimo, multiplicador geral do preço de venda dos peixes, Conchas, Aquário, Mercado | Economia | `economy.json` |
-| Preço, duração e bônus do VIP | Economia → `vip` | `economy.json` |
+| Preço, duração, bônus de XP e ciclo offline do VIP | Economia → `vip` | `economy.json` |
 | Arena, Cardume, Expedições | Outros arquivos | `arena.json`, `expeditions.json`… |
 | Tripulação (preços, renda, marcos, offline) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play | `crew.json` |
 | Melhorias (preços, efeitos, níveis, nomes) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play | `upgrades.json` |
@@ -67,11 +67,17 @@ Onde fica cada coisa no painel:
   `progression.json → rarity.tiers`), que multiplica o `draw_weight` de cada categoria de tamanho
   para os peixes dessa raridade. O que não estiver listado fica 1. Hoje o Raro tem Grande × 0,85 e
   Excepcional × 0,7 (GDD_ADENDO A-083). Campo opcional: arquivos sem ele continuam valendo.
-- **Mordida na pesca por raridade (M24-T22, A-159, TD-043):** `rarity.tiers[].fishing_bite_multiplier` (0,35 no Raro,
-  Épico, Lendário e Mítico) multiplica a chance de um peixe daquela raridade morder **na pesca** (online e offline),
-  depois dos pesos do mapa e do bônus de raridade da vara; os Comuns completam o resto. Com o ciclo na metade
-  (`fishing.online_cycle_seconds` 15 e `offline_cycle_seconds` 30), cada raridade chega a ~70% dos peixes por hora de
-  antes. Expedições e os vendedores do Mercado usam os pesos do mapa sem ele. Ausente = 1; não vale para o Comum.
+- **Mordida na pesca por raridade (M24-T22, A-159, TD-043):** `rarity.tiers[].fishing_bite_multiplier` (0,233333 no
+  Raro, Épico, Lendário e Mítico desde o M24-T27, A-160; era 0,35) multiplica a chance de um peixe daquela raridade
+  morder **na pesca** (online e offline), depois dos pesos do mapa e do bônus de raridade da vara; os Comuns completam o
+  resto. Com o ciclo de 10 s (`fishing.online_cycle_seconds` 10 e `offline_cycle_seconds` 20), cada raridade continua
+  com os mesmos peixes por hora do ciclo de 15 s (0,35 × 10/15) e ~70% dos do ciclo de 30 s. Para manter os raros por
+  hora ao mudar o ciclo, mude este número na mesma proporção. Expedições e os vendedores do Mercado usam os pesos do mapa
+  sem ele. Ausente = 1; não vale para o Comum.
+- **Ciclo de pesca (M24-T27, A-160):** `progression.json → fishing.online_cycle_seconds` (10) e
+  `offline_cycle_seconds` (20); com o VIP ativo, a pesca offline usa `economy.json → vip.offline_cycle_seconds` (15; 0 =
+  o VIP não muda o ciclo). A Caixa de Pesca (`economy.json → fishing_box.capacity`, 8.640) guarda 1 dia de pesca online;
+  as iscas (`equipment.json → baits[].charges`, 180) duram 30 min online.
 - Todo arquivo carrega `config_schema_version`. Aumente-o quando o *formato* do arquivo mudar, não
   quando um número mudar.
 
@@ -112,6 +118,11 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
   regerado. O Nv.10 do Pescador chega em ~30 min online (era ~1 h); o Nv.1000 com a Tripulação e as Melhorias, em
   ~57 / ~102 / ~119 dias (jogo aberto / 4 vezes / 1 vez por dia; eram ~50 / ~92 / ~106), porque no fim do jogo os raros
   valiam mais que o dobro de Comuns (OD-063).
+- **Pesca a cada 10 s (12/10/2026, M24-T27, A-160):** online 15 → 10 s, offline 30 → 20 s, 15 s offline com o VIP
+  (`vip.offline_cycle_seconds`); `fishing_bite_multiplier` 0,35 → 0,233333 (raros por hora iguais, chance por peixe
+  2/3); Caixa de Pesca 3.000 → 8.640 (1 dia de pesca online); iscas 120 → 180 tentativas pelo mesmo preço; chance de
+  fragmento ÷1,5 (0,43% a 0,67%) e o Passe regerado. Nv.10 em ~20 min online; Nv.1000 com a Tripulação e as Melhorias em
+  ~50 / ~91 / ~106 dias (eram ~57 / ~102 / ~119).
 - A Vara 1 custa **2.500** Moedas para comprar. Desde o M24-T13 ela vai até o **Nv.100**: o 1º nível custa **500**
   Moedas e 1 Concha (antes 1.500 e 2), do Nv.1 ao 30 são ~156 mil Moedas e 44 Conchas, e do 1 ao 100 ~1,5 bi Moedas
   e 588 Conchas.
@@ -152,8 +163,8 @@ Desde 11/10/2026 (M24-T16 e M24-T17, A-157 e A-158, TD-042). Números gerados po
 
 - **Barcos não são vendidos.** Cada barco (menos o inicial) tem `map_id` (o mapa cujos peixes dão os fragmentos dele;
   um barco por mapa), `fragments_required` (quantos montam o barco: 20 no Mapa 1 até 200 no Mapa 10) e
-  `fragment_drop_chance` (a chance de um peixe puxado naquele mapa dar 1 fragmento: 0,64% a 1,03% desde o M24-T22; eram
-  1,3% a 2,4% com o ciclo de 30 s). O script grava com 4 casas. O barco inicial não
+  `fragment_drop_chance` (a chance de um peixe puxado naquele mapa dar 1 fragmento: 0,43% a 0,67% desde o M24-T27 com o
+  ciclo de 10 s; eram 0,64% a 1,03% com o de 15 s e 1,3% a 2,4% com o de 30 s). O script grava com 4 casas. O barco inicial não
   tem `map_id`. `boat_fragments.drop_on_offline_fishing` diz se a pesca offline também dá fragmentos (sim).
 - **Como a chance foi calibrada.** Para quem abre o jogo 4 vezes por dia e pesca no mapa do barco, montar leva ~2 dias
   no Mapa 1 e ~10 no Mapa 10 (`DIAS_ALVO_PRIMEIRO` e `DIAS_ALVO_ULTIMO` no script).

@@ -357,6 +357,12 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>Extra share of Fisher XP on offline catches while the VIP is active (0.5 = +50%).</summary>
         public double OfflineFisherXpBonus { get; set; }
+
+        /// <summary>
+        /// Seconds per offline fishing attempt while the VIP is active (M24-T27, A-160), in place of
+        /// fishing.offline_cycle_seconds; 0 (or absent) = the VIP does not change the offline cycle.
+        /// </summary>
+        public double OfflineCycleSeconds { get; set; }
     }
 
     /// <summary>The Auction rules (GDD section 35).</summary>

@@ -1303,6 +1303,8 @@ Pedido do proprietário (07/10/2026): um VIP que custa **100 Dólares do jogo** 
   acaba no meio da ausência, o bônus conta só até ali.
 - A tela de "Bem-vindo de volta" mostra quanto do XP veio do VIP.
 - Valores em `config/economy.json` → `vip`.
+- *Desde 12/10/2026 (A-160) o VIP também faz a pesca offline mais rápida: 1 tentativa a cada 15 s em vez de 20 s. O
+  bônus de XP continua (OD-065).*
 - **Efeito simulado** (`docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md`): abrindo 4 vezes por dia, o Nv.100 passa
   de ~19 para ~15 dias; 1 vez por dia, de ~24 para ~18 dias. Quem deixa o jogo aberto o dia todo não muda
   (~10 dias), então o VIP nunca passa da meta de 10 dias.
@@ -2366,6 +2368,10 @@ sugestões para ajustar jogando.
 ### A-159 · Mais peixes, menos raros
 **Seção do GDD:** 7, 10, 17, 22 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
 
+*Atualizado em 12/10/2026 (A-160): o ciclo passou para 10 s online e 20 s offline (15 s com o VIP), o multiplicador
+para 0,233333, a Caixa para 8.640, as iscas para 180 e os fragmentos para 0,43%–0,67%. Os raros por hora continuam os
+deste item. Os números abaixo são os de 11/10/2026.*
+
 Decisão do proprietário em 11/10/2026 (M24-T22): "a ideia é aumentar a quantidade de peixes pescados e diminuir a
 chance de pegar mais raros". Respostas dele: **o dobro de peixes por hora**; peixes raros por hora **um pouco menos que
 hoje** (~70%); Moedas e XP por hora **sobem junto** (o valor e o XP de cada peixe não mudam). Números em `/config`.
@@ -2438,3 +2444,86 @@ hoje** (~70%); Moedas e XP por hora **sobem junto** (o valor e o XP de cada peix
   aceitar 3.000; as iscas compradas antes mantêm as tentativas que têm.
 - **Painel de Desenvolvimento → Balanceamento → Raridades:** a coluna nova "Na pesca" (o 0,35 de cada raridade). A
   coluna "Chance" da aba Mapas continua mostrando a chance do mapa sem esse número.
+
+### A-160 · Pesca a cada 10 s, VIP a cada 15 s fora do jogo e Caixa para 1 dia
+**Seção do GDD:** 7, 10, 17, 22 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Decisão do proprietário em 12/10/2026 (M24-T27): "Vamos mudar para pesca a cada 10 segundos on-line e 20 segundos
+off-line, mantendo o buff do vip off-line que vai ser 15 segundos cada pesca, a ideia é aumentar número de peixes
+pescados e diminuir porcentagem de chance deles morderem, de vir peixes mais raros, etc, caixa de pesca comporta 1 dia
+de pesca online". Números em `/config`.
+
+- **Ciclo.** Uma tentativa a cada **10 s** com o jogo aberto (era 15 s) e a cada **20 s** com o jogo fechado (era 30 s):
+  1,5× peixes por hora. A chance de puxar cada peixe, o teto de 95% e o limite de 24 h offline não mudaram.
+- **VIP.** Com o VIP ativo, a pesca com o jogo fechado faz **1 tentativa a cada 15 s** (em vez de 20 s). Interpretação
+  registrada de "mantendo o buff do vip off-line que vai ser 15 segundos cada pesca": o ciclo de 15 s passa a ser o
+  benefício do VIP fora do jogo, e o **bônus de +50% de XP de Pescador offline do A-110 continua junto** (o proprietário
+  disse "mantendo o buff"; a pergunta se os dois ficam juntos está na OD-065). Um VIP que acaba enquanto o jogador está
+  fora conta 15 s só até o fim dele: cada tentativa usa 15 s se termina antes do fim do VIP; dali em diante, 20 s (como
+  o bônus de XP, que é conferido na hora de cada peixe). O VIP não muda a pesca com o jogo aberto.
+  A aba VIP da Loja diz "Com o VIP, a pesca com o jogo fechado faz 1 tentativa a cada 15 segundos (sem VIP, a cada 20
+  segundos)…"; o "Bem-vindo de volta" diz "1 tentativa a cada 15 segundos com o VIP (20 segundos sem ele)" quando o VIP
+  valeu em alguma tentativa.
+- **Raros: menos por peixe, os mesmos por hora.** O multiplicador de mordida das raridades acima de Comum
+  (`fishing_bite_multiplier`, A-159) passou de **0,35 para 0,233333** (0,35 × 10/15). Com 1,5× tentativas, cada
+  raridade continua com **os mesmos peixes por hora online** de antes (e com o jogo fechado sem VIP também), em qualquer
+  mapa e equipamento; a chance de um peixe ser raro cai para 2/3. Exemplos (online, por hora):
+
+  | Momento | Raridade | Morde, por peixe (antes → agora) | Puxados por hora (antes → agora) |
+  |---|---|---|---|
+  | Começo: Rio Selvagem, Ponta Selvagem Nv.10, Remo Valente | Raro | 0,36% → 0,24% | 0,37 → 0,37 |
+  | | Todos os peixes | | 131 → 197 |
+  | Meio: Costa de Coral, Corrente Mestra Nv.30, Horizonte Dourado Nv.10, isca Maré Viva | Raro | 4,7% → 3,1% | 8,3 → 8,3 |
+  | | Épico | 0,94% → 0,63% | 1,3 → 1,3 |
+  | | Todos os peixes | | 203 → 305 |
+  | Fim: Abismo Atlântico, Soberana Abissal Nv.100, Titã do Atlântico Nv.100, isca Ouro de Maré | Raro | 15,2% → 10,2% | 34,7 → 34,7 |
+  | | Épico | 9,7% → 6,5% | 22,2 → 22,2 |
+  | | Lendário | 4,1% → 2,8% | 9,4 → 9,4 |
+  | | Mítico | 0,12% → 0,08% | 0,28 → 0,28 |
+  | | Todos os peixes | | 228 → 342 |
+
+  Com o VIP, fora do jogo são 240 tentativas por hora (sem VIP, 180): ali o VIP dá 1,33× peixes de cada raridade.
+  Expedições e os vendedores do Mercado continuam com o sorteio sem o multiplicador (A-159).
+- **Tamanhos especiais.** Excepcional e Perfeição continuam sorteados por peixe e por isso vêm **1,5× por hora**
+  (3× o de antes do A-159); não mudaram sem decisão (OD-064, aberta).
+- **Caixa de Pesca: 8.640 peixes** (era 3.000) = 1 dia de pesca online (24 h a cada 10 s). Cabe também um dia inteiro
+  fora do jogo: 4.320 tentativas sem VIP e 5.760 com o VIP (o limite offline continua 24 h). A Caixa aparece no HUD, na
+  própria Caixa e no Perfil com o número do config.
+- **Iscas: 180 tentativas por compra** (eram 120), pelo mesmo preço: continuam durando 30 min de pesca online e custando
+  o mesmo por hora.
+- **Fragmentos de barco: chance por peixe ÷1,5** (0,43% no Lago Sereno a 0,67% no Abismo Atlântico; eram 0,64% a 1,03%),
+  recalculada pelo script para o mesmo ritmo de montagem (A-157: ~2 dias no Mapa 1 e ~10 no Mapa 10 abrindo o jogo 4
+  vezes por dia; a simulação dá 2,0 e 10,0 dias, iguais aos de antes). Fragmentos por hora: 99% a 101% dos de antes.
+- **Passe do Pescador regerado** pelo script com a economia nova (Moedas e Conchas de cada marco seguem a renda do
+  jogador de referência quando ele chega ao nível): Nv.10 2.460 Moedas e 9 Conchas (era 1.950 e 6); Nv.100 554 mil e 23
+  (era 822 mil e 15); Nv.500 834 mi e 135 (era 979 mi e 91); Nv.1000 838 bi e 206 (era 1,11 tri e 138). As Moedas dos
+  níveis altos caem porque o jogador chega lá mais cedo, com a Tripulação ainda menor. Dólares e fragmentos não mudaram.
+- **Ganhos sobem junto** (decisão do A-159): o valor de venda e o XP de cada peixe não mudaram. Por hora de pesca online:
+
+  | Momento | XP da pesca por hora | Moedas da pesca por hora | Conchas por hora |
+  |---|---|---|---|
+  | Começo | ×1,49 | ×1,48 | ×1,5 |
+  | Meio | ×1,42 | ×1,40 | ×1,5 |
+  | Fim (tudo no Nv.100) | ×1,13 | ×1,10 | ×1,5 |
+
+  No fim do jogo a renda da pesca vai de ~20 mil/s para ~22 mil/s (a da Tripulação não muda). Comparado com antes do
+  A-159 (ciclo de 30 s), o fim fica em ~95% do XP e ~88% das Moedas por hora (OD-063 continua aberta).
+- **Tempo até cada nível** (`tools/Progressao/simular_melhorias.py`, com a Tripulação e as Melhorias, sem o Passe e sem
+  VIP; antes → agora; a curva do Pescador não foi recalibrada):
+
+  | Jeito de jogar | Nv.10 | Nv.100 | Nv.500 | Nv.1000 |
+  |---|---|---|---|---|
+  | Jogo aberto o dia todo | ~29 min → ~14 min | 0,7 → 0,5 dia | 14,3 → 12,5 dias | 56,6 → 50,5 dias |
+  | Abre 4 vezes por dia (30 min) | 8,4 h* → 8,4 h* | 1,8 → 1,3 dia | 26,9 → 23,5 dias | 102,3 → 91,3 dias |
+  | Abre 1 vez por dia (30 min) | 20 h* → 20 h* | 3,8 → 3,8 dias | 33,8 → 29,8 dias | 118,8 → 105,8 dias |
+
+  \* Contado da meia-noite do primeiro dia (a primeira sessão começa às 8 h ou às 20 h). Só pescando
+  (`simular_progressao.py`): Nv.10 em ~20 min online; Nv.1000 em ~53 / ~99 / ~109 dias (eram ~60 / ~113 / ~123). Com o
+  VIP o tempo todo (`simular_progressao.py --vip`, só pescando), abrindo 4 vezes por dia o Nv.1000 vem em ~55 dias (era
+  ~81 com o VIP do A-159 e ~99 sem VIP agora). O Nv.1000 continua bem acima de 30 dias com o jogo sempre aberto.
+- **Na tela.** O pescador lança, espera a mordida, fisga e mostra o peixe: a sequência mais longa (mostrar e guardar o
+  peixe 2,8 s, lançar 1,3 s, mordida 2,5 s e recolher 1,2 s, com a espera no meio) leva ~7 s e cabe nos 10 s; a
+  animação já se ajusta ao tempo da tentativa. Nada mudou no visual.
+- **Quem já joga**: nada a migrar. O que foi pescado com o jogo aberto antes de fechar conta no ritmo antigo; o tempo
+  fechado conta no ritmo novo (20 s, ou 15 s com VIP); dali em diante, 10 s. A Caixa passa a aceitar 8.640; as iscas
+  compradas antes mantêm as tentativas que têm.

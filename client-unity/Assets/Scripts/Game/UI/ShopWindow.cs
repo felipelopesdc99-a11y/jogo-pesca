@@ -1385,7 +1385,10 @@ namespace FishingIdle.Game.UI
             Fill(skin, new Rect(content.x, content.y, content.width, Mathf.Min(content.height, 252f)), new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.7f), 12f);
             content = new Rect(content.x + 12f, content.y + 10f, content.width - 24f, content.height - 20f);
 
-            GUI.Label(new Rect(content.x, content.y, content.width, 40), GameTexts.Vip.Note, skin.SmallMuted);
+            var note = vip.OfflineCycleSeconds > 0
+                ? GameTexts.Vip.NoteWithCycle(Format.Duration(vip.OfflineCycleSeconds), Format.Duration(vip.NormalOfflineCycleSeconds))
+                : GameTexts.Vip.Note;
+            GUI.Label(new Rect(content.x, content.y, content.width, 40), note, skin.SmallMuted);
             var rect = new Rect(content.x, content.y + 42, content.width, 190);
             GUI.Box(rect, GUIContent.none, vip.Active ? skin.CardSelected : skin.Card);
             skin.IconBadge(new Rect(rect.x + 40, rect.y + 30, 56, 56), Icons.Dollar, vip.Active ? UiSkin.Gold : UiSkin.Muted);

@@ -7,13 +7,15 @@ namespace FishingIdle.GameService.Tests;
 public sealed class FishingBoxLimitTests
 {
     private static GameConfig SmallBox() =>
-        TestSupport.ConfigWith(GameConfigLoader.EconomyFile, j => j.Replace("\"capacity\": 3000", "\"capacity\": 3"), certainCatch: true).Config;
+        TestSupport.ConfigWith(GameConfigLoader.EconomyFile, j => j.Replace("\"capacity\": 8640", "\"capacity\": 3"), certainCatch: true).Config;
 
     [Fact]
-    public void The_real_box_holds_3000_fish()
+    public void The_real_box_holds_8640_fish_one_day_of_online_fishing()
     {
-        // 1.500 until M24-T22 (A-159): doubled with the fishing cycle cut in half.
-        Assert.Equal(3000, TestSupport.RealConfig().Economy.FishingBox.Capacity);
+        // 1.500 until M24-T22 (A-159), then 3.000; M24-T27 (A-160): one whole day of online fishing (24 h every 10 s).
+        var config = TestSupport.RealConfig();
+        Assert.Equal(8640, config.Economy.FishingBox.Capacity);
+        Assert.Equal(24 * 3600 / config.Fishing.OnlineCycleSeconds, config.Economy.FishingBox.Capacity, 6);
     }
 
     [Fact]
@@ -22,6 +24,10 @@ public sealed class FishingBoxLimitTests
         var config = TestSupport.RealConfig();
         var offlineAttempts = config.Fishing.OfflineAccumulationCapHours * 3600 / config.Fishing.OfflineCycleSeconds;
         Assert.True(config.Economy.FishingBox.Capacity >= offlineAttempts);
+
+        // With the VIP's faster offline cycle (A-160) too.
+        var vipAttempts = config.Fishing.OfflineAccumulationCapHours * 3600 / config.Economy.Vip.OfflineCycleSeconds;
+        Assert.True(config.Economy.FishingBox.Capacity >= vipAttempts);
     }
 
     [Fact]

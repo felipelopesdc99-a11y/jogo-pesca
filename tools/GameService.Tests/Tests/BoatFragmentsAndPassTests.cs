@@ -59,7 +59,7 @@ public sealed class BoatFragmentsAndPassTests
             Assert.Equal(maps[i].Id, boat.MapId);
             Assert.True(config.TryGetBoatForMap(maps[i].Id, out var forMap));
             Assert.Equal(boat.Id, forMap.Id);
-            Assert.InRange(boat.FragmentDropChance, 0.005, 0.03);
+            Assert.InRange(boat.FragmentDropChance, 0.003, 0.03);
             Assert.True(boat.HasLevels);
             Assert.Equal(boat.CatchSuccessBonus * 3, boat.CatchSuccessBonusAtMaxLevel, 6);
             if (i > 0)
