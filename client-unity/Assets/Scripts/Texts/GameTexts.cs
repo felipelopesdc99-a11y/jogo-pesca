@@ -937,7 +937,7 @@ namespace FishingIdle.Texts
             public static string DollarsAmount(string amount) => amount + " Dólares";
             public const string DollarsOffline = "Pagos quando o jogo estiver online.";
             public const string You = "(você)";
-            public const string CardumeEmpty = "Seu Cardume está vazio: coloque peixes no Cardume (Aquário) para atacar o Boss.";
+            public const string CardumeEmpty = "Seu Cardume está vazio: coloque peixes no Cardume (Perfil → Cardume) para atacar o Boss.";
             public const string CardumeLocked = "Seu Cardume está em uma Expedição e não pode atacar o Boss agora.";
             public const string Waiting = "O Boss ainda não apareceu.";
             public const string ClosedHint = "Deixe o jogo aberto no horário: o Cardume ataca sozinho.";
@@ -949,7 +949,7 @@ namespace FishingIdle.Texts
             public const string LastResultNothing = "Nenhuma recompensa.";
             public static string ItemCoins(string amount) => "+" + amount + " Moedas";
             public static string ItemShells(string amount) => "+" + amount + " Conchas";
-            public static string ItemClothing(string amount) => "+" + amount + " Fragmentos de Roupa";
+            public static string ItemClothing(long count) => count == 1 ? "+1 Fragmento de Roupa" : "+" + Format.Number(count) + " Fragmentos de Roupa";
             public static string ItemBoat(string amount, string boat) => "+" + amount + " frag. · " + boat;
             public static string ItemDollars(string amount) => "+" + amount + " Dólares";
             public static string DamagePop(string amount) => "-" + amount;
@@ -1246,7 +1246,7 @@ namespace FishingIdle.Texts
             public const string ResetConfirm = "Apagar e começar de novo";
         }
 
-        // ------------------------------------------------------------------ window header "Placa do Píer" (addendum A-148)
+        // ------------------------------------------------------------------ window header: the label of the "Diário de bordo" (A-148, A-170)
 
         public static class WindowHeader
         {

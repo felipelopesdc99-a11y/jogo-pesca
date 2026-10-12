@@ -108,6 +108,17 @@ namespace FishingIdle.Game.UI
         private ServiceResult<FeedPreview> _feedPreview;
         private Vector2 _feedScroll;
 
+        // The food lists as filtered by the search, rebuilt only when the search, the box or the aquarium changes
+        // (the box holds up to thousands of fish; filtering them every frame cost a lot).
+        private List<CatchView> _feedBoxShown = new List<CatchView>();
+        private IReadOnlyList<CatchView> _feedBoxSource;
+        private string _feedBoxSearch;
+        private List<FishView> _feedOthers = new List<FishView>();
+        private List<FishView> _feedOthersShown = new List<FishView>();
+        private AquariumView _feedOthersSource;
+        private long _feedOthersSelected = -1;
+        private string _feedOthersSearch;
+
         // Selling several fish at once (A-130)
         private bool _multi;
         private readonly HashSet<long> _sellSet = new HashSet<long>();
@@ -205,8 +216,8 @@ namespace FishingIdle.Game.UI
                 Close();
             }
 
-            // Search by name, next to Fechar (the same place in the Fishing Box).
-            var search = NameSearch.Field(skin, new Rect(panel.xMax - 156 - 16 - 300, panel.y + 24, 300, 38), _search, "busca_aquario");
+            // Search by name, next to the seal (the same place in the Fishing Box; the header keeps 316 for it).
+            var search = NameSearch.Field(skin, new Rect(WindowFrame.HeaderRight(panel) - 300, panel.y + 24, 300, 38), _search, "busca_aquario");
             if (search != _search)
             {
                 _search = search;
@@ -1210,7 +1221,7 @@ namespace FishingIdle.Game.UI
             var rightWidth = Mathf.Max(badgeWidth, marked ? 20f : 0f);
             if (badge != null)
             {
-                skin.Tag(new Rect(r.xMax - 10f - badgeWidth, r.y + 9f, badgeWidth, 20f), badge, UiSkin.Accent);
+                skin.Tag(new Rect(r.xMax - 10f - badgeWidth, r.y + 9f, badgeWidth, 20f), badge, UiSkin.NightAccent);
             }
 
             if (marked)
@@ -1661,7 +1672,8 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(area.x, area.y, area.width, 32), GameTexts.Aquarium.FeedTitle + ": " + _selected.SpeciesName, skin.Title);
             GUI.Label(new Rect(area.x + 2, area.y + 36, area.width, 22), GameTexts.Aquarium.FeedPickHint, skin.SmallMuted);
 
-            var others = _aquarium.Fish.Where(f => f.FishId != _selectedId).ToList();
+            RefreshFoodLists();
+            var others = _feedOthers;
             var boxLabel = GameTexts.Aquarium.FeedFromBox + " (" + _box.Count + ")";
             var aquariumLabel = GameTexts.Aquarium.FeedFromAquarium + " (" + others.Count + ")";
             if (GUI.Button(new Rect(area.x, area.y + 70, 230, 32), boxLabel, _feedFromAquarium ? skin.Chip : skin.ChipActive))
@@ -1679,7 +1691,7 @@ namespace FishingIdle.Game.UI
             var grid = new Rect(area.x - 4, area.y + 118, area.width + 8, area.height - 118);
             if (_feedFromAquarium)
             {
-                DrawGrid(grid, others.Where(f => NameSearch.Matches(f.SpeciesName, _search)).ToList(), ref _feedScroll, (rect, fish) =>
+                DrawGrid(grid, _feedOthersShown, ref _feedScroll, (rect, fish) =>
                 {
                     if (FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
                         GameTexts.Player.LevelShort + " " + fish.Level + " · " + Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName, (float)fish.SizePercentile,
@@ -1692,7 +1704,7 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                DrawGrid(grid, _box.Where(c => NameSearch.Matches(c.SpeciesName, _search)).ToList(), ref _feedScroll, (rect, c) =>
+                DrawGrid(grid, _feedBoxShown, ref _feedScroll, (rect, c) =>
                 {
                     if (FishCard(skin, rect, c.SpeciesId, c.SpeciesName,
                         Format.SizeCm(c.SizeCm) + " · " + c.SizeCategoryName, (float)c.SizePercentile,
@@ -1702,6 +1714,26 @@ namespace FishingIdle.Game.UI
                         Toggle(_foodBox, c.CatchId);
                     }
                 });
+            }
+        }
+
+        /// <summary>Rebuilds the filtered food lists only when the search, the box or the aquarium view changed.</summary>
+        private void RefreshFoodLists()
+        {
+            if (!ReferenceEquals(_box, _feedBoxSource) || _feedBoxSearch != _search)
+            {
+                _feedBoxSource = _box;
+                _feedBoxSearch = _search;
+                _feedBoxShown = _box.Where(c => NameSearch.Matches(c.SpeciesName, _search)).ToList();
+            }
+
+            if (!ReferenceEquals(_aquarium, _feedOthersSource) || _feedOthersSelected != _selectedId || _feedOthersSearch != _search)
+            {
+                _feedOthersSource = _aquarium;
+                _feedOthersSelected = _selectedId;
+                _feedOthersSearch = _search;
+                _feedOthers = _aquarium.Fish.Where(f => f.FishId != _selectedId).ToList();
+                _feedOthersShown = _feedOthers.Where(f => NameSearch.Matches(f.SpeciesName, _search)).ToList();
             }
         }
 

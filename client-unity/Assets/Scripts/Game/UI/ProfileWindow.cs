@@ -286,7 +286,7 @@ namespace FishingIdle.Game.UI
 
             GUI.DrawTexture(portrait, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 18);
 
-            // The wallet, right to left from Fechar; whatever is left goes to the name and the level.
+            // The wallet, right to left from the seal; whatever is left goes to the name and the level.
             var wallet = new[]
             {
                 (Icons.Coin, GameTexts.Player.Coins, player != null ? player.Coins : 0L),
@@ -294,7 +294,7 @@ namespace FishingIdle.Game.UI
                 (Icons.Dollar, GameTexts.Player.Dollars, player != null ? player.Dollars : 0L),
                 (Icons.Honor, GameTexts.Arena.Honor, _arena != null ? _arena.Honor : 0L),
             };
-            var wx = panel.xMax - 156 - 14;
+            var wx = WindowFrame.HeaderRight(panel);
             for (var i = wallet.Length - 1; i >= 0; i--)
             {
                 var (icon, label, amount) = wallet[i];
@@ -336,11 +336,9 @@ namespace FishingIdle.Game.UI
             var level = GameTexts.Player.LevelShort + " " + _profile.FisherLevel;
             var lw = skin.SmallBold.CalcSize(new GUIContent(level)).x + 16;
             var badge = new Rect(tx, panel.y + 58, lw, 22);
-            GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 0, 8);
-            var prev = GUI.contentColor;
-            GUI.contentColor = new Color(0.03f, 0.12f, 0.16f);
-            GUI.Label(new Rect(badge.x + 8, badge.y + 1, lw, UiSkin.SmallLine), level, skin.SmallBold);
-            GUI.contentColor = prev;
+            // A seal in its night colours, also on the sheet (the paper ink under dark text did not read).
+            GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.NightAccent, 0, 8);
+            UiSkin.ColoredLabel(new Rect(badge.x + 8, badge.y + 1, lw, UiSkin.SmallLine), level, skin.SmallBold, UiSkin.SceneNight, false);
             if (player != null && player.FisherXpToNext > 0)
             {
                 skin.Bar(new Rect(badge.xMax + 10, badge.y + 7, Mathf.Clamp(tw2 - lw - 10, 60f, 300f), 8), player.FisherXp / (float)player.FisherXpToNext);
@@ -384,9 +382,7 @@ namespace FishingIdle.Game.UI
             {
                 var rank = GameTexts.Arena.RankOf(_arena.Rank);
                 var rw = skin.Display.CalcSize(new GUIContent(rank)).x;
-                GUI.contentColor = UiSkin.Gold;
-                GUI.Label(new Rect(x, y - 4, rw + 4, 44), rank, skin.Display);
-                GUI.contentColor = Color.white;
+                UiSkin.ColoredLabel(new Rect(x, y - 4, rw + 4, 44), rank, skin.Display, UiSkin.Gold);
                 GUI.Label(new Rect(x + rw + 12, y + 14, w - rw - 12, 20), FishCard.Fit(GameTexts.Profile.OfPlayers(_arena.Participants), skin.SmallMuted, w - rw - 12), skin.SmallMuted);
                 y += 46;
                 y = InfoRow(skin, x, y, w, GameTexts.Arena.Honor, Format.Number(_arena.Honor), null);
@@ -490,9 +486,8 @@ namespace FishingIdle.Game.UI
             {
                 var color = UiSkin.RarityColor(t.RarityId);
                 GUI.DrawTexture(new Rect(x, y + 6, 10, 10), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, 5);
-                GUI.contentColor = Color.Lerp(color, Color.white, 0.25f);
-                GUI.Label(new Rect(x + 16, y, colSpecies - x - 20, 22), FishCard.Fit(t.RarityName, skin.SmallBold, colSpecies - x - 20), skin.SmallBold);
-                GUI.contentColor = Color.white;
+                UiSkin.ColoredLabel(new Rect(x + 16, y, colSpecies - x - 20, 22), FishCard.Fit(t.RarityName, skin.SmallBold, colSpecies - x - 20), skin.SmallBold,
+                    UiSkin.Paper ? color : Color.Lerp(color, Color.white, 0.25f));
                 GUI.Label(new Rect(colSpecies, y, colCaught - colSpecies, 22), t.SpeciesFound + " / " + t.SpeciesTotal, skin.Small);
                 GUI.Label(new Rect(colCaught, y, x + w - colCaught, 22), Format.Number(t.Caught), skin.SmallRight);
                 y += 24;
@@ -519,9 +514,7 @@ namespace FishingIdle.Game.UI
                 var (value, label, color, exact) = tiles[i];
                 var r = new Rect(x + (i % 2) * (tileW + 8f), y + (i / 2) * (tileH + 8f), tileW, tileH);
                 GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.OnSheet(new Color(0.06f, 0.11f, 0.2f, 0.9f)), 0, 10);
-                GUI.contentColor = color;
-                GUI.Label(new Rect(r.x + 10, r.y + (tileH < 54f ? 2 : 6), r.width - 16, 28), FishCard.Fit(value, skin.Heading, r.width - 16), skin.Heading);
-                GUI.contentColor = Color.white;
+                UiSkin.ColoredLabel(new Rect(r.x + 10, r.y + (tileH < 54f ? 2 : 6), r.width - 16, 28), FishCard.Fit(value, skin.Heading, r.width - 16), skin.Heading, color);
                 GUI.Label(new Rect(r.x + 10, r.yMax - 21, r.width - 16, UiSkin.SmallLine), FishCard.Fit(label, skin.SmallMuted, r.width - 16), skin.SmallMuted);
                 if (exact > 0 && r.Contains(Event.current.mousePosition))
                 {
@@ -570,9 +563,17 @@ namespace FishingIdle.Game.UI
         {
             var lw = skin.SmallMuted.CalcSize(new GUIContent(label)).x + 12f;
             GUI.Label(new Rect(x, y, lw, 22), label, skin.SmallMuted);
-            if (color.HasValue) GUI.contentColor = color.Value;
-            GUI.Label(new Rect(x + lw, y, w - lw, 22), FishCard.Fit(value, skin.SmallBold, w - lw), RightBold(skin));
-            GUI.contentColor = Color.white;
+            var valueRect = new Rect(x + lw, y, w - lw, 22);
+            var valueText = FishCard.Fit(value, skin.SmallBold, w - lw);
+            if (color.HasValue)
+            {
+                UiSkin.ColoredLabel(valueRect, valueText, RightBold(skin), color.Value);
+            }
+            else
+            {
+                GUI.Label(valueRect, valueText, RightBold(skin));
+            }
+
             skin.Divider(new Rect(x, y + 27, w, 1));
             return y + 34;
         }
@@ -587,9 +588,7 @@ namespace FishingIdle.Game.UI
             var tw = w - 54 - bw - 6;
             GUI.Label(new Rect(x + 54, y + 2, tw, 22), FishCard.Fit(name, skin.BodyBold, tw), skin.BodyBold);
             GUI.Label(new Rect(x + 54, y + 21, tw, UiSkin.SmallLine), FishCard.Fit(detail, skin.SmallMuted, tw), skin.SmallMuted);
-            GUI.contentColor = UiSkin.Accent;
-            GUI.Label(new Rect(x + w - bw, y + 12, bw, 20), bonusText, skin.SmallBold);
-            GUI.contentColor = Color.white;
+            UiSkin.ColoredLabel(new Rect(x + w - bw, y + 12, bw, 20), bonusText, skin.SmallBold, UiSkin.Accent);
             return y + 50;
         }
 
@@ -865,10 +864,8 @@ namespace FishingIdle.Game.UI
             var tx = thumb.xMax + 14f;
             var tw = bx - 14f - tx;
 
-            var prev = GUI.contentColor;
-            GUI.contentColor = Color.Lerp(tier, Color.white, 0.35f);
-            GUI.Label(new Rect(tx, rect.y + 12f, tw, 28), FishCard.Fit(rod.Name, skin.Heading, tw), skin.Heading);
-            GUI.contentColor = prev;
+            UiSkin.ColoredLabel(new Rect(tx, rect.y + 12f, tw, 28), FishCard.Fit(rod.Name, skin.Heading, tw), skin.Heading,
+                UiSkin.Paper ? tier : Color.Lerp(tier, Color.white, 0.35f));
             var level = rod.HasLevels ? " · " + GameTexts.Aquarium.LevelOf(rod.Level, rod.MaxLevel) : string.Empty;
             GUI.Label(new Rect(tx, rect.y + 42f, tw, 20), FishCard.Fit(GameTexts.Profile.Tier(rod.Tier) + level, skin.SmallMuted, tw), skin.SmallMuted);
             GUI.Label(new Rect(tx, rect.y + 64f, tw, 20), FishCard.Fit(CatchesText(rod), skin.Small, tw), skin.Small);
@@ -1120,10 +1117,8 @@ namespace FishingIdle.Game.UI
 
             var tx = rect.x + 14f;
             var ty = rect.y + 14f;
-            var prev = GUI.contentColor;
-            GUI.contentColor = Color.Lerp(_tipColor, Color.white, 0.2f);
-            GUI.Label(new Rect(tx, ty, innerW, 24), FishCard.Fit(_tipTitle, skin.BodyBold, innerW), skin.BodyBold);
-            GUI.contentColor = prev;
+            UiSkin.ColoredLabel(new Rect(tx, ty, innerW, 24), FishCard.Fit(_tipTitle, skin.BodyBold, innerW), skin.BodyBold,
+                UiSkin.Paper ? _tipColor : Color.Lerp(_tipColor, Color.white, 0.2f));
             ty += 26f;
 
             foreach (var (kind, text, value) in _tipLines)
@@ -1143,9 +1138,7 @@ namespace FishingIdle.Game.UI
                         GUI.Label(new Rect(tx, ty, innerW, 20), FishCard.Fit(text, skin.SmallMuted, innerW), skin.SmallMuted);
                         break;
                     case TipKind.Hint:
-                        GUI.contentColor = UiSkin.Accent;
-                        GUI.Label(new Rect(tx, ty + 6f, innerW, 20), FishCard.Fit(text, skin.SmallBold, innerW), skin.SmallBold);
-                        GUI.contentColor = prev;
+                        UiSkin.ColoredLabel(new Rect(tx, ty + 6f, innerW, 20), FishCard.Fit(text, skin.SmallBold, innerW), skin.SmallBold, UiSkin.Accent);
                         break;
                     default:
                         GUI.Label(new Rect(tx, ty, innerW, h), text, TipStyle(skin, kind));
@@ -1181,9 +1174,7 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, y, 260, UiSkin.SmallLine), GameTexts.Cardume.Strength, skin.SmallMuted);
             var strengthText = Format.Number(_cardume.Strength);
             var strengthWidth = skin.Display.CalcSize(new GUIContent(strengthText)).x;
-            GUI.contentColor = UiSkin.Gold;
-            GUI.Label(new Rect(x, y + 16, Mathf.Max(260f, strengthWidth + 8f), 40), strengthText, skin.Display);
-            GUI.contentColor = Color.white;
+            UiSkin.ColoredLabel(new Rect(x, y + 16, Mathf.Max(260f, strengthWidth + 8f), 40), strengthText, skin.Display, UiSkin.Gold);
 
             // The dots start after the number as drawn, so a big Strength never touches them.
             var dotsX = x + Mathf.Max(230f, strengthWidth + 18f);
@@ -1270,12 +1261,11 @@ namespace FishingIdle.Game.UI
 
                 // Position number in a round badge, top-left; the rarity seal top-right.
                 var badge = new Rect(rect.x + 10, rect.y + 10, 26, 26);
-                GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, selected ? UiSkin.Accent : new Color(0.06f, 0.12f, 0.2f, 0.95f), 0, 13);
-                GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 1.5f, 13);
-                var prev = GUI.contentColor;
-                GUI.contentColor = selected ? new Color(0.03f, 0.12f, 0.16f) : Color.white;
-                GUI.Label(new Rect(badge.x, badge.y + 4, badge.width, 18), slot.Position.ToString(), CenteredBold(skin));
-                GUI.contentColor = prev;
+                // A dark seal in night colours in both modes (dark text on the turquoise, light text on the night).
+                GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, selected ? UiSkin.NightAccent : new Color(0.06f, 0.12f, 0.2f, 0.95f), 0, 13);
+                GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.NightAccent, 1.5f, 13);
+                UiSkin.ColoredLabel(new Rect(badge.x, badge.y + 4, badge.width, 18), slot.Position.ToString(), CenteredBold(skin),
+                    selected ? UiSkin.SceneNight : Color.white, false);
 
                 if (slot.Fish == null)
                 {
@@ -1944,14 +1934,17 @@ namespace FishingIdle.Game.UI
             var ty = y + (h - 22f) / 2f - 2f;
             var lw = Mathf.Min(skin.SmallMuted.CalcSize(new GUIContent(label)).x + 12f, w * 0.55f);
             GUI.Label(new Rect(x, ty, lw, 22f), FishCard.Fit(label, skin.SmallMuted, lw), skin.SmallMuted);
-            var prevContent = GUI.contentColor;
+            var valueRect = new Rect(x + lw, ty, w - lw, 22f);
+            var valueText = FishCard.Fit(value, skin.SmallBold, w - lw);
             if (color.HasValue)
             {
-                GUI.contentColor = color.Value;
+                UiSkin.ColoredLabel(valueRect, valueText, RightBold(skin), color.Value);
+            }
+            else
+            {
+                GUI.Label(valueRect, valueText, RightBold(skin));
             }
 
-            GUI.Label(new Rect(x + lw, ty, w - lw, 22f), FishCard.Fit(value, skin.SmallBold, w - lw), RightBold(skin));
-            GUI.contentColor = prevContent;
             skin.Divider(new Rect(x, y + h - 2f, w, 1f));
             return y + h;
         }

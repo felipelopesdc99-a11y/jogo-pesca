@@ -120,7 +120,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Market.Title, GameTexts.Market.Note, out var closed, 1500f, 880f, Icons.Market, bookmarks: true);
+            var area = WindowFrame.Draw(skin, screenWidth, screenHeight, GameTexts.Market.Title, GameTexts.Market.Note, out var closed, 1320f, 840f, Icons.Market, bookmarks: true);
             if (closed)
             {
                 _selectedListing = 0;
@@ -367,10 +367,8 @@ namespace FishingIdle.Game.UI
                 // A chosen rarity or size shows in its colour, like the Fishing Box filters.
                 var c = colorOf(options[index - 1].Id);
                 GUI.DrawTexture(new Rect(x + 40, y, w - 80, 30), skin.White, ScaleMode.StretchToFill, true, 0, new Color(c.r, c.g, c.b, 0.18f), 0, 8);
-                var previous = GUI.contentColor;
-                GUI.contentColor = Color.Lerp(c, Color.white, 0.4f);
-                GUI.Label(new Rect(x + 40, y + 6, w - 80, 22), FishCard.Fit(options[index - 1].Name, skin.Center, w - 80), skin.Center);
-                GUI.contentColor = previous;
+                UiSkin.ColoredLabel(new Rect(x + 40, y + 6, w - 80, 22), FishCard.Fit(options[index - 1].Name, skin.Center, w - 80), skin.Center,
+                    UiSkin.Paper ? c : Color.Lerp(c, Color.white, 0.4f));
             }
             else
             {

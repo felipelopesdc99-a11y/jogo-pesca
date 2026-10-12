@@ -8,7 +8,7 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// The "Eventos" window (M24-T39, addendum A-167), on the Placa do Píer with the "i": the game's events as cards in a
+    /// The "Eventos" window (M24-T39, addendum A-167), on a "Diário de bordo" page (A-170) with the "i": the game's events as cards in a
     /// scrolling list. Today there is one, the Boss Mundial: its boss, the daily time, the state (countdown, happening now
     /// with the time left, or the last result), the band reached today and "Abrir", which opens the Boss window.
     /// </summary>
@@ -102,7 +102,7 @@ namespace FishingIdle.Game.UI
             GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.95f), 0, ArtSize / 2f);
             GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, open ? UiSkin.Gold : UiSkin.Border, 2f, ArtSize / 2f);
             var icon = WorldBossWindow.NavIcon;
-            skin.DrawIconExact(new Rect(disc.center.x - 30f, disc.center.y - 30f, 60f, 60f), icon, icon == Icons.Attack ? UiSkin.Danger : Color.white);
+            skin.DrawIconExact(new Rect(disc.center.x - 30f, disc.center.y - 30f, 60f, 60f), icon, icon == Icons.Attack ? UiSkin.NightDanger : Color.white);
 
             var button = new Rect(rect.xMax - 20f - OpenWidth, rect.center.y - 22f, OpenWidth, 44f);
             var x = disc.xMax + 20f;

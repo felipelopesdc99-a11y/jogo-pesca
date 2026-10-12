@@ -10,7 +10,7 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// The "Boss Mundial" window (M24-T29, addendum A-165), on the Placa do Píer with the "i": the Cardume on the left
+    /// The "Boss Mundial" window (M24-T29, addendum A-165), on a "Diário de bordo" page (A-170) with the "i": the Cardume on the left
     /// attacking the boss on the right (damage numbers floating up, as in the Arena replay), the day's damage with the band
     /// bar, the six bands and their rewards, "Ranking de hoje" and the Dólares of the top 10. Outside the event: the countdown
     /// and the last event's result.
@@ -335,7 +335,7 @@ namespace FishingIdle.Game.UI
             var items = new List<string>();
             if (coins > 0) items.Add(GameTexts.WorldBoss.ItemCoins(Format.Short(coins)));
             if (shells > 0) items.Add(GameTexts.WorldBoss.ItemShells(Format.Number(shells)));
-            if (clothing > 0) items.Add(GameTexts.WorldBoss.ItemClothing(Format.Number(clothing)));
+            if (clothing > 0) items.Add(GameTexts.WorldBoss.ItemClothing(clothing));
             if (boatFragments > 0) items.Add(GameTexts.WorldBoss.ItemBoat(Format.Number(boatFragments), boat));
             if (dollars > 0) items.Add(GameTexts.WorldBoss.ItemDollars(Format.Number(dollars)));
             return items.Count > 0 ? string.Join(", ", items) : GameTexts.WorldBoss.LastResultNothing;

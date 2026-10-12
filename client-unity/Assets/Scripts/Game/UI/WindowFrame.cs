@@ -31,6 +31,10 @@ namespace FishingIdle.Game.UI
         // Layout, relative to the wooden frame. The content area keeps the old place (28 px in, 80 px down), so no
         // window had to move its content.
         private const float Margin = 28f, Wood = 14f;
+
+        // Each side keeps clear of the HUD's round shortcuts (20 margin + 96 column + room for their labels), which stay
+        // clickable beside an open window.
+        private const float ShortcutClearance = 140f;
         private const float ContentTop = 80f, ContentBottom = 24f;
         private const float LabelLeft = -12f, LabelTop = -10f, LabelHeight = 56f;
         private const float LabelPadLeft = 18f, LabelPadRight = 16f, LabelIcon = 32f, LabelIconGap = 10f;
@@ -92,6 +96,12 @@ namespace FishingIdle.Game.UI
             return Content(panel);
         }
 
+        /// <summary>
+        /// Where the closing seal of a frame starts on the left, less the usual 16 px gap: header pieces a window draws
+        /// itself (search, wallet) end here.
+        /// </summary>
+        public static float HeaderRight(Rect panel) => panel.xMax - SealInset - SealSize / 2f - 16f;
+
         /// <summary>The content area of a frame: the sheet, less its margins and the label.</summary>
         public static Rect Content(Rect panel)
         {
@@ -112,7 +122,7 @@ namespace FishingIdle.Game.UI
             GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), skin.Overlay);
             Fill(skin, new Rect(0, 0, screenWidth, screenHeight), new Color(UiSkin.Ink.r, UiSkin.Ink.g, UiSkin.Ink.b, 0.12f), 0f);
 
-            var width = Mathf.Min(maxWidth, screenWidth - 80f);
+            var width = Mathf.Min(maxWidth, screenWidth - ShortcutClearance * 2f);
             var height = Mathf.Min(maxHeight, screenHeight - 120f);
             var panel = new Rect((screenWidth - width) / 2f, (screenHeight - height) / 2f + 20f, width, height);
             if (bookmarks)
@@ -266,7 +276,7 @@ namespace FishingIdle.Game.UI
                 var note = notes != null && i < notes.Count ? notes[i] : null;
                 var textWidth = width - BookmarkUnder - 8f;
                 var labelHeight = _bookmark.CalcHeight(new GUIContent(labels[i]), textWidth);
-                var noteHeight = string.IsNullOrEmpty(note) ? 0f : 16f;
+                var noteHeight = string.IsNullOrEmpty(note) ? 0f : 18f;
                 var height = 12f + (icon != null ? BookmarkIcon + 2f : 0f) + labelHeight + noteHeight + 10f;
                 var on = i == active;
                 var tab = new Rect(_panel.xMax - BookmarkUnder - (on ? 0f : BookmarkTuck), y, width, height);
@@ -569,9 +579,10 @@ namespace FishingIdle.Game.UI
             _tipTitle.normal.textColor = UiSkin.InkAccent;
             _tipBody = new GUIStyle(skin.Body) { fontSize = UiSkin.SmallSize, wordWrap = true };
             _tipBody.normal.textColor = UiSkin.Ink;
-            _bookmark = new GUIStyle(skin.SmallBold) { fontSize = UiSkin.ChipSize, alignment = TextAnchor.UpperCenter, wordWrap = true, clipping = TextClipping.Overflow };
+            // Legible at 1200×600 (A-149): the label at 15 px, the note under it at 14 px.
+            _bookmark = new GUIStyle(skin.SmallBold) { fontSize = UiSkin.SmallSize, alignment = TextAnchor.UpperCenter, wordWrap = true, clipping = TextClipping.Overflow };
             _bookmark.normal.textColor = Color.white;
-            _bookmarkNote = new GUIStyle(_bookmark) { font = skin.BodyFont, fontSize = UiSkin.BadgeSize, wordWrap = false, clipping = TextClipping.Clip };
+            _bookmarkNote = new GUIStyle(_bookmark) { font = skin.BodyFont, fontSize = UiSkin.ChipSize, wordWrap = false, clipping = TextClipping.Clip };
             _bookmarkNote.normal.textColor = new Color(1f, 1f, 1f, 0.92f);
             _paper = new GUIStyle(GUIStyle.none) { border = new RectOffset(10, 10, 10, 10) };
             _paper.normal.background = Art.PanelTexture(UiSkin.PaperFill, UiSkin.PaperFillBottom, UiSkin.PaperFill, 10, 0f, 128, 0f);

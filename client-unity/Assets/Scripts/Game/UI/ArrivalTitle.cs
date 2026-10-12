@@ -22,6 +22,8 @@ namespace FishingIdle.Game.UI
         private string _line;
         private float _startedAt = -100f;
 
+        private GUIStyle _chapterStyle, _nameStyle, _lineStyle;
+
         public void Show(string chapter, string name, string line)
         {
             _chapter = chapter;
@@ -49,9 +51,17 @@ namespace FishingIdle.Game.UI
             var previous = GUI.color;
             GUI.color = new Color(1f, 1f, 1f, alpha);
             var gold = VisualTheme.Current.Reward;
-            var chapterStyle = new GUIStyle(skin.SmallGold) { alignment = TextAnchor.MiddleCenter, fontSize = 15 };
-            var nameStyle = new GUIStyle(skin.Display) { alignment = TextAnchor.MiddleCenter, fontSize = 52 };
-            var lineStyle = new GUIStyle(skin.DisplaySub) { alignment = TextAnchor.MiddleCenter, fontSize = 18 };
+            // The three styles are built once (they were rebuilt on every GUI event).
+            if (_chapterStyle == null || _nameStyle.font != skin.Display.font)
+            {
+                _chapterStyle = new GUIStyle(skin.SmallGold) { alignment = TextAnchor.MiddleCenter, fontSize = 15 };
+                _nameStyle = new GUIStyle(skin.Display) { alignment = TextAnchor.MiddleCenter, fontSize = 52 };
+                _lineStyle = new GUIStyle(skin.DisplaySub) { alignment = TextAnchor.MiddleCenter, fontSize = 18 };
+            }
+
+            var chapterStyle = _chapterStyle;
+            var nameStyle = _nameStyle;
+            var lineStyle = _lineStyle;
             lineStyle.normal.textColor = UiSkin.Muted;
 
             if (!string.IsNullOrEmpty(_chapter))

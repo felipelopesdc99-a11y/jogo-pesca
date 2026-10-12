@@ -1102,7 +1102,7 @@ namespace FishingIdle.Game.Bootstrap
             var items = new System.Collections.Generic.List<string>();
             if (paid.Coins > 0) items.Add(GameTexts.WorldBoss.ItemCoins(Format.Short(paid.Coins)));
             if (paid.Shells > 0) items.Add(GameTexts.WorldBoss.ItemShells(Format.Number(paid.Shells)));
-            if (paid.ClothingFragments > 0) items.Add(GameTexts.WorldBoss.ItemClothing(Format.Number(paid.ClothingFragments)));
+            if (paid.ClothingFragments > 0) items.Add(GameTexts.WorldBoss.ItemClothing(paid.ClothingFragments));
             if (paid.BoatFragments > 0) items.Add(GameTexts.WorldBoss.ItemBoat(Format.Number(paid.BoatFragments), paid.BoatName));
             if (paid.Dollars > 0) items.Add(GameTexts.WorldBoss.ItemDollars(Format.Number(paid.Dollars)));
             Toasts.Push(GameTexts.WorldBoss.PaidToast(items.Count > 0 ? string.Join(", ", items) : GameTexts.WorldBoss.LastResultNothing), ToastKind.Coins, notify: true);

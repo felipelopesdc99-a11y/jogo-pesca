@@ -126,8 +126,8 @@ namespace FishingIdle.Game.UI
                 Close();
             }
 
-            // Search by name, next to Fechar (the same place in the Aquarium).
-            var search = NameSearch.Field(skin, new Rect(panel.xMax - 156 - 16 - 300, panel.y + 24, 300, 38), _search, "busca_caixa");
+            // Search by name, next to the seal (the same place in the Aquarium; the header keeps 316 for it).
+            var search = NameSearch.Field(skin, new Rect(WindowFrame.HeaderRight(panel) - 300, panel.y + 24, 300, 38), _search, "busca_caixa");
             if (search != _search)
             {
                 _search = search;
@@ -479,11 +479,10 @@ namespace FishingIdle.Game.UI
                 var dim = count == 0 && !all;
                 var dot = 10f;
                 GUI.DrawTexture(new Rect(tab.x + 12, tab.center.y - dot / 2f, dot, dot), skin.White, ScaleMode.StretchToFill, true, 0, dim ? UiSkin.Muted : color, 0, dot / 2f);
-                var previous = GUI.contentColor;
-                GUI.contentColor = active ? Color.Lerp(color, Color.white, 0.6f) : dim ? UiSkin.Muted : UiSkin.Text;
+                // On the sheet the colour is set as ink (tinting multiplied the dark ink and the colour vanished).
+                var labelColor = active ? (UiSkin.Paper ? color : Color.Lerp(color, Color.white, 0.6f)) : dim ? UiSkin.Muted : UiSkin.Text;
                 var lw = skin.BodyBold.CalcSize(new GUIContent(label)).x;
-                GUI.Label(new Rect(tab.x + 28, tab.y + 11, lw + 4, 22), label, skin.BodyBold);
-                GUI.contentColor = previous;
+                UiSkin.ColoredLabel(new Rect(tab.x + 28, tab.y + 11, lw + 4, 22), label, skin.BodyBold, labelColor);
                 GUI.Label(new Rect(tab.x + 34 + lw, tab.y + 13, w - lw - 34, 20), number, skin.SmallMuted);
 
                 if (GUI.Button(tab, GUIContent.none, GUIStyle.none))

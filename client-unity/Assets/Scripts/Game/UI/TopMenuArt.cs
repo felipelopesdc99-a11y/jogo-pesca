@@ -192,7 +192,8 @@ namespace FishingIdle.Game.UI
         {
             var style = RoundLabel(skin);
             var w = style.CalcSize(new GUIContent(text)).x + 12f;
-            var pill = new Rect(circle.center.x - w / 2f, circle.yMax - 14f, w, 20f);
+            // Ends 2 px above the label under the button (it used to touch it).
+            var pill = new Rect(circle.center.x - w / 2f, circle.yMax - 18f, w, 20f);
             GUI.DrawTexture(pill, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.04f, 0.08f, 0.14f, 0.9f), 0, 10);
             GUI.Label(pill, text, style);
         }

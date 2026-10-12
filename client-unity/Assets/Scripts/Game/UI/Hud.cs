@@ -54,7 +54,18 @@ namespace FishingIdle.Game.UI
         private const float UnderBar = BarHeight + 24f;
 
         // 480 since A-149 (was 440): two lines of the 15 px text hold what two lines of 13 px held.
-        private const float ToastWidth = 480f;
+        private const float ToastWidth = 480f, ToastHeight = 62f;
+
+        // The celebration banner: under the strip, or under a window's label (130..186) and the sub-tabs (90..122)
+        // when one is open. While it shows over the scene, the toasts start below it.
+        private const float CelebrationTop = 96f, CelebrationTopWindow = 196f, CelebrationBottom = CelebrationTop + Celebrations.Height + 12f;
+
+        // With a window open, the latest toast and the tutorial hint share the strip under the window: the toast left of
+        // the Fishing Box button, the hint left of the toast, never narrower than this (else the toast waits).
+        private const float BottomHintMinWidth = 600f, BottomHintMaxWidth = 880f;
+
+        // The test tools' button at the bottom left (Editor and development builds only): 12 + 130.
+        private const float DevButtonRight = 142f;
 
         private GameRoot _root;
         private FishingScene _scene;
@@ -105,6 +116,16 @@ namespace FishingIdle.Game.UI
 
         // The tabs of the last frame (the sub-tabs and the tutorial point at them), and the plaque's text styles.
         private Rect[] _tabRects;
+
+        // The sub-tabs' labels and widths, kept between frames (no arrays built every frame).
+        private static readonly string[] AdventureSubTabs = { GameTexts.Navigation.Expedition, GameTexts.Navigation.Arena, GameTexts.Navigation.Events };
+        private static readonly string[] TradeSubTabs = { GameTexts.Navigation.Market, GameTexts.Navigation.Shop };
+        private readonly float[] _subTabWidths = new float[3];
+        private readonly GUIContent _measure = new GUIContent();
+
+        // The chances line of the fishing panel, rebuilt only when the service hands a new gear view.
+        private FishingIdle.GameService.Shop.GearView _chanceGear;
+        private string _chanceText = string.Empty;
         private GUIStyle _plaqueCaption;
         private GUIStyle _plaqueRate;
 
@@ -264,6 +285,8 @@ namespace FishingIdle.Game.UI
                     ToastKind.Info, now, _root.Toasts);
 
                 // The moment the fragments reach the next piece: say once that it can be assembled.
+                // TODO(regras): this comparison belongs to the game service; use the service's "roupa pode ser montada"
+                // signal on the update once it exists (revisão de integridade das telas, 12/10/2026).
                 if (cost > 0 && have >= cost && have - update.ClothingFragments < cost)
                 {
                     _root.Toasts.Push(GameTexts.Gear.ClothingReadyToast(Format.Number(cost)), ToastKind.Important, notify: true);
@@ -419,7 +442,13 @@ namespace FishingIdle.Game.UI
 
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
             {
-                if (_showNotifications || _showSettings)
+                if (_admin.IsOpen)
+                {
+                    // The test tools (F2) sit above everything: Esc closes them first.
+                    _admin.Toggle();
+                    Event.current.Use();
+                }
+                else if (_showNotifications || _showSettings)
                 {
                     _showNotifications = false;
                     _showSettings = false;
@@ -508,7 +537,16 @@ namespace FishingIdle.Game.UI
                 DrawStrip(skin, false);
             }
 
-            DrawShortcuts(skin);
+            // The bell and options panels are drawn last, over the shortcuts: while one is open, nothing under it
+            // takes a click (a click on the panel used to open the Mapa or the Aquário underneath).
+            var panelOpen = _showNotifications || _showSettings;
+            GUI.enabled = !windowOpen && !panelOpen;
+            if (!windowOpen)
+            {
+                // With a window open, the shortcuts are drawn above it instead (below), still clickable.
+                DrawShortcuts(skin);
+            }
+
             DrawFishingControls(skin);
             DrawBoxButton(skin);
             if (!windowOpen)
@@ -517,6 +555,11 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.enabled = true;
+            if (windowOpen)
+            {
+                _showNotifications = false;
+                _showSettings = false;
+            }
 
             // Menu transition: a window fades in when the first one opens.
             if (windowOpen && !_windowWasOpen)
@@ -551,12 +594,16 @@ namespace FishingIdle.Game.UI
                 GUI.enabled = !WelcomeBackPending && !welcomeDialog && !AnyWindowDialog();
                 DrawStrip(skin, true);
                 DrawSubTabs(skin);
+                // The round shortcuts stay beside the window (WindowFrame keeps the frame clear of their column):
+                // a click closes the window and opens the shortcut's one, like the tabs.
+                DrawShortcuts(skin);
                 GUI.enabled = true;
             }
 
             _arrival.Draw(skin, _width, _height);
             DrawToasts(skin);
-            _root.Celebrations.Draw(skin, _width);
+            // With a window open, the banner goes below the window's label and the sub-tabs.
+            _root.Celebrations.Draw(skin, _width, windowOpen ? CelebrationTopWindow : CelebrationTop);
             DrawTutorial(skin, windowOpen);
             DrawPanels(skin);
 
@@ -609,7 +656,7 @@ namespace FishingIdle.Game.UI
         // ------------------------------------------------------------------ top menu (M24-T43, A-169)
 
         // The five tabs and the menus each one groups (owner's choice of 12/10/2026, example 2 of menu_mesclas).
-        private const int GroupFishing = 0, GroupCrew = 1, GroupAdventure = 2, GroupTrade = 3, GroupProfile = 4, GroupCount = 5;
+        private const int GroupFishing = 0, GroupCrew = 1, GroupAdventure = 2, GroupTrade = 3, GroupProfile = 4, GroupCount = 5, NoGroup = -1;
 
         private static string GroupLabel(int group)
         {
@@ -638,13 +685,17 @@ namespace FishingIdle.Game.UI
 
         private static string PendingIcon(string art, string fallback) => ArtAssets.Icon(art) != null ? art : fallback;
 
-        /// <summary>The tab whose window is open; Pesca when none of the grouped windows is.</summary>
+        /// <summary>
+        /// The tab whose window is open; Pesca when no window is; none for a window outside the tabs (Caixa, Mapa,
+        /// Aquário, Passe, Ranking), so Pesca is not lit over it.
+        /// </summary>
         private int ActiveGroup()
         {
             if (_crew.IsOpen) return GroupCrew;
             if (_expedition.IsOpen || _arena.IsOpen || _events.IsOpen || _boss.IsOpen) return GroupAdventure;
             if (_market.IsOpen || _shop.IsOpen) return GroupTrade;
             if (_profile.IsOpen) return GroupProfile;
+            if (_box.IsOpen || _aquarium.IsOpen || _map.IsOpen || _pass.IsOpen || _ranking.IsOpen) return NoGroup;
             return GroupFishing;
         }
 
@@ -816,12 +867,12 @@ namespace FishingIdle.Game.UI
             int active;
             if (group == GroupAdventure)
             {
-                labels = new[] { GameTexts.Navigation.Expedition, GameTexts.Navigation.Arena, GameTexts.Navigation.Events };
+                labels = AdventureSubTabs;
                 active = _expedition.IsOpen ? 0 : _arena.IsOpen ? 1 : 2;
             }
             else if (group == GroupTrade)
             {
-                labels = new[] { GameTexts.Navigation.Market, GameTexts.Navigation.Shop };
+                labels = TradeSubTabs;
                 active = _market.IsOpen ? 0 : 1;
             }
             else
@@ -829,11 +880,12 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var widths = new float[labels.Length];
+            var widths = _subTabWidths;
             var total = (labels.Length - 1) * SubTabGap;
             for (var i = 0; i < labels.Length; i++)
             {
-                widths[i] = skin.Chip.CalcSize(new GUIContent(labels[i])).x + 32f;
+                _measure.text = labels[i];
+                widths[i] = skin.Chip.CalcSize(_measure).x + 32f;
                 total += widths[i];
             }
 
@@ -873,7 +925,8 @@ namespace FishingIdle.Game.UI
 
         /// <summary>
         /// The round shortcuts in a column on the right: Mapa, Aquário, Passe do Pescador, Eventos (the Boss Mundial, gold and
-        /// breathing with the time left, while it happens) and Ranking. Under an open window they are covered and inert.
+        /// breathing with the time left, while it happens) and Ranking. With a window open they stay beside it, clickable:
+        /// a click closes the window and opens the shortcut's one (inert only under a window's own dialog).
         /// </summary>
         private void DrawShortcuts(UiSkin skin)
         {
@@ -1251,13 +1304,20 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var parts = new System.Collections.Generic.List<string>();
-            foreach (var chance in gear.Chances)
+            if (!ReferenceEquals(gear, _chanceGear))
             {
-                if (chance.BitesHere)
+                // A new gear view from the service: build the line once, not every frame.
+                var parts = new System.Collections.Generic.List<string>();
+                foreach (var chance in gear.Chances)
                 {
-                    parts.Add(GameTexts.Fishing.ChanceShort(chance.RarityName, Format.Percent(chance.Chance, 0)));
+                    if (chance.BitesHere)
+                    {
+                        parts.Add(GameTexts.Fishing.ChanceShort(chance.RarityName, Format.Percent(chance.Chance, 0)));
+                    }
                 }
+
+                _chanceGear = gear;
+                _chanceText = string.Join(" · ", parts);
             }
 
             // One line, right-aligned, never wrapping: [bait icon][charges]  [rod icon] chances.
@@ -1268,7 +1328,7 @@ namespace FishingIdle.Game.UI
             var leftWidth = left != null ? skin.SmallGoldRight.CalcSize(new GUIContent(left)).x + 4f : 0f;
             var baitBlock = left != null ? 22f + leftWidth + 8f : 0f;
             var maxText = Mathf.Max(0f, rect.width - 26f - baitBlock - 4f);
-            var text = FishCard.Fit(string.Join(" · ", parts), style, maxText);
+            var text = FishCard.Fit(_chanceText, style, maxText);
             var textWidth = Mathf.Min(maxText, style.CalcSize(new GUIContent(text)).x);
             var x = rect.xMax - 4f - textWidth - 26f;
             skin.DrawIcon(new Rect(x, rect.y + 1, 18, 18), Icons.Fishing, UiSkin.Accent);
@@ -1379,6 +1439,12 @@ namespace FishingIdle.Game.UI
                 y = PlaqueTop + PlaqueHeight + 16f;
             }
 
+            if (_root.Celebrations.Active)
+            {
+                // The celebration banner spans the top centre: the column starts below it while it shows.
+                y = Mathf.Max(y, CelebrationBottom);
+            }
+
             // The column stops above the Fishing Box button and, when a narrow screen puts them in line,
             // above the fishing panel; the oldest toasts wait (they still expire on time).
             var bottom = BoxButtonRect.y - 12f;
@@ -1387,18 +1453,24 @@ namespace FishingIdle.Game.UI
                 bottom = Mathf.Min(bottom, FishingPanelRect.y - 12f);
             }
 
-            // With a window open, only the latest toast shows, at the bottom right under the window, so it
-            // never covers the window's header ("Fechar") or the Market balance.
+            // With a window open, only the latest toast shows, in the strip under the window, left of the Fishing Box
+            // button (never over it) and right of the tutorial hint; when both cannot fit, the toast waits (it stays in
+            // the bell's history).
             var windowOpen = _root.WindowOpen;
             var last = windowOpen ? items.Count - 1 : 0;
             if (windowOpen)
             {
-                y = _height - 74f;
+                y = _height - 12f - ToastHeight;
+                left = BottomBandRight - ToastWidth;
+                if (TutorialStripShown(true) && left - 12f - BottomBandLeft < BottomHintMinWidth)
+                {
+                    return;
+                }
             }
 
             for (var i = items.Count - 1; i >= last && i >= 0; i--)
             {
-                if (!windowOpen && y + 62f > bottom)
+                if (!windowOpen && y + ToastHeight > bottom)
                 {
                     break;
                 }
@@ -1410,7 +1482,8 @@ namespace FishingIdle.Game.UI
                 var alpha = Mathf.Min(fadeIn, fadeOut);
                 var accent = ToastAccent(toast.Kind);
 
-                var rect = new Rect(left + (1f - fadeIn) * 40f, y, ToastWidth, 62);
+                // Slides in from the right over the scene; from the left under a window (the Caixa button is at its right).
+                var rect = new Rect(left + (1f - fadeIn) * (windowOpen ? -40f : 40f), y, ToastWidth, ToastHeight);
                 var previous = GUI.color;
                 GUI.color = new Color(1f, 1f, 1f, alpha);
                 skin.FloatingPanel(rect);
@@ -1502,9 +1575,7 @@ namespace FishingIdle.Game.UI
 
             // With a window open the hint moves to a strip under it; otherwise it sits on the left under the
             // strip (the round shortcuts and the toasts are on the right).
-            var rect = windowOpen
-                ? new Rect(_width / 2f - 440, _height - 88, 880, 76)
-                : new Rect(20, UnderBar, 340, 200);
+            var rect = windowOpen ? BottomHintRect() : new Rect(20, UnderBar, 340, 200);
             skin.DrawShadow(rect);
             GUI.Box(rect, GUIContent.none, skin.PanelSolid);
             skin.DrawOutline(rect, UiSkin.Accent);
@@ -1540,6 +1611,36 @@ namespace FishingIdle.Game.UI
             {
                 DrawTutorialHighlight(tutorial.Step);
             }
+        }
+
+        /// <summary>Free strip under an open window: from the test tools' button (or the edge) to the Fishing Box button.</summary>
+        private float BottomBandLeft => _root.DevToolsEnabled ? DevButtonRight + 12f : 20f;
+
+        private float BottomBandRight => BoxButtonRect.x - 12f;
+
+        /// <summary>True when the tutorial hint shows as a strip under an open window this frame.</summary>
+        private bool TutorialStripShown(bool windowOpen)
+        {
+            var tutorial = _root.Tutorial;
+            return windowOpen && tutorial != null && tutorial.Active && !WelcomeBackPending && tutorial.Step != TutorialSteps.Welcome;
+        }
+
+        /// <summary>
+        /// The tutorial hint under an open window: centred when it fits, inside the free strip and left of the latest
+        /// toast when one shows (DrawToasts uses the same rule).
+        /// </summary>
+        private Rect BottomHintRect()
+        {
+            var left = BottomBandLeft;
+            var right = BottomBandRight;
+            if (_root.Toasts.Items.Count > 0 && right - ToastWidth - 12f - left >= BottomHintMinWidth)
+            {
+                right -= ToastWidth + 12f;
+            }
+
+            var width = Mathf.Min(BottomHintMaxWidth, right - left);
+            var x = Mathf.Clamp(_width / 2f - width / 2f, left, right - width);
+            return new Rect(x, _height - 88f, width, 76f);
         }
 
         /// <summary>A pulsing gold outline around what the current step asks the player to use.</summary>
@@ -1580,11 +1681,30 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ notifications and settings
 
+        private Rect NotificationsPanelRect => new Rect(_width - 24 - 470, BarHeight + 8f, 470, 560);
+
+        private Rect SettingsPanelRect => new Rect(_width - 24 - 380, BarHeight + 8f, 380, 340);
+
         private void DrawPanels(UiSkin skin)
         {
+            // A click on an open panel stays on it (and a click outside closes it), so nothing under it reacts.
+            var e = Event.current;
+            if ((_showNotifications || _showSettings) && e.type == EventType.MouseDown)
+            {
+                var over = _showNotifications ? NotificationsPanelRect : SettingsPanelRect;
+                var bar = new Rect(0, 0, _width, BarHeight);
+                if (!over.Contains(e.mousePosition) && !bar.Contains(e.mousePosition))
+                {
+                    _showNotifications = false;
+                    _showSettings = false;
+                    e.Use();
+                    return;
+                }
+            }
+
             if (_showNotifications)
             {
-                var panel = new Rect(_width - 24 - 470, BarHeight + 8f, 470, 560);
+                var panel = NotificationsPanelRect;
                 skin.FloatingPanel(panel);
                 GUI.Label(new Rect(panel.x + 20, panel.y + 16, 300, 26), GameTexts.Hud.Notifications, skin.Heading);
                 if (_root.Toasts.History.Count > 0 && GUI.Button(new Rect(panel.xMax - 110, panel.y + 14, 90, 30), GameTexts.Hud.ClearNotifications, skin.Chip))
@@ -1620,7 +1740,7 @@ namespace FishingIdle.Game.UI
 
             if (_showSettings)
             {
-                var panel = new Rect(_width - 24 - 380, BarHeight + 8f, 380, 340);
+                var panel = SettingsPanelRect;
                 skin.FloatingPanel(panel);
                 var x = panel.x + 20;
                 var w = panel.width - 40;
@@ -1641,6 +1761,16 @@ namespace FishingIdle.Game.UI
                 }
 
                 GUI.Label(new Rect(x, y + 46, w, 66), GameTexts.Hud.CompactNote, skin.SmallMuted);
+            }
+
+            // Whatever the panel's own controls did not take (a click on its empty paper) ends here.
+            if (_showNotifications && e.type == EventType.MouseDown && NotificationsPanelRect.Contains(e.mousePosition))
+            {
+                e.Use();
+            }
+            else if (_showSettings && e.type == EventType.MouseDown && SettingsPanelRect.Contains(e.mousePosition))
+            {
+                e.Use();
             }
         }
 

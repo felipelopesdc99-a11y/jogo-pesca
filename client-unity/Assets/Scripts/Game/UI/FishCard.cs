@@ -191,22 +191,62 @@ namespace FishingIdle.Game.UI
         /// <summary>The text as it fits in <paramref name="width"/>: shortened with "…" when it would overflow.</summary>
         public static string Fit(string text, GUIStyle style, float width)
         {
-            if (string.IsNullOrEmpty(text) || style.CalcSize(new GUIContent(text)).x <= width)
+            if (string.IsNullOrEmpty(text))
             {
                 return text;
             }
 
-            for (var n = text.Length - 1; n > 0; n--)
+            // Called for many labels every frame: the answer is kept per text, style and whole-pixel width, and the
+            // cut is found by a binary search instead of measuring once per character.
+            var w = Mathf.Floor(width);
+            var key = (text, style, style.font, style.fontSize, (int)w);
+            if (FitCache.TryGetValue(key, out var cached))
             {
-                var shorter = text.Substring(0, n).TrimEnd() + "…";
-                if (style.CalcSize(new GUIContent(shorter)).x <= width)
-                {
-                    return shorter;
-                }
+                return cached;
             }
 
-            return "…";
+            string result;
+            FitContent.text = text;
+            if (style.CalcSize(FitContent).x <= w)
+            {
+                result = text;
+            }
+            else
+            {
+                var best = 0;
+                var lo = 1;
+                var hi = text.Length - 1;
+                while (lo <= hi)
+                {
+                    var mid = (lo + hi) / 2;
+                    FitContent.text = text.Substring(0, mid).TrimEnd() + "…";
+                    if (style.CalcSize(FitContent).x <= w)
+                    {
+                        best = mid;
+                        lo = mid + 1;
+                    }
+                    else
+                    {
+                        hi = mid - 1;
+                    }
+                }
+
+                result = best > 0 ? text.Substring(0, best).TrimEnd() + "…" : "…";
+            }
+
+            if (FitCache.Count >= FitCacheLimit)
+            {
+                FitCache.Clear();
+            }
+
+            FitCache[key] = result;
+            return result;
         }
+
+        private const int FitCacheLimit = 4096;
+        private static readonly GUIContent FitContent = new GUIContent();
+        private static readonly System.Collections.Generic.Dictionary<(string, GUIStyle, Font, int, int), string> FitCache =
+            new System.Collections.Generic.Dictionary<(string, GUIStyle, Font, int, int), string>();
 
         /// <summary>The line without the size name, which the Excepcional seal already shows ("98,4 cm · Excepcional · Nv. 3" → "98,4 cm · Nv. 3").</summary>
         private static string WithoutSize(string line, string size)
@@ -248,12 +288,12 @@ namespace FishingIdle.Game.UI
             if (newSpecies)
             {
                 m.Badge = GameTexts.Box.NewSpeciesBadge;
-                m.BadgeColor = UiSkin.Accent;
+                m.BadgeColor = UiSkin.NightAccent;
             }
             else if (record)
             {
                 m.Badge = GameTexts.Box.RecordBadge;
-                m.BadgeColor = UiSkin.Gold;
+                m.BadgeColor = UiSkin.NightReward;
             }
         }
     }

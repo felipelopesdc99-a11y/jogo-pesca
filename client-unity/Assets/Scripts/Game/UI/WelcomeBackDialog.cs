@@ -16,6 +16,12 @@ namespace FishingIdle.Game.UI
     /// </summary>
     public static class WelcomeBackDialog
     {
+        // What the summary counts from the report, computed once per report (not every frame), and the body's scroll.
+        private static OfflineReport _counted;
+        private static System.Collections.Generic.List<CatchView> _best = new System.Collections.Generic.List<CatchView>();
+        private static int _count, _newSpecies, _lines;
+        private static Vector2 _scroll;
+
         /// <summary>Draws the dialog while there is a report. Returns true when the player asked for the Fishing Box.</summary>
         public static bool Draw(UiSkin skin, GameRoot root, float screenWidth, float screenHeight)
         {
@@ -27,20 +33,30 @@ namespace FishingIdle.Game.UI
             }
 
             var update = report?.Update ?? new FishingUpdate();
-            var best = update.NewCatches.Where(c => c.IsImportant).OrderByDescending(c => c.SalePriceCoins).Take(4).ToList();
-            var count = update.NewCatches.Count;
-            var newSpecies = update.NewCatches.Count(c => c.IsNewSpecies);
-
-            // The height follows the lines actually drawn below (24 px each), so none runs into the note.
-            var lines = 0;
-            if (report != null)
+            if (report == null || !ReferenceEquals(report, _counted))
             {
-                lines = (report.Capped ? 1 : 0) + (update.Escapes.Count > 0 ? 1 : 0) + (update.SkippedBoxFull > 0 ? 1 : 0) + (update.BaitRanOut != null ? 1 : 0);
-                if (count > 0)
+                _counted = report;
+                _scroll = Vector2.zero;
+                _best = update.NewCatches.Where(c => c.IsImportant).OrderByDescending(c => c.SalePriceCoins).Take(4).ToList();
+                _count = update.NewCatches.Count;
+                _newSpecies = update.NewCatches.Count(c => c.IsNewSpecies);
+
+                // The height follows the lines actually drawn below (24 px each), so none runs into the note.
+                _lines = 0;
+                if (report != null)
                 {
-                    lines += 1 + (newSpecies > 0 ? 1 : 0) + (update.ShellsGained > 0 ? 1 : 0) + (update.LevelsReached.Count > 0 ? 1 : 0) + EquipmentLines(update);
+                    _lines = (report.Capped ? 1 : 0) + (update.Escapes.Count > 0 ? 1 : 0) + (update.SkippedBoxFull > 0 ? 1 : 0) + (update.BaitRanOut != null ? 1 : 0);
+                    if (_count > 0)
+                    {
+                        _lines += 1 + (_newSpecies > 0 ? 1 : 0) + (update.ShellsGained > 0 ? 1 : 0) + (update.LevelsReached.Count > 0 ? 1 : 0) + EquipmentLines(update);
+                    }
                 }
             }
+
+            var best = _best;
+            var count = _count;
+            var newSpecies = _newSpecies;
+            var lines = _lines;
 
             // The Crew's part: a gap, its title and Moedas (56), XP, a level reached, the cap, and its 2-line note (46).
             var crewHeight = crew == null ? 0f
@@ -48,8 +64,10 @@ namespace FishingIdle.Game.UI
 
             // Title and time away (92), the fishing heading (40), each optional line, the best catches (128), the Crew,
             // the note and buttons (124).
-            var height = 92f + (report != null ? 40f : 0f) + lines * 24f + (best.Count > 0 ? 128f : 0f) + crewHeight + 124f;
-            var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, Mathf.Max(360f, height), 720f);
+            var body = (report != null ? 40f : 0f) + lines * 24f + (best.Count > 0 ? 128f : 0f) + crewHeight;
+            var height = 92f + body + 124f;
+            // Never taller than the screen (a long absence with every kind of line): the body scrolls instead.
+            var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, Mathf.Min(Mathf.Max(360f, height), screenHeight - 80f), 720f);
             var x = rect.x + 30;
             var w = rect.width - 60;
             var y = rect.y + 24;
@@ -60,6 +78,15 @@ namespace FishingIdle.Game.UI
             y += 42;
             GUI.Label(new Rect(x, y, w, 22), GameTexts.Offline.Away(Format.Duration((report != null ? report.AwayMs : crew.AwayMs) / 1000.0)), skin.Body);
             y += 26;
+            var view = new Rect(rect.x, y, rect.width - 6f, rect.yMax - 120f - y);
+            var scrolls = body > view.height + 1f;
+            if (scrolls)
+            {
+                _scroll = GUI.BeginScrollView(view, _scroll, new Rect(0, 0, view.width - 20f, body));
+                x -= rect.x;
+                y = 0f;
+            }
+
             if (report != null)
             {
                 y = DrawFishing(skin, report, update, best, count, newSpecies, x, w, y);
@@ -68,6 +95,12 @@ namespace FishingIdle.Game.UI
             if (crew != null)
             {
                 DrawCrew(skin, crew, x, w, y + 16f);
+            }
+
+            if (scrolls)
+            {
+                GUI.EndScrollView();
+                x += rect.x;
             }
 
             var note = report == null

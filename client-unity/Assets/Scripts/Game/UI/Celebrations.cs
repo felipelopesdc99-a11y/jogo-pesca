@@ -14,6 +14,9 @@ namespace FishingIdle.Game.UI
     {
         private const int MaxQueued = 3;
 
+        /// <summary>The banner's height; the HUD keeps the toasts below it while it shows.</summary>
+        public const float Height = 124f;
+
         private sealed class Item
         {
             public string Title;
@@ -43,7 +46,8 @@ namespace FishingIdle.Game.UI
             _queue.Enqueue(new Item { Title = title, Subtitle = subtitle, Color = color, Art = art, Reveal = reveal });
         }
 
-        public void Draw(UiSkin skin, float screenWidth)
+        /// <summary>Draws the current banner centred at <paramref name="top"/> (the HUD lowers it under an open window).</summary>
+        public void Draw(UiSkin skin, float screenWidth, float top)
         {
             var theme = VisualTheme.Current;
             var duration = theme.CelebrationSeconds;
@@ -72,7 +76,7 @@ namespace FishingIdle.Game.UI
             var hasArt = item.Art != null;
             var titleWidth = skin.Display.CalcSize(new GUIContent(item.Title)).x;
             var width = Mathf.Clamp(titleWidth + (hasArt ? 230f : 90f), 520f, 900f);
-            var rect = new Rect(screenWidth / 2f - width / 2f, 96f, width, 124f);
+            var rect = new Rect(screenWidth / 2f - width / 2f, top, width, Height);
 
             var previousMatrix = GUI.matrix;
             var previousColor = GUI.color;

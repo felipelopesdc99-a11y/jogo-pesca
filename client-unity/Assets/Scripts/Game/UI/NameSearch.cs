@@ -60,8 +60,30 @@ namespace FishingIdle.Game.UI
                 return true;
             }
 
-            return !string.IsNullOrEmpty(name) && Fold(name).Contains(Fold(search.Trim()));
+            if (string.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
+            // The folded forms are kept: the same few species names are checked for thousands of fish.
+            if (!Folded.TryGetValue(name, out var foldedName))
+            {
+                foldedName = Fold(name);
+                Folded[name] = foldedName;
+            }
+
+            if (!ReferenceEquals(search, _lastSearch))
+            {
+                _lastSearch = search;
+                _lastSearchFolded = Fold(search.Trim());
+            }
+
+            return foldedName.Contains(_lastSearchFolded);
         }
+
+        private static readonly System.Collections.Generic.Dictionary<string, string> Folded = new System.Collections.Generic.Dictionary<string, string>();
+        private static string _lastSearch;
+        private static string _lastSearchFolded;
 
         private static string Fold(string s)
         {

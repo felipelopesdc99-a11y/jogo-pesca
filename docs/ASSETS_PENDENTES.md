@@ -386,9 +386,13 @@ pendente nesta seção.
 Recebida e guardada sem uso: a **placa de destino** (poste com placa e bandeirola, do "Exemplo 3 — Porto"). Não foi
 copiada para o jogo; fica com o proprietário para um uso futuro.
 
-## Cabeçalho "Placa do Píer" de todos os menus (A-148, escolha do proprietário em 08/10/2026)
+## Cabeçalho "Placa do Píer" de todos os menus (A-148) — RETIRADO, não pedir
 
-O cabeçalho já funciona com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/WindowFrame.cs`): placa de
+**RETIRADO em 12/10/2026 (A-148 → A-170).** As janelas passaram a ser páginas do "Diário de bordo" (seção mais
+abaixo); a placa, a corda e a argola não são mais usadas pelo jogo. **Não pedir** `ui_hdr_placa`, `ui_hdr_corda` nem
+`ui_hdr_argola`. O texto abaixo fica só como histórico.
+
+Histórico: o cabeçalho funcionava com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/WindowFrame.cs`): placa de
 três tábuas azul-escuras com borda turquesa e quatro parafusos, duas cordas listradas e argolas de aço. A sombra
 embaixo da placa, o ícone do menu, o título, o botão "i" e o balanço são do código — a arte não deve trazer nada
 disso. Arquivos esperados, em `Resources/Arte/UI/` (PNG, fundo transparente):
@@ -399,7 +403,7 @@ disso. Arquivos esperados, em `Resources/Arte/UI/` (PNG, fundo transparente):
   jogo desenha a corda com 6 px de largura.
 - `ui_hdr_argola.png` — 64×64, argola de aço vista de frente, centro vazado (transparente). O jogo desenha com 18 px.
 
-Pedidos prontos para colar no ChatGPT (um por imagem):
+Pedidos antigos (RETIRADOS — **não colar**):
 
 > Placa de madeira para cabeçalho de jogo mobile, 512×128 px em PNG com fundo transparente, vista de frente, ocupando
 > a imagem inteira (cantos arredondados com raio de 18 px). Três tábuas horizontais azul-escuras (de cima para baixo
@@ -565,13 +569,13 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 ## Barcos por fragmentos e Passe do Pescador (M24-T16/T17, A-157 e A-158, pedido em 11/10/2026)
 
-`ASSET_PENDENTE`. Enquanto os arquivos não existem: o fragmento usa o ícone do barco; o botão do Passe usa a estrela.
+`ASSET_PENDENTE`. Enquanto os arquivos não existem: o fragmento usa o ícone do barco; o cabeçalho da janela do Passe usa a estrela.
 Os barcos 6 a 10 saíram do jogo em 12/10/2026 (M24-T42, A-168): os pedidos de arte deles foram retirados.
 
 | Arquivo | O quê | Tamanho | Onde aparece |
 |---|---|---|---|
 | `Arte/Fragmentos/frag_boat_01.png` a `frag_boat_05.png` | Ícone do fragmento de cada barco | 256×256 → o jogo desenha com 18–20 px | Passe, Loja, avisos |
-| `Arte/Icones/ico_passe.png` | Ícone do Passe do Pescador (botão da barra de cima e placa da janela) | como os outros `ico_` | Barra de cima, janela do Passe |
+| `Arte/Icones/ico_passe.png` | Ícone do Passe do Pescador no cabeçalho da janela | como os outros `ico_` | Só na etiqueta (cabeçalho) da janela do Passe; o atalho redondo usa `ico_atalho_passe` |
 
 Pedidos prontos para colar no ChatGPT (um por imagem):
 
@@ -626,12 +630,12 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 ## Menu Eventos (M24-T39, A-167, pedido em 12/10/2026)
 
-`ASSET_PENDENTE`. Enquanto o arquivo não existe, o botão "Eventos" da barra de cima e a placa da janela usam o relógio
+`ASSET_PENDENTE`. Enquanto o arquivo não existe, o cabeçalho da janela Eventos usa o relógio
 (`ico_relogio`). Quando o arquivo existir, o jogo passa a usá-lo sozinho.
 
 | Arquivo | O quê | Tamanho | Onde aparece |
 |---|---|---|---|
-| `Arte/Icones/ico_eventos.png` | Ícone do botão "Eventos" na barra de cima | 96×96, branco sobre transparente (como os outros ícones do menu, A-139) | Barra de cima e placa da janela Eventos |
+| `Arte/Icones/ico_eventos.png` | Ícone da janela "Eventos" no cabeçalho | 96×96, branco sobre transparente (como os outros ícones do menu, A-139) | Só na etiqueta (cabeçalho) da janela Eventos; o atalho redondo usa `ico_atalho_eventos` |
 
 Pedido pronto para colar no ChatGPT:
 

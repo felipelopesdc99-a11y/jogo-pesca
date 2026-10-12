@@ -277,11 +277,14 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>A small solid tag like "NOVA ESPÉCIE" (dark text on a colour).</summary>
+        /// <summary>
+        /// A small solid tag like "NOVA ESPÉCIE" (dark text on a colour). The colour is always its night version, also
+        /// on the sheet: the dark paper inks under the dark text read at ~2,5:1.
+        /// </summary>
         public void Tag(Rect rect, string text, Color color)
         {
             var previous = GUI.backgroundColor;
-            GUI.backgroundColor = color;
+            GUI.backgroundColor = NightOf(color);
             GUI.Label(rect, text, Badge);
             GUI.backgroundColor = previous;
         }

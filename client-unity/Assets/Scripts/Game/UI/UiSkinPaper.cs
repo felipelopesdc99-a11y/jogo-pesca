@@ -63,6 +63,36 @@ namespace FishingIdle.Game.UI
         /// <summary>The night turquoise whatever the mode (the "i" on the window label, the accent of the note).</summary>
         public static Color NightAccent => Theme.Action;
 
+        /// <summary>The night gold whatever the mode (the "RECORDE" seal reads the same on the sheet and over the scene).</summary>
+        public static Color NightReward => Theme.Reward;
+
+        /// <summary>The night red whatever the mode (an icon on a dark disc inside a window).</summary>
+        public static Color NightDanger => Theme.Danger;
+
+        /// <summary>The night twin of a colour that may have been taken as its paper ink (seals keep their night look).</summary>
+        public static Color NightOf(Color color) => ToNight(color);
+
+        private static readonly Dictionary<GUIStyle, GUIStyle> ColoredStyles = new Dictionary<GUIStyle, GUIStyle>();
+
+        /// <summary>
+        /// A label in <paramref name="color"/>. On the sheet the colour becomes its ink (<see cref="InkOf"/>) and is set as
+        /// the text colour: tinting with GUI.contentColor multiplies the dark ink and the colour vanishes. With
+        /// <paramref name="ink"/> false the colour is used as given in both modes (text on a dark seal).
+        /// </summary>
+        public static void ColoredLabel(Rect rect, string text, GUIStyle style, Color color, bool ink = true)
+        {
+            if (!ColoredStyles.TryGetValue(style, out var colored))
+            {
+                colored = new GUIStyle(style);
+                ColoredStyles[style] = colored;
+            }
+
+            var c = ink && Paper ? InkOf(color) : color;
+            colored.normal.textColor = c;
+            colored.hover.textColor = c;
+            GUI.Label(rect, text, colored);
+        }
+
         /// <summary>The night turquoise hover whatever the mode.</summary>
         public static Color NightAccentHover => Theme.ActionHover;
 

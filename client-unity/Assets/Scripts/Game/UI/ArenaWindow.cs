@@ -788,9 +788,7 @@ namespace FishingIdle.Game.UI
                     GUI.color = previous;
                 }
 
-                GUI.contentColor = color;
-                GUI.Label(new Rect(block.x, block.y + 8, block.width, 26), GameTexts.Arena.Place(rank), skin.CenterBold);
-                GUI.contentColor = Color.white;
+                UiSkin.ColoredLabel(new Rect(block.x, block.y + 8, block.width, 26), GameTexts.Arena.Place(rank), skin.CenterBold, color);
 
                 // Above the pedestal: medal, best fish, name.
                 var top = area.y;
