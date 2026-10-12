@@ -14,7 +14,6 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../../client-unity/Assets/Scripts/Texts/**/*.cs" />
     <Compile Include="../../client-unity/Assets/Scripts/GameService/**/*.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -23,6 +22,8 @@
     <InternalsVisibleTo Include="FishingIdle.Simulador" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Texts is its own assembly in Unity (FishingIdle.Texts.asmdef). -->
+    <ProjectReference Include="../Texts.Build/Texts.Build.csproj" />
     <!-- Same Newtonsoft.Json as Unity's com.unity.nuget.newtonsoft-json 3.2.1. -->
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
