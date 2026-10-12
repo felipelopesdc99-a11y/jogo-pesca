@@ -1,0 +1,584 @@
+{
+  "config_file": "world_boss.json",
+  "config_schema_version": 1,
+  "balance_status": "provisional",
+  "description": "Boss Mundial (M24-T29, A-165): todo dia às 19:00 (horário de Brasília) abre por 10 minutos um Boss com vida infinita. Com o jogo aberto, o Cardume ataca sozinho a cada poucos segundos; nada conta com o jogo fechado. O dano do dia dá uma faixa de recompensa (Moedas, Conchas, Fragmentos de Roupa e fragmentos do barco do mapa mais alto liberado), paga uma vez, às 19:10 ou na próxima abertura do jogo. O top 1 a 10 do dia ganha Dólares só quando o jogo estiver online (ranking.online_rewards_enabled). Números provisórios, para o proprietário ajustar jogando.",
+  "display_name": "Leviatã do Abismo",
+  "display_name_note": "SUGESTÃO: o nome do Boss é decisão do proprietário (OD-068). Trocar aqui muda o nome em todas as telas.",
+  "schedule": {
+    "utc_offset_minutes": -180,
+    "start_minute_of_day": 1140,
+    "duration_minutes": 10,
+    "note": "Horário de Brasília fixo (UTC−3, sem horário de verão): utc_offset_minutes −180. start_minute_of_day é o minuto do dia em que o evento abre (1140 = 19:00); duration_minutes é quanto tempo fica aberto (10 = até 19:10). O evento precisa começar e terminar no mesmo dia (start_minute_of_day + duration_minutes até 1440). O relógio é o do serviço do jogo (IClock), que nunca volta (TD-030)."
+  },
+  "attack": {
+    "interval_seconds": 3,
+    "max_catch_up_attacks": 3,
+    "boss_defense": 0,
+    "note": "Com o evento aberto e o jogo aberto, o Cardume ataca o Boss a cada interval_seconds (10 minutos ÷ 3 s = 200 ataques no máximo por dia). Em cada ataque, cada peixe do Cardume bate com a regra de dano da Arena (arena.json → combat: Ataque × sorteio de 0,97 a 1,03, com a defesa boss_defense, 0 = sem redução), vezes os golpes que a Velocidade dele dá nesse intervalo (interval_seconds ÷ intervalo de ataque da Arena). max_catch_up_attacks: se o jogo travar ou dormir uns segundos, no máximo esses ataques atrasados contam de uma vez; o tempo com o jogo fechado nunca conta. Cardume vazio ou em Expedição não ataca."
+  },
+  "bands_note": "6 faixas de dano do dia, crescentes. damage_percent é a porcentagem do dano máximo do dia: o dano que o Cardume mais forte que o jogador usou naquele dia faria nos 10 minutos inteiros (200 ataques, sorteio médio). Assim as faixas valem do começo ao fim do jogo sem tabela por nível: ficar os 10 minutos dá a faixa 6, entrar no meio dá menos. O jogador recebe a recompensa da maior faixa alcançada (não soma as de baixo). Moedas = income_minutes minutos da renda de referência do nível do Pescador (reference_income); Conchas = shell_minutes minutos das Conchas de referência; clothing_fragments = Fragmentos de Roupa; boat_fragments = fragmentos do barco do mapa mais alto liberado pelo nível do Pescador (extras se o barco já foi montado). Alvo: os 10 minutos inteiros valem ~1 hora de renda.",
+  "bands": [
+    {
+      "damage_percent": 5,
+      "income_minutes": 5,
+      "shell_minutes": 5,
+      "clothing_fragments": 0,
+      "boat_fragments": 0
+    },
+    {
+      "damage_percent": 15,
+      "income_minutes": 10,
+      "shell_minutes": 10,
+      "clothing_fragments": 1,
+      "boat_fragments": 0
+    },
+    {
+      "damage_percent": 30,
+      "income_minutes": 20,
+      "shell_minutes": 20,
+      "clothing_fragments": 1,
+      "boat_fragments": 1
+    },
+    {
+      "damage_percent": 50,
+      "income_minutes": 30,
+      "shell_minutes": 30,
+      "clothing_fragments": 2,
+      "boat_fragments": 1
+    },
+    {
+      "damage_percent": 75,
+      "income_minutes": 45,
+      "shell_minutes": 45,
+      "clothing_fragments": 2,
+      "boat_fragments": 2
+    },
+    {
+      "damage_percent": 95,
+      "income_minutes": 60,
+      "shell_minutes": 60,
+      "clothing_fragments": 3,
+      "boat_fragments": 3
+    }
+  ],
+  "ranking": {
+    "dollars_by_rank": [
+      50,
+      40,
+      30,
+      25,
+      20,
+      15,
+      10,
+      10,
+      5,
+      5
+    ],
+    "online_rewards_enabled": false,
+    "note": "Ranking do dia por dano. dollars_by_rank: Dólares do 1º ao 10º colocado (pedido do proprietário em 12/10/2026). online_rewards_enabled: false no jogo local (regra A-100 do Ranking: só o jogador está no ranking, então ele seria sempre o 1º); ligar só quando houver servidor com jogadores reais. As recompensas por faixa de dano pagam sempre."
+  },
+  "reference_income_note": "Renda de referência por nível do Pescador, usada para as Moedas e Conchas das faixas: vale a linha do maior level até o nível do jogador. coins_per_hour = 6 × as Moedas grátis do marco do Passe naquele nível (o Passe dá ~10 minutos da renda de quem abre o jogo 4 vezes por dia); shells_per_hour = 2 × as Conchas grátis do marco (~30 minutos das Conchas da pesca). Gerado por tools/Progressao/boss_mundial.py a partir de pass.json.",
+  "reference_income": [
+    {
+      "level": 1,
+      "coins_per_hour": 14760,
+      "shells_per_hour": 18
+    },
+    {
+      "level": 20,
+      "coins_per_hour": 175200,
+      "shells_per_hour": 24
+    },
+    {
+      "level": 30,
+      "coins_per_hour": 594000,
+      "shells_per_hour": 32
+    },
+    {
+      "level": 40,
+      "coins_per_hour": 594000,
+      "shells_per_hour": 32
+    },
+    {
+      "level": 50,
+      "coins_per_hour": 594000,
+      "shells_per_hour": 32
+    },
+    {
+      "level": 60,
+      "coins_per_hour": 906000,
+      "shells_per_hour": 48
+    },
+    {
+      "level": 70,
+      "coins_per_hour": 906000,
+      "shells_per_hour": 48
+    },
+    {
+      "level": 80,
+      "coins_per_hour": 3264000,
+      "shells_per_hour": 50
+    },
+    {
+      "level": 90,
+      "coins_per_hour": 3264000,
+      "shells_per_hour": 50
+    },
+    {
+      "level": 100,
+      "coins_per_hour": 3264000,
+      "shells_per_hour": 50
+    },
+    {
+      "level": 110,
+      "coins_per_hour": 13920000,
+      "shells_per_hour": 100
+    },
+    {
+      "level": 120,
+      "coins_per_hour": 17760000,
+      "shells_per_hour": 100
+    },
+    {
+      "level": 130,
+      "coins_per_hour": 23700000,
+      "shells_per_hour": 124
+    },
+    {
+      "level": 140,
+      "coins_per_hour": 29820000,
+      "shells_per_hour": 128
+    },
+    {
+      "level": 150,
+      "coins_per_hour": 29820000,
+      "shells_per_hour": 128
+    },
+    {
+      "level": 160,
+      "coins_per_hour": 66000000,
+      "shells_per_hour": 164
+    },
+    {
+      "level": 170,
+      "coins_per_hour": 72000000,
+      "shells_per_hour": 170
+    },
+    {
+      "level": 180,
+      "coins_per_hour": 73800000,
+      "shells_per_hour": 172
+    },
+    {
+      "level": 190,
+      "coins_per_hour": 109200000,
+      "shells_per_hour": 182
+    },
+    {
+      "level": 200,
+      "coins_per_hour": 129000000,
+      "shells_per_hour": 182
+    },
+    {
+      "level": 210,
+      "coins_per_hour": 189000000,
+      "shells_per_hour": 192
+    },
+    {
+      "level": 220,
+      "coins_per_hour": 214200000,
+      "shells_per_hour": 196
+    },
+    {
+      "level": 230,
+      "coins_per_hour": 214800000,
+      "shells_per_hour": 196
+    },
+    {
+      "level": 240,
+      "coins_per_hour": 214800000,
+      "shells_per_hour": 196
+    },
+    {
+      "level": 250,
+      "coins_per_hour": 323400000,
+      "shells_per_hour": 196
+    },
+    {
+      "level": 260,
+      "coins_per_hour": 355200000,
+      "shells_per_hour": 208
+    },
+    {
+      "level": 270,
+      "coins_per_hour": 450000000,
+      "shells_per_hour": 214
+    },
+    {
+      "level": 280,
+      "coins_per_hour": 513600000,
+      "shells_per_hour": 216
+    },
+    {
+      "level": 290,
+      "coins_per_hour": 579600000,
+      "shells_per_hour": 220
+    },
+    {
+      "level": 300,
+      "coins_per_hour": 816000000,
+      "shells_per_hour": 228
+    },
+    {
+      "level": 310,
+      "coins_per_hour": 918000000,
+      "shells_per_hour": 230
+    },
+    {
+      "level": 320,
+      "coins_per_hour": 1032000000,
+      "shells_per_hour": 234
+    },
+    {
+      "level": 330,
+      "coins_per_hour": 1032000000,
+      "shells_per_hour": 234
+    },
+    {
+      "level": 340,
+      "coins_per_hour": 1032000000,
+      "shells_per_hour": 234
+    },
+    {
+      "level": 350,
+      "coins_per_hour": 1032000000,
+      "shells_per_hour": 234
+    },
+    {
+      "level": 360,
+      "coins_per_hour": 1554000000,
+      "shells_per_hour": 242
+    },
+    {
+      "level": 370,
+      "coins_per_hour": 1596000000,
+      "shells_per_hour": 242
+    },
+    {
+      "level": 380,
+      "coins_per_hour": 1914000000,
+      "shells_per_hour": 248
+    },
+    {
+      "level": 390,
+      "coins_per_hour": 1968000000,
+      "shells_per_hour": 248
+    },
+    {
+      "level": 400,
+      "coins_per_hour": 1998000000,
+      "shells_per_hour": 248
+    },
+    {
+      "level": 410,
+      "coins_per_hour": 2430000000,
+      "shells_per_hour": 252
+    },
+    {
+      "level": 420,
+      "coins_per_hour": 2670000000,
+      "shells_per_hour": 254
+    },
+    {
+      "level": 430,
+      "coins_per_hour": 3096000000,
+      "shells_per_hour": 258
+    },
+    {
+      "level": 440,
+      "coins_per_hour": 3288000000,
+      "shells_per_hour": 260
+    },
+    {
+      "level": 450,
+      "coins_per_hour": 3390000000,
+      "shells_per_hour": 260
+    },
+    {
+      "level": 460,
+      "coins_per_hour": 4500000000,
+      "shells_per_hour": 266
+    },
+    {
+      "level": 470,
+      "coins_per_hour": 5010000000,
+      "shells_per_hour": 270
+    },
+    {
+      "level": 480,
+      "coins_per_hour": 5010000000,
+      "shells_per_hour": 270
+    },
+    {
+      "level": 490,
+      "coins_per_hour": 5886000000,
+      "shells_per_hour": 272
+    },
+    {
+      "level": 500,
+      "coins_per_hour": 5886000000,
+      "shells_per_hour": 272
+    },
+    {
+      "level": 510,
+      "coins_per_hour": 5886000000,
+      "shells_per_hour": 272
+    },
+    {
+      "level": 520,
+      "coins_per_hour": 5886000000,
+      "shells_per_hour": 272
+    },
+    {
+      "level": 530,
+      "coins_per_hour": 5886000000,
+      "shells_per_hour": 272
+    },
+    {
+      "level": 540,
+      "coins_per_hour": 8760000000,
+      "shells_per_hour": 282
+    },
+    {
+      "level": 550,
+      "coins_per_hour": 9300000000,
+      "shells_per_hour": 302
+    },
+    {
+      "level": 560,
+      "coins_per_hour": 9480000000,
+      "shells_per_hour": 312
+    },
+    {
+      "level": 570,
+      "coins_per_hour": 9600000000,
+      "shells_per_hour": 316
+    },
+    {
+      "level": 580,
+      "coins_per_hour": 9660000000,
+      "shells_per_hour": 320
+    },
+    {
+      "level": 590,
+      "coins_per_hour": 12420000000,
+      "shells_per_hour": 328
+    },
+    {
+      "level": 600,
+      "coins_per_hour": 13560000000,
+      "shells_per_hour": 332
+    },
+    {
+      "level": 610,
+      "coins_per_hour": 14040000000,
+      "shells_per_hour": 334
+    },
+    {
+      "level": 620,
+      "coins_per_hour": 14280000000,
+      "shells_per_hour": 336
+    },
+    {
+      "level": 630,
+      "coins_per_hour": 14460000000,
+      "shells_per_hour": 336
+    },
+    {
+      "level": 640,
+      "coins_per_hour": 14640000000,
+      "shells_per_hour": 338
+    },
+    {
+      "level": 650,
+      "coins_per_hour": 14820000000,
+      "shells_per_hour": 338
+    },
+    {
+      "level": 660,
+      "coins_per_hour": 14940000000,
+      "shells_per_hour": 340
+    },
+    {
+      "level": 670,
+      "coins_per_hour": 33180000000,
+      "shells_per_hour": 360
+    },
+    {
+      "level": 680,
+      "coins_per_hour": 39900000000,
+      "shells_per_hour": 366
+    },
+    {
+      "level": 690,
+      "coins_per_hour": 47040000000,
+      "shells_per_hour": 370
+    },
+    {
+      "level": 700,
+      "coins_per_hour": 60600000000,
+      "shells_per_hour": 378
+    },
+    {
+      "level": 710,
+      "coins_per_hour": 63000000000,
+      "shells_per_hour": 378
+    },
+    {
+      "level": 720,
+      "coins_per_hour": 64800000000,
+      "shells_per_hour": 378
+    },
+    {
+      "level": 730,
+      "coins_per_hour": 66000000000,
+      "shells_per_hour": 382
+    },
+    {
+      "level": 740,
+      "coins_per_hour": 67800000000,
+      "shells_per_hour": 384
+    },
+    {
+      "level": 750,
+      "coins_per_hour": 69000000000,
+      "shells_per_hour": 384
+    },
+    {
+      "level": 760,
+      "coins_per_hour": 69600000000,
+      "shells_per_hour": 384
+    },
+    {
+      "level": 770,
+      "coins_per_hour": 190800000000,
+      "shells_per_hour": 410
+    },
+    {
+      "level": 780,
+      "coins_per_hour": 334800000000,
+      "shells_per_hour": 424
+    },
+    {
+      "level": 790,
+      "coins_per_hour": 409800000000,
+      "shells_per_hour": 432
+    },
+    {
+      "level": 800,
+      "coins_per_hour": 496200000000,
+      "shells_per_hour": 436
+    },
+    {
+      "level": 810,
+      "coins_per_hour": 515400000000,
+      "shells_per_hour": 436
+    },
+    {
+      "level": 820,
+      "coins_per_hour": 526200000000,
+      "shells_per_hour": 440
+    },
+    {
+      "level": 830,
+      "coins_per_hour": 720000000000,
+      "shells_per_hour": 446
+    },
+    {
+      "level": 840,
+      "coins_per_hour": 876000000000,
+      "shells_per_hour": 450
+    },
+    {
+      "level": 850,
+      "coins_per_hour": 900000000000,
+      "shells_per_hour": 454
+    },
+    {
+      "level": 860,
+      "coins_per_hour": 1158000000000,
+      "shells_per_hour": 462
+    },
+    {
+      "level": 870,
+      "coins_per_hour": 1272000000000,
+      "shells_per_hour": 462
+    },
+    {
+      "level": 880,
+      "coins_per_hour": 1356000000000,
+      "shells_per_hour": 466
+    },
+    {
+      "level": 890,
+      "coins_per_hour": 1410000000000,
+      "shells_per_hour": 466
+    },
+    {
+      "level": 900,
+      "coins_per_hour": 1446000000000,
+      "shells_per_hour": 466
+    },
+    {
+      "level": 910,
+      "coins_per_hour": 1476000000000,
+      "shells_per_hour": 466
+    },
+    {
+      "level": 920,
+      "coins_per_hour": 1494000000000,
+      "shells_per_hour": 466
+    },
+    {
+      "level": 930,
+      "coins_per_hour": 1524000000000,
+      "shells_per_hour": 470
+    },
+    {
+      "level": 940,
+      "coins_per_hour": 1542000000000,
+      "shells_per_hour": 470
+    },
+    {
+      "level": 950,
+      "coins_per_hour": 1560000000000,
+      "shells_per_hour": 470
+    },
+    {
+      "level": 960,
+      "coins_per_hour": 5064000000000,
+      "shells_per_hour": 472
+    },
+    {
+      "level": 970,
+      "coins_per_hour": 6060000000000,
+      "shells_per_hour": 472
+    },
+    {
+      "level": 980,
+      "coins_per_hour": 6660000000000,
+      "shells_per_hour": 472
+    },
+    {
+      "level": 990,
+      "coins_per_hour": 6660000000000,
+      "shells_per_hour": 472
+    },
+    {
+      "level": 1000,
+      "coins_per_hour": 6660000000000,
+      "shells_per_hour": 472
+    }
+  ]
+}

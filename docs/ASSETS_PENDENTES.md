@@ -619,6 +619,22 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 > Ícone quadrado de item de um jogo idle de pesca mobile, PNG 256×256 px com fundo transparente: um fragmento de vara de pesca — um pedaço de vara com um passador de linha e a ponta quebrada — com um brilho suave na cor da vara (troque a cor para cada vara: 01 verde-musgo, 02 dourado, 03 turquesa, 04 azul-royal, 05 azul-noite com dourado). Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 20 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivos: frag_rod_01.png … frag_rod_05.png
 
+## Boss Mundial (M24-T29, A-165, pedido em 12/10/2026)
+
+`ASSET_PENDENTE`. Enquanto os arquivos não existem: o botão do HUD usa o ícone de ataque (`ico_atacar`) e a janela
+desenha o Boss como um disco escuro com borda vermelha e o ícone de ataque no meio.
+
+| Arquivo | O quê | Tamanho | Onde aparece |
+|---|---|---|---|
+| `Arte/Icones/ico_boss.png` | Ícone do Boss Mundial | 256×256 → 40 px | Botão do HUD (à esquerda do Passe) e cabeçalho da janela |
+| `Arte/Boss/boss_mundial.png` | O Boss (o nome sugerido é "Leviatã do Abismo", OD-068), virado para a esquerda | 1024×768 → até ~520×230 px | Janela "Boss Mundial", à direita |
+
+Pedidos prontos para colar no ChatGPT (um por imagem):
+
+> Ícone quadrado de interface de um jogo idle de pesca mobile, PNG 256×256 px com fundo transparente: a silhueta da cabeça de uma enorme criatura marinha abissal (um leviatã com mandíbula aberta e dentes finos) em azul-noite, com olho brilhante dourado e um contorno turquesa. Centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 40 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: ico_boss.png
+
+> Ilustração de um chefe de um jogo idle de pesca mobile, PNG 1024×768 px com fundo transparente: o "Leviatã do Abismo", uma criatura marinha gigantesca e elegante, meio peixe e meio serpente, de corpo azul-noite com escamas em degradê para turquesa, barbatanas longas translúcidas, olhos dourados e pequenas luzes bioluminescentes ao longo do corpo, virado para a esquerda em posição de ataque. Corpo inteiro visível, ocupando cerca de 85% da imagem, sem cenário, sem texto, sem sombra projetada. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivo: boss_mundial.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

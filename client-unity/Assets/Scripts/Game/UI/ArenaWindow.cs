@@ -656,7 +656,7 @@ namespace FishingIdle.Game.UI
         /// A fish's art; flipped = mirrored around its centre in the virtual canvas, composed with the HUD's
         /// GUI.matrix (not in screen pixels).
         /// </summary>
-        private static void DrawFish(Rect art, string speciesId, bool flipped)
+        internal static void DrawFish(Rect art, string speciesId, bool flipped)
         {
             if (!flipped)
             {

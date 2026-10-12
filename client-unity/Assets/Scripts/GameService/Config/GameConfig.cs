@@ -46,9 +46,11 @@ namespace FishingIdle.GameService.Config
             CrewConfig crew,
             UpgradesConfig upgrades,
             PassConfig pass,
+            WorldBossConfig worldBoss,
             string version)
         {
             Pass = pass;
+            WorldBoss = worldBoss;
             _passMilestones = pass.Milestones.ToDictionary(m => m.Level);
             Equipment = equipment;
             Crew = crew;
@@ -104,6 +106,9 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>The Passe do Pescador (pass.json, M24-T17).</summary>
         public PassConfig Pass { get; }
+
+        /// <summary>The Boss Mundial (world_boss.json, M24-T29).</summary>
+        public WorldBossConfig WorldBoss { get; }
 
         /// <summary>The pass milestone reached at exactly <paramref name="level"/>, or null.</summary>
         public PassMilestoneConfig PassMilestoneAt(int level) => _passMilestones.TryGetValue(level, out var m) ? m : null;

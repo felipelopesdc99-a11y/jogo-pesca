@@ -3,6 +3,33 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m21.56] — 12/10/2026
+
+Boss Mundial diário (M24-T29, A-165, TD-049): pedido do proprietário de 12/10/2026 ("quero criar um Boss mundial para
+todos conseguirem atacar, todo dia às 19:00 …"). Verificado no CI, não aberto no Unity.
+
+### Adicionado
+
+- **Boss Mundial** (`config/world_boss.json`): todo dia das 19:00 às 19:10, horário de Brasília. Vida infinita; nome
+  sugerido "Leviatã do Abismo" (OD-068). Com o jogo aberto o Cardume ataca sozinho a cada 3 s (até 200 ataques), com a
+  regra de dano da Arena; com o jogo fechado nada conta. Cardume vazio ou em Expedição não ataca.
+- 6 faixas de dano (5% a 95% do dano máximo do dia) com 5 a 60 minutos de renda em Moedas e Conchas, até 3 Fragmentos
+  de Roupa e até 3 fragmentos do barco do mapa mais alto liberado; pagas uma vez, às 19:10 ou na próxima abertura.
+- Ranking do dia por dano e os Dólares do top 1 a 10 (50, 40, 30, 25, 20, 15, 10, 10, 5, 5), desligados no jogo local
+  (`online_rewards_enabled`) até existir servidor.
+- HUD: botão do Boss à esquerda do Passe, com a contagem até as 19:00 e brilho durante o evento. Janela "Boss Mundial":
+  Cardume x Boss com números de dano, dano de hoje, barra e cartões das faixas, sua recompensa, "Ranking de hoje",
+  Dólares do top 10; fora do horário, a contagem e o último resultado. Avisos de começo, faixa e pagamento.
+- Save versão 19 (`world_boss`). `tools/Progressao/boss_mundial.py` (renda de referência a partir do `pass.json`).
+  Testes `WorldBossTests`. Arte provisória (pedidos em `docs/ASSETS_PENDENTES.md`).
+
+### Mudado
+
+- `BattleEngine`: o cálculo de um golpe saiu para `RollDamage` e `HitDamage` (mesma sequência de sorteios; as batalhas
+  da Arena não mudam).
+- OD-067 resolvida pelo proprietário ("sem problema na questão da calça, isso é pensado"): a curva do Pescador fica como
+  está (M24-T35).
+
 ## [0.2.0-m21.55] — 12/10/2026
 
 Varas e roupas por fragmentos (M24-T32 e M24-T33, A-163 e A-164, TD-048): decisões do proprietário de 12/10/2026 ("Vai

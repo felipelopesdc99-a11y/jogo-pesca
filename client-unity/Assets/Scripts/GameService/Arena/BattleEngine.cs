@@ -100,9 +100,7 @@ namespace FishingIdle.GameService.Arena
                 var attacker = teams[side][index].Stats;
                 var defender = teams[enemy][target].Stats;
 
-                var roll = combat.DamageRoll.Min + rng.NextDouble() * (combat.DamageRoll.Max - combat.DamageRoll.Min);
-                var mitigated = attacker.Attack * roll * (1.0 - defender.Defense / (defender.Defense + combat.DefenseMitigation.Constant));
-                var damage = Math.Max(mitigated, attacker.Attack * combat.DefenseMitigation.MinimumDamageRatioOfAttack);
+                var damage = HitDamage(combat, attacker.Attack, defender.Defense, RollDamage(combat, rng));
 
                 hp[enemy][target] = Math.Max(0, hp[enemy][target] - damage);
                 outcome.Events.Add(new BattleEvent
@@ -129,6 +127,25 @@ namespace FishingIdle.GameService.Arena
             outcome.Winner = hp[0].Sum() / Math.Max(1, MaxHp(sideA)) >= hp[1].Sum() / Math.Max(1, MaxHp(sideB)) ? 0 : 1;
             outcome.DurationSeconds = time;
             return outcome;
+        }
+
+        /// <summary>The small damage roll (arena.json → combat.damage_roll), one draw from <paramref name="rng"/>.</summary>
+        public static double RollDamage(CombatConfig combat, Rng rng)
+        {
+            return combat.DamageRoll.Min + rng.NextDouble() * (combat.DamageRoll.Max - combat.DamageRoll.Min);
+        }
+
+        /// <summary>The roll's middle value: what an average hit deals.</summary>
+        public static double AverageRoll(CombatConfig combat) => (combat.DamageRoll.Min + combat.DamageRoll.Max) / 2.0;
+
+        /// <summary>
+        /// One hit: attack × roll × (1 − defense ÷ (defense + constant)), never below the minimum share of the attack. The
+        /// Arena's battles and the Boss Mundial (A-165) use this same rule.
+        /// </summary>
+        public static double HitDamage(CombatConfig combat, double attack, double defense, double roll)
+        {
+            var mitigated = attack * roll * (1.0 - defense / (defense + combat.DefenseMitigation.Constant));
+            return Math.Max(mitigated, attack * combat.DefenseMitigation.MinimumDamageRatioOfAttack);
         }
 
         /// <summary>interval = base × (reference speed ÷ speed): faster fish attack a little more often.</summary>

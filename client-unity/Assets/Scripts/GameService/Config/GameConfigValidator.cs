@@ -1386,5 +1386,76 @@ namespace FishingIdle.GameService.Config
                 errors.Add(V.CrewMilestones(section));
             }
         }
+
+        /// <summary>world_boss.json (M24-T29, A-165): a window inside one day, a positive attack interval, ascending bands.</summary>
+        public static List<string> ValidateWorldBoss(WorldBossConfig boss)
+        {
+            var errors = new List<string>();
+            if (boss == null)
+            {
+                errors.Add(V.ConfigFileMissing(GameConfigLoader.WorldBossFile));
+                return errors;
+            }
+
+            if (string.IsNullOrWhiteSpace(boss.DisplayName))
+            {
+                errors.Add(V.Missing(GameConfigLoader.WorldBossFile, "display_name"));
+            }
+
+            var schedule = boss.Schedule;
+            if (schedule == null || schedule.UtcOffsetMinutes < -720 || schedule.UtcOffsetMinutes > 840
+                || schedule.StartMinuteOfDay < 0 || schedule.StartMinuteOfDay > 1439
+                || schedule.DurationMinutes < 1 || schedule.DurationMinutes > 240
+                || schedule.StartMinuteOfDay + schedule.DurationMinutes > 1440)
+            {
+                errors.Add(V.WorldBossSchedule);
+            }
+
+            var attack = boss.Attack;
+            if (attack == null || !(attack.IntervalSeconds >= 1) || attack.IntervalSeconds > 60
+                || attack.MaxCatchUpAttacks < 1 || attack.MaxCatchUpAttacks > 100 || !(attack.BossDefense >= 0) || double.IsInfinity(attack.BossDefense)
+                || (schedule != null && attack.IntervalSeconds > schedule.DurationMinutes * 60.0))
+            {
+                errors.Add(V.WorldBossAttack);
+            }
+
+            var bands = boss.Bands;
+            var bandsOk = bands != null && bands.Count >= 1 && bands.Count <= 20;
+            var previous = 0.0;
+            foreach (var band in bands ?? new List<WorldBossBandConfig>())
+            {
+                bandsOk &= band != null && band.DamagePercent > previous && band.DamagePercent <= 100
+                           && band.IncomeMinutes >= 0 && band.ShellMinutes >= 0 && band.IncomeMinutes <= 100000 && band.ShellMinutes <= 100000
+                           && band.ClothingFragments >= 0 && band.BoatFragments >= 0;
+                previous = band?.DamagePercent ?? previous;
+            }
+
+            if (!bandsOk)
+            {
+                errors.Add(V.WorldBossBands);
+            }
+
+            var ranking = boss.Ranking;
+            if (ranking == null || ranking.DollarsByRank == null || ranking.DollarsByRank.Count > 100 || ranking.DollarsByRank.Any(d => d < 0))
+            {
+                errors.Add(V.WorldBossRanking);
+            }
+
+            var income = boss.ReferenceIncome;
+            var incomeOk = income != null && income.Count >= 1 && income.Count <= 2000 && income[0] != null && income[0].Level == 1;
+            var level = 0;
+            foreach (var row in income ?? new List<WorldBossIncomeConfig>())
+            {
+                incomeOk &= row != null && row.Level > level && row.CoinsPerHour >= 0 && row.ShellsPerHour >= 0;
+                level = row?.Level ?? level;
+            }
+
+            if (!incomeOk)
+            {
+                errors.Add(V.WorldBossIncome);
+            }
+
+            return errors;
+        }
     }
 }

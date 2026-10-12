@@ -1059,4 +1059,76 @@ namespace FishingIdle.GameService.Config
         /// <summary>Fragmentos de Roupa (M24-T33).</summary>
         public int ClothingFragments { get; set; }
     }
+
+    /// <summary>
+    /// The Boss Mundial (world_boss.json, M24-T29, A-165): a daily window (Brasília time) in which the Cardume attacks a
+    /// boss with infinite health; the day's damage gives a reward band.
+    /// </summary>
+    public sealed class WorldBossConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+
+        /// <summary>The boss's name (a suggestion until the owner decides, OD-068).</summary>
+        public string DisplayName { get; set; }
+        public WorldBossScheduleConfig Schedule { get; set; }
+        public WorldBossAttackConfig Attack { get; set; }
+
+        /// <summary>In ascending damage_percent order; the player gets the highest band reached.</summary>
+        public List<WorldBossBandConfig> Bands { get; set; }
+        public WorldBossRankingConfig Ranking { get; set; }
+
+        /// <summary>In ascending level order, the first at level 1; the row of the highest level not above the Fisher's applies.</summary>
+        public List<WorldBossIncomeConfig> ReferenceIncome { get; set; }
+    }
+
+    public sealed class WorldBossScheduleConfig
+    {
+        /// <summary>The event's fixed time zone (−180 = Brasília, UTC−3).</summary>
+        public int UtcOffsetMinutes { get; set; }
+
+        /// <summary>Minute of that day the window opens (1140 = 19:00).</summary>
+        public int StartMinuteOfDay { get; set; }
+        public int DurationMinutes { get; set; }
+    }
+
+    public sealed class WorldBossAttackConfig
+    {
+        public double IntervalSeconds { get; set; }
+
+        /// <summary>Late attacks credited at once after a short freeze; the time with the game closed never counts.</summary>
+        public int MaxCatchUpAttacks { get; set; }
+
+        /// <summary>The boss's Defense in the Arena damage rule (0 = no reduction).</summary>
+        public double BossDefense { get; set; }
+    }
+
+    public sealed class WorldBossBandConfig
+    {
+        /// <summary>Percent of the day's maximum damage (the strongest Cardume of the day over the whole window).</summary>
+        public double DamagePercent { get; set; }
+
+        /// <summary>Minutes of the reference income paid in Moedas / Conchas.</summary>
+        public double IncomeMinutes { get; set; }
+        public double ShellMinutes { get; set; }
+        public int ClothingFragments { get; set; }
+
+        /// <summary>Fragments of the boat of the highest map the Fisher level unlocks.</summary>
+        public int BoatFragments { get; set; }
+    }
+
+    public sealed class WorldBossRankingConfig
+    {
+        /// <summary>Dólares of the 1st to the Nth of the day.</summary>
+        public List<long> DollarsByRank { get; set; }
+
+        /// <summary>Off in the local game (the player is alone in the ranking); on only with a server and real players.</summary>
+        public bool OnlineRewardsEnabled { get; set; }
+    }
+
+    public sealed class WorldBossIncomeConfig
+    {
+        public int Level { get; set; }
+        public long CoinsPerHour { get; set; }
+        public long ShellsPerHour { get; set; }
+    }
 }

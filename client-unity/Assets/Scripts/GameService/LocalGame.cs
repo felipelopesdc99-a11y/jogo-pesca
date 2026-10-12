@@ -18,6 +18,7 @@ using FishingIdle.GameService.Shop;
 using FishingIdle.GameService.Tutorial;
 using FishingIdle.GameService.Upgrades;
 using FishingIdle.GameService.Vip;
+using FishingIdle.GameService.WorldBoss;
 
 namespace FishingIdle.GameService
 {
@@ -57,6 +58,7 @@ namespace FishingIdle.GameService
             Crew = crew;
             Upgrades = new LocalUpgradeService(session, crew);
             Pass = new LocalPassService(session, fishing);
+            WorldBoss = new LocalWorldBossService(session, Cardume, fishing);
             DevTools = new LocalDevToolsService(session, fishing, crew);
         }
 
@@ -89,6 +91,9 @@ namespace FishingIdle.GameService
 
         /// <summary>The Passe do Pescador (M24-T17): milestones every 10 Fisher levels, free and premium rewards.</summary>
         public IPassService Pass { get; }
+
+        /// <summary>The Boss Mundial (M24-T29): every day at 19:00 (Brasília), 10 minutes of automatic Cardume attacks.</summary>
+        public IWorldBossService WorldBoss { get; }
 
         /// <summary>The owner's test tools (A-123); they refuse everything unless Session.DevToolsEnabled is on.</summary>
         public IDevToolsService DevTools { get; }

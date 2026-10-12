@@ -19,6 +19,21 @@ O que o MVP local **não** protege, e só o servidor vai proteger (Milestone 12)
 arquivo no PC, que pode ser editado — por isso o save é validado ao carregar, mas não é tratado
 como a arquitetura definitiva.
 
+### Boss Mundial (M24-T29, A-165, TD-049)
+
+- **Horário pelo relógio do serviço**, nunca pelo da tela: o `IClock` da `GameSession` (o `SteadyClock` da TD-030).
+  Voltar o relógio do PC congela o tempo, então não dá ataques nem pagamento a mais; adiantar o relógio para as 19:00
+  de outros dias é o abuso que o MVP local não impede (TD-019) — mas cada dia paga uma vez só, e quem adianta não volta.
+- **Só conta com o jogo aberto.** A primeira atualização depois de abrir o jogo só marca o ponto de partida; o tempo com
+  o jogo fechado nunca vira ataque. Um congelamento curto com o jogo aberto conta no máximo `max_catch_up_attacks`.
+- **Sem repetição.** Cada ataque tem um índice no dia (k intervalos depois das 19:00) e o seu sorteio vem do `Rng` do
+  save com o dia e o índice; o save guarda o último índice processado, então o mesmo ataque nunca conta duas vezes. O
+  pagamento marca `paid` no mesmo save que credita as moedas.
+- **Faixas relativas ao Cardume mais forte do dia**, guardado como máximo (`reference_damage` nunca desce): trocar para
+  um Cardume fraco no começo e forte depois não deixa a faixa mais fácil.
+- **Dólares do top 10** só com `online_rewards_enabled`, desligado no jogo local (no ranking local só existe o jogador).
+  Com o servidor, o ranking, o dano e o pagamento passam a ser dele.
+
 ## Nunca confiar no cliente para
 
 Hora atual · conclusão de ciclo de pesca · qual peixe foi capturado · tamanho ou raridade do peixe ·

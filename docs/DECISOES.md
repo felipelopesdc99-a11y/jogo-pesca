@@ -1015,3 +1015,35 @@ aconteceria. Bônus por eixo somados aos que já existem reaproveitam toda a mat
 
 **Rever se.** O proprietário decidir sobre as varas no Mercado (OD-066), o efeito das roupas no Pescador (OD-067), a regra do
 nível por uso (OD-068) ou os extras (OD-060); ou quiser escolher quando vestir/tirar uma peça (hoje ficam sempre vestidas).
+
+## TD-049 · Boss Mundial: horário de Brasília fixo, ataques por índice no dia e Dólares atrás de uma chave online (12/10/2026)
+
+**Origem.** M24-T29 (A-165): o proprietário pediu um Boss Mundial todo dia às 19:00, 10 minutos, ataque automático do
+Cardume com o jogo aberto, recompensas por dano e Dólares do top 1 a 10.
+
+**Decisão.**
+- **Horário de Brasília fixo no config** (`world_boss.json → schedule.utc_offset_minutes` −180), não o fuso do PC: o
+  evento é o mesmo para todos os jogadores (é "mundial") e o Brasil não tem horário de verão desde 2019. O dia do evento
+  é `floor((utc + offset) ÷ 1 dia)`; o validador recusa uma janela que passe da meia-noite, para um evento pertencer a um
+  dia só. As contas ficam em `WorldBoss/WorldBossRules` (puras, sem relógio).
+- **Ataque por índice.** O ataque k acontece k × `interval_seconds` depois da abertura (1 a 200). O save guarda o último
+  índice processado; `Update` credita do seguinte até o devido agora, no máximo `max_catch_up_attacks` de uma vez. O
+  sorteio de cada ataque é `Rng.For(seed ^ sal, dia, k)`: processar de novo não muda nada e nada conta duas vezes.
+- **"Só com o jogo aberto"** sem relógio novo: a primeira chamada de `Update` em cada execução do jogo só ancora o índice
+  (campo em memória do serviço, zerado no reset do save). Assim o tempo fechado nunca vira ataque, mesmo que o save diga
+  que o jogador estava no evento; o resto do anti-trapaça é o `SteadyClock` (TD-030).
+- **Dano reaproveitando a Arena.** `BattleEngine` ganhou `RollDamage`, `AverageRoll` e `HitDamage` (a fórmula que estava
+  dentro de `Resolve`, que agora chama as duas primeiras — a mesma sequência de sorteios, as batalhas não mudam). O Boss
+  usa `HitDamage` com `boss_defense` e multiplica pelos golpes que a Velocidade dá no intervalo (`BattleEngine.Interval`).
+- **Faixas relativas** (escolhido por ser o mais simples que vale do Nv.1 ao Nv.1000): `damage_percent` do dano máximo do
+  dia, `reference_damage` = o maior "dano dos 10 minutos inteiros com o sorteio médio" entre os Cardumes usados no dia
+  (nunca desce, para trocar de Cardume no meio não facilitar a faixa). A recompensa é em **minutos de renda** de uma tabela
+  por nível (`reference_income`) gerada do `pass.json` por `tools/Progressao/boss_mundial.py` (conta simples, sem
+  simulação longa: o Passe já é calibrado em minutos de renda).
+- **Pagamento único**: `Paid` no registro do dia; pago no `Update` que passa das 19:10 (depois do último ataque) ou no
+  primeiro da próxima abertura. Um registro só no save (`WorldBossState`, save versão 19), trocado pelo do dia seguinte
+  depois de pago; é ele que a tela mostra como "último resultado".
+- **Dólares do top 10 atrás de `ranking.online_rewards_enabled`** (falso no repositório): no jogo local o ranking só tem
+  o jogador (A-100) e ele seria sempre o 1º. A regra (`WorldBossRules.DollarsFor`) já está pronta e testada com a chave
+  ligada; com o servidor, o ranking e o pagamento passam a ser dele.
+- **Cardume em Expedição não ataca**, a mesma trava da Arena (`AttackBlocker`), em vez de inventar outra regra.

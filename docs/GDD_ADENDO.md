@@ -2764,3 +2764,63 @@ tamanho, camiseta = Conchas, calça = XP); a roupa "sobe usando ela, upa com o t
 - **Quem já joga** (save versão 18): fragmentos de roupa começam em 0 e nenhuma peça montada.
 - **Arte provisória** (`ASSET_PENDENTE`): as peças e o fragmento usam o ícone da estrela; pedidos em
   `docs/ASSETS_PENDENTES.md` (ícones das 5 peças, do Fragmento de Roupa e dos fragmentos de vara).
+
+### A-165 · Boss Mundial (todo dia às 19:00, 10 minutos)
+**Seção do GDD:** 24–30 (Cardume e Arena), 7 (HUD) · novo escopo pedido pelo proprietário · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário em 12/10/2026 (M24-T29): "quero criar um Boss mundial para todos conseguirem atacar, todo dia às
+19:00, ele tem vida infinita, a ideia é todos conseguirem atacar com seu cardume e conseguir recompensas de acordo com o
+dano que aquele cardume infligiu, top 1 ao 10 ganham recompensas em dólares também". Respostas dele: 10 minutos por dia
+(19:00–19:10, horário de Brasília); ataque automático contínuo só com o jogo aberto; Dólares do top 1–10: 50, 40, 30, 25,
+20, 15, 10, 10, 5, 5; no jogo local a regra fica pronta, o ranking mostra só o jogador e os Dólares só pagam com servidor.
+Números em `config/world_boss.json`.
+
+- **Horário.** Todo dia das **19:00 às 19:10, horário de Brasília** (UTC−3 fixo, sem horário de verão). O dia do evento
+  vira à meia-noite de Brasília. O relógio é o do serviço do jogo, que nunca volta (TD-030).
+- **O Boss.** Vida infinita. Nome **sugerido** "Leviatã do Abismo" (o nome é decisão do proprietário, OD-068). Arte
+  provisória (`ASSET_PENDENTE`): um disco escuro com borda vermelha e o ícone de ataque; pedido em
+  `docs/ASSETS_PENDENTES.md`.
+- **Ataque automático.** Com o evento aberto e o **jogo aberto** (não precisa estar com a janela do Boss aberta), o
+  Cardume ataca sozinho **a cada 3 segundos** — até **200 ataques** no dia. Com o jogo fechado nada conta, nem depois:
+  ao reabrir no meio do evento, os ataques recomeçam dali e o dano de antes continua. Um travamento curto com o jogo
+  aberto recupera no máximo 3 ataques atrasados.
+- **Dano.** Cada peixe do Cardume bate com a **mesma regra da Arena** (Ataque × sorteio de 0,97 a 1,03, com o bônus 6/6;
+  o Boss não tem defesa), vezes os golpes que a Velocidade dele dá em 3 s (na Velocidade 100, 1,5 golpe). Cardume
+  **vazio não ataca** (aviso na janela e ao começar); Cardume **em Expedição** também não (a mesma trava da Arena).
+- **Faixas de recompensa** (6, crescentes). Para valer do começo ao fim do jogo sem tabela por nível, a faixa é uma
+  porcentagem do **dano máximo do dia**: o que o Cardume mais forte que o jogador usou naquele dia faria nos 10 minutos
+  inteiros. Ficar os 10 minutos dá a Faixa 6; ficar 6 minutos dá a Faixa 4. Recebe a recompensa da **maior faixa
+  alcançada** (não soma). Moedas e Conchas são minutos da renda de referência do nível do Pescador (a renda de quem abre
+  o jogo 4 vezes por dia, tirada do Passe: Moedas/h = 6 × as Moedas grátis do marco; Conchas/h = 2 × as Conchas); os
+  fragmentos de barco são do **barco do mapa mais alto liberado** pelo nível (extras se já montado, OD-060).
+
+  | Faixa | Dano do dia | Moedas | Conchas | Frag. de Roupa | Frag. de barco | Nv.10 | Nv.100 | Nv.1000 |
+  |---|---|---|---|---|---|---|---|---|
+  | 1 | 5% | 5 min de renda | 5 min | — | — | 1.230 | 272 mil | 555 bi |
+  | 2 | 15% | 10 min | 10 min | 1 | — | 2.460 | 544 mil | 1,11 tri |
+  | 3 | 30% | 20 min | 20 min | 1 | 1 | 4.920 | 1,09 mi | 2,22 tri |
+  | 4 | 50% | 30 min | 30 min | 2 | 1 | 7.380 | 1,63 mi | 3,33 tri |
+  | 5 | 75% | 45 min | 45 min | 2 | 2 | 11.070 | 2,45 mi | 5 tri |
+  | 6 | 95% | 60 min | 60 min | 3 | 3 | 14.760 | 3,26 mi | 6,66 tri |
+
+  (Moedas por nível nas três últimas colunas; Conchas da Faixa 6: 18 no Nv.10, 50 no Nv.100, 472 no Nv.1000.) Os 10
+  minutos valem ~1 hora de renda normal, dentro do alvo de 30 a 60 minutos. Provisório: o proprietário ajusta jogando.
+- **Pagamento.** Às 19:10, ou na próxima vez que o jogo abrir; **uma vez só** por dia. Quem não abriu o jogo no horário
+  não ganha nada.
+- **Ranking do dia** por dano. **Top 1 a 10 ganham Dólares**: 50, 40, 30, 25, 20, 15, 10, 10, 5 e 5. No jogo local só o
+  jogador está no ranking (regra A-100), então os Dólares ficam **desligados** (`online_rewards_enabled`) até existir
+  servidor com jogadores reais; as recompensas por faixa pagam normalmente.
+- **HUD.** Botão "Boss Mundial" na barra de cima, à esquerda do Passe, com uma pílula embaixo contando até as 19:00;
+  durante o evento o botão brilha e a pílula fica dourada com o tempo que falta.
+- **Janela "Boss Mundial"** (Placa do Píer com o "i" explicando tudo; contador "Começa em 2:14:33" ou "Termina em 7:12"):
+  em cima, o Cardume à esquerda (dois grupos de três, a fila da frente avançando a cada ataque) e o Boss à direita com o
+  nome e "Vida infinita", com os números de dano subindo como na Arena; embaixo, "Dano de hoje" em letras grandes, "N de
+  200 ataques", a barra com a marca de cada faixa, "Próxima: Faixa 3 com 12.345 de dano", os 6 cartões de faixa com a
+  recompensa (o alcançado em dourado com o visto) e "Sua recompensa (paga quando o evento acabar)". À direita, "Ranking de
+  hoje" (local: só você) com a nota "Ranking com outros jogadores quando o jogo estiver online" e a tabela "Dólares do top
+  10" ("Pagos quando o jogo estiver online."). Fora do horário: "O Boss aparece em …", "Todo dia às 19:00 (horário de
+  Brasília), por 10 minutos" e o **último resultado** (data, dano, ataques, faixa, posição e o que pagou).
+- **Avisos.** "O Boss Mundial apareceu: Leviatã do Abismo! Seu Cardume já está atacando." (com o aviso do Cardume vazio
+  ou em Expedição, se for o caso); "Boss Mundial: você chegou à Faixa 3!"; e no pagamento "Boss Mundial: +14.760 Moedas,
+  +18 Conchas, +3 Fragmentos de Roupa, +3 frag. · Rastro Azul" (com a comemoração se o barco for montado).
+- **Quem já joga** (save versão 19): começa sem participação; o primeiro evento é o das 19:00 seguintes.

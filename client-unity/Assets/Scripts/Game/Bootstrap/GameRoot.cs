@@ -14,6 +14,7 @@ using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Market;
 using FishingIdle.GameService.Pass;
+using FishingIdle.GameService.WorldBoss;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
 using FishingIdle.GameService.Ranking;
@@ -185,6 +186,7 @@ namespace FishingIdle.Game.Bootstrap
                     }
 
                     RefreshTutorial();
+                    SyncWorldBoss();
 
                     var marketNews = Game.Market.Update();
                     foreach (var news in marketNews)
@@ -1031,6 +1033,56 @@ namespace FishingIdle.Game.Bootstrap
                 Celebrations.Show(GameTexts.Gear.ClothingAssembledTitle, name, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
                 Refresh();
             });
+        }
+
+        // ------------------------------------------------------------------ Boss Mundial (M24-T29, A-165)
+
+        /// <summary>The Boss Mundial as the service last returned it (refreshed with the sync). Presentation only.</summary>
+        public WorldBossView WorldBoss { get; private set; }
+
+        /// <summary>Lets the service credit the Cardume's attacks while the game is open, and shows its notices.</summary>
+        private void SyncWorldBoss()
+        {
+            var update = Game.WorldBoss.Update();
+            WorldBoss = Game.WorldBoss.GetWorldBoss();
+            if (update.Started)
+            {
+                Toasts.Push(GameTexts.WorldBoss.StartedToast(WorldBoss.BossName), ToastKind.Important, notify: true);
+                if (WorldBoss.AttackBlocker == ServiceError.CardumeEmpty)
+                {
+                    Toasts.Push(GameTexts.WorldBoss.CardumeEmpty, ToastKind.Warning);
+                }
+                else if (WorldBoss.AttackBlocker == ServiceError.CardumeLocked)
+                {
+                    Toasts.Push(GameTexts.WorldBoss.CardumeLocked, ToastKind.Warning);
+                }
+            }
+
+            if (update.BandReached > 0)
+            {
+                Toasts.Push(GameTexts.WorldBoss.BandToast(update.BandReached), ToastKind.LevelUp);
+            }
+
+            var paid = update.Paid;
+            if (paid == null)
+            {
+                return;
+            }
+
+            var items = new System.Collections.Generic.List<string>();
+            if (paid.Coins > 0) items.Add(GameTexts.WorldBoss.ItemCoins(Format.Short(paid.Coins)));
+            if (paid.Shells > 0) items.Add(GameTexts.WorldBoss.ItemShells(Format.Number(paid.Shells)));
+            if (paid.ClothingFragments > 0) items.Add(GameTexts.WorldBoss.ItemClothing(Format.Number(paid.ClothingFragments)));
+            if (paid.BoatFragments > 0) items.Add(GameTexts.WorldBoss.ItemBoat(Format.Number(paid.BoatFragments), paid.BoatName));
+            if (paid.Dollars > 0) items.Add(GameTexts.WorldBoss.ItemDollars(Format.Number(paid.Dollars)));
+            Toasts.Push(GameTexts.WorldBoss.PaidToast(items.Count > 0 ? string.Join(", ", items) : GameTexts.WorldBoss.LastResultNothing), ToastKind.Coins, notify: true);
+            if (paid.BoatAssembled)
+            {
+                Toasts.Push(GameTexts.Gear.BoatAssembledToast(paid.BoatName), ToastKind.Important, notify: true);
+                Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, paid.BoatName, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+            }
+
+            Refresh();
         }
 
         // ------------------------------------------------------------------ Passe do Pescador (M24-T17)

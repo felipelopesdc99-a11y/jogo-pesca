@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 18;
+        public const int CurrentVersion = 19;
 
         public int SaveVersion { get; set; } = CurrentVersion;
         public string PlayerId { get; set; }
@@ -179,6 +179,9 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>The Passe do Pescador: premium bought and milestones claimed (M24-T17). Added in save version 16.</summary>
         public PassState Pass { get; set; } = new PassState();
 
+        /// <summary>The Boss Mundial of the last day the player took part (M24-T29, A-165). Added in save version 19.</summary>
+        public WorldBossState WorldBoss { get; set; } = new WorldBossState();
+
         /// <summary>The equipped rod item, or null if the reference is broken.</summary>
         public InventoryItem EquippedRodItem()
         {
@@ -276,6 +279,38 @@ namespace FishingIdle.GameService.Persistence
         /// version 16 migration; 0 for a new player.
         /// </summary>
         public int LegacyDollarsUpToLevel { get; set; }
+    }
+
+    /// <summary>
+    /// The Boss Mundial (M24-T29, A-165): the last event day the player took part in, its damage and what it paid. One
+    /// record only: a new day's event replaces it after the old one is paid.
+    /// </summary>
+    public sealed class WorldBossState
+    {
+        /// <summary>The event day: days since 01/01/1970 in the event's time zone (Brasília). 0 = never took part.</summary>
+        public long Day { get; set; }
+
+        public long Damage { get; set; }
+        public int Attacks { get; set; }
+
+        /// <summary>The last attack slot of the window already processed (attack k happens k intervals after the start).</summary>
+        public long LastAttackIndex { get; set; }
+
+        /// <summary>The day's maximum damage: the strongest Cardume of the day over the whole window. Never goes down.</summary>
+        public double ReferenceDamage { get; set; }
+
+        /// <summary>The highest reward band reached (0 = none).</summary>
+        public int Band { get; set; }
+
+        /// <summary>The day's rewards were settled (paid, or nothing to pay). Never paid twice.</summary>
+        public bool Paid { get; set; }
+        public int Rank { get; set; }
+        public long PaidCoins { get; set; }
+        public long PaidShells { get; set; }
+        public long PaidClothingFragments { get; set; }
+        public long PaidBoatFragments { get; set; }
+        public string PaidBoatId { get; set; }
+        public long PaidDollars { get; set; }
     }
 
     /// <summary>

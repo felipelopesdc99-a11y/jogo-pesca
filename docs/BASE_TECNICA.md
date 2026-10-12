@@ -111,6 +111,7 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IClothingService` | `LocalClothingService` | Roupas (M24-T33, A-164, TD-048): as 5 peças com nível, XP de uso e bônus; `Assemble` monta a peça escolhida com os Fragmentos de Roupa |
 | `IGearService` | `LocalGearService` | Barcos e iscas: iscas compradas, usar, guardar; barcos só usar e melhorar o nível (`UpgradeBoat`, M24-T13) — desde o M24-T16 eles vêm de fragmentos (`BoatFragmentRules`, TD-042) e a oferta mostra mapa, fragmentos e chance; equipamento em uso e chance de puxar por raridade |
 | `IPassService` | `LocalPassService` | Passe do Pescador (M24-T17, A-158, TD-042): marcos de `pass.json`, resgatar um ou todos, comprar o Premium com Dólares (libera os marcos já passados); `IsMilestone` para o aviso de nível |
+| `IWorldBossService` | `LocalWorldBossService` | Boss Mundial (M24-T29, A-165, TD-049): `Update` (chamado pelo jogo aberto a cada sincronização) abre o dia, credita os ataques devidos do Cardume, sobe de faixa e paga uma vez quando a janela fecha; `GetWorldBoss` monta a tela. Regras puras em `WorldBossRules` (dia e janela no fuso do config, dano com `BattleEngine.HitDamage`, faixas, renda de referência, barco do mapa mais alto, Dólares por posição) |
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
 | `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
 | `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
@@ -257,7 +258,9 @@ o Passe do Pescador (`PassState`: id do passe, Premium, marcos resgatados gráti
 o nível até onde os Dólares do A-111 já foram pagos: mín(nível, 100) na migração); v17 marca o modelo de iscas
 (`BaitModelVersion`, TD-046); v18 adiciona os fragmentos de vara (`RodFragments`, por id de vara) e as roupas
 (`ClothingState`: `Fragments` e `Pieces` com nível, XP de uso e quando foi montada); saves antigos entram com os dois
-vazios e as varas do Inventário continuam com o nível (TD-048).
+vazios e as varas do Inventário continuam com o nível (TD-048); v19 adiciona o Boss Mundial (`WorldBossState`: o dia
+do evento no fuso de Brasília, dano, ataques, último índice de ataque processado, dano máximo do dia, faixa, `Paid` e o
+que foi pago; um registro só, trocado no evento do dia seguinte depois de pago; saves antigos entram com ele vazio).
 Cada passo está em `SaveMigrations.Upgrade`.
 - Troca de curva de nível de varas e peixes (TD-041): ao carregar, depois da curva do Pescador, o `GameSession` chama
   `LevelCurveMigration.MoveToCurrentCurves`. Um save na curva 1 tem cada vara (Inventário e Mercado) levada ao nível
@@ -479,6 +482,12 @@ Cada passo está em `SaveMigrations.Upgrade`.
   mapa …" com a barra na ficha (sem Comprar) nas abas Varas e Barcos, e a aba Roupas (`DrawClothingCard`: nível, barra de
   uso, bônus agora e no Nv.100, "Montar (N fragmentos de roupa)" por `GameRoot.AssembleClothing`); o `WelcomeBackDialog`
   soma os fragmentos e os níveis da pesca offline; a `PassWindow` mostra as linhas de vara e de roupa.
+- **Boss Mundial na tela** (M24-T29, A-165): `GameRoot.SyncWorldBoss` chama `Game.WorldBoss.Update()` na sincronização de
+  0,25 s (é isso que faz o Cardume atacar com o jogo aberto, mesmo com a janela fechada), guarda `GameRoot.WorldBoss` e
+  avisa o começo, a faixa nova e o pagamento. O `Hud` desenha o botão à esquerda do Passe (`TopRightExtent` passou a 268)
+  com a pílula da contagem regressiva (dourada com o tempo restante durante o evento). A janela `UI/WorldBossWindow` só
+  lê `GameRoot.WorldBoss`: Cardume à esquerda (com `ArenaWindow.DrawFish`, agora `internal`), Boss à direita, números
+  de dano quando a contagem de ataques sobe, faixas, ranking e Dólares do top 10; fora do horário, o último resultado.
 
 ## 7. Painel de Desenvolvimento (Editor)
 

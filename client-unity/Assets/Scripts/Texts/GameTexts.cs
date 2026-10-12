@@ -867,6 +867,72 @@ namespace FishingIdle.Texts
             public static string ItemDollars(string amount) => "+" + amount + " Dólares";
         }
 
+        // ------------------------------------------------------------------ Boss Mundial (M24-T29, A-165)
+
+        public static class WorldBoss
+        {
+            public const string Title = "Boss Mundial";
+            public const string ButtonTip = "Boss Mundial";
+            public const string NowOpen = "AGORA";
+            public static string Info(string time, int minutes, string interval) =>
+                "Todo dia às " + time + " (horário de Brasília) o Boss Mundial aparece por " + minutes + " minutos. Ele tem vida infinita: " +
+                "o objetivo é causar o maior dano possível. Com o jogo aberto, seu Cardume ataca sozinho a cada " + interval + " segundos, " +
+                "com a mesma força da Arena; com o jogo fechado ele não ataca. O dano do dia leva você às faixas de recompensa " +
+                "(Moedas, Conchas, Fragmentos de Roupa e fragmentos de barco); ficar os " + minutes + " minutos inteiros leva à última. " +
+                "Você recebe a recompensa da maior faixa alcançada quando o evento acaba, ou na próxima vez que abrir o jogo. " +
+                "Os 10 maiores danos do dia também ganham Dólares, quando o jogo estiver online. Cardume vazio ou em Expedição não ataca.";
+            public static string Counter(string countdown) => "Começa em " + countdown;
+            public static string CounterOpen(string countdown) => "Termina em " + countdown;
+            public static string StartsIn(string countdown) => "O Boss aparece em " + countdown;
+            public static string Daily(string time, int minutes) => "Todo dia às " + time + " (horário de Brasília), por " + minutes + " minutos";
+            public static string TimeLeft(string countdown) => "Tempo restante: " + countdown;
+            public const string InfiniteHp = "Vida infinita";
+            public const string YourCardume = "Seu Cardume";
+            public const string DamageToday = "Dano de hoje";
+            public static string Attacks(string count, string max) => count + " de " + max + " ataques";
+            public const string Bands = "Faixas de recompensa";
+            public static string Band(int number) => "Faixa " + number;
+            public static string BandPercent(string percent) => percent + " do dano máximo";
+            public static string BandThreshold(string damage) => damage + " de dano";
+            public static string NextBand(int number, string damage) => "Próxima: Faixa " + number + " com " + damage + " de dano";
+            public static string NextBandPercent(int number, string percent) => "Próxima: Faixa " + number + " (" + percent + " do dano máximo)";
+            public const string AllBands = "Todas as faixas alcançadas!";
+            public static string YourBand(int number) => "Sua faixa: " + number;
+            public const string NoBand = "Nenhuma faixa ainda";
+            public const string YourReward = "Sua recompensa (paga quando o evento acabar)";
+            public const string NoReward = "Cause dano para chegar à Faixa 1.";
+            public const string RankingToday = "Ranking de hoje";
+            public const string RankingEmpty = "Ninguém atacou ainda hoje.";
+            public const string RankingLocalNote = "Ranking com outros jogadores quando o jogo estiver online.";
+            public const string DollarsTitle = "Dólares do top 10";
+            public static string DollarsRank(int rank) => rank + "º";
+            public static string DollarsAmount(string amount) => amount + " Dólares";
+            public const string DollarsOffline = "Pagos quando o jogo estiver online.";
+            public const string You = "(você)";
+            public const string CardumeEmpty = "Seu Cardume está vazio: coloque peixes no Cardume (Aquário) para atacar o Boss.";
+            public const string CardumeLocked = "Seu Cardume está em uma Expedição e não pode atacar o Boss agora.";
+            public const string Waiting = "O Boss ainda não apareceu.";
+            public const string ClosedHint = "Deixe o jogo aberto no horário: o Cardume ataca sozinho.";
+            public static string LastResultTitle(string date) => "Último evento (" + date + ")";
+            public static string LastResultDamage(string damage, string attacks) => damage + " de dano em " + attacks + " ataques";
+            public static string LastResultBand(int band) => band > 0 ? "Faixa " + band : "Nenhuma faixa";
+            public static string LastResultRank(int rank) => rank + "º no ranking do dia";
+            public const string LastResultNone = "Você ainda não participou de um Boss Mundial.";
+            public const string LastResultNothing = "Nenhuma recompensa.";
+            public static string ItemCoins(string amount) => "+" + amount + " Moedas";
+            public static string ItemShells(string amount) => "+" + amount + " Conchas";
+            public static string ItemClothing(string amount) => "+" + amount + " Fragmentos de Roupa";
+            public static string ItemBoat(string amount, string boat) => "+" + amount + " frag. · " + boat;
+            public static string ItemDollars(string amount) => "+" + amount + " Dólares";
+            public static string DamagePop(string amount) => "-" + amount;
+
+            // Notices
+            public static string StartedToast(string boss) => "O Boss Mundial apareceu: " + boss + "! Seu Cardume já está atacando.";
+            public static string BandToast(int band) => "Boss Mundial: você chegou à Faixa " + band + "!";
+            public static string PaidToast(string items) => "Boss Mundial: " + items;
+            public static string BoatAssembled(string boat) => "Barco montado: " + boat + "!";
+        }
+
         // ------------------------------------------------------------------ gear: boats, baits, Catch Success (docs/SISTEMA_SUCESSO_PESCA.md)
 
         public static class Gear
@@ -1368,6 +1434,11 @@ namespace FishingIdle.Texts
             public static string ClothingInvalid(string what) => "equipment.json: \"clothing." + what + "\" está inválido.";
             public static string ClothingAxisUnknown(string piece, string axis) => "equipment.json: a roupa \"" + piece + "\" tem bonus_axis \"" + (axis ?? "") + "\". Use catch_success, rarity_efficiency, size_quality, shell_yield ou fisher_xp.";
             public static string PassRodUnknown(int level, string rod) => "pass.json: o marco do Nv." + level + " dá fragmentos da vara \"" + (rod ?? "") + "\", que não existe em rods.json (ou é a Vara Inicial).";
+            public const string WorldBossSchedule = "world_boss.json: \"schedule\" precisa de utc_offset_minutes entre −720 e 840, start_minute_of_day de 0 a 1439 e duration_minutes de 1 a 240, e o evento precisa terminar no mesmo dia (start_minute_of_day + duration_minutes até 1440).";
+            public const string WorldBossAttack = "world_boss.json: \"attack\" precisa de interval_seconds de 1 a 60 (e não maior que a duração do evento), max_catch_up_attacks de 1 a 100 e boss_defense de 0 ou mais.";
+            public const string WorldBossBands = "world_boss.json: \"bands\" precisa ter de 1 a 20 faixas, com damage_percent maior que 0 e até 100, em ordem crescente, e nenhum valor negativo.";
+            public const string WorldBossRanking = "world_boss.json: \"ranking.dollars_by_rank\" precisa existir, com no máximo 100 valores e nenhum negativo.";
+            public const string WorldBossIncome = "world_boss.json: \"reference_income\" precisa começar no level 1, com os levels em ordem crescente e nenhum valor negativo.";
             public static string PassBoatUnknown(int level, string boat) => "pass.json: o marco do Nv." + level + " dá fragmentos do barco \"" + (boat ?? "") + "\", que não existe em equipment.json (ou é o barco inicial).";
             public static string UnknownSizeInRarity(string rarity, string size) => "progression.json: a raridade \"" + rarity + "\" cita o tamanho \"" + (size ?? "") + "\" em size_weight_multipliers, que não existe em size.categories.";
             public static string UnknownRarity(string species, string rarity) => "fish_catalog.json: a espécie \"" + species + "\" usa a raridade \"" + (rarity ?? "") + "\", que não existe em progression.json.";

@@ -440,6 +440,13 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 18;
             }
 
+            if (save.SaveVersion == 18)
+            {
+                // v19: the Boss Mundial (M24-T29, A-165). Nobody has taken part yet.
+                save.WorldBoss = new WorldBossState();
+                save.SaveVersion = 19;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BoatLevels = save.BoatLevels ?? new Dictionary<string, int>();
             save.BoatFragments = save.BoatFragments ?? new Dictionary<string, long>();
@@ -447,6 +454,7 @@ namespace FishingIdle.GameService.Persistence
             save.Clothing = save.Clothing ?? new ClothingState();
             save.Clothing.Pieces = save.Clothing.Pieces ?? new Dictionary<string, ClothingPieceState>();
             save.Pass = save.Pass ?? new PassState();
+            save.WorldBoss = save.WorldBoss ?? new WorldBossState();
             save.Pass.FreeClaimed = save.Pass.FreeClaimed ?? new List<int>();
             save.Pass.PremiumClaimed = save.Pass.PremiumClaimed ?? new List<int>();
             save.BaitCharges = save.BaitCharges ?? new Dictionary<string, int>();
@@ -597,6 +605,10 @@ namespace FishingIdle.GameService.Persistence
                 && save.Clothing.Pieces.Any(p => string.IsNullOrWhiteSpace(p.Key) || p.Value == null || p.Value.Level < 1 || p.Value.Xp < 0)))) problems.Add("clothing malformed");
             if (save.Pass == null || save.Pass.FreeClaimed == null || save.Pass.PremiumClaimed == null) problems.Add("pass missing");
             else if (save.Pass.LegacyDollarsUpToLevel < 0 || save.Pass.PremiumBoughtAtMs < 0) problems.Add("pass negative values");
+            if (save.WorldBoss != null && (save.WorldBoss.Day < 0 || save.WorldBoss.Damage < 0 || save.WorldBoss.Attacks < 0 || save.WorldBoss.Band < 0
+                || save.WorldBoss.Rank < 0 || double.IsNaN(save.WorldBoss.ReferenceDamage) || save.WorldBoss.ReferenceDamage < 0
+                || save.WorldBoss.PaidCoins < 0 || save.WorldBoss.PaidShells < 0 || save.WorldBoss.PaidDollars < 0
+                || save.WorldBoss.PaidClothingFragments < 0 || save.WorldBoss.PaidBoatFragments < 0)) problems.Add("world boss malformed");
             if (save.Upgrades == null || save.Upgrades.Levels == null) problems.Add("upgrades missing");
             else if (save.Upgrades.Levels.Any(u => string.IsNullOrWhiteSpace(u.Key) || u.Value < 0)) problems.Add("upgrades have malformed levels");
 

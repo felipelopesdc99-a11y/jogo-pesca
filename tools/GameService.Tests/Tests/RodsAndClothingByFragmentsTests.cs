@@ -289,7 +289,7 @@ public sealed class RodsAndClothingByFragmentsTests
         var reopened = TestSupport.NewGame(Real, dir, clock).Game;
         var save = reopened.Session.Save;
         Assert.Equal(PlayerSave.CurrentVersion, save.SaveVersion);
-        Assert.Equal(18, PlayerSave.CurrentVersion);
+        Assert.True(PlayerSave.CurrentVersion >= 18);
         var rod = reopened.Profile.GetProfile().EquippedRod;
         Assert.Equal("rod_02", rod.RodId);
         Assert.Equal(37, rod.Level);

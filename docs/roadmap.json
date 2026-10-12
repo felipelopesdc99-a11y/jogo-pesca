@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-12T17:30:00Z",
+  "updated_at": "2026-10-12T20:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -611,7 +611,8 @@
       "title": "Roupas aceleram o Pescador (Nv.1000 em ~55 dias)",
       "detail": "Com as 5 roupas, o jogador de referência (jogo aberto, Tripulação e Melhorias, sem Passe e sem VIP) chega ao Nv.1000 em ~55 dias, não ~60 (A-162); quase tudo vem da Calça (+10% de XP no Nv.100; com +30% eram ~49 dias). Opções: (a) fica assim; (b) recalibrar a curva do Pescador para ~60 dias de novo com as roupas (curva versão 4, sem baixar nível de ninguém); (c) diminuir a Calça (por exemplo +5% no Nv.100: ~57 dias).",
       "raised_at": "2026-10-12T17:30:00Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolution": "Decisão do proprietário em 12/10/2026: \"sem problema na questão da calça, isso é pensado\" (opção a, fica assim). Nada muda na curva do Pescador (M24-T35)."
     },
     {
       "id": "OD-068",
@@ -619,6 +620,14 @@
       "title": "Nível das roupas: por peixe ou por tempo",
       "detail": "Hoje cada peixe puxado (online ou offline) dá 1 ponto de uso a cada peça montada; do Nv.1 ao Nv.100 são ~437 mil peixes (a 1ª peça chega ao Nv.100 por volta do dia 55-60 com o jogo aberto; abrindo 4 vezes por dia, Nv.93 no dia 60). Opções: (a) fica por peixe (escolhido: mais simples, segue o ritmo da pesca e não conta o tempo com a Caixa cheia); (b) por tempo pescando (online e offline).",
       "raised_at": "2026-10-12T17:30:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-068",
+      "task_id": "M24-T37",
+      "title": "Nome do Boss Mundial",
+      "detail": "O Boss Mundial está com o nome sugerido \"Leviatã do Abismo\" (world_boss.json → display_name; a arte pedida em docs/ASSETS_PENDENTES.md segue esse nome). Opções: (a) fica \"Leviatã do Abismo\"; (b) outro nome que você escolher; (c) um Boss diferente por dia da semana (seria um sistema novo, só com sua aprovação).",
+      "raised_at": "2026-10-12T20:00:00Z",
       "status": "OPEN"
     }
   ],
@@ -4682,6 +4691,18 @@
           "updated_at": "2026-10-12T12:00:00Z"
         },
         {
+          "id": "M24-T29",
+          "title": "Boss mundial",
+          "subsystem": "config",
+          "description": "Pedido do proprietário (12/10/2026): \"quero criar um Boss mundial para todos conseguirem atacar, todo dia às 19:00, ele tem vida infinita, a ideia é todos conseguirem atacar com seu cardume e conseguir recompensas de acordo com o dano que aquele cardume infligiu, top 1 ao 10 ganham recompensas em dólares também\". Respostas: 10 minutos (19:00–19:10, Brasília), ataque automático contínuo só com o jogo aberto, Dólares 50/40/30/25/20/15/10/10/5/5 só com servidor (flag em config), recompensas por dano pagam no local.",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T33"
+          ],
+          "updated_at": "2026-10-12T20:00:00Z",
+          "completion_notes": "config/world_boss.json (novo): nome sugerido \"Leviatã do Abismo\" (OD-068), 19:00 de Brasília (UTC−3 fixo) por 10 min, ataque a cada 3 s (200 por dia), até 3 ataques atrasados após um travamento, defesa do Boss 0; 6 faixas por % do dano máximo do dia (5/15/30/50/75/95%) com 5/10/20/30/45/60 min de renda em Moedas e Conchas, 0/1/1/2/2/3 Fragmentos de Roupa e 0/0/1/1/2/3 fragmentos do barco do mapa mais alto liberado; Dólares do top 10 atrás de ranking.online_rewards_enabled (false); renda de referência por nível gerada do pass.json por tools/Progressao/boss_mundial.py (6× as Moedas e 2× as Conchas do marco). Regras: WorldBoss/WorldBossRules (dia e janela no fuso do config, dano com BattleEngine.HitDamage/RollDamage extraídos de Resolve, faixas, barco, Dólares) e LocalWorldBossService (IWorldBossService: Update credita os ataques por índice com Rng.For(seed, dia, k), só com o jogo aberto — a 1ª chamada de cada execução só ancora —, sobe de faixa e paga uma vez às 19:10 ou na próxima abertura; GetWorldBoss). Cardume vazio ou em Expedição não ataca. Save versão 19 (WorldBossState). Validação do world_boss.json. Tela: botão no HUD à esquerda do Passe com contagem regressiva e brilho durante o evento (ASSET_PENDENTE ico_boss), janela UI/WorldBossWindow (Cardume x Boss com números de dano, dano de hoje, barra com as faixas, 6 cartões, sua recompensa, Ranking de hoje com a nota do online, Dólares do top 10; fora do horário, contagem e último resultado; arte do Boss ASSET_PENDENTE), avisos de começo, faixa e pagamento em GameRoot.SyncWorldBoss. Testes WorldBossTests (13). Docs: A-165, TD-049, BASE_TECNICA, SEGURANCA, config/README, ASSETS_PENDENTES. Verificado no CI, não aberto no Unity."
+        },
+        {
           "id": "M24-T30",
           "title": "Iscas: 3 modelos (+5/+10/+15%) com 999 tentativas",
           "subsystem": "config",
@@ -4746,11 +4767,12 @@
           "title": "Roupas e a curva do Pescador",
           "subsystem": "config",
           "description": "Com as roupas (sobretudo a Calça, +10% de XP de cada peixe no Nv.100), o Nv.1000 com o jogo aberto vem em ~55 dias em vez dos ~60 decididos em 12/10/2026 (A-162). Decidir o que fazer (OD-067).",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M24-T33"
           ],
-          "updated_at": "2026-10-12T17:30:00Z"
+          "updated_at": "2026-10-12T20:00:00Z",
+          "completion_notes": "Decisão do proprietário em 12/10/2026 (OD-067): \"sem problema na questão da calça, isso é pensado\" (opção a, fica assim). A curva do Pescador não muda: com as roupas o Nv.1000 continua em ~55 dias com o jogo aberto, a Tripulação e as Melhorias (A-164)."
         },
         {
           "id": "M24-T36",
@@ -4762,6 +4784,17 @@
             "M24-T33"
           ],
           "updated_at": "2026-10-12T17:30:00Z"
+        },
+        {
+          "id": "M24-T37",
+          "title": "Nome do Boss Mundial",
+          "subsystem": "config",
+          "description": "O Boss Mundial (M24-T29, A-165) usa o nome sugerido \"Leviatã do Abismo\" (world_boss.json → display_name). O nome e a arte são decisão do proprietário (OD-068).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T29"
+          ],
+          "updated_at": "2026-10-12T20:00:00Z"
         }
       ]
     }
