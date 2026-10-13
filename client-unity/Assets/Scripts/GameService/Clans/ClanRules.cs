@@ -42,6 +42,18 @@ namespace FishingIdle.GameService.Clans
         /// <summary>The Fisher level reaches the clans' minimum (Nv.100).</summary>
         public static bool LevelAllows(GameConfig config, PlayerSave save) => save.FisherLevel >= config.Clans.Membership.MinFisherLevel;
 
+        /// <summary>
+        /// Dólares to create a clan now: each player's first clan costs costs.first_create_dollars (free), every later one
+        /// costs.create_dollars, even after deleting the first (owner, 13/10/2026). Saves from before the counter existed
+        /// count the clans already numbered.
+        /// </summary>
+        public static long CreatePrice(GameConfig config, PlayerSave save)
+        {
+            var state = save.Clans;
+            var created = state == null ? 0 : Math.Max(state.ClansCreated, state.NextClanNumber - 1);
+            return created > 0 ? config.Clans.Costs.CreateDollars : config.Clans.Costs.FirstCreateDollars;
+        }
+
         /// <summary>Places of a clan: the base plus the ones bought, never above max_members.</summary>
         public static int Capacity(GameConfig config, ClanRecord clan)
         {

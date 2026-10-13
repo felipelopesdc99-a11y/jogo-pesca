@@ -3222,6 +3222,8 @@ fragmentos** (eram 15 / 25 / 35 / 45 / 60). Barcos e roupas não mudaram.
   (a vara soma na Chance de Sucesso da Captura). As 5 roupas continuam sendo o mais demorado.
 
 ### A-174 · Clãs
+
+*Atualizado em 13/10/2026 (decisão do proprietário): o **primeiro clã de cada jogador é grátis**. Se ele apagar o clã (saindo dele vazio) e quiser criar outro, aí paga os 50 Dólares. É por jogador: todo jogador tem o seu primeiro clã grátis. O botão mostra "Criar clã · Grátis" e, embaixo, "O primeiro clã de cada jogador é grátis; os próximos custam Dólares."*
 **Seção do GDD:** novo (pedido do proprietário) · decisão do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
 Pedido do proprietário em 13/10/2026 (M24-T49): "Vamos adicionar os clans, jogadores podem entrar ou criar um clan,

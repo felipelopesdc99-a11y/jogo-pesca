@@ -199,3 +199,6 @@ valor. O que vale dizer com clareza:
 Este é um projeto privado durante a V0.1. Se um problema de segurança for encontrado, registre-o
 como uma tarefa `BLOCKED` em `docs/roadmap.json`, com o subsistema afetado, para que ele apareça na
 lista de atenção da Visão geral em vez de ficar perdido numa conversa.
+
+
+- **Clãs, primeiro clã grátis (13/10/2026):** o contador de clãs criados (`ClansCreated`) é por jogador e só sobe. No servidor ele fica no registro do jogador, nunca no cliente; senão bastaria apagar o save para criar clãs de graça.

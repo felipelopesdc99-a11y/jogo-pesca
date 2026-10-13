@@ -895,6 +895,8 @@ namespace FishingIdle.Texts
             public const string NameLabel = "Nome do clã";
             public static string NameRule(int min, int max) => "De " + min + " a " + max + " caracteres: letras, números, espaço, ponto, hífen ou sublinhado. Não pode repetir o nome de outro clã.";
             public static string CreateButton(string cost) => "Criar clã · " + cost + " Dólares";
+            public const string CreateButtonFree = "Criar clã · Grátis";
+            public const string CreateFreeNote = "O primeiro clã de cada jogador é grátis; os próximos custam Dólares.";
             public static string YourDollars(string amount) => "Você tem " + amount + " Dólares";
             public const string JoinTitle = "Entrar num clã";
             public const string JoinOnline = "A lista de clãs para entrar aparece quando o jogo estiver online. Por enquanto, crie o seu.";

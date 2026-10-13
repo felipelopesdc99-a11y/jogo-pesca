@@ -321,6 +321,12 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>The clans this game knows. Local: only the player's own (0 or 1).</summary>
         public List<ClanRecord> KnownClans { get; set; } = new List<ClanRecord>();
 
+        /// <summary>
+        /// How many clans this player has created (deleted ones included). The first is free, the next ones cost
+        /// costs.create_dollars (owner, 13/10/2026). Per player; never goes down.
+        /// </summary>
+        public long ClansCreated { get; set; }
+
         /// <summary>Numbers the local clan ids ("clan_1" …); never reused.</summary>
         public long NextClanNumber { get; set; } = 1;
 

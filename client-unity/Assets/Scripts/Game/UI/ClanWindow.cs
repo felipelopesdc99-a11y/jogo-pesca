@@ -166,7 +166,7 @@ namespace FishingIdle.Game.UI
             var button = new Rect(x, y, Mathf.Min(w, 380f), 46f);
             var enabled = GUI.enabled;
             GUI.enabled = enabled && canCreate;
-            if (skin.IconButton(button, Icons.Dollar, GameTexts.Clan.CreateButton(Format.Number(view.CreateCostDollars)), canCreate ? skin.ButtonPrimary : skin.Button))
+            if (skin.IconButton(button, Icons.Dollar, view.CreateCostDollars == 0 ? GameTexts.Clan.CreateButtonFree : GameTexts.Clan.CreateButton(Format.Number(view.CreateCostDollars)), canCreate ? skin.ButtonPrimary : skin.Button))
             {
                 if (_root.CreateClan(_nameDraft))
                 {
@@ -176,7 +176,8 @@ namespace FishingIdle.Game.UI
 
             GUI.enabled = enabled;
             var style = canCreate ? skin.SmallGold : skin.SmallMuted;
-            GUI.Label(new Rect(x, button.yMax + 8f, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Clan.YourDollars(Format.Number(view.Dollars)), style, w), style);
+            var below = view.CreateCostDollars == 0 ? GameTexts.Clan.CreateFreeNote : GameTexts.Clan.YourDollars(Format.Number(view.Dollars));
+            GUI.Label(new Rect(x, button.yMax + 8f, w, UiSkin.SmallLine), FishCard.Fit(below, style, w), style);
             y = button.yMax + 44f;
 
             // Join a clan: the list comes from the server (TD-055).

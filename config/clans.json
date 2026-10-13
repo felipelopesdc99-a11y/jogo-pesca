@@ -2,7 +2,7 @@
   "config_file": "clans.json",
   "config_schema_version": 1,
   "balance_status": "PROVISÓRIO",
-  "description": "Clãs (M24-T49, A-174, pedido do proprietário em 13/10/2026). Só Pescadores do Nv.100 para cima podem criar ou entrar num clã. Criar custa Dólares; o clã começa com 10 vagas e o dono compra vagas extras com Dólares, cada uma mais cara. Quem está num clã ganha +1% de XP de Pescador na pesca. Cada membro coloca 1 peixe do Aquário no Cardume do Clã (o peixe continua no Aquário e no Cardume pessoal); a Força do clã é a soma da Força desses peixes. Todo dia às 00:00 (horário de Brasília) os 3 clãs mais fortes ganham recompensas, só quando o jogo estiver online (ranking.online_rewards_enabled). Números provisórios, para o proprietário ajustar (OD-071).",
+  "description": "Clãs (M24-T49, A-174, pedido do proprietário em 13/10/2026). Só Pescadores do Nv.100 para cima podem criar ou entrar num clã. O primeiro clã de cada jogador é grátis; criar outro depois custa Dólares; o clã começa com 10 vagas e o dono compra vagas extras com Dólares, cada uma mais cara. Quem está num clã ganha +1% de XP de Pescador na pesca. Cada membro coloca 1 peixe do Aquário no Cardume do Clã (o peixe continua no Aquário e no Cardume pessoal); a Força do clã é a soma da Força desses peixes. Todo dia às 00:00 (horário de Brasília) os 3 clãs mais fortes ganham recompensas, só quando o jogo estiver online (ranking.online_rewards_enabled). Números provisórios, para o proprietário ajustar (OD-071).",
   "membership": {
     "min_fisher_level": 100,
     "base_members": 10,
@@ -10,10 +10,11 @@
     "note": "min_fisher_level: nível do Pescador para criar ou entrar num clã (pedido do proprietário: Nv.100 para cima). base_members: vagas de todo clã novo (10). max_members: limite de vagas contando as compradas (15 = 10 + até 5 compradas, decisão do proprietário em 13/10/2026); o jogo recusa comprar além dele."
   },
   "costs": {
+    "first_create_dollars": 0,
     "create_dollars": 50,
     "extra_slot_first_dollars": 20,
     "extra_slot_growth": 1.5,
-    "note": "create_dollars: Dólares para criar um clã. Vagas extras (só o dono compra): a 1ª custa extra_slot_first_dollars e cada uma seguinte custa extra_slot_growth vezes a anterior, arredondado (20, 30, 45, 68, 101: as 5 vagas que dá para comprar). Números provisórios (OD-071)."
+    "note": "first_create_dollars: Dólares do primeiro clã de cada jogador (0 = grátis, decisão do proprietário em 13/10/2026). create_dollars: Dólares de cada clã que o mesmo jogador criar depois do primeiro, mesmo que tenha apagado o anterior. Vagas extras (só o dono compra): a 1ª custa extra_slot_first_dollars e cada uma seguinte custa extra_slot_growth vezes a anterior, arredondado (20, 30, 45, 68, 101: as 5 vagas que dá para comprar). Números provisórios (OD-071)."
   },
   "name": {
     "min_length": 3,

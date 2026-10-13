@@ -1316,7 +1316,7 @@ namespace FishingIdle.GameService.Config
             }
 
             var c = clans.Costs;
-            if (c == null || c.CreateDollars < 0 || c.ExtraSlotFirstDollars < 1 || !(c.ExtraSlotGrowth >= 1) || c.ExtraSlotGrowth > 10)
+            if (c == null || c.FirstCreateDollars < 0 || c.CreateDollars < 0 || c.ExtraSlotFirstDollars < 1 || !(c.ExtraSlotGrowth >= 1) || c.ExtraSlotGrowth > 10)
             {
                 errors.Add(V.ClansCosts);
             }

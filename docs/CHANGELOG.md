@@ -3,6 +3,15 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.11] — 13/10/2026
+
+Primeiro clã grátis, decisão do proprietário. Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- O **primeiro clã de cada jogador é grátis**. Quem apagar o clã (saindo dele vazio) e criar outro paga 50 Dólares.
+  Saves que já criaram um clã contam como tendo usado o grátis.
+
 ## [0.2.0-m24.10] — 13/10/2026
 
 Vagas do clã, decisão do proprietário. Verificado no CI, não aberto no Unity.

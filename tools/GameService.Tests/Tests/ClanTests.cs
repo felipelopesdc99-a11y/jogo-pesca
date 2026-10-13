@@ -79,6 +79,7 @@ public sealed class ClanTests
         Assert.Equal(10, c.Membership.BaseMembers);
         // Owner (13/10/2026): up to 5 extra places, one per purchase, each dearer.
         Assert.Equal(15, c.Membership.MaxMembers);
+        Assert.Equal(0, c.Costs.FirstCreateDollars);
         Assert.True(c.Costs.CreateDollars > 0);
         Assert.True(c.Costs.ExtraSlotGrowth > 1);
         Assert.Equal(0.01, c.XpBonus, 9);
@@ -123,29 +124,56 @@ public sealed class ClanTests
     }
 
     [Fact]
-    public void Creating_costs_Dolares_and_without_enough_it_is_refused()
+    public void The_first_clan_of_each_player_is_free_and_the_next_ones_cost_Dolares()
     {
+        Assert.Equal(0, Clans.Costs.FirstCreateDollars);
         var cost = Clans.Costs.CreateDollars;
-        var (game, _, _) = Player(dollars: cost - 1);
-        var refused = game.Clans.Create("Os Pescadores");
-        Assert.False(refused.Succeeded);
-        Assert.Equal(ServiceError.NotEnoughDollars, refused.Error);
-        Assert.Equal("Dólares insuficientes.", refused.ErrorMessage);
-        Assert.Equal(cost - 1, game.Session.Save.Dollars);
-        Assert.Empty(game.Session.Save.Clans.KnownClans);
+        Assert.True(cost > 0);
 
-        game.Session.Save.Dollars = cost + 7;
-        var made = game.Clans.Create("  Os   Pescadores ");
-        Assert.True(made.Succeeded, made.ErrorMessage);
-        Assert.Equal(7, game.Session.Save.Dollars);
-        var clan = made.Value.Clan;
+        // Each player's first clan is free, even with no Dólares.
+        var (game, _, _) = Player(dollars: 0);
+        Assert.Equal(0, game.Clans.GetClan().CreateCostDollars);
+        var first = game.Clans.Create("  Os   Pescadores ");
+        Assert.True(first.Succeeded, first.ErrorMessage);
+        Assert.Equal(0, game.Session.Save.Dollars);
+        var clan = first.Value.Clan;
         Assert.Equal("Os Pescadores", clan.Name);
         Assert.True(clan.IsOwner);
         Assert.Equal(1, clan.MemberCount);
         Assert.Equal(10, clan.Capacity);
         Assert.True(clan.Members.Single().IsPlayer);
         Assert.Equal(ServiceError.AlreadyInClan, game.Clans.Create("Outro Nome").Error);
+        Assert.Equal(1, game.Session.Save.Clans.ClansCreated);
+
+        // Deleting it (leaving the empty clan) and creating again costs create_dollars.
+        Assert.True(game.Clans.Leave().Succeeded);
+        Assert.Equal(cost, game.Clans.GetClan().CreateCostDollars);
+        game.Session.Save.Dollars = cost - 1;
+        var refused = game.Clans.Create("Os Pescadores");
+        Assert.Equal(ServiceError.NotEnoughDollars, refused.Error);
+        Assert.Equal("Dólares insuficientes.", refused.ErrorMessage);
+        Assert.Equal(cost - 1, game.Session.Save.Dollars);
+        Assert.Empty(game.Session.Save.Clans.KnownClans);
+
+        game.Session.Save.Dollars = cost + 7;
+        Assert.True(game.Clans.Create("Os Pescadores").Succeeded);
         Assert.Equal(7, game.Session.Save.Dollars);
+        Assert.Equal(2, game.Session.Save.Clans.ClansCreated);
+
+        // Per player: another player still gets the first one free.
+        var (other, _, _) = Player(dollars: 0);
+        Assert.Equal(0, other.Clans.GetClan().CreateCostDollars);
+        Assert.True(other.Clans.Create("Outro Clã").Succeeded);
+    }
+
+    [Fact]
+    public void A_save_that_already_created_a_clan_before_the_counter_pays_for_the_next()
+    {
+        var (game, _, _) = Player(dollars: 0);
+        game.Session.Save.Clans.NextClanNumber = 2; // a v22 save that created (and deleted) one clan
+        game.Session.Save.Clans.ClansCreated = 0;
+        Assert.Equal(Clans.Costs.CreateDollars, game.Clans.GetClan().CreateCostDollars);
+        Assert.Equal(ServiceError.NotEnoughDollars, game.Clans.Create("Os Pescadores").Error);
     }
 
     [Fact]

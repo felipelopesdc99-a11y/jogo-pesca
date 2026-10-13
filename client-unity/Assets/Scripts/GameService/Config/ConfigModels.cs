@@ -1093,6 +1093,9 @@ namespace FishingIdle.GameService.Config
 
     public sealed class ClanCostsConfig
     {
+        /// <summary>Dólares for each player's first clan (0 = free, owner 13/10/2026).</summary>
+        public long FirstCreateDollars { get; set; }
+        /// <summary>Dólares for every clan the same player creates after the first.</summary>
         public long CreateDollars { get; set; }
         public long ExtraSlotFirstDollars { get; set; }
         public double ExtraSlotGrowth { get; set; }

@@ -245,7 +245,7 @@ namespace FishingIdle.GameService.Clans
                 FisherLevel = Save.FisherLevel,
                 LevelAllows = ClanRules.LevelAllows(Config, Save),
                 Dollars = Save.Dollars,
-                CreateCostDollars = Clans.Costs.CreateDollars,
+                CreateCostDollars = ClanRules.CreatePrice(Config, Save),
                 CreateBlocker = CreateBlocker(),
                 NameMinLength = Clans.Name.MinLength,
                 NameMaxLength = Clans.Name.MaxLength,
@@ -346,8 +346,9 @@ namespace FishingIdle.GameService.Clans
 
             var state = State;
             var now = _session.Clock.UtcNowMs;
-            var price = Clans.Costs.CreateDollars;
+            var price = ClanRules.CreatePrice(Config, Save);
             Save.Dollars -= price;
+            state.ClansCreated = Math.Max(state.ClansCreated, state.NextClanNumber - 1) + 1;
             var clan = new ClanRecord
             {
                 Id = "clan_" + state.NextClanNumber++,
@@ -532,7 +533,7 @@ namespace FishingIdle.GameService.Clans
         {
             if (ClanRules.MyClan(Save) != null) return ServiceError.AlreadyInClan;
             if (!ClanRules.LevelAllows(Config, Save)) return ServiceError.ClanLevelTooLow;
-            if (Save.Dollars < Clans.Costs.CreateDollars) return ServiceError.NotEnoughDollars;
+            if (Save.Dollars < ClanRules.CreatePrice(Config, Save)) return ServiceError.NotEnoughDollars;
             return ServiceError.None;
         }
 
