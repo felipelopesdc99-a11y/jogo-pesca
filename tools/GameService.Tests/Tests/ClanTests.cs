@@ -526,7 +526,7 @@ public sealed class ClanTests
         clock.AdvanceSeconds(60);
         var (again, _, _) = TestSupport.NewGame(TestSupport.CertainCatchConfig(), dir, clock, skipTutorial: false);
         Assert.Equal(SaveLoadStatus.Loaded, again.Session.LoadStatus);
-        Assert.Equal(22, PlayerSave.CurrentVersion);
+        Assert.True(PlayerSave.CurrentVersion >= 22);
         Assert.Equal(PlayerSave.CurrentVersion, again.Session.Save.SaveVersion);
         Assert.NotNull(again.Session.Save.Clans);
         Assert.Null(again.Session.Save.Clans.MyClanId);

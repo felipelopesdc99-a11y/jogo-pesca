@@ -332,7 +332,9 @@ public sealed class FishingServiceTests
 
         Assert.Equal(box.Count, preview.Count);
         Assert.Equal(box.Sum(c => c.SalePriceCoins), preview.TotalCoins);
-        Assert.All(preview.ProtectedCatches, c => Assert.Contains(c.SizeCategoryId, new[] { "exceptional", "perfect" }));
-        Assert.Equal(box.Count(c => c.SizeCategoryId == "exceptional" || c.SizeCategoryId == "perfect"), preview.ProtectedCatches.Count);
+        // Special sizes, and since M24-T52 (A-176) the 5-star genes, ask before a bulk sale.
+        static bool Valuable(FishingIdle.GameService.Fishing.CatchView c) => c.SizeCategoryId == "exceptional" || c.SizeCategoryId == "perfect" || c.Genes.Stars >= 5;
+        Assert.All(preview.ProtectedCatches, c => Assert.True(Valuable(c)));
+        Assert.Equal(box.Count(Valuable), preview.ProtectedCatches.Count);
     }
 }
