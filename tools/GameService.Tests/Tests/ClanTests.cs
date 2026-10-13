@@ -77,7 +77,8 @@ public sealed class ClanTests
         var c = Clans;
         Assert.Equal(100, c.Membership.MinFisherLevel);
         Assert.Equal(10, c.Membership.BaseMembers);
-        Assert.True(c.Membership.MaxMembers > c.Membership.BaseMembers);
+        // Owner (13/10/2026): up to 5 extra places, one per purchase, each dearer.
+        Assert.Equal(15, c.Membership.MaxMembers);
         Assert.True(c.Costs.CreateDollars > 0);
         Assert.True(c.Costs.ExtraSlotGrowth > 1);
         Assert.Equal(0.01, c.XpBonus, 9);

@@ -3,6 +3,15 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.10] — 13/10/2026
+
+Vagas do clã, decisão do proprietário. Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- O clã começa com 10 vagas e o dono pode comprar **até mais 5**, uma por compra, cada uma mais cara (20, 30, 45, 68 e
+  101 Dólares). O máximo passou de 50 para 15 vagas.
+
 ## [0.2.0-m24.9] — 13/10/2026
 
 Artes das roupas, dos fragmentos e do Boss Mundial, feitas pelo proprietário no ChatGPT. Verificado no CI, não aberto no Unity.

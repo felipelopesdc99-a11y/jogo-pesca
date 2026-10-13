@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-13T18:00:00Z",
+  "updated_at": "2026-10-13T14:20:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -674,7 +674,7 @@
       "id": "OD-071",
       "task_id": "M24-T50",
       "title": "Preços e prêmios dos clãs",
-      "detail": "Os clãs (A-174) estão com números provisórios em config/clans.json. Hoje: criar um clã custa 50 Dólares; cada vaga extra custa 20 Dólares e cada uma seguinte 1,5 vez a anterior (20, 30, 45, 68, 101 …), até 50 vagas no total; prêmios do ranking diário para cada membro: 1º 25 Dólares + 60 min de renda em Moedas e em Conchas + 3 Fragmentos de Roupa + 3 fragmentos de barco; 2º 15 + 45 min + 2 + 2; 3º 10 + 30 min + 1 + 1 (os prêmios só ligam com o jogo online). Para comparar: até o Nv.100 o Passe grátis dá 100 Dólares, e o VIP e o Premium do Passe custam 100 cada. Opções: (a) ficam assim; (b) criar mais barato (por exemplo 20 Dólares) ou mais caro (100); (c) outro limite de vagas; (d) outros prêmios.",
+      "detail": "Os clãs (A-174) estão com números provisórios em config/clans.json. Hoje: criar um clã custa 50 Dólares; cada vaga extra custa 20 Dólares e cada uma seguinte 1,5 vez a anterior (20, 30, 45, 68, 101), até 15 vagas no total (10 + até 5 compradas: decidido pelo proprietário em 13/10/2026); prêmios do ranking diário para cada membro: 1º 25 Dólares + 60 min de renda em Moedas e em Conchas + 3 Fragmentos de Roupa + 3 fragmentos de barco; 2º 15 + 45 min + 2 + 2; 3º 10 + 30 min + 1 + 1 (os prêmios só ligam com o jogo online). Para comparar: até o Nv.100 o Passe grátis dá 100 Dólares, e o VIP e o Premium do Passe custam 100 cada. Opções: (a) ficam assim; (b) criar mais barato (por exemplo 20 Dólares) ou mais caro (100); (d) outros prêmios.",
       "raised_at": "2026-10-13T18:00:00Z",
       "status": "OPEN"
     }

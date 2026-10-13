@@ -3250,7 +3250,7 @@ só Pescador Nv.100+ cria ou entra; criar e comprar vagas custam Dólares. TD-05
   os mais fortes primeiro. Embaixo, os **membros** ("N/M membros" e "10 vagas + X compradas (máximo 50)"), o dono
   primeiro, cada um com o nível e o peixe que colocou (ou "Sem peixe no Cardume do Clã").
 - **Vagas:** todo clã começa com 10. O dono compra vagas extras com Dólares: a 1ª custa 20 e cada uma seguinte 1,5 vez a
-  anterior, arredondado (20, 30, 45, 68, 101 …), até 50 vagas no total.
+  anterior, arredondado (20, 30, 45, 68, 101), até 15 vagas no total (10 + até 5 compradas; *atualizado em 13/10/2026, decisão do proprietário: antes eram 50*).
 - **Bônus de XP:** quem está num clã ganha **+1% de XP de Pescador** em cada peixe pescado, com o jogo aberto e fechado.
   A fração de ponto é guardada e somada no próximo peixe, para ser +1% exato mesmo nos peixes de pouco XP. Sair do clã
   tira o bônus. Não vale para Expedições nem para as recompensas.
@@ -3272,7 +3272,7 @@ só Pescador Nv.100+ cria ou entra; criar e comprar vagas custam Dólares. TD-05
 - **Sair:** o dono que sai sozinho fecha o clã (o nome fica livre; os Dólares não voltam). Com outros membros, o clã passa
   para o membro mais antigo.
 - **Decisões pequenas tomadas na implementação** (registradas aqui): sub-aba no Perfil; nome de 3 a 20 caracteres com
-  as regras do nome do jogador; 1 vaga extra por compra e máximo de 50 vagas; clã sem peixe fora do ranking; empate
+  as regras do nome do jogador; 1 vaga extra por compra; máximo de 15 vagas (10 + 5 compradas, decidido pelo proprietário em 13/10/2026); clã sem peixe fora do ranking; empate
   decidido pelo clã mais antigo; o +1% com a fração guardada; prêmio do 3º lugar é o mínimo e não há prêmio do 4º em
   diante; o jogo local paga no máximo um dia (o último) se ficar fechado vários dias; dono que sai passa o clã ao membro
   mais antigo; entrar é de graça. Os números (preços, máximo, prêmios) são provisórios e estão no OD-071.
