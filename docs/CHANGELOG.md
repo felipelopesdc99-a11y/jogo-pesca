@@ -3,6 +3,29 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.18] — 13/10/2026
+
+Montar barco e vara pelo botão, um depois do outro, e mapas só pelo nível, pedido do proprietário (M24-T58, A-180).
+Save continua v24. Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- **Barcos e varas não montam mais sozinhos.** Com os fragmentos completos, o jogador aperta **Montar** na Loja
+  (Barcos ou Varas). Para montar é preciso ter o **anterior**: o Barco 1 pede o Água Mansa e o Barco N pede o Barco
+  N − 1; a Vara 1 pede o Caniço Manso e a Vara N pede a Vara N − 1 no Inventário. Sem o anterior, a Loja mostra
+  "Precisa do barco X" / "Precisa da vara X". Montar gasta só os fragmentos pedidos (o resto fica guardado) e **não**
+  troca o barco em uso nem a vara equipada.
+- Os avisos da pesca, do Passe, do Boss Mundial e do Clã dizem "Fragmentos completos: … Monte na Loja"; o Bem-vindo de
+  volta marca "COMPLETO!".
+- **Mapas abrem só pelo nível do Pescador.** Nenhum mapa pede vara; qualquer vara pode ser equipada em qualquer mapa. Na
+  tela do Mapa, "Sua vara aqui" mostra, só como informação, as raridades que a vara em uso não pesca naquele mapa.
+- Nada mudou nos números de balanceamento. O ritmo re-simulado: os mapas abrem bem antes (Mapa 10 em ~8 h, ~1,3 dia e
+  ~2,8 dias, contra 1,8 / 3,8 / 5,8 dias) e o Nv.1000 chega ~1 dia antes (54,2 / 101,3 / 108,8 dias).
+
+### Pendente
+
+- **OD-074:** vender fragmentos de barco e de vara (e barcos)? Hoje só as varas montadas se vendem.
+
 ## [0.2.0-m24.17] — 13/10/2026
 
 Artes dos menus que ainda não tinham visual próprio (M24-T57, A-179). Verificado no CI, não aberto no Unity.

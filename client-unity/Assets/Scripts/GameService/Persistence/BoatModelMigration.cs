@@ -100,7 +100,8 @@ namespace FishingIdle.GameService.Persistence
                 if (gain != null)
                 {
                     change.FragmentsMoved = Add(change.FragmentsMoved, pair.Value);
-                    if (gain.Assembled)
+                    // Boats the player had are assembled again at once (they were theirs), not left to "Montar" (A-180).
+                    if (BoatFragmentRules.AssembleForMigration(config, save, target))
                     {
                         change.BoatsAssembled.Add(target.Id);
                     }

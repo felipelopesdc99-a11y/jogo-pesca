@@ -1,3 +1,4 @@
+using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Shop;
 using Xunit;
@@ -6,13 +7,13 @@ namespace FishingIdle.GameService.Tests;
 
 /// <summary>
 /// OD-070, option c (13/10/2026, M24-T48): rods 1 to 5 ask for 5 / 8 / 12 / 15 / 20 fragments (were 15 / 25 / 35 / 45 /
-/// 60). A save that already holds more fragments than the new number assembles the rod when the game opens, without losing
-/// a fragment: what is left stays as extras, and a rod already owned keeps its extras untouched.
+/// 60). Since M24-T58 (A-180) a save that already holds more fragments than the new number keeps all of them on opening
+/// (nothing is assembled by itself); the player assembles with "Montar", in order, spending only the new number.
 /// </summary>
 public sealed class FewerRodFragmentsTests
 {
     [Fact]
-    public void A_save_with_more_fragments_than_the_new_number_assembles_on_opening_and_keeps_the_rest()
+    public void A_save_with_more_fragments_than_the_new_number_keeps_them_and_the_player_assembles_in_order()
     {
         var config = TestSupport.CertainCatchConfig();
         var (game, clock, dir) = TestSupport.NewGame(config);
@@ -33,28 +34,33 @@ public sealed class FewerRodFragmentsTests
         var after = again.Session.Save;
         Assert.Equal(SaveLoadStatus.Loaded, again.Session.LoadStatus);
 
-        Assert.True(RodFragmentRules.Owns(after, "rod_02"));
-        Assert.True(RodFragmentRules.Owns(after, "rod_03"));
-        Assert.False(RodFragmentRules.Owns(after, "rod_04"));
-        Assert.Equal(inventoryBefore + 2, after.Inventory.Count);
-        Assert.Single(after.Inventory, i => i.RodId == "rod_03");
-
-        // Nothing lost: the assembling spent exactly the new number, the rest stays as extras.
+        // Opening assembles nothing and loses nothing.
+        Assert.False(RodFragmentRules.Owns(after, "rod_02"));
+        Assert.Equal(inventoryBefore, after.Inventory.Count);
         Assert.Equal(7, RodFragmentRules.Have(after, "rod_01"));
-        Assert.Equal(12 - 8, RodFragmentRules.Have(after, "rod_02"));
-        Assert.Equal(34 - 12, RodFragmentRules.Have(after, "rod_03"));
+        Assert.Equal(12, RodFragmentRules.Have(after, "rod_02"));
+        Assert.Equal(34, RodFragmentRules.Have(after, "rod_03"));
         Assert.Equal(14, RodFragmentRules.Have(after, "rod_04"));
 
-        // The highest rod assembled goes in use, at Nv.1.
-        var equipped = after.EquippedRodItem();
-        Assert.Equal("rod_03", equipped.RodId);
-        Assert.Equal(1, equipped.Level);
+        // Rod 3 waits for rod 2; then "Montar" spends exactly the new number, the rest stays as extras.
+        Assert.Equal(ServiceError.RodNeedsPrevious, again.Shop.AssembleRod("rod_03").Error);
+        Assert.True(again.Shop.AssembleRod("rod_02").Succeeded);
+        Assert.True(again.Shop.AssembleRod("rod_03").Succeeded);
+        Assert.Equal(ServiceError.NotEnoughRodFragments, again.Shop.AssembleRod("rod_04").Error);
+        Assert.Equal(inventoryBefore + 2, after.Inventory.Count);
+        Assert.Single(after.Inventory, i => i.RodId == "rod_03");
+        Assert.Equal(12 - 8, RodFragmentRules.Have(after, "rod_02"));
+        Assert.Equal(34 - 12, RodFragmentRules.Have(after, "rod_03"));
 
-        // One more fragment of rod 4 assembles it in play, as always.
+        // Not equipped by itself: the rod in use stays.
+        Assert.Equal("rod_01", after.EquippedRodItem().RodId);
+
+        // One more fragment of rod 4 completes it; the player assembles it.
         config.TryGetRod("rod_04", out var rod4);
         var gain = RodFragmentRules.Add(config, after, rod4, 1, clock.UtcNowMs);
-        Assert.True(gain.Assembled);
-        Assert.Equal(0, gain.Have);
-        Assert.Equal("rod_04", after.EquippedRodItem().RodId);
+        Assert.True(gain.Ready);
+        Assert.Equal(15, gain.Have);
+        Assert.True(again.Shop.AssembleRod("rod_04").Succeeded);
+        Assert.Equal(0, RodFragmentRules.Have(after, "rod_04"));
     }
 }

@@ -100,29 +100,41 @@ public sealed class RodsAndClothingByFragmentsTests
     }
 
     [Fact]
-    public void The_progression_never_locks_every_map_s_rod_drops_while_fishing()
+    public void The_progression_never_locks_every_rod_fishes_on_every_map()
     {
+        // Since M24-T58 (A-180) a map opens only by the Fisher level: every rod, even the Starter Rod, has something to
+        // catch on every map (the rarities it cannot catch are only information on the Map screen).
         var config = Real;
-        foreach (var map in config.Maps.Maps.Where(m => m.MinimumRodTier > 0))
+        foreach (var map in config.Maps.Maps)
         {
-            // Every rod drops on every map: a rod of the tier the map asks for (or more) only needs a chance above 0.
-            var ok = config.FragmentRods.Any(rod => rod.Tier >= map.MinimumRodTier && rod.FragmentDropChance > 0);
-            Assert.True(ok, map.Id + " would lock the progression");
+            foreach (var rod in config.Rods.Rods)
+            {
+                Assert.True(FishingIdle.GameService.Fishing.CatchRules.EligiblePool(config, map, rod).Count > 0, map.Id + " × " + rod.Id);
+            }
         }
     }
 
     [Fact]
     public void A_config_that_would_lock_the_progression_is_rejected_in_portuguese()
     {
-        // Rod 5 never drops: map 10 asks for it and nobody could ever get there.
+        // A rod that would catch nothing on a map (any rod fishes anywhere since M24-T58): the Starter Rod only Mythic.
         var none = TestSupport.ConfigWith(GameConfigLoader.RodsFile, j =>
+        {
+            var root = JObject.Parse(j);
+            RodJson(root, "rod_00_starter")["can_catch_rarities"] = new JArray("mythic");
+            return root.ToString();
+        });
+        Assert.False(none.Succeeded);
+        Assert.Contains(none.Errors, e => e.Contains("map_01") && e.Contains("rod_00_starter") && e.Contains("nenhum peixe"));
+
+        // A rod whose fragments never drop no longer locks any map (maps ask only for the Fisher level).
+        var never = TestSupport.ConfigWith(GameConfigLoader.RodsFile, j =>
         {
             var root = JObject.Parse(j);
             RodJson(root, "rod_05")["fragment_drop_chance"] = 0.0;
             return root.ToString();
         });
-        Assert.False(none.Succeeded);
-        Assert.Contains(none.Errors, e => e.Contains("map_10") && e.Contains("travaria"));
+        Assert.True(never.Succeeded, string.Join("\n", never.Errors));
 
         var chance = TestSupport.ConfigWith(GameConfigLoader.RodsFile, j =>
         {
@@ -141,7 +153,7 @@ public sealed class RodsAndClothingByFragmentsTests
     // ------------------------------------------------------------------ rod fragments while fishing
 
     [Fact]
-    public void Rod_fragments_drop_on_every_map_each_rod_in_its_own_roll_and_assemble_the_rod()
+    public void Rod_fragments_drop_on_every_map_each_rod_in_its_own_roll_and_the_player_assembles_the_rod()
     {
         var config = With((rods, equipment) =>
         {
@@ -164,18 +176,29 @@ public sealed class RodsAndClothingByFragmentsTests
         Assert.Equal(1.0, offer.FragmentChance, 9);
         Assert.False(offer.Owned);
 
+        // Complete, but not assembled by itself (M24-T58, A-180): the player presses "Montar".
         var last = Cycles(game, clock, 1).Single().RodFragments.Single(f => f.RodId == "rod_01");
-        Assert.True(last.Assembled);
-        Assert.True(last.Equipped);
-        Assert.Equal(0, last.Have);
-        var rod = game.Profile.GetProfile().EquippedRod;
-        Assert.Equal("rod_01", rod.RodId);
+        Assert.True(last.Ready);
+        Assert.False(last.Owned);
+        Assert.Null(last.NeedsRodName);
+        Assert.Equal(required, last.Have);
+        Assert.Equal(1, game.Profile.GetProfile().Inventory.Count);
+        Assert.Equal(ServiceError.None, game.Shop.GetShop().Rods.Single(r => r.RodId == "rod_01").AssembleBlocker);
+
+        var made = game.Shop.AssembleRod("rod_01");
+        Assert.True(made.Succeeded, made.ErrorMessage);
+        Assert.True(made.Value.Owned);
+        Assert.Equal(0, made.Value.Fragments);
+        Assert.Equal(ServiceError.RodAlreadyOwned, game.Shop.AssembleRod("rod_01").Error);
+        Assert.Equal("rod_00_starter", game.Profile.GetProfile().EquippedRod.RodId);   // not equipped by itself
+        var rod = game.Profile.GetProfile().Inventory.Single(r => r.RodId == "rod_01");
         Assert.Equal(1, rod.Level);
         Assert.Equal(2, game.Profile.GetProfile().Inventory.Count);
+        Assert.True(game.Profile.EquipRod(rod.ItemId).Succeeded);
 
         // Owned: new fragments are kept as extras.
         var extra = Cycles(game, clock, 1).Single().RodFragments.Single(f => f.RodId == "rod_01");
-        Assert.False(extra.Assembled);
+        Assert.False(extra.Ready);
         Assert.True(extra.Owned);
         Assert.Equal(1, RodFragmentRules.Have(game.Session.Save, "rod_01"));
         Assert.Equal(required + 1, RodFragmentRules.Have(game.Session.Save, "rod_02"));
@@ -224,14 +247,54 @@ public sealed class RodsAndClothingByFragmentsTests
     }
 
     [Fact]
-    public void A_rod_of_a_lower_tier_is_assembled_but_not_put_in_use()
+    public void A_rod_needs_the_rod_before_it_in_the_inventory_and_is_never_equipped_by_itself()
+    {
+        // M24-T58 (A-180): rod N asks for rod N − 1 in the Inventory (rod 1 for the Starter Rod).
+        var (game, _, _) = TestSupport.NewGame(Real);
+        var config = game.Session.Config;
+        var save = game.Session.Save;
+        config.TryGetRod("rod_02", out var two);
+        RodFragmentRules.Add(config, save, two, two.FragmentsRequired + 2, 0);
+        var offer = game.Shop.GetShop().Rods.Single(r => r.RodId == "rod_02");
+        Assert.Equal(ServiceError.RodNeedsPrevious, offer.AssembleBlocker);
+        Assert.Equal("Ponta Selvagem", offer.PreviousRodName);
+        Assert.False(offer.HasPreviousRod);
+        Assert.Equal("Precisa da vara Ponta Selvagem", FishingIdle.Texts.GameTexts.Gear.NeedsRod(offer.PreviousRodName));
+        Assert.Equal(ServiceError.RodNeedsPrevious, game.Shop.AssembleRod("rod_02").Error);
+        Assert.Equal(ServiceError.NotEnoughRodFragments, game.Shop.AssembleRod("rod_01").Error);
+        Assert.Equal(ServiceError.NotFromFragments, game.Shop.AssembleRod("rod_00_starter").Error);
+        Assert.Equal(ServiceError.ItemNotFound, game.Shop.AssembleRod("rod_99").Error);
+        Assert.Equal("Caniço Manso", game.Shop.GetShop().Rods.Single(r => r.RodId == "rod_01").PreviousRodName);
+
+        config.TryGetRod("rod_01", out var one);
+        RodFragmentRules.Add(config, save, one, one.FragmentsRequired, 0);
+        Assert.True(game.Shop.AssembleRod("rod_01").Succeeded);
+        Assert.True(game.Shop.AssembleRod("rod_02").Succeeded);
+        Assert.Equal(2, RodFragmentRules.Have(save, "rod_02"));   // only fragments_required spent
+        Assert.Equal("rod_00_starter", game.Profile.GetProfile().EquippedRod.RodId);
+        Assert.Contains(game.Profile.GetProfile().Inventory, r => r.RodId == "rod_02");
+    }
+
+    [Fact]
+    public void Selling_the_rod_before_blocks_the_next_one_until_the_player_has_it_again()
     {
         var (game, _, _) = TestSupport.NewGame(Real);
-        TestSupport.GiveRod(game, "rod_03");
-        var gain = TestSupport.GiveRod(game, "rod_01");
-        Assert.False(gain.Equipped);
-        Assert.Equal("rod_03", game.Profile.GetProfile().EquippedRod.RodId);
-        Assert.Contains(game.Profile.GetProfile().Inventory, r => r.RodId == "rod_01");
+        var config = game.Session.Config;
+        var save = game.Session.Save;
+        config.TryGetRod("rod_01", out var one);
+        config.TryGetRod("rod_02", out var two);
+        RodFragmentRules.Add(config, save, one, one.FragmentsRequired, 0);
+        Assert.True(game.Shop.AssembleRod("rod_01").Succeeded);
+        var copy = game.Profile.GetProfile().Inventory.Single(r => r.RodId == "rod_01");
+        Assert.True(game.Profile.SellRod(copy.ItemId).Succeeded);
+
+        RodFragmentRules.Add(config, save, two, two.FragmentsRequired, 0);
+        Assert.Equal(ServiceError.RodNeedsPrevious, game.Shop.AssembleRod("rod_02").Error);
+
+        // Rod 1 again (its fragments assemble it again), then rod 2.
+        RodFragmentRules.Add(config, save, one, one.FragmentsRequired, 0);
+        Assert.True(game.Shop.AssembleRod("rod_01").Succeeded);
+        Assert.True(game.Shop.AssembleRod("rod_02").Succeeded);
     }
 
     [Fact]
@@ -337,7 +400,8 @@ public sealed class RodsAndClothingByFragmentsTests
         Assert.True(game.Profile.SellRod(copy.ItemId).Succeeded);
 
         var gain = RodFragmentRules.Add(config, game.Session.Save, rod, 1, 0);
-        Assert.True(gain.Assembled);
+        Assert.True(gain.Ready);
+        Assert.True(game.Shop.AssembleRod("rod_01").Succeeded);
         Assert.Contains(game.Profile.GetProfile().Inventory, r => r.RodId == "rod_01");
     }
 
@@ -702,10 +766,11 @@ public sealed class RodsAndClothingByFragmentsTests
         var claim = game.Pass.Claim(10, PassTrack.Free);
         Assert.True(claim.Succeeded, claim.ErrorMessage);
         Assert.Equal(reward.RodFragments, claim.Value.RodFragments.Single().Amount);
-        Assert.Contains(rod.DisplayName, claim.Value.RodsAssembled);
+        Assert.Contains(rod.DisplayName, claim.Value.RodsReady);
         Assert.Equal(reward.ClothingFragments, claim.Value.ClothingFragments);
         Assert.Equal(reward.ClothingFragments, save.Clothing.Fragments);
-        Assert.Equal(rod.Id, game.Profile.GetProfile().EquippedRod.RodId);
+        Assert.Equal("rod_00_starter", game.Profile.GetProfile().EquippedRod.RodId);
+        Assert.True(game.Shop.AssembleRod(rod.Id).Succeeded);
     }
 
     // ------------------------------------------------------------------ the shop's views

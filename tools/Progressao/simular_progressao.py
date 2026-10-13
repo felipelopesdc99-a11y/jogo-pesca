@@ -14,8 +14,9 @@ O que ele faz:
     Nv.100, curva_niveis.py; o mais barato primeiro) e iscas (só quando a isca se paga);
   - barcos e varas não são comprados (M24-T16, A-157; M24-T32, A-163): desde o M24-T47 (A-173) cada peixe puxado, em
     qualquer mapa, dá em média fragment_drop_chance fragmento de CADA barco e de CADA vara (sorteios independentes;
-    online e offline, se drop_on_offline_fishing); com fragments_required o barco é montado e o jogador passa a usar o
-    melhor barco que tem; a vara montada passa a ser usada se for de categoria maior (Rules.legacy_rod_prices volta a
+    online e offline, se drop_on_offline_fishing); desde o M24-T58 (A-180) nada se monta sozinho: o jogador de
+    referência aperta Montar assim que pode, em ordem (cada barco e cada vara pedem o anterior), e passa a usar o
+    melhor barco que tem e a vara de categoria maior; os mapas abrem só pelo nível do Pescador (Rules.legacy_rod_prices volta a
     vender as varas na Loja, para comparar com antes; Rules.boat_drops / rod_drops podem ser trocados para simular a
     regra de antes, um mapa por barco e por vara);
   - roupas (M24-T33, A-164): cada peixe puxado em qualquer mapa dá, em média, clothing.fragment_drop_chance Fragmento de
@@ -64,8 +65,10 @@ class Rules:
         self.maps = sorted(load('maps.json')['maps'], key=lambda m: m['unlock_fisher_level'])
         self.rods_cfg = load('rods.json')
         self.rods = sorted(self.rods_cfg['rods'], key=lambda r: r['tier'])
-        # Fisher level of the first map that asks for each rod tier (items themselves have no level, M24-T09).
-        self.rod_needed_at = {r['id']: min([m['unlock_fisher_level'] for m in self.maps if m['minimum_rod_tier'] >= r['tier']] or [10 ** 9])
+        # Fisher level of the first map that asks for each rod tier (items themselves have no level, M24-T09). Since
+        # M24-T58 (A-180) no map asks for a rod (maps.json has no minimum_rod_tier), so only the starter rod has one; it is
+        # kept for the legacy Shop prices (Rules.legacy_rod_prices) and for configs from before.
+        self.rod_needed_at = {r['id']: min([m['unlock_fisher_level'] for m in self.maps if m.get('minimum_rod_tier', 0) >= r['tier']] or [10 ** 9])
                               for r in self.rods}
         eq = load('equipment.json')
         self.eq_cfg = eq
@@ -219,7 +222,8 @@ class Player:
     def map(self):
         best = self.r.maps[0]
         for m in self.r.maps:
-            if m['unlock_fisher_level'] <= self.level and m['minimum_rod_tier'] <= self.rod['tier']:
+            # Since M24-T58 (A-180) only the Fisher level opens a map (a config from before may still ask for a rod).
+            if m['unlock_fisher_level'] <= self.level and m.get('minimum_rod_tier', 0) <= self.rod['tier']:
                 best = m
         return best
 
@@ -295,27 +299,45 @@ class Player:
 
     # ------------------------------------------------------------- boats by fragments (M24-T16)
     def add_fragments(self, boat, amount):
-        """Adds fragments of a boat; assembles it when they reach fragments_required (as BoatFragmentRules.cs)."""
+        """Adds fragments of a boat, then presses "Montar" on whatever can be assembled (M24-T58, A-180)."""
         self.fragments[boat['id']] = self.fragments.get(boat['id'], 0.0) + amount
-        if boat['id'] not in self.owned_boats and self.fragments[boat['id']] >= boat.get('fragments_required', 1):
-            self.fragments[boat['id']] -= boat['fragments_required']
-            self.owned_boats.add(boat['id'])
-            self.boat_levels.setdefault(boat['id'], 1)
-            self.bought[boat['id']] = getattr(self, 'now', 0.0)
-            # The new boat is used when it is better than the one in use (the service does the same).
-            if self.r.boat_bonus(boat, 1) > self.boat_bonus():
-                self.boat = boat
+        self.assemble()
 
     # ------------------------------------------------------------- rods by fragments (M24-T32)
     def add_rod_fragments(self, rod, amount):
-        """Adds fragments of a rod; assembles it at fragments_required and uses it when its tier is higher (as RodFragmentRules.cs)."""
+        """Adds fragments of a rod, then presses "Montar" on whatever can be assembled (M24-T58, A-180)."""
         self.rod_fragments[rod['id']] = self.rod_fragments.get(rod['id'], 0.0) + amount
-        if rod['id'] not in self.rods and self.rod_fragments[rod['id']] >= rod.get('fragments_required', 1):
-            self.rod_fragments[rod['id']] -= rod['fragments_required']
-            self.rods[rod['id']] = 1
-            self.bought[rod['id']] = getattr(self, 'now', 0.0)
-            if rod['tier'] > self.rod['tier']:
-                self.rod = rod
+        self.assemble()
+
+    def assemble(self):
+        """The reference player presses "Montar" as soon as it can, in tier order (M24-T58, A-180): a boat or rod needs its
+        fragments_required AND the one before it (as BoatFragmentRules / RodFragmentRules.AssembleBlocker); assembling spends
+        only fragments_required. Nothing goes in use by itself in the game; this player then uses the better boat and the
+        rod of the higher tier at once."""
+        r = self.r
+        prev = r.boats[0]['id']
+        for boat in r.boats[1:]:
+            need = boat.get('fragments_required', 1)
+            if boat['id'] not in self.owned_boats and prev in self.owned_boats and self.fragments.get(boat['id'], 0.0) >= need:
+                self.fragments[boat['id']] -= need
+                self.owned_boats.add(boat['id'])
+                self.boat_levels.setdefault(boat['id'], 1)
+                self.bought[boat['id']] = getattr(self, 'now', 0.0)
+                if r.boat_bonus(boat, 1) > self.boat_bonus():
+                    self.boat = boat
+            prev = boat['id']
+        if r.legacy_rod_prices is not None:
+            return
+        prev = r.rods[0]['id']
+        for rod in r.rods[1:]:
+            need = rod.get('fragments_required', 1)
+            if rod in r.fragment_rods and rod['id'] not in self.rods and prev in self.rods and self.rod_fragments.get(rod['id'], 0.0) >= need:
+                self.rod_fragments[rod['id']] -= need
+                self.rods[rod['id']] = 1
+                self.bought[rod['id']] = getattr(self, 'now', 0.0)
+                if rod['tier'] > self.rod['tier']:
+                    self.rod = rod
+            prev = rod['id']
 
     # ------------------------------------------------------------- clothing (M24-T33)
     def add_clothing_fragments(self, amount):

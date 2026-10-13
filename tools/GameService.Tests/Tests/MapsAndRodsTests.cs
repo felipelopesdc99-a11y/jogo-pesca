@@ -46,27 +46,38 @@ public sealed class MapsAndRodsTests
     }
 
     [Fact]
-    public void Level_10_with_the_starter_rod_still_cannot_fish_map_2()
+    public void Level_10_with_the_starter_rod_can_travel_to_map_2_and_sees_what_the_rod_misses()
     {
+        // M24-T58 (A-180): only the Fisher level opens a map; the rod is information (the rarities it cannot catch there).
         var (game, _, _) = VeteranPlayer();
+        var map2 = game.Maps.GetMaps().Maps.Single(m => m.MapId == "map_02");
+        Assert.Equal(ServiceError.None, map2.TravelBlocker);
+        Assert.Equal(new[] { "Raro" }, map2.RaritiesRodMisses);
+        Assert.Empty(game.Maps.GetMaps().Maps.Single(m => m.MapId == "map_01").RaritiesRodMisses);
+        Assert.Equal(new[] { "Raro", "Épico", "Lendário", "Mítico" }, game.Maps.GetMaps().Maps.Single(m => m.MapId == "map_10").RaritiesRodMisses);
+        Assert.Equal(ServiceError.MapLocked, game.Maps.TravelTo("map_10").Error);
 
-        Assert.Equal(ServiceError.RodTooWeakForMap, game.Maps.TravelTo("map_02").Error);
-        Assert.Equal("map_01", game.Player.GetPlayer().MapId);
+        Assert.True(game.Maps.TravelTo("map_02").Succeeded);
     }
 
     [Fact]
-    public void Assembling_rod_1_costs_nothing_equips_it_and_keeps_the_starter_rod()
+    public void Assembling_rod_1_costs_nothing_keeps_the_starter_rod_and_does_not_equip_it()
     {
         var (game, _, _) = VeteranPlayer();
         var coins = game.Player.GetPlayer().Coins;
+        var config = game.Session.Config;
+        config.TryGetRod("rod_01", out var rod);
+        RodFragmentRules.Add(config, game.Session.Save, rod, rod.FragmentsRequired, 0);
 
-        var gain = TestSupport.GiveRod(game, "rod_01");
+        var made = game.Shop.AssembleRod("rod_01");
 
-        Assert.True(gain.Equipped);
+        Assert.True(made.Succeeded, made.ErrorMessage);
         Assert.Equal(coins, game.Player.GetPlayer().Coins);
         var profile = game.Profile.GetProfile();
-        Assert.Equal("Ponta Selvagem", profile.EquippedRod.Name);
+        Assert.Equal("Caniço Manso", profile.EquippedRod.Name);
         Assert.Equal(2, profile.Inventory.Count);
+        Assert.True(game.Profile.EquipRod(made.Value.OwnedItemId).Succeeded);
+        Assert.Equal("Ponta Selvagem", game.Profile.GetProfile().EquippedRod.Name);
         Assert.True(game.Shop.GetShop().Rods.Single(r => r.RodId == "rod_01").Owned);
         Assert.Equal(ServiceError.RodNotForSale, game.Shop.BuyRod("rod_01").Error);
     }
@@ -109,7 +120,7 @@ public sealed class MapsAndRodsTests
     }
 
     [Fact]
-    public void On_map_2_the_starter_rod_cannot_be_equipped()
+    public void On_map_2_the_starter_rod_can_be_equipped_since_any_rod_works_on_any_map()
     {
         var (game, clock, _) = VeteranPlayer();
         TestSupport.GiveRod(game, "rod_01");
@@ -119,8 +130,8 @@ public sealed class MapsAndRodsTests
 
         var starter = game.Profile.GetProfile().Inventory.Single(r => r.RodId == "rod_00_starter");
 
-        Assert.False(starter.AllowedOnCurrentMap);
-        Assert.Equal(ServiceError.RodNotAllowedOnMap, game.Profile.EquipRod(starter.ItemId).Error);
+        Assert.True(game.Profile.EquipRod(starter.ItemId).Succeeded);
+        Assert.Equal(new[] { "Raro" }, game.Maps.GetMaps().Maps.Single(m => m.MapId == "map_02").RaritiesRodMisses);
     }
 
     [Fact]

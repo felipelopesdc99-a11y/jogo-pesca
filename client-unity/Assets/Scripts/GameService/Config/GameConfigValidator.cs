@@ -441,13 +441,13 @@ namespace FishingIdle.GameService.Config
 
             ValidateRodFragments(rods, maps, errors);
 
-            // ---- maps × rods: every rod allowed on a map must have something to catch there, or fishing
-            // would have no species to draw from (the game would stop with an error).
+            // ---- maps × rods: since M24-T58 (A-180) every rod can fish on every map (a map opens only by the Fisher level),
+            // so every rod must have something to catch on every map, or fishing would have no species to draw from.
             if (maps.Maps != null && rods.Rods != null)
             {
                 foreach (var map in maps.Maps.Where(m => m.FishPool != null))
                 {
-                    foreach (var rod in rods.Rods.Where(r => r.Tier >= map.MinimumRodTier && r.CanCatchRarities != null))
+                    foreach (var rod in rods.Rods.Where(r => r != null && r.CanCatchRarities != null))
                     {
                         var catchable = map.FishPool.Any(e => e.CatchWeight > 0
                             && speciesById.TryGetValue(e.SpeciesId ?? string.Empty, out var s)
@@ -883,8 +883,8 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>
         /// Rods by fragments (M24-T32, A-163): every rod but the free one has at least 1 fragment to assemble it and a chance
-        /// from 0 to 1. Since M24-T47 (A-173) every rod drops on every map, so the progression never locks as long as every
-        /// map's minimum tier is held by the free rod or by a rod whose fragments drop (chance above 0).
+        /// from 0 to 1. Since M24-T47 (A-173) every rod drops on every map; since M24-T58 (A-180) maps open only by the
+        /// Fisher level, so no rod is needed to reach a map.
         /// </summary>
         private static void ValidateRodFragments(RodsConfig rods, MapsConfig maps, List<string> errors)
         {
@@ -906,15 +906,6 @@ namespace FishingIdle.GameService.Config
                 {
                     errors.Add(V.ChanceOutOfRange(file, rod.Id + ".fragment_drop_chance"));
                 }
-            }
-
-            // Reachability: the best tier the player can get by fishing (any map drops every rod with a chance above 0).
-            var best = rods.Rods.Where(r => r != null && GameConfig.IsFreeClaimRod(r)).Select(r => r.Tier)
-                .Concat(fragmentRods.Where(r => r.FragmentDropChance > 0 && r.FragmentDropChance <= 1).Select(r => r.Tier))
-                .DefaultIfEmpty(0).Max();
-            foreach (var map in maps.Maps.Where(m => m != null && m.MinimumRodTier > best))
-            {
-                errors.Add(V.MapRodUnreachable(map.Id, map.MinimumRodTier));
             }
         }
 

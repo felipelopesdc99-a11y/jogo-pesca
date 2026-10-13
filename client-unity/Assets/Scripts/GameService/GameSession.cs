@@ -334,26 +334,15 @@ namespace FishingIdle.GameService
                 }
             }
 
-            var assembled = Shop.BoatFragmentRules.AssembleReady(Config, Save);
-            if (assembled.Count > 0)
-            {
-                _log("Boats assembled from fragments already held: " + string.Join(", ", assembled) + ".");
-            }
+            // Nothing is assembled on load (M24-T58, A-180): fragments already enough wait for the player's "Montar".
 
-            // Rods and clothing by fragments (M24-T32/T33): no negative counts, levels inside the config's maximum, and the
-            // rods whose fragments are already enough (a config that lowered fragments_required) are assembled.
+            // Rods and clothing by fragments (M24-T32/T33): no negative counts and levels inside the config's maximum.
             if (Save.RodFragments != null)
             {
                 foreach (var rodId in Save.RodFragments.Keys.ToList())
                 {
                     Save.RodFragments[rodId] = Math.Max(0, Save.RodFragments[rodId]);
                 }
-            }
-
-            var rodsAssembled = Shop.RodFragmentRules.AssembleReady(Config, Save, Clock.UtcNowMs);
-            if (rodsAssembled.Count > 0)
-            {
-                _log("Rods assembled from fragments already held: " + string.Join(", ", rodsAssembled) + ".");
             }
 
             if (Save.Clothing != null)

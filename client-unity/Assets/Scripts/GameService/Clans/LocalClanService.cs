@@ -111,7 +111,8 @@ namespace FishingIdle.GameService.Clans
         public long ClothingFragments { get; internal set; }
         public long BoatFragments { get; internal set; }
         public string BoatName { get; internal set; }
-        public bool BoatAssembled { get; internal set; }
+        /// <summary>The boat fragments completed the boat: it is ready for "Montar" (M24-T58, A-180).</summary>
+        public bool BoatReady { get; internal set; }
 
         public bool IsEmpty => Dollars <= 0 && Coins <= 0 && Shells <= 0 && ClothingFragments <= 0 && BoatFragments <= 0;
     }
@@ -687,7 +688,7 @@ namespace FishingIdle.GameService.Clans
                     {
                         result.BoatFragments = gain.Amount;
                         result.BoatId = boat.Id;
-                        assembled = gain.Assembled;
+                        assembled = gain.Ready;
                     }
                 }
             }
@@ -699,7 +700,7 @@ namespace FishingIdle.GameService.Clans
             if (reward != null)
             {
                 var paid = Result(result);
-                paid.BoatAssembled = assembled;
+                paid.BoatReady = assembled;
                 update.Paid = paid;
             }
         }

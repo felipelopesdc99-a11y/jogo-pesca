@@ -118,13 +118,13 @@ def main(wanted):
         fish = [s for s in species if s['primary_map_id'] == mid]
         rarities = [r for r in ('common', 'rare', 'epic', 'legendary', 'mythic') if any(s['rarity'] == r for s in fish)]
         maps['maps'].append(od(id=mid, display_name=meta['display_name'], playable_in_v0_1=False, unlock_fisher_level=meta['level'],
-                               minimum_rod_tier=meta['rod_tier'], visual_theme=od(**meta['visual_theme']), available_rarities=rarities,
+                               visual_theme=od(**meta['visual_theme']), available_rarities=rarities,
                                fish_pool_weight_total=sum(s['catch_weight'] for s in fish),
                                fish_pool=[od(species_id=s['id'], catch_weight=s['catch_weight']) for s in fish]))
         print('   mapa', meta['display_name'])
-    maps['unlock_ladder_reference']['note'] = 'Escada de progressão da seção 17 do GDD. Os Mapas 5 a 10 seguem docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md e entram no jogo aos poucos. Referência: o jogo não lê esta seção (o nível e a vara de cada mapa vêm de maps).'
+    maps['unlock_ladder_reference']['note'] = 'Escada de progressão da seção 17 do GDD. Os Mapas 5 a 10 seguem docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md e entram no jogo aos poucos. Referência: o jogo não lê esta seção (o nível de cada mapa vem de maps). Desde 13/10/2026 (M24-T58, A-180) um mapa abre só pelo nível do Pescador (unlock_fisher_level): não há mais vara mínima por mapa; a vara em uso só decide quais raridades do mapa ela pesca (rods.json → can_catch_rarities).'
 
-    # ---- varas mínimas dos mapas novos
+    # ---- varas dos mapas novos (rod_tier só diz quais varas entram; desde o M24-T58 os mapas não pedem vara)
     have_rods = {r['id'] for r in rods['rods']}
     tiers_needed = {MAPAS[m]['rod_tier'] for m in wanted}
     for prop in proposta['rods']:

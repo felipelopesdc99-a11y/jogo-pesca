@@ -233,6 +233,8 @@ Excepcionais e Raras começaram a ser registradas nesta versão; capturas anteri
 ### A-028 · Equipar vara
 **Seção do GDD:** 19, 20 · **Situação:** Em vigor
 
+*Atualizado em 13/10/2026 (A-180): qualquer vara pode ser equipada em qualquer mapa; uma vara mais fraca só pesca menos raridades ali.*
+
 O Perfil mostra a vara equipada (tier, nível, bônus, se pesca Raros e se gera Conchas) e o Inventário
 com todas as varas. Uma vara que não serve no mapa atual não pode ser equipada. Trocar de vara no
 meio da pesca vale a partir do próximo ciclo.
@@ -252,10 +254,14 @@ concluída ao abrir. Nunca há viagem automática ao subir de nível.
 ### A-030 · Requisitos do Rio Selvagem
 **Seção do GDD:** 17, 19 · **Situação:** Em vigor
 
+*Atualizado em 13/10/2026 (A-180): os mapas abrem só pelo nível do Pescador; a Vara 1 não é mais pedida, e a Vara Inicial pode ser usada no Rio Selvagem (pesca só os Comuns de lá).*
+
 Nível 10 **e** a Vara 1 equipada. No Rio Selvagem, a Vara Inicial não pode ser equipada.
 
 ### A-031 · Comprar vara
 **Seção do GDD:** 19 · **Situação:** Confirmar
+
+*Atualizado em 13/10/2026 (A-180): nada mais monta sozinho. Com os fragmentos e a vara anterior no Inventário, o jogador aperta Montar; a vara montada vai para o Inventário e não é equipada sozinha.*
 
 *Atualizado em 12/10/2026 (A-153, A-163): as varas não são mais compradas na Loja nem pedem nível; vêm de fragmentos que caem pescando e do Passe e montam sozinhas. A vara montada vai para o Inventário e é equipada se for de categoria maior que a vara em uso.*
 
@@ -968,6 +974,8 @@ moedas e 500 conchas no total) e as iscas são o gasto novo. Detalhes em
 
 ### A-093 · Mapas 3 e 4, raridade Épico e Vara 2
 **Seção do GDD:** 17, 19, 21, 22 · **Situação:** Decidido pelo proprietário (30/09/2026, `docs/PROGRESSAO_MAPAS_3_4.md`)
+
+*Atualizado em 13/10/2026 (A-180): a coluna "Vara mínima" é histórica; os mapas abrem só pelo nível do Pescador.*
 
 | Mapa | Nível | Vara mínima | Espécies | Épicos |
 |---|---:|---|---|---|
@@ -1956,6 +1964,8 @@ antes (10/10/2026). Os números de cada etapa ficam em /config e são ajustados 
 ### A-153 · Etapa 1 do novo escopo: itens sem nível, Pescador até o Nv.1000
 **Seção do GDD:** 7, 17, 19 · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
 
+*Atualizado em 13/10/2026 (A-180): os mapas não pedem mais a categoria mínima de vara; abrem só pelo nível.*
+
 *Atualizado em 12/10/2026 (A-172): a Tripulação saiu do jogo; o XP do Pescador vem só da pesca. Os tempos com a Tripulação citados abaixo são históricos.*
 
 Decisão do proprietário em 10/10/2026 (M24-T09 e M24-T03), primeira etapa do A-152:
@@ -2267,6 +2277,8 @@ nível: Moedas e Conchas. Tudo que já existia continua; números em `/config`, 
 
 ### A-157 · Barcos por fragmentos
 **Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 13/10/2026 (A-180): o barco não monta mais sozinho. Com os fragmentos **e** o barco anterior (o Barco 1 pede o Água Mansa), o jogador aperta Montar na Loja → Barcos; montar gasta só os fragmentos pedidos e o barco não entra em uso sozinho (o jogador aperta Usar).*
 
 *Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). As chances por mapa abaixo (0,43% a 0,67%) e "Caem no mapa …" na Loja são a regra de antes; o mapa de cada barco hoje só diz de qual barco o Boss Mundial dá fragmentos.*
 
@@ -2699,6 +2711,8 @@ iscas novas (A-161), o Nv.1000 chegava em ~50 dias com o jogo sempre aberto. Nú
 ### A-163 · Varas por fragmentos
 **Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
+*Atualizado em 13/10/2026 (A-180): a vara não monta mais sozinha nem é equipada sozinha. Com os fragmentos **e** a vara anterior no Inventário (a Vara 1 pede o Caniço Manso), o jogador aperta Montar na Loja → Varas. Os mapas não pedem mais vara: "Onde cada vara cai" e "a progressão nunca trava" abaixo são a regra de antes.*
+
 *Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). O mapa de cada vara (Vara 1 no Mapa 1, 2 no 3 …) e as chances de 1,63% a 7% abaixo são a regra de antes; a Loja diz "Caem em todos os mapas".*
 
 *Atualizado em 12/10/2026 (A-172): os dias citados abaixo foram simulados com a Tripulação e as Melhorias; as chances de fragmento não mudaram.*
@@ -2927,6 +2941,8 @@ vazia ou travada sem explicação:
 ### A-168 · Volta para 5 barcos (os mapas 6 a 10 dão os barcos 1 a 5)
 **Seção do GDD:** 7, 13, 19 · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
+*Atualizado em 13/10/2026 (A-180): os barcos são montados pelo jogador (Montar), em ordem, cada um pedindo o anterior.*
+
 *Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). A tabela de mapas e chances e o "Caem nos mapas …" da Loja abaixo são a regra de antes; os dois mapas de cada barco hoje só dizem de qual barco o Boss Mundial dá fragmentos.*
 
 "Vamos voltar para 5 barcos por enquanto." "Só voltar a 5 barcos." Muda o A-157 e o A-158; o fragmento por barco continua.
@@ -3115,6 +3131,8 @@ que a Tripulação ajudava a cumprir. Nenhum sistema, moeda ou raridade novo.
 
 ### A-173 · Todos os fragmentos em qualquer mapa (0,1% cada)
 **Seção do GDD:** 7, 13, 19 (novo escopo A-152) · decisão do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 13/10/2026 (A-180): "montagem sozinha", "vara de categoria maior entra em uso" e "barco melhor entra em uso" abaixo deixaram de valer: o jogador monta com Montar, em ordem, e escolhe o que usar. Os mapas abrem só pelo nível (a vara não trava mais nenhum mapa). Os dias abaixo são os de antes; os de hoje estão no A-180.*
 
 Decisão do proprietário em 13/10/2026 (M24-T47): "A ideia é os jogadores conseguirem todos esses fragmentos enquanto
 pescam, mas com uma porcentagem bem pequena." Perguntado, escolheu: "Todos em qualquer mapa 0,1%". Muda o A-157, o A-163,
@@ -3493,3 +3511,60 @@ volta ao visual anterior. Texto claro sobre foto ganha véu ou placa azul-noite,
   Resumo): avatar na moldura da esquerda, nome com "Editar", nível com a barra de XP e a linha de XP/mapa/VIP escritos
   por cima. O meio do couro estica conforme a largura; a moldura e a âncora mantêm a forma. As moedas continuam à
   direita.
+
+### A-180 · Montar barco e vara pelo botão, um depois do outro; mapas só pelo nível
+
+**Seção do GDD:** 7, 13, 17, 18, 19 (novo escopo A-152) · decisão do proprietário em 13/10/2026 (M24-T58) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário: "Para montar o próximo barco, precisa ter o barco anterior (não monta automático, jogador pode
+querer vender), para montar a próxima vara precisa da vara anterior, não tem mais bloqueio para ir para o próximo mapa a
+não ser o NÍVEL do jogador." Muda o A-157, o A-163, o A-168 e o A-173 (montagem) e o A-028, o A-030 e o A-093 (mapas).
+
+- **Nada monta sozinho.** Os fragmentos continuam caindo como no A-173 (0,1% por peixe puxado, em qualquer mapa, também
+  offline) e vindo do Passe e do Boss Mundial, e se acumulam sem limite. Juntar os fragmentos pedidos não monta mais o
+  item: o jogador aperta **Montar** na ficha do item (Loja → Barcos ou Loja → Varas).
+- **Um depois do outro.** Para montar um barco é preciso ter o **barco anterior** (o Barco 1, Remo Valente, pede o Água
+  Mansa, que todo jogador tem). Para montar uma vara é preciso ter a **vara anterior no Inventário** (a Vara 1, Ponta
+  Selvagem, pede o Caniço Manso). Uma vara anunciada no Mercado, em leilão ou esperando em Itens a Retirar não está no
+  Inventário: o jogador retira ou cancela antes de montar a seguinte.
+- **Montar gasta só o pedido.** Os fragmentos acima do pedido ficam guardados. O barco entra no Nv.1 e **não** passa a
+  ser usado sozinho (o jogador aperta Usar); a vara vai para o Inventário no Nv.1 e **não** é equipada sozinha (o jogador
+  equipa quando quiser). Assim, montar nunca troca o que o jogador escolheu.
+- **Loja:** no lugar do botão aparece, conforme o caso: **Montar** (pode montar); "**Precisa do barco X**" / "**Precisa
+  da vara X**" (com cadeado, quando falta o anterior); ou "Monte com fragmentos" (faltam fragmentos). A barra
+  "Fragmentos 12/20" continua. Os avisos da pesca e do Passe dizem "Fragmentos completos: X! Monte na Loja → Barcos" (ou
+  "Para montar, precisa do barco Y"); o relatório "Bem-vindo de volta" marca "COMPLETO!" / "Pronto para montar na Loja".
+  A comemoração "Barco montado!" / "Vara montada!" aparece quando o jogador monta.
+- **Vender:** as varas montadas continuam podendo ser vendidas ao NPC, destruídas e vendidas no Mercado e no Leilão (o
+  Caniço Manso não). Os barcos nunca puderam ser vendidos, e os fragmentos também não. Se o jogador vender a vara
+  anterior, não monta a seguinte até ter de novo (os fragmentos dela, que continuam caindo, montam outra). Vender
+  fragmentos ou barcos é uma decisão pendente (OD-074).
+- **Roupas:** já eram montadas pelo jogador, com a peça que ele escolhe (A-164). Continuam iguais, sem ordem.
+- **Mapas só pelo nível.** Um mapa abre só com o nível do Pescador que ele pede (Nv.10, 20 … 90). A vara não trava mais
+  nenhum mapa, a viagem nem a troca de vara. A vara em uso só decide quais raridades ela pesca: na tela do Mapa, a
+  linha "Vara necessária" virou "**Sua vara aqui**: Pesca todas as raridades" ou "Não pesca Raro, Épico…" (em dourado),
+  só como informação. Todo mapa tem Comuns, então qualquer vara pesca em qualquer mapa. O Inventário não mostra mais "Não
+  serve neste mapa".
+- **Missões:** "Monte a vara X" / "Monte o barco X" contam quando o jogador monta; "Libere o mapa X" conta pelo nível.
+- **Saves antigos:** o que já estava montado fica. Fragmentos acima do pedido continuam guardados; ao abrir, nada é
+  montado sozinho. Não muda o formato do save (continua v24).
+- **Ritmo** (o jogador de referência monta assim que pode, em ordem, e usa o que monta; só a pesca e o Passe grátis,
+  sem o Boss Mundial; `tools/Progressao/fragmentos_qualquer_mapa.py`, em `docs/propostas/fragmentos_qualquer_mapa.json`).
+  Nenhum número de balanceamento mudou; "antes" é a regra do M24-T48 (montagem sozinha e mapas pedindo vara).
+
+  | Dias (h = horas): antes → **agora** | Jogo aberto | 4 vezes por dia | 1 vez por dia |
+  |---|---|---|---|
+  | Mapa 2 abre (Nv.10) | 11,0 h → **14 min** | 1,3 → **8,4 h** | 1,8 → **20,4 h** |
+  | Mapa 4 abre (Nv.30) | 19,7 h → **1,7 h** | 1,9 → **12,0 h** | 2,8 → **1,8** |
+  | Mapa 6 abre (Nv.50) | 1,1 → **3,1 h** | 2,5 → **18,0 h** | 3,8 → **1,8** |
+  | Mapa 8 abre (Nv.70) | 1,4 → **4,8 h** | 3,3 → **18,0 h** | 4,8 → **1,8** |
+  | Mapa 10 abre (Nv.90) | 1,8 → **8,2 h** | 3,8 → **1,3** | 5,8 → **2,8** |
+  | Nv.100 | 23,3 h → **9,6 h** | 2,3 → **1,3** | 3,8 → **2,8** |
+  | Nv.500 | 14,2 → **13,6** | 26,9 → **25,9** | 30,8 → **28,8** |
+  | Nv.1000 | 54,8 → **54,2** | 102,3 → **101,3** | 109,8 → **108,8** |
+  | Último barco (Horizonte Dourado) | 3,6 → **3,2** | 7,3 → **6,5** | 8,8 → **8,8** |
+  | Última vara (Soberana Abissal) | 1,8 → **1,6** | 3,8 → **3,5** | 5,8 → **4,8** |
+  | Todos os 15 itens (as roupas fecham) | 19,0 → **18,8** | 35,8 → **35,3** | 39,8 → **38,8** |
+
+  Os mapas abrem bem antes (o nível chega antes da vara). O jogador pesca mais cedo em mapas melhores, mesmo com uma vara
+  que não pega todas as raridades, e por isso tudo chega um pouco antes; o Nv.1000 muda menos de 1%.

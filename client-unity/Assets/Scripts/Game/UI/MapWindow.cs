@@ -473,7 +473,9 @@ namespace FishingIdle.Game.UI
             var my = inner.center.y - 39f;
             Row(skin, mx, ref my, midWidth, GameTexts.Map.NeedsLevel, GameTexts.Map.LevelRequirement(map.UnlockFisherLevel), map.LevelUnlocked);
             skin.Divider(new Rect(mx, my - 3f, midWidth, 1f));
-            Row(skin, mx, ref my, midWidth, GameTexts.Map.NeedsRod, map.MinimumRodTier == 0 ? GameTexts.Map.AnyRod : map.MinimumRodName, map.RodAllowed);
+            // The rod is information, not a lock (M24-T58, A-180): which rarities of this map the rod in use cannot catch.
+            var misses = map.RaritiesRodMisses.Count == 0 ? GameTexts.Map.RodCatchesAll : GameTexts.Map.RodMisses(string.Join(", ", map.RaritiesRodMisses));
+            Row(skin, mx, ref my, midWidth, GameTexts.Map.RodHere, misses, map.RaritiesRodMisses.Count == 0);
             skin.Divider(new Rect(mx, my - 3f, midWidth, 1f));
             Row(skin, mx, ref my, midWidth, GameTexts.Map.Species, GameTexts.Map.Discovered(map.SpeciesDiscovered, map.SpeciesTotal), true);
 

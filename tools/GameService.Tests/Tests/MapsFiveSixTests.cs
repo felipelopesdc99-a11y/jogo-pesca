@@ -29,18 +29,18 @@ public sealed class MapsFiveSixTests
     }
 
     [Fact]
-    public void Map_5_opens_at_level_40_for_rod_2()
+    public void Map_5_opens_at_level_40_with_any_rod()
     {
         Assert.Equal(ServiceError.MapLocked, Player(39, "rod_01", "rod_02").Maps.TravelTo("map_05").Error);
-        Assert.Equal(ServiceError.RodTooWeakForMap, Player(40, "rod_01").Maps.TravelTo("map_05").Error);
+        Assert.True(Player(40, "rod_01").Maps.TravelTo("map_05").Succeeded);   // only the level opens a map (M24-T58, A-180)
         Assert.True(Player(40, "rod_01", "rod_02").Maps.TravelTo("map_05").Succeeded);
     }
 
     [Fact]
-    public void Map_6_needs_level_50_and_rod_3()
+    public void Map_6_needs_only_level_50()
     {
         Assert.Equal(ServiceError.MapLocked, Player(49, "rod_01", "rod_02").Maps.TravelTo("map_06").Error);
-        Assert.Equal(ServiceError.RodTooWeakForMap, Player(50, "rod_01", "rod_02").Maps.TravelTo("map_06").Error);
+        Assert.True(Player(50, "rod_01", "rod_02").Maps.TravelTo("map_06").Succeeded);   // no rod asked for since M24-T58
         TestSupport.GiveRod(Player(1, "rod_01", "rod_02"), "rod_03"); // items have no minimum level (M24-T09)
 
         var game = Player(50, "rod_01", "rod_02", "rod_03");

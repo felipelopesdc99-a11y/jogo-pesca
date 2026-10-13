@@ -22,6 +22,18 @@ namespace FishingIdle.GameService.Shop
         public long Fragments { get; internal set; }
         public int FragmentsRequired { get; internal set; }
         public double FragmentChance { get; internal set; }
+
+        /// <summary>
+        /// Why "Montar" is refused now (M24-T58, A-180); None when the rod can be assembled. RodAlreadyOwned once the
+        /// player has it, RodNeedsPrevious while the rod before it (<see cref="PreviousRodName"/>) is not in the Inventory.
+        /// </summary>
+        public ServiceError AssembleBlocker { get; internal set; }
+
+        /// <summary>The rod this one asks for in the Inventory before it can be assembled; null for the Starter Rod.</summary>
+        public string PreviousRodName { get; internal set; }
+
+        /// <summary>Whether <see cref="PreviousRodName"/> is in the Inventory.</summary>
+        public bool HasPreviousRod { get; internal set; }
         public int MaxLevel { get; internal set; }
         public double RarityBonus { get; internal set; }
         public double SizeBonus { get; internal set; }
@@ -82,6 +94,12 @@ namespace FishingIdle.GameService.Shop
 
         /// <summary>Claims the free Starter Rod, adds it to the Inventory and equips it. Any other rod: RodNotForSale.</summary>
         ServiceResult<RodOfferView> BuyRod(string rodId);
+
+        /// <summary>
+        /// Assembles a rod with its fragments (M24-T58, A-180): it takes fragments_required and the rod before it in the
+        /// Inventory; only fragments_required are spent. The rod goes to the Inventory at Nv.1 and is not equipped.
+        /// </summary>
+        ServiceResult<RodOfferView> AssembleRod(string rodId);
     }
 
     public sealed class LocalShopService : IShopService
@@ -139,8 +157,25 @@ namespace FishingIdle.GameService.Shop
             return ServiceResult<RodOfferView>.Ok(Offer(rod));
         }
 
+        public ServiceResult<RodOfferView> AssembleRod(string rodId)
+        {
+            Config.TryGetRod(rodId, out var rod);
+            var blocker = RodFragmentRules.AssembleBlocker(Config, Save, rod);
+            if (blocker != ServiceError.None)
+            {
+                return ServiceResult<RodOfferView>.Fail(blocker);
+            }
+
+            // The rod is not equipped, so the fishing does not change: no sync needed.
+            var item = RodFragmentRules.Assemble(Config, Save, rod, _session.Clock.UtcNowMs);
+            _session.Persist();
+            _session.Log("Assembled rod " + rod.Id + " (item " + item.Id + ") from " + rod.FragmentsRequired + " fragments.");
+            return ServiceResult<RodOfferView>.Ok(Offer(rod));
+        }
+
         private RodOfferView Offer(RodConfig rod)
         {
+            var previous = RodFragmentRules.Previous(Config, rod);
             var at1 = Config.RodBonusesAt(rod, 1);
             var max = Config.RodMaxLevel(rod);
             var atMax = Config.RodBonusesAt(rod, max);
@@ -157,6 +192,9 @@ namespace FishingIdle.GameService.Shop
                 Fragments = RodFragmentRules.Have(Save, rod.Id),
                 FragmentsRequired = GameConfig.IsFragmentRod(rod) ? rod.FragmentsRequired : 0,
                 FragmentChance = GameConfig.IsFragmentRod(rod) ? rod.FragmentDropChance : 0,
+                AssembleBlocker = RodFragmentRules.AssembleBlocker(Config, Save, rod),
+                PreviousRodName = previous?.DisplayName,
+                HasPreviousRod = previous != null && RodFragmentRules.InInventory(Save, previous.Id),
                 MaxLevel = max,
                 RarityBonus = at1.RarityEfficiency,
                 SizeBonus = at1.SizeQuality,

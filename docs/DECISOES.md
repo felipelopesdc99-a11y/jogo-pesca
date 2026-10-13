@@ -1344,3 +1344,39 @@ tela; a flag `online_only` deixa as missões sociais prontas para o servidor sem
 
 **Rever se.** O jogo ganhar servidor (aí o servidor soma os contadores, conclui e paga; as missões online-only passam a
 contar) ou o proprietário mudar os prêmios (OD-073) ou a lista.
+
+## TD-058 · Montar pelo botão: somar fragmentos e montar são duas ações; mapas sem vara mínima (13/10/2026)
+
+**Origem.** M24-T58 (A-180): o proprietário pediu que barco e vara não montem sozinhos, que cada um peça o anterior e que
+os mapas abram só pelo nível.
+
+**Decisão.**
+- **`Add` só soma; montar é uma intenção do jogador.** `BoatFragmentRules.Add` e `RodFragmentRules.Add` (pesca, Passe,
+  Boss, Clã) não montam mais nada; o ganho leva `Ready` (os fragmentos ficaram completos com este ganho) e
+  `NeedsBoatName`/`NeedsRodName` (o anterior que ainda falta), para a tela avisar. Montar é `IGearService.AssembleBoat` e
+  `IShopService.AssembleRod`, que conferem `AssembleBlocker` (o mesmo valor vai na oferta da Loja, para o botão) e gastam
+  só `fragments_required`. Erros novos: `BoatAlreadyOwned`, `NotEnoughBoatFragments`, `BoatNeedsPrevious`,
+  `NotEnoughRodFragments`, `RodNeedsPrevious`, `NotFromFragments`; a frase com o nome ("Precisa do barco X") vem de
+  `GameTexts.Gear.NeedsBoat/NeedsRod` com o nome que a oferta traz (`PreviousBoatName`/`PreviousRodName`).
+- **"O anterior" é o de categoria logo abaixo** (`Previous`, por `tier` no config), então a ordem acompanha o config sem
+  campo novo. O barco anterior conta se é do jogador (`OwnedBoatIds` ou o inicial); a vara anterior conta só **no
+  Inventário** (`InInventory`): anunciada, em leilão ou em Itens a Retirar não monta a seguinte. A regra de "já tenho"
+  da vara (`Owns`, que inclui o Mercado) continua a mesma para não montar duas.
+- **Montar não usa nem equipa.** Nada muda o barco em uso nem a vara equipada sem o jogador pedir (por isso montar não
+  chama `Sync` da pesca). O jogador de referência das simulações usa o que monta, como faria um jogador atento.
+- **Sem save novo.** Não há campo novo; ao abrir, `GameSession` não monta mais nada (saíram os `AssembleReady`). A única
+  montagem automática que ficou é a da `BoatModelMigration` (`AssembleForMigration`), porque ali os barcos eram do
+  jogador antes da conversão.
+- **Mapas: o campo saiu.** `minimum_rod_tier` saiu do `maps.json` e de `MapConfig` (o loader ignora chaves a mais, então
+  um config antigo ainda abre); saíram `RodTooWeakForMap`, `RodNotAllowedOnMap`, `MapView.MinimumRodTier/RodAllowed` e
+  `RodItemView.AllowedOnCurrentMap`. O validador agora confere toda vara em todo mapa (`MapRodCatchesNothing`), e o
+  `MapView.RaritiesRodMisses` dá à tela o que a vara em uso não pesca ali. Os geradores Python leem
+  `m.get('minimum_rod_tier', 0)`; o Passe guarda a ordem antiga das varas numa tabela (`VARA_DO_MAPA`), para continuar
+  dando os fragmentos de cada vara nos mesmos marcos.
+
+**Por quê.** Separar "ganhar fragmento" de "montar" deixa a regra num lugar só (o serviço), sem estado novo, e o
+servidor futuro faz o mesmo: soma ao pescar e monta quando o jogador pede. Tirar o campo em vez de zerá-lo evita que um
+mapa volte a pedir vara por engano.
+
+**Rever se.** O proprietário decidir vender fragmentos ou barcos (OD-074, junto com o OD-060), ou quiser a montagem de
+volta automática como opção.

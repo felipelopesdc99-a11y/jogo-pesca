@@ -63,14 +63,15 @@ public sealed class ReviewFixTests
     }
 
     [Fact]
-    public void A_rod_too_weak_for_the_destination_cannot_be_equipped_during_the_trip()
+    public void Any_rod_can_be_equipped_during_the_trip()
     {
+        // M24-T58 (A-180): no map asks for a rod, so the destination never refuses one.
         var (game, _, _) = Traveller();
         var starter = game.Profile.GetProfile().Inventory.Single(r => r.Tier == 0).ItemId;
         Assert.True(game.Maps.TravelTo("map_02").Succeeded);
 
-        Assert.Equal(ServiceError.RodNotAllowedOnMap, game.Profile.EquipRod(starter).Error);
-        Assert.Equal("rod_01", game.Profile.GetProfile().EquippedRod.RodId);
+        Assert.True(game.Profile.EquipRod(starter).Succeeded);
+        Assert.Equal("rod_00_starter", game.Profile.GetProfile().EquippedRod.RodId);
     }
 
     [Fact]

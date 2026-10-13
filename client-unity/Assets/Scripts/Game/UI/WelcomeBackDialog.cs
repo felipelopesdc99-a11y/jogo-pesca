@@ -249,17 +249,17 @@ namespace FishingIdle.Game.UI
             foreach (var boat in update.Fragments.GroupBy(f => f.BoatId))
             {
                 var last = boat.Last();
-                var assembled = boat.Any(f => f.Assembled);
+                var assembled = boat.Any(f => f.Ready);
                 Gears.Add(FragmentGear(FragmentFolder + boat.Key, Icons.Boat, last.BoatName, GameTexts.Offline.BoatFragments, boat.Sum(f => f.Amount),
-                    last.Have, last.Required, last.Owned, assembled, GameTexts.Offline.BoatAssembledTag, GameTexts.Offline.BoatAssembledKind));
+                    last.Have, last.Required, last.Owned, assembled, GameTexts.Offline.BoatReadyTag, GameTexts.Offline.BoatReadyKind));
             }
 
             foreach (var rod in update.RodFragments.GroupBy(f => f.RodId))
             {
                 var last = rod.Last();
-                var assembled = rod.Any(f => f.Assembled);
+                var assembled = rod.Any(f => f.Ready);
                 Gears.Add(FragmentGear(FragmentFolder + rod.Key, Icons.Rod, last.RodName, GameTexts.Offline.RodFragments, rod.Sum(f => f.Amount),
-                    last.Have, last.Required, last.Owned, assembled, GameTexts.Offline.RodAssembledTag, GameTexts.Offline.RodAssembledKind));
+                    last.Have, last.Required, last.Owned, assembled, GameTexts.Offline.RodReadyTag, GameTexts.Offline.RodReadyKind));
             }
 
             if (update.ClothingFragments > 0)

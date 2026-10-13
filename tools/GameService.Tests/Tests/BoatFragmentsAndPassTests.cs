@@ -159,9 +159,10 @@ public sealed class BoatFragmentsAndPassTests
     // ------------------------------------------------------------------ fragments per catch
 
     [Fact]
-    public void Every_catch_can_drop_a_fragment_and_the_boat_assembles_itself()
+    public void Every_catch_can_drop_a_fragment_and_the_player_assembles_the_boat()
     {
-        // With the chance at 100%, every fish pulled out gives 1 fragment of boat_01; 20 assemble it.
+        // With the chance at 100%, every fish pulled out gives 1 fragment of boat_01; with 20 the player can assemble it
+        // (M24-T58, A-180: nothing assembles by itself).
         var (game, clock, _) = TestSupport.NewGame(WithFragmentChance("boat_01", 1.0));
         var config = game.Session.Config;
         game.Fishing.StartFishing();
@@ -181,22 +182,39 @@ public sealed class BoatFragmentsAndPassTests
 
         clock.AdvanceSeconds(cycle);
         var last = game.Fishing.Sync().Fragments.Single();
-        Assert.True(last.Assembled);
-        Assert.True(last.Owned);
-        Assert.Equal(0, last.Have);
+        Assert.True(last.Ready);
+        Assert.False(last.Owned);
+        Assert.Null(last.NeedsBoatName);
+        Assert.Equal(20, last.Have);
 
-        var gear = game.Gear.GetGear();
-        Assert.Equal("boat_01", gear.BoatId);
-        var boat = gear.Boats.Single(b => b.BoatId == "boat_01");
+        // Not assembled by itself, not even after more fragments: they keep adding up.
+        clock.AdvanceSeconds(cycle);
+        var more = game.Fishing.Sync().Fragments.Single();
+        Assert.False(more.Ready);
+        Assert.False(more.Owned);
+        var before = game.Gear.GetGear();
+        Assert.Equal("boat_00", before.BoatId);
+        Assert.False(before.Boats.Single(b => b.BoatId == "boat_01").Owned);
+        Assert.Equal(21, before.Boats.Single(b => b.BoatId == "boat_01").Fragments);
+        Assert.Equal(ServiceError.None, before.Boats.Single(b => b.BoatId == "boat_01").AssembleBlocker);
+
+        // "Montar" spends only the 20 it asks for; the boat is owned at Nv.1 but not put in use.
+        var assembled = game.Gear.AssembleBoat("boat_01");
+        Assert.True(assembled.Succeeded);
+        var boat = assembled.Value.Boats.Single(b => b.BoatId == "boat_01");
         Assert.True(boat.Owned);
         Assert.Equal(1, boat.Level);
+        Assert.Equal(1, boat.Fragments);
+        Assert.Equal("boat_00", assembled.Value.BoatId);
+        Assert.Equal(ServiceError.BoatAlreadyOwned, game.Gear.AssembleBoat("boat_01").Error);
+        Assert.Equal("boat_01", game.Gear.UseBoat("boat_01").Value.BoatId);
 
         // After the boat is owned, new fragments are kept as extras.
         clock.AdvanceSeconds(cycle);
         var extra = game.Fishing.Sync().Fragments.Single();
-        Assert.False(extra.Assembled);
+        Assert.False(extra.Ready);
         Assert.True(extra.Owned);
-        Assert.Equal(1, game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01").Fragments);
+        Assert.Equal(2, game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01").Fragments);
     }
 
     [Fact]
@@ -263,16 +281,41 @@ public sealed class BoatFragmentsAndPassTests
     }
 
     [Fact]
-    public void A_new_boat_is_put_in_use_only_when_it_is_better()
+    public void A_boat_needs_the_boat_before_it_and_its_fragments()
     {
+        // M24-T58 (A-180): boat N asks for boat N − 1 (boat 1 for the starter boat, which every player has).
         var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
-        TestSupport.GiveBoat(game, "boat_05");
-        Assert.Equal("boat_05", game.Gear.GetGear().BoatId);
+        var config = game.Session.Config;
+        var save = game.Session.Save;
+        config.TryGetBoat("boat_02", out var two);
+        BoatFragmentRules.Add(config, save, two, two.FragmentsRequired + 3);
 
-        TestSupport.GiveBoat(game, "boat_01");
-        var gear = game.Gear.GetGear();
-        Assert.Equal("boat_05", gear.BoatId);
-        Assert.True(gear.Boats.Single(b => b.BoatId == "boat_01").Owned);
+        var view = game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_02");
+        Assert.Equal(ServiceError.BoatNeedsPrevious, view.AssembleBlocker);
+        Assert.Equal("Remo Valente", view.PreviousBoatName);
+        Assert.False(view.HasPreviousBoat);
+        Assert.Equal("Precisa do barco Remo Valente", FishingIdle.Texts.GameTexts.Gear.NeedsBoat(view.PreviousBoatName));
+        var refused = game.Gear.AssembleBoat("boat_02");
+        Assert.Equal(ServiceError.BoatNeedsPrevious, refused.Error);
+        Assert.False(string.IsNullOrEmpty(refused.ErrorMessage));
+        Assert.Equal(two.FragmentsRequired + 3, BoatFragmentRules.Have(save, "boat_02"));
+
+        // Boat 1 asks for the starter boat only, and its fragments.
+        var one = game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01");
+        Assert.Equal("Água Mansa", one.PreviousBoatName);
+        Assert.True(one.HasPreviousBoat);
+        Assert.Equal(ServiceError.NotEnoughBoatFragments, one.AssembleBlocker);
+        config.TryGetBoat("boat_01", out var first);
+        Assert.Equal("Remo Valente", BoatFragmentRules.Add(config, save, two, 1).NeedsBoatName);
+        BoatFragmentRules.Add(config, save, first, first.FragmentsRequired);
+        Assert.True(game.Gear.AssembleBoat("boat_01").Succeeded);
+
+        // With boat 1, boat 2 is assembled and only fragments_required are spent.
+        Assert.True(game.Gear.AssembleBoat("boat_02").Succeeded);
+        Assert.Equal(4, BoatFragmentRules.Have(save, "boat_02"));
+        Assert.Equal("boat_00", game.Gear.GetGear().BoatId);
+        Assert.Equal(ServiceError.BoatAlreadyOwned, game.Gear.AssembleBoat("boat_00").Error);
+        Assert.Equal(ServiceError.BoatNotFound, game.Gear.AssembleBoat("boat_99").Error);
     }
 
     [Fact]
@@ -285,7 +328,7 @@ public sealed class BoatFragmentsAndPassTests
         config.TryGetBoat("boat_03", out var boat);
         var gain = BoatFragmentRules.Add(config, game.Session.Save, boat, 7);
         Assert.Equal(7, gain.Have);
-        Assert.False(gain.Assembled);
+        Assert.False(gain.Ready);
         game.Session.Persist();
 
         var reopened = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock).Game;
@@ -396,7 +439,7 @@ public sealed class BoatFragmentsAndPassTests
     }
 
     [Fact]
-    public void Pass_fragments_can_assemble_a_boat()
+    public void Pass_fragments_can_complete_a_boat_for_the_player_to_assemble()
     {
         var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
         var save = game.Session.Save;
@@ -407,7 +450,9 @@ public sealed class BoatFragmentsAndPassTests
 
         var claim = game.Pass.Claim(10, PassTrack.Free);
         Assert.True(claim.Succeeded);
-        Assert.Contains(boat.DisplayName, claim.Value.BoatsAssembled);
+        Assert.Contains(boat.DisplayName, claim.Value.BoatsReady);
+        Assert.False(game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01").Owned);
+        Assert.True(game.Gear.AssembleBoat("boat_01").Succeeded);
         Assert.True(game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01").Owned);
     }
 

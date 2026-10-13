@@ -68,8 +68,8 @@ namespace FishingIdle.GameService.WorldBoss
         public long BoatFragments { get; internal set; }
         public string BoatName { get; internal set; }
 
-        /// <summary>The boat fragments assembled the boat.</summary>
-        public bool BoatAssembled { get; internal set; }
+        /// <summary>The boat fragments completed the boat: it is ready for "Montar" (M24-T58, A-180).</summary>
+        public bool BoatReady { get; internal set; }
         public long Dollars { get; internal set; }
 
         public bool IsEmpty => Coins <= 0 && Shells <= 0 && ClothingFragments <= 0 && BoatFragments <= 0 && Dollars <= 0;
@@ -418,7 +418,7 @@ namespace FishingIdle.GameService.WorldBoss
                     {
                         state.PaidBoatFragments = gain.Amount;
                         state.PaidBoatId = boat.Id;
-                        assembled = gain.Assembled;
+                        assembled = gain.Ready;
                     }
                 }
             }
@@ -436,7 +436,7 @@ namespace FishingIdle.GameService.WorldBoss
             if (state.Damage > 0)
             {
                 var result = Result(state);
-                result.BoatAssembled = assembled;
+                result.BoatReady = assembled;
                 update.Paid = result;
             }
 

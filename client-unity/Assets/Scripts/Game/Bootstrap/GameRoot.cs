@@ -923,6 +923,76 @@ namespace FishingIdle.Game.Bootstrap
         public ClothingView Clothing { get; private set; }
 
         /// <summary>Assembles the piece the player picked with the Fragmentos de Roupa (it is worn at once).</summary>
+        /// <summary>"Montar" on a boat (M24-T58, A-180): the service checks the fragments and the boat before it.</summary>
+        public void AssembleBoat(string boatId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Gear.AssembleBoat(boatId);
+                if (!result.Succeeded)
+                {
+                    var message = result.ErrorMessage;
+                    if (result.Error == ServiceError.BoatNeedsPrevious)
+                    {
+                        foreach (var boat in Game.Gear.GetGear().Boats)
+                        {
+                            if (boat.BoatId == boatId && boat.PreviousBoatName != null)
+                            {
+                                message = GameTexts.Gear.NeedsBoat(boat.PreviousBoatName) + ".";
+                            }
+                        }
+                    }
+
+                    Toasts.Push(message, ToastKind.Warning);
+                    return;
+                }
+
+                var name = boatId;
+                foreach (var boat in result.Value.Boats)
+                {
+                    if (boat.BoatId == boatId)
+                    {
+                        name = boat.Name;
+                    }
+                }
+
+                Toasts.Push(GameTexts.Gear.BoatAssembledToast(name), ToastKind.Important, notify: true);
+                Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, name, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+                Refresh();
+            });
+        }
+
+        /// <summary>"Montar" on a rod (M24-T58, A-180): the service checks the fragments and the rod before it in the Inventory.</summary>
+        public void AssembleRod(string rodId)
+        {
+            Guard(() =>
+            {
+                var result = Game.Shop.AssembleRod(rodId);
+                if (!result.Succeeded)
+                {
+                    var message = result.ErrorMessage;
+                    if (result.Error == ServiceError.RodNeedsPrevious)
+                    {
+                        foreach (var rod in Game.Shop.GetShop().Rods)
+                        {
+                            if (rod.RodId == rodId && rod.PreviousRodName != null)
+                            {
+                                message = GameTexts.Gear.NeedsRod(rod.PreviousRodName) + ".";
+                            }
+                        }
+                    }
+
+                    Toasts.Push(message, ToastKind.Warning);
+                    return;
+                }
+
+                Toasts.Push(GameTexts.Gear.RodAssembledToast(result.Value.Name), ToastKind.Important, notify: true);
+                Celebrations.Show(GameTexts.Gear.RodAssembledTitle, result.Value.Name, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+                AquariumChanged?.Invoke();
+                Refresh();
+            });
+        }
+
         public void AssembleClothing(string pieceId)
         {
             Guard(() =>
@@ -990,10 +1060,9 @@ namespace FishingIdle.Game.Bootstrap
             if (paid.BoatFragments > 0) items.Add(GameTexts.WorldBoss.ItemBoat(Format.Number(paid.BoatFragments), paid.BoatName));
             if (paid.Dollars > 0) items.Add(GameTexts.WorldBoss.ItemDollars(Format.Number(paid.Dollars)));
             Toasts.Push(GameTexts.WorldBoss.PaidToast(items.Count > 0 ? string.Join(", ", items) : GameTexts.WorldBoss.LastResultNothing), ToastKind.Coins, notify: true);
-            if (paid.BoatAssembled)
+            if (paid.BoatReady)
             {
-                Toasts.Push(GameTexts.Gear.BoatAssembledToast(paid.BoatName), ToastKind.Important, notify: true);
-                Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, paid.BoatName, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+                Toasts.Push(GameTexts.Gear.BoatReadyToast(paid.BoatName), ToastKind.Important, notify: true);
             }
 
             Refresh();
@@ -1027,10 +1096,9 @@ namespace FishingIdle.Game.Bootstrap
             if (paid.ClothingFragments > 0) items.Add(GameTexts.WorldBoss.ItemClothing(paid.ClothingFragments));
             if (paid.BoatFragments > 0) items.Add(GameTexts.WorldBoss.ItemBoat(Format.Number(paid.BoatFragments), paid.BoatName));
             Toasts.Push(GameTexts.Clan.PaidToast(paid.Rank, string.Join(", ", items)), ToastKind.Coins, notify: true);
-            if (paid.BoatAssembled)
+            if (paid.BoatReady)
             {
-                Toasts.Push(GameTexts.Gear.BoatAssembledToast(paid.BoatName), ToastKind.Important, notify: true);
-                Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, paid.BoatName, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+                Toasts.Push(GameTexts.Gear.BoatReadyToast(paid.BoatName), ToastKind.Important, notify: true);
             }
 
             Refresh();
@@ -1200,21 +1268,21 @@ namespace FishingIdle.Game.Bootstrap
                 }
 
                 Toasts.Push(items.Count > 0 ? GameTexts.Pass.ClaimedItems(string.Join(", ", items)) : GameTexts.Pass.ClaimedToast(claim.Claimed), ToastKind.Coins);
-                foreach (var boat in claim.BoatsAssembled)
+                // Fragments completed by the claim: the player assembles with "Montar" (M24-T58, A-180).
+                foreach (var boat in claim.Fragments)
                 {
-                    Toasts.Push(GameTexts.Gear.BoatAssembledToast(boat), ToastKind.Important, notify: true);
-                    Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, boat, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+                    if (boat.Ready)
+                    {
+                        Toasts.Push(boat.NeedsBoatName == null ? GameTexts.Gear.BoatReadyToast(boat.BoatName) : GameTexts.Gear.BoatReadyNeedsToast(boat.BoatName, boat.NeedsBoatName), ToastKind.Important, notify: true);
+                    }
                 }
 
-                foreach (var rod in claim.RodsAssembled)
+                foreach (var rod in claim.RodFragments)
                 {
-                    Toasts.Push(GameTexts.Gear.RodAssembledToast(rod), ToastKind.Important, notify: true);
-                    Celebrations.Show(GameTexts.Gear.RodAssembledTitle, rod, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
-                }
-
-                if (claim.RodsAssembled.Count > 0)
-                {
-                    AquariumChanged?.Invoke();
+                    if (rod.Ready)
+                    {
+                        Toasts.Push(rod.NeedsRodName == null ? GameTexts.Gear.RodReadyToast(rod.RodName) : GameTexts.Gear.RodReadyNeedsToast(rod.RodName, rod.NeedsRodName), ToastKind.Important, notify: true);
+                    }
                 }
 
                 Refresh();

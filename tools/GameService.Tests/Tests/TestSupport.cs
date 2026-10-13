@@ -136,34 +136,80 @@ internal static class TestSupport
     }
 
     /// <summary>
-    /// Gives a boat the way the game does since M24-T16 (A-157): all the fragments it needs, which assemble it (and put it
-    /// in use when it is better). Boats are no longer sold.
+    /// Gives a boat the way the game does since M24-T58 (A-180): all the fragments it needs and "Montar". The boat before
+    /// it, when the player does not have it, is lent only for the assembly and taken back, so a test gets just the boat it
+    /// asked for. Then, as before M24-T58, the boat is put in use when it is better than the one in use.
     /// </summary>
-    public static void GiveBoat(LocalGame game, string boatId)
+    public static FishingIdle.GameService.Shop.FragmentGainView GiveBoat(LocalGame game, string boatId)
     {
         var config = game.Session.Config;
+        var save = game.Session.Save;
         config.TryGetBoat(boatId, out var boat);
-        var gain = FishingIdle.GameService.Shop.BoatFragmentRules.Add(config, game.Session.Save, boat, boat.FragmentsRequired);
-        if (gain == null || !gain.Assembled)
+        var previous = FishingIdle.GameService.Shop.BoatFragmentRules.Previous(config, boat);
+        var lent = previous != null && !FishingIdle.GameService.Shop.BoatFragmentRules.Owns(config, save, previous);
+        if (lent)
         {
-            throw new InvalidOperationException("Boat " + boatId + " was not assembled.");
+            save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
+            save.OwnedBoatIds.Add(previous.Id);
+        }
+
+        var gain = FishingIdle.GameService.Shop.BoatFragmentRules.Add(config, save, boat, boat.FragmentsRequired);
+        var result = game.Gear.AssembleBoat(boatId);
+        if (lent)
+        {
+            save.OwnedBoatIds.Remove(previous.Id);
+        }
+
+        if (gain == null || !result.Succeeded)
+        {
+            throw new InvalidOperationException("Boat " + boatId + " was not assembled: " + result.Error + ".");
+        }
+
+        var active = FishingIdle.GameService.Shop.GearRules.ActiveBoat(config, save);
+        if (config.BoatBonusAt(boat, 1) > FishingIdle.GameService.Shop.GearRules.BoatBonus(config, save, active))
+        {
+            save.BoatId = boat.Id;
         }
 
         game.Session.Persist();
+        return gain;
     }
 
     /// <summary>
-    /// Gives a rod the way the game does since M24-T32 (A-163): all the fragments it needs, which assemble it (and put it in
-    /// use when its tier is higher than the rod in use). Rods are no longer sold.
+    /// Gives a rod the way the game does since M24-T58 (A-180): all the fragments it needs and "Montar". The rod before it,
+    /// when it is not in the Inventory, is lent only for the assembly and taken back, so a test gets just the rod it asked
+    /// for. Then, as before M24-T58, the rod is equipped when its tier is higher than the rod in use.
     /// </summary>
     public static FishingIdle.GameService.Shop.RodFragmentGainView GiveRod(LocalGame game, string rodId)
     {
         var config = game.Session.Config;
+        var save = game.Session.Save;
         config.TryGetRod(rodId, out var rod);
-        var gain = FishingIdle.GameService.Shop.RodFragmentRules.Add(config, game.Session.Save, rod, rod.FragmentsRequired, game.Session.Clock.UtcNowMs);
-        if (gain == null || !gain.Assembled)
+        var previous = FishingIdle.GameService.Shop.RodFragmentRules.Previous(config, rod);
+        FishingIdle.GameService.Persistence.InventoryItem lent = null;
+        if (previous != null && !FishingIdle.GameService.Shop.RodFragmentRules.InInventory(save, previous.Id))
         {
-            throw new InvalidOperationException("Rod " + rodId + " was not assembled.");
+            lent = new FishingIdle.GameService.Persistence.InventoryItem { Id = -1, Kind = FishingIdle.GameService.Persistence.InventoryItem.KindRod, RodId = previous.Id, Level = 1 };
+            save.Inventory.Add(lent);
+        }
+
+        var gain = FishingIdle.GameService.Shop.RodFragmentRules.Add(config, save, rod, rod.FragmentsRequired, game.Session.Clock.UtcNowMs);
+        var result = game.Shop.AssembleRod(rodId);
+        if (lent != null)
+        {
+            save.Inventory.Remove(lent);
+        }
+
+        if (gain == null || !result.Succeeded)
+        {
+            throw new InvalidOperationException("Rod " + rodId + " was not assembled: " + result.Error + ".");
+        }
+
+        var item = save.Inventory.Last(i => i.Kind == FishingIdle.GameService.Persistence.InventoryItem.KindRod && i.RodId == rodId);
+        var equipped = save.EquippedRodItem();
+        if (equipped == null || !config.TryGetRod(equipped.RodId, out var current) || rod.Tier > current.Tier)
+        {
+            save.EquippedRodItemId = item.Id;
         }
 
         game.Session.Persist();

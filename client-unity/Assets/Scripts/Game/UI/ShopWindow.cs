@@ -977,8 +977,12 @@ namespace FishingIdle.Game.UI
             }
             else if (!rod.IsFree)
             {
-                // Rods are not sold (M24-T32): a gold pill says how to get it.
-                AssemblePill(skin, button, Icons.Rod);
+                // Rods are not sold (M24-T32): "Montar" when the service allows it (M24-T58, A-180), otherwise why not.
+                if (AssembleAction(skin, button, Icons.Rod, rod.AssembleBlocker, rod.AssembleBlocker == ServiceError.RodNeedsPrevious ? GameTexts.Gear.NeedsRod(rod.PreviousRodName) : null))
+                {
+                    _root.AssembleRod(rod.RodId);
+                    _dirty = true;
+                }
             }
             else if (rod.BuyBlocker != ServiceError.None)
             {
@@ -1013,6 +1017,30 @@ namespace FishingIdle.Game.UI
             var text = GameTexts.Gear.FragmentsChance(Format.Percent(chance, chance < 0.01 ? 2 : 1));
             GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(text, skin.SmallMuted, w), skin.SmallMuted);
             y += 22f;
+        }
+
+        /// <summary>
+        /// The button row of a boat or rod not owned yet (M24-T58, A-180): "Montar" when the service says it can be assembled
+        /// (returns true when pressed); "Precisa do barco X" / "Precisa da vara X" when the one before it is missing; the gold
+        /// "MONTE COM FRAGMENTOS" pill while fragments are missing.
+        /// </summary>
+        private static bool AssembleAction(UiSkin skin, Rect button, string icon, ServiceError blocker, string needsText)
+        {
+            if (blocker == ServiceError.None)
+            {
+                return skin.IconButton(button, Icons.Check, GameTexts.Gear.Assemble, skin.ButtonPrimary);
+            }
+
+            if (needsText != null)
+            {
+                var text = FishCard.Fit(needsText, skin.SmallBold, button.width - 40f);
+                var width = Mathf.Min(button.width, skin.PillWidth(text, true) + 6f);
+                skin.AccentPill(new Rect(button.center.x - width / 2f, button.center.y - 13f, width, 26f), text, UiSkin.Gold, Icons.Lock);
+                return false;
+            }
+
+            AssemblePill(skin, button, icon);
+            return false;
         }
 
         /// <summary>The gold "MONTE COM FRAGMENTOS" pill in the button's place (boats and rods are not sold).</summary>
@@ -1177,10 +1205,11 @@ namespace FishingIdle.Game.UI
                     _root.UseBoat(boat.BoatId);
                 }
             }
-            else
+            else if (AssembleAction(skin, button, Icons.Boat, boat.AssembleBlocker, boat.AssembleBlocker == ServiceError.BoatNeedsPrevious ? GameTexts.Gear.NeedsBoat(boat.PreviousBoatName) : null))
             {
-                // Boats are not sold: a gold pill says how to get it.
-                AssemblePill(skin, button, Icons.Boat);
+                // Boats are not sold: "Montar" when the service allows it (M24-T58, A-180), otherwise why not.
+                _root.AssembleBoat(boat.BoatId);
+                _dirty = true;
             }
         }
 

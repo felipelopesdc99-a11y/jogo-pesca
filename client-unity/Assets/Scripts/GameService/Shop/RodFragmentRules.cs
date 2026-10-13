@@ -17,22 +17,26 @@ namespace FishingIdle.GameService.Shop
         public long Have { get; internal set; }
         public int Required { get; internal set; }
 
-        /// <summary>Whether the player owns the rod after this gain (assembled now or before).</summary>
+        /// <summary>Whether the player owns the rod (assembled before; extras then).</summary>
         public bool Owned { get; internal set; }
 
-        /// <summary>Whether this gain completed the rod.</summary>
-        public bool Assembled { get; internal set; }
+        /// <summary>
+        /// Whether this gain completed the fragments the rod asks for (M24-T58, A-180): nothing is assembled by itself,
+        /// the player assembles it with the "Montar" button (Loja → Varas).
+        /// </summary>
+        public bool Ready { get; internal set; }
 
-        /// <summary>Whether the assembled rod was put in use (it is of a higher tier than the one in use).</summary>
-        public bool Equipped { get; internal set; }
+        /// <summary>The rod the player still needs in the Inventory to assemble this one (the one before it), or null.</summary>
+        public string NeedsRodName { get; internal set; }
     }
 
     /// <summary>
     /// Rods by fragments (M24-T32, A-163): since M24-T47 (A-173) every fish pulled out, on any map, may drop one fragment of
-    /// each rod but the free Starter Rod (one roll per rod, with its own fragment_drop_chance), so the rod that opens the
-    /// next map can always drop and the progression never locks. fragments_required of them assemble the rod, which goes
-    /// to the Inventory at Nv.1 and is put in use when its tier is higher than the rod in use. Fragments that arrive while
-    /// the rod is owned are kept as extras (they assemble it again if it is sold). Rods are not sold in the Shop anymore.
+    /// each rod but the free Starter Rod (one roll per rod, with its own fragment_drop_chance). Since M24-T58 (A-180) the
+    /// player assembles the rod with the "Montar" button: it takes fragments_required fragments AND the rod before it in
+    /// the Inventory (rod 1 asks for the Starter Rod). Assembling spends only fragments_required; the rod goes to the
+    /// Inventory at Nv.1 and is not equipped by itself. Fragments keep adding up without a limit; those of an owned rod are
+    /// extras (they assemble it again if it is sold). Rods are not sold in the Shop.
     /// </summary>
     public static class RodFragmentRules
     {
@@ -86,9 +90,8 @@ namespace FishingIdle.GameService.Shop
         }
 
         /// <summary>
-        /// Adds fragments of a rod and assembles it when they reach fragments_required (the Starter Rod takes none).
-        /// Assembling spends the fragments, adds the rod to the Inventory at Nv.1 and puts it in use when its tier is
-        /// higher than the rod in use.
+        /// Adds fragments of a rod (the Starter Rod takes none). Nothing is assembled here (M24-T58): the gain says when
+        /// the fragments became enough (<see cref="RodFragmentGainView.Ready"/>) and which rod is still missing before it.
         /// </summary>
         public static RodFragmentGainView Add(GameConfig config, PlayerSave save, RodConfig rod, long amount, long nowMs)
         {
@@ -98,9 +101,10 @@ namespace FishingIdle.GameService.Shop
             }
 
             save.RodFragments = save.RodFragments ?? new Dictionary<string, long>();
-            var have = Have(save, rod.Id);
-            have = amount > long.MaxValue - have ? long.MaxValue : have + amount;
+            var before = Have(save, rod.Id);
+            var have = amount > long.MaxValue - before ? long.MaxValue : before + amount;
             save.RodFragments[rod.Id] = have;
+            var required = System.Math.Max(1, rod.FragmentsRequired);
             var gain = new RodFragmentGainView
             {
                 RodId = rod.Id,
@@ -108,38 +112,45 @@ namespace FishingIdle.GameService.Shop
                 Amount = amount,
                 Required = rod.FragmentsRequired,
             };
-            var before = save.EquippedRodItemId;
-            gain.Assembled = TryAssemble(config, save, rod, nowMs);
-            gain.Equipped = gain.Assembled && save.EquippedRodItemId != before;
-            gain.Have = Have(save, rod.Id);
+            gain.Have = have;
             gain.Owned = Owns(save, rod.Id);
+            gain.Ready = !gain.Owned && before < required && have >= required;
+            var previous = Previous(config, rod);
+            gain.NeedsRodName = previous != null && !InInventory(save, previous.Id) ? previous.DisplayName : null;
             return gain;
         }
 
-        /// <summary>Assembles every rod whose fragments are already enough (a config that lowered fragments_required). Returns their ids.</summary>
-        internal static List<string> AssembleReady(GameConfig config, PlayerSave save, long nowMs)
+        /// <summary>The rod right before this one in tier order (the Starter Rod for rod 1); null for the Starter Rod.</summary>
+        public static RodConfig Previous(GameConfig config, RodConfig rod)
         {
-            var assembled = new List<string>();
-            foreach (var rod in config.Rods.Rods.Where(GameConfig.IsFragmentRod).OrderBy(r => r.Tier))
-            {
-                if (TryAssemble(config, save, rod, nowMs))
-                {
-                    assembled.Add(rod.Id);
-                }
-            }
-
-            return assembled;
+            return config.Rods.Rods.Where(r => r.Tier < rod.Tier).OrderByDescending(r => r.Tier).FirstOrDefault();
         }
 
-        private static bool TryAssemble(GameConfig config, PlayerSave save, RodConfig rod, long nowMs)
+        /// <summary>Whether a copy of this rod is in the Inventory (a rod on the Market or in Items to Withdraw is not).</summary>
+        public static bool InInventory(PlayerSave save, string rodId)
         {
-            var required = System.Math.Max(1, rod.FragmentsRequired);
-            if (Owns(save, rod.Id) || Have(save, rod.Id) < required)
-            {
-                return false;
-            }
+            return save.Inventory.Any(i => i.Kind == InventoryItem.KindRod && i.RodId == rodId);
+        }
 
-            save.RodFragments[rod.Id] = Have(save, rod.Id) - required;
+        /// <summary>Why a rod cannot be assembled now (M24-T58, A-180); None when it can.</summary>
+        public static ServiceError AssembleBlocker(GameConfig config, PlayerSave save, RodConfig rod)
+        {
+            if (rod == null) return ServiceError.ItemNotFound;
+            if (!GameConfig.IsFragmentRod(rod)) return ServiceError.NotFromFragments;
+            if (Owns(save, rod.Id)) return ServiceError.RodAlreadyOwned;
+            var previous = Previous(config, rod);
+            if (previous != null && !InInventory(save, previous.Id)) return ServiceError.RodNeedsPrevious;
+            if (Have(save, rod.Id) < System.Math.Max(1, rod.FragmentsRequired)) return ServiceError.NotEnoughRodFragments;
+            return ServiceError.None;
+        }
+
+        /// <summary>
+        /// Assembles a rod (checked by <see cref="AssembleBlocker"/> first): spends fragments_required (the rest stays kept)
+        /// and adds the rod to the Inventory at Nv.1. It is not equipped: the player chooses (M24-T58, A-180). Returns it.
+        /// </summary>
+        internal static InventoryItem Assemble(GameConfig config, PlayerSave save, RodConfig rod, long nowMs)
+        {
+            save.RodFragments[rod.Id] = Have(save, rod.Id) - System.Math.Max(1, rod.FragmentsRequired);
             var item = new InventoryItem
             {
                 Id = save.NextItemId++,
@@ -150,16 +161,7 @@ namespace FishingIdle.GameService.Shop
                 PurchasePriceCoins = 0,
             };
             save.Inventory.Add(item);
-
-            // The new rod goes in use when it is of a higher tier than the rod in use (or when there is none yet).
-            var equipped = save.EquippedRodItem();
-            var current = equipped != null && config.TryGetRod(equipped.RodId, out var r) ? r : null;
-            if (current == null || rod.Tier > current.Tier)
-            {
-                save.EquippedRodItemId = item.Id;
-            }
-
-            return true;
+            return item;
         }
     }
 }

@@ -29,10 +29,10 @@ public sealed class MapsThreeFourTests
     }
 
     [Fact]
-    public void Map_3_opens_at_level_20_for_rod_1_and_never_for_the_starter_rod()
+    public void Map_3_opens_at_level_20_with_any_rod()
     {
         Assert.Equal(ServiceError.MapLocked, Player(19, "rod_01").Maps.TravelTo("map_03").Error);
-        Assert.Equal(ServiceError.RodTooWeakForMap, Player(25).Maps.TravelTo("map_03").Error);
+        Assert.True(Player(25).Maps.TravelTo("map_03").Succeeded);   // only the level opens a map (M24-T58, A-180)
 
         var game = Player(20, "rod_01");
         Assert.True(game.Maps.GetMaps().Maps.Single(m => m.MapId == "map_03").LevelUnlocked);
@@ -40,10 +40,10 @@ public sealed class MapsThreeFourTests
     }
 
     [Fact]
-    public void Map_4_needs_level_30_and_rod_2()
+    public void Map_4_needs_only_level_30()
     {
         Assert.Equal(ServiceError.MapLocked, Player(29, "rod_01").Maps.TravelTo("map_04").Error);
-        Assert.Equal(ServiceError.RodTooWeakForMap, Player(30, "rod_01").Maps.TravelTo("map_04").Error);
+        Assert.True(Player(30, "rod_01").Maps.TravelTo("map_04").Succeeded);   // no rod asked for since M24-T58 (A-180)
         TestSupport.GiveRod(Player(1), "rod_02"); // items have no minimum level (M24-T09)
 
         var game = Player(30, "rod_01", "rod_02");

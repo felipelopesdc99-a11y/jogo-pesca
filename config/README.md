@@ -5,7 +5,7 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | Arquivo | Responsável por |
 |---|---|
 | `fish_catalog.json` | Dados próprios da espécie: raridade, faixa de tamanho, atributos base, valor de venda, XP de alimento, XP do Pescador |
-| `maps.json` | Mapas, pools de peixes por mapa com pesos de captura, nível de desbloqueio, vara mínima, regras de viagem |
+| `maps.json` | Mapas, pools de peixes por mapa com pesos de captura, nível de desbloqueio (a única trava de um mapa desde o M24-T58), regras de viagem |
 | `progression.json` | Curva de XP do Pescador, curva de XP do peixe (até o Nv.100) e bônus de atributo por nível do peixe, distribuição de tamanho, regras de modificador de raridade/tamanho/nível, regras de alimentação, intervalos de pesca, genes dos peixes (`genes`, M24-T52) |
 | `rods.json` | Definições das varas, bônus no Nv.1 e no Nv.100 (com a curva entre eles), custo de cada nível (Moedas e Conchas), regras de revenda; varas por fragmentos (quantos fragmentos montam e a chance por peixe puxado, em qualquer mapa desde o M24-T47; o valor de referência no Mercado) |
 | `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário, VIP (preço em Dólares, dias, bônus de XP offline e o ciclo da pesca offline com VIP, `offline_cycle_seconds`); `crew_removal_refund`: os preços da Tripulação e das Melhorias de antes, só para devolver as Moedas a quem já jogava (M24-T46, A-172; não mudam nada no jogo de hoje) |
@@ -207,6 +207,16 @@ Desde 11/10/2026 (M24-T16 e M24-T17, A-157 e A-158, TD-042). Números gerados po
 `tools/Progressao/passe_fragmentos.py gerar` (os "botões" ficam no começo do script); o ritmo é simulado por
 `tools/Progressao/passe_fragmentos.py simular --gravar` (resultado em `docs/propostas/passe_fragmentos.json`).
 
+**Desde 13/10/2026 (M24-T58, A-180) nada é montado sozinho, e os mapas abrem só pelo nível.** Juntar os
+`fragments_required` de um barco ou de uma vara não monta mais nada: o jogador aperta **Montar** (Loja → Barcos ou
+Varas), e só pode montar tendo o item anterior — o Barco N pede o Barco N − 1 (o Barco 1 pede o barco inicial, que todo
+jogador tem) e a Vara N pede a Vara N − 1 **no Inventário** (a Vara 1 pede a Vara Inicial). Montar gasta só
+`fragments_required`; o resto fica guardado, sem limite. O item montado entra no Nv.1 e **não** passa a ser usado sozinho
+(o barco com Usar; a vara com Equipar). A ordem é a dos `tier`. Os mapas não têm mais `minimum_rod_tier`: abrem só com
+`unlock_fisher_level`; a vara em uso decide apenas quais raridades do mapa ela pesca (`rods.json → can_catch_rarities`),
+e o validador confere que toda vara pesca alguma coisa em todo mapa. As roupas já eram montadas pelo jogador, peça
+escolhida por ele (A-164), e continuam iguais.
+
 **Desde 13/10/2026 (M24-T47, A-173, TD-054) todo fragmento cai em qualquer mapa.** Cada peixe puxado (online e offline;
 Expedições não) faz um sorteio para **cada** barco, **cada** vara e o Fragmento de Roupa, cada um com o seu
 `fragment_drop_chance` — hoje **0,001 (0,1%)** em todos, a chance pedida pelo proprietário. Para mudar, edite o
@@ -250,9 +260,9 @@ Depois de mudar varas ou roupas, rode também `passe_fragmentos.py gerar` (o Pas
   `fragment_map_id`, o único mapa onde ela caía, com 1,63% a 7%). `acquisition.market_reference_coins` é o valor da vara no Mercado e
   na revenda (o preço que ela tinha na Loja). `fragment_rules.drop_on_offline_fishing` diz se a pesca offline também dá
   fragmentos (sim). A Vara Inicial é `"free_claim_in_shop"` e não tem mapa.
-- **A progressão não pode travar.** Como toda vara cai em todo mapa (M24-T47), basta que a categoria que cada mapa pede
-  (`minimum_rod_tier` no `maps.json`) seja a da Vara Inicial ou a de uma vara com `fragment_drop_chance` maior que 0. O
-  jogo recusa o config que travaria, com a mensagem dizendo qual mapa.
+- **A progressão não pode travar.** Desde o M24-T58 (A-180) nenhum mapa pede vara (`minimum_rod_tier` saiu do
+  `maps.json`); o validador confere que toda vara pesca alguma raridade em todo mapa. Até então, cada mapa pedia uma
+  categoria mínima de vara, e o jogo recusava um config em que essa vara não caísse pescando.
 - **Como a chance era calibrada (até o M24-T46).** Quem abria o jogo 4 vezes por dia montava cada vara no mesmo dia em que
   comprava antes (`PRECOS_ANTIGOS` no script guarda os preços de antes, só para comparar).
 - **Roupas** (`equipment.json → clothing`): `fragment_drop_chance` (0,1% desde o M24-T47, era 0,17%: um tipo só de

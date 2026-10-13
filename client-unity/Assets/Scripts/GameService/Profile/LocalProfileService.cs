@@ -247,13 +247,8 @@ namespace FishingIdle.GameService.Profile
                 return ServiceResult<RodItemView>.Fail(ServiceError.ItemNotFound);
             }
 
-            // During a trip the rod must also be allowed where the boat is going.
+            // Any rod works on any map (M24-T58, A-180); a weaker rod only catches fewer rarities there.
             Config.TryGetMap(Save.CurrentMapId, out var map);
-            Config.TryGetMap(Save.Travel.Active ? Save.Travel.ToMapId : null, out var destination);
-            if ((map != null && rod.Tier < map.MinimumRodTier) || (destination != null && rod.Tier < destination.MinimumRodTier))
-            {
-                return ServiceResult<RodItemView>.Fail(ServiceError.RodNotAllowedOnMap);
-            }
 
             // Cycles completed with the old rod are settled with the old rod.
             _fishing.Sync();
@@ -379,7 +374,6 @@ namespace FishingIdle.GameService.Profile
                 CanCatchMythic = rod.CanCatchRarities != null && rod.CanCatchRarities.Any(r => Config.RarityRank(r) > 3),
                 GeneratesShells = rod.GeneratesShells,
                 IsEquipped = item.Id == Save.EquippedRodItemId,
-                AllowedOnCurrentMap = map == null || rod.Tier >= map.MinimumRodTier,
                 NextUpgradeCost = rod.HasInternalLevels ? Config.RodUpgradeCost(rod, item.Level) : 0,
                 NextUpgradeShells = rod.HasInternalLevels ? Config.RodUpgradeShellCost(rod, item.Level) : 0,
                 ResaleValue = RodRules.ResaleValue(rod, item),

@@ -941,10 +941,6 @@ namespace FishingIdle.Game.UI
                 var equipped = GameTexts.Profile.Equipped.ToUpperInvariant();
                 skin.AccentPill(new Rect(bx, row2 + 7f, Mathf.Min(bw, skin.PillWidth(equipped, true) + 6f), 24), equipped, UiSkin.Accent, Icons.Check);
             }
-            else if (!rod.AllowedOnCurrentMap)
-            {
-                GUI.Label(new Rect(bx, row2, side, 38), GameTexts.Profile.NotAllowedHere, skin.SmallGold);
-            }
             else if (GUI.Button(new Rect(bx, row2, side, 38), FishCard.Fit(GameTexts.Profile.Equip, skin.ButtonPrimary, side - 24f), skin.ButtonPrimary))
             {
                 _root.EquipRod(rod.ItemId);
@@ -1069,11 +1065,6 @@ namespace FishingIdle.Game.UI
             TipAdd(TipKind.Row, GameTexts.Profile.SizeBonus, "+" + Format.Percent(rod.SizeBonus, 0));
             TipAdd(TipKind.Row, GameTexts.Profile.ShellBonus, rod.GeneratesShells ? "+" + Format.Percent(rod.ShellBonus, 0) : GameTexts.Profile.NoShells);
             TipAdd(TipKind.Text, CatchesText(rod));
-            if (!rod.AllowedOnCurrentMap)
-            {
-                TipAdd(TipKind.Warning, GameTexts.Profile.NotAllowedHere);
-            }
-
             TipAdd(TipKind.Hint, GameTexts.Profile.ClickForActions);
         }
 

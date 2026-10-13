@@ -75,6 +75,10 @@ FRAG_VARA_GRATIS = 0.15
 # free rod fragments it gave before (15% of the old 15 / 25 / 35 / 45 / 60): the owner chose (c) on the simulation that
 # kept them. FRAG_VARA_GRATIS only counts for a rod missing here.
 PASSE_FRAG_VARAS = {'rod_01': 3, 'rod_02': 4, 'rod_03': 6, 'rod_04': 7, 'rod_05': 9}
+# A categoria de vara que cada mapa pedia até o M24-T58 (A-180; hoje os mapas abrem só pelo nível). Só decide em que marco
+# do Passe vêm os fragmentos de cada vara (o nível do primeiro mapa que pedia a categoria dela), para o Passe não mudar.
+VARA_DO_MAPA = {'map_01': 0, 'map_02': 1, 'map_03': 1, 'map_04': 2, 'map_05': 2, 'map_06': 3, 'map_07': 3, 'map_08': 4,
+                'map_09': 4, 'map_10': 5}
 ROUPA_ATE_100 = 2
 ROUPA_DEPOIS = 1
 
@@ -217,8 +221,6 @@ def catch_rates(rules, reference):
         lvl = max(MARCO_A_CADA, mp['unlock_fisher_level'])
         snap = reference.at_level.get(lvl) or reference.at_level[max(reference.at_level)]
         rod = next(r for r in rules.rods if r['id'] == snap['vara'])
-        if rod['tier'] < mp['minimum_rod_tier']:
-            rod = next(r for r in rules.rods if r['tier'] >= mp['minimum_rod_tier'])
         _, _, _, caught = rules.per_attempt(mp, rod, snap['nivel_vara'] if rod['id'] == snap['vara'] else 1, snap['bonus_barco'], snap.get('roupas'))
         out[mp['id']] = {'por_tentativa': caught, 'vara': rod['id'], 'nivel_vara': snap['nivel_vara'], 'bonus_barco': round(snap['bonus_barco'], 4)}
     return out
@@ -235,12 +237,12 @@ def smooth(values):
 
 
 def rods_by_level(rules):
-    """The milestone of each rod (M24-T32): the Fisher level that unlocks the first map asking for its tier."""
+    """The milestone of each rod (M24-T32): the Fisher level of the map that asked for its tier until M24-T58 (VARA_DO_MAPA)."""
     out = {}
     for rod in rules.rods:
         if rod['tier'] == 0:
             continue
-        first = min((m['unlock_fisher_level'] for m in rules.maps if m['minimum_rod_tier'] == rod['tier']), default=None)
+        first = min((m['unlock_fisher_level'] for m in rules.maps if VARA_DO_MAPA.get(m['id']) == rod['tier']), default=None)
         if first:
             out[max(MARCO_A_CADA, int(math.ceil(first / float(MARCO_A_CADA))) * MARCO_A_CADA)] = rod
     return out

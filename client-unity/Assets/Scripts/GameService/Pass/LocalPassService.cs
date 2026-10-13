@@ -94,12 +94,12 @@ namespace FishingIdle.GameService.Pass
         /// <summary>Fragments received, one entry per boat (summed), with the state after the claim.</summary>
         public List<FragmentGainView> Fragments { get; } = new List<FragmentGainView>();
 
-        /// <summary>Names of the boats the fragments assembled.</summary>
-        public List<string> BoatsAssembled { get; } = new List<string>();
+        /// <summary>Names of the boats whose fragments this claim completed (the player assembles them, M24-T58, A-180).</summary>
+        public List<string> BoatsReady { get; } = new List<string>();
 
-        /// <summary>Rod fragments received, one entry per rod (summed), and the rods they assembled (M24-T32).</summary>
+        /// <summary>Rod fragments received, one entry per rod (summed), and the rods whose fragments they completed (M24-T32, M24-T58).</summary>
         public List<RodFragmentGainView> RodFragments { get; } = new List<RodFragmentGainView>();
-        public List<string> RodsAssembled { get; } = new List<string>();
+        public List<string> RodsReady { get; } = new List<string>();
 
         /// <summary>Fragmentos de Roupa received (M24-T33).</summary>
         public long ClothingFragments { get; internal set; }
@@ -340,16 +340,16 @@ namespace FishingIdle.GameService.Pass
                         same.Amount += gain.Amount;
                         same.Have = gain.Have;
                         same.Owned = gain.Owned;
-                        same.Assembled |= gain.Assembled;
+                        same.Ready |= gain.Ready;
                     }
                     else
                     {
                         result.Fragments.Add(gain);
                     }
 
-                    if (gain.Assembled)
+                    if (gain.Ready)
                     {
-                        result.BoatsAssembled.Add(gain.BoatName);
+                        result.BoatsReady.Add(gain.BoatName);
                     }
                 }
             }
@@ -365,17 +365,16 @@ namespace FishingIdle.GameService.Pass
                         same.Amount += gain.Amount;
                         same.Have = gain.Have;
                         same.Owned = gain.Owned;
-                        same.Assembled |= gain.Assembled;
-                        same.Equipped |= gain.Equipped;
+                        same.Ready |= gain.Ready;
                     }
                     else
                     {
                         result.RodFragments.Add(gain);
                     }
 
-                    if (gain.Assembled)
+                    if (gain.Ready)
                     {
-                        result.RodsAssembled.Add(gain.RodName);
+                        result.RodsReady.Add(gain.RodName);
                     }
                 }
             }

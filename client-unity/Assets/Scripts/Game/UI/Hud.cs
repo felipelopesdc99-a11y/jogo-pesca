@@ -251,15 +251,15 @@ namespace FishingIdle.Game.UI
             _root.PushPassMilestones(update.LevelsReached);
 
             // Boat fragments (M24-T16, A-157), rod fragments (M24-T32, A-163) and Fragmentos de Roupa (M24-T33, A-164): small
-            // notices grouped by kind (FragmentNotices); a big one when a boat or a rod is assembled.
+            // notices grouped by kind (FragmentNotices); a big one when a boat's or a rod's fragments are complete (the player
+            // then assembles it with "Montar", M24-T58, A-180).
             var now = Time.unscaledTime;
             foreach (var fragment in update.Fragments)
             {
                 var f = fragment;
-                if (f.Assembled)
+                if (f.Ready)
                 {
-                    _root.Toasts.Push(GameTexts.Gear.BoatAssembledToast(f.BoatName), ToastKind.Important, notify: true);
-                    _root.Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, f.BoatName, VisualTheme.Current.Reward);
+                    _root.Toasts.Push(f.NeedsBoatName == null ? GameTexts.Gear.BoatReadyToast(f.BoatName) : GameTexts.Gear.BoatReadyNeedsToast(f.BoatName, f.NeedsBoatName), ToastKind.Important, notify: true);
                 }
                 else
                 {
@@ -274,10 +274,9 @@ namespace FishingIdle.Game.UI
             foreach (var fragment in update.RodFragments)
             {
                 var f = fragment;
-                if (f.Assembled)
+                if (f.Ready)
                 {
-                    _root.Toasts.Push(f.Equipped ? GameTexts.Gear.RodAssembledEquippedToast(f.RodName) : GameTexts.Gear.RodAssembledToast(f.RodName), ToastKind.Important, notify: true);
-                    _root.Celebrations.Show(GameTexts.Gear.RodAssembledTitle, f.RodName, VisualTheme.Current.Reward);
+                    _root.Toasts.Push(f.NeedsRodName == null ? GameTexts.Gear.RodReadyToast(f.RodName) : GameTexts.Gear.RodReadyNeedsToast(f.RodName, f.NeedsRodName), ToastKind.Important, notify: true);
                 }
                 else
                 {

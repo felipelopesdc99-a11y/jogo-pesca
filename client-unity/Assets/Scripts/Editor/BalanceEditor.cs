@@ -545,7 +545,7 @@ namespace FishingIdle.Editor
             _simAttempts = Mathf.Clamp(EditorGUILayout.IntField(T.SimAttempts, _simAttempts), 100, 1000000);
 
             var map = maps[_simMap];
-            if (rod.Tier < map.MinimumRodTier || CatchRules.EligiblePool(config, map, rod).Count == 0)
+            if (CatchRules.EligiblePool(config, map, rod).Count == 0)
             {
                 EditorGUILayout.HelpBox(T.SimRodCannotFish, MessageType.Warning);
                 return;

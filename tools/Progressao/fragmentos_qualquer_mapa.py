@@ -21,7 +21,9 @@ O que a simulação conta:
     Premium;
   - NÃO conta o Boss Mundial (os fragmentos de barco e de roupa das faixas dele): ele depende do dano de cada dia e não
     está no jogador de referência. O Boss só adianta os números abaixo;
-  - roupas montadas na ordem de simular_progressao.CLOTHING_ORDER, assim que há fragmentos.
+  - roupas montadas na ordem de simular_progressao.CLOTHING_ORDER, assim que há fragmentos;
+  - desde o M24-T58 (A-180) nada se monta sozinho: o jogador de referência aperta Montar assim que pode, em ordem (cada
+    barco e cada vara pedem o anterior), e os mapas abrem só pelo nível do Pescador (sem vara mínima).
 """
 import argparse
 import collections
@@ -131,10 +133,11 @@ def fmt(v):
 
 
 def liberado(g, m):
-    """The day a map opens: the Fisher level it asks for and a rod of its minimum_rod_tier (None = not yet)."""
+    """The day a map opens (None = not yet): the Fisher level it asks for (since M24-T58, A-180, the only lock; a config
+    from before also asked for a rod of its minimum_rod_tier)."""
     p = g.p
     level_day = p.reached.get(m['unlock_fisher_level'])
-    rods = [0.0 if x['tier'] == 0 else p.bought.get(x['id']) for x in g.rules.rods if x['tier'] >= m['minimum_rod_tier']]
+    rods = [0.0 if x['tier'] == 0 else p.bought.get(x['id']) for x in g.rules.rods if x['tier'] >= m.get('minimum_rod_tier', 0)]
     rods = [d for d in rods if d is not None]
     if level_day is None or not rods:
         return None
@@ -166,7 +169,9 @@ def simular(days, gravar):
                    '"varas_15_a_60": todos em qualquer mapa, 0,1%% cada, com as varas pedindo 15 / 25 / 35 / 45 / 60 '
                    'fragmentos (M24-T47); "agora": o mesmo com as varas pedindo 5 / 8 / 12 / 15 / 20 (OD-070, opção c, '
                    'M24-T48; o Passe continua dando 3 / 4 / 6 / 7 / 9 fragmentos de vara). Conta a pesca (online e offline, continuando depois do '
-                   'Nv.1000) e o Passe grátis; não conta o Boss Mundial nem o Premium. null = não chegou em %d dias.' % days)
+                   'Nv.1000) e o Passe grátis; não conta o Boss Mundial nem o Premium. Desde o M24-T58 (A-180), nas três: o jogador '
+                   'aperta Montar assim que pode, em ordem (cada barco e cada vara pedem o anterior), e os mapas abrem só pelo nível. '
+                   'null = não chegou em %d dias.' % days)
     out['chances_agora'] = collections.OrderedDict(
         [(b['id'], b.get('fragment_drop_chance')) for b in rules.fragment_boats]
         + [(x['id'], x.get('fragment_drop_chance')) for x in rules.fragment_rods]

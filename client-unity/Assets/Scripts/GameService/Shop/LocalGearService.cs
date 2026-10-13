@@ -28,6 +28,18 @@ namespace FishingIdle.GameService.Shop
         public int FragmentsRequired { get; internal set; }
         public double FragmentChance { get; internal set; }
 
+        /// <summary>
+        /// Why "Montar" is refused now (M24-T58, A-180); None when the boat can be assembled. BoatAlreadyOwned once owned,
+        /// BoatNeedsPrevious while the boat before it (<see cref="PreviousBoatName"/>) is missing.
+        /// </summary>
+        public ServiceError AssembleBlocker { get; internal set; }
+
+        /// <summary>The boat this one asks for before it can be assembled (the starter boat for boat 1); null for the starter.</summary>
+        public string PreviousBoatName { get; internal set; }
+
+        /// <summary>Whether the player has <see cref="PreviousBoatName"/>.</summary>
+        public bool HasPreviousBoat { get; internal set; }
+
         /// <summary>Whether the boat levels up (M24-T13); the starter boat does not.</summary>
         public bool HasLevels { get; internal set; }
 
@@ -117,6 +129,12 @@ namespace FishingIdle.GameService.Shop
         /// <summary>Switches to a boat already owned.</summary>
         ServiceResult<GearView> UseBoat(string boatId);
 
+        /// <summary>
+        /// Assembles a boat with its fragments (M24-T58, A-180): it takes fragments_required and the boat before it; only
+        /// fragments_required are spent. The boat is owned at Nv.1 and is not put in use (UseBoat does that).
+        /// </summary>
+        ServiceResult<GearView> AssembleBoat(string boatId);
+
         /// <summary>Takes an owned boat one level up, paying Moedas and Conchas (M24-T13).</summary>
         ServiceResult<GearView> UpgradeBoat(string boatId);
 
@@ -187,6 +205,7 @@ namespace FishingIdle.GameService.Shop
                 var owned = OwnsBoat(b);
                 var level = owned ? GearRules.BoatLevel(config, save, b) : 1;
                 var max = config.BoatMaxLevel(b);
+                var previous = BoatFragmentRules.Previous(config, b);
                 view.Boats.Add(new BoatOfferView
                 {
                     BoatId = b.Id,
@@ -199,6 +218,9 @@ namespace FishingIdle.GameService.Shop
                     Fragments = BoatFragmentRules.Have(save, b.Id),
                     FragmentsRequired = b.Id == config.StarterBoat.Id ? 0 : b.FragmentsRequired,
                     FragmentChance = b.Id == config.StarterBoat.Id ? 0 : b.FragmentDropChance,
+                    AssembleBlocker = BoatFragmentRules.AssembleBlocker(config, save, b),
+                    PreviousBoatName = previous?.DisplayName,
+                    HasPreviousBoat = previous != null && BoatFragmentRules.Owns(config, save, previous),
                     HasLevels = b.HasLevels,
                     Level = level,
                     MaxLevel = max,
@@ -247,6 +269,26 @@ namespace FishingIdle.GameService.Shop
             _fishing.Sync();
             Save.BoatId = boat.Id;
             _session.Persist();
+            return ServiceResult<GearView>.Ok(GetGear());
+        }
+
+        public ServiceResult<GearView> AssembleBoat(string boatId)
+        {
+            if (!Config.TryGetBoat(boatId, out var boat))
+            {
+                return ServiceResult<GearView>.Fail(ServiceError.BoatNotFound);
+            }
+
+            var blocker = BoatFragmentRules.AssembleBlocker(Config, Save, boat);
+            if (blocker != ServiceError.None)
+            {
+                return ServiceResult<GearView>.Fail(blocker);
+            }
+
+            // The boat is not put in use, so the catch chance does not change: no sync needed.
+            BoatFragmentRules.Assemble(Config, Save, boat);
+            _session.Persist();
+            _session.Log("Assembled boat " + boat.Id + " from " + boat.FragmentsRequired + " fragments.");
             return ServiceResult<GearView>.Ok(GetGear());
         }
 

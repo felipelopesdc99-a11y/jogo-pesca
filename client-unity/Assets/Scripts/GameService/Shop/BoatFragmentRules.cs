@@ -17,18 +17,26 @@ namespace FishingIdle.GameService.Shop
         public long Have { get; internal set; }
         public int Required { get; internal set; }
 
-        /// <summary>Whether the player owns the boat after this gain (assembled now or before).</summary>
+        /// <summary>Whether the player owns the boat (assembled before; extras then).</summary>
         public bool Owned { get; internal set; }
 
-        /// <summary>Whether this gain completed the boat.</summary>
-        public bool Assembled { get; internal set; }
+        /// <summary>
+        /// Whether this gain completed the fragments the boat asks for (M24-T58, A-180): nothing is assembled by itself,
+        /// the player assembles it with the "Montar" button (Loja → Barcos).
+        /// </summary>
+        public bool Ready { get; internal set; }
+
+        /// <summary>The boat the player still needs to assemble this one (the one before it), or null when they have it.</summary>
+        public string NeedsBoatName { get; internal set; }
     }
 
     /// <summary>
     /// Boats by fragments (M24-T16, A-157): since M24-T47 (A-173) every fish pulled out, on any map, may drop one fragment
-    /// of each boat (one roll per boat, with its own fragment_drop_chance); fragments_required of them assemble the boat,
-    /// which is then owned at Nv.1 and put in use when it is better than the boat in use. Fragments that arrive after the
-    /// boat is owned are kept as extras (OD-060).
+    /// of each boat (one roll per boat, with its own fragment_drop_chance). Since M24-T58 (A-180) the player assembles the
+    /// boat with the "Montar" button: it takes fragments_required fragments AND the boat before it (boat 1 asks for the
+    /// starter boat, which every player has). Assembling spends only fragments_required; the boat is owned at Nv.1 and is
+    /// not put in use by itself. Fragments keep adding up without a limit; the ones above fragments_required stay kept
+    /// (and those of an owned boat are extras, OD-060).
     /// </summary>
     public static class BoatFragmentRules
     {
@@ -73,8 +81,8 @@ namespace FishingIdle.GameService.Shop
         }
 
         /// <summary>
-        /// Adds fragments of a boat and assembles it when they reach fragments_required (the starter boat has none).
-        /// Assembling spends the fragments, adds the boat at Nv.1 and puts it in use when its bonus beats the boat in use.
+        /// Adds fragments of a boat (the starter boat has none). Nothing is assembled here (M24-T58): the gain says when
+        /// the fragments became enough (<see cref="FragmentGainView.Ready"/>) and which boat is still missing before it.
         /// </summary>
         public static FragmentGainView Add(GameConfig config, PlayerSave save, BoatConfig boat, long amount)
         {
@@ -84,9 +92,10 @@ namespace FishingIdle.GameService.Shop
             }
 
             save.BoatFragments = save.BoatFragments ?? new Dictionary<string, long>();
-            var have = Have(save, boat.Id);
-            have = amount > long.MaxValue - have ? long.MaxValue : have + amount;
+            var before = Have(save, boat.Id);
+            var have = amount > long.MaxValue - before ? long.MaxValue : before + amount;
             save.BoatFragments[boat.Id] = have;
+            var required = System.Math.Max(1, boat.FragmentsRequired);
             var gain = new FragmentGainView
             {
                 BoatId = boat.Id,
@@ -94,25 +103,52 @@ namespace FishingIdle.GameService.Shop
                 Amount = amount,
                 Required = boat.FragmentsRequired,
             };
-            gain.Assembled = TryAssemble(config, save, boat);
-            gain.Have = Have(save, boat.Id);
+            gain.Have = have;
             gain.Owned = Owns(config, save, boat);
+            gain.Ready = !gain.Owned && before < required && have >= required;
+            var previous = Previous(config, boat);
+            gain.NeedsBoatName = previous != null && !Owns(config, save, previous) ? previous.DisplayName : null;
             return gain;
         }
 
-        /// <summary>Assembles every boat whose fragments are already enough (a config that lowered fragments_required). Returns their ids.</summary>
-        internal static List<string> AssembleReady(GameConfig config, PlayerSave save)
+        /// <summary>The boat right before this one in tier order (the starter boat for boat 1); null for the starter boat.</summary>
+        public static BoatConfig Previous(GameConfig config, BoatConfig boat)
         {
-            var assembled = new List<string>();
-            foreach (var boat in config.Equipment.Boats.OrderBy(b => b.Tier))
-            {
-                if (boat.Id != config.StarterBoat.Id && TryAssemble(config, save, boat))
-                {
-                    assembled.Add(boat.Id);
-                }
-            }
+            return config.Equipment.Boats.Where(b => b.Tier < boat.Tier).OrderByDescending(b => b.Tier).FirstOrDefault();
+        }
 
-            return assembled;
+        /// <summary>Why a boat cannot be assembled now (M24-T58, A-180); None when it can.</summary>
+        public static ServiceError AssembleBlocker(GameConfig config, PlayerSave save, BoatConfig boat)
+        {
+            if (boat == null) return ServiceError.BoatNotFound;
+            if (boat.Id == config.StarterBoat.Id) return ServiceError.BoatAlreadyOwned;
+            if (Owns(config, save, boat)) return ServiceError.BoatAlreadyOwned;
+            var previous = Previous(config, boat);
+            if (previous != null && !Owns(config, save, previous)) return ServiceError.BoatNeedsPrevious;
+            if (Have(save, boat.Id) < System.Math.Max(1, boat.FragmentsRequired)) return ServiceError.NotEnoughBoatFragments;
+            return ServiceError.None;
+        }
+
+        /// <summary>
+        /// Assembles a boat (checked by <see cref="AssembleBlocker"/> first): spends fragments_required (the rest stays
+        /// kept) and adds the boat at Nv.1. It is not put in use: the player chooses with "Usar" (M24-T58, A-180).
+        /// </summary>
+        internal static void Assemble(GameConfig config, PlayerSave save, BoatConfig boat)
+        {
+            save.BoatFragments[boat.Id] = Have(save, boat.Id) - System.Math.Max(1, boat.FragmentsRequired);
+            save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
+            // A boat missing from BoatLevels is at Nv.1 (GearRules.BoatLevel).
+            save.OwnedBoatIds.Add(boat.Id);
+        }
+
+        /// <summary>
+        /// Only for converting a save from the old boat model (BoatModelMigration): the boats the player had become
+        /// fragments of today's boats and are assembled again at once, as before, so a migrated save keeps what it had.
+        /// Not used by the game since M24-T58 (A-180): there the player assembles with "Montar".
+        /// </summary>
+        internal static bool AssembleForMigration(GameConfig config, PlayerSave save, BoatConfig boat)
+        {
+            return TryAssemble(config, save, boat);
         }
 
         private static bool TryAssemble(GameConfig config, PlayerSave save, BoatConfig boat)

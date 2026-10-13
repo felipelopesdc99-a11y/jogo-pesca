@@ -61,8 +61,8 @@ namespace FishingIdle.GameService.Config
     {
         public string Id { get; set; }
         public string DisplayName { get; set; }
+        /// <summary>The only thing that opens the map (M24-T58, A-180: no rod is asked for anymore).</summary>
         public int UnlockFisherLevel { get; set; }
-        public int MinimumRodTier { get; set; }
         public List<string> AvailableRarities { get; set; }
         public List<FishPoolEntryConfig> FishPool { get; set; }
         public MapThemeConfig VisualTheme { get; set; }

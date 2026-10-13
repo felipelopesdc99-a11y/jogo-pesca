@@ -13,15 +13,17 @@ namespace FishingIdle.GameService.Maps
         public string MapId { get; internal set; }
         public string Name { get; internal set; }
         public string Summary { get; internal set; }
+        /// <summary>The Fisher level that opens the map: the only requirement since M24-T58 (A-180).</summary>
         public int UnlockFisherLevel { get; internal set; }
-        public int MinimumRodTier { get; internal set; }
-
-        /// <summary>Name of the weakest rod that can fish here (e.g. "Vara 1").</summary>
-        public string MinimumRodName { get; internal set; }
 
         public bool IsCurrent { get; internal set; }
         public bool LevelUnlocked { get; internal set; }
-        public bool RodAllowed { get; internal set; }
+
+        /// <summary>
+        /// Information, not a lock (M24-T58, A-180): names of the rarities of this map the rod in use cannot catch (rods.json
+        /// → can_catch_rarities), lowest first. Empty when the rod catches everything here or there is no rod yet.
+        /// </summary>
+        public List<string> RaritiesRodMisses { get; } = new List<string>();
         public int SpeciesTotal { get; internal set; }
         public int SpeciesDiscovered { get; internal set; }
 
@@ -99,23 +101,31 @@ namespace FishingIdle.GameService.Maps
             var rod = EquippedRod();
             foreach (var map in Config.Maps.Maps)
             {
-                var weakest = Config.Rods.Rods.Where(r => r.Tier >= map.MinimumRodTier).OrderBy(r => r.Tier).FirstOrDefault();
                 var speciesIds = map.FishPool.Select(e => e.SpeciesId).Distinct().ToList();
-                view.Maps.Add(new MapView
+                var entry = new MapView
                 {
                     MapId = map.Id,
                     Name = map.DisplayName,
                     Summary = map.VisualTheme?.Summary,
                     UnlockFisherLevel = map.UnlockFisherLevel,
-                    MinimumRodTier = map.MinimumRodTier,
-                    MinimumRodName = weakest?.DisplayName,
                     IsCurrent = map.Id == Save.CurrentMapId,
                     LevelUnlocked = Save.FisherLevel >= map.UnlockFisherLevel,
-                    RodAllowed = rod != null && rod.Tier >= map.MinimumRodTier,
                     SpeciesTotal = speciesIds.Count,
                     SpeciesDiscovered = speciesIds.Count(Save.SpeciesRecords.ContainsKey),
-                    TravelBlocker = Blocker(map, rod),
-                });
+                    TravelBlocker = Blocker(map),
+                };
+                if (rod?.CanCatchRarities != null && map.AvailableRarities != null)
+                {
+                    foreach (var tier in Config.Progression.Rarity.Tiers)
+                    {
+                        if (map.AvailableRarities.Contains(tier.Id) && !rod.CanCatchRarities.Contains(tier.Id))
+                        {
+                            entry.RaritiesRodMisses.Add(tier.DisplayName);
+                        }
+                    }
+                }
+
+                view.Maps.Add(entry);
             }
 
             return view;
@@ -145,7 +155,7 @@ namespace FishingIdle.GameService.Maps
                 return ServiceResult<TravelView>.Fail(ServiceError.MapNotFound);
             }
 
-            var blocker = Blocker(map, EquippedRod());
+            var blocker = Blocker(map);
             if (blocker != ServiceError.None)
             {
                 return ServiceResult<TravelView>.Fail(blocker);
@@ -193,12 +203,12 @@ namespace FishingIdle.GameService.Maps
             return new MapUpdate { Arrived = true, MapId = Save.CurrentMapId };
         }
 
-        private ServiceError Blocker(MapConfig map, RodConfig rod)
+        /// <summary>Only the Fisher level opens a map (M24-T58, A-180): the rod in use never blocks a trip.</summary>
+        private ServiceError Blocker(MapConfig map)
         {
             if (Save.Travel.Active) return ServiceError.Traveling;
             if (map.Id == Save.CurrentMapId) return ServiceError.AlreadyOnMap;
             if (Save.FisherLevel < map.UnlockFisherLevel) return ServiceError.MapLocked;
-            if (rod == null || rod.Tier < map.MinimumRodTier) return ServiceError.RodTooWeakForMap;
             return ServiceError.None;
         }
 

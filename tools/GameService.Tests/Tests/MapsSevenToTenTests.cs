@@ -33,28 +33,30 @@ public sealed class MapsSevenToTenTests
     [InlineData("map_08", 70, "rod_04", "rod_03")]
     [InlineData("map_09", 80, "rod_04", "rod_03")]
     [InlineData("map_10", 90, "rod_05", "rod_04")]
-    public void Each_map_needs_its_level_and_its_rod(string mapId, int level, string rod, string weaker)
+    public void Each_map_needs_only_its_level(string mapId, int level, string rod, string weaker)
     {
         var all = new[] { "rod_01", "rod_02", "rod_03", "rod_04", "rod_05" };
         var upToWeaker = all.Take(Array.IndexOf(all, weaker) + 1).ToArray();
         var upToRod = all.Take(Array.IndexOf(all, rod) + 1).ToArray();
 
         Assert.Equal(ServiceError.MapLocked, Player(level - 1, upToWeaker).Maps.TravelTo(mapId).Error);
-        Assert.Equal(ServiceError.RodTooWeakForMap, Player(level, upToWeaker).Maps.TravelTo(mapId).Error);
+        // M24-T58 (A-180): a weaker rod no longer locks the map, and neither does having no rod but the Starter Rod.
+        Assert.True(Player(level, upToWeaker).Maps.TravelTo(mapId).Succeeded);
+        Assert.True(Player(level).Maps.TravelTo(mapId).Succeeded);
         Assert.True(Player(level, upToRod).Maps.TravelTo(mapId).Succeeded);
     }
 
     [Fact]
     public void Rods_4_and_5_are_assembled_from_their_fragments_at_any_level()
     {
-        // M24-T09 / M24-T32: no minimum level; the map still asks for its level (Each_map_needs_its_level_and_its_rod).
+        // M24-T09 / M24-T32: no minimum level; the map still asks for its level (Each_map_needs_only_its_level).
         var four = Player(1, "rod_01", "rod_02", "rod_03");
         var gainFour = TestSupport.GiveRod(four, "rod_04");
         var five = Player(1, "rod_01", "rod_02", "rod_03", "rod_04");
         var gainFive = TestSupport.GiveRod(five, "rod_05");
 
-        Assert.True(gainFour.Assembled);
-        Assert.True(gainFive.Assembled);
+        Assert.True(gainFour.Ready);
+        Assert.True(gainFive.Ready);
         Assert.True(FishingIdle.GameService.Shop.RodFragmentRules.Owns(four.Session.Save, "rod_04"));
         Assert.True(FishingIdle.GameService.Shop.RodFragmentRules.Owns(five.Session.Save, "rod_05"));
         Assert.Equal(1, four.Player.GetPlayer().FisherLevel);
@@ -77,11 +79,11 @@ public sealed class MapsSevenToTenTests
     }
 
     [Fact]
-    public void Every_rod_catches_something_on_every_map_it_may_fish()
+    public void Every_rod_catches_something_on_every_map()
     {
         foreach (var map in Config.Maps.Maps)
         {
-            foreach (var rod in Config.Rods.Rods.Where(r => r.Tier >= map.MinimumRodTier))
+            foreach (var rod in Config.Rods.Rods)
             {
                 var species = CatchRules.Roll(Config, map, rod, 1, Rng.For(1, 2, 3)).Species;
                 Assert.Contains(map.FishPool, e => e.SpeciesId == species.Id);

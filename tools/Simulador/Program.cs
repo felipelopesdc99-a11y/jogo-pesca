@@ -209,6 +209,27 @@ public static class Program
                         }
                     }
 
+                    // Since M24-T58 (A-180) nothing is assembled by itself: this player presses "Montar" as soon as it can, in
+                    // order (each rod and boat asks for the one before it), and uses what it assembles.
+                    for (var again = true; again;)
+                    {
+                        again = false;
+                        var rodOffer = game.Shop.GetShop().Rods.Where(x => x.AssembleBlocker == ServiceError.None).OrderBy(x => x.Tier).FirstOrDefault();
+                        var madeRod = rodOffer != null ? game.Shop.AssembleRod(rodOffer.RodId) : null;
+                        if (madeRod != null && madeRod.Succeeded)
+                        {
+                            game.Profile.EquipRod(madeRod.Value.OwnedItemId);
+                            again = true;
+                        }
+
+                        var boatOffer = game.Gear.GetGear().Boats.Where(x => x.AssembleBlocker == ServiceError.None).OrderBy(x => x.Tier).FirstOrDefault();
+                        if (boatOffer != null && game.Gear.AssembleBoat(boatOffer.BoatId).Succeeded)
+                        {
+                            game.Gear.UseBoat(boatOffer.BoatId);
+                            again = true;
+                        }
+                    }
+
                     // Rods are not sold since M24-T32 (A-163): they are assembled from the fragments the catches drop.
                     foreach (var rod in game.Shop.GetShop().Rods.Where(x => x.Owned && x.Tier > 0 && !bought.Contains(x.RodId)))
                     {
@@ -218,7 +239,7 @@ public static class Program
                     }
 
                     // Boats are not sold since M24-T16 (A-157): they are assembled from the fragments the catches drop
-                    // (and the service puts a better one in use). Note when each one arrived.
+                    // (above, with "Montar"). Note when each one arrived.
                     foreach (var boat in game.Gear.GetGear().Boats.Where(x => x.Owned && x.Tier > 0 && !boatsSeen.Contains(x.BoatId)))
                     {
                         boatsSeen.Add(boat.BoatId);
@@ -326,7 +347,7 @@ public static class Program
         var combos = new List<(string label, MapConfig map, RodConfig rod, int level)>();
         foreach (var map in config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel))
         {
-            foreach (var rod in config.Rods.Rods.Where(x => x.Tier >= map.MinimumRodTier).OrderBy(x => x.Tier))
+            foreach (var rod in config.Rods.Rods.OrderBy(x => x.Tier))
             {
                 combos.Add((map.DisplayName + " · " + rod.DisplayName + (rod.HasInternalLevels ? " Nv.1" : ""), map, rod, 1));
                 if (rod.HasInternalLevels)
@@ -626,7 +647,7 @@ public static class Program
         var combos = new List<(MapConfig map, RodConfig rod, int level, BoatConfig boat, BaitConfig bait)>();
         foreach (var map in config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel))
         {
-            foreach (var rod in config.Rods.Rods.Where(x => x.Tier >= map.MinimumRodTier).OrderBy(x => x.Tier))
+            foreach (var rod in config.Rods.Rods.OrderBy(x => x.Tier))
             {
                 var levels = rod.HasInternalLevels ? new[] { 1, config.RodMaxLevel(rod) } : new[] { 1 };
                 foreach (var level in levels)

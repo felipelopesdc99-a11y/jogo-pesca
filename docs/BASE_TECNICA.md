@@ -106,10 +106,10 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IPlayerService` | `LocalPlayerService` | Resumo do jogador (nível, XP, Moedas, Conchas, Dólares, mapa, vara, Aquário) |
 | `IAquariumService` | `LocalAquariumService` | Guardar capturas, ficha do peixe, alimentar, vender do Aquário |
 | `ICardumeService` | `LocalCardumeService` | Posições 1–6, bônus 6/6, Força privada |
-| `IMapService` | `LocalMapService` | Mapas, requisitos, viagem de 30s (pausa e retoma a pesca) |
-| `IShopService` | `LocalShopService` | Loja, aba Varas: desde o M24-T32 nenhuma vara é vendida (vêm de fragmentos, `RodFragmentRules`, TD-048); `BuyRod` só resgata a Vara Inicial do tutorial. A oferta mostra os fragmentos e a chance (a mesma em todos os mapas desde o M24-T47), o nível da sua vara, os bônus agora e o preço do próximo nível (melhorar continua em `IProfileService.UpgradeRod`) |
+| `IMapService` | `LocalMapService` | Mapas, requisito (só o nível do Pescador desde o M24-T58; as raridades que a vara em uso não pesca vêm como informação), viagem de 10 s (pausa e retoma a pesca) |
+| `IShopService` | `LocalShopService` | Loja, aba Varas: desde o M24-T32 nenhuma vara é vendida (vêm de fragmentos, `RodFragmentRules`, TD-048); `BuyRod` só resgata a Vara Inicial do tutorial; `AssembleRod` monta pelo botão Montar (M24-T58, TD-058). A oferta mostra os fragmentos e a chance (a mesma em todos os mapas desde o M24-T47), o nível da sua vara, os bônus agora e o preço do próximo nível (melhorar continua em `IProfileService.UpgradeRod`) |
 | `IClothingService` | `LocalClothingService` | Roupas (M24-T33, A-164, TD-048): as 5 peças com nível, XP de uso e bônus; `Assemble` monta a peça escolhida com os Fragmentos de Roupa |
-| `IGearService` | `LocalGearService` | Barcos e iscas: iscas compradas, usar, guardar; barcos só usar e melhorar o nível (`UpgradeBoat`, M24-T13) — desde o M24-T16 eles vêm de fragmentos (`BoatFragmentRules`, TD-042) e a oferta mostra fragmentos e chance; equipamento em uso e chance de puxar por raridade |
+| `IGearService` | `LocalGearService` | Barcos e iscas: iscas compradas, usar, guardar; barcos só montar (`AssembleBoat`, M24-T58, TD-058), usar e melhorar o nível (`UpgradeBoat`, M24-T13) — desde o M24-T16 eles vêm de fragmentos (`BoatFragmentRules`, TD-042) e a oferta mostra fragmentos e chance; equipamento em uso e chance de puxar por raridade |
 | `IPassService` | `LocalPassService` | Passe do Pescador (M24-T17, A-158, TD-042): marcos de `pass.json`, resgatar um ou todos, comprar o Premium com Dólares (libera os marcos já passados); `IsMilestone` para o aviso de nível |
 | `IWorldBossService` | `LocalWorldBossService` | Boss Mundial (M24-T29, A-165, TD-049): `Update` (chamado pelo jogo aberto a cada sincronização) abre o dia, credita os ataques devidos do Cardume, sobe de faixa e paga uma vez quando a janela fecha; `GetWorldBoss` monta a tela. Regras puras em `WorldBossRules` (dia e janela no fuso do config, dano com `BattleEngine.HitDamage`, faixas, renda de referência, barco do mapa mais alto, Dólares por posição) |
 | `IClanService` | `LocalClanService` | Clãs (M24-T49, A-174, TD-055): `Create` (Nv.100+, paga Dólares, nome validado e sem repetir), `Join` (por id, o "convite"; pronto para o servidor), `Leave` (clã vazio fecha; dono que sai passa o clã ao membro mais antigo), `BuySlot` (só o dono, preço crescente, até `max_members`), `SetFish`/`ClearFish` (1 peixe do Aquário no Cardume do Clã, sem tirá-lo do Aquário nem do Cardume), `GetFishCandidates`, `Update` (fecha o dia do ranking às 00:00 de Brasília e, só com `online_rewards_enabled`, paga o top 3 uma vez). Regras puras em `ClanRules` (vagas e preço, nome, `TakeBonusXp` com a fração guardada em `ClanState.XpCarry`, Força do peixe pela regra do Cardume, Força do clã com `SafeMath`, dia no fuso do config, ordem do ranking). O +1% de XP entra em `LocalFishingService.ApplyCatch` (`FishingUpdate.ClanXpGained`); peixe vendido, comido ou anunciado sai do Cardume do Clã (`ClanRules.DropMissingFish`, chamado pelo Aquário, pelo Mercado, pelo Leilão, pelo `Update` e na carga) |
@@ -327,19 +327,27 @@ Cada passo está em `SaveMigrations.Upgrade`.
   `BoatFragmentRules.RollOnCatch` faz um sorteio por barco de `GameConfig.FragmentBoats` (todos menos o inicial, em ordem
   de categoria), com o `Rng` do mesmo ciclo e o `fragment_drop_chance` de cada um; a pesca offline também, se
   `boat_fragments.drop_on_offline_fishing`. `GameConfig.TryGetBoatForMap` ficou só para o Boss Mundial
-  (`WorldBossRules.BoatFor`). `BoatFragmentRules.Add` (usado também pelo Passe e pelos testes) soma e
-  monta o barco ao chegar em `fragments_required`. O `FishingUpdate.Fragments` leva cada fragmento para a tela e para
+  (`WorldBossRules.BoatFor`). `BoatFragmentRules.Add` (usado também pelo Passe, pelo Boss, pelo Clã e
+  pelos testes) só soma, sem limite; desde o M24-T58 (TD-058) nada é montado ali: o ganho diz se os fragmentos ficaram
+  completos (`Ready`) e qual barco ainda falta antes (`NeedsBoatName`). Quem monta é `IGearService.AssembleBoat`, que
+  confere `BoatFragmentRules.AssembleBlocker` (fragmentos e o barco anterior, `Previous` pela categoria), gasta só
+  `fragments_required` e não troca o barco em uso. `AssembleForMigration` (montar na hora, como antes) é só da
+  `BoatModelMigration`. O `FishingUpdate.Fragments` leva cada fragmento para a tela e para
   o "Bem-vindo de volta".
 - Varas e roupas por fragmentos (TD-048; em qualquer mapa desde o M24-T47, TD-054): na mesma tentativa, depois dos
   fragmentos de barco, `RodFragmentRules.RollOnCatch` faz um sorteio por vara de `GameConfig.FragmentRods` (em ordem de
   categoria) e `ClothingRules.RollOnCatch` o do Fragmento de Roupa; depois `ClothingRules.GainUse` dá 1 ponto de uso por peixe a cada peça montada. `RodFragmentRules.Add`
-  monta a vara (Inventário, Nv.1, em uso se a categoria for maior); a pesca lê a vara em uso a cada tentativa. Os bônus
+  só soma (como o dos barcos, TD-058); `IShopService.AssembleRod` confere `RodFragmentRules.AssembleBlocker` (fragmentos e
+  a vara anterior **no Inventário**, `InInventory`), põe a vara no Inventário no Nv.1 e não a equipa; a pesca lê a vara em
+  uso a cada tentativa. Os bônus
   das roupas vêm de `ClothingRules.Bonuses`: Luvas no `gearBonus`, Chapéu/Botas/Camiseta em `CatchRules.WithClothing`,
   Calça no XP em `ApplyCatch`. `FishingUpdate.RodFragments`, `ClothingFragments`/`ClothingFragmentsHave` e
-  `ClothingLevels` levam tudo para a tela. O validador (`ValidateRodFragments`) garante que a categoria que cada mapa
-  pede seja a da Vara Inicial ou a de uma vara com chance maior que 0 (a progressão não trava).
+  `ClothingLevels` levam tudo para a tela. Desde o M24-T58 os mapas não pedem vara (`MapConfig` não tem mais
+  `MinimumRodTier`; `LocalMapService` só confere o nível): o validador garante que toda vara pesca alguma raridade em
+  todo mapa, e `MapView.RaritiesRodMisses` diz, só como informação, o que a vara em uso não pesca ali.
 - Passe do Pescador (TD-042): `LocalPassService` lê os marcos de `pass.json` e grava só o que foi resgatado. Resgatar
-  chama `Sync` da pesca antes (os fragmentos podem trocar o barco ou a vara em uso). Desde o M24-T32/T33 a recompensa
+  chama `Sync` da pesca antes (de quando os fragmentos trocavam o barco ou a vara em uso; desde o M24-T58 eles não trocam,
+  e `BoatsReady`/`RodsReady` dizem o que ficou pronto para montar). Desde o M24-T32/T33 a recompensa
   também tem `rod_id`/`rod_fragments` e `clothing_fragments`. Subir de nível não paga nada sozinho
   (`FisherLevelRules.AddXp` só soma XP e níveis); os Dólares do A-111 estão na faixa grátis.
 - Tripulação e Melhorias (TD-039, TD-040): retiradas no M24-T46 (TD-053). A venda ao NPC (`CatchRules.SalePrice`) não
@@ -409,7 +417,7 @@ Cada passo está em `SaveMigrations.Upgrade`.
     animais novos (`LivingAnimals`: araras-azuis, tuiuiú, colhereiros, guarás, trinta-réis, caranguejo,
     boto) reaproveitam os comportamentos existentes com outra arte.
   - **Mapas 5 a 10** (A-104, A-105): `tools/Progressao/aplicar_mapas.py map_05 map_06 ...` copia de
-    `docs/propostas/mapas_5_10.json` para `/config` as espécies, os mapas, a vara mínima de cada mapa e a
+    `docs/propostas/mapas_5_10.json` para `/config` as espécies, os mapas, a vara mínima de cada mapa (até o M24-T58; hoje os mapas não pedem vara) e a
     raridade nova que eles usam (sem duplicar nada se rodar de novo). A arte de cada par de mapas tem seu
     script (`tools/Arte/processar_mapas_5_6.py`), que reaproveita `processar_mapas_3_4.py` trocando só os
     nomes e tira o mar pintado embaixo das faixas do horizonte (`drop_painted_sea`). `gerar_cenarios.py

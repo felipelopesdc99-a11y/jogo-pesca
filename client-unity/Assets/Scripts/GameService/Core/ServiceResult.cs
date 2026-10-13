@@ -18,12 +18,10 @@ namespace FishingIdle.GameService.Core
         FishAtMaxLevel,
         InvalidCardumePosition,
         ItemNotFound,
-        RodNotAllowedOnMap,
         Traveling,
         AlreadyOnMap,
         MapNotFound,
         MapLocked,
-        RodTooWeakForMap,
         NotEnoughCoins,
         RodNotForSale,
         RodAlreadyOwned,
@@ -98,6 +96,14 @@ namespace FishingIdle.GameService.Core
         MissionNotReady,
         MissionAlreadyClaimed,
         MissionNothingToClaim,
+
+        // Boats and rods assembled by the player (M24-T58, A-180)
+        BoatAlreadyOwned,
+        NotEnoughBoatFragments,
+        BoatNeedsPrevious,
+        NotEnoughRodFragments,
+        RodNeedsPrevious,
+        NotFromFragments,
     }
 
     /// <summary>

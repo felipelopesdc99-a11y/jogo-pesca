@@ -333,10 +333,11 @@ namespace FishingIdle.Texts
             public const string ClothingReady = "Já dá para montar uma roupa!";
             public const string ClothingAllAssembled = "Todas as roupas montadas";
             public static string Extras(string amount) => "Já é seu · " + amount + " de sobra";
-            public const string BoatAssembledTag = "MONTADO!";
-            public const string RodAssembledTag = "MONTADA!";
-            public const string BoatAssembledKind = "Barco montado!";
-            public const string RodAssembledKind = "Vara montada!";
+            // Fragments completed while away (M24-T58, A-180): nothing assembles by itself, the player presses "Montar".
+            public const string BoatReadyTag = "COMPLETO!";
+            public const string RodReadyTag = "COMPLETA!";
+            public const string BoatReadyKind = "Pronto para montar na Loja";
+            public const string RodReadyKind = "Pronta para montar na Loja";
             public static string ClothingLevels(string pieces) => "Roupas subiram de nível: " + pieces;
             public static string PieceLevel(string piece, int level) => piece + " Nv." + level;
             public const string Warnings = "Avisos";
@@ -680,8 +681,10 @@ namespace FishingIdle.Texts
             public const string TravelNote = "A viagem é sempre manual. Durante a viagem a pesca fica pausada e volta sozinha na chegada, se estava ligada.";
             public const string Species = "Espécies";
             public const string NeedsLevel = "Nível necessário";
-            public const string NeedsRod = "Vara necessária";
-            public const string AnyRod = "Qualquer vara";
+            // Information, not a lock (M24-T58, A-180): a map opens only by the Fisher level.
+            public const string RodHere = "Sua vara aqui";
+            public const string RodCatchesAll = "Pesca todas as raridades";
+            public static string RodMisses(string rarities) => "Não pesca " + rarities;
             public const string Locked = "Bloqueado";
 
             public static string Departing(string map) => "Partindo para " + map + ".";
@@ -726,7 +729,7 @@ namespace FishingIdle.Texts
             public const string Owned = "Já é sua";
             public const string AtLevel1 = "No Nível 1";
             public const string AtMax = "No nível máximo";
-            public const string Note = "Varas não são vendidas: cada vara é montada com fragmentos que às vezes caem quando você puxa um peixe em qualquer mapa (também na pesca offline) ou que vêm do Passe do Pescador. Com todos os fragmentos a vara é montada sozinha, vai para o Inventário (Perfil) e, se for de categoria maior que a sua, já entra em uso. Melhore o nível da sua vara aqui ou no Inventário (cada nível dá um pouco mais, até o Nível 100); lá você também vende ou destrói varas.";
+            public const string Note = "Varas não são vendidas: cada vara é montada com fragmentos que às vezes caem quando você puxa um peixe em qualquer mapa (também na pesca offline) ou que vêm do Passe do Pescador. Com todos os fragmentos, aperte Montar: para montar uma vara você precisa ter a vara anterior no Inventário (a primeira pede o Caniço Manso). A vara montada vai para o Inventário (Perfil) no Nível 1; equipe quando quiser. Melhore o nível da sua vara aqui ou no Inventário (cada nível dá um pouco mais, até o Nível 100); lá você também vende ou destrói varas. Os mapas abrem só pelo seu nível; uma vara mais fraca só pesca menos raridades.";
             public const string Upgrade = "Melhorar";
             public const string SellRod = "Vender";
             public const string DestroyRod = "Destruir";
@@ -1143,7 +1146,6 @@ namespace FishingIdle.Texts
             public static string StartedToast(string boss) => "O Boss Mundial apareceu: " + boss + "! Seu Cardume já está atacando.";
             public static string BandToast(int band) => "Boss Mundial: você chegou à Faixa " + band + "!";
             public static string PaidToast(string items) => "Boss Mundial: " + items;
-            public static string BoatAssembled(string boat) => "Barco montado: " + boat + "!";
         }
 
         // ------------------------------------------------------------------ Clãs (M24-T49, A-174)
@@ -1256,7 +1258,7 @@ namespace FishingIdle.Texts
             public const string InUse = "Em uso";
             public const string Use = "Usar";
             public const string PutAway = "Guardar";
-            public const string BoatsNote = "Barcos não são vendidos: cada barco é montado com fragmentos que às vezes caem quando você puxa um peixe em qualquer mapa (também na pesca offline) ou que vêm do Passe do Pescador. Com todos os fragmentos o barco é montado sozinho e fica com você para sempre; se for melhor que o seu, já entra em uso. Ele aumenta a chance de puxar todo peixe, e cada nível que você melhora soma um pouco mais, até o Nível 100. Troque quando quiser.";
+            public const string BoatsNote = "Barcos não são vendidos: cada barco é montado com fragmentos que às vezes caem quando você puxa um peixe em qualquer mapa (também na pesca offline) ou que vêm do Passe do Pescador. Com todos os fragmentos, aperte Montar: para montar um barco você precisa ter o barco anterior (o primeiro pede o Água Mansa, que é seu desde o começo). O barco montado fica com você no Nível 1; aperte Usar para passar a usá-lo. Ele aumenta a chance de puxar todo peixe, e cada nível que você melhora soma um pouco mais, até o Nível 100. Troque quando quiser.";
             public const string BaitsNote = "A isca dura um número de tentativas: gasta 1 por tentativa, puxando o peixe ou não, também offline. Comprar de novo soma tentativas. Só uma isca fica em uso.";
             public const string OpenDetails = "Ver equipamento e chances";
 
@@ -1274,11 +1276,20 @@ namespace FishingIdle.Texts
             public static string FragmentsChance(string percent) => percent + " de chance por peixe puxado";
             public static string FragmentsExtra(string amount) => "Fragmentos extras: " + amount;
             public const string AssembleHint = "Monte com fragmentos";
+
+            // Assembling by hand (M24-T58, A-180).
+            public const string Assemble = "Montar";
+            public static string NeedsBoat(string boat) => "Precisa do barco " + boat;
+            public static string NeedsRod(string rod) => "Precisa da vara " + rod;
+            public static string BoatReadyToast(string boat) => "Fragmentos completos: " + boat + "! Monte na Loja → Barcos.";
+            public static string BoatReadyNeedsToast(string boat, string previous) => "Fragmentos completos: " + boat + ". Para montar, precisa do barco " + previous + ".";
+            public static string RodReadyToast(string rod) => "Fragmentos completos: " + rod + "! Monte na Loja → Varas.";
+            public static string RodReadyNeedsToast(string rod, string previous) => "Fragmentos completos: " + rod + ". Para montar, precisa da vara " + previous + " no Inventário.";
             public const string StarterBoat = "Já é seu desde o começo";
             public static string FragmentToast(string boat, string have, string required) => "+1 fragmento de barco: " + boat + " (" + have + "/" + required + ")";
             public static string FragmentExtraToast(string boat) => "+1 fragmento de barco: " + boat + " (extra)";
             public static string FragmentsToast(string amount, string boat) => "+" + amount + " fragmentos de barco: " + boat;
-            public static string BoatAssembledToast(string boat) => "Barco montado: " + boat + "! Veja na Loja.";
+            public static string BoatAssembledToast(string boat) => "Barco montado: " + boat + "! Aperte Usar para passar a usá-lo.";
             public const string BoatAssembledTitle = "Barco montado!";
             public static string UsingBoat(string boat) => "Barco em uso: " + boat + ".";
             public static string UpgradedBoat(string boat, int level) => boat + " agora está no Nível " + level + ".";
@@ -1293,8 +1304,7 @@ namespace FishingIdle.Texts
             public static string RodFragmentsToast(string amount, string rod, string have, string required) => "+" + amount + " fragmentos de vara: " + rod + " (" + have + "/" + required + ")";
             public static string RodFragmentExtraToast(string amount, string rod) => "+" + amount + (amount == "1" ? " fragmento de vara: " : " fragmentos de vara: ") + rod + " (extra)";
             public static string RodFragmentsPassToast(string amount, string rod) => "+" + amount + " fragmentos de vara: " + rod;
-            public static string RodAssembledToast(string rod) => "Vara montada: " + rod + "! Veja na Loja.";
-            public static string RodAssembledEquippedToast(string rod) => "Vara montada e equipada: " + rod + "!";
+            public static string RodAssembledToast(string rod) => "Vara montada: " + rod + "! Ela está no Inventário; equipe quando quiser.";
             public const string RodAssembledTitle = "Vara montada!";
             public static string BoatFragmentsGroupToast(string amount, string boat, string have, string required) => "+" + amount + " fragmentos de barco: " + boat + " (" + have + "/" + required + ")";
             public static string BoatFragmentsExtraGroupToast(string amount, string boat) => "+" + amount + " fragmentos de barco: " + boat + " (extra)";
@@ -1392,7 +1402,6 @@ namespace FishingIdle.Texts
             public const string RodSlot = "Vara de pesca";
             public const string Equip = "Equipar";
             public const string Equipped = "Equipada";
-            public const string NotAllowedHere = "Não serve neste mapa";
             public const string RarityBonus = "Chance de raridade";
             public const string SizeBonus = "Qualidade de tamanho";
             public const string ShellBonus = "Conchas";
@@ -1637,12 +1646,10 @@ namespace FishingIdle.Texts
                 case "FishAtMaxLevel": return "Este peixe já está no nível máximo.";
                 case "InvalidCardumePosition": return "Essa posição do Cardume não existe.";
                 case "ItemNotFound": return "Esse item não está mais no seu Inventário.";
-                case "RodNotAllowedOnMap": return "Essa vara não pode ser usada neste mapa.";
                 case "Traveling": return "Você está viajando. Espere chegar ao destino.";
                 case "AlreadyOnMap": return "Você já está neste mapa.";
                 case "MapNotFound": return "Esse mapa não existe.";
                 case "MapLocked": return "Você ainda não tem nível para este mapa.";
-                case "RodTooWeakForMap": return "Sua vara não serve para este mapa. Monte uma vara melhor com os fragmentos que caem pescando (veja na Loja → Varas).";
                 case "NotEnoughCoins": return "Moedas insuficientes.";
                 case "RodNotForSale": return "As varas não são vendidas: monte com fragmentos.";
                 case "RodAlreadyOwned": return "Você já tem esta vara no Inventário.";
@@ -1667,6 +1674,12 @@ namespace FishingIdle.Texts
                 case "PassNothingToClaim": return "Nada para resgatar agora. Suba de nível para chegar ao próximo marco.";
                 case "ClothingNotFound": return "Essa peça de roupa não existe.";
                 case "ClothingAlreadyOwned": return "Você já montou esta peça.";
+                case "BoatAlreadyOwned": return "Você já tem este barco.";
+                case "NotEnoughBoatFragments": return "Faltam fragmentos para montar este barco.";
+                case "BoatNeedsPrevious": return "Precisa do barco anterior para montar este (veja qual na Loja → Barcos).";
+                case "NotEnoughRodFragments": return "Faltam fragmentos para montar esta vara.";
+                case "RodNeedsPrevious": return "Precisa da vara anterior no Inventário para montar esta (veja qual na Loja → Varas).";
+                case "NotFromFragments": return "Este item não é montado com fragmentos.";
                 case "NotEnoughClothingFragments": return "Faltam Fragmentos de Roupa para montar esta peça.";
                 case "ClanLevelTooLow": return "Só Pescadores do Nv.100 para cima podem criar ou entrar num clã.";
                 case "AlreadyInClan": return "Você já está num clã. Saia dele antes.";
@@ -1764,7 +1777,6 @@ namespace FishingIdle.Texts
             public static string BoatMapRepeated(string map) => "equipment.json: o mapa \"" + map + "\" tem mais de um barco (em map_id ou extra_fragment_maps). Cada mapa é de um barco só (o barco de que o Boss Mundial dá fragmentos).";
             public static string PassLevels(int max) => "pass.json: os marcos (milestones) precisam de níveis diferentes, em ordem crescente, entre 1 e " + max + ".";
             public static string RodMethodUnknown(string rod, string method) => "rods.json: a vara \"" + rod + "\" tem acquisition.method \"" + (method ?? "") + "\". Use \"fragments\" (vara montada com fragmentos) ou \"free_claim_in_shop\" (a Vara Inicial).";
-            public static string MapRodUnreachable(string map, int tier) => "maps.json: o mapa \"" + map + "\" pede vara de categoria " + tier + ", e nenhuma vara dessa categoria (ou maior) cai pescando (fragment_drop_chance maior que 0 em rods.json). A progressão travaria.";
             public static string ClothingInvalid(string what) => "equipment.json: \"clothing." + what + "\" está inválido.";
             public static string ClothingAxisUnknown(string piece, string axis) => "equipment.json: a roupa \"" + piece + "\" tem bonus_axis \"" + (axis ?? "") + "\". Use catch_success, rarity_efficiency, size_quality, shell_yield ou fisher_xp.";
             public static string PassRodUnknown(int level, string rod) => "pass.json: o marco do Nv." + level + " dá fragmentos da vara \"" + (rod ?? "") + "\", que não existe em rods.json (ou é a Vara Inicial).";
@@ -1992,7 +2004,7 @@ namespace FishingIdle.Texts
             public const string SimAttempts = "Tentativas";
             public const string SimRun = "Simular";
             public const string SimInvalid = "O balanceamento desta tela tem problemas; corrija antes de simular:";
-            public const string SimRodCannotFish = "Esta vara não pesca neste mapa (categoria mínima do mapa ou raridades).";
+            public const string SimRodCannotFish = "Esta vara não pesca nenhuma raridade deste mapa.";
             public const string SimResultAttempts = "Tentativas";
             public const string SimResultCatches = "Capturas";
             public const string SimResultEscapes = "Fugas";

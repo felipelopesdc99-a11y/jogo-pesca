@@ -51,9 +51,6 @@ namespace FishingIdle.GameService.Profile
         public bool GeneratesShells { get; internal set; }
         public bool IsEquipped { get; internal set; }
 
-        /// <summary>Whether it can be used on the map the player is on (GDD section 19).</summary>
-        public bool AllowedOnCurrentMap { get; internal set; }
-
         /// <summary>Coins for the next internal level; 0 at the max level or for rods without levels.</summary>
         public long NextUpgradeCost { get; internal set; }
 
