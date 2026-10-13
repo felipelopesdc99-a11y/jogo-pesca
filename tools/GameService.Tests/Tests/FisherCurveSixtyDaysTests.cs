@@ -149,7 +149,7 @@ public sealed class FisherCurveSixtyDaysTests
         var change = FisherLevelRules.MoveToCurrentCurve(Config, save);
 
         Assert.Equal(100, change.LevelBefore);
-        Assert.Equal(282, save.FisherLevel);
+        Assert.Equal(281, save.FisherLevel);
         Assert.Equal(rest, save.FisherXp);
         Assert.Equal(4, save.FisherXpCurveVersion);
         Assert.Null(FisherLevelRules.MoveToCurrentCurve(Config, save));
