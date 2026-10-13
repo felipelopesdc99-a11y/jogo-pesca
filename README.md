@@ -49,6 +49,13 @@ peixes, vender ou guardar no Aquário.
 
 > Se aparecer algum erro vermelho no **Console** do Unity, copie a mensagem e mande no chat.
 
+## Ao baixar uma versão nova: sempre numa pasta nova
+
+Extraia o zip numa **pasta vazia**, nunca por cima da versão antiga. O zip só traz os arquivos que existem hoje; se
+ele for extraído por cima, os arquivos que saíram do jogo (por exemplo a Tripulação, retirada em 12/10/2026) continuam
+na pasta e o Unity mostra dezenas de erros "The type or namespace name … could not be found". O save não fica na
+pasta do projeto, então nada se perde ao usar uma pasta nova.
+
 ## Se o Unity não deixar dar Play
 
 **"Internal build system error" com "Uma política de Controle de Aplicativo bloqueou este arquivo" (Bee.DotNet.dll).**
