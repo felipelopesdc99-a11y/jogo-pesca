@@ -1063,8 +1063,8 @@ namespace FishingIdle.Game.UI
                 if (emblem != null)
                 {
                     // The duel emblem behind the "VS" (A-179); the word keeps a dark outline to read on it.
-                    var e = Mathf.Min(240f, avatarSize * 1.2f);
-                    GUI.DrawTexture(new Rect(vs.center.x - e / 2f, vs.center.y - e / 2f, e, e), emblem, ScaleMode.ScaleToFit, true);
+                    var badge = Mathf.Min(240f, avatarSize * 1.2f);
+                    GUI.DrawTexture(new Rect(vs.center.x - badge / 2f, vs.center.y - badge / 2f, badge, badge), emblem, ScaleMode.ScaleToFit, true);
                     WindowFrame.OutlinedLabel(vs, GameTexts.Arena.VsMark, skin.VsDisplay);
                 }
                 else
