@@ -30,6 +30,39 @@ Os pedidos prontos para colar no ChatGPT, na ordem certa, estão no documento
 [Fishing Idle — Pedidos de arte para o ChatGPT](https://claude.ai/code/artifact/320602da-0a64-4e9b-b729-4108aef7656e).
 Mande as imagens geradas no chat; o recorte e a padronização ficam por minha conta.
 
+
+## Guia para o ChatGPT e lista viva do que falta (13/10/2026)
+
+A página "Artes do Fishing Idle" (artifact entregue ao proprietário em 13/10/2026) tem os 51 pedidos que faltam, em
+3 prioridades, com botão de copiar e marcação de feito. As instruções abaixo vão coladas UMA vez no começo de cada
+conversa com o ChatGPT; os pedidos terminam com "Siga o guia de estilo … Arquivo: <nome>".
+
+> Você vai criar as artes do meu jogo "Fishing Idle", um jogo idle de pesca para PC e celular. Vou te mandar um pedido por vez; siga SEMPRE estas regras, em todos os pedidos desta conversa:
+>
+> 1. UMA imagem por pedido, no tamanho exato pedido (largura × altura em pixels), em PNG.
+> 2. Quando eu pedir fundo transparente, o fundo tem que ser transparente de verdade (canal alfa), nunca branco nem um xadrez desenhado. Se não conseguir transparência, use um fundo magenta liso (#FF00FF) e me avise em uma linha.
+> 3. NUNCA escreva texto, letras, números, logotipos, marca d'água ou assinatura na imagem. O jogo escreve tudo por cima.
+> 4. Não acrescente moldura, borda, sombra projetada, chão, cenário ou fundo que eu não pedi.
+> 5. O objeto fica inteiro e centralizado, sem cortar nas bordas, com uma margem pequena em volta.
+> 6. Estilo "Lago Dourado — Clean Premium": pintura digital limpa de jogo mobile premium, contornos suaves, formas arredondadas e amigáveis, cores profundas e saturadas na medida, luz suave vinda de cima (levemente da esquerda), sombras discretas. Sem ruído, sem granulado, sem cara de foto, sem 3D plástico brilhante, sem anime e sem cartum exagerado. Em dúvida entre mais efeito e mais limpo, escolha o mais limpo.
+> 7. Paleta base: azul-noite #0A1422, azul #2F93C4, turquesa #25C4C1, dourado #F6B93B (só como destaque), creme #F2E4C4, madeira #9B673D. Cores de raridade quando aparecerem: Comum cinza #8A8F98, Raro azul #3B7FD9, Épico roxo #9A4FD6, Lendário laranja #D9822B, Mítico vermelho #D23B5A.
+> 8. Ícones de menu: desenho BRANCO chapado (#FFFFFF) sobre fundo transparente, sem nenhuma outra cor, traço único grosso com cantos arredondados, legível em 32 px.
+> 9. Cenários largos (faixas e fundos): o centro fica mais calmo e com pouco detalhe, porque o jogo coloca textos e cartões por cima. Sem pessoas em primeiro plano.
+> 10. Séries (ilhas, avatares, poses, degraus do pódio): mantenha o mesmo estilo, o mesmo ângulo, a mesma luz e o mesmo tamanho em todas as imagens da série.
+> 11. Quando eu anexar uma imagem e pedir para EDITAR, mantenha exatamente o mesmo personagem ou objeto (forma, cores, posição, tamanho e enquadramento) e mude só o que eu pedir.
+> 12. Não me faça perguntas e não proponha alternativas: gere direto. Se algum detalhe for impossível, gere o mais próximo e diga em uma linha o que ficou diferente.
+> 13. Use o nome de arquivo que eu indicar no fim de cada pedido.
+>
+> Responda só "Entendido" agora e espere o primeiro pedido.
+
+Novos pedidos desta lista que ainda não têm seção própria (prioridade B, menus sem arte; o jogo ainda não lê estes
+arquivos — o código passa a usá-los quando chegarem): `Arte/UI/merc_feira_porto.png` (1600×500), `Arte/Icones/ico_leilao.png`
+(256×256, branco), `Arte/UI/arena_fundo.png` (1600×900), `Arte/UI/arena_vs.png` (512×512), `Arte/UI/caixa_cena.png`
+(1600×500), `Arte/UI/passe_faixa.png` (1600×500), `Arte/UI/passe_premium_selo.png` (256×256), `Arte/UI/eventos_quadro.png`
+(1600×900), `Arte/UI/cla_brasao.png` (512×512), `Arte/UI/cla_fundo.png` (1600×900), `Arte/UI/perfil_carteira.png` (1200×700).
+Pódio da Arena em arquivos separados: `Arte/Arena/podio_1.png` (400×420), `podio_2.png` (400×320), `podio_3.png` (400×250).
+Avatares: `Arte/Avatares/avatar_01.png` a `avatar_06.png` (512×512, fundo transparente).
+
 ## Como trocar uma arte
 
 1. Produza a imagem seguindo a Bíblia de Arte (`docs/ART_BIBLE_V0_1.md`) e o checklist da seção 41
