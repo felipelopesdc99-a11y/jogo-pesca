@@ -2,8 +2,9 @@
 
 Uso:
   python3 tools/Progressao/passe_fragmentos.py gerar
-      # grava em config/equipment.json a chance de fragmento de cada barco (fragment_drop_chance) e a quantidade
-      # (fragments_required), e gera config/pass.json (100 marcos, do Nv.10 ao Nv.1000)
+      # grava em config/equipment.json a quantidade de fragmentos de cada barco (fragments_required) e gera
+      # config/pass.json (100 marcos, do Nv.10 ao Nv.1000). A chance (fragment_drop_chance) não é mais gerada: desde
+      # 13/10/2026 (M24-T47, A-173) é a chance pedida pelo proprietário, a mesma em todos os mapas, e fica como está
   python3 tools/Progressao/passe_fragmentos.py passe
       # só regera config/pass.json (as Moedas e Conchas de cada marco pela renda de hoje), sem mexer nos barcos
   python3 tools/Progressao/passe_fragmentos.py simular [--dias 170] [--gravar]
@@ -11,17 +12,16 @@ Uso:
       # docs/propostas/passe_fragmentos.json
 
 Regras (as mesmas do jogo, GameService/Shop/BoatFragmentRules.cs e GameService/Pass/LocalPassService.cs):
-  - cada peixe puxado no mapa de um barco tem fragment_drop_chance de dar 1 fragmento dele (nos extra_fragment_maps, a
-    chance de lá, que este script não muda), online e offline
-    (equipment.json → boat_fragments.drop_on_offline_fishing); Expedições não dão;
+  - desde o M24-T47 (A-173) cada peixe puxado, em qualquer mapa, tem fragment_drop_chance de dar 1 fragmento de CADA
+    barco (um sorteio por barco), online e offline (equipment.json → boat_fragments.drop_on_offline_fishing);
+    Expedições não dão. map_id e extra_fragment_maps só dizem de qual barco é cada marco do passe e cada faixa do Boss;
   - com fragments_required fragmentos o barco é montado (Nv.1) e passa a ser usado se for melhor;
   - o passe tem um marco a cada 10 níveis do Pescador; cada marco tem a recompensa grátis e a premium. O premium é
     comprado com Dólares e libera também as recompensas premium dos marcos já passados.
 
 Como os números são gerados (ajuste as constantes abaixo e rode "gerar" de novo):
-  - chance de fragmento: o jogador que abre 4 vezes por dia (30 min online + o resto offline, até 24 h), pescando no
-    mapa do barco com a vara e o barco que tinha ao chegar lá (uma simulação de referência), monta o barco em
-    DIAS_ALVO_PRIMEIRO dias no Mapa 1 e DIAS_ALVO_ULTIMO no Mapa 10 (crescendo em progressão geométrica);
+  - chance de fragmento: não é mais gerada (até o M24-T46 era calibrada para montar cada barco em DIAS_ALVO_PRIMEIRO
+    dias no Mapa 1 a DIAS_ALVO_ULTIMO no Mapa 10, pescando no mapa dele); "simular" ainda mede esses dias;
   - Moedas do passe: MINUTOS_MOEDAS minutos da renda da pesca que o jogador de referência (4 vezes por dia,
     tools/Progressao/jogador.py; sem Tripulação nem Melhorias desde o A-172) tem ao chegar àquele nível; Conchas: MINUTOS_CONCHAS minutos de Conchas da pesca
     online; o premium dá PREMIUM_MULT vezes isso;
@@ -285,18 +285,10 @@ def gerar(days):
     reference = play(PERFIL_REFERENCIA, days)
     rates = catch_rates(rules, reference)
     per_day = attempts_per_day(rules, PERFIL_REFERENCIA)
-    # The target days grow across the maps (Mapa 1 → Mapa 10), not across the boats: since M24-T42 (A-168) there are 5
-    # boats, and maps 6 to 10 drop boats 1 to 5 again with the chance they already had (extra_fragment_maps, kept as is).
-    n = len(rules.maps)
+    # Since M24-T47 (A-173) the chance is the owner's (every boat on every map, the same for all): it stays as it is.
     for b in boats:
-        i = b['tier'] - 1
-        target = DIAS_ALVO_PRIMEIRO * (DIAS_ALVO_ULTIMO / DIAS_ALVO_PRIMEIRO) ** (i / float(max(1, n - 1)))
-        rate = rates[b['map_id']]['por_tentativa']
-        chance = b['fragments_required'] / (target * per_day * rate)
-        # 4 casas: com o ciclo de pesca na metade (M24-T22) as chances ficaram abaixo de 1% e 3 casas erravam ~10%.
-        b['fragment_drop_chance'] = round(max(0.0001, chance), 4)
-        print('  %s (%s): %d fragmentos, %s por peixe (alvo %s dias, %s das tentativas viram peixe puxado)'
-              % (b['id'], b['map_id'], b['fragments_required'], pct(b['fragment_drop_chance'], 2), dec(target, 1), pct(rate, 0)))
+        print('  %s: %d fragmentos, %s por peixe em qualquer mapa (não muda)'
+              % (b['id'], b['fragments_required'], pct(b.get('fragment_drop_chance', 0.0), 2)))
     save('equipment.json', eq)
     write_pass(rules, reference, boats)
 

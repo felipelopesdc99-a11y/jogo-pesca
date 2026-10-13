@@ -3,6 +3,27 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.6] — 13/10/2026
+
+Todos os fragmentos caem em qualquer mapa, com 0,1% cada, por decisão do proprietário (M24-T47, A-173, TD-054). Save
+continua na versão 21. Não compilado localmente; verificado no CI. Não aberto no Unity.
+
+### Mudado
+
+- **Fragmentos em qualquer mapa:** cada peixe puxado (online e offline), em qualquer mapa, tem 0,1% de chance de dar 1
+  fragmento de **cada** barco, de **cada** vara e do Fragmento de Roupa, em sorteios separados. Antes cada barco caía só
+  em dois mapas (0,43% a 0,67%), cada vara num mapa só (1,63% a 7%) e a roupa em todos (0,17%).
+- **Loja:** barcos, varas e roupas dizem "Caem em todos os mapas" e mostram a chance; as notas da Loja dizem "em qualquer
+  mapa". O Boss Mundial e o Passe não mudaram.
+- **Validação do config:** basta que a vara que cada mapa pede tenha chance maior que 0 (a progressão não trava).
+  `rods.json → fragment_map_id` e a chance de `extra_fragment_maps` saíram.
+- **Ritmo** (pesca + Passe grátis, sem Boss): todos os 15 itens em ~20,5 / ~38,3 / ~41,8 dias (jogo aberto / 4 vezes por
+  dia / 1 vez por dia; antes ~11,9 / ~22,5 / ~25,8). Os mapas abrem mais tarde (Mapa 10 no dia ~7,7 / ~14,8 / ~16,8,
+  antes ~0,8 / ~2,3 / ~5,8) e o Nv.1000 vem em ~58,5 / ~108,8 / ~117,8 dias (antes ~53,8 / ~100,3 / ~109,8). Decisão
+  aberta: OD-070.
+- Simulações: `tools/Progressao/fragmentos_qualquer_mapa.py` (novo, resultado em
+  `docs/propostas/fragmentos_qualquer_mapa.json`); os geradores não escrevem mais as chances de fragmento.
+
 ## [0.2.0-m24.5] — 12/10/2026
 
 A Tripulação e as Melhorias saíram do jogo, por decisão do proprietário (M24-T46, A-172). Save versão 21. Verificado

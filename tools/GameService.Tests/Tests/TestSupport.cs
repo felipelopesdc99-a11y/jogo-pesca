@@ -68,6 +68,12 @@ internal static class TestSupport
         return _certain = result.Config;
     }
 
+    /// <summary>
+    /// A rod chance that never drops in a test but keeps the config valid: since M24-T47 (A-173) the validator wants every
+    /// map's rod to have a chance above 0 (every rod drops on every map; a rod at 0 would lock the progression).
+    /// </summary>
+    public const double NeverDrops = 1e-12;
+
     /// <summary>The real config with a JSON edit applied to one file (and, if asked, every bite pulled out).</summary>
     public static ConfigLoadResult ConfigWith(string file, Func<string, string> edit, bool certainCatch = false)
     {
@@ -91,7 +97,7 @@ internal static class TestSupport
             {
                 if (rod["fragment_drop_chance"] != null)
                 {
-                    rod["fragment_drop_chance"] = 0.0;
+                    rod["fragment_drop_chance"] = NeverDrops;
                 }
             }
 

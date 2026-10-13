@@ -25,10 +25,10 @@ namespace FishingIdle.GameService.Shop
     }
 
     /// <summary>
-    /// Boats by fragments (M24-T16, A-157): each boat belongs to one or more maps (M24-T42, A-168: maps 6 to 10 drop boats
-    /// 1 to 5); a fish pulled out there may drop one of its
-    /// fragments; fragments_required of them assemble the boat, which is then owned at Nv.1 and put in use when it is
-    /// better than the boat in use. Fragments that arrive after the boat is owned are kept as extras (OD-060).
+    /// Boats by fragments (M24-T16, A-157): since M24-T47 (A-173) every fish pulled out, on any map, may drop one fragment
+    /// of each boat (one roll per boat, with its own fragment_drop_chance); fragments_required of them assemble the boat,
+    /// which is then owned at Nv.1 and put in use when it is better than the boat in use. Fragments that arrive after the
+    /// boat is owned are kept as extras (OD-060).
     /// </summary>
     public static class BoatFragmentRules
     {
@@ -44,24 +44,32 @@ namespace FishingIdle.GameService.Shop
         }
 
         /// <summary>
-        /// The roll after a fish is pulled out on <paramref name="map"/>: with that map's chance for its boat, 1 fragment of it.
-        /// Draws from the cycle's own <see cref="Rng"/> after the catch, so the catch itself never changes. Offline catches
-        /// drop only when the config allows it (equipment.json → boat_fragments). Returns the gain, or null.
+        /// The rolls after a fish is pulled out (any map, M24-T47): one per boat but the starter one, in tier order, each
+        /// with that boat's fragment_drop_chance of 1 fragment of it. Draws from the cycle's own <see cref="Rng"/> after the
+        /// catch, so the catch itself never changes; a boat with chance 0 draws nothing. Offline catches drop only when the
+        /// config allows it (equipment.json → boat_fragments). Returns the gains (empty when none dropped).
         /// </summary>
-        internal static FragmentGainView RollOnCatch(GameConfig config, PlayerSave save, MapConfig map, Rng rng, bool offline)
+        internal static List<FragmentGainView> RollOnCatch(GameConfig config, PlayerSave save, Rng rng, bool offline)
         {
-            var chance = map == null ? 0.0 : config.BoatFragmentChanceOn(map.Id);
-            if (map == null || !config.TryGetBoatForMap(map.Id, out var boat) || chance <= 0)
-            {
-                return null;
-            }
-
+            var gains = new List<FragmentGainView>();
             if (offline && !config.FragmentsDropOffline)
             {
-                return null;
+                return gains;
             }
 
-            return rng.NextDouble() < chance ? Add(config, save, boat, 1) : null;
+            foreach (var boat in config.FragmentBoats)
+            {
+                if (boat.FragmentDropChance > 0 && rng.NextDouble() < boat.FragmentDropChance)
+                {
+                    var gain = Add(config, save, boat, 1);
+                    if (gain != null)
+                    {
+                        gains.Add(gain);
+                    }
+                }
+            }
+
+            return gains;
         }
 
         /// <summary>

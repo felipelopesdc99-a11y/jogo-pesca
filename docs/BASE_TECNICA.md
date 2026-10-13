@@ -107,9 +107,9 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IAquariumService` | `LocalAquariumService` | Guardar capturas, ficha do peixe, alimentar, vender do Aquário |
 | `ICardumeService` | `LocalCardumeService` | Posições 1–6, bônus 6/6, Força privada |
 | `IMapService` | `LocalMapService` | Mapas, requisitos, viagem de 30s (pausa e retoma a pesca) |
-| `IShopService` | `LocalShopService` | Loja, aba Varas: desde o M24-T32 nenhuma vara é vendida (vêm de fragmentos, `RodFragmentRules`, TD-048); `BuyRod` só resgata a Vara Inicial do tutorial. A oferta mostra o mapa onde a vara cai, os fragmentos e a chance, o nível da sua vara, os bônus agora e o preço do próximo nível (melhorar continua em `IProfileService.UpgradeRod`) |
+| `IShopService` | `LocalShopService` | Loja, aba Varas: desde o M24-T32 nenhuma vara é vendida (vêm de fragmentos, `RodFragmentRules`, TD-048); `BuyRod` só resgata a Vara Inicial do tutorial. A oferta mostra os fragmentos e a chance (a mesma em todos os mapas desde o M24-T47), o nível da sua vara, os bônus agora e o preço do próximo nível (melhorar continua em `IProfileService.UpgradeRod`) |
 | `IClothingService` | `LocalClothingService` | Roupas (M24-T33, A-164, TD-048): as 5 peças com nível, XP de uso e bônus; `Assemble` monta a peça escolhida com os Fragmentos de Roupa |
-| `IGearService` | `LocalGearService` | Barcos e iscas: iscas compradas, usar, guardar; barcos só usar e melhorar o nível (`UpgradeBoat`, M24-T13) — desde o M24-T16 eles vêm de fragmentos (`BoatFragmentRules`, TD-042) e a oferta mostra mapa, fragmentos e chance; equipamento em uso e chance de puxar por raridade |
+| `IGearService` | `LocalGearService` | Barcos e iscas: iscas compradas, usar, guardar; barcos só usar e melhorar o nível (`UpgradeBoat`, M24-T13) — desde o M24-T16 eles vêm de fragmentos (`BoatFragmentRules`, TD-042) e a oferta mostra fragmentos e chance; equipamento em uso e chance de puxar por raridade |
 | `IPassService` | `LocalPassService` | Passe do Pescador (M24-T17, A-158, TD-042): marcos de `pass.json`, resgatar um ou todos, comprar o Premium com Dólares (libera os marcos já passados); `IsMilestone` para o aviso de nível |
 | `IWorldBossService` | `LocalWorldBossService` | Boss Mundial (M24-T29, A-165, TD-049): `Update` (chamado pelo jogo aberto a cada sincronização) abre o dia, credita os ataques devidos do Cardume, sobe de faixa e paga uma vez quando a janela fecha; `GetWorldBoss` monta a tela. Regras puras em `WorldBossRules` (dia e janela no fuso do config, dano com `BattleEngine.HitDamage`, faixas, renda de referência, barco do mapa mais alto, Dólares por posição) |
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
@@ -278,19 +278,21 @@ Cada passo está em `SaveMigrations.Upgrade`.
   BoatUpgradeCost / BoatUpgradeShellCost`), chama `Sync` da pesca antes (os ciclos já completos ficam no nível antigo)
   e grava `BoatLevels`. O bônus em uso vem de `GearRules.BoatBonus` (nível do save), usado pela pesca
   (`SpendAttempt`), pela tela (`GetGear`) e pelo `CatchSimulator` (parâmetro `boatLevel`).
-- Barcos por fragmentos (TD-042): na pesca, depois de cada peixe puxado, `BoatFragmentRules.RollOnCatch` sorteia
-  com o `Rng` do mesmo ciclo o fragmento do barco do mapa (`GameConfig.TryGetBoatForMap`); a pesca offline também, se
-  `boat_fragments.drop_on_offline_fishing`. `BoatFragmentRules.Add` (usado também pelo Passe e pelos testes) soma e
+- Barcos por fragmentos (TD-042; em qualquer mapa desde o M24-T47, TD-054): na pesca, depois de cada peixe puxado,
+  `BoatFragmentRules.RollOnCatch` faz um sorteio por barco de `GameConfig.FragmentBoats` (todos menos o inicial, em ordem
+  de categoria), com o `Rng` do mesmo ciclo e o `fragment_drop_chance` de cada um; a pesca offline também, se
+  `boat_fragments.drop_on_offline_fishing`. `GameConfig.TryGetBoatForMap` ficou só para o Boss Mundial
+  (`WorldBossRules.BoatFor`). `BoatFragmentRules.Add` (usado também pelo Passe e pelos testes) soma e
   monta o barco ao chegar em `fragments_required`. O `FishingUpdate.Fragments` leva cada fragmento para a tela e para
   o "Bem-vindo de volta".
-- Varas e roupas por fragmentos (TD-048): na mesma tentativa, depois do fragmento de barco, `RodFragmentRules.RollOnCatch`
-  sorteia o fragmento da vara do mapa (`GameConfig.TryGetRodForMap`) e `ClothingRules.RollOnCatch` o Fragmento de Roupa
-  (qualquer mapa); depois `ClothingRules.GainUse` dá 1 ponto de uso por peixe a cada peça montada. `RodFragmentRules.Add`
+- Varas e roupas por fragmentos (TD-048; em qualquer mapa desde o M24-T47, TD-054): na mesma tentativa, depois dos
+  fragmentos de barco, `RodFragmentRules.RollOnCatch` faz um sorteio por vara de `GameConfig.FragmentRods` (em ordem de
+  categoria) e `ClothingRules.RollOnCatch` o do Fragmento de Roupa; depois `ClothingRules.GainUse` dá 1 ponto de uso por peixe a cada peça montada. `RodFragmentRules.Add`
   monta a vara (Inventário, Nv.1, em uso se a categoria for maior); a pesca lê a vara em uso a cada tentativa. Os bônus
   das roupas vêm de `ClothingRules.Bonuses`: Luvas no `gearBonus`, Chapéu/Botas/Camiseta em `CatchRules.WithClothing`,
   Calça no XP em `ApplyCatch`. `FishingUpdate.RodFragments`, `ClothingFragments`/`ClothingFragmentsHave` e
-  `ClothingLevels` levam tudo para a tela. O validador (`ValidateRodFragments`) garante que nenhuma vara fique impossível
-  de montar.
+  `ClothingLevels` levam tudo para a tela. O validador (`ValidateRodFragments`) garante que a categoria que cada mapa
+  pede seja a da Vara Inicial ou a de uma vara com chance maior que 0 (a progressão não trava).
 - Passe do Pescador (TD-042): `LocalPassService` lê os marcos de `pass.json` e grava só o que foi resgatado. Resgatar
   chama `Sync` da pesca antes (os fragmentos podem trocar o barco ou a vara em uso). Desde o M24-T32/T33 a recompensa
   também tem `rod_id`/`rod_fragments` e `clothing_fragments`. Subir de nível não paga nada sozinho
@@ -481,8 +483,8 @@ Cada passo está em `SaveMigrations.Upgrade`.
   `GameRoot.PushPassMilestones` avisa os marcos alcançados pela pesca.
 - **Fragmentos na tela** (M24-T16, A-157; M24-T32/T33, A-163/A-164): o `Hud` avisa os fragmentos de barco, de vara e de
   roupa e os níveis das roupas por `UI/FragmentNotices` (no máximo um aviso por tipo a cada 8 s, somando o que chega no
-  meio) e comemora barco, vara e roupa montados; a `ShopWindow` mostra "12/20" na etiqueta e "Fragmentos 12/20 · Caem no
-  mapa …" com a barra na ficha (sem Comprar) nas abas Varas e Barcos, e a aba Roupas (`DrawClothingCard`: nível, barra de
+  meio) e comemora barco, vara e roupa montados; a `ShopWindow` mostra "12/20" na etiqueta e "Fragmentos 12/20 · Caem em
+  todos os mapas" (M24-T47) com a barra na ficha (sem Comprar) nas abas Varas e Barcos, e a aba Roupas (`DrawClothingCard`: nível, barra de
   uso, bônus agora e no Nv.100, "Montar (N fragmentos de roupa)" por `GameRoot.AssembleClothing`); o `WelcomeBackDialog`
   soma os fragmentos e os níveis da pesca offline; a `PassWindow` mostra as linhas de vara e de roupa.
 - **Boss Mundial na tela** (M24-T29, A-165): `GameRoot.SyncWorldBoss` chama `Game.WorldBoss.Update()` na sincronização de
@@ -492,9 +494,10 @@ Cada passo está em `SaveMigrations.Upgrade`.
   `UI/WorldBossWindow` só
   lê `GameRoot.WorldBoss`: Cardume à esquerda (com `ArenaWindow.DrawFish`, agora `internal`), Boss à direita, números
   de dano quando a contagem de ataques sobe, faixas, ranking e Dólares do top 10; fora do horário, o último resultado.
-- **Fragmentos de barco em mais de um mapa** (M24-T42, A-168, TD-051): `equipment.json → boats[].extra_fragment_maps`
-  soma mapas de queda ao `map_id` principal. `GameConfig` monta o índice mapa → (barco, chance) (`TryGetBoatForMap`,
-  `BoatFragmentChanceOn`, `FragmentMapsOf`); a `ShopWindow` mostra "Caem nos mapas …" e a chance do mapa atual. Os
+- **Mapas de cada barco** (M24-T42, A-168, TD-051; desde o M24-T47, TD-054, só para o Boss Mundial):
+  `equipment.json → boats[].extra_fragment_maps` soma mapas ao `map_id` principal. `GameConfig` monta o índice mapa →
+  barco (`TryGetBoatForMap`, `MapsOf`). Os fragmentos caem em qualquer mapa, e a `ShopWindow` mostra "Caem em todos os
+  mapas" e a chance de cada item. Os
   barcos removidos e o que eles viram ficam em `equipment.json → boat_migration` (lido pela `BoatModelMigration`).
 - **Menu Eventos** (M24-T39, A-167): `UI/EventsWindow` mostra os eventos em cartões (hoje só o Boss Mundial), lendo
   `GameRoot.WorldBoss`; "Abrir" abre a `WorldBossWindow`, e o "‹ Eventos" dela volta. Um evento novo acrescenta o tipo

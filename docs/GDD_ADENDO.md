@@ -2266,6 +2266,8 @@ nível: Moedas e Conchas. Tudo que já existia continua; números em `/config`, 
 ### A-157 · Barcos por fragmentos
 **Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
 
+*Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). As chances por mapa abaixo (0,43% a 0,67%) e "Caem no mapa …" na Loja são a regra de antes; o mapa de cada barco hoje só diz de qual barco o Boss Mundial dá fragmentos.*
+
 > **Atualizado em 12/10/2026 (A-168):** o jogo voltou para **5 barcos**. Os barcos 6 a 10 (Vela do Sol, Quilha Azul, Canto
 > da Baleia, Farol Noturno, Titã do Atlântico) saíram; os mapas 6 a 10 dão fragmentos dos barcos 1 a 5. A regra do
 > fragmento por barco continua a mesma. O texto abaixo é o de 11/10/2026.
@@ -2695,6 +2697,8 @@ iscas novas (A-161), o Nv.1000 chegava em ~50 dias com o jogo sempre aberto. Nú
 ### A-163 · Varas por fragmentos
 **Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
+*Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). O mapa de cada vara (Vara 1 no Mapa 1, 2 no 3 …) e as chances de 1,63% a 7% abaixo são a regra de antes; a Loja diz "Caem em todos os mapas".*
+
 *Atualizado em 12/10/2026 (A-172): os dias citados abaixo foram simulados com a Tripulação e as Melhorias; as chances de fragmento não mudaram.*
 
 Decisão do proprietário em 12/10/2026 (M24-T32): "Vai dropar fragmentos de equipamentos. Então vai dropar fragmento de
@@ -2751,6 +2755,8 @@ continuam subindo de nível com Moedas e Conchas (A-156). Números em `config/ro
 
 ### A-164 · Roupas
 **Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). A chance do Fragmento de Roupa passou de 0,17% para 0,1%; o resto das roupas não mudou.*
 
 *Atualizado em 12/10/2026: a OD-067 foi resolvida; o proprietário manteve a Calça como está (opção a) e a curva do Pescador não muda.*
 
@@ -2918,6 +2924,8 @@ vazia ou travada sem explicação:
 
 ### A-168 · Volta para 5 barcos (os mapas 6 a 10 dão os barcos 1 a 5)
 **Seção do GDD:** 7, 13, 19 · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). A tabela de mapas e chances e o "Caem nos mapas …" da Loja abaixo são a regra de antes; os dois mapas de cada barco hoje só dizem de qual barco o Boss Mundial dá fragmentos.*
 
 "Vamos voltar para 5 barcos por enquanto." "Só voltar a 5 barcos." Muda o A-157 e o A-158; o fragmento por barco continua.
 
@@ -3102,3 +3110,65 @@ que a Tripulação ajudava a cumprir. Nenhum sistema, moeda ou raridade novo.
   Dólares e fragmentos do Passe não mudaram.
 - **Arte:** os ícones `ico_tripulacao` e `ico_aba_tripulacao` saíram do jogo; os pedidos de arte da Tripulação e das
   Melhorias em `docs/ASSETS_PENDENTES.md` estão marcados RETIRADO (não pedir).
+
+### A-173 · Todos os fragmentos em qualquer mapa (0,1% cada)
+**Seção do GDD:** 7, 13, 19 (novo escopo A-152) · decisão do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Decisão do proprietário em 13/10/2026 (M24-T47): "A ideia é os jogadores conseguirem todos esses fragmentos enquanto
+pescam, mas com uma porcentagem bem pequena." Perguntado, escolheu: "Todos em qualquer mapa 0,1%". Muda o A-157, o A-163,
+o A-164 e o A-168 só em **onde** os fragmentos caem e na chance; o resto continua (montagem sozinha, extras guardados,
+vara de categoria maior entra em uso, barco melhor entra em uso, Passe e Boss Mundial dando fragmentos, Expedições sem
+fragmentos).
+
+- **A regra:** em **qualquer mapa**, cada peixe puxado (online e offline; o que escapa não conta) tem **0,1%** de chance
+  de dar 1 fragmento de **cada** um destes, em sorteios separados: os 5 barcos, as 5 varas e o Fragmento de Roupa. Um
+  mesmo peixe pode dar mais de um fragmento. As chances ficam em `/config` (uma por item, todas 0,001).
+- **Loja:** a ficha de cada barco, de cada vara e das roupas diz "Fragmentos 12/20 · **Caem em todos os mapas**" e a
+  chance ("0,10% de chance por peixe puxado"). Os textos "Caem no mapa …" e "cada mapa tem o seu barco" saíram; as notas
+  da Loja dizem "em qualquer mapa".
+- **Boss Mundial e Passe:** não mudaram. O Boss continua dando fragmentos do barco do mapa mais alto liberado (o mapa de
+  cada barco no config ficou só para isso) e o Passe continua com os mesmos marcos.
+- **A progressão nunca trava:** como toda vara cai em todo mapa, o jogo só confere que a vara que cada mapa pede tenha
+  chance maior que 0.
+- **Quanto tempo leva** (o jogador de referência de `tools/Progressao/jogador.py`: só a pesca, sempre no melhor mapa
+  liberado, com o **Passe grátis** e sem Premium; **sem o Boss Mundial**, que só adiantaria; valor médio, sem sorte;
+  dias contados da meia-noite do primeiro dia; `tools/Progressao/fragmentos_qualquer_mapa.py`, resultado em
+  `docs/propostas/fragmentos_qualquer_mapa.json`). "Antes" é a regra de 12/10/2026.
+
+  | Dia em que monta, em dias (h = horas): antes → **agora** | Jogo aberto | 4 vezes por dia | 1 vez por dia |
+  |---|---|---|---|
+  | Barco 1 · Remo Valente | 8,7 → **2,9** | 16,8 → **5,9** | 7,8 → **6,8** |
+  | Barco 2 · Rastro Azul | 3,5 → **3,4** | 7,3 → **6,8** | 4,8 → **7,8** |
+  | Barco 3 · Proa Selvagem | 7,3 → **3,7** | 14,3 → **7,5** | 8,8 → **9,8** |
+  | Barco 4 · Costa Nobre | 2,7 → **4,6** | 2,3 → **8,9** | 5,8 → **10,8** |
+  | Barco 5 · Horizonte Dourado | 1,4 → **5,2** | 3,3 → **10,3** | 6,8 → **11,8** |
+  | Vara 1 · Ponta Selvagem | 1,9 h → **2,6** | 12,0 h → **5,3** | 1,8 → **6,8** |
+  | Vara 2 · Maré Dourada | 4,6 h → **4,0** | 18,0 h → **7,8** | 2,8 → **8,8** |
+  | Vara 3 · Corrente Mestra | 6,2 h → **5,0** | 22,1 h → **9,8** | 3,8 → **11,8** |
+  | Vara 4 · Atlântico Nobre | 10,1 h → **6,1** | 1,3 → **11,8** | 4,8 → **13,8** |
+  | Vara 5 · Soberana Abissal | 20,2 h → **7,7** | 2,3 → **14,8** | 5,8 → **16,8** |
+  | 1ª roupa (Luvas, 15 frag.) | 6,2 h → **1,0** | 22,1 h → **2,3** | 2,8 → **2,8** |
+  | 2ª roupa (Chapéu, 25) | 1,2 → **3,5** | 2,8 → **6,9** | 4,8 → **8,8** |
+  | 3ª roupa (Calça, 40) | 3,4 → **7,2** | 6,8 → **13,8** | 8,8 → **15,8** |
+  | 4ª roupa (Botas, 60) | 6,9 → **12,6** | 13,3 → **23,8** | 15,8 → **26,8** |
+  | 5ª roupa (Camiseta, 80) | 11,9 → **20,5** | 22,5 → **38,3** | 25,8 → **41,8** |
+  | **Todos os 15 itens** | 11,9 → **20,5** | 22,5 → **38,3** | 25,8 → **41,8** |
+
+  O que mais demora são as roupas: as 5 peças pedem 220 fragmentos de um tipo só (15 + 25 + 40 + 60 + 80). Os barcos e as
+  varas chegam em 3 a 17 dias.
+- **Efeito na progressão:** com 0,1%, as varas chegam bem mais tarde, e são elas que abrem os mapas (`minimum_rod_tier`).
+  O jogo não trava, mas o jogador fica mais tempo nos primeiros mapas:
+
+  | Dia em que o mapa abre (h = horas): antes → **agora** | Jogo aberto | 4 vezes por dia | 1 vez por dia |
+  |---|---|---|---|
+  | Mapa 2 · Rio Selvagem (Nv.10, Vara 1) | 1,9 h → **2,6** | 12,0 h → **5,3** | 1,8 → **6,8** |
+  | Mapa 4 · Estuário das Marés (Nv.30, Vara 2) | 4,6 h → **4,0** | 18,0 h → **7,8** | 2,8 → **8,8** |
+  | Mapa 6 · Arquipélago do Sol (Nv.50, Vara 3) | 6,2 h → **5,0** | 22,1 h → **9,8** | 3,8 → **11,8** |
+  | Mapa 8 · Banco das Baleias (Nv.70, Vara 4) | 10,1 h → **6,1** | 1,3 → **11,8** | 4,8 → **13,8** |
+  | Mapa 10 · Abismo Atlântico (Nv.90, Vara 5) | 20,2 h → **7,7** | 2,3 → **14,8** | 5,8 → **16,8** |
+  | Pescador Nv.100 | 10,1 h → **2,9** | 1,3 → **5,8** | 3,8 → **7,8** |
+  | Pescador Nv.500 | 13,2 → **17,9** | 25,3 → **33,9** | 29,8 → **37,8** |
+  | Pescador Nv.1000 | 53,8 → **58,5** | 100,3 → **108,8** | 109,8 → **117,8** |
+
+  Com o jogo aberto, o Mapa 2 abre no dia ~2,6 (antes em ~2 horas) e o Mapa 10 no dia ~7,7 (antes em ~20 horas); o
+  Nv.1000 vem ~5 a 8 dias depois (+7% a +9%). Nada foi rebalanceado além da chance; as opções estão no OD-070.

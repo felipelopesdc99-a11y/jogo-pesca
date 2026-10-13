@@ -21,21 +21,11 @@ namespace FishingIdle.GameService.Shop
         public bool InUse { get; internal set; }
 
         /// <summary>
-        /// Boats are not sold (M24-T16, A-157): the map whose catches drop this boat's fragments (null for the starter
-        /// boat), the fragments the player has (extras once owned), how many assemble it and the chance per fish.
+        /// Boats are not sold (M24-T16, A-157): the fragments the player has (extras once owned), how many assemble it (0 for
+        /// the starter boat) and the chance per fish pulled out, the same on every map since M24-T47 (A-173).
         /// </summary>
-        public string MapId { get; internal set; }
-        public string MapName { get; internal set; }
-
-        /// <summary>
-        /// Every map that drops this boat's fragments, in order (M24-T42, A-168: maps 6 to 10 drop boats 1 to 5), so the
-        /// Shop says "Caem nos mapas X e Y". Empty for the starter boat.
-        /// </summary>
-        public List<string> MapNames { get; internal set; } = new List<string>();
         public long Fragments { get; internal set; }
         public int FragmentsRequired { get; internal set; }
-
-        /// <summary>The chance per fish on the map the player is on when it drops this boat; otherwise on <see cref="MapId"/>.</summary>
         public double FragmentChance { get; internal set; }
 
         /// <summary>Whether the boat levels up (M24-T13); the starter boat does not.</summary>
@@ -197,22 +187,6 @@ namespace FishingIdle.GameService.Shop
                 var owned = OwnsBoat(b);
                 var level = owned ? GearRules.BoatLevel(config, save, b) : 1;
                 var max = config.BoatMaxLevel(b);
-                var boatMap = config.TryGetMap(b.MapId, out var m) ? m : null;
-                var mapNames = new List<string>();
-                var chance = b.FragmentDropChance;
-                foreach (var (mapId, mapChance) in GameConfig.FragmentMapsOf(b))
-                {
-                    if (config.TryGetMap(mapId, out var dropMap))
-                    {
-                        mapNames.Add(dropMap.DisplayName);
-                    }
-
-                    if (mapId == save.CurrentMapId)
-                    {
-                        chance = mapChance;
-                    }
-                }
-
                 view.Boats.Add(new BoatOfferView
                 {
                     BoatId = b.Id,
@@ -222,12 +196,9 @@ namespace FishingIdle.GameService.Shop
                     Bonus = config.BoatBonusAt(b, level),
                     Owned = owned,
                     InUse = b.Id == boat.Id,
-                    MapId = boatMap?.Id,
-                    MapName = boatMap?.DisplayName,
-                    MapNames = mapNames,
                     Fragments = BoatFragmentRules.Have(save, b.Id),
-                    FragmentsRequired = b.FragmentsRequired,
-                    FragmentChance = chance,
+                    FragmentsRequired = b.Id == config.StarterBoat.Id ? 0 : b.FragmentsRequired,
+                    FragmentChance = b.Id == config.StarterBoat.Id ? 0 : b.FragmentDropChance,
                     HasLevels = b.HasLevels,
                     Level = level,
                     MaxLevel = max,

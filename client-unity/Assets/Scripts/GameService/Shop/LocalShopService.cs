@@ -16,11 +16,9 @@ namespace FishingIdle.GameService.Shop
         public int Tier { get; internal set; }
 
         /// <summary>
-        /// Rods are not sold (M24-T32, A-163): the map whose catches drop this rod's fragments (null for the Starter Rod),
-        /// the fragments the player has (extras once owned), how many assemble it and the chance per fish.
+        /// Rods are not sold (M24-T32, A-163): the fragments the player has (extras once owned), how many assemble it (0 for
+        /// the Starter Rod) and the chance per fish pulled out, the same on every map since M24-T47 (A-173).
         /// </summary>
-        public string MapId { get; internal set; }
-        public string MapName { get; internal set; }
         public long Fragments { get; internal set; }
         public int FragmentsRequired { get; internal set; }
         public double FragmentChance { get; internal set; }
@@ -150,18 +148,15 @@ namespace FishingIdle.GameService.Shop
             var now = Config.RodBonusesAt(rod, copy?.Level ?? 1);
             var nextCoins = copy != null && rod.HasInternalLevels ? Config.RodUpgradeCost(rod, copy.Level) : 0;
             var nextShells = copy != null && rod.HasInternalLevels ? Config.RodUpgradeShellCost(rod, copy.Level) : 0;
-            var fragmentMap = GameConfig.IsFragmentRod(rod) && Config.TryGetMap(rod.FragmentMapId, out var m) ? m : null;
             return new RodOfferView
             {
                 RodId = rod.Id,
                 Name = rod.DisplayName,
                 Description = rod.Description,
                 Tier = rod.Tier,
-                MapId = fragmentMap?.Id,
-                MapName = fragmentMap?.DisplayName,
                 Fragments = RodFragmentRules.Have(Save, rod.Id),
-                FragmentsRequired = rod.FragmentsRequired,
-                FragmentChance = rod.FragmentDropChance,
+                FragmentsRequired = GameConfig.IsFragmentRod(rod) ? rod.FragmentsRequired : 0,
+                FragmentChance = GameConfig.IsFragmentRod(rod) ? rod.FragmentDropChance : 0,
                 MaxLevel = max,
                 RarityBonus = at1.RarityEfficiency,
                 SizeBonus = at1.SizeQuality,

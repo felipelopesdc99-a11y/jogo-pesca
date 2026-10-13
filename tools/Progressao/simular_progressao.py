@@ -12,13 +12,12 @@ O que ele faz:
   - compra como um jogador cuidadoso: a próxima vara assim que tem o dinheiro (itens não têm nível mínimo desde
     M24-T09; guarda dinheiro para ela quando o mapa que a pede está a 8 níveis), níveis da vara e do barco (até o
     Nv.100, curva_niveis.py; o mais barato primeiro) e iscas (só quando a isca se paga);
-  - barcos não são comprados (M24-T16, A-157): cada peixe puxado no mapa de um barco dá, em média,
-    fragment_drop_chance fragmento dele (online e offline, se drop_on_offline_fishing; nos extra_fragment_maps, com a chance
-    de lá, M24-T42); com fragments_required o barco
-    é montado e o jogador passa a usar o melhor barco que tem;
-  - varas também não são compradas (M24-T32, A-163): cada peixe puxado no fragment_map_id de uma vara dá, em média,
-    fragment_drop_chance fragmento dela; com fragments_required ela é montada e passa a ser usada se for de categoria maior
-    (Rules.legacy_rod_prices volta a vender as varas na Loja, para comparar com antes);
+  - barcos e varas não são comprados (M24-T16, A-157; M24-T32, A-163): desde o M24-T47 (A-173) cada peixe puxado, em
+    qualquer mapa, dá em média fragment_drop_chance fragmento de CADA barco e de CADA vara (sorteios independentes;
+    online e offline, se drop_on_offline_fishing); com fragments_required o barco é montado e o jogador passa a usar o
+    melhor barco que tem; a vara montada passa a ser usada se for de categoria maior (Rules.legacy_rod_prices volta a
+    vender as varas na Loja, para comparar com antes; Rules.boat_drops / rod_drops podem ser trocados para simular a
+    regra de antes, um mapa por barco e por vara);
   - roupas (M24-T33, A-164): cada peixe puxado em qualquer mapa dá, em média, clothing.fragment_drop_chance Fragmento de
     Roupa; o jogador monta as peças na ordem CLOTHING_ORDER assim que tem os fragmentos; cada peixe puxado dá
     use_xp_per_fish de XP a cada peça montada; os bônus somam aos da vara (raridade, tamanho, Conchas), à chance de puxar
@@ -71,21 +70,17 @@ class Rules:
         eq = load('equipment.json')
         self.eq_cfg = eq
         self.boats = sorted(eq['boats'], key=lambda b: b['tier'])
-        # Boats by fragments (M24-T16): the boat of each map, and whether offline fishing drops them too.
-        # {map id: (boat, chance)}: map_id and, since M24-T42 (A-168), extra_fragment_maps (maps 6 to 10 drop boats 1 to 5).
-        self.boat_of_map = {}
-        for b in self.boats:
-            if b.get('map_id'):
-                self.boat_of_map.setdefault(b['map_id'], (b, b.get('fragment_drop_chance', 0.0)))
-            for extra in b.get('extra_fragment_maps') or []:
-                self.boat_of_map.setdefault(extra['map_id'], (b, extra.get('fragment_drop_chance', 0.0)))
+        # Boats and rods by fragments (M24-T16, M24-T32; since M24-T47, A-173, every map drops every one of them, each
+        # with its own fragment_drop_chance per fish pulled out), and whether offline fishing drops them too.
+        self.fragment_boats = [b for b in self.boats if b.get('fragments_required')]
         self.fragments_offline = (eq.get('boat_fragments') or {}).get('drop_on_offline_fishing', True)
         self.baits = eq['baits']
-        # Rods by fragments (M24-T32): the rod of each map, and whether offline fishing drops them too.
-        self.rod_of_map = {r['fragment_map_id']: r for r in self.rods if r.get('fragment_map_id')}
+        self.fragment_rods = [r for r in self.rods if (r.get('acquisition') or {}).get('method') == 'fragments']
         self.rod_fragments_offline = (self.rods_cfg.get('fragment_rules') or {}).get('drop_on_offline_fishing', True)
         # {rod id: (Moedas, Conchas)}: sells those rods in the Shop as before M24-T32 (only to compare with the old pace).
         self.legacy_rod_prices = None
+        # Whether fishing goes on past the max level (only the fragments and Moedas matter then); off = as before M24-T47.
+        self.fish_past_max_level = False
         # Clothing (M24-T33); None = no clothing (to compare with before).
         self.clothing = eq.get('clothing')
         econ = load('economy.json')
@@ -95,6 +90,14 @@ class Rules:
         self.price_mult = econ['npc_fish_sale']['price_multiplier']
         self.xp_scale = xp_scale or {}
         self._cache = {}
+
+    def boat_drops(self, map_id):
+        """[(boat, chance per fish pulled out)] on a map: every boat, on every map (M24-T47, A-173)."""
+        return [(b, b.get('fragment_drop_chance', 0.0)) for b in self.fragment_boats]
+
+    def rod_drops(self, map_id):
+        """[(rod, chance per fish pulled out)] on a map: every rod, on every map (M24-T47, A-173)."""
+        return [(r, r.get('fragment_drop_chance', 0.0)) for r in self.fragment_rods]
 
     def rod_bonus(self, rod, level):
         # Rods level up to Nv.100 on a curve (M24-T13, curva_niveis.py).
@@ -252,7 +255,8 @@ class Player:
         # Offline the player stays on the map where the game was closed (the game never travels by itself): a level or a
         # rod that arrives while away only moves them at the next session (M24-T32).
         fixed = self.map() if self.offline else None
-        while attempts > 0 and self.level < self.r.max_level:
+        # At the max level the fishing goes on (no more XP counts): the fragments keep dropping (M24-T47).
+        while attempts > 0 and (self.level < self.r.max_level or self.r.fish_past_max_level):
             mp = fixed or self.map()
             lvl = self.rods[self.rod['id']]
             # bait runs out in the middle: split the batch there
@@ -260,8 +264,8 @@ class Player:
             xp, coins, shells, caught = self.r.per_attempt(mp, self.rod, lvl, self.gear(), self.extra())
             xp *= xp_mult
             # level ups inside the batch: stop at the next level
-            need = self.r.xp_to_next[self.level] - self.xp
-            steps = n if xp <= 0 else min(n, max(1, int(-(-need // xp))))
+            need = self.r.xp_to_next[self.level] - self.xp if self.level < self.r.max_level else 0.0
+            steps = n if xp <= 0 or self.level >= self.r.max_level else min(n, max(1, int(-(-need // xp))))
             key = ((self.level - 1) // 10, mp['id'])
             self.usage[key] = self.usage.get(key, 0) + steps
             self.att[self.level] = self.att.get(self.level, 0) + steps
@@ -269,12 +273,12 @@ class Player:
             self.xp += xp * steps
             self.coins += coins * steps
             self.shells += shells * steps
-            boat, boat_chance = self.r.boat_of_map.get(mp['id'], (None, 0.0))
-            if boat and (not self.offline or self.r.fragments_offline):
-                self.add_fragments(boat, caught * steps * boat_chance)
-            rod = self.r.rod_of_map.get(mp['id'])
-            if rod and self.r.legacy_rod_prices is None and (not self.offline or self.r.rod_fragments_offline):
-                self.add_rod_fragments(rod, caught * steps * rod.get('fragment_drop_chance', 0.0))
+            if not self.offline or self.r.fragments_offline:
+                for boat, boat_chance in self.r.boat_drops(mp['id']):
+                    self.add_fragments(boat, caught * steps * boat_chance)
+            if self.r.legacy_rod_prices is None and (not self.offline or self.r.rod_fragments_offline):
+                for rod, rod_chance in self.r.rod_drops(mp['id']):
+                    self.add_rod_fragments(rod, caught * steps * rod_chance)
             cl = self.r.clothing
             if cl and (not self.offline or cl.get('drop_on_offline_fishing', True)):
                 self.add_clothing_fragments(caught * steps * cl['fragment_drop_chance'])

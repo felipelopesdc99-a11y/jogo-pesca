@@ -17,8 +17,11 @@ public sealed class BoatFragmentsAndPassTests
 {
     private static GameConfig Config => TestSupport.RealConfig();
 
-    /// <summary>The certain-catch config with the fragment chance of one boat (and, if asked, offline drops) changed.</summary>
-    private static GameConfig WithFragmentChance(string boatId, double chance, bool dropOffline = true, double extraMapChance = -1)
+    /// <summary>
+    /// The certain-catch config with the fragment chance of one boat (null = every boat) changed and the other boats at 0
+    /// (since M24-T47 every boat drops on every map), and, if asked, offline drops off.
+    /// </summary>
+    private static GameConfig WithFragmentChance(string boatId, double chance, bool dropOffline = true)
     {
         var texts = TestSupport.ConfigTexts();
         var progression = JObject.Parse(texts[GameConfigLoader.ProgressionFile]);
@@ -31,14 +34,9 @@ public sealed class BoatFragmentsAndPassTests
         texts[GameConfigLoader.ProgressionFile] = progression.ToString();
 
         var equipment = JObject.Parse(texts[GameConfigLoader.EquipmentFile]);
-        var boatJson = equipment["boats"]!.Single(b => (string)b["id"]! == boatId);
-        boatJson["fragment_drop_chance"] = chance;
-        if (extraMapChance >= 0 && boatJson["extra_fragment_maps"] is JArray extras)
+        foreach (var boatJson in equipment["boats"]!.Where(b => b["fragment_drop_chance"] != null))
         {
-            foreach (var extra in extras)
-            {
-                extra["fragment_drop_chance"] = extraMapChance;
-            }
+            boatJson["fragment_drop_chance"] = boatId == null || (string)boatJson["id"]! == boatId ? chance : 0.0;
         }
 
         equipment["boat_fragments"]!["drop_on_offline_fishing"] = dropOffline;
@@ -52,7 +50,7 @@ public sealed class BoatFragmentsAndPassTests
     // ------------------------------------------------------------------ the 5 boats (M24-T42, A-168)
 
     [Fact]
-    public void There_are_five_boats_and_maps_6_to_10_drop_boats_1_to_5_again()
+    public void There_are_five_boats_each_with_its_maps_for_the_boss_and_all_drop_on_every_map()
     {
         var config = Config;
         var boats = config.Equipment.Boats.OrderBy(b => b.Tier).ToList();
@@ -66,15 +64,13 @@ public sealed class BoatFragmentsAndPassTests
         Assert.Equal(10, maps.Count);
         for (var i = 0; i < 10; i++)
         {
-            // Map 1 → boat 1 … map 5 → boat 5; map 6 → boat 1 … map 10 → boat 5.
+            // Map 1 → boat 1 … map 5 → boat 5; map 6 → boat 1 … map 10 → boat 5 (the boat of the Boss Mundial's bands).
             var boat = boats[i % 5 + 1];
             Assert.True(config.TryGetBoatForMap(maps[i].Id, out var forMap));
             Assert.Equal(boat.Id, forMap.Id);
-            Assert.InRange(config.BoatFragmentChanceOn(maps[i].Id), 0.003, 0.03);
             if (i < 5)
             {
                 Assert.Equal(maps[i].Id, boat.MapId);
-                Assert.Equal(boat.FragmentDropChance, config.BoatFragmentChanceOn(maps[i].Id), 9);
                 Assert.True(boat.HasLevels);
                 Assert.Equal(boat.CatchSuccessBonus * 3, boat.CatchSuccessBonusAtMaxLevel, 6);
                 if (i > 0)
@@ -89,38 +85,43 @@ public sealed class BoatFragmentsAndPassTests
             }
         }
 
-        // Maps 1 to 5 keep their chances; maps 6 to 10 keep the chance they had for boats 6 to 10 (A-157 → A-168).
-        var expected = new Dictionary<string, double>
-        {
-            ["map_01"] = 0.0043, ["map_02"] = 0.0043, ["map_03"] = 0.0048, ["map_04"] = 0.0051, ["map_05"] = 0.0052,
-            ["map_06"] = 0.0053, ["map_07"] = 0.0058, ["map_08"] = 0.0061, ["map_09"] = 0.0066, ["map_10"] = 0.0067,
-        };
-        foreach (var pair in expected)
-        {
-            Assert.Equal(pair.Value, config.BoatFragmentChanceOn(pair.Key), 9);
-        }
-
+        // M24-T47 (A-173): every boat drops on every map at 0,1% per fish pulled out.
+        Assert.Equal(boats.Skip(1).Select(b => b.Id), config.FragmentBoats.Select(b => b.Id));
+        Assert.All(config.FragmentBoats, b => Assert.Equal(0.001, b.FragmentDropChance, 9));
         Assert.Equal(20, boats[1].FragmentsRequired);
         Assert.Equal(55, boats[5].FragmentsRequired);
     }
 
     [Fact]
-    public void A_catch_on_map_6_drops_a_fragment_of_boat_1_and_the_shop_names_both_maps()
+    public void A_catch_on_any_map_can_drop_a_fragment_of_every_boat()
     {
-        var (game, clock, _) = TestSupport.NewGame(WithFragmentChance("boat_01", 1.0, extraMapChance: 1.0));
-        var save = game.Session.Save;
-        save.CurrentMapId = "map_06";
-        save.FisherLevel = game.Session.Config.Maps.Maps.Single(m => m.Id == "map_06").UnlockFisherLevel;
-        TestSupport.GiveRod(game, "rod_05");
-        game.Fishing.StartFishing();
-        clock.AdvanceSeconds(game.Session.Config.Fishing.OnlineCycleSeconds);
-        var fragments = game.Fishing.Sync().Fragments;
-        Assert.Single(fragments);
-        Assert.Equal("boat_01", fragments[0].BoatId);
+        foreach (var (mapId, rodId) in new[] { ("map_01", (string)null), ("map_06", "rod_05"), ("map_10", "rod_05") })
+        {
+            var (game, clock, _) = TestSupport.NewGame(WithFragmentChance(null, 1.0));
+            var save = game.Session.Save;
+            save.CurrentMapId = mapId;
+            save.FisherLevel = game.Session.Config.Maps.Maps.Single(m => m.Id == mapId).UnlockFisherLevel;
+            if (rodId != null)
+            {
+                TestSupport.GiveRod(game, rodId);
+            }
 
-        var offer = game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01");
-        Assert.Equal(new[] { "Lago Sereno", game.Session.Config.Maps.Maps.Single(m => m.Id == "map_06").DisplayName }, offer.MapNames);
-        Assert.Equal(1.0, offer.FragmentChance, 9);
+            game.Fishing.StartFishing();
+            clock.AdvanceSeconds(game.Session.Config.Fishing.OnlineCycleSeconds);
+            var update = game.Fishing.Sync();
+            Assert.Single(update.NewCatches);
+            // One roll per boat, in tier order, all from the same catch.
+            Assert.Equal(new[] { "boat_01", "boat_02", "boat_03", "boat_04", "boat_05" }, update.Fragments.Select(f => f.BoatId));
+            Assert.All(update.Fragments, f => Assert.Equal(1, f.Amount));
+        }
+
+        // Only boat 5 at 100%: a catch on map 1 (the map of boat 1) still drops boat 5.
+        var (one, oneClock, _) = TestSupport.NewGame(WithFragmentChance("boat_05", 1.0));
+        one.Fishing.StartFishing();
+        oneClock.AdvanceSeconds(one.Session.Config.Fishing.OnlineCycleSeconds);
+        Assert.Equal("boat_05", one.Fishing.Sync().Fragments.Single().BoatId);
+        Assert.Equal(1.0, one.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_05").FragmentChance, 9);
+        Assert.Equal(0.0, one.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01").FragmentChance, 9);
     }
 
     [Fact]
@@ -147,8 +148,8 @@ public sealed class BoatFragmentsAndPassTests
         var view = game.Gear.GetGear();
         var boat1 = view.Boats.Single(b => b.BoatId == "boat_01");
         Assert.False(boat1.Owned);
-        Assert.Equal("map_01", boat1.MapId);
-        Assert.Equal("Lago Sereno", boat1.MapName);
+        Assert.Equal(0.001, boat1.FragmentChance, 9);
+        Assert.Equal(0, view.Boats.Single(b => b.BoatId == "boat_00").FragmentsRequired);
         Assert.Equal(0, boat1.Fragments);
         Assert.Equal(20, boat1.FragmentsRequired);
         Assert.Equal(ServiceError.BoatNotOwned, game.Gear.UseBoat("boat_01").Error);
@@ -158,9 +159,9 @@ public sealed class BoatFragmentsAndPassTests
     // ------------------------------------------------------------------ fragments per catch
 
     [Fact]
-    public void Every_catch_on_the_map_can_drop_a_fragment_and_the_boat_assembles_itself()
+    public void Every_catch_can_drop_a_fragment_and_the_boat_assembles_itself()
     {
-        // With the chance at 100%, every fish pulled out on map_01 gives 1 fragment of boat_01; 20 assemble it.
+        // With the chance at 100%, every fish pulled out gives 1 fragment of boat_01; 20 assemble it.
         var (game, clock, _) = TestSupport.NewGame(WithFragmentChance("boat_01", 1.0));
         var config = game.Session.Config;
         game.Fishing.StartFishing();
@@ -222,9 +223,9 @@ public sealed class BoatFragmentsAndPassTests
     }
 
     [Fact]
-    public void Only_the_boat_of_the_map_drops_and_a_zero_chance_drops_nothing()
+    public void A_zero_chance_drops_nothing()
     {
-        var (game, clock, _) = TestSupport.NewGame(WithFragmentChance("boat_01", 0.0));
+        var (game, clock, _) = TestSupport.NewGame(WithFragmentChance(null, 0.0));
         game.Fishing.StartFishing();
         var catches = TestSupport.PlayFor(game, clock, 600, game.Session.Config.Fishing.OnlineCycleSeconds);
         Assert.NotEmpty(catches);

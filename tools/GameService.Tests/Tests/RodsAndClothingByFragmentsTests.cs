@@ -10,10 +10,10 @@ using Xunit;
 namespace FishingIdle.GameService.Tests;
 
 /// <summary>
-/// Rods by fragments (M24-T32, A-163) and clothing (M24-T33, A-164): each rod drops on a map the rod before it already
-/// reaches, so the progression never locks; rods are out of the Shop and the ones a player has stay; one kind of clothing
-/// fragment drops on every map, any piece can be assembled, each piece adds to its own axis and goes up a level with use;
-/// the 95% ceiling holds; the pass gives both; the rolls come after the catch, so the catches never change.
+/// Rods by fragments (M24-T32, A-163) and clothing (M24-T33, A-164): since M24-T47 (A-173) every rod, every boat and the
+/// Fragmento de Roupa drop on every map, each in its own roll at 0,1%, so the progression never locks; rods are out of the
+/// Shop and the ones a player has stay; any clothing piece can be assembled, each piece adds to its own axis and goes up a
+/// level with use; the 95% ceiling holds; the pass gives both; the rolls come after the catch, so the catches never change.
 /// </summary>
 public sealed class RodsAndClothingByFragmentsTests
 {
@@ -47,12 +47,12 @@ public sealed class RodsAndClothingByFragmentsTests
 
     private static JToken RodJson(JObject rods, string id) => rods["rods"]!.Single(r => (string)r["id"]! == id);
 
-    /// <summary>No boat, rod or clothing drop except the ones the test sets.</summary>
+    /// <summary>No boat, rod or clothing drop except the ones the test sets (rods at TestSupport.NeverDrops, see there).</summary>
     private static void NoDrops(JObject rods, JObject equipment)
     {
         foreach (var rod in rods["rods"]!.Where(r => r["fragment_drop_chance"] != null))
         {
-            rod["fragment_drop_chance"] = 0.0;
+            rod["fragment_drop_chance"] = TestSupport.NeverDrops;
         }
 
         foreach (var boat in equipment["boats"]!.Where(b => b["fragment_drop_chance"] != null))
@@ -75,55 +75,37 @@ public sealed class RodsAndClothingByFragmentsTests
         return updates;
     }
 
-    // ------------------------------------------------------------------ the rods and where they drop
+    // ------------------------------------------------------------------ every fragment on every map (M24-T47, A-173)
 
     [Fact]
-    public void Every_rod_drops_on_the_last_map_the_rod_before_it_reaches()
+    public void Every_rod_boat_and_the_clothing_drop_on_every_map_at_0_1_percent()
     {
         var config = Real;
-        var expected = new Dictionary<string, string>
-        {
-            ["rod_01"] = "map_01", ["rod_02"] = "map_03", ["rod_03"] = "map_05", ["rod_04"] = "map_07", ["rod_05"] = "map_09",
-        };
         Assert.True(GameConfig.IsFreeClaimRod(config.StarterRod));
-        Assert.Null(config.StarterRod.FragmentMapId);
-        foreach (var (rodId, mapId) in expected)
-        {
-            config.TryGetRod(rodId, out var rod);
-            Assert.True(GameConfig.IsFragmentRod(rod));
-            Assert.Equal(mapId, rod.FragmentMapId);
-            Assert.True(config.TryGetRodForMap(mapId, out var forMap));
-            Assert.Equal(rodId, forMap.Id);
-            Assert.InRange(rod.FragmentDropChance, 0.001, 0.2);
-            Assert.True(rod.FragmentsRequired >= 10);
-            config.TryGetMap(mapId, out var map);
-            Assert.Equal(rod.Tier - 1, map.MinimumRodTier);
-            // The last map the rod before it reaches: the next map asks for this rod.
-            var next = config.Maps.Maps.Where(m => m.UnlockFisherLevel > map.UnlockFisherLevel).OrderBy(m => m.UnlockFisherLevel).FirstOrDefault();
-            if (next != null)
-            {
-                Assert.Equal(rod.Tier, next.MinimumRodTier);
-            }
-        }
+        Assert.Null(typeof(RodConfig).GetProperty("FragmentMapId"));
+        Assert.Null(typeof(BoatFragmentMapConfig).GetProperty("FragmentDropChance"));
 
-        // Maps without a rod drop nothing of a rod.
-        Assert.False(config.TryGetRodForMap("map_02", out _));
-        Assert.False(config.TryGetRodForMap("map_10", out _));
+        // One roll per rod and per boat, in tier order; the starter rod and boat take no fragments.
+        Assert.Equal(new[] { "rod_01", "rod_02", "rod_03", "rod_04", "rod_05" }, config.FragmentRods.Select(r => r.Id));
+        Assert.Equal(new[] { "boat_01", "boat_02", "boat_03", "boat_04", "boat_05" }, config.FragmentBoats.Select(b => b.Id));
+        Assert.All(config.FragmentRods, rod =>
+        {
+            Assert.True(GameConfig.IsFragmentRod(rod));
+            Assert.Equal(0.001, rod.FragmentDropChance, 9);
+            Assert.True(rod.FragmentsRequired >= 10);
+        });
+        Assert.All(config.FragmentBoats, boat => Assert.Equal(0.001, boat.FragmentDropChance, 9));
+        Assert.Equal(0.001, config.Clothing.FragmentDropChance, 9);
     }
 
     [Fact]
-    public void The_progression_never_locks_every_map_s_rod_drops_on_an_earlier_map()
+    public void The_progression_never_locks_every_map_s_rod_drops_while_fishing()
     {
         var config = Real;
         foreach (var map in config.Maps.Maps.Where(m => m.MinimumRodTier > 0))
         {
-            // Some rod of the tier the map asks for (or more) drops on a map the player can already fish: a lower tier
-            // asked and a level that comes no later than this map's.
-            var ok = config.Rods.Rods.Where(GameConfig.IsFragmentRod).Any(rod =>
-                rod.Tier >= map.MinimumRodTier
-                && config.TryGetMap(rod.FragmentMapId, out var drop)
-                && drop.MinimumRodTier < map.MinimumRodTier
-                && drop.UnlockFisherLevel <= map.UnlockFisherLevel);
+            // Every rod drops on every map: a rod of the tier the map asks for (or more) only needs a chance above 0.
+            var ok = config.FragmentRods.Any(rod => rod.Tier >= map.MinimumRodTier && rod.FragmentDropChance > 0);
             Assert.True(ok, map.Id + " would lock the progression");
         }
     }
@@ -131,30 +113,24 @@ public sealed class RodsAndClothingByFragmentsTests
     [Fact]
     public void A_config_that_would_lock_the_progression_is_rejected_in_portuguese()
     {
-        // Rod 2 dropping on the map that asks for rod 2 itself.
-        var self = TestSupport.ConfigWith(GameConfigLoader.RodsFile, j =>
+        // Rod 5 never drops: map 10 asks for it and nobody could ever get there.
+        var none = TestSupport.ConfigWith(GameConfigLoader.RodsFile, j =>
         {
             var root = JObject.Parse(j);
-            RodJson(root, "rod_02")["fragment_map_id"] = "map_04";
+            RodJson(root, "rod_05")["fragment_drop_chance"] = 0.0;
             return root.ToString();
         });
-        Assert.False(self.Succeeded);
-        Assert.Contains(self.Errors, e => e.Contains("rod_02") && e.Contains("map_04"));
+        Assert.False(none.Succeeded);
+        Assert.Contains(none.Errors, e => e.Contains("map_10") && e.Contains("travaria"));
 
-        // Rod 1 dropping on map 3 (which asks for rod 1): nobody can ever get past the starter rod.
-        var chain = TestSupport.ConfigWith(GameConfigLoader.RodsFile, j =>
+        var chance = TestSupport.ConfigWith(GameConfigLoader.RodsFile, j =>
         {
             var root = JObject.Parse(j);
-            RodJson(root, "rod_01")["fragment_map_id"] = "map_03";
-            RodJson(root, "rod_02")["fragment_map_id"] = "map_02";
+            RodJson(root, "rod_03")["fragment_drop_chance"] = 1.5;
             return root.ToString();
         });
-        Assert.False(chain.Succeeded);
-        Assert.Contains(chain.Errors, e => e.Contains("rod_01") && e.Contains("travaria"));
-
-        var unknown = TestSupport.ConfigWith(GameConfigLoader.RodsFile, j => j.Replace("\"fragment_map_id\": \"map_05\"", "\"fragment_map_id\": \"map_99\""));
-        Assert.False(unknown.Succeeded);
-        Assert.Contains(unknown.Errors, e => e.Contains("rod_03") && e.Contains("fragment_map_id"));
+        Assert.False(chance.Succeeded);
+        Assert.Contains(chance.Errors, e => e.Contains("rod_03.fragment_drop_chance"));
 
         var sold = TestSupport.ConfigWith(GameConfigLoader.RodsFile, j => j.Replace("\"method\": \"fragments\"", "\"method\": \"coin_purchase\""));
         Assert.False(sold.Succeeded);
@@ -164,7 +140,7 @@ public sealed class RodsAndClothingByFragmentsTests
     // ------------------------------------------------------------------ rod fragments while fishing
 
     [Fact]
-    public void Rod_fragments_drop_only_on_their_map_and_assemble_the_rod()
+    public void Rod_fragments_drop_on_every_map_each_rod_in_its_own_roll_and_assemble_the_rod()
     {
         var config = With((rods, equipment) =>
         {
@@ -176,16 +152,16 @@ public sealed class RodsAndClothingByFragmentsTests
         var required = config.Rods.Rods.Single(r => r.Id == "rod_01").FragmentsRequired;
         game.Fishing.StartFishing();
 
-        var before = Cycles(game, clock, required - 1).SelectMany(u => u.RodFragments).ToList();
-        Assert.Equal(required - 1, before.Count);
-        Assert.All(before, f => Assert.Equal("rod_01", f.RodId));
+        // Map 1: every fish pulled out gives 1 fragment of rod 1 and 1 of rod 2 (two rolls, in tier order).
+        var updates = Cycles(game, clock, required - 1);
+        Assert.All(updates, u => Assert.Equal(new[] { "rod_01", "rod_02" }, u.RodFragments.Select(f => f.RodId)));
         Assert.Equal("rod_00_starter", game.Profile.GetProfile().EquippedRod.RodId);
         var offer = game.Shop.GetShop().Rods.Single(r => r.RodId == "rod_01");
         Assert.Equal(required - 1, offer.Fragments);
-        Assert.Equal("Lago Sereno", offer.MapName);
+        Assert.Equal(1.0, offer.FragmentChance, 9);
         Assert.False(offer.Owned);
 
-        var last = Cycles(game, clock, 1).Single().RodFragments.Single();
+        var last = Cycles(game, clock, 1).Single().RodFragments.Single(f => f.RodId == "rod_01");
         Assert.True(last.Assembled);
         Assert.True(last.Equipped);
         Assert.Equal(0, last.Have);
@@ -195,17 +171,53 @@ public sealed class RodsAndClothingByFragmentsTests
         Assert.Equal(2, game.Profile.GetProfile().Inventory.Count);
 
         // Owned: new fragments are kept as extras.
-        var extra = Cycles(game, clock, 1).Single().RodFragments.Single();
+        var extra = Cycles(game, clock, 1).Single().RodFragments.Single(f => f.RodId == "rod_01");
         Assert.False(extra.Assembled);
         Assert.True(extra.Owned);
         Assert.Equal(1, RodFragmentRules.Have(game.Session.Save, "rod_01"));
+        Assert.Equal(required + 1, RodFragmentRules.Have(game.Session.Save, "rod_02"));
 
-        // Map 2 has no rod: nothing drops there; map 3 drops rod 2.
+        // Map 2 (which had no rod before M24-T47) and map 10 drop both rods too.
         game.Session.Save.CurrentMapId = "map_02";
-        Assert.Empty(Cycles(game, clock, 5).SelectMany(u => u.RodFragments));
+        Assert.Equal(10, Cycles(game, clock, 5).SelectMany(u => u.RodFragments).Count());
+        TestSupport.GiveRod(game, "rod_05");
+        game.Session.Save.FisherLevel = 90;
+        game.Session.Save.CurrentMapId = "map_10";
+        Assert.Equal(6, Cycles(game, clock, 3).SelectMany(u => u.RodFragments).Count());
+        Assert.Equal(1 + 5 + 3, RodFragmentRules.Have(game.Session.Save, "rod_01"));
+        Assert.Equal(required + 1 + 5 + 3, RodFragmentRules.Have(game.Session.Save, "rod_02"));
+    }
+
+    [Fact]
+    public void Every_kind_of_fragment_rolls_on_its_own_after_the_catch()
+    {
+        // All 11 kinds at 100%: one fish pulled out gives 1 of each boat, 1 of each rod and 1 Fragmento de Roupa.
+        var config = With((rods, equipment) =>
+        {
+            foreach (var r in rods["rods"]!.Where(r => r["fragment_drop_chance"] != null))
+            {
+                r["fragment_drop_chance"] = 1.0;
+                r["fragments_required"] = 1_000_000;
+            }
+
+            foreach (var b in equipment["boats"]!.Where(b => b["fragment_drop_chance"] != null))
+            {
+                b["fragment_drop_chance"] = 1.0;
+                b["fragments_required"] = 1_000_000;
+            }
+
+            equipment["clothing"]!["fragment_drop_chance"] = 1.0;
+        });
+        var (game, clock, _) = TestSupport.NewGame(config);
         game.Session.Save.CurrentMapId = "map_03";
-        Assert.All(Cycles(game, clock, 5).SelectMany(u => u.RodFragments), f => Assert.Equal("rod_02", f.RodId));
-        Assert.Equal(5, RodFragmentRules.Have(game.Session.Save, "rod_02"));
+        game.Session.Save.FisherLevel = 20;
+        TestSupport.GiveRod(game, "rod_01");
+        game.Fishing.StartFishing();
+        var update = Cycles(game, clock, 1).Single();
+        Assert.Single(update.NewCatches);
+        Assert.Equal(new[] { "boat_01", "boat_02", "boat_03", "boat_04", "boat_05" }, update.Fragments.Select(f => f.BoatId));
+        Assert.Equal(new[] { "rod_01", "rod_02", "rod_03", "rod_04", "rod_05" }, update.RodFragments.Select(f => f.RodId));
+        Assert.Equal(1, update.ClothingFragments);
     }
 
     [Fact]
@@ -248,7 +260,7 @@ public sealed class RodsAndClothingByFragmentsTests
     // ------------------------------------------------------------------ rods out of the Shop, and the rods players have
 
     [Fact]
-    public void Rods_are_not_sold_anymore_and_the_shop_says_where_they_drop()
+    public void Rods_are_not_sold_anymore_and_the_shop_shows_the_chance()
     {
         Assert.Null(typeof(RodOfferView).GetProperty("PriceCoins"));
         Assert.Null(typeof(RodAcquisitionConfig).GetProperty("PurchaseCostCoins"));
@@ -260,9 +272,8 @@ public sealed class RodsAndClothingByFragmentsTests
         {
             Assert.Equal(ServiceError.RodNotForSale, game.Shop.BuyRod(offer.RodId).Error);
             Assert.Equal(ServiceError.RodNotForSale, offer.BuyBlocker);
-            Assert.NotNull(offer.MapName);
             Assert.True(offer.FragmentsRequired > 0);
-            Assert.True(offer.FragmentChance > 0);
+            Assert.Equal(0.001, offer.FragmentChance, 9);
         }
 
         Assert.Equal(5, game.Shop.GetShop().Rods.Count);
@@ -530,12 +541,29 @@ public sealed class RodsAndClothingByFragmentsTests
     public void Rod_and_clothing_rolls_come_after_the_catch_so_the_catches_never_change()
     {
         // Rod and clothing fragments at 50% (the rod never assembles): the same seed gives the same fish as with no drops.
+        // Since M24-T47 every boat and rod rolls on every catch too: with all of them at 50% the fish are still the same.
         var none = With(NoDrops);
         var drops = With((rods, equipment) =>
         {
             NoDrops(rods, equipment);
             RodJson(rods, "rod_01")["fragment_drop_chance"] = 0.5;
             RodJson(rods, "rod_01")["fragments_required"] = 1_000_000;
+            equipment["clothing"]!["fragment_drop_chance"] = 0.5;
+        });
+        var everything = With((rods, equipment) =>
+        {
+            foreach (var r in rods["rods"]!.Where(r => r["fragment_drop_chance"] != null))
+            {
+                r["fragment_drop_chance"] = 0.5;
+                r["fragments_required"] = 1_000_000;
+            }
+
+            foreach (var b in equipment["boats"]!.Where(b => b["fragment_drop_chance"] != null))
+            {
+                b["fragment_drop_chance"] = 0.5;
+                b["fragments_required"] = 1_000_000;
+            }
+
             equipment["clothing"]!["fragment_drop_chance"] = 0.5;
         });
 
@@ -553,6 +581,8 @@ public sealed class RodsAndClothingByFragmentsTests
         var plain = Run(none, out var r0, out var c0);
         var withDrops = Run(drops, out var r1, out var c1);
         Assert.Equal(plain, withDrops);
+        Assert.Equal(plain, Run(everything, out var rAll, out _));
+        Assert.InRange(rAll, 5 * 60, 5 * 140);
         Assert.Equal(0, r0 + c0);
         Assert.InRange(r1, 60, 140);
         Assert.InRange(c1, 60, 140);

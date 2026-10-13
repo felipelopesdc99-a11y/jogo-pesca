@@ -26,9 +26,7 @@ namespace FishingIdle.GameService.Config
         private readonly Dictionary<string, BoatConfig> _boats;
         private readonly Dictionary<string, BaitConfig> _baits;
         private readonly Dictionary<string, BoatConfig> _boatByMap;
-        private readonly Dictionary<string, double> _boatChanceByMap;
         private readonly Dictionary<int, PassMilestoneConfig> _passMilestones;
-        private readonly Dictionary<string, RodConfig> _rodByMap;
         private readonly Dictionary<string, ClothingPieceConfig> _clothing;
 
         internal GameConfig(
@@ -51,20 +49,23 @@ namespace FishingIdle.GameService.Config
             _passMilestones = pass.Milestones.ToDictionary(m => m.Level);
             Equipment = equipment;
             _boats = equipment.Boats.ToDictionary(b => b.Id, StringComparer.Ordinal);
-            // Each map drops the fragments of one boat: its own map_id or one of its extra_fragment_maps (M24-T42, A-168).
+            // Each map belongs to one boat: its own map_id or one of its extra_fragment_maps (M24-T42, A-168). Since
+            // M24-T47 (A-173) the fragments drop on every map; the map only picks the boat of the Boss Mundial's bands.
             _boatByMap = new Dictionary<string, BoatConfig>(StringComparer.Ordinal);
-            _boatChanceByMap = new Dictionary<string, double>(StringComparer.Ordinal);
             foreach (var boat in equipment.Boats)
             {
-                foreach (var (mapId, chance) in FragmentMapsOf(boat))
+                foreach (var mapId in MapsOf(boat))
                 {
                     if (!_boatByMap.ContainsKey(mapId))
                     {
                         _boatByMap[mapId] = boat;
-                        _boatChanceByMap[mapId] = chance;
                     }
                 }
             }
+
+            // Every boat and rod assembled from fragments, in tier order: the order of the rolls after each catch (M24-T47).
+            FragmentBoats = equipment.Boats.Where(b => b.Id != StarterBoat.Id).OrderBy(b => b.Tier).ToList();
+            FragmentRods = rods.Rods.Where(IsFragmentRod).OrderBy(r => r.Tier).ToList();
 
             _baits = equipment.Baits.ToDictionary(b => b.Id, StringComparer.Ordinal);
             FishCatalog = fishCatalog;
@@ -81,7 +82,6 @@ namespace FishingIdle.GameService.Config
             _species = fishCatalog.Species.ToDictionary(s => s.Id, StringComparer.Ordinal);
             _maps = maps.Maps.ToDictionary(m => m.Id, StringComparer.Ordinal);
             _rods = rods.Rods.ToDictionary(r => r.Id, StringComparer.Ordinal);
-            _rodByMap = rods.Rods.Where(r => IsFragmentRod(r) && !string.IsNullOrEmpty(r.FragmentMapId)).ToDictionary(r => r.FragmentMapId, StringComparer.Ordinal);
             _clothing = (equipment.Clothing?.Pieces ?? new List<ClothingPieceConfig>()).ToDictionary(p => p.Id, StringComparer.Ordinal);
             _sizeCategories = progression.Size.Categories.ToDictionary(c => c.Id, StringComparer.Ordinal);
             _rarities = progression.Rarity.Tiers.ToDictionary(t => t.Id, StringComparer.Ordinal);
@@ -111,14 +111,17 @@ namespace FishingIdle.GameService.Config
         /// <summary>The pass milestone reached at exactly <paramref name="level"/>, or null.</summary>
         public PassMilestoneConfig PassMilestoneAt(int level) => _passMilestones.TryGetValue(level, out var m) ? m : null;
 
-        /// <summary>The boat whose fragments the catches on a map drop (M24-T16), or false when the map has none.</summary>
+        /// <summary>The boat of a map (M24-T16; the Boss Mundial gives its fragments, M24-T29), or false when the map has none.</summary>
         public bool TryGetBoatForMap(string mapId, out BoatConfig boat) => _boatByMap.TryGetValue(mapId ?? string.Empty, out boat);
 
-        /// <summary>The chance that a fish pulled out on a map drops 1 fragment of the boat that map drops; 0 when it drops none.</summary>
-        public double BoatFragmentChanceOn(string mapId) => _boatChanceByMap.TryGetValue(mapId ?? string.Empty, out var chance) ? chance : 0.0;
+        /// <summary>Every boat but the starter one, by tier: each fish pulled out on any map rolls for each of them (M24-T47, A-173).</summary>
+        public IReadOnlyList<BoatConfig> FragmentBoats { get; }
 
-        /// <summary>The maps whose catches drop a boat's fragments, in order (map_id first, then extra_fragment_maps), with their chances.</summary>
-        public static IEnumerable<(string MapId, double Chance)> FragmentMapsOf(BoatConfig boat)
+        /// <summary>Every rod assembled from fragments, by tier: each fish pulled out on any map rolls for each of them (M24-T47, A-173).</summary>
+        public IReadOnlyList<RodConfig> FragmentRods { get; }
+
+        /// <summary>The maps of a boat, in order (map_id first, then extra_fragment_maps).</summary>
+        public static IEnumerable<string> MapsOf(BoatConfig boat)
         {
             if (boat == null)
             {
@@ -127,23 +130,20 @@ namespace FishingIdle.GameService.Config
 
             if (!string.IsNullOrEmpty(boat.MapId))
             {
-                yield return (boat.MapId, boat.FragmentDropChance);
+                yield return boat.MapId;
             }
 
             foreach (var extra in boat.ExtraFragmentMaps ?? new List<BoatFragmentMapConfig>())
             {
                 if (extra != null && !string.IsNullOrEmpty(extra.MapId))
                 {
-                    yield return (extra.MapId, extra.FragmentDropChance);
+                    yield return extra.MapId;
                 }
             }
         }
 
         /// <summary>Whether offline fishing drops boat fragments too (equipment.json → boat_fragments).</summary>
         public bool FragmentsDropOffline => Equipment.BoatFragments?.DropOnOfflineFishing ?? true;
-
-        /// <summary>The rod whose fragments the catches on a map drop (M24-T32), or false when the map has none.</summary>
-        public bool TryGetRodForMap(string mapId, out RodConfig rod) => _rodByMap.TryGetValue(mapId ?? string.Empty, out rod);
 
         /// <summary>Whether offline fishing drops rod fragments too (rods.json → fragment_rules).</summary>
         public bool RodFragmentsDropOffline => Rods.FragmentRules?.DropOnOfflineFishing ?? true;

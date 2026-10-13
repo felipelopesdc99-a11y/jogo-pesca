@@ -465,19 +465,13 @@ namespace FishingIdle.GameService.Fishing
             {
                 ApplyCatch(attempt.Catch, atMs, update, offline: offline, clothingXp: clothing.FisherXp);
 
-                // Boats by fragments (M24-T16): the map's boat may drop a fragment, from the same cycle's Rng, after the catch.
-                var fragment = Shop.BoatFragmentRules.RollOnCatch(Config, Save, map, rng, offline);
-                if (fragment != null)
-                {
-                    update.Fragments.Add(fragment);
-                }
+                // Boats by fragments (M24-T16): since M24-T47 (A-173) every boat may drop a fragment on any map, each in
+                // its own roll, from the same cycle's Rng, after the catch.
+                update.Fragments.AddRange(Shop.BoatFragmentRules.RollOnCatch(Config, Save, rng, offline));
 
-                // Rods by fragments (M24-T32) and the Fragmento de Roupa (M24-T33): the same Rng, after the boat's roll.
-                var rodFragment = Shop.RodFragmentRules.RollOnCatch(Config, Save, map, rng, offline, atMs);
-                if (rodFragment != null)
-                {
-                    update.RodFragments.Add(rodFragment);
-                }
+                // Rods by fragments (M24-T32, every rod on any map since M24-T47) and the Fragmento de Roupa (M24-T33):
+                // the same Rng, after the boats' rolls.
+                update.RodFragments.AddRange(Shop.RodFragmentRules.RollOnCatch(Config, Save, rng, offline, atMs));
 
                 if (Shop.ClothingRules.RollOnCatch(Config, Save, rng, offline))
                 {

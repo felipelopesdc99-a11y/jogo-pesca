@@ -860,10 +860,9 @@ namespace FishingIdle.GameService.Config
         }
 
         /// <summary>
-        /// Rods by fragments (M24-T32, A-163): every rod but the free one drops on one existing map that asks for a lower
-        /// tier than its own, one rod per map, with at least 1 fragment and a chance from 0 to 1. And the progression never
-        /// locks: starting from the free rod, each rod can be assembled with a rod the player can already have, and every
-        /// map's minimum tier is reachable.
+        /// Rods by fragments (M24-T32, A-163): every rod but the free one has at least 1 fragment to assemble it and a chance
+        /// from 0 to 1. Since M24-T47 (A-173) every rod drops on every map, so the progression never locks as long as every
+        /// map's minimum tier is held by the free rod or by a rod whose fragments drop (chance above 0).
         /// </summary>
         private static void ValidateRodFragments(RodsConfig rods, MapsConfig maps, List<string> errors)
         {
@@ -873,24 +872,9 @@ namespace FishingIdle.GameService.Config
                 return;
             }
 
-            var mapById = maps.Maps.Where(m => m?.Id != null).GroupBy(m => m.Id, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
-            var used = new HashSet<string>(StringComparer.Ordinal);
             var fragmentRods = rods.Rods.Where(r => r != null && GameConfig.IsFragmentRod(r)).ToList();
             foreach (var rod in fragmentRods)
             {
-                if (string.IsNullOrWhiteSpace(rod.FragmentMapId) || !mapById.TryGetValue(rod.FragmentMapId, out var map))
-                {
-                    errors.Add(V.RodMapUnknown(rod.Id, rod.FragmentMapId));
-                }
-                else if (map.MinimumRodTier >= rod.Tier)
-                {
-                    errors.Add(V.RodMapTooHigh(rod.Id, map.Id));
-                }
-                else if (!used.Add(rod.FragmentMapId))
-                {
-                    errors.Add(V.RodMapRepeated(rod.FragmentMapId));
-                }
-
                 if (rod.FragmentsRequired < 1 || rod.FragmentsRequired > 1000000)
                 {
                     errors.Add(V.AtLeast(file, rod.Id + ".fragments_required", 1));
@@ -902,28 +886,10 @@ namespace FishingIdle.GameService.Config
                 }
             }
 
-            // Reachability: the best tier the player can hold grows as the rods that drop within it are assembled.
-            var best = rods.Rods.Where(r => r != null && GameConfig.IsFreeClaimRod(r)).Select(r => r.Tier).DefaultIfEmpty(0).Max();
-            var reached = new HashSet<string>(StringComparer.Ordinal);
-            for (var changed = true; changed;)
-            {
-                changed = false;
-                foreach (var rod in fragmentRods.Where(r => !reached.Contains(r.Id ?? string.Empty)))
-                {
-                    if (rod.Id != null && rod.FragmentMapId != null && mapById.TryGetValue(rod.FragmentMapId, out var map) && map.MinimumRodTier <= best)
-                    {
-                        reached.Add(rod.Id);
-                        best = Math.Max(best, rod.Tier);
-                        changed = true;
-                    }
-                }
-            }
-
-            foreach (var rod in fragmentRods.Where(r => r.Id != null && !reached.Contains(r.Id)))
-            {
-                errors.Add(V.RodUnreachable(rod.Id));
-            }
-
+            // Reachability: the best tier the player can get by fishing (any map drops every rod with a chance above 0).
+            var best = rods.Rods.Where(r => r != null && GameConfig.IsFreeClaimRod(r)).Select(r => r.Tier)
+                .Concat(fragmentRods.Where(r => r.FragmentDropChance > 0 && r.FragmentDropChance <= 1).Select(r => r.Tier))
+                .DefaultIfEmpty(0).Max();
             foreach (var map in maps.Maps.Where(m => m != null && m.MinimumRodTier > best))
             {
                 errors.Add(V.MapRodUnreachable(map.Id, map.MinimumRodTier));
@@ -998,7 +964,8 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>
         /// Boats by fragments (M24-T16, A-157): the starter boat belongs to no map; every other boat to one existing map
-        /// (map_id) and maybe more (extra_fragment_maps, M24-T42), one boat per map, with at least 1 fragment to assemble it and a drop chance between 0 and 1.
+        /// (map_id) and maybe more (extra_fragment_maps, M24-T42), one boat per map (the Boss Mundial's boat, M24-T47), with
+        /// at least 1 fragment to assemble it and a drop chance between 0 and 1 (on every map since M24-T47, A-173).
         /// </summary>
         private static void ValidateBoatFragments(EquipmentConfig equipment, MapsConfig maps, List<string> errors)
         {
@@ -1027,7 +994,7 @@ namespace FishingIdle.GameService.Config
                     errors.Add(V.BoatMapRepeated(boat.MapId));
                 }
 
-                // More maps that drop this boat (M24-T42, A-168): each one existing, not taken by another boat, with its chance.
+                // More maps of this boat (M24-T42, A-168): each one existing and not taken by another boat.
                 foreach (var extra in boat.ExtraFragmentMaps ?? new List<BoatFragmentMapConfig>())
                 {
                     if (extra == null || string.IsNullOrWhiteSpace(extra.MapId) || !mapIds.Contains(extra.MapId))
@@ -1039,11 +1006,6 @@ namespace FishingIdle.GameService.Config
                     if (!used.Add(extra.MapId))
                     {
                         errors.Add(V.BoatMapRepeated(extra.MapId));
-                    }
-
-                    if (!(extra.FragmentDropChance >= 0) || extra.FragmentDropChance > 1)
-                    {
-                        errors.Add(V.ChanceOutOfRange(file, boat.Id + ".extra_fragment_maps." + extra.MapId + ".fragment_drop_chance"));
                     }
                 }
 

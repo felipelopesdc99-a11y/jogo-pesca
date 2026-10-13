@@ -2,9 +2,10 @@
 
 Uso:
   python3 tools/Progressao/fragmentos_equipamento.py gerar
-      # grava em config/rods.json a chance de fragmento de cada vara (fragment_drop_chance), o mapa onde ela cai
-      # (fragment_map_id) e quantos fragmentos ela pede (fragments_required); e em config/equipment.json → clothing a
-      # chance do Fragmento de Roupa, o custo de montar cada peça e a curva de XP de uso
+      # grava em config/rods.json quantos fragmentos cada vara pede (fragments_required); e em config/equipment.json →
+      # clothing o custo de montar cada peça e a curva de XP de uso. As chances (fragment_drop_chance das varas e do
+      # Fragmento de Roupa) não são mais geradas: desde 13/10/2026 (M24-T47, A-173) são a chance pedida pelo
+      # proprietário, a mesma em todos os mapas, e ficam como estão
   python3 tools/Progressao/fragmentos_equipamento.py simular [--dias 60] [--gravar]
       # compara o ritmo de hoje com o de antes (varas compradas na Loja, sem roupas) nos 3 jeitos de jogar e, com
       # --gravar, escreve docs/propostas/fragmentos_equipamento.json
@@ -12,12 +13,10 @@ Uso:
 Regras (as mesmas do jogo, GameService/Shop/RodFragmentRules.cs e ClothingRules.cs; o simulador é
 simular_progressao.py, pelo jogador de referência de jogador.py, como passe_fragmentos.py; até o A-172 com a
 Tripulação e as Melhorias, que saíram do jogo):
-  - cada vara (menos a inicial) cai no ÚLTIMO mapa que a vara anterior alcança (o de maior nível entre os que pedem no
-    máximo a categoria anterior): a vara que libera o próximo mapa sempre cai num mapa que o jogador já pesca;
-  - chance da vara: o jogador de referência (4 vezes por dia, PERFIL_REFERENCIA) monta cada vara no mesmo dia em que a
-    comprava na Loja antes (PRECOS_ANTIGOS, os preços de antes de M24-T32), pescando no melhor mapa liberado;
-  - Fragmento de Roupa: um tipo só, em todos os mapas; a chance faz o jogador de referência montar as 5 peças em
-    DIAS_ROUPAS dias, sem o Passe (o Passe também dá Fragmentos de Roupa);
+  - desde o M24-T47 (A-173) cada vara (menos a inicial) e o Fragmento de Roupa caem em qualquer mapa, cada um no seu
+    sorteio, com a chance de /config (até o M24-T46 cada vara caía num mapa só, com a chance calibrada aqui para montar
+    no dia em que era comprada na Loja, e a roupa era calibrada para DIAS_ROUPAS dias);
+  - os dias para montar tudo com a regra de hoje: tools/Progressao/fragmentos_qualquer_mapa.py;
   - XP de uso: a 1ª peça de quem deixa o jogo aberto chega ao Nv.100 em DIAS_NV100_ROUPA dias (crescimento geométrico
     a partir de XP_PRIMEIRO_NIVEL por nível).
 """
@@ -48,7 +47,6 @@ CUSTO_ROUPAS = [15, 25, 40, 60, 80]       # fragmentos da 1ª, 2ª … 5ª peça
 DIAS_ROUPAS = 30.0                        # 4 vezes por dia, sem o Passe: as 5 peças
 DIAS_NV100_ROUPA = 60.0                   # jogo aberto: a 1ª peça no Nv.100
 XP_PRIMEIRO_NIVEL = 10                    # XP de uso do Nv.1 para o Nv.2
-DIAS_CALIBRAR = 12.0
 DIAS_SIMULAR = 60.0
 CHECK_DAYS = (1, 3, 7, 14, 30, 45, 60)
 TINY = 1e-9
@@ -75,18 +73,6 @@ def pct(ratio, places):
 
 def fmt(days):
     return P.fmt_days(days * 86400.0) if days is not None else '—'
-
-
-def drop_maps(maps, rods):
-    """The map of each rod: the last map (highest unlock level) whose minimum_rod_tier is below the rod's tier."""
-    ordered = sorted(maps, key=lambda m: m['unlock_fisher_level'])
-    out = collections.OrderedDict()
-    for rod in sorted(rods, key=lambda r: r['tier']):
-        if rod['tier'] == 0:
-            continue
-        reachable = [m for m in ordered if m['minimum_rod_tier'] < rod['tier']]
-        out[rod['id']] = reachable[-1]['id']
-    return out
 
 
 class Game(P.Game):
@@ -165,36 +151,14 @@ def at_day(trace, day, pick):
 def gerar():
     rods_cfg = load('rods.json')
     eq = load('equipment.json')
-    maps = load('maps.json')['maps']
-    where = drop_maps(maps, rods_cfg['rods'])
 
-    print('Antes (varas compradas na Loja, sem roupas), %s…' % PERFIL_REFERENCIA)
-    old = play(PERFIL_REFERENCIA, DIAS_CALIBRAR, legacy=True, clothing=False).p.bought
-    chances = {rid: TINY for rid in where}
-    for rid in where:
-        # Rod `rid` never assembles (tiny chance): its fragments ÷ chance = fish pulled out on its map so far.
-        g = play(PERFIL_REFERENCIA, DIAS_CALIBRAR, rod_chances=chances)
-        caught = at_day(g.trace, old[rid], lambda rods, _: rods.get(rid, 0.0) / TINY)
-        chances[rid] = round(FRAGMENTOS_VARAS[rid] / max(1.0, caught), 4)
-        print('  %s: cai em %s, %d fragmentos, %s por peixe (comprada no dia %s antes; %s peixes puxados ali até lá)'
-              % (rid, where[rid], FRAGMENTOS_VARAS[rid], pct(chances[rid], 2), dec(old[rid], 2), dec(caught, 0)))
-
+    # Since M24-T47 (A-173) the chances are the owner's (every rod and the clothing on every map): they stay as they are.
     for rod in rods_cfg['rods']:
-        if rod['id'] in where:
-            rod['fragment_map_id'] = where[rod['id']]
+        if rod['id'] in FRAGMENTOS_VARAS:
+            rod.pop('fragment_map_id', None)
             rod['fragments_required'] = FRAGMENTOS_VARAS[rod['id']]
-            rod['fragment_drop_chance'] = chances[rod['id']]
     save('rods.json', rods_cfg)
-
-    # Clothing: the chance that assembles the 5 pieces in DIAS_ROUPAS days (4 vezes por dia, no pass).
-    total = float(sum(CUSTO_ROUPAS))
     chance = eq['clothing']['fragment_drop_chance']
-    for _ in range(4):
-        g = play(PERFIL_REFERENCIA, DIAS_ROUPAS + 1, clothing_chance=chance)
-        frags = at_day(g.trace, DIAS_ROUPAS, lambda _, c: c)
-        chance = chance * total / max(TINY, frags)
-    chance = round(chance, 4)
-    print('Fragmento de Roupa: %s por peixe (as 5 peças em ~%s dias, 4 vezes por dia)' % (pct(chance, 2), dec(DIAS_ROUPAS, 0)))
 
     # Use XP: the first piece of the always-open player reaches Nv.100 in DIAS_NV100_ROUPA days.
     growth = eq['clothing']['level_xp']['growth']
@@ -227,7 +191,7 @@ def simular(days, gravar):
     rods_cfg = load('rods.json')
     eq = load('equipment.json')
     maps = sorted(load('maps.json')['maps'], key=lambda m: m['unlock_fisher_level'])
-    rods = [r for r in rods_cfg['rods'] if r.get('fragment_map_id')]
+    rods = [r for r in rods_cfg['rods'] if (r.get('acquisition') or {}).get('method') == 'fragments']
     map_name = {m['id']: m['display_name'] for m in maps}
     rules = S.Rules()
 
@@ -240,7 +204,7 @@ def simular(days, gravar):
     out['varas'] = collections.OrderedDict()
     for r in rods:
         out['varas'][r['id']] = collections.OrderedDict([
-            ('nome', r['display_name']), ('categoria', r['tier']), ('mapa', r['fragment_map_id']), ('nome_do_mapa', map_name[r['fragment_map_id']]),
+            ('nome', r['display_name']), ('categoria', r['tier']), ('mapa', 'todos (M24-T47)'),
             ('fragmentos', r['fragments_required']), ('chance_por_peixe', r['fragment_drop_chance']),
             ('preco_antes', PRECOS_ANTIGOS[r['id']]),
         ])

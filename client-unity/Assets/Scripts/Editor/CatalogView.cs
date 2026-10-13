@@ -86,10 +86,10 @@ namespace FishingIdle.Editor
                     foreach (var rod in config.Rods.Rods.OrderBy(r => r.Tier))
                     {
                         var card = new Card { Title = rod.DisplayName, Subtitle = rod.Id + " · " + GameTexts.Profile.Tier(rod.Tier), Art = ArtAssets.Texture("Varas/" + rod.Id) };
-                        // Rods are not sold since M24-T32: the fragments that assemble it and where they drop.
-                        if (config.TryGetMap(rod.FragmentMapId, out var rodMap))
+                        // Rods are not sold since M24-T32: the fragments that assemble it (they drop on every map since M24-T47).
+                        if (GameConfig.IsFragmentRod(rod))
                         {
-                            card.Lines.Add(T.CatalogFragments(rod.FragmentsRequired, Format.Percent(rod.FragmentDropChance, rod.FragmentDropChance < 0.01 ? 2 : 1), rodMap.DisplayName));
+                            card.Lines.Add(T.CatalogFragments(rod.FragmentsRequired, Format.Percent(rod.FragmentDropChance, rod.FragmentDropChance < 0.01 ? 2 : 1)));
                         }
 
                         card.Lines.Add(T.CatalogMaxLevel(config.RodMaxLevel(rod)));
@@ -103,15 +103,12 @@ namespace FishingIdle.Editor
                     {
                         var card = new Card { Title = boat.DisplayName, Subtitle = boat.Id, Art = ArtAssets.Texture("Barcos/" + boat.Id) };
                         card.Lines.Add(T.CatalogBonus(Format.Percent(boat.CatchSuccessBonus, 0)));
-                        // Boats are not sold since M24-T16: the fragments that assemble it and where they drop.
-                        // One line per map that drops it (M24-T42: maps 6 to 10 drop boats 1 to 5).
-                        foreach (var (mapId, chance) in GameConfig.FragmentMapsOf(boat))
+                        // Boats are not sold since M24-T16: the fragments that assemble it (they drop on every map since M24-T47).
+                        if (boat.Id != config.StarterBoat.Id)
                         {
-                            if (config.TryGetMap(mapId, out var boatMap))
-                            {
-                                card.Lines.Add(T.CatalogFragments(boat.FragmentsRequired, Format.Percent(chance, chance < 0.01 ? 2 : 1), boatMap.DisplayName));
-                            }
+                            card.Lines.Add(T.CatalogFragments(boat.FragmentsRequired, Format.Percent(boat.FragmentDropChance, boat.FragmentDropChance < 0.01 ? 2 : 1)));
                         }
+
                         yield return card;
                     }
 

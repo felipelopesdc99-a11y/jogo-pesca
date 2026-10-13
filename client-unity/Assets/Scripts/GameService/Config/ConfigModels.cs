@@ -296,11 +296,9 @@ namespace FishingIdle.GameService.Config
         public RodAcquisitionConfig Acquisition { get; set; }
 
         /// <summary>
-        /// Rods by fragments (M24-T32, A-163): the map whose catches drop this rod's fragments (null for the starter rod),
-        /// how many assemble it and the chance per fish pulled out there. The map never asks for this rod's tier, so the
-        /// rod that opens the next map always drops on a map the player already fishes.
+        /// Rods by fragments (M24-T32, A-163): how many fragments assemble it and the chance that a fish pulled out drops
+        /// 1 of them. Since M24-T47 (A-173) every rod drops on every map, each in its own roll; 0 for the starter rod.
         /// </summary>
-        public string FragmentMapId { get; set; }
         public int FragmentsRequired { get; set; }
         public double FragmentDropChance { get; set; }
 
@@ -842,18 +840,19 @@ namespace FishingIdle.GameService.Config
         public LevelCostConfig UpgradeCost { get; set; }
 
         /// <summary>
-        /// The map whose catches drop this boat's fragments (M24-T16, A-157); null for the starter boat. Boats are not
-        /// sold: <see cref="FragmentsRequired"/> fragments assemble one.
+        /// The boat's map (M24-T16, A-157); null for the starter boat. Since M24-T47 (A-173) the fragments drop on every
+        /// map: the map only says which boat the Boss Mundial gives fragments of (the boat of the highest map unlocked).
+        /// Boats are not sold: <see cref="FragmentsRequired"/> fragments assemble one.
         /// </summary>
         public string MapId { get; set; }
         public int FragmentsRequired { get; set; }
 
-        /// <summary>Chance that a fish pulled out on <see cref="MapId"/> drops 1 fragment of this boat (0 to 1).</summary>
+        /// <summary>Chance that a fish pulled out on any map drops 1 fragment of this boat (0 to 1), in its own roll (M24-T47).</summary>
         public double FragmentDropChance { get; set; }
 
         /// <summary>
-        /// Other maps whose catches also drop this boat's fragments, each with its own chance (M24-T42, A-168: back to 5
-        /// boats, maps 6 to 10 drop boats 1 to 5). Null or empty = only <see cref="MapId"/>.
+        /// Other maps of this boat (M24-T42, A-168: maps 6 to 10 are boats 1 to 5), for the Boss Mundial like
+        /// <see cref="MapId"/>. Null or empty = only <see cref="MapId"/>.
         /// </summary>
         public List<BoatFragmentMapConfig> ExtraFragmentMaps { get; set; }
     }
@@ -861,7 +860,6 @@ namespace FishingIdle.GameService.Config
     public sealed class BoatFragmentMapConfig
     {
         public string MapId { get; set; }
-        public double FragmentDropChance { get; set; }
     }
 
     /// <summary>

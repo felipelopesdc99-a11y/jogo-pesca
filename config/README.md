@@ -7,13 +7,13 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | `fish_catalog.json` | Dados próprios da espécie: raridade, faixa de tamanho, atributos base, valor de venda, XP de alimento, XP do Pescador |
 | `maps.json` | Mapas, pools de peixes por mapa com pesos de captura, nível de desbloqueio, vara mínima, regras de viagem |
 | `progression.json` | Curva de XP do Pescador, curva de XP do peixe (até o Nv.100) e bônus de atributo por nível do peixe, distribuição de tamanho, regras de modificador de raridade/tamanho/nível, regras de alimentação, intervalos de pesca |
-| `rods.json` | Definições das varas, bônus no Nv.1 e no Nv.100 (com a curva entre eles), custo de cada nível (Moedas e Conchas), regras de revenda; varas por fragmentos (o mapa onde cada vara cai, quantos fragmentos montam e a chance por peixe puxado; o valor de referência no Mercado) |
+| `rods.json` | Definições das varas, bônus no Nv.1 e no Nv.100 (com a curva entre eles), custo de cada nível (Moedas e Conchas), regras de revenda; varas por fragmentos (quantos fragmentos montam e a chance por peixe puxado, em qualquer mapa desde o M24-T47; o valor de referência no Mercado) |
 | `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário, VIP (preço em Dólares, dias, bônus de XP offline e o ciclo da pesca offline com VIP, `offline_cycle_seconds`); `crew_removal_refund`: os preços da Tripulação e das Melhorias de antes, só para devolver as Moedas a quem já jogava (M24-T46, A-172; não mudam nada no jogo de hoje) |
 | `arena.json` | Energia, seleção de oponentes, Honra, constantes de combate, formação, regras de Cardume, métrica de Força, Loja da Arena |
 | `expeditions.json` | Durações, Força Recomendada, curvas de eficiência, recompensas |
 | `arena_bots.json` | Só no jogo local: como os 200 adversários simulados da Arena são montados e com que frequência atacam você |
 | `market_bots.json` | Só no jogo local: vendedores e compradores simulados do Mercado (quantos anúncios, preços de referência, chance de vender) |
-| `equipment.json` | Barcos, iscas e roupas: bônus na Chance de Sucesso da Captura, preço e tentativas de cada isca; barcos por fragmentos (o mapa de cada barco, quantos fragmentos montam e a chance por peixe puxado; se a pesca offline também dá), níveis dos barcos (bônus no Nv.1 e no Nv.100, custo de cada nível); roupas (`clothing`: chance do Fragmento de Roupa, custo de cada peça na ordem de montagem, bônus de cada peça no Nv.1 e no Nv.100 e o XP de uso de cada nível) |
+| `equipment.json` | Barcos, iscas e roupas: bônus na Chance de Sucesso da Captura, preço e tentativas de cada isca; barcos por fragmentos (quantos fragmentos montam e a chance por peixe puxado, em qualquer mapa desde o M24-T47; o mapa de cada barco, que hoje só diz de qual barco o Boss dá fragmentos; se a pesca offline também dá), níveis dos barcos (bônus no Nv.1 e no Nv.100, custo de cada nível); roupas (`clothing`: chance do Fragmento de Roupa, custo de cada peça na ordem de montagem, bônus de cada peça no Nv.1 e no Nv.100 e o XP de uso de cada nível) |
 | `pass.json` | O Passe do Pescador (M24-T17): o preço do Premium em Dólares e os 100 marcos (Nv.10 ao Nv.1000), cada um com a recompensa grátis e a Premium (Moedas, Conchas, Dólares, fragmentos de um barco, de uma vara e de roupa). Gerado por `tools/Progressao/passe_fragmentos.py gerar` (só o passe, sem mexer nos barcos: `passe_fragmentos.py passe`; resultado da simulação em `docs/propostas/passe_fragmentos.json`) |
 | `world_boss.json` | O Boss Mundial (M24-T29, A-165): nome (sugestão, OD-069), horário (19:00 de Brasília, UTC−3 fixo, por 10 minutos), intervalo dos ataques automáticos do Cardume (3 s), quantos ataques atrasados contam depois de um travamento, a defesa do Boss, as 6 faixas de dano (porcentagem do dano máximo do dia e a recompensa de cada uma: minutos de renda em Moedas e Conchas, Fragmentos de Roupa e fragmentos de barco), os Dólares do top 1 a 10 e a chave `online_rewards_enabled` (desligada no jogo local), e a renda de referência por nível, gerada por `tools/Progressao/boss_mundial.py` a partir do `pass.json` |
 
@@ -151,8 +151,8 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
   hoje sem calibrar.
 - **Todo nível custa Moedas e Conchas (M24-T30):** `upgrade_cost.shells_first` das varas e dos barcos precisa ser pelo
   menos 1; o jogo recusa um config com 0.
-- A Vara 1 **não é mais vendida** (M24-T32, A-163): monta com **15 fragmentos** que caem no Lago Sereno (3,7% por peixe
-  puxado) e no Passe; os 2.500 Moedas de antes ficaram só como valor de referência no Mercado
+- A Vara 1 **não é mais vendida** (M24-T32, A-163): monta com **15 fragmentos** que caem pescando em qualquer mapa (0,1%
+  por peixe puxado desde o M24-T47, A-173; era 3,7% só no Lago Sereno) e no Passe; os 2.500 Moedas de antes ficaram só como valor de referência no Mercado
   (`acquisition.market_reference_coins`). Desde o M24-T13 ela vai até o **Nv.100**: o 1º nível custa **500**
   Moedas e 1 Concha (antes 1.500 e 2), do Nv.1 ao 30 são ~156 mil Moedas e 44 Conchas, e do 1 ao 100 ~1,5 bi Moedas
   e 588 Conchas.
@@ -191,9 +191,19 @@ Desde 11/10/2026 (M24-T16 e M24-T17, A-157 e A-158, TD-042). Números gerados po
 `tools/Progressao/passe_fragmentos.py gerar` (os "botões" ficam no começo do script); o ritmo é simulado por
 `tools/Progressao/passe_fragmentos.py simular --gravar` (resultado em `docs/propostas/passe_fragmentos.json`).
 
-- **Barcos não são vendidos.** São **5 barcos** (mais o inicial) desde o M24-T42 (A-168, TD-051); cada um cai em **dois
-  mapas**: `map_id` (um dos Mapas 1 a 5) com `fragment_drop_chance`, e `extra_fragment_maps` (lista de `{map_id,
-  fragment_drop_chance}`, hoje um dos Mapas 6 a 10). `fragments_required` diz quantos montam o barco (20 no Remo Valente
+**Desde 13/10/2026 (M24-T47, A-173, TD-054) todo fragmento cai em qualquer mapa.** Cada peixe puxado (online e offline;
+Expedições não) faz um sorteio para **cada** barco, **cada** vara e o Fragmento de Roupa, cada um com o seu
+`fragment_drop_chance` — hoje **0,001 (0,1%)** em todos, a chance pedida pelo proprietário. Para mudar, edite o
+`fragment_drop_chance` de cada barco (`equipment.json → boats`), de cada vara (`rods.json → rods`) e da roupa
+(`equipment.json → clothing`); os geradores não mexem mais nas chances. Quantos dias leva para montar tudo:
+`tools/Progressao/fragmentos_qualquer_mapa.py simular --gravar` (resultado em
+`docs/propostas/fragmentos_qualquer_mapa.json`). As linhas abaixo que falam de "mapa onde cai" e de chances por mapa são
+a regra de antes, para o histórico.
+
+- **Barcos não são vendidos.** São **5 barcos** (mais o inicial) desde o M24-T42 (A-168, TD-051). Cada um tem **dois
+  mapas**: `map_id` (um dos Mapas 1 a 5) e `extra_fragment_maps` (lista de `{map_id}`, hoje um dos Mapas 6 a 10); desde o
+  M24-T47 eles só dizem de qual barco o Boss Mundial dá fragmentos (o do mapa mais alto liberado) e o Passe usa a mesma
+  ordem. Até o M24-T46 os fragmentos caíam só nesses mapas, cada um com a sua chance (descrito a seguir). `fragments_required` diz quantos montam o barco (20 no Remo Valente
   até 55 no Horizonte Dourado). Chance de um peixe puxado dar 1 fragmento: **0,43% a 0,52%** nos Mapas 1 a 5 e **0,53% a
   0,67%** nos Mapas 6 a 10 (ciclo de 10 s, M24-T27; eram 0,64% a 1,03% com o de 15 s e 1,3% a 2,4% com o de 30 s). O
   validador confere que cada mapa dá um barco só, contando os dois campos. O script grava com 4 casas e mexe só no
@@ -219,18 +229,18 @@ Desde 12/10/2026 (M24-T32 e M24-T33, A-163 e A-164, TD-048). Números gerados po
 `tools/Progressao/fragmentos_equipamento.py simular --gravar` (resultado em `docs/propostas/fragmentos_equipamento.json`).
 Depois de mudar varas ou roupas, rode também `passe_fragmentos.py gerar` (o Passe dá fragmentos delas).
 
-- **Varas não são vendidas.** Cada vara menos a inicial tem `acquisition.method` `"fragments"`, `fragment_map_id` (o mapa
-  cujos peixes dão os fragmentos dela; um mapa dá no máximo uma vara), `fragments_required` (15 a 60) e
-  `fragment_drop_chance` (1,63% a 7% por peixe puxado). `acquisition.market_reference_coins` é o valor da vara no Mercado e
+- **Varas não são vendidas.** Cada vara menos a inicial tem `acquisition.method` `"fragments"`, `fragments_required` (15 a
+  60) e `fragment_drop_chance` (0,1% por peixe puxado, em qualquer mapa, desde o M24-T47; até o M24-T46 havia também
+  `fragment_map_id`, o único mapa onde ela caía, com 1,63% a 7%). `acquisition.market_reference_coins` é o valor da vara no Mercado e
   na revenda (o preço que ela tinha na Loja). `fragment_rules.drop_on_offline_fishing` diz se a pesca offline também dá
   fragmentos (sim). A Vara Inicial é `"free_claim_in_shop"` e não tem mapa.
-- **A progressão não pode travar.** O mapa de uma vara precisa pedir uma categoria **menor** que a dela
-  (`minimum_rod_tier` no `maps.json`), e todo mapa precisa pedir uma categoria que alguma vara alcançável tenha. O jogo
-  recusa o config que travaria, com a mensagem dizendo qual vara ou mapa. O script escolhe sempre o último mapa que a vara
-  anterior alcança (Vara 1 no Mapa 1, 2 no 3, 3 no 5, 4 no 7, 5 no 9).
-- **Como a chance foi calibrada.** Quem abre o jogo 4 vezes por dia monta cada vara no mesmo dia em que comprava antes
-  (`PRECOS_ANTIGOS` no script guarda os preços de antes, só para essa conta).
-- **Roupas** (`equipment.json → clothing`): `fragment_drop_chance` (0,17%: um tipo só de fragmento, em todos os mapas),
+- **A progressão não pode travar.** Como toda vara cai em todo mapa (M24-T47), basta que a categoria que cada mapa pede
+  (`minimum_rod_tier` no `maps.json`) seja a da Vara Inicial ou a de uma vara com `fragment_drop_chance` maior que 0. O
+  jogo recusa o config que travaria, com a mensagem dizendo qual mapa.
+- **Como a chance era calibrada (até o M24-T46).** Quem abria o jogo 4 vezes por dia montava cada vara no mesmo dia em que
+  comprava antes (`PRECOS_ANTIGOS` no script guarda os preços de antes, só para comparar).
+- **Roupas** (`equipment.json → clothing`): `fragment_drop_chance` (0,1% desde o M24-T47, era 0,17%: um tipo só de
+  fragmento, em todos os mapas),
   `drop_on_offline_fishing`, `fragments_to_assemble` (custo da 1ª, 2ª … peça montada, qualquer peça: 15, 25, 40, 60, 80),
   `max_level` (100) e `bonus_curve_exponent` (a curva das varas), `use_xp_per_fish` (pontos de uso por peixe puxado) e
   `level_xp` (`first` × `growth` ^ (N − 1) pontos do nível N para o N + 1, arredondado como os preços), e `pieces` (id,

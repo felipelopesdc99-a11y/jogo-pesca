@@ -657,7 +657,7 @@ namespace FishingIdle.Editor
                 var prefix = "rods[" + r + "].";
                 EditorGUILayout.LabelField(rod.Value<string>("display_name"), EditorStyles.boldLabel);
                 Number(file, prefix + "acquisition.market_reference_coins", T.RodPrice, 0);
-                // Rods by fragments (M24-T32): how many assemble it and the chance per fish on its map (fragment_map_id).
+                // Rods by fragments (M24-T32): how many assemble it and the chance per fish, on every map since M24-T47.
                 Number(file, prefix + "fragments_required", T.RodFragmentsRequired, 1);
                 Number(file, prefix + "fragment_drop_chance", T.RodFragmentChance, 0);
                 Number(file, prefix + "bonuses.catch_success", T.RodStarterCatchBonus, 0);

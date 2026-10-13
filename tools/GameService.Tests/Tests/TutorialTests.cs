@@ -19,7 +19,7 @@ public sealed class TutorialTests
         Assert.Empty(game.Profile.GetProfile().Inventory);
         Assert.Equal(ServiceError.NoRod, game.Fishing.StartFishing().Error);
         var offer = game.Shop.GetShop().Rods.Single(r => r.IsFree);
-        Assert.Null(offer.MapId); // the free rod drops nowhere: it is claimed here
+        Assert.Equal(0, offer.FragmentsRequired); // the free rod takes no fragments: it is claimed here
         Assert.Equal(ServiceError.None, offer.BuyBlocker);
 
         var claimed = game.Shop.BuyRod(offer.RodId);

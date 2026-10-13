@@ -390,14 +390,14 @@ public static class Program
         }
 
         r.AppendLine();
-        r.AppendLine("| Vara | Fragmentos | Chance por peixe | Caem no mapa | Todas as melhorias | Horas para pagar as melhorias |");
-        r.AppendLine("|---|---:|---:|---|---:|---:|");
+        // Since M24-T47 (A-173) every rod drops on every map, each in its own roll.
+        r.AppendLine("| Vara | Fragmentos | Chance por peixe (qualquer mapa) | Todas as melhorias | Horas para pagar as melhorias |");
+        r.AppendLine("|---|---:|---:|---:|---:|");
         foreach (var rod in config.Rods.Rods.Where(GameConfig.IsFragmentRod).OrderBy(x => x.Tier))
         {
             var upgrades = MarketRules.RodUpgradeSpend(config, rod, config.RodMaxLevel(rod));
             var after = p.CoinsPerHourMap2 > 0 ? upgrades / p.CoinsPerHourMap2 : 0;
-            var map = config.TryGetMap(rod.FragmentMapId, out var m) ? m.DisplayName : rod.FragmentMapId;
-            r.AppendLine("| " + rod.DisplayName + " | " + Format.Number(rod.FragmentsRequired) + " | " + Format.Percent(rod.FragmentDropChance, 2) + " | " + map
+            r.AppendLine("| " + rod.DisplayName + " | " + Format.Number(rod.FragmentsRequired) + " | " + Format.Percent(rod.FragmentDropChance, 2)
                          + " | " + Format.Number(upgrades) + " | " + Format.Decimal(after, 1) + " h |");
         }
 
@@ -662,17 +662,17 @@ public static class Program
         }
 
         r.AppendLine();
-        // Boats are not sold since M24-T16 (A-157): the fragments each one needs, where they drop and the expected catches.
-        r.AppendLine("Barcos por fragmentos (tools/Progressao/passe_fragmentos.py simula os dias):");
+        // Boats are not sold since M24-T16 (A-157): the fragments each one needs and the expected catches; since M24-T47
+        // (A-173) every boat drops on every map, each in its own roll.
+        r.AppendLine("Barcos por fragmentos, em qualquer mapa (tools/Progressao/fragmentos_qualquer_mapa.py simula os dias):");
         r.AppendLine();
-        r.AppendLine("| Barco | Bônus | Mapa | Fragmentos | Chance por peixe | Peixes puxados (esperado) |");
-        r.AppendLine("|---|---:|---|---:|---:|---:|");
+        r.AppendLine("| Barco | Bônus | Fragmentos | Chance por peixe | Peixes puxados (esperado) |");
+        r.AppendLine("|---|---:|---:|---:|---:|");
         foreach (var boat in boats.Skip(1))
         {
-            var mapName = config.TryGetMap(boat.MapId, out var boatMap) ? boatMap.DisplayName : "—";
             var catches = boat.FragmentDropChance > 0 ? boat.FragmentsRequired / boat.FragmentDropChance : 0;
-            r.AppendLine("| " + boat.DisplayName + " | +" + Format.Percent(boat.CatchSuccessBonus, 0) + " | " + mapName + " | " + Format.Number(boat.FragmentsRequired) + " | "
-                         + Format.Percent(boat.FragmentDropChance, 1) + " | " + Format.Number((long)catches) + " |");
+            r.AppendLine("| " + boat.DisplayName + " | +" + Format.Percent(boat.CatchSuccessBonus, 0) + " | " + Format.Number(boat.FragmentsRequired) + " | "
+                         + Format.Percent(boat.FragmentDropChance, 2) + " | " + Format.Number((long)catches) + " |");
         }
 
         r.AppendLine();

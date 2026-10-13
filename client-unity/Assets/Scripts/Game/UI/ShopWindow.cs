@@ -884,11 +884,11 @@ namespace FishingIdle.Game.UI
             var catches = rod.CanCatchMythic ? GameTexts.Profile.CatchesUpToMythic : rod.CanCatchLegendary ? GameTexts.Profile.CatchesUpToLegendary : rod.CanCatchEpic ? GameTexts.Profile.CatchesRareAndEpic : rod.CanCatchRare ? GameTexts.Profile.CatchesRare : GameTexts.Profile.NoRare;
             y = WrappedLabel(new Rect(x, y, w, 0f), catches, skin.Small) + 4f;
 
-            // Rods by fragments (M24-T32, A-163): "Fragmentos 12/25 · Caem no mapa Pantanal Dourado", a bar and the chance
-            // while the rod is not assembled; the extras once it is.
-            if (rod.MapName != null)
+            // Rods by fragments (M24-T32, A-163): "Fragmentos 12/25 · Caem em todos os mapas" (M24-T47), a bar and the
+            // chance while the rod is not assembled; the extras once it is.
+            if (rod.FragmentsRequired > 0)
             {
-                FragmentLines(skin, x, ref y, w, rod.Owned, rod.Fragments, rod.FragmentsRequired, GameTexts.Gear.FragmentsWhere(rod.MapName), rod.FragmentChance);
+                FragmentLines(skin, x, ref y, w, rod.Owned, rod.Fragments, rod.FragmentsRequired, GameTexts.Gear.FragmentsEverywhere, rod.FragmentChance);
             }
 
             y += 8f;
@@ -1065,7 +1065,7 @@ namespace FishingIdle.Game.UI
             }
             else if (clothing != null)
             {
-                FragmentLines(skin, x, ref y, w, false, clothing.Fragments, clothing.NextCost, GameTexts.Gear.ClothingDropsEverywhere, clothing.FragmentChance);
+                FragmentLines(skin, x, ref y, w, false, clothing.Fragments, clothing.NextCost, GameTexts.Gear.FragmentsEverywhere, clothing.FragmentChance);
             }
 
             var button = new Rect(x, inner.yMax - 44f, w, 44f);
@@ -1120,16 +1120,11 @@ namespace FishingIdle.Game.UI
                 y += 22f;
             }
 
-            // Boats by fragments (M24-T16, A-157): where they drop and how many there are ("Fragmentos 12/40 · Caem no mapa
-            // Lago Sereno"), with a bar while the boat is not assembled; the extras once it is.
-            if (boat.MapName != null)
+            // Boats by fragments (M24-T16, A-157): how many there are ("Fragmentos 12/40 · Caem em todos os mapas", M24-T47),
+            // with a bar while the boat is not assembled; the extras once it is.
+            if (boat.FragmentsRequired > 0)
             {
-                // A boat dropped on more than one map (M24-T42, A-168): "Caem nos mapas Lago Sereno e Ilha do Sol".
-                var names = boat.MapNames ?? new List<string>();
-                var dropText = names.Count > 1
-                    ? GameTexts.Gear.FragmentsWhereMany(string.Join(", ", names.Take(names.Count - 1)) + GameTexts.Gear.ListAnd + names[names.Count - 1])
-                    : GameTexts.Gear.FragmentsWhere(boat.MapName);
-                FragmentLines(skin, x, ref y, w, boat.Owned, boat.Fragments, boat.FragmentsRequired, dropText, boat.FragmentChance);
+                FragmentLines(skin, x, ref y, w, boat.Owned, boat.Fragments, boat.FragmentsRequired, GameTexts.Gear.FragmentsEverywhere, boat.FragmentChance);
             }
 
             // Owned with levels: the Use button / "Em uso" pill sits over the upgrade row.

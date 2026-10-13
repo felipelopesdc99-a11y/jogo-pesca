@@ -28,11 +28,11 @@ namespace FishingIdle.GameService.Shop
     }
 
     /// <summary>
-    /// Rods by fragments (M24-T32, A-163): every rod but the free Starter Rod drops on one map (rods.json →
-    /// fragment_map_id), always a map the rod before it already reaches, so the progression never locks. A fish pulled out
-    /// there may drop one of its fragments; fragments_required of them assemble the rod, which goes to the Inventory at
-    /// Nv.1 and is put in use when its tier is higher than the rod in use. Fragments that arrive while the rod is owned are
-    /// kept as extras (they assemble it again if it is sold). Rods are not sold in the Shop anymore.
+    /// Rods by fragments (M24-T32, A-163): since M24-T47 (A-173) every fish pulled out, on any map, may drop one fragment of
+    /// each rod but the free Starter Rod (one roll per rod, with its own fragment_drop_chance), so the rod that opens the
+    /// next map can always drop and the progression never locks. fragments_required of them assemble the rod, which goes
+    /// to the Inventory at Nv.1 and is put in use when its tier is higher than the rod in use. Fragments that arrive while
+    /// the rod is owned are kept as extras (they assemble it again if it is sold). Rods are not sold in the Shop anymore.
     /// </summary>
     public static class RodFragmentRules
     {
@@ -57,23 +57,32 @@ namespace FishingIdle.GameService.Shop
         }
 
         /// <summary>
-        /// The roll after a fish is pulled out on <paramref name="map"/>: with the map rod's chance, 1 fragment of it.
-        /// Draws from the cycle's own <see cref="Rng"/> after the catch and the boat fragment, so neither ever changes.
-        /// Offline catches drop only when the config allows it (rods.json → fragment_rules). Returns the gain, or null.
+        /// The rolls after a fish is pulled out (any map, M24-T47): one per rod assembled from fragments, in tier order,
+        /// each with that rod's fragment_drop_chance of 1 fragment of it. Draws from the cycle's own <see cref="Rng"/> after
+        /// the catch and the boat fragments, so none of them ever changes; a rod with chance 0 draws nothing. Offline
+        /// catches drop only when the config allows it (rods.json → fragment_rules). Returns the gains (empty when none dropped).
         /// </summary>
-        internal static RodFragmentGainView RollOnCatch(GameConfig config, PlayerSave save, MapConfig map, Rng rng, bool offline, long nowMs)
+        internal static List<RodFragmentGainView> RollOnCatch(GameConfig config, PlayerSave save, Rng rng, bool offline, long nowMs)
         {
-            if (map == null || !config.TryGetRodForMap(map.Id, out var rod) || rod.FragmentDropChance <= 0)
-            {
-                return null;
-            }
-
+            var gains = new List<RodFragmentGainView>();
             if (offline && !config.RodFragmentsDropOffline)
             {
-                return null;
+                return gains;
             }
 
-            return rng.NextDouble() < rod.FragmentDropChance ? Add(config, save, rod, 1, nowMs) : null;
+            foreach (var rod in config.FragmentRods)
+            {
+                if (rod.FragmentDropChance > 0 && rng.NextDouble() < rod.FragmentDropChance)
+                {
+                    var gain = Add(config, save, rod, 1, nowMs);
+                    if (gain != null)
+                    {
+                        gains.Add(gain);
+                    }
+                }
+            }
+
+            return gains;
         }
 
         /// <summary>

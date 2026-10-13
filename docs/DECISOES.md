@@ -1189,3 +1189,40 @@ proprietário aprovou; manter os níveis 1 a 249 iguais deixa sem mudança quem 
 **Rever se.** O proprietário quiser uma renda passiva de novo (seria um sistema novo, decisão dele), ou quiser a meta
 de ~60 dias também para quem abre o jogo 4 vezes por dia (hoje ~112 dias, eram ~108 com a Tripulação, que rendia com o
 jogo fechado).
+
+## TD-054 · Fragmentos em qualquer mapa: um sorteio por item e o validador por chance (13/10/2026)
+
+**Origem.** M24-T47 (A-173): o proprietário decidiu que todos os fragmentos (os 5 barcos, as 5 varas e o Fragmento de
+Roupa) caem em qualquer mapa, com 0,1% de chance cada.
+
+**Decisão.**
+- **Um sorteio por item, independente.** `BoatFragmentRules.RollOnCatch` e `RodFragmentRules.RollOnCatch` não recebem
+  mais o mapa: percorrem `GameConfig.FragmentBoats` e `GameConfig.FragmentRods` (listas prontas na carga, em ordem de
+  categoria) e fazem um `NextDouble()` por item com chance maior que 0, do `Rng` do mesmo ciclo, depois da captura. A
+  ordem é fixa (barcos 1 a 5, varas 1 a 5, roupa), então a mesma semente dá os mesmos fragmentos; a captura nunca muda,
+  porque cada ciclo tem o seu `Rng` (`Rng.For(seed, sessão, ciclo)`) e os sorteios vêm depois dela. Um item com chance 0
+  não gasta sorteio. Os dois retornam listas (vários fragmentos no mesmo peixe são possíveis).
+- **A chance fica em cada item** (`fragment_drop_chance` de cada barco, de cada vara e de `clothing`), todos 0,001. Uma
+  chance global seria mais curta, mas os campos por item já existiam, o Painel já os edita e deixam o proprietário dar
+  uma chance diferente a um item sem mudar código.
+- **O vínculo mapa → fragmento saiu da regra.** `rods.json → fragment_map_id` e `boats[].extra_fragment_maps[].fragment_drop_chance`
+  saíram (do config e dos modelos), com `GameConfig.TryGetRodForMap`, `BoatFragmentChanceOn` e `FragmentMapsOf`. O
+  `map_id`/`extra_fragment_maps` dos barcos **ficou**, porque tem outro uso: o Boss Mundial dá fragmentos do barco do mapa
+  mais alto liberado (`WorldBossRules.BoatFor` → `TryGetBoatForMap`), e o Passe segue a mesma ordem; `GameConfig.MapsOf`
+  substitui `FragmentMapsOf`. As ofertas da Loja perderam `MapId`/`MapName`/`MapNames`; a tela diz "Caem em todos os
+  mapas" quando `FragmentsRequired > 0`.
+- **Validador.** A regra "a vara que libera o próximo mapa cai num mapa que o jogador já pesca" não faz mais sentido. Agora:
+  cada vara por fragmentos com `fragments_required` de 1 a 1.000.000 e chance de 0 a 1, e a categoria que cada mapa pede
+  (`minimum_rod_tier`) precisa ser a da Vara Inicial ou a de uma vara com chance **maior que 0** (senão "a progressão
+  travaria"). Saíram as mensagens `RodMapUnknown`, `RodMapTooHigh`, `RodMapRepeated` e `RodUnreachable`. Os testes que
+  precisam de "nenhuma vara cai" usam `TestSupport.NeverDrops` (1e-12), que nunca sorteia e mantém o config válido.
+- **Simulação.** `simular_progressao.Rules` ganhou `boat_drops(map)`/`rod_drops(map)` (hoje: todos os itens em qualquer
+  mapa), que `fragmentos_qualquer_mapa.py` troca pela tabela de antes para comparar, e `fish_past_max_level` (a pesca
+  continua depois do Nv.1000, só para contar fragmentos). Os geradores (`passe_fragmentos.py gerar`,
+  `fragmentos_equipamento.py gerar`) não escrevem mais as chances.
+
+**Por quê.** Sortear cada item separado é o que o proprietário pediu ("0,1% para cada") e é o mais simples de explicar e
+de testar. Manter o `map_id` dos barcos evita mudar o Boss e o Passe, que não fizeram parte do pedido.
+
+**Rever se.** O proprietário escolher outra opção do OD-070 (chance maior para as varas ou menos fragmentos), ou quiser
+uma chance só para tudo.

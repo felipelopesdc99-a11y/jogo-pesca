@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-12T23:30:00Z",
+  "updated_at": "2026-10-13T12:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -598,7 +598,7 @@
       "id": "OD-062",
       "task_id": "M24-T21",
       "title": "Ritmo dos barcos fora do mapa e força do Premium",
-      "detail": "Premissa de hoje (12/10/2026, A-168): são 5 barcos, e cada um cai em dois mapas, um dos Mapas 1 a 5 e um dos Mapas 6 a 10 (Remo Valente: Lago Sereno e Arquipélago do Sol; … Horizonte Dourado: Costa de Coral e Abismo Atlântico). Quem pesca sempre no melhor mapa liberado já recebe, nos Mapas 6 a 10, fragmentos dos barcos 1 a 5, então não precisa voltar a um mapa antigo para completar todos; o Passe grátis e o Premium dão fragmentos só desses 5 barcos. Os dias simulados com 10 barcos (~25 a ~100 dias pelo Passe grátis, ~3 a ~13 com o Premium) não valem mais e serão refeitos com tools/Progressao/passe_fragmentos.py quando você decidir. O que continua em aberto é o ritmo e a força do Premium (fragmentos em dobro e retroativos). Opções: (a) fica assim; (b) mais fragmentos na faixa grátis; (c) menos fragmentos no Premium.",
+      "detail": "Premissa de hoje (12/10/2026, A-168): são 5 barcos, e cada um cai em dois mapas, um dos Mapas 1 a 5 e um dos Mapas 6 a 10 (Remo Valente: Lago Sereno e Arquipélago do Sol; … Horizonte Dourado: Costa de Coral e Abismo Atlântico). Quem pesca sempre no melhor mapa liberado já recebe, nos Mapas 6 a 10, fragmentos dos barcos 1 a 5, então não precisa voltar a um mapa antigo para completar todos; o Passe grátis e o Premium dão fragmentos só desses 5 barcos. Os dias simulados com 10 barcos (~25 a ~100 dias pelo Passe grátis, ~3 a ~13 com o Premium) não valem mais e serão refeitos com tools/Progressao/passe_fragmentos.py quando você decidir. O que continua em aberto é o ritmo e a força do Premium (fragmentos em dobro e retroativos). Opções: (a) fica assim; (b) mais fragmentos na faixa grátis; (c) menos fragmentos no Premium. Atualização de 13/10/2026 (A-173, M24-T47): por decisão do proprietário, todos os fragmentos de barco caem em qualquer mapa, com 0,1% por peixe puxado para cada barco; os dois mapas de cada barco só dizem de qual barco o Boss Mundial dá fragmentos. Simulado com o Passe grátis: os 5 barcos montados entre os dias 2,9 e 5,2 (jogo aberto), 5,9 e 10,3 (4 vezes por dia) e 6,8 e 11,8 (1 vez por dia). O que continua em aberto aqui é a força do Premium.",
       "raised_at": "2026-10-11T12:00:00Z",
       "status": "OPEN"
     },
@@ -658,6 +658,14 @@
       "title": "Nome do Boss Mundial",
       "detail": "O Boss Mundial está com o nome sugerido \"Leviatã do Abismo\" (world_boss.json → display_name; a arte pedida em docs/ASSETS_PENDENTES.md segue esse nome). Opções: (a) fica \"Leviatã do Abismo\"; (b) outro nome que você escolher; (c) um Boss diferente por dia da semana (seria um sistema novo, só com sua aprovação).",
       "raised_at": "2026-10-12T20:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-070",
+      "task_id": "M24-T48",
+      "title": "Varas com 0,1% chegam bem mais tarde e atrasam os mapas",
+      "detail": "Com todos os fragmentos em qualquer mapa a 0,1% (A-173), as varas, que abrem os mapas (minimum_rod_tier), chegam bem mais tarde. Simulado (pesca + Passe grátis, sem Boss): com o jogo aberto o Mapa 2 abre no dia ~2,6 (antes ~2 horas) e o Mapa 10 no dia ~7,7 (antes ~20 horas); 4 vezes por dia, Mapa 2 no dia ~5,3 (antes ~12 h) e Mapa 10 no ~14,8 (antes ~2,3); 1 vez por dia, Mapa 2 no ~6,8 (antes ~1,8) e Mapa 10 no ~16,8 (antes ~5,8). O Nv.1000 vem em ~58,5 / ~108,8 / ~117,8 dias (antes ~53,8 / ~100,3 / ~109,8). Nada trava; só fica mais lento no começo. Opções: (a) fica assim (0,1% em tudo); (b) só as varas com chance maior, por exemplo 0,5% (barcos e roupa ficam 0,1%): Mapa 10 em ~1,7 / ~3,8 / ~4,8 dias e Nv.1000 em ~54,8 / ~102,3 / ~109,8 dias, quase como antes; (c) as varas pedem menos fragmentos, por exemplo 5 / 8 / 12 / 15 / 20 (eram 15 a 60), com 0,1%: Mapa 10 em ~1,8 / ~3,8 / ~5,8 dias e Nv.1000 em ~54,8 / ~102,3 / ~109,8 dias. Os números de (b) e (c) são de uma simulação rápida, sem mudar nada no jogo.",
+      "raised_at": "2026-10-13T12:00:00Z",
       "status": "OPEN"
     }
   ],
@@ -4921,6 +4929,32 @@
           ],
           "updated_at": "2026-10-12T23:30:00Z",
           "completion_notes": "Regras: saíram GameService/Crew e GameService/Upgrades, config/crew.json e config/upgrades.json (fora de RequiredFiles), os modelos, a validação e os erros CrewMember*/Upgrade*; venda ao NPC sem multiplicador (CatchRules.SalePrice, CatchViews.Create, Caixa, Aquário e Expedição); MarketRules.BotFloor = venda ao NPC + 1 (TD-052 → TD-053); Caixa de Pesca continua com 8.640. Save v21: os campos crew/upgrades de um save antigo são lidos (PlayerSave.RetiredCrew/RetiredUpgrades) e Persistence/CrewRemovalMigration devolve as Moedas pelos preços de antes guardados em economy.json → crew_removal_refund (b·(rⁿ−1)/(r−1) por tripulante, cost_factor × b × r^unlock_count por Melhoria de tripulante, Σ dos níveis das gerais até max_level; SafeMath; ids desconhecidos ignorados; nada de Conchas), limpa os campos e mostra um aviso único (GameSession.CrewRefund, GameTexts.Startup.CrewRemovedRefund). Telas: saíram CrewWindow, UpgradesPanel, a aba Tripulação (menu com 4 abas, 160 px, centralizadas, cores mantidas), a renda/s da placa (agora \"MOEDAS\" e o total), a parte da Tripulação do Bem-vindo de volta, Format.PerSecond/Rate, os textos órfãos do GameTexts e os ícones ico_tripulacao e ico_aba_tripulacao. Balanceamento: tools/Progressao/jogador.py (jogador de referência só com a pesca) no lugar de simular_tripulacao.py e simular_melhorias.py; curva do Pescador versão 4 (calibrar_xp.py --manter-ate 250 --metas 500:14.6d,750:33.3d,1000:60d --gravar; níveis 1 a 249 iguais; 217.677.170 XP até o Nv.1000, eram 229.596.770). Nv.1000 com o jogo aberto: sem roupas 59,6 dias com a Tripulação → 63,2 sem ela na curva 3 → 60,0 na curva 4; com roupas 54,6 → 57,1 → 54,3. 4 vezes por dia: 107,8 → 117,9 → 112,3 (sem roupas). 1 vez por dia: 123,8 → 129,9 → 123,8. pass.json (Moedas e Conchas, passe_fragmentos.py passe) e world_boss.json → reference_income (boss_mundial.py) regerados pela renda só da pesca. Testes: CrewTests e UpgradeTests saíram; CrewRemovalTests (reembolso exato, save v20 sem Tripulação, sem os campos, ids desconhecidos, saturação, config sem a seção, preço inválido), FisherCurveSixtyDaysTests na curva 4 (curva 3 → 4 sem baixar nível), StartupWithOldSavesTests com Tripulação e Melhorias nos saves v13 a v20, MarketTests com o piso novo. A-172, TD-053. Verificado no CI (GitHub) no commit 724fdf6: 409 testes passando e 0 erros e 0 avisos no jogo, no Painel e no Simulador. Não aberto no Unity."
+        },
+        {
+          "id": "M24-T47",
+          "title": "Todos os fragmentos em qualquer mapa (0,1% cada)",
+          "subsystem": "config",
+          "description": "Decisão do proprietário (13/10/2026): \"A ideia é os jogadores conseguirem todos esses fragmentos enquanto pescam, mas com uma porcentagem bem pequena.\" Perguntado, escolheu \"Todos em qualquer mapa 0,1% — faça os testes de quantos dias pra ele fechar todos os itens\". Cada peixe puxado, em qualquer mapa, sorteia 0,1% para cada barco, cada vara e o Fragmento de Roupa; simular os dias para fechar tudo e o efeito na liberação dos mapas e no Nv.1000.",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T16",
+            "M24-T32",
+            "M24-T33",
+            "M24-T42"
+          ],
+          "updated_at": "2026-10-13T12:00:00Z",
+          "completion_notes": "Regra: em qualquer mapa, cada peixe puxado (online e offline; Expedições não) faz um sorteio independente para cada barco, cada vara e o Fragmento de Roupa, com o Rng do ciclo, depois da captura (barcos 1 a 5, varas 1 a 5, roupa). BoatFragmentRules.RollOnCatch e RodFragmentRules.RollOnCatch sem mapa, sobre GameConfig.FragmentBoats e FragmentRods, devolvendo listas. Config: fragment_drop_chance 0,001 em cada barco, cada vara e clothing; saíram rods.json → fragment_map_id e a chance de extra_fragment_maps; o map_id/extra_fragment_maps dos barcos ficou só para o Boss Mundial (WorldBossRules.BoatFor) e o Passe. Saíram GameConfig.TryGetRodForMap, BoatFragmentChanceOn, FragmentMapsOf (→ MapsOf) e MapId/MapName/MapNames das ofertas. Validador: a categoria que cada mapa pede precisa ser a da Vara Inicial ou a de uma vara com chance > 0 (saíram RodMapUnknown/TooHigh/Repeated/RodUnreachable). Telas: Loja diz \"Caem em todos os mapas\" (barcos, varas e roupas; GameTexts.Gear.FragmentsEverywhere), notas da Loja de varas e barcos, Catálogo e Painel (rótulos de chance) ajustados; nada de cálculo na tela. Simulação (tools/Progressao/fragmentos_qualquer_mapa.py, docs/propostas/fragmentos_qualquer_mapa.json; pesca + Passe grátis, sem Boss nem Premium): todos os 15 itens em 20,5 / 38,3 / 41,8 dias (jogo aberto / 4×/dia / 1×/dia; antes 11,9 / 22,5 / 25,8); barcos em 2,9–5,2 / 5,9–10,3 / 6,8–11,8 dias; varas em 2,6–7,7 / 5,3–14,8 / 6,8–16,8; roupas (5 peças) 20,5 / 38,3 / 41,8. Mapa 10 abre no dia 7,7 / 14,8 / 16,8 (antes 0,84 / 2,3 / 5,8); Nv.1000 em 58,5 / 108,8 / 117,8 (antes 53,8 / 100,3 / 109,8). Nada rebalanceado além da chance (OD-070). simular_progressao.py: boat_drops/rod_drops e fish_past_max_level; geradores passe_fragmentos.py e fragmentos_equipamento.py não escrevem mais as chances (conferido rodando os dois numa cópia). Testes: BoatFragmentsAndPass (qualquer mapa, todos os barcos num peixe, chance 0), RodsAndClothingByFragments (0,1% em tudo, progressão, validador, varas em qualquer mapa, 11 sorteios num peixe, capturas iguais com todos a 50%, offline), TestSupport.NeverDrops; saíram as medidas de fragmentos por hora de TenSecondCycle e MoreFishFewerRares. A-173 (e notas em A-157/A-163/A-164/A-168), TD-054, config/README, BASE_TECNICA. Não compilado localmente (sem .NET); CI no push. Não aberto no Unity."
+        },
+        {
+          "id": "M24-T48",
+          "title": "Ritmo das varas com 0,1% (liberação dos mapas)",
+          "subsystem": "config",
+          "description": "Com 0,1% em qualquer mapa (M24-T47, A-173) as varas chegam bem mais tarde e os mapas abrem mais tarde (Mapa 10 no dia ~7,7 com o jogo aberto, era ~20 horas; Nv.1000 em ~58,5 dias, era ~53,8). Nada trava. Decidir se fica assim ou se as varas ganham chance maior ou pedem menos fragmentos (OD-070).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T47"
+          ],
+          "updated_at": "2026-10-13T12:00:00Z"
         }
       ],
       "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."

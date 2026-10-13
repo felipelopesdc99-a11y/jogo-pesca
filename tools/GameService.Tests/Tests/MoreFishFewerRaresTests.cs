@@ -22,12 +22,6 @@ public sealed class MoreFishFewerRaresTests
     private const double OnlineCycleBefore = 30;
     private const double OfflineCycleBefore = 60;
 
-    private static readonly Dictionary<string, double> FragmentChanceBefore = new Dictionary<string, double>
-    {
-        ["boat_01"] = 0.013, ["boat_02"] = 0.013, ["boat_03"] = 0.015, ["boat_04"] = 0.015, ["boat_05"] = 0.016,
-        ["boat_06"] = 0.017, ["boat_07"] = 0.019, ["boat_08"] = 0.02, ["boat_09"] = 0.023, ["boat_10"] = 0.024,
-    };
-
     private static MapConfig Map(string id) { Config.TryGetMap(id, out var map); return map; }
     private static RodConfig Rod(string id) { Config.TryGetRod(id, out var rod); return rod; }
     private static BoatConfig Boat(string id) { Config.TryGetBoat(id, out var boat); return boat; }
@@ -175,41 +169,8 @@ public sealed class MoreFishFewerRaresTests
         Assert.Equal(4320, report.Update.NewCatches.Count + report.Update.Escapes.Count);
     }
 
-    [Fact]
-    public void Boat_fragments_per_hour_stay_about_the_same_on_every_map()
-    {
-        // With the minimum rod of the map at Nv.1 and no boat or bait: fragments per hour = attempts per hour ×
-        // fish pulled out per attempt × chance per fish (A-157). The chance was halved and recalibrated (A-159), then
-        // cut by 1,5 and recalibrated again (A-160): about a third of A-157.
-        foreach (var boat in Config.Equipment.Boats.Where(b => b.MapId != null))
-        {
-            var map = Map(boat.MapId);
-            var rod = Config.Rods.Rods.OrderBy(r => r.Tier).First(r => r.Tier >= map.MinimumRodTier);
-            var pulledBefore = PulledPerAttempt(map, rod, 1, 0, fishing: false).Values.Sum();
-            var pulledNow = PulledPerAttempt(map, rod, 1, 0, fishing: true).Values.Sum();
-            var before = 3600 / OnlineCycleBefore * pulledBefore * FragmentChanceBefore[boat.Id];
-            var now = 3600 / Config.Fishing.OnlineCycleSeconds * pulledNow * boat.FragmentDropChance;
-
-            Assert.InRange(now / before, 0.9, 1.1);
-            Assert.InRange(boat.FragmentDropChance, FragmentChanceBefore[boat.Id] * 0.25, FragmentChanceBefore[boat.Id] * 0.37);
-        }
-
-        // Maps 6 to 10 drop the fragments of boats 1 to 5 (extra_fragment_maps, M24-T42) with the chance the removed boat
-        // of that map had: the same pace per hour.
-        foreach (var extra in Config.Equipment.Boats.Where(b => b.ExtraFragmentMaps != null).SelectMany(b => b.ExtraFragmentMaps))
-        {
-            var map = Map(extra.MapId);
-            var removed = "boat_" + extra.MapId.Substring("map_".Length);
-            var rod = Config.Rods.Rods.OrderBy(r => r.Tier).First(r => r.Tier >= map.MinimumRodTier);
-            var pulledBefore = PulledPerAttempt(map, rod, 1, 0, fishing: false).Values.Sum();
-            var pulledNow = PulledPerAttempt(map, rod, 1, 0, fishing: true).Values.Sum();
-            var before = 3600 / OnlineCycleBefore * pulledBefore * FragmentChanceBefore[removed];
-            var now = 3600 / Config.Fishing.OnlineCycleSeconds * pulledNow * extra.FragmentDropChance;
-
-            Assert.InRange(now / before, 0.9, 1.1);
-            Assert.InRange(extra.FragmentDropChance, FragmentChanceBefore[removed] * 0.25, FragmentChanceBefore[removed] * 0.37);
-        }
-    }
+    // The boat fragments per hour of A-159/A-160 were replaced on 13/10/2026 (M24-T47, A-173): every boat drops on every
+    // map at 0,1% per fish pulled out (BoatFragmentsAndPassTests, RodsAndClothingByFragmentsTests).
 
     [Fact]
     public void Expeditions_and_the_market_sellers_keep_the_plain_draw()
