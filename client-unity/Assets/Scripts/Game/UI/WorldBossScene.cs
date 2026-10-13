@@ -95,7 +95,7 @@ namespace FishingIdle.Game.UI
             // Breathing: holds the idle pose, cross-fades into the breathing one and back, every BreathCycle seconds.
             var p = Mathf.Repeat(now, BreathCycle) / BreathCycle;
             var triangle = p < 0.5f ? p * 2f : 2f - p * 2f;
-            var breath = _poses[1].Texture != null ? Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.2f, 0.8f, triangle)) : 0f;
+            var breath = _poses[1].Texture != null ? Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.35f, 0.65f, triangle)) : 0f;
 
             // Attack: fades in fast, holds, fades out at the end.
             var attack = 0f;
