@@ -3049,7 +3049,7 @@ Decidido na revisão de integridade de 12/10/2026 (M24-T45).
   sobre o turquesa (cerca de 9:1), para ficarem legíveis tanto no papel quanto nas cenas.
 
 ### A-172 · A Tripulação e as Melhorias saíram do jogo
-**Seção do GDD:** 10, 17, 19 (novo escopo A-152) · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (aguardando o CI, não aberto no Unity)
+**Seção do GDD:** 10, 17, 19 (novo escopo A-152) · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
 Decisão do proprietário em 12/10/2026 (M24-T46): "Não vai ter tripulação, retira isso do jogo". Perguntado, ele escolheu
 tirar também as **Melhorias gerais** e **manter a meta de ~60 dias até o Nv.1000** (sem roupas; ~55 com roupas, OD-067),

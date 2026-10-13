@@ -5,8 +5,8 @@ raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
 ## [0.2.0-m24.5] — 12/10/2026
 
-A Tripulação e as Melhorias saíram do jogo, por decisão do proprietário (M24-T46, A-172). Save versão 21. Não aberto no
-Unity.
+A Tripulação e as Melhorias saíram do jogo, por decisão do proprietário (M24-T46, A-172). Save versão 21. Verificado
+no CI (409 testes), não aberto no Unity.
 
 ### Removido
 
