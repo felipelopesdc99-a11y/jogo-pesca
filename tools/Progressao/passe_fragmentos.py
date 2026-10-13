@@ -4,6 +4,8 @@ Uso:
   python3 tools/Progressao/passe_fragmentos.py gerar
       # grava em config/equipment.json a chance de fragmento de cada barco (fragment_drop_chance) e a quantidade
       # (fragments_required), e gera config/pass.json (100 marcos, do Nv.10 ao Nv.1000)
+  python3 tools/Progressao/passe_fragmentos.py passe
+      # só regera config/pass.json (as Moedas e Conchas de cada marco pela renda de hoje), sem mexer nos barcos
   python3 tools/Progressao/passe_fragmentos.py simular [--dias 170] [--gravar]
       # simula o ritmo (os 3 jeitos de jogar, com o passe grátis e com o premium) e, com --gravar, escreve
       # docs/propostas/passe_fragmentos.json
@@ -20,8 +22,8 @@ Como os números são gerados (ajuste as constantes abaixo e rode "gerar" de nov
   - chance de fragmento: o jogador que abre 4 vezes por dia (30 min online + o resto offline, até 24 h), pescando no
     mapa do barco com a vara e o barco que tinha ao chegar lá (uma simulação de referência), monta o barco em
     DIAS_ALVO_PRIMEIRO dias no Mapa 1 e DIAS_ALVO_ULTIMO no Mapa 10 (crescendo em progressão geométrica);
-  - Moedas do passe: MINUTOS_MOEDAS minutos da renda (Tripulação + pesca) que o jogador de referência (4 vezes por
-    dia, com Tripulação e Melhorias) tem ao chegar àquele nível; Conchas: MINUTOS_CONCHAS minutos de Conchas da pesca
+  - Moedas do passe: MINUTOS_MOEDAS minutos da renda da pesca que o jogador de referência (4 vezes por dia,
+    tools/Progressao/jogador.py; sem Tripulação nem Melhorias desde o A-172) tem ao chegar àquele nível; Conchas: MINUTOS_CONCHAS minutos de Conchas da pesca
     online; o premium dá PREMIUM_MULT vezes isso;
   - Dólares: os 10 a cada 10 níveis até o Nv.100 do A-111 passam para a faixa grátis (mesmo total); depois, 10 a cada
     100 níveis (grátis) e 10 a cada 50 níveis (premium);
@@ -43,9 +45,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import curva_niveis as C  # noqa: E402
-import simular_melhorias as M  # noqa: E402
+import jogador as J  # noqa: E402
 import simular_progressao as S  # noqa: E402
-import simular_tripulacao as T  # noqa: E402
 
 ROOT = S.ROOT
 CONFIG = S.CONFIG
@@ -72,7 +73,7 @@ FRAG_VARA_GRATIS = 0.15
 ROUPA_ATE_100 = 2
 ROUPA_DEPOIS = 1
 
-PROFILES = T.PROFILES
+PROFILES = J.PROFILES
 
 
 def load(name):
@@ -105,11 +106,11 @@ def attempts_per_day(rules, profile):
 
 # ---------------------------------------------------------------- the reference player and the simulations
 
-class Game(M.Game):
-    """The M24 economy (fishing + Crew + Upgrades) with boats by fragments, plus the pass when one is given."""
+class Game(J.Game):
+    """The reference economy (fishing only since A-172) with boats by fragments, plus the pass when one is given."""
 
-    def __init__(self, crew_cfg, up_cfg, pass_cfg=None, premium=False):
-        super().__init__(crew_cfg, up_cfg)
+    def __init__(self, pass_cfg=None, premium=False):
+        super().__init__()
         self.pass_cfg = pass_cfg
         self.buy_premium = premium
         self.premium = False
@@ -145,7 +146,7 @@ class Game(M.Game):
             self.levels_seen += MARCO_A_CADA
             lvl = self.levels_seen
             self.at_level[lvl] = {
-                'renda_moedas_s': self.crew.coins_rate() + self.fishing_coins_per_second(),
+                'renda_moedas_s': self.income(),
                 'conchas_s': self.fishing_shells_per_second(),
                 'vara': p.rod['id'], 'nivel_vara': p.rods[p.rod['id']], 'bonus_barco': p.boat_bonus() + p.gloves(), 'roupas': p.extra(),
                 'dia': self.t / 86400.0,
@@ -193,27 +194,9 @@ class Game(M.Game):
 
 
 def play(profile, days, pass_cfg=None, premium=False):
-    """The same loop as simular_melhorias.play, with this Game."""
-    g = Game(M.load_json('crew.json'), M.load_json('upgrades.json'), pass_cfg, premium)
-    sessions = PROFILES[profile][1]
-    end = days * 86400.0
-    if sessions is None:
-        while g.t < end and g.p.level < g.rules.max_level:
-            g.online(T.step_for(g.t) * 20, T.step_for(g.t))
-        return g
-    last_end = None
-    day = 0
-    while g.t < end:
-        for start_h, minutes in sessions:
-            start = day * 86400.0 + start_h * 3600.0
-            if last_end is None:
-                g.t = start
-            else:
-                g.offline(start - last_end)
-            g.online(minutes * 60.0, 5.0 if day == 0 else 30.0)
-            last_end = g.t
-        day += 1
-    return g
+    """jogador.play with this Game (the always-open profile stops at the max level)."""
+    g = Game(pass_cfg, premium)
+    return J.play(g, profile, days, stop_at_level=g.rules.max_level if PROFILES[profile][1] is None else None)
 
 
 def map_of_level(level, n_maps):
@@ -315,7 +298,18 @@ def gerar(days):
         print('  %s (%s): %d fragmentos, %s por peixe (alvo %s dias, %s das tentativas viram peixe puxado)'
               % (b['id'], b['map_id'], b['fragments_required'], pct(b['fragment_drop_chance'], 2), dec(target, 1), pct(rate, 0)))
     save('equipment.json', eq)
+    write_pass(rules, reference, boats)
 
+
+def so_passe(days):
+    """Rewrites only config/pass.json (the boats' chances in equipment.json stay as they are)."""
+    rules = S.Rules()
+    boats = [b for b in load('equipment.json')['boats'] if b.get('map_id')]
+    print('Simulação de referência (%s, %d dias, sem passe)…' % (PERFIL_REFERENCIA, days))
+    write_pass(rules, play(PERFIL_REFERENCIA, days), boats)
+
+
+def write_pass(rules, reference, boats):
     # Milestones take turns over the 5 boats (Nv.10·X → boat X, Nv.60 → boat 1 again: the boat map 6 drops, A-168).
     boats_by_map = {int(b['map_id'][-2:]): b for b in boats}
     pass_cfg = collections.OrderedDict([
@@ -326,7 +320,8 @@ def gerar(days):
                         '(Nv.10 ao Nv.1000), cada um com a recompensa grátis e a premium. O premium é comprado uma vez com '
                         'Dólares (premium_price_dollars) e libera também as recompensas premium dos marcos já passados. '
                         'Os 10 Dólares a cada 10 níveis até o Nv.100 (A-111) estão na faixa grátis. Números gerados por '
-                        'tools/Progressao/passe_fragmentos.py gerar; são sugestões para ajustar jogando.'),
+                        'tools/Progressao/passe_fragmentos.py gerar (só o passe: passe_fragmentos.py passe; as Moedas seguem a renda da pesca '
+                        'desde que a Tripulação saiu, A-172); são sugestões para ajustar jogando.'),
         ('pass_id', 'pescador'),
         ('pass_id_note', 'Identifica este passe no save. Temporadas (passes que trocam) ficaram para depois (OD-059): '
                          'hoje existe um passe só, e um pass_id diferente não zera nada.'),
@@ -340,7 +335,7 @@ def gerar(days):
         ('milestones', build_pass(reference, boats_by_map, rods_by_level(rules))),
     ])
     save('pass.json', pass_cfg)
-    print('config/equipment.json e config/pass.json gravados.')
+    print('config/pass.json gravado.')
 
 
 def dec(value, places):
@@ -376,7 +371,7 @@ def simular(days, gravar):
     out['gerado_por'] = 'tools/Progressao/passe_fragmentos.py'
     out['nota'] = ('Barcos por fragmentos (M24-T16, A-157) e Passe do Pescador (M24-T17, A-158). "no_mapa": dias para montar o '
                    'barco pescando só no mapa dele (online e offline), com a vara e o barco que o jogador de referência '
-                   '(4 vezes por dia) tinha ao chegar lá. "progressao": o jogo inteiro (pesca, Tripulação e Melhorias, '
+                   '(4 vezes por dia) tinha ao chegar lá. "progressao": o jogo inteiro (a pesca, '
                    'sempre no melhor mapa liberado, sem voltar para pegar fragmentos), com o passe grátis resgatado na '
                    'hora e, no "premium", o premium comprado assim que os Dólares dão. Dias contados da meia-noite do '
                    'primeiro dia.')
@@ -455,12 +450,14 @@ def simular(days, gravar):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('acao', choices=('gerar', 'simular'))
+    ap.add_argument('acao', choices=('gerar', 'passe', 'simular'))
     ap.add_argument('--dias', type=float, default=170)
     ap.add_argument('--gravar', action='store_true')
     a = ap.parse_args()
     if a.acao == 'gerar':
         gerar(a.dias)
+    elif a.acao == 'passe':
+        so_passe(a.dias)
     else:
         simular(a.dias, a.gravar)
 

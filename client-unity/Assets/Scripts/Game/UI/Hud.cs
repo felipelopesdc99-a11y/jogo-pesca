@@ -16,9 +16,9 @@ namespace FishingIdle.Game.UI
     /// </summary>
     /// <remarks>
     /// Layout follows GDD section 8 with the top menu chosen by the owner on 12/10/2026 (M24-T43, A-169): a thin
-    /// strip with the player card on the left (Moedas, Conchas, Dólares; a click opens the Perfil), five big coloured
-    /// tabs in the centre (Pesca, Tripulação, Aventura, Comércio, Perfil) and the bell and options on the right; a small
-    /// plaque with the income hanging under it; the round shortcuts (Mapa, Aquário, Passe, Eventos, Ranking) in a column
+    /// strip with the player card on the left (Moedas, Conchas, Dólares; a click opens the Perfil), four big coloured
+    /// tabs in the centre (Pesca, Aventura, Comércio, Perfil; the Tripulação left the game in M24-T46, A-172) and the bell
+    /// and options on the right; a small plaque with the Moedas hanging under it; the round shortcuts (Mapa, Aquário, Passe, Eventos, Ranking) in a column
     /// on the right, the toasts left of them; the tutorial hint on the left. Everything is laid out on a 1080-pixel-tall
     /// virtual canvas and scaled.
     /// </remarks>
@@ -31,8 +31,8 @@ namespace FishingIdle.Game.UI
         // wooden trim (80..86).
         private const float BarHeight = 80f;
 
-        // The five big tabs: 64 px tall (y 8..72; the active one grows 7%), 140 px wide or as wide as the longest label.
-        private const float TabTop = 8f, TabHeight = 64f, TabWidth = 140f, TabGap = 10f, TabIconOnlyWidth = 76f;
+        // The four big tabs: 64 px tall (y 8..72; the active one grows 7%), 160 px wide or as wide as the longest label.
+        private const float TabTop = 8f, TabHeight = 64f, TabWidth = 160f, TabGap = 14f, TabIconOnlyWidth = 76f;
 
         // The bell and the options at the right end of the strip: 20 margin + 2 × 52 + 8.
         private const float SideButton = 52f, SideButtonY = 12f;
@@ -41,8 +41,9 @@ namespace FishingIdle.Game.UI
         // The player card at the left of the strip.
         private const float PlayerCardHeight = 64f, PortraitSize = 50f;
 
-        // The plaque with the income, hanging under the tabs (only with no window open).
-        private const float PlaqueWidth = 320f, PlaqueHeight = 90f, PlaqueTop = BarHeight + 20f;
+        // The plaque with the Moedas, hanging under the tabs (only with no window open). Until A-172 it also showed the
+        // Crew's income per second; with no steady income left, it shows only the Moedas.
+        private const float PlaqueWidth = 260f, PlaqueHeight = 66f, PlaqueTop = BarHeight + 20f;
 
         // The sub-tabs of Aventura and Comércio, under the active tab (only with a window of the group open).
         private const float SubTabY = BarHeight + 10f, SubTabHeight = 32f, SubTabGap = 6f;
@@ -86,7 +87,6 @@ namespace FishingIdle.Game.UI
         private ArenaWindow _arena;
         private MarketWindow _market;
         private RankingWindow _ranking;
-        private CrewWindow _crew;
         private PassWindow _pass;
         private WorldBossWindow _boss;
         private EventsWindow _events;
@@ -107,7 +107,6 @@ namespace FishingIdle.Game.UI
         private long _coinsShown;
         private float _coinsChangedAt = -10f;
         private long _coinsGain;
-        private long _crewCoinsSeen;
         private float _coinsGainAt = -10f;
         private float _width;
         private float _height;
@@ -130,7 +129,6 @@ namespace FishingIdle.Game.UI
         private FishingIdle.GameService.Shop.GearView _chanceGear;
         private string _chanceText = string.Empty;
         private GUIStyle _plaqueCaption;
-        private GUIStyle _plaqueRate;
 
         private void Start()
         {
@@ -159,7 +157,6 @@ namespace FishingIdle.Game.UI
             _arena = new ArenaWindow(_root);
             _market = new MarketWindow(_root);
             _ranking = new RankingWindow(_root);
-            _crew = new CrewWindow(_root);
             _pass = new PassWindow(_root);
             _boss = new WorldBossWindow(_root);
             _events = new EventsWindow(_root);
@@ -484,11 +481,6 @@ namespace FishingIdle.Game.UI
                     _market.Close();
                     Event.current.Use();
                 }
-                else if (_crew.IsOpen)
-                {
-                    _crew.Close();
-                    Event.current.Use();
-                }
                 else if (_ranking.IsOpen)
                 {
                     _ranking.Close();
@@ -529,7 +521,7 @@ namespace FishingIdle.Game.UI
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
             var welcomeDialog = _root.Tutorial != null && _root.Tutorial.Active && _root.Tutorial.Step == TutorialSteps.Welcome;
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _crew.IsOpen || _pass.IsOpen || _boss.IsOpen || _events.IsOpen || WelcomeBackPending || welcomeDialog;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _pass.IsOpen || _boss.IsOpen || _events.IsOpen || WelcomeBackPending || welcomeDialog;
             _root.WindowOpen = windowOpen;
             GUI.enabled = !windowOpen;
             if (!windowOpen)
@@ -581,7 +573,6 @@ namespace FishingIdle.Game.UI
             _arena.Draw(skin, _width, _height);
             _market.Draw(skin, _width, _height);
             _ranking.Draw(skin, _width, _height);
-            _crew.Draw(skin, _width, _height);
             _pass.Draw(skin, _width, _height);
             _boss.Draw(skin, _width, _height);
             _events.Draw(skin, _width, _height);
@@ -631,8 +622,8 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>The "Bem-vindo de volta" summary is waiting (fishing, the Crew or both).</summary>
-        private bool WelcomeBackPending => _root.WelcomeBack != null || _root.CrewWelcome != null;
+        /// <summary>The "Bem-vindo de volta" summary of the offline fishing is waiting.</summary>
+        private bool WelcomeBackPending => _root.WelcomeBack != null;
 
         /// <summary>True when any window shows its own confirmation or profile dialog over itself.</summary>
         private bool AnyWindowDialog()
@@ -657,14 +648,14 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ top menu (M24-T43, A-169)
 
-        // The five tabs and the menus each one groups (owner's choice of 12/10/2026, example 2 of menu_mesclas).
-        private const int GroupFishing = 0, GroupCrew = 1, GroupAdventure = 2, GroupTrade = 3, GroupProfile = 4, GroupCount = 5, NoGroup = -1;
+        // The four tabs and the menus each one groups (owner's choice of 12/10/2026, example 2 of menu_mesclas; the
+        // Tripulação tab left with the Crew, M24-T46, A-172).
+        private const int GroupFishing = 0, GroupAdventure = 1, GroupTrade = 2, GroupProfile = 3, GroupCount = 4, NoGroup = -1;
 
         private static string GroupLabel(int group)
         {
             switch (group)
             {
-                case GroupCrew: return GameTexts.Navigation.Crew;
                 case GroupAdventure: return GameTexts.Navigation.Adventure;
                 case GroupTrade: return GameTexts.Navigation.Trade;
                 case GroupProfile: return GameTexts.Navigation.Profile;
@@ -677,7 +668,6 @@ namespace FishingIdle.Game.UI
         {
             switch (group)
             {
-                case GroupCrew: return PendingIcon("aba_tripulacao", CrewWindow.NavIcon);
                 case GroupAdventure: return PendingIcon("aba_aventura", Icons.Expedition);
                 case GroupTrade: return PendingIcon("aba_comercio", Icons.Market);
                 case GroupProfile: return PendingIcon("aba_perfil", Icons.Profile);
@@ -693,7 +683,6 @@ namespace FishingIdle.Game.UI
         /// </summary>
         private int ActiveGroup()
         {
-            if (_crew.IsOpen) return GroupCrew;
             if (_expedition.IsOpen || _arena.IsOpen || _events.IsOpen || _boss.IsOpen) return GroupAdventure;
             if (_market.IsOpen || _shop.IsOpen) return GroupTrade;
             if (_profile.IsOpen) return GroupProfile;
@@ -702,8 +691,8 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// The strip across the top: the player card on the left (a click opens the Perfil), the five tabs in the centre,
-        /// the bell and the options on the right; with no window open, the plaque with the income hangs under it.
+        /// The strip across the top: the player card on the left (a click opens the Perfil), the four tabs in the centre,
+        /// the bell and the options on the right; with no window open, the plaque with the Moedas hangs under it.
         /// </summary>
         private void DrawStrip(UiSkin skin, bool windowOpen)
         {
@@ -795,7 +784,6 @@ namespace FishingIdle.Game.UI
             CloseAllWindows();
             switch (group)
             {
-                case GroupCrew: _crew.Open(); break;
                 case GroupAdventure: _expedition.Open(); break;
                 case GroupTrade:
                     // The first window of the group (Mercado); during the tutorial step of the first rod, the Loja.
@@ -814,7 +802,7 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// Where the five tabs go: centred on the screen when that fits, otherwise centred between the player card and
+        /// Where the four tabs go: centred on the screen when that fits, otherwise centred between the player card and
         /// the bell; narrower tabs when needed, and icons only when even the narrowest labels do not fit.
         /// </summary>
         private Rect[] TabLayout(UiSkin skin, float cardRight, out bool iconsOnly)
@@ -860,7 +848,7 @@ namespace FishingIdle.Game.UI
 
         /// <summary>
         /// With a window of Aventura or Comércio open, its sister windows as small sub-tabs hanging under the active tab
-        /// (Expedição | Arena | Eventos, Mercado | Loja). The Tripulação keeps its own tabs inside the window.
+        /// (Expedição | Arena | Eventos, Mercado | Loja).
         /// </summary>
         private void DrawSubTabs(UiSkin skin)
         {
@@ -1002,7 +990,10 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>The small wooden plaque hanging under the tabs: the Crew's income per second (gold) and the Moedas.</summary>
+        /// <summary>
+        /// The small wooden plaque hanging under the tabs: the Moedas, counting up. Until A-172 it also showed the Crew's
+        /// income per second; the game has no steady income now, so the plaque shows only the Moedas.
+        /// </summary>
         private void DrawIncomePlaque(UiSkin skin, PlayerView player)
         {
             var plaque = new Rect(_width / 2f - PlaqueWidth / 2f, PlaqueTop, PlaqueWidth, PlaqueHeight);
@@ -1010,15 +1001,13 @@ namespace FishingIdle.Game.UI
             if (_plaqueCaption == null)
             {
                 _plaqueCaption = new GUIStyle(skin.TinyMutedCenter) { normal = { textColor = new Color32(0xF3, 0xE2, 0xBF, 0xFF) } };
-                _plaqueRate = new GUIStyle(skin.NumberBig) { alignment = TextAnchor.MiddleCenter, fontSize = 28, normal = { textColor = UiSkin.Gold } };
             }
 
-            UiSkin.ShadowLabel(new Rect(plaque.x, plaque.y + 6f, plaque.width, 16f), GameTexts.Navigation.IncomeTitle, _plaqueCaption);
-            UiSkin.ShadowLabel(new Rect(plaque.x, plaque.y + 22f, plaque.width, 32f), GameTexts.Crew.HudRate(Format.PerSecond(_root.CrewCoinsPerSecond)), _plaqueRate);
+            UiSkin.ShadowLabel(new Rect(plaque.x, plaque.y + 6f, plaque.width, 16f), GameTexts.Navigation.CoinsTitle, _plaqueCaption);
 
-            // The coin counter (counting up, with the "+N" of a gain at its right), centred on the bottom line.
+            // The coin counter (counting up, with the "+N" of a gain at its right), centred under the caption.
             var textWidth = skin.Number.CalcSize(new GUIContent(Format.Short(_coinsShown > 0 ? _coinsShown : player.Coins))).x;
-            var coinLine = DrawCoins(skin, plaque.center.x - (24f + 8f + textWidth) / 2f, plaque.y + 70f, 24f, player.Coins);
+            var coinLine = DrawCoins(skin, plaque.center.x - (26f + 8f + textWidth) / 2f, plaque.y + 40f, 26f, player.Coins);
             DrawCoinGain(skin, coinLine, plaque.xMax + 120f);
         }
 
@@ -1149,16 +1138,6 @@ namespace FishingIdle.Game.UI
         /// </summary>
         private Rect DrawCoins(UiSkin skin, float x, float centreY, float iconSize, long coins)
         {
-            // The Crew's steady income (M24-T05, A-154) counts in quietly: no "+N" pop and no pulse every second.
-            var passive = _root.CrewCoinsCredited - _crewCoinsSeen;
-            _crewCoinsSeen = _root.CrewCoinsCredited;
-            if (passive > 0 && _coinsTarget >= 0 && coins > _coinsTarget)
-            {
-                var quiet = Math.Min(passive, coins - _coinsTarget);
-                _coinsFrom += quiet;
-                _coinsTarget += quiet;
-            }
-
             if (_coinsTarget != coins)
             {
                 if (coins > _coinsTarget && _coinsTarget >= 0)
@@ -1199,7 +1178,6 @@ namespace FishingIdle.Game.UI
             CloseFully(() => _arena.IsOpen, _arena.Close);
             CloseFully(() => _market.IsOpen, _market.Close);
             CloseFully(() => _ranking.IsOpen, _ranking.Close);
-            CloseFully(() => _crew.IsOpen, _crew.Close);
             CloseFully(() => _pass.IsOpen, _pass.Close);
             CloseFully(() => _boss.IsOpen, _boss.Close);
             CloseFully(() => _events.IsOpen, _events.Close);

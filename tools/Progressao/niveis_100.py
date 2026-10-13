@@ -4,7 +4,7 @@ Uso:
   python3 tools/Progressao/niveis_100.py gerar      # grava os números novos em config/ (rods, equipment, progression,
                                                     # arena_bots, market_bots)
   python3 tools/Progressao/niveis_100.py simular [--dias 80] [--gravar]
-                                                    # simula o ritmo com a economia do M24 (Tripulação + Melhorias) e,
+                                                    # simula o ritmo com a economia de hoje (só a pesca, A-172) e,
                                                     # com --gravar, escreve docs/propostas/niveis_100.json
 
 Regras (as mesmas do jogo, curva_niveis.py e GameService/Config/LevelCurve.cs):
@@ -57,8 +57,8 @@ XP_PEIXE_BASE = 0.11
 XP_PEIXE_EXPOENTE = 2.0
 XP_PEIXE_MINIMO = 5
 
-# Simulação: um nível de vara ou barco é comprado quando custa até estes segundos de renda (Tripulação + pesca), como
-# o Sonar e a Caixa Térmica em simular_melhorias.py, e quando há Moedas e Conchas.
+# Simulação: um nível de vara ou barco é comprado quando custa até estes segundos de renda (a pesca; até o A-172 também a
+# Tripulação) e quando há Moedas e Conchas.
 SEGUNDOS_DE_RENDA = 600.0
 
 
@@ -255,12 +255,11 @@ def gerar(before):
 # ---------------------------------------------------------------- simulation
 
 def make_game(days, max_tier=None):
-    import simular_melhorias as M
-    import simular_tripulacao as T
+    import jogador as J
 
-    class Game(M.Game):
-        def __init__(self, crew_cfg, up_cfg):
-            super().__init__(crew_cfg, up_cfg)
+    class Game(J.Game):
+        def __init__(self):
+            super().__init__()
             p = self.p
             p.upgrade_ok = lambda coins: coins <= self.income() * SEGUNDOS_DE_RENDA
             self.item_levels = {}       # (kind, id, level) -> seconds
@@ -281,9 +280,6 @@ def make_game(days, max_tier=None):
                 next_rod = p.next_rod
                 p.next_rod = lambda: (lambda r: r if r is not None and r['tier'] <= max_tier else None)(next_rod())
 
-        def income(self):
-            return self.crew.coins_rate() + self.fishing_coins_per_second()
-
         def observe(self):
             super().observe()
             p = self.p
@@ -300,13 +296,7 @@ def make_game(days, max_tier=None):
             d = int(self.t // 86400)
             self.shells_at.setdefault(d, self.shells_gained)
 
-    crew_cfg = M.load_json('crew.json')
-    up_cfg = M.load_json('upgrades.json')
-    g = Game(crew_cfg, up_cfg)
-    end = days * 86400.0
-    while g.t < end:
-        g.online(T.step_for(g.t) * 20, T.step_for(g.t))
-    return g
+    return J.play(Game(), 'sempre_aberto', days)
 
 
 def fmt_days(seconds):
@@ -399,7 +389,7 @@ def simular(days, gravar):
         row = items.setdefault(key, collections.OrderedDict([('comprada_em', fmt_days(g.bought_at.get(iid)))]))
         row['Nv.%d' % target] = '%s (%s depois da compra)' % (fmt_days(t), fmt_days(t - g.bought_at.get(iid, 0.0)))
     shells = collections.OrderedDict(('dia %d' % d, int(v)) for d, v in sorted(g.shells_at.items()) if d in (1, 2, 3, 7, 14, 30, 45, 60, 75))
-    print('== Ritmo (jogo aberto o dia todo, Tripulação + Melhorias do M24, um nível quando custa até %d s de renda)' % SEGUNDOS_DE_RENDA)
+    print('== Ritmo (jogo aberto o dia todo, só a pesca, um nível quando custa até %d s de renda)' % SEGUNDOS_DE_RENDA)
     for k, row in items.items():
         print('  %-24s %s' % (k, ' · '.join('%s: %s' % kv for kv in row.items())))
     print('  Conchas ganhas (acumulado):', dict(shells))
@@ -421,9 +411,9 @@ def simular(days, gravar):
         result = collections.OrderedDict([
             ('gerado_por', 'tools/Progressao/niveis_100.py'),
             ('nota', 'Varas, barcos e peixes até o Nv.100 (M24-T13, A-156). Ritmo simulado com o perfil "jogo aberto o dia '
-                     'todo" e a economia do M24 (Tripulação e Melhorias, simular_melhorias.py): o jogador compra o próximo '
+                     'todo" e a economia de hoje (só a pesca desde o A-172, jogador.py): o jogador compra o próximo '
                      'nível da vara ou do barco em uso (o mais barato primeiro) quando tem as Moedas e as Conchas e o nível '
-                     'custa até %d segundos de renda (Tripulação + pesca); guarda Conchas para a próxima vara. As Conchas '
+                     'custa até %d segundos de renda da pesca; guarda Conchas para a próxima vara. As Conchas '
                      'só vêm da pesca.' % SEGUNDOS_DE_RENDA),
             ('parametros', collections.OrderedDict([
                 ('nivel_maximo', MAX_LEVEL), ('expoente_da_curva', EXPOENTE), ('multiplicador_no_maximo', MULT_NO_MAXIMO),

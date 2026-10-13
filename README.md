@@ -9,8 +9,6 @@ servidor, sem internet e sem nenhum serviço pago. Estão no jogo:
   o VIP), até 24 horas; Caixa de Pesca para 1 dia de pesca.
 - **10 mapas** e 100 espécies, do Comum ao Mítico; o **Pescador vai até o Nv.1000**, com números grandes ("3,4 mi",
   "12 bi").
-- **Tripulação** automática (pescadores e barcos que rendem Moedas e XP sozinhos) e **Melhorias** compradas que
-  multiplicam a renda.
 - Varas, barcos e peixes até o **Nv.100**; **5 barcos**, as varas e as **5 roupas** são montados com **fragmentos**
   que caem pescando; três iscas com 999 tentativas.
 - **Passe do Pescador** (marcos a cada 10 níveis, faixa Grátis e Premium) e o **Boss Mundial**, todo dia às 19:00, no
@@ -41,9 +39,9 @@ Você só precisa do **Unity**. Nada mais.
 A cada 10 segundos o pescador tenta pegar um peixe. Clique em **Caixa de Pesca** (canto inferior direito) para ver os
 peixes, vender ou guardar no Aquário.
 
-- **Menu de cima:** à esquerda, o seu cartão (clique para abrir o Perfil); no centro, **5 abas**: **Pesca**,
-  **Tripulação**, **Aventura** (Expedição, Arena e Eventos), **Comércio** (Mercado e Loja) e **Perfil**; à direita, os
-  avisos e as opções. Embaixo das abas fica a placa com a renda da Tripulação.
+- **Menu de cima:** à esquerda, o seu cartão (clique para abrir o Perfil); no centro, **4 abas**: **Pesca**,
+  **Aventura** (Expedição, Arena e Eventos), **Comércio** (Mercado e Loja) e **Perfil**; à direita, os avisos e as
+  opções. Embaixo das abas fica a placa com as suas Moedas.
 - **Atalhos redondos** na lateral direita: **Mapa**, **Aquário**, **Passe**, **Eventos** e **Ranking**. Durante o Boss
   Mundial, o atalho Eventos fica dourado e abre direto a luta.
 - As janelas abrem no estilo **"Diário de bordo"** (papel numa moldura de madeira). O **"i"** ao lado do título explica

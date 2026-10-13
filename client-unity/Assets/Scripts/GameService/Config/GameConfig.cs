@@ -25,8 +25,6 @@ namespace FishingIdle.GameService.Config
 
         private readonly Dictionary<string, BoatConfig> _boats;
         private readonly Dictionary<string, BaitConfig> _baits;
-        private readonly Dictionary<string, CrewMemberConfig> _crew;
-        private readonly Dictionary<string, GeneralUpgradeConfig> _generalUpgrades;
         private readonly Dictionary<string, BoatConfig> _boatByMap;
         private readonly Dictionary<string, double> _boatChanceByMap;
         private readonly Dictionary<int, PassMilestoneConfig> _passMilestones;
@@ -44,8 +42,6 @@ namespace FishingIdle.GameService.Config
             ArenaBotsConfig arenaBots,
             MarketBotsConfig marketBots,
             EquipmentConfig equipment,
-            CrewConfig crew,
-            UpgradesConfig upgrades,
             PassConfig pass,
             WorldBossConfig worldBoss,
             string version)
@@ -54,10 +50,6 @@ namespace FishingIdle.GameService.Config
             WorldBoss = worldBoss;
             _passMilestones = pass.Milestones.ToDictionary(m => m.Level);
             Equipment = equipment;
-            Crew = crew;
-            _crew = crew.Members.ToDictionary(m => m.Id, StringComparer.Ordinal);
-            Upgrades = upgrades;
-            _generalUpgrades = upgrades.GeneralUpgrades.ToDictionary(u => u.Id, StringComparer.Ordinal);
             _boats = equipment.Boats.ToDictionary(b => b.Id, StringComparer.Ordinal);
             // Each map drops the fragments of one boat: its own map_id or one of its extra_fragment_maps (M24-T42, A-168).
             _boatByMap = new Dictionary<string, BoatConfig>(StringComparer.Ordinal);
@@ -109,15 +101,6 @@ namespace FishingIdle.GameService.Config
         public MarketBotsConfig MarketBots { get; }
         public EquipmentConfig Equipment { get; }
 
-        /// <summary>The automatic Crew (crew.json, M24-T05).</summary>
-        public CrewConfig Crew { get; }
-
-        public bool TryGetCrewMember(string id, out CrewMemberConfig member) => _crew.TryGetValue(id ?? string.Empty, out member);
-
-        /// <summary>The upgrades bought with Moedas (upgrades.json, M24-T06).</summary>
-        public UpgradesConfig Upgrades { get; }
-
-        public bool TryGetGeneralUpgrade(string id, out GeneralUpgradeConfig upgrade) => _generalUpgrades.TryGetValue(id ?? string.Empty, out upgrade);
 
         /// <summary>The Passe do Pescador (pass.json, M24-T17).</summary>
         public PassConfig Pass { get; }

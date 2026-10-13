@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 20;
+        public const int CurrentVersion = 21;
 
         /// <remarks>
         /// A file without save_version is read as version 1, so it runs every migration instead of skipping them all
@@ -184,11 +184,16 @@ namespace FishingIdle.GameService.Persistence
 
         public PlayerStats Stats { get; set; } = new PlayerStats();
 
-        /// <summary>The automatic Crew: units hired and the last moment its income was credited (M24-T05). Added in save version 13.</summary>
-        public CrewState Crew { get; set; } = new CrewState();
+        /// <summary>
+        /// The Crew of save versions 13 to 20 (M24-T05), removed in M24-T46 (A-172). Read only so the session can give back
+        /// the Moedas it cost (<see cref="CrewRemovalMigration"/>), then cleared; never written again (null is left out).
+        /// </summary>
+        [JsonProperty("crew", NullValueHandling = NullValueHandling.Ignore)]
+        public RetiredCrewState RetiredCrew { get; set; }
 
-        /// <summary>The upgrades bought with Moedas, by id, with their levels (M24-T06). Added in save version 14.</summary>
-        public UpgradesState Upgrades { get; set; } = new UpgradesState();
+        /// <summary>The Upgrades of save versions 14 to 20 (M24-T06), removed in M24-T46 (A-172); as <see cref="RetiredCrew"/>.</summary>
+        [JsonProperty("upgrades", NullValueHandling = NullValueHandling.Ignore)]
+        public RetiredUpgradesState RetiredUpgrades { get; set; }
 
         /// <summary>The Passe do Pescador: premium bought and milestones claimed (M24-T17). Added in save version 16.</summary>
         public PassState Pass { get; set; } = new PassState();
@@ -228,47 +233,20 @@ namespace FishingIdle.GameService.Persistence
     }
 
     /// <summary>
-    /// The automatic Crew (M24-T05, A-154). Only the units and the income cursor are stored: names, prices and rates
-    /// come from crew.json, so a balance change applies to the units already hired.
+    /// What a save of versions 13 to 20 had of the Crew (M24-T05), removed in M24-T46 (A-172): only the units, to refund
+    /// them. The other fields of the old Crew (income cursor, carries, totals) are not read.
     /// </summary>
-    public sealed class CrewState
+    public sealed class RetiredCrewState
     {
-        /// <summary>Units hired of each member, by member id (crew.json). Members never hired are absent.</summary>
+        /// <summary>Units hired of each member, by the old member id (crew_01 … crew_10).</summary>
         public Dictionary<string, long> Units { get; set; } = new Dictionary<string, long>();
-
-        /// <summary>The moment the income was last credited (Unix ms). Time after it is still owed.</summary>
-        public long LastCreditedAtMs { get; set; }
-
-        /// <summary>Fractions of a Moeda and of an XP point earned but not yet credited, so nothing is lost to rounding.</summary>
-        public double CoinsCarry { get; set; }
-        public double XpCarry { get; set; }
-
-        /// <summary>Everything the Crew ever earned (for the window and audits).</summary>
-        public long CoinsEarned { get; set; }
-        public long XpEarned { get; set; }
-
-        /// <summary>Units of a member; 0 when never hired.</summary>
-        public long UnitsOf(string memberId)
-        {
-            return memberId != null && Units != null && Units.TryGetValue(memberId, out var units) ? units : 0;
-        }
     }
 
-    /// <summary>
-    /// The upgrades bought with Moedas (M24-T06, A-155). Only ids and levels are stored: names, prices and effects come
-    /// from upgrades.json, so a balance change applies to what was already bought. A Crew member's upgrade is level 1
-    /// once bought; a general upgrade keeps its level. Ids no longer in upgrades.json are kept and ignored.
-    /// </summary>
-    public sealed class UpgradesState
+    /// <summary>What a save of versions 14 to 20 had of the Upgrades (M24-T06), removed in M24-T46 (A-172): the levels, to refund them.</summary>
+    public sealed class RetiredUpgradesState
     {
-        /// <summary>Level of each bought upgrade, by id. Upgrades never bought are absent.</summary>
+        /// <summary>Level of each bought upgrade, by the old id ("crew_02_up_3", "port_radio" …).</summary>
         public Dictionary<string, int> Levels { get; set; } = new Dictionary<string, int>();
-
-        /// <summary>Level of an upgrade; 0 when never bought.</summary>
-        public int LevelOf(string upgradeId)
-        {
-            return upgradeId != null && Levels != null && Levels.TryGetValue(upgradeId, out var level) ? level : 0;
-        }
     }
 
     /// <summary>

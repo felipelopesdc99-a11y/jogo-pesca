@@ -2,11 +2,12 @@
 
 Uso:  python3 tools/Progressao/calibrar_xp.py [--manter-ate 100] [--metas 250:3.67d,500:14.6d,750:33.3d,1000:60d] [--gravar]
 
-Como funciona (M24-T31, A-162; a versão anterior, do M24-T03/A-153, media só a pesca):
-  1. Mede com a economia atual: o jogador de referência é o de tools/Progressao/simular_melhorias.py no perfil
-     "sempre aberto" (o jogo aberto o dia todo, só online), com a pesca no ciclo de progression.json → fishing (10 s
-     online), a Tripulação, as Melhorias, os níveis de vara e de barco, os barcos por fragmentos e as iscas de
-     config/equipment.json. Sem o Passe do Pescador e sem VIP (o mesmo perfil do A-153, A-155 e A-160).
+Como funciona (M24-T31, A-162; refeito no A-172, sem a Tripulação e sem as Melhorias, que saíram do jogo):
+  1. Mede com a economia atual: o jogador de referência é o de tools/Progressao/jogador.py no perfil "sempre aberto"
+     (o jogo aberto o dia todo, só online), com a pesca no ciclo de progression.json → fishing (10 s online), os níveis
+     de vara e de barco, os barcos e as varas por fragmentos e as iscas de config/equipment.json. Sem o Passe do
+     Pescador, sem VIP e **sem roupas** (decisão do proprietário na OD-067: as roupas, sobretudo a Calça, adiantam o
+     Nv.1000 de ~60 para ~55 dias, e isso é pensado). Com --com-roupas, calibra com as roupas.
   2. O começo fica como está: os níveis abaixo de --manter-ate (padrão 100) não mudam, e o tempo até esse nível é o
      que a simulação mede com eles (hoje Nv.10 em ~20 min e Nv.100 em ~0,5 dia).
   3. Depois dele, o tempo planejado até cada nível segue uma curva suave (logaritmo do tempo contra o logaritmo do
@@ -20,7 +21,7 @@ Como funciona (M24-T31, A-162; a versão anterior, do M24-T03/A-153, media só a
      significativos acima disso. A tabela nunca pede menos XP que o nível anterior.
   6. Com --gravar, escreve a tabela e os totais em config/progression.json.
 
-O XP dos peixes e da Tripulação não muda: o que muda é quanto cada nível pede. Trocar a curva pede subir
+O XP dos peixes não muda: o que muda é quanto cada nível pede. Trocar a curva pede subir
 fisher.xp_curve_version, para os saves serem convertidos (TD-038).
 """
 import argparse
@@ -34,9 +35,8 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import simular_melhorias as M  # noqa: E402
+import jogador as J  # noqa: E402
 import simular_progressao as S  # noqa: E402
-import simular_tripulacao as T  # noqa: E402
 
 PROFILE = 'sempre_aberto'
 DEFAULT_KEEP = 100
@@ -80,33 +80,20 @@ def current_table():
     return list(r.xp_to_next)   # index = level, [0] unused; len = max_level
 
 
-def run(table, profile=PROFILE, days=None, extend=False, stop_at_max=True):
-    """The reference player (Crew + Upgrades, no pass, no VIP) with this XP table."""
+# Whether the reference player wears clothing (A-164). The calibration is without it (OD-067); main() can change it.
+WITH_CLOTHING = False
+
+
+def run(table, profile=PROFILE, days=None, extend=False, stop_at_max=True, clothing=None):
+    """The reference player (fishing only, no pass, no VIP; clothing per WITH_CLOTHING) with this XP table."""
     t = list(table) + ([table[-1] * 1000] * EXTRA_LEVELS if extend else [])
-    g = M.Game(M.load_json('crew.json'), M.load_json('upgrades.json'))
-    g.rules.max_level = len(t)
-    g.rules.xp_to_next = t
-    sessions = T.PROFILES[profile][1]
-    days = days or 200.0
-    end = days * 86400.0
-    top = len(table)
-    if sessions is None:
-        while g.t < end and not (stop_at_max and g.p.level >= top):
-            g.online(T.step_for(g.t) * 20, T.step_for(g.t))
-        return g
-    last_end = None
-    day = 0
-    while g.t < end and not (stop_at_max and g.p.level >= top):
-        for start_h, minutes in sessions:
-            start = day * 86400.0 + start_h * 3600.0
-            if last_end is None:
-                g.t = start
-            else:
-                g.offline(start - last_end)
-            g.online(minutes * 60.0, 5.0 if day == 0 else 30.0)
-            last_end = g.t
-        day += 1
-    return g
+    rules = S.Rules()
+    if not (WITH_CLOTHING if clothing is None else clothing):
+        rules.clothing = None
+    rules.max_level = len(t)
+    rules.xp_to_next = t
+    g = J.Game(rules)
+    return J.play(g, profile, days or 200.0, stop_at_level=len(table) if stop_at_max else None)
 
 
 def xp_by_time(table, days):
@@ -185,12 +172,13 @@ def calibrate(keep, targets, window=12, rounds=6):
 
 
 def report(table):
-    print('Tempo até cada nível (Tripulação + Melhorias, sem Passe e sem VIP):')
-    levels = [l for l in TIME_LEVELS if l <= len(table)]
-    print('  %-14s' % 'perfil', ' '.join('%8s' % ('Nv.%d' % l) for l in levels))
-    for prof in T.PROFILES:
-        g = run(table, prof, days=400)
-        print('  %-14s' % prof, ' '.join('%8s' % S.fmt(g.p.reached.get(l)) for l in levels))
+    for clothing in (False, True):
+        print('Tempo até cada nível (só a pesca, %s roupas, sem Passe e sem VIP):' % ('com' if clothing else 'sem'))
+        levels = [l for l in TIME_LEVELS if l <= len(table)]
+        print('  %-14s' % 'perfil', ' '.join('%8s' % ('Nv.%d' % l) for l in levels))
+        for prof in J.PROFILES:
+            g = run(table, prof, days=400, clothing=clothing)
+            print('  %-14s' % prof, ' '.join('%8s' % S.fmt(g.p.reached.get(l)) for l in levels))
     print('XP para o próximo nível:')
     for l in REPORT_LEVELS:
         if l < len(table):
@@ -202,8 +190,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--manter-ate', type=int, default=DEFAULT_KEEP, help='os níveis abaixo deste não mudam')
     ap.add_argument('--metas', default=DEFAULT_TARGETS, help='nível:tempo para quem deixa o jogo aberto (h = horas, d = dias)')
+    ap.add_argument('--com-roupas', action='store_true', help='calibra com as roupas (o padrão é sem, OD-067)')
+    ap.add_argument('--so-relatorio', action='store_true', help='não calibra: só mostra os tempos da tabela de hoje')
     ap.add_argument('--gravar', action='store_true')
     a = ap.parse_args()
+    global WITH_CLOTHING
+    WITH_CLOTHING = a.com_roupas
+    if a.so_relatorio:
+        report(current_table())
+        return
     targets = parse_targets(a.metas)
     table, anchor = calibrate(a.manter_ate, targets)
     print('Mantidos os níveis 1 a %d; Nv.%d medido em %s dia.' % (a.manter_ate - 1, anchor[0], ('%.2f' % anchor[1]).replace('.', ',')))

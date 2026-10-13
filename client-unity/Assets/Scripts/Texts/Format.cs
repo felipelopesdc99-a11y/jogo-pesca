@@ -49,48 +49,6 @@ namespace FishingIdle.Texts
             return text + unit;
         }
 
-        /// <summary>
-        /// An income per second (the Crew, M24-T05): "0,006/s", "0,25/s", "12,5/s", "845.320/s", "3,4 mi/s".
-        /// Small values keep their decimals so the first hires do not read as zero.
-        /// </summary>
-        public static string PerSecond(double value)
-        {
-            return Rate(value) + "/s";
-        }
-
-        /// <summary>The number of <see cref="PerSecond"/> without the "/s" (e.g. the Crew's XP per second).</summary>
-        public static string Rate(double value)
-        {
-            if (double.IsNaN(value) || value <= 0)
-            {
-                return "0";
-            }
-
-            string text;
-            if (value < 0.01)
-            {
-                text = Decimal(value, 3);
-            }
-            else if (value < 1)
-            {
-                text = Decimal(value, 2);
-            }
-            else if (value < 100)
-            {
-                text = Decimal(Math.Truncate(value * 10.0) / 10.0, 1);
-                if (text.EndsWith(",0", StringComparison.Ordinal))
-                {
-                    text = text.Substring(0, text.Length - 2);
-                }
-            }
-            else
-            {
-                text = Short(value >= 9.2e18 ? long.MaxValue : (long)value);
-            }
-
-            return text;
-        }
-
         /// <summary>A multiplier without a needless decimal: 2 → "2", 1.5 → "1,5", 128 → "128".</summary>
         public static string Factor(double value)
         {

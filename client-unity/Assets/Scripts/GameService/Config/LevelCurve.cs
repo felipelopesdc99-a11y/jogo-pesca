@@ -13,7 +13,7 @@ namespace FishingIdle.GameService.Config
     /// </remarks>
     public static class LevelCurve
     {
-        /// <summary>A price that does not fit a long: never payable (as the Crew, TD-039).</summary>
+        /// <summary>A price that does not fit a long: never payable (TD-039).</summary>
         public const long Unaffordable = long.MaxValue;
 
         /// <summary>The value at <paramref name="level"/>, clamped to 1..<paramref name="maxLevel"/>.</summary>

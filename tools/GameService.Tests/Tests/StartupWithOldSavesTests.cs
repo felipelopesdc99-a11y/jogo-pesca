@@ -2,7 +2,6 @@ using System.Diagnostics;
 using FishingIdle.GameService;
 using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Core;
-using FishingIdle.GameService.Crew;
 using FishingIdle.GameService.Market;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Ranking;
@@ -57,10 +56,17 @@ public class StartupWithOldSavesTests
         Assert.True(save.FisherLevel >= 60);
         Assert.True(save.Dollars >= 60);
         Assert.Contains("boat_02", save.OwnedBoatIds);
+        // The Crew and the Upgrades of versions 13 to 20 were refunded and cleared (M24-T46, A-172).
+        Assert.Null(save.RetiredCrew);
+        Assert.Null(save.RetiredUpgrades);
+        Assert.Equal(version >= 13, game.Session.CrewRefund != null && game.Session.CrewRefund.CoinsRefunded > 0);
 
         // Closing and opening again (what the owner does after the first run) loads the migrated save as it is.
         game.Fishing.MarkSeen();
-        game.Crew.MarkSeen();
+        game.Session.Persist();
+        var onDisk = JObject.Parse(File.ReadAllText(Path.Combine(dir, JsonFilePlayerRepository.SaveFileName)));
+        Assert.Null(onDisk["crew"]);
+        Assert.Null(onDisk["upgrades"]);
         clock.AdvanceSeconds(3600);
         var again = Open(dir, clock);
         FirstFrame(again);
@@ -87,7 +93,6 @@ public class StartupWithOldSavesTests
         Assert.True(game.Fishing.StartFishing().Succeeded);
         RunFrames(game, clock, frames: 20, stepSeconds: 5);
         game.Fishing.MarkSeen();
-        game.Crew.MarkSeen();
         clock.UtcNowMs = ReopenAtMs;
 
         var reopen = Stopwatch.StartNew();
@@ -147,22 +152,32 @@ public class StartupWithOldSavesTests
         if (kept.Count > 6) game.Market.ListFish(kept[6].FishId, 500);
         if (kept.Count > 7) game.Auctions.StartAuction(true, kept[7].FishId, 500);
 
-        // Fishing on, an Expedition on its way, a few Crew members hired (from the version that has the Crew).
+        // Fishing on and an Expedition on its way.
         game.Expeditions.Start("exp_30m");
         game.Fishing.StartFishing();
-        if (version >= 13)
-        {
-            game.Crew.Hire("crew_01", CrewBuyMode.Ten);
-        }
-
         game.Fishing.MarkSeen();
-        game.Crew.MarkSeen();
         game.Session.Persist();
 
         var path = Path.Combine(dir, JsonFilePlayerRepository.SaveFileName);
         var json = JObject.Parse(File.ReadAllText(path));
         json["save_version"] = version;
         json["campo_de_uma_versao_antiga"] = 1;   // unknown fields of old files are ignored
+        if (version >= 13)
+        {
+            // The Crew of versions 13 to 20 (M24-T05): ten Ajudantes da Isca hired, as the old game wrote it.
+            json["crew"] = new JObject
+            {
+                ["units"] = new JObject { ["crew_01"] = 10 }, ["last_credited_at_ms"] = TestSupport.StartMs, ["coins_carry"] = 0.25,
+                ["xp_carry"] = 0.0, ["coins_earned"] = 1234, ["xp_earned"] = 5,
+            };
+        }
+
+        if (version >= 14)
+        {
+            // The Upgrades of versions 14 to 20 (M24-T06): the Ajudante's first ×2 and two levels of the Freguesia na Feira.
+            json["upgrades"] = new JObject { ["levels"] = new JObject { ["crew_01_up_1"] = 1, ["fair_customers"] = 2 } };
+        }
+
         if (version <= 18)
         {
             json.Remove("world_boss");
@@ -198,16 +213,6 @@ public class StartupWithOldSavesTests
             json.Remove("fish_level_curve_version");
         }
 
-        if (version <= 13)
-        {
-            json.Remove("upgrades");
-        }
-
-        if (version <= 12)
-        {
-            json.Remove("crew");
-        }
-
         if (version <= 11)
         {
             json.Remove("fisher_xp_curve_version");
@@ -238,7 +243,6 @@ public class StartupWithOldSavesTests
     {
         Refresh(game);
         game.Tutorial.Get();
-        game.Crew.TakeOfflineReport();
         game.Fishing.TakeOfflineReport();
         Frame(game);
         Windows(game);
@@ -263,12 +267,11 @@ public class StartupWithOldSavesTests
         Windows(game);
     }
 
-    /// <summary>GameRoot.Update: the sync every 0,25 s and the Crew every second.</summary>
+    /// <summary>GameRoot.Update: the sync every 0,25 s.</summary>
     private static void Frame(LocalGame game)
     {
         game.Maps.Update();
         game.Fishing.Sync();
-        game.Crew.TakeOfflineReport();
         game.Fishing.TakeOfflineReport();
         game.Expeditions.Update();
         game.Expeditions.PendingResult();
@@ -277,7 +280,6 @@ public class StartupWithOldSavesTests
         game.WorldBoss.Update();
         game.WorldBoss.GetWorldBoss();
         game.Market.Update();
-        game.Crew.Sync();
         Refresh(game);
     }
 
@@ -291,7 +293,6 @@ public class StartupWithOldSavesTests
         game.Clothing.GetClothing();
         game.Vip.GetVip();
         game.Pass.GetPass();
-        game.Crew.GetCrew(CrewBuyMode.One);
     }
 
     /// <summary>What each window asks the service for when it opens.</summary>
@@ -318,12 +319,6 @@ public class StartupWithOldSavesTests
         foreach (RankingCategory category in Enum.GetValues(typeof(RankingCategory)))
         {
             game.Ranking.GetRanking(category);
-        }
-
-        game.Upgrades.GetUpgrades();
-        foreach (CrewBuyMode mode in Enum.GetValues(typeof(CrewBuyMode)))
-        {
-            game.Crew.GetCrew(mode);
         }
 
         game.Pass.GetPass();

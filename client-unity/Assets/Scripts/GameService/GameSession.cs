@@ -80,6 +80,12 @@ namespace FishingIdle.GameService
 
         public string SaveLocation => _repository.Location;
 
+        /// <summary>
+        /// What the save had of the removed Crew and Upgrades and the Moedas given back for it, when this start converted
+        /// a save from before v21 (M24-T46, A-172); null otherwise. The screen shows it once, as a notice.
+        /// </summary>
+        public CrewRemovalChange CrewRefund { get; private set; }
+
         /// <summary>Raised after the config is swapped, so services can re-anchor running timers.</summary>
         internal event Action<GameConfig, GameConfig> ConfigReplaced;
 
@@ -188,7 +194,6 @@ namespace FishingIdle.GameService
                 FishLevelCurveVersion = Config.Progression.FishLevel.LevelCurveVersion,
                 BaitModelVersion = Config.BaitModelVersion,
                 BoatModelVersion = Config.BoatModelVersion,
-                Crew = new CrewState { LastCreditedAtMs = now },
                 Pass = new PassState { PassId = Config.Pass.PassId },
             };
             // No rod yet: the tutorial has the player claim the free Starter Rod in the Shop (GDD section 40).
@@ -230,6 +235,15 @@ namespace FishingIdle.GameService
             {
                 Save.FisherLevel = maxLevel;
                 Save.FisherXp = 0;
+            }
+
+            // The Crew and the Upgrades left the game (M24-T46, A-172): a save from before gets back the Moedas they cost.
+            var refund = Persistence.CrewRemovalMigration.Refund(Config, Save);
+            if (refund.HadData)
+            {
+                CrewRefund = refund;
+                _log("Crew and Upgrades removed: " + refund.UnitsRefunded + " crew units and " + refund.UpgradeLevelsRefunded + " upgrade levels refunded ("
+                     + refund.CrewCoins + " + " + refund.UpgradeCoins + " coins; " + refund.UnknownIds + " unknown ids ignored).");
             }
 
             // A save from an older XP curve moves to the current one: total XP → level, never down (TD-038).

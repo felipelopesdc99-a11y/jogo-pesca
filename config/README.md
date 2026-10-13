@@ -8,16 +8,14 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | `maps.json` | Mapas, pools de peixes por mapa com pesos de captura, nível de desbloqueio, vara mínima, regras de viagem |
 | `progression.json` | Curva de XP do Pescador, curva de XP do peixe (até o Nv.100) e bônus de atributo por nível do peixe, distribuição de tamanho, regras de modificador de raridade/tamanho/nível, regras de alimentação, intervalos de pesca |
 | `rods.json` | Definições das varas, bônus no Nv.1 e no Nv.100 (com a curva entre eles), custo de cada nível (Moedas e Conchas), regras de revenda; varas por fragmentos (o mapa onde cada vara cai, quantos fragmentos montam e a chance por peixe puxado; o valor de referência no Mercado) |
-| `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário, VIP (preço em Dólares, dias, bônus de XP offline e o ciclo da pesca offline com VIP, `offline_cycle_seconds`) |
+| `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário, VIP (preço em Dólares, dias, bônus de XP offline e o ciclo da pesca offline com VIP, `offline_cycle_seconds`); `crew_removal_refund`: os preços da Tripulação e das Melhorias de antes, só para devolver as Moedas a quem já jogava (M24-T46, A-172; não mudam nada no jogo de hoje) |
 | `arena.json` | Energia, seleção de oponentes, Honra, constantes de combate, formação, regras de Cardume, métrica de Força, Loja da Arena |
 | `expeditions.json` | Durações, Força Recomendada, curvas de eficiência, recompensas |
 | `arena_bots.json` | Só no jogo local: como os 200 adversários simulados da Arena são montados e com que frequência atacam você |
 | `market_bots.json` | Só no jogo local: vendedores e compradores simulados do Mercado (quantos anúncios, preços de referência, chance de vender) |
 | `equipment.json` | Barcos, iscas e roupas: bônus na Chance de Sucesso da Captura, preço e tentativas de cada isca; barcos por fragmentos (o mapa de cada barco, quantos fragmentos montam e a chance por peixe puxado; se a pesca offline também dá), níveis dos barcos (bônus no Nv.1 e no Nv.100, custo de cada nível); roupas (`clothing`: chance do Fragmento de Roupa, custo de cada peça na ordem de montagem, bônus de cada peça no Nv.1 e no Nv.100 e o XP de uso de cada nível) |
-| `crew.json` | A Tripulação automática (M24): os 10 tripulantes (nome, preço da 1ª unidade, quanto cada unidade a mais encarece, Moedas e XP por segundo), quantos do anterior liberam o próximo, marcos de quantidade e da frota, e a renda com o jogo fechado (100% nas primeiras horas, depois a taxa reduzida até o teto). Resultado da simulação em `docs/propostas/tripulacao.json` (`tools/Progressao/simular_tripulacao.py`); a renda por unidade foi recalibrada com as Melhorias (A-155) |
-| `pass.json` | O Passe do Pescador (M24-T17): o preço do Premium em Dólares e os 100 marcos (Nv.10 ao Nv.1000), cada um com a recompensa grátis e a Premium (Moedas, Conchas, Dólares, fragmentos de um barco, de uma vara e de roupa). Gerado por `tools/Progressao/passe_fragmentos.py gerar` (resultado da simulação em `docs/propostas/passe_fragmentos.json`) |
+| `pass.json` | O Passe do Pescador (M24-T17): o preço do Premium em Dólares e os 100 marcos (Nv.10 ao Nv.1000), cada um com a recompensa grátis e a Premium (Moedas, Conchas, Dólares, fragmentos de um barco, de uma vara e de roupa). Gerado por `tools/Progressao/passe_fragmentos.py gerar` (só o passe, sem mexer nos barcos: `passe_fragmentos.py passe`; resultado da simulação em `docs/propostas/passe_fragmentos.json`) |
 | `world_boss.json` | O Boss Mundial (M24-T29, A-165): nome (sugestão, OD-069), horário (19:00 de Brasília, UTC−3 fixo, por 10 minutos), intervalo dos ataques automáticos do Cardume (3 s), quantos ataques atrasados contam depois de um travamento, a defesa do Boss, as 6 faixas de dano (porcentagem do dano máximo do dia e a recompensa de cada uma: minutos de renda em Moedas e Conchas, Fragmentos de Roupa e fragmentos de barco), os Dólares do top 1 a 10 e a chave `online_rewards_enabled` (desligada no jogo local), e a renda de referência por nível, gerada por `tools/Progressao/boss_mundial.py` a partir do `pass.json` |
-| `upgrades.json` | As Melhorias compradas com Moedas (M24): as de tripulante (`crew_upgrades`: com quantas unidades cada uma libera, o fator de preço sobre a unidade daquele número, o nome e o complemento do nome de cada tripulante; ×2 na renda dele, uma vez só) e as gerais com níveis (`general_upgrades`: efeito, quanto cada nível soma, quantos níveis, preço do nível 1 e quanto cada nível encarece). Resultado da simulação com a Tripulação em `docs/propostas/melhorias.json` (`tools/Progressao/simular_melhorias.py`) |
 
 ## Como editar
 
@@ -45,8 +43,6 @@ Onde fica cada coisa no painel:
 | Preço mínimo, multiplicador geral do preço de venda dos peixes, Conchas, Aquário, Mercado | Economia | `economy.json` |
 | Preço, duração, bônus de XP e ciclo offline do VIP | Economia → `vip` | `economy.json` |
 | Arena, Cardume, Expedições | Outros arquivos | `arena.json`, `expeditions.json`… |
-| Tripulação (preços, renda, marcos, offline) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play | `crew.json` |
-| Melhorias (preços, efeitos, níveis, nomes) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play | `upgrades.json` |
 | Boss Mundial (horário, intervalo, faixas, Dólares do top 10) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play. Mudou o `pass.json`? Rode `tools/Progressao/boss_mundial.py` | `world_boss.json` |
 | Passe do Pescador (recompensas, preço do Premium) | Ainda sem seção no painel: edite o arquivo ou gere de novo com o script; o jogo valida ao apertar Play | `pass.json` |
 
@@ -115,9 +111,9 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
   +15% por 100 tentativas, Vara 1 de +2% a +12%. Hoje: 5 barcos de **+2% a +10%** no Nv.1 (3× no Nv.100), três iscas de
   **+5%, +10% e +15%** com **999 tentativas** por compra, e varas com níveis até o Nv.100 (Vara 1: +1,5% no Nv.1, +24%
   no Nv.100).
-- *Histórico, substituído pelo A-109, A-153 e A-162:* o XP do Pescador do nível 1 ao 100 somava **711.000 XP**,
+- *Histórico, substituído pelo A-109, A-153, A-162 e A-172:* o XP do Pescador do nível 1 ao 100 somava **711.000 XP**,
   contra uma meta de cerca de 90 dias. Hoje são **309.220 XP** até o Nv.100 (~0,5 dia com o jogo aberto) e
-  **229.596.770 XP** até o Nv.1000 (~60 dias).
+  **217.677.170 XP** até o Nv.1000 (~60 dias).
 - O XP do peixe do nível 1 ao 10 somava **3.885 XP** (A-132). Desde 10/10/2026 (M24-T13, A-156) o peixe vai até o
   **Nv.100**: do Nv.1 ao 100 são **36.160 XP** (~930 Comuns de 39 XP); o Nv.41, que tem a força do Nv.10 de antes
   (+36%), pede **2.465 XP** (~63 Comuns).
@@ -144,6 +140,15 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
   medido com a Tripulação e as Melhorias, jogo aberto, sem Passe e sem VIP. Nv.1000 em ~60 / ~108 / ~124 dias (jogo
   aberto / 4 vezes / 1 vez por dia; eram ~50 / ~91 / ~105); do Nv.1 ao Nv.1000, 229.596.770 XP. Trocar a curva de novo
   pede subir `xp_curve_version` (os saves são convertidos pelo XP total, sem baixar nível) e regerar o `pass.json`.
+- **Sem Tripulação e sem Melhorias (12/10/2026, M24-T46, A-172, TD-053):** `crew.json` e `upgrades.json` saíram; a venda
+  ao NPC não tem mais multiplicador. Para manter a meta, a curva do Pescador foi para a **versão 4**: os níveis 1 a 249
+  iguais e o resto regerado por `python3 tools/Progressao/calibrar_xp.py --manter-ate 250 --metas
+  500:14.6d,750:33.3d,1000:60d --gravar`, medido pelo jogador de referência de `tools/Progressao/jogador.py` (só a pesca,
+  **sem roupas**, jogo aberto, sem Passe e sem VIP). Nv.1000 em ~60,0 / ~112 / ~124 dias sem roupas e ~54,3 / ~101 / ~111
+  com roupas (jogo aberto / 4 vezes / 1 vez por dia; sem o ajuste seriam 63,2 / 118 / 130 e 57,1 / 106 / 116); do Nv.1 ao
+  Nv.1000, 217.677.170 XP. `pass.json` (Moedas e Conchas, `passe_fragmentos.py passe`) e `world_boss.json →
+  reference_income` (`boss_mundial.py`) regerados pela renda só da pesca. `--so-relatorio` mostra os tempos da tabela de
+  hoje sem calibrar.
 - **Todo nível custa Moedas e Conchas (M24-T30):** `upgrade_cost.shells_first` das varas e dos barcos precisa ser pelo
   menos 1; o jogo recusa um config com 0.
 - A Vara 1 **não é mais vendida** (M24-T32, A-163): monta com **15 fragmentos** que caem no Lago Sereno (3,7% por peixe

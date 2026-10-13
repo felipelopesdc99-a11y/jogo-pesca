@@ -4,7 +4,7 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// Drawing pieces of the top menu (M24-T43, A-169): the dark strip with its wooden trim, the five big coloured tabs,
+    /// Drawing pieces of the top menu (M24-T43, A-169): the dark strip with its wooden trim, the four big coloured tabs,
     /// the small hanging plaque, the round shortcuts on the right and their red badges. Presentation only.
     /// </summary>
     /// <remarks>
@@ -21,16 +21,17 @@ namespace FishingIdle.Game.UI
         private static readonly Color WoodEdge = new Color32(0x4B, 0x30, 0x1A, 0xFF);
         private static readonly Color Rope = new Color32(0xC9, 0xA8, 0x6A, 0xFF);
 
-        // The tab colours (one per group, like the cards of the Lago de Bolso): top and bottom of the gradient.
+        // The tab colours (one per group, like the cards of the Lago de Bolso): top and bottom of the gradient. Pesca,
+        // Aventura, Comércio, Perfil; the blue of the Tripulação left with it (M24-T46, A-172), the others kept their colour.
         private static readonly Color[] TabTop =
         {
-            new Color32(0x2F, 0xB7, 0xB3, 0xFF), new Color32(0x2F, 0x7F, 0xD0, 0xFF), new Color32(0x8F, 0x55, 0xD6, 0xFF),
+            new Color32(0x2F, 0xB7, 0xB3, 0xFF), new Color32(0x8F, 0x55, 0xD6, 0xFF),
             new Color32(0xD0, 0x8A, 0x2A, 0xFF), new Color32(0x4D, 0x66, 0x80, 0xFF),
         };
 
         private static readonly Color[] TabBottom =
         {
-            new Color32(0x16, 0x70, 0x6E, 0xFF), new Color32(0x1A, 0x43, 0x77, 0xFF), new Color32(0x4A, 0x2A, 0x7D, 0xFF),
+            new Color32(0x16, 0x70, 0x6E, 0xFF), new Color32(0x4A, 0x2A, 0x7D, 0xFF),
             new Color32(0x7A, 0x4A, 0x14, 0xFF), new Color32(0x26, 0x37, 0x4B, 0xFF),
         };
 

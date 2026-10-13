@@ -639,6 +639,10 @@ ou outra instância gerada pelo script com outro peso), sem mexer nas janelas.
 
 ## TD-038 — Troca de curva de XP do Pescador: XP total vira nível, nunca para baixo
 
+> **Atualizado por TD-053 (12/10/2026, A-172):** a curva está na versão 4 (os níveis 1 a 249 iguais aos da versão 3, o
+> resto recalibrado sem a Tripulação). A conversão é a mesma desta decisão. A Tripulação saiu: a pesca é a única fonte
+> de XP do Pescador, e o "Rever se" abaixo não vale mais.
+
 **Origem.** M24-T03 (A-153): o Pescador passa do Nv.100 para o Nv.1000 com uma tabela de XP nova.
 
 **Decisão.** `progression.json → fisher.xp_curve_version` numera a curva (1 = Nv.1 ao Nv.100, A-109; 2 = Nv.1 ao
@@ -659,6 +663,10 @@ qualquer curva futura mais lenta.
 ela também precisa somar em `fisher_xp_total`, senão uma troca de curva futura não a enxerga.
 
 ## TD-039 — Tripulação: renda por relógio sem sorteio, cursor no save e preços em fórmula fechada
+
+> **Retirado por TD-053 (12/10/2026, A-172):** a Tripulação saiu do jogo (decisão do proprietário). `config/crew.json`,
+> `GameService/Crew` e `PlayerSave.Crew` não existem mais; um save antigo recebe de volta as Moedas que ela custou. Esta
+> decisão fica como histórico.
 
 **Origem.** M24-T05 (A-154): pescadores e barcos que rendem Moedas e XP por segundo, com o jogo aberto e fechado.
 
@@ -699,6 +707,10 @@ render enquanto o jogo está aberto mas parado por mais de 2 minutos (hoje isso 
 primeiras horas de qualquer jeito). As Melhorias (M24-T06) vão multiplicar a renda: entram em `CrewRules.CoinsPerSecond`.
 
 ## TD-040 — Melhorias: ids gerados, nível por id no save e multiplicadores aplicados onde a renda é calculada
+
+> **Retirado por TD-053 (12/10/2026, A-172):** as Melhorias (da Tripulação e gerais) saíram do jogo junto com a
+> Tripulação. `config/upgrades.json`, `GameService/Upgrades` e `PlayerSave.Upgrades` não existem mais; o preço de venda
+> ao NPC não tem mais multiplicador. Esta decisão fica como histórico.
 
 **Origem.** M24-T06 (A-155): Melhorias compradas com Moedas, as de tripulante (×2, uma vez) e as gerais (com níveis).
 
@@ -1104,6 +1116,10 @@ CI (TD-044) compila contra o Unity 2021.3 e passa os testes; o problema prováve
 
 ## TD-052 · Revisão de integridade das regras e do save (12/10/2026)
 
+> **Atualizado por TD-053 (12/10/2026, A-172):** sem as Melhorias, o piso dos bots para um peixe é o preço de venda ao
+> NPC + 1 Moeda (`UpgradeRules.MaxFishSaleMultiplier` saiu). O objetivo é o mesmo: comprar de um bot e revender ao jogo
+> nunca dá lucro. O resto desta decisão continua.
+
 **Origem.** Revisão de integridade das regras, do config e do save de 12/10/2026.
 
 **Decisão.**
@@ -1126,3 +1142,50 @@ CI (TD-044) compila contra o Unity 2021.3 e passa os testes; o problema prováve
 - **Semente fixa nos testes.** `LocalGame.Start(..., rngSeed)` e `TestSupport.NewGame(seed:)` aceitam uma semente para um
   jogador novo; os testes do Mercado e do Leilão usam `TestSupport.FixedSeed` e escolhem leilões que cabem no orçamento
   (M24-T26: o teste falhava às vezes quando a semente sorteava leilões de vara acima dos 10 milhões).
+
+## TD-053 · Tripulação e Melhorias retiradas: save v21 com reembolso pelo config e o novo piso dos bots (12/10/2026)
+
+**Origem.** M24-T46 (A-172): o proprietário tirou a Tripulação e as Melhorias (as da Tripulação e as gerais) do jogo e
+manteve a meta de ~60 dias até o Nv.1000.
+
+**Decisão.**
+- **Código e config.** Saem `GameService/Crew` (`CrewRules`, `LocalCrewService`, `ICrewService`), `GameService/Upgrades`
+  (`UpgradeRules`, `LocalUpgradeService`, `IUpgradeService`), `config/crew.json` e `config/upgrades.json` (fora de
+  `GameConfigLoader.RequiredFiles`), os modelos e a validação deles, os erros `CrewMember*`/`Upgrade*` e, na tela,
+  `CrewWindow`, `UpgradesPanel`, a aba do menu, a parte do "Bem-vindo de volta", a renda/s da placa e
+  `Format.PerSecond`/`Rate`. `CatchRules.SalePrice` e `CatchViews.Create` perdem o multiplicador (só o preço do config).
+- **Piso dos bots** (`MarketRules.BotFloor`): `NpcValue + 1` para peixe e vara. Sem multiplicador de venda no jogo, esse
+  é o máximo que o jogo paga por um peixe, e revender ao NPC o que se comprou de um bot continua sem lucro.
+- **Save v21.** As propriedades `crew` e `upgrades` do arquivo continuam **legíveis** (`PlayerSave.RetiredCrew` e
+  `RetiredUpgrades`, com `NullValueHandling.Ignore`), mas só as unidades e os níveis: o resto do estado antigo (cursor,
+  frações, totais) é ignorado. A migração estrutural v20 → v21 só sobe a versão; as de v12 → v13 e v13 → v14 não criam
+  mais nada. Um save v21 nunca tem os dois campos.
+- **Reembolso pelo config, na abertura da sessão** (`Persistence/CrewRemovalMigration`, chamada em
+  `GameSession.RepairAgainstConfig` antes da troca de curva): como as migrações das iscas e dos barcos (TD-051), os
+  preços de antes ficam em `economy.json → crew_removal_refund` (tripulantes: id, `base_cost`, `cost_growth`; linhas
+  das Melhorias da Tripulação: `unlock_count`, `cost_factor`; Melhorias gerais: id, `base_cost`, `cost_growth`,
+  `max_level`), só para essa conta. Moedas devolvidas = b·(rⁿ − 1)/(r − 1) por tripulante com n unidades (o que a compra
+  em fórmula fechada cobrava a partir de 0), + cost_factor × b × r^unlock_count por Melhoria de tripulante comprada (id
+  `crew_XX_up_N`), + Σ base × growth^(k−1) de k = 1 ao nível de cada Melhoria geral (no máximo `max_level`). Cada parcela é
+  arredondada como o jogo cobrava; tudo soma por `SafeMath.Add` (um save editado com unidades absurdas para em
+  `long.MaxValue`, nunca vira negativo). Ids desconhecidos, contagens ≤ 0 e um config sem a seção não dão nada e não
+  impedem a abertura (TD-050). Depois os dois campos viram `null` e o save é gravado: abrir de novo não paga de novo.
+  Nada de Conchas (nenhum dos dois sistemas custava Conchas). O XP que a Tripulação deu fica (está em `fisher_xp_total`);
+  a renda do tempo fechado desde o último cursor não é paga (o sistema não existe mais).
+- **Aviso.** `GameSession.CrewRefund` (o `CrewRemovalChange` desta abertura, ou `null`) — o `GameRoot` mostra um aviso
+  importante uma vez, com as Moedas devolvidas (`GameTexts.Startup.CrewRemovedRefund`/`CrewRemoved`).
+- **Balanceamento.** O jogador de referência das simulações passou para `tools/Progressao/jogador.py` (só a pesca);
+  `simular_tripulacao.py` e `simular_melhorias.py` saíram, e `calibrar_xp.py`, `passe_fragmentos.py`,
+  `fragmentos_equipamento.py` e `niveis_100.py` usam o novo. A meta foi mantida pela **curva do Pescador versão 4**
+  (`calibrar_xp.py --manter-ate 250 --metas 500:14.6d,750:33.3d,1000:60d --gravar`, calibrada sem roupas, OD-067), com
+  a conversão de sempre (TD-038). `pass.json` (Moedas e Conchas dos marcos, `passe_fragmentos.py passe`, que não mexe
+  nos barcos) e `world_boss.json → reference_income` (`boss_mundial.py`) foram regerados pela renda só da pesca.
+
+**Por quê.** Guardar os preços no config (e não no código) segue a regra de que todo número mora em `/config` e o
+precedente das iscas e dos barcos. Ler os campos antigos em vez de apagá-los às cegas é o único jeito de devolver o que
+o jogador gastou. Mudar a curva do Pescador (e não o preço dos peixes ou dos níveis) mantém o resto da economia como o
+proprietário aprovou; manter os níveis 1 a 249 iguais deixa sem mudança quem está no começo.
+
+**Rever se.** O proprietário quiser uma renda passiva de novo (seria um sistema novo, decisão dele), ou quiser a meta
+de ~60 dias também para quem abre o jogo 4 vezes por dia (hoje ~112 dias, eram ~108 com a Tripulação, que rendia com o
+jogo fechado).

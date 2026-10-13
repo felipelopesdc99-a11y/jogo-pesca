@@ -119,8 +119,6 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `ICurrencyTradeService` | `LocalCurrencyTradeService` | Venda de Conchas e Dólares por Moedas: anunciar (a quantidade sai da carteira) e cancelar; no MVP local não há ofertas nem compradores (`CurrencyTradeView.LocalOnly`) |
 | `IDevToolsService` | `LocalDevToolsService` | Ferramentas de teste (A-123): recursos, peixes, nível, Energia e avançar o tempo; recusa tudo se `GameSession.DevToolsEnabled` estiver desligado |
 | `IVipService` | `LocalVipService` | VIP (A-110): comprar com Dólares (soma os dias ao fim do atual) e ver até quando vale. O bônus de XP é aplicado pela pesca offline (`VipRules.OfflineBonusXp`), conferido na hora de cada captura |
-| `ICrewService` | `LocalCrewService` | Tripulação (M24-T05, A-154, TD-039): contratar ×1/×10/×100/Máx, renda de Moedas e XP por segundo pelo relógio (aberto e fechado), marcos, resumo offline. Regras puras em `CrewRules` (preço em fórmula fechada, marcos, renda com as Melhorias, parte offline) |
-| `IUpgradeService` | `LocalUpgradeService` | Melhorias (M24-T06, A-155, TD-040): as 3 Melhorias de tripulante mais baratas, as gerais com o próximo nível e as compradas; comprar (credita a Tripulação antes). Regras puras em `UpgradeRules` (ids `crew_NN_up_K`, nomes, preços, multiplicadores); os efeitos entram em `CrewRules`, na venda ao NPC (`CatchRules.SalePrice` com multiplicador) e no teto offline da Tripulação |
 | `IRankingService` | `LocalRankingService` | Ranking de jogadores reais por Nível, Moedas, Conchas e Peixes pescados; no MVP local só o jogador deste PC (`RankingView.LocalOnly`) |
 | `ITutorialService` | `LocalTutorialService` | Tutorial: passo atual, avanço automático, "Entendi", pular |
 | `IProfileService` | `LocalProfileService` | Perfil próprio: vara equipada, Inventário, Enciclopédia, Destaques |
@@ -198,10 +196,11 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 - O jogo carrega todos os arquivos de `GameConfigLoader.RequiredFiles`: `fish_catalog`, `maps`,
   `progression`, `rods`, `economy`, `arena`, `expeditions`, `arena_bots` (adversários simulados do
   MVP local), `market_bots` (vendedores e compradores simulados do Mercado), `equipment` (barcos e
-  iscas, desde a V0.2), `crew` (a Tripulação, desde o M24), `upgrades` (as Melhorias, desde o M24) e `pass` (o
-  Passe do Pescador, M24-T17). O Painel de Desenvolvimento usa a mesma lista (o `crew.json`, o `upgrades.json` e o
-  `pass.json` ainda não têm seção própria no Painel de Balanceamento: edita-se à mão, ou se gera de novo com o script,
-  e o jogo valida ao abrir). Os barcos (fragmentos e chance) aparecem na aba Sucesso da pesca.
+  iscas, desde a V0.2), `pass` (o Passe do Pescador, M24-T17) e `world_boss` (o Boss Mundial, M24-T29). O
+  `crew.json` e o `upgrades.json` (Tripulação e Melhorias) saíram no M24-T46 (TD-053); os preços deles ficam só em
+  `economy.json → crew_removal_refund`, para o reembolso dos saves antigos. O Painel de Desenvolvimento usa a mesma lista
+  (o `pass.json` ainda não tem seção própria no Painel de Balanceamento: edita-se à mão, ou se gera de novo com o
+  script, e o jogo valida ao abrir). Os barcos (fragmentos e chance) aparecem na aba Sucesso da pesca.
 - `GameConfigLoader.LoadFromTexts` é usado tanto pelo jogo quanto pelo Painel de Desenvolvimento:
   o painel só grava se a mesma validação que o jogo usa passar.
 - `GameConfig.Version` é uma impressão digital curta do conteúdo. Mesmos arquivos, mesma versão.
@@ -248,10 +247,8 @@ Regras:
 `OwnedBoatIds`, `BaitCharges`, `ActiveBaitId`) e a contagem de escapes (`Stats.Escapes`); saves
 antigos entram com o Barco Inicial e sem isca; v11 adiciona os Dólares (`Dollars`, começa em 0) e os anúncios de Conchas e Dólares
 (`MarketState.CurrencyListings`); v12 grava a curva de XP do Pescador em que o nível foi ganho
-(`FisherXpCurveVersion`; saves antigos entram com a curva 1); v13 adiciona a Tripulação (`CrewState`: unidades por
-id, cursor `LastCreditedAtMs`, frações guardadas e total rendido; saves antigos entram com ela vazia e o cursor é
-posto em "agora" ao carregar); v14 adiciona as Melhorias (`UpgradesState.Levels`: nível por id; saves antigos entram
-sem nenhuma); v15 adiciona o nível dos barcos (`BoatLevels`: nível por id de barco, ausente = Nv.1) e as curvas de nível
+(`FisherXpCurveVersion`; saves antigos entram com a curva 1); v13 adicionava a Tripulação e v14 as Melhorias (as duas
+saíram na v21: as migrações v12 → v13 e v13 → v14 hoje só sobem a versão); v15 adiciona o nível dos barcos (`BoatLevels`: nível por id de barco, ausente = Nv.1) e as curvas de nível
 de varas e peixes (`RodLevelCurveVersion`, `FishLevelCurveVersion`; saves antigos entram com 1, a curva Nv.1–Nv.10);
 v16 adiciona os fragmentos de barco (`BoatFragments`, por id de barco; começam vazios, os barcos comprados continuam) e
 o Passe do Pescador (`PassState`: id do passe, Premium, marcos resgatados grátis e Premium e `LegacyDollarsUpToLevel`,
@@ -264,7 +261,11 @@ que foi pago; um registro só, trocado no evento do dia seguinte depois de pago;
 v20 marca o modelo de barcos (`BoatModelVersion`; saves antigos entram com 1, os 10 barcos de antes). A conversão dos
 barcos 6 a 10 em fragmentos, Moedas e Conchas (A-168) precisa do config e por isso não fica em `SaveMigrations`: roda
 uma vez ao abrir a sessão, em `Persistence/BoatModelMigration.MoveToCurrentModel`, antes de os níveis de barco serem
-limitados ao config (TD-051), como a das iscas (`BaitModelMigration`, v17, TD-046).
+limitados ao config (TD-051), como a das iscas (`BaitModelMigration`, v17, TD-046); v21 tira a Tripulação e as Melhorias
+(M24-T46, TD-053): os campos `crew` e `upgrades` de um save antigo são lidos em `PlayerSave.RetiredCrew` e
+`RetiredUpgrades` (só unidades e níveis) e, ao abrir a sessão, `Persistence/CrewRemovalMigration.Refund` devolve as
+Moedas que custaram (preços de `economy.json → crew_removal_refund`, somas por `SafeMath`), põe os dois em `null` e o
+save é gravado sem eles; `GameSession.CrewRefund` guarda o que foi devolvido para o aviso único da tela.
 Cada passo está em `SaveMigrations.Upgrade`.
 - Troca de curva de nível de varas e peixes (TD-041): ao carregar, depois da curva do Pescador, o `GameSession` chama
   `LevelCurveMigration.MoveToCurrentCurves`. Um save na curva 1 tem cada vara (Inventário e Mercado) levada ao nível
@@ -294,13 +295,8 @@ Cada passo está em `SaveMigrations.Upgrade`.
   chama `Sync` da pesca antes (os fragmentos podem trocar o barco ou a vara em uso). Desde o M24-T32/T33 a recompensa
   também tem `rod_id`/`rod_fragments` e `clothing_fragments`. Subir de nível não paga nada sozinho
   (`FisherLevelRules.AddXp` só soma XP e níveis); os Dólares do A-111 estão na faixa grátis.
-- Tripulação (TD-039): `LocalCrewService.Sync` paga a renda de `LastCreditedAtMs` até agora (relógio da sessão, que
-  nunca volta) e move o cursor; um intervalo maior que `online_gap_seconds` conta como offline (100% e depois a taxa
-  reduzida até o teto) e vira `CrewOfflineReport`. Só a renda grava o save no máximo a cada 30 s; contratar e fechar
-  gravam na hora. O XP passa por `FisherLevelRules.AddXp`, o mesmo caminho da pesca.
-- Melhorias (TD-040): `LocalUpgradeService.Buy` chama `LocalCrewService.SettleNow` antes de cobrar, para a renda até
-  ali ficar na taxa antiga. Para um efeito novo: uma chave em `UpgradeEffects`, um multiplicador em `UpgradeRules` e a
-  chamada no ponto em que aquele valor é calculado (nunca na tela).
+- Tripulação e Melhorias (TD-039, TD-040): retiradas no M24-T46 (TD-053). A venda ao NPC (`CatchRules.SalePrice`) não
+  tem mais multiplicador, e o piso dos vendedores simulados (`MarketRules.BotFloor`) é o preço de venda ao NPC + 1.
 - Troca de curva de XP (TD-038): ao carregar, o `GameSession` chama `FisherLevelRules.MoveToCurrentCurve`, que
   converte o XP total (`FisherXpTotal`) no nível da curva atual quando o save é de uma curva mais antiga, sem nunca
   baixar o nível. Mudou a tabela de XP de um jeito que mexe em quem já joga? Aumente `fisher.xp_curve_version` em
@@ -475,21 +471,14 @@ Cada passo está em `SaveMigrations.Upgrade`.
 - **Modo compacto** (Opções → Modo compacto): janela de 480×270 só com a cena, uma linha de status e a
   última captura. É só apresentação; o serviço pesca igual. No Editor o tamanho da janela não muda.
 - **Transição de menus:** a janela que abre faz um fade (0,18 s por padrão, `window_fade_seconds` no tema).
-- **Tripulação na tela** (M24-T08, A-154): `GameRoot` chama `Crew.Sync` a cada 1 s (`SyncCrew`: avisos de nível
-  e dos marcos do Passe como na pesca) e soma o que entrou em `CrewCoinsCredited`; o `Hud` usa esse número para contar a renda
-  na carteira sem o pulo e sem o "+N" a cada segundo, e mostra `CrewCoinsPerSecond` como "+X/s" no cartão. A janela
-  `UI/CrewWindow` pede `GetCrew(modo)` a cada 0,25 s e contrata por `GameRoot.HireCrew`; abre pela aba Tripulação do
-  menu de cima (A-169, abaixo). O
-  `WelcomeBackDialog` junta `GameRoot.WelcomeBack` (pesca) e `GameRoot.CrewWelcome` (Tripulação); qualquer um
-  basta para abrir.
-- **Melhorias na tela** (M24-T11, A-155): a `CrewWindow` tem as abas "Tripulação | Melhorias" (chips); a aba
-  Melhorias é desenhada por `UI/UpgradesPanel`, que pede `GameRoot.GetUpgrades()` a cada 0,25 s e compra por
-  `GameRoot.BuyUpgrade`. O "i" da janela mostra o texto da aba aberta.
+- **Tripulação e Melhorias na tela:** retiradas no M24-T46 (A-172): saíram `UI/CrewWindow`, `UI/UpgradesPanel`, a aba
+  do menu, `GameRoot.SyncCrew`/`CrewWelcome`/`CrewCoinsPerSecond` e a parte da Tripulação do `WelcomeBackDialog` (que
+  hoje mostra só a pesca). Ao abrir um save antigo, `GameRoot.AnnounceCrewRefund` mostra uma vez as Moedas devolvidas.
 - **Passe do Pescador na tela** (M24-T17, A-158): abre pelo atalho redondo "Passe" da lateral direita (A-169), com a
   contagem vermelha de `GameRoot.Pass.ClaimableCount`. A janela `UI/PassWindow`
   pede `Game.Pass.GetPass()` a cada 0,5 s, desenha só as colunas visíveis da trilha (100 marcos) e manda os pedidos por
   `GameRoot.ClaimPass`, `ClaimAllPass` e `BuyPassPremium` (que mostram os avisos e a comemoração de barco montado).
-  `GameRoot.PushPassMilestones` avisa os marcos alcançados (pesca e Tripulação).
+  `GameRoot.PushPassMilestones` avisa os marcos alcançados pela pesca.
 - **Fragmentos na tela** (M24-T16, A-157; M24-T32/T33, A-163/A-164): o `Hud` avisa os fragmentos de barco, de vara e de
   roupa e os níveis das roupas por `UI/FragmentNotices` (no máximo um aviso por tipo a cada 8 s, somando o que chega no
   meio) e comemora barco, vara e roupa montados; a `ShopWindow` mostra "12/20" na etiqueta e "Fragmentos 12/20 · Caem no
@@ -511,10 +500,10 @@ Cada passo está em `SaveMigrations.Upgrade`.
   `GameRoot.WorldBoss`; "Abrir" abre a `WorldBossWindow`, e o "‹ Eventos" dela volta. Um evento novo acrescenta o tipo
   em `EventsWindow.EventKind` e um desenhador de cartão; nenhuma regra mora na janela.
 - **Menu de cima** (M24-T43, A-169): o `Hud` desenha a faixa escura (`DrawStrip`) com o cartão do jogador à esquerda
-  (clique abre o Perfil), as **5 abas** no centro (`GroupFishing`, `GroupCrew`, `GroupAdventure`, `GroupTrade`,
-  `GroupProfile`; rótulos em `GameTexts.Navigation`), o sino e as opções à direita (`TopRightExtent`). As sub-abas da aba
+  (clique abre o Perfil), as **4 abas** no centro (`GroupFishing`, `GroupAdventure`, `GroupTrade`, `GroupProfile`;
+  rótulos em `GameTexts.Navigation`; a aba Tripulação saiu no M24-T46), o sino e as opções à direita (`TopRightExtent`). As sub-abas da aba
   ativa (Expedição | Arena | Eventos e Mercado | Loja) saem em `DrawSubTabs`. Sem janela aberta, a placa pendurada
-  (`DrawIncomePlaque`) mostra a renda da Tripulação e as Moedas. Os atalhos redondos (Mapa, Aquário, Passe, Eventos,
+  (`DrawIncomePlaque`) mostra "MOEDAS" e o total contando (até o M24-T46 mostrava também a renda da Tripulação). Os atalhos redondos (Mapa, Aquário, Passe, Eventos,
   Ranking) ficam em coluna na direita (`DrawShortcuts`, constantes `Shortcut*`); com uma janela aberta ficam cobertos e
   não respondem. As peças de desenho (faixa, abas coloridas, placa, moldura redonda, contagens) estão em
   `UI/TopMenuArt`; os ícones pendentes (`ico_aba_*`, `ico_atalho_*`, `ui_atalho_moldura`) são usados quando o arquivo

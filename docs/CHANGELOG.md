@@ -3,6 +3,38 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.5] — 12/10/2026
+
+A Tripulação e as Melhorias saíram do jogo, por decisão do proprietário (M24-T46, A-172). Save versão 21. Não aberto no
+Unity.
+
+### Removido
+
+- **Tripulação** (os 10 tripulantes, a renda por segundo com o jogo aberto e fechado, os marcos) e **Melhorias** (as 50
+  da Tripulação e as 5 gerais: Rádio do Porto, Freguesia na Feira, Caixa Térmica, Sonar de Cardume e Maré Boa), com a
+  janela, a aba do menu de cima, a parte "Sua Tripulação trabalhou" do "Bem-vindo de volta", os avisos e os ícones
+  `ico_tripulacao` e `ico_aba_tripulacao`. `config/crew.json` e `config/upgrades.json` saíram.
+
+### Mudado
+
+- **Menu de cima com 4 abas** (Pesca, Aventura, Comércio, Perfil), um pouco mais largas e centralizadas. A placa
+  embaixo delas mostra só "MOEDAS" e o total.
+- **Venda de peixe ao NPC** sem multiplicador (Caixa, Aquário e peixe da Expedição). O preço mínimo dos vendedores
+  simulados do Mercado e do Leilão passa a ser a venda ao NPC + 1 Moeda (TD-053).
+- **Curva do Pescador versão 4**: para o Nv.1000 continuar em ~60 dias com o jogo aberto (sem roupas; ~54 com roupas)
+  sem a Tripulação, os níveis 250 em diante foram recalibrados (do Nv.1 ao Nv.1000: 217.677.170 XP, eram 229.596.770).
+  Os níveis 1 a 249 não mudaram; ninguém perde nível.
+- **Passe do Pescador e Boss Mundial**: as Moedas e Conchas dos marcos do Passe e a renda de referência do Boss foram
+  regeradas pela renda só da pesca (no Nv.1000 do Passe: 3,24 mi de Moedas, eram 1,11 tri).
+- Simulações: `tools/Progressao/jogador.py` é o novo jogador de referência; `simular_tripulacao.py` e
+  `simular_melhorias.py` saíram.
+
+### Migração
+
+- **Save v20 → v21:** quem tinha tripulantes ou Melhorias recebe de volta todas as Moedas que gastou neles (pelas curvas
+  de preço de antes, guardadas em `economy.json → crew_removal_refund`), com um aviso único. Saves sem Tripulação abrem
+  normalmente, sem mudança.
+
 ## [0.2.0-m24.4] — 12/10/2026
 
 Ícones das janelas no estilo novo. Verificado no CI, não aberto no Unity.

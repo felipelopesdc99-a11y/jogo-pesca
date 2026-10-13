@@ -388,16 +388,13 @@ namespace FishingIdle.GameService.Persistence
 
             if (save.SaveVersion == 12)
             {
-                // v13 adds the automatic Crew (M24-T05). Everyone starts with no one hired; the income cursor starts
-                // at 0 and GameSession sets it to "now" on load, so no Crew income is owed for the time before it.
-                save.Crew = new CrewState();
+                // v13 added the automatic Crew (M24-T05), removed in v21 (M24-T46, A-172): nothing to add any more.
                 save.SaveVersion = 13;
             }
 
             if (save.SaveVersion == 13)
             {
-                // v14 adds the upgrades bought with Moedas (M24-T06). Everyone starts with none.
-                save.Upgrades = new UpgradesState();
+                // v14 added the Upgrades bought with Moedas (M24-T06), removed in v21 (M24-T46, A-172): nothing to add any more.
                 save.SaveVersion = 14;
             }
 
@@ -455,6 +452,14 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 20;
             }
 
+            if (save.SaveVersion == 20)
+            {
+                // v21: the Crew and the Upgrades left the game (M24-T46, A-172). What the save had of them stays in
+                // RetiredCrew / RetiredUpgrades until GameSession gives back the Moedas they cost (CrewRemovalMigration, it
+                // needs the config) and clears them; a v21 file never has them.
+                save.SaveVersion = 21;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BoatLevels = save.BoatLevels ?? new Dictionary<string, int>();
             save.BoatFragments = save.BoatFragments ?? new Dictionary<string, long>();
@@ -490,10 +495,6 @@ namespace FishingIdle.GameService.Persistence
             save.SpeciesRecords = save.SpeciesRecords ?? new Dictionary<string, SpeciesRecord>();
             save.Stats = save.Stats ?? new PlayerStats();
             save.Fishing = save.Fishing ?? new FishingSessionState();
-            save.Crew = save.Crew ?? new CrewState();
-            save.Crew.Units = save.Crew.Units ?? new Dictionary<string, long>();
-            save.Upgrades = save.Upgrades ?? new UpgradesState();
-            save.Upgrades.Levels = save.Upgrades.Levels ?? new Dictionary<string, int>();
         }
     }
 
@@ -600,13 +601,6 @@ namespace FishingIdle.GameService.Persistence
                 if (fishIds.Any(id => id <= 0 || id >= save.NextFishId)) problems.Add("aquarium id outside issued range");
             }
             if (save.Stats == null) problems.Add("stats missing");
-            if (save.Crew == null || save.Crew.Units == null) problems.Add("crew missing");
-            else
-            {
-                if (save.Crew.Units.Any(u => string.IsNullOrWhiteSpace(u.Key) || u.Value < 0)) problems.Add("crew has malformed units");
-                if (save.Crew.CoinsEarned < 0 || save.Crew.XpEarned < 0 || save.Crew.LastCreditedAtMs < 0) problems.Add("crew negative values");
-                if (double.IsNaN(save.Crew.CoinsCarry) || double.IsNaN(save.Crew.XpCarry)) problems.Add("crew carry is not a number");
-            }
             if (save.BoatLevels != null && save.BoatLevels.Any(b => string.IsNullOrWhiteSpace(b.Key) || b.Value < 1)) problems.Add("boat levels malformed");
             if (save.BoatFragments != null && save.BoatFragments.Any(b => string.IsNullOrWhiteSpace(b.Key) || b.Value < 0)) problems.Add("boat fragments malformed");
             if (save.RodFragments != null && save.RodFragments.Any(r => string.IsNullOrWhiteSpace(r.Key) || r.Value < 0)) problems.Add("rod fragments malformed");
@@ -618,8 +612,6 @@ namespace FishingIdle.GameService.Persistence
                 || save.WorldBoss.Rank < 0 || double.IsNaN(save.WorldBoss.ReferenceDamage) || save.WorldBoss.ReferenceDamage < 0
                 || save.WorldBoss.PaidCoins < 0 || save.WorldBoss.PaidShells < 0 || save.WorldBoss.PaidDollars < 0
                 || save.WorldBoss.PaidClothingFragments < 0 || save.WorldBoss.PaidBoatFragments < 0)) problems.Add("world boss malformed");
-            if (save.Upgrades == null || save.Upgrades.Levels == null) problems.Add("upgrades missing");
-            else if (save.Upgrades.Levels.Any(u => string.IsNullOrWhiteSpace(u.Key) || u.Value < 0)) problems.Add("upgrades have malformed levels");
 
             return problems;
         }

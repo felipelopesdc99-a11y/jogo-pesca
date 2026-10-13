@@ -115,5 +115,114 @@
       "price_brl": 4.99,
       "note": "Referência do proprietário: 100 Dólares = R$ 4,99. A compra com dinheiro real só existe quando o jogo tiver uma loja (Steam, Google Play); o jogo ainda não lê este valor."
     }
+  },
+  "crew_removal_refund": {
+    "note": "A Tripulação e as Melhorias saíram do jogo em 12/10/2026 (decisão do proprietário, M24-T46, A-172). Estes são os preços de antes (crew.json e upgrades.json), guardados só para devolver a quem já jogava as Moedas que gastou: ao abrir um save antigo, cada tripulante vira base_cost × (cost_growth^unidades − 1) ÷ (cost_growth − 1) Moedas, cada Melhoria de tripulante comprada vira cost_factor × base_cost × cost_growth^unlock_count do tripulante dela (as ids eram crew_XX_up_N, N = a linha de crew_upgrade_tiers), e cada Melhoria geral vira a soma de base_cost × cost_growth^(n−1) do nível 1 ao nível que tinha (no máximo max_level). Tudo em Moedas: nenhuma das duas custava Conchas. Não muda nada no jogo de hoje.",
+    "crew_members": [
+      {
+        "id": "crew_01",
+        "base_cost": 15,
+        "cost_growth": 1.1
+      },
+      {
+        "id": "crew_02",
+        "base_cost": 160,
+        "cost_growth": 1.097
+      },
+      {
+        "id": "crew_03",
+        "base_cost": 1800,
+        "cost_growth": 1.093
+      },
+      {
+        "id": "crew_04",
+        "base_cost": 20000,
+        "cost_growth": 1.09
+      },
+      {
+        "id": "crew_05",
+        "base_cost": 220000,
+        "cost_growth": 1.087
+      },
+      {
+        "id": "crew_06",
+        "base_cost": 2400000,
+        "cost_growth": 1.083
+      },
+      {
+        "id": "crew_07",
+        "base_cost": 26000000,
+        "cost_growth": 1.08
+      },
+      {
+        "id": "crew_08",
+        "base_cost": 290000000,
+        "cost_growth": 1.077
+      },
+      {
+        "id": "crew_09",
+        "base_cost": 3200000000,
+        "cost_growth": 1.073
+      },
+      {
+        "id": "crew_10",
+        "base_cost": 35000000000,
+        "cost_growth": 1.07
+      }
+    ],
+    "crew_upgrade_tiers": [
+      {
+        "unlock_count": 1,
+        "cost_factor": 10
+      },
+      {
+        "unlock_count": 10,
+        "cost_factor": 50
+      },
+      {
+        "unlock_count": 25,
+        "cost_factor": 250
+      },
+      {
+        "unlock_count": 50,
+        "cost_factor": 1250
+      },
+      {
+        "unlock_count": 100,
+        "cost_factor": 6250
+      }
+    ],
+    "general_upgrades": [
+      {
+        "id": "port_radio",
+        "base_cost": 20000,
+        "cost_growth": 12.0,
+        "max_level": 10
+      },
+      {
+        "id": "fair_customers",
+        "base_cost": 1500,
+        "cost_growth": 4.0,
+        "max_level": 10
+      },
+      {
+        "id": "cooler_box",
+        "base_cost": 50000,
+        "cost_growth": 15.0,
+        "max_level": 5
+      },
+      {
+        "id": "school_sonar",
+        "base_cost": 100000,
+        "cost_growth": 8.0,
+        "max_level": 10
+      },
+      {
+        "id": "good_tide",
+        "base_cost": 2500,
+        "cost_growth": 4.0,
+        "max_level": 10
+      }
+    ]
   }
 }

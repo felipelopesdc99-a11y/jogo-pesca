@@ -27,24 +27,13 @@ namespace FishingIdle.GameService.Market
         }
 
         /// <summary>
-        /// The lowest price a simulated seller asks (listing or starting bid): one coin above the most the game could ever
-        /// pay for the goods. For a fish that is the NPC price with the Freguesia na Feira at its max level, so buying from
-        /// a simulated seller and selling to the game never profits, whatever upgrades the player has now or later (TD-052).
+        /// The lowest price a simulated seller asks (listing or starting bid): one coin above what the game pays for the
+        /// goods (the NPC sale), so buying from a simulated seller and selling to the game never profits (TD-052). Since the
+        /// Upgrades left the game (M24-T46, TD-053) nothing multiplies the NPC price, so the floor is that price + 1 Moeda.
         /// </summary>
         public static long BotFloor(GameConfig config, MarketGoods goods)
         {
-            long npc;
-            if (goods.Kind == MarketGoods.KindFish)
-            {
-                npc = config.TryGetSpecies(goods.Fish.SpeciesId, out var species)
-                    ? CatchRules.SalePrice(config, species, goods.Fish.SizeMm, FishingIdle.GameService.Upgrades.UpgradeRules.MaxFishSaleMultiplier(config))
-                    : 0;
-            }
-            else
-            {
-                npc = NpcValue(config, goods);
-            }
-
+            var npc = NpcValue(config, goods);
             return npc >= long.MaxValue - 1 ? long.MaxValue : npc + 1;
         }
 

@@ -5,7 +5,6 @@ using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Persistence;
-using FishingIdle.GameService.Upgrades;
 
 namespace FishingIdle.GameService.Aquarium
 {
@@ -185,8 +184,6 @@ namespace FishingIdle.GameService.Aquarium
                 return ServiceResult<SaleResult>.Fail(ServiceError.CardumeLocked);
             }
 
-            // Freguesia na Feira (M24-T06): the same price each card shows.
-            var multiplier = UpgradeRules.FishSaleMultiplier(Config, Save.Upgrades);
             long total = 0;
             foreach (var f in fish)
             {
@@ -195,7 +192,7 @@ namespace FishingIdle.GameService.Aquarium
                     return ServiceResult<SaleResult>.Fail(ServiceError.SpeciesMissingFromConfig);
                 }
 
-                total += CatchRules.SalePrice(Config, species, f.SizeMm, multiplier);
+                total += CatchRules.SalePrice(Config, species, f.SizeMm);
             }
 
             Save.Aquarium.RemoveAll(f => wanted.Contains(f.Id));
@@ -368,7 +365,7 @@ namespace FishingIdle.GameService.Aquarium
                 view.SpeciesMaxCm = species.SizeCm.Max;
                 view.SizePercentile = CatchRules.Percentile(species, fish.SizeMm);
                 view.Stats = FishRules.Stats(Config, species, fish.SizeMm, fish.Level, fish.SizeCategoryId);
-                view.SalePriceCoins = CatchRules.SalePrice(Config, species, fish.SizeMm, UpgradeRules.FishSaleMultiplier(Config, Save.Upgrades));
+                view.SalePriceCoins = CatchRules.SalePrice(Config, species, fish.SizeMm);
                 view.FeedXp = FishRules.FeedValue(Config, species, fish.SizeMm, fish.InvestedXp);
                 view.IsValuableFood = FishRules.IsValuableFood(Config, species.Rarity, fish.SizeCategoryId, fish.Level);
             }

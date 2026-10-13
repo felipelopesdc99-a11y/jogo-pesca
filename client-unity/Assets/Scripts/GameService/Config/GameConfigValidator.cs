@@ -23,8 +23,6 @@ namespace FishingIdle.GameService.Config
             ArenaBotsConfig bots,
             MarketBotsConfig marketBots,
             EquipmentConfig equipment,
-            CrewConfig crew,
-            UpgradesConfig upgrades,
             PassConfig pass)
         {
             var errors = new List<string>();
@@ -855,8 +853,7 @@ namespace FishingIdle.GameService.Config
                 ValidateBoatMigration(equipment, errors);
             }
 
-            ValidateCrew(crew, errors);
-            ValidateUpgrades(upgrades, crew, errors);
+            ValidateCrewRemovalRefund(economy?.CrewRemovalRefund, errors);
             ValidateClothing(equipment?.Clothing, errors);
             ValidatePass(pass, progression, equipment, rods, errors);
             return errors;
@@ -1228,215 +1225,43 @@ namespace FishingIdle.GameService.Config
             return true;
         }
 
-        /// <summary>upgrades.json (M24-T06): the Crew members' ×2s and the general upgrades with levels.</summary>
-        private static void ValidateUpgrades(UpgradesConfig upgrades, CrewConfig crew, List<string> errors)
+        /// <summary>
+        /// economy.json → crew_removal_refund (M24-T46, A-172): the prices of the removed Crew and Upgrades, used only to give
+        /// old saves back what they spent. Optional: without it nothing is refunded and the game still opens.
+        /// </summary>
+        private static void ValidateCrewRemovalRefund(CrewRemovalRefundConfig refund, List<string> errors)
         {
-            const string file = GameConfigLoader.UpgradesFile;
-            var crewUpgrades = upgrades?.CrewUpgrades;
-            if (crewUpgrades?.Tiers == null || crewUpgrades.Tiers.Count == 0)
+            if (refund == null)
             {
-                errors.Add(V.Missing(file, "crew_upgrades.tiers"));
                 return;
             }
 
-            if (upgrades.GeneralUpgrades == null)
+            var members = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var member in refund.CrewMembers ?? new List<RetiredCrewMemberConfig>())
             {
-                errors.Add(V.Missing(file, "general_upgrades"));
-                return;
-            }
-
-            if (!(crewUpgrades.Multiplier >= 1) || crewUpgrades.Multiplier > 1000)
-            {
-                errors.Add(V.UpgradeMultiplier);
-            }
-
-            // At most 20 tiers: each bought one multiplies the member once more.
-            var previous = 0;
-            var ascending = crewUpgrades.Tiers.Count <= 20;
-            foreach (var tier in crewUpgrades.Tiers)
-            {
-                if (tier == null)
+                if (member == null || string.IsNullOrWhiteSpace(member.Id) || !members.Add(member.Id)
+                    || !(member.BaseCost >= 0) || !(member.CostGrowth > 1) || member.CostGrowth > 10)
                 {
-                    ascending = false;
-                    continue;
-                }
-
-                ascending &= tier.UnlockCount > previous;
-                previous = tier.UnlockCount;
-                if (!(tier.CostFactor > 0) || tier.CostFactor > 1e12)
-                {
-                    errors.Add(V.UpgradeCostFactor(tier.UnlockCount));
-                }
-
-                if (string.IsNullOrWhiteSpace(tier.Name))
-                {
-                    errors.Add(V.Missing(file, "crew_upgrades.tiers (" + tier.UnlockCount + ").name"));
+                    errors.Add(V.CrewRefundInvalid("crew_members (" + (member?.Id ?? "") + ")"));
                 }
             }
 
-            if (!ascending)
+            foreach (var tier in refund.CrewUpgradeTiers ?? new List<RetiredCrewUpgradeTierConfig>())
             {
-                errors.Add(V.UpgradeTiers);
-            }
-
-            // Every member needs the end of its upgrades' names; the generated ids must not clash with the general ones.
-            var ids = new HashSet<string>(StringComparer.Ordinal);
-            if (crew?.Members != null)
-            {
-                foreach (var member in crew.Members)
+                if (tier == null || tier.UnlockCount < 0 || !(tier.CostFactor >= 0))
                 {
-                    if (member == null || string.IsNullOrWhiteSpace(member.Id))
-                    {
-                        continue;
-                    }
-
-                    if (crewUpgrades.MemberSuffixes == null || !crewUpgrades.MemberSuffixes.TryGetValue(member.Id, out var suffix) || string.IsNullOrWhiteSpace(suffix))
-                    {
-                        errors.Add(V.UpgradeSuffixMissing(member.Id));
-                    }
-
-                    for (var i = 0; i < crewUpgrades.Tiers.Count; i++)
-                    {
-                        ids.Add(FishingIdle.GameService.Upgrades.UpgradeRules.CrewUpgradeId(member.Id, i));
-                    }
+                    errors.Add(V.CrewRefundInvalid("crew_upgrade_tiers"));
                 }
             }
 
-            foreach (var upgrade in upgrades.GeneralUpgrades)
+            var general = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var upgrade in refund.GeneralUpgrades ?? new List<RetiredGeneralUpgradeConfig>())
             {
-                if (upgrade == null || string.IsNullOrWhiteSpace(upgrade.Id) || !ids.Add(upgrade.Id))
+                if (upgrade == null || string.IsNullOrWhiteSpace(upgrade.Id) || !general.Add(upgrade.Id)
+                    || !(upgrade.BaseCost >= 0) || !(upgrade.CostGrowth >= 1) || upgrade.CostGrowth > 1000 || upgrade.MaxLevel < 0 || upgrade.MaxLevel > 1000)
                 {
-                    errors.Add(V.DuplicateOrEmptyId(file, "general_upgrades", upgrade?.Id));
-                    continue;
+                    errors.Add(V.CrewRefundInvalid("general_upgrades (" + (upgrade?.Id ?? "") + ")"));
                 }
-
-                if (string.IsNullOrWhiteSpace(upgrade.DisplayName))
-                {
-                    errors.Add(V.Missing(file, upgrade.Id + ".display_name"));
-                }
-
-                if (!UpgradeEffects.All.Contains(upgrade.Effect))
-                {
-                    errors.Add(V.UpgradeUnknownEffect(upgrade.Id, upgrade.Effect));
-                }
-
-                if (upgrade.MaxLevel < 1 || upgrade.MaxLevel > 1000)
-                {
-                    errors.Add(V.UpgradeMaxLevel(upgrade.Id));
-                }
-
-                // +% effects at most +10.000% per level; the offline hours at most a year in total.
-                var limit = upgrade.Effect == UpgradeEffects.CrewOfflineHours ? 24.0 * 365 / Math.Max(1, upgrade.MaxLevel) : 100.0;
-                if (!(upgrade.ValuePerLevel > 0) || upgrade.ValuePerLevel > limit)
-                {
-                    errors.Add(V.UpgradeValue(upgrade.Id));
-                }
-
-                if (upgrade.BaseCost < 1)
-                {
-                    errors.Add(V.AtLeast(file, upgrade.Id + ".base_cost", 1));
-                }
-
-                if (!(upgrade.CostGrowth >= 1) || upgrade.CostGrowth > 1000)
-                {
-                    errors.Add(V.UpgradeCostGrowth(upgrade.Id));
-                }
-            }
-        }
-
-        /// <summary>crew.json (M24-T05): the Crew's members, milestones and offline income.</summary>
-        private static void ValidateCrew(CrewConfig crew, List<string> errors)
-        {
-            const string file = GameConfigLoader.CrewFile;
-            if (crew?.Members == null || crew.Members.Count == 0)
-            {
-                errors.Add(V.Missing(file, "members"));
-                return;
-            }
-
-            var ids = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var member in crew.Members)
-            {
-                if (member == null || string.IsNullOrWhiteSpace(member.Id) || !ids.Add(member.Id))
-                {
-                    errors.Add(V.DuplicateOrEmptyId(file, "members", member?.Id));
-                    continue;
-                }
-
-                if (string.IsNullOrWhiteSpace(member.DisplayName))
-                {
-                    errors.Add(V.Missing(file, member.Id + ".display_name"));
-                }
-
-                if (member.BaseCost < 1)
-                {
-                    errors.Add(V.AtLeast(file, member.Id + ".base_cost", 1));
-                }
-
-                // Above 1, or every unit would cost the same forever; at most 10, a guard against a typo.
-                if (!(member.CostGrowth > 1.0) || member.CostGrowth > 10.0)
-                {
-                    errors.Add(V.CrewCostGrowth(member.Id));
-                }
-
-                if (!(member.CoinsPerSecond >= 0) || !(member.XpPerSecond >= 0) || double.IsInfinity(member.CoinsPerSecond) || double.IsInfinity(member.XpPerSecond))
-                {
-                    errors.Add(V.NegativeValue(file, member.Id + " (renda)"));
-                }
-            }
-
-            if (crew.UnlockPreviousCount < 1)
-            {
-                errors.Add(V.AtLeast(file, "unlock_previous_count", 1));
-            }
-
-            if (!(crew.OnlineGapSeconds >= 1))
-            {
-                errors.Add(V.AtLeast(file, "online_gap_seconds", 1));
-            }
-
-            var offline = crew.Offline;
-            if (offline == null)
-            {
-                errors.Add(V.Missing(file, "offline"));
-            }
-            else
-            {
-                if (!(offline.FullRateHours >= 0) || !(offline.MaxHours >= offline.FullRateHours) || offline.MaxHours > 24 * 365)
-                {
-                    errors.Add(V.CrewOfflineHours);
-                }
-
-                if (!(offline.ReducedRate >= 0) || offline.ReducedRate > 1)
-                {
-                    errors.Add(V.ChanceOutOfRange(file, "offline.reduced_rate"));
-                }
-            }
-
-            ValidateCrewMilestones(crew.Milestones, "milestones", errors);
-            ValidateCrewMilestones(crew.FleetMilestones, "fleet_milestones", errors);
-        }
-
-        private static void ValidateCrewMilestones(CrewMilestonesConfig milestones, string section, List<string> errors)
-        {
-            if (milestones?.Counts == null)
-            {
-                errors.Add(V.Missing(GameConfigLoader.CrewFile, section));
-                return;
-            }
-
-            var previous = 0;
-            var ascending = true;
-            foreach (var count in milestones.Counts)
-            {
-                ascending &= count > previous;
-                previous = count;
-            }
-
-            // At most 64 counts: the multiplier is applied once per count reached.
-            if (!ascending || milestones.Counts.Count > 64 || !(milestones.Multiplier >= 1) || milestones.Multiplier > 1000)
-            {
-                errors.Add(V.CrewMilestones(section));
             }
         }
 

@@ -45,15 +45,13 @@ namespace FishingIdle.GameService.Config
         public const string ArenaBotsFile = "arena_bots.json";
         public const string MarketBotsFile = "market_bots.json";
         public const string EquipmentFile = "equipment.json";
-        public const string CrewFile = "crew.json";
-        public const string UpgradesFile = "upgrades.json";
         public const string PassFile = "pass.json";
         public const string WorldBossFile = "world_boss.json";
 
         /// <summary>The files the implemented milestones need, in a stable order.</summary>
         public static readonly IReadOnlyList<string> RequiredFiles = new[]
         {
-            FishCatalogFile, MapsFile, ProgressionFile, RodsFile, EconomyFile, ArenaFile, ExpeditionsFile, ArenaBotsFile, MarketBotsFile, EquipmentFile, CrewFile, UpgradesFile, PassFile, WorldBossFile,
+            FishCatalogFile, MapsFile, ProgressionFile, RodsFile, EconomyFile, ArenaFile, ExpeditionsFile, ArenaBotsFile, MarketBotsFile, EquipmentFile, PassFile, WorldBossFile,
         };
 
         public static ConfigLoadResult LoadFromDirectory(string directory)
@@ -112,8 +110,6 @@ namespace FishingIdle.GameService.Config
             var bots = Parse<ArenaBotsConfig>(texts, ArenaBotsFile, errors);
             var marketBots = Parse<MarketBotsConfig>(texts, MarketBotsFile, errors);
             var equipment = Parse<EquipmentConfig>(texts, EquipmentFile, errors);
-            var crew = Parse<CrewConfig>(texts, CrewFile, errors);
-            var upgrades = Parse<UpgradesConfig>(texts, UpgradesFile, errors);
             var pass = Parse<PassConfig>(texts, PassFile, errors);
             var worldBoss = Parse<WorldBossConfig>(texts, WorldBossFile, errors);
 
@@ -122,14 +118,14 @@ namespace FishingIdle.GameService.Config
                 return new ConfigLoadResult(null, errors);
             }
 
-            errors.AddRange(GameConfigValidator.Validate(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots, equipment, crew, upgrades, pass));
+            errors.AddRange(GameConfigValidator.Validate(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots, equipment, pass));
             errors.AddRange(GameConfigValidator.ValidateWorldBoss(worldBoss));
             if (errors.Count > 0)
             {
                 return new ConfigLoadResult(null, errors);
             }
 
-            var config = new GameConfig(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots, equipment, crew, upgrades, pass, worldBoss, Fingerprint(texts));
+            var config = new GameConfig(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots, equipment, pass, worldBoss, Fingerprint(texts));
             return new ConfigLoadResult(config, errors);
         }
 

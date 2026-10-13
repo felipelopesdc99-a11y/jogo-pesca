@@ -367,6 +367,9 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>The VIP (A-110): bought with Dólares, boosts offline Fisher XP for a while.</summary>
         public VipConfig Vip { get; set; }
+
+        /// <summary>The prices of the removed Crew and Upgrades, only to refund old saves (M24-T46, A-172).</summary>
+        public CrewRemovalRefundConfig CrewRemovalRefund { get; set; }
     }
 
     /// <summary>The VIP (A-110).</summary>
@@ -900,157 +903,53 @@ namespace FishingIdle.GameService.Config
         public long CostShells { get; set; }
     }
 
-    // ---------------------------------------------------------------- crew.json
+    // ---------------------------------------------------------------- economy.json → crew_removal_refund
 
     /// <summary>
-    /// The automatic Crew (M24-T05, A-154): hired fishers and boats that earn Moedas and Fisher XP per second, with
-    /// the game open or closed. Never fish.
+    /// The prices of the Crew and the Upgrades removed in M24-T46 (A-172, TD-053), kept only to give back what a save spent
+    /// on them (<see cref="Persistence.CrewRemovalMigration"/>). Nothing else in the game reads them.
     /// </summary>
-    public sealed class CrewConfig
+    public sealed class CrewRemovalRefundConfig
     {
-        public int ConfigSchemaVersion { get; set; }
+        /// <summary>The Crew members (crew.json before A-172): id, price of the first unit and growth per unit.</summary>
+        public List<RetiredCrewMemberConfig> CrewMembers { get; set; }
 
-        /// <summary>Each member after the first unlocks when the player has at least this many of the previous one.</summary>
-        public int UnlockPreviousCount { get; set; }
+        /// <summary>The Crew members' upgrades (upgrades.json → crew_upgrades.tiers before A-172), in tier order.</summary>
+        public List<RetiredCrewUpgradeTierConfig> CrewUpgradeTiers { get; set; }
 
-        /// <summary>Time without a sync that still counts as the game open (full income, no welcome summary).</summary>
-        public double OnlineGapSeconds { get; set; }
-
-        public CrewOfflineConfig Offline { get; set; }
-
-        /// <summary>Per member: reaching each count multiplies that member's Moedas.</summary>
-        public CrewMilestonesConfig Milestones { get; set; }
-
-        /// <summary>Fleet: every member with at least the count multiplies the whole Crew's Moedas.</summary>
-        public CrewMilestonesConfig FleetMilestones { get; set; }
-
-        /// <summary>In hiring order.</summary>
-        public List<CrewMemberConfig> Members { get; set; }
+        /// <summary>The general upgrades (upgrades.json → general_upgrades before A-172).</summary>
+        public List<RetiredGeneralUpgradeConfig> GeneralUpgrades { get; set; }
     }
 
-    public sealed class CrewOfflineConfig
-    {
-        /// <summary>Hours away at the full rate.</summary>
-        public double FullRateHours { get; set; }
-
-        /// <summary>Share of the income after <see cref="FullRateHours"/> (0.5 = 50%).</summary>
-        public double ReducedRate { get; set; }
-
-        /// <summary>Hours away that count at all; the rest earns nothing.</summary>
-        public double MaxHours { get; set; }
-    }
-
-    public sealed class CrewMilestonesConfig
-    {
-        /// <summary>Ascending unit counts.</summary>
-        public List<int> Counts { get; set; }
-
-        /// <summary>Multiplier applied once per count reached (2 = doubles).</summary>
-        public double Multiplier { get; set; }
-    }
-
-    public sealed class CrewMemberConfig
+    public sealed class RetiredCrewMemberConfig
     {
         public string Id { get; set; }
-        public string DisplayName { get; set; }
-
-        /// <summary>The plural ("Canoeiros"), for "Libera com 10 Canoeiros"; the display name when missing.</summary>
-        public string DisplayNamePlural { get; set; }
-
-        /// <summary>The plural, or the display name when the file has none.</summary>
-        public string PluralName => string.IsNullOrWhiteSpace(DisplayNamePlural) ? DisplayName : DisplayNamePlural;
 
         /// <summary>Moedas of the first unit.</summary>
-        public long BaseCost { get; set; }
+        public double BaseCost { get; set; }
 
-        /// <summary>Each extra unit costs this much times the previous one (1.07 to 1.10).</summary>
+        /// <summary>Each extra unit cost this much times the previous one.</summary>
         public double CostGrowth { get; set; }
-
-        /// <summary>Moedas per second of one unit, before milestones.</summary>
-        public double CoinsPerSecond { get; set; }
-
-        /// <summary>Fisher XP per second of one unit (milestones do not change it).</summary>
-        public double XpPerSecond { get; set; }
     }
 
-    // ---------------------------------------------------------------- upgrades.json
-
-    /// <summary>
-    /// Upgrades bought with Moedas (M24-T06, A-155): one-off ×2s per Crew member and general upgrades with levels.
-    /// None asks for a Fisher level.
-    /// </summary>
-    public sealed class UpgradesConfig
+    public sealed class RetiredCrewUpgradeTierConfig
     {
-        public int ConfigSchemaVersion { get; set; }
-
-        public CrewUpgradesConfig CrewUpgrades { get; set; }
-
-        /// <summary>The general upgrades, in the order the window lists them.</summary>
-        public List<GeneralUpgradeConfig> GeneralUpgrades { get; set; }
-    }
-
-    /// <summary>One upgrade per Crew member and per tier: unlocked by that member's units, bought once, ×multiplier on its Moedas.</summary>
-    public sealed class CrewUpgradesConfig
-    {
-        /// <summary>What each bought upgrade multiplies that member's Moedas by (2 = doubles).</summary>
-        public double Multiplier { get; set; }
-
-        public List<CrewUpgradeTierConfig> Tiers { get; set; }
-
-        /// <summary>The end of each upgrade's name, by member id ("do Canoeiro").</summary>
-        public Dictionary<string, string> MemberSuffixes { get; set; }
-    }
-
-    public sealed class CrewUpgradeTierConfig
-    {
-        /// <summary>Units of the member needed to buy it.</summary>
+        /// <summary>Units of the member it asked for; its price was cost_factor × base_cost × cost_growth^unlock_count.</summary>
         public int UnlockCount { get; set; }
 
-        /// <summary>The price is this times the price of that member's unit number <see cref="UnlockCount"/>.</summary>
         public double CostFactor { get; set; }
-
-        /// <summary>The start of the name ("Anzol Afiado"); the member's suffix completes it.</summary>
-        public string Name { get; set; }
     }
 
-    public sealed class GeneralUpgradeConfig
+    public sealed class RetiredGeneralUpgradeConfig
     {
         public string Id { get; set; }
-        public string DisplayName { get; set; }
 
-        /// <summary>What it does: one of <see cref="UpgradeEffects"/>.</summary>
-        public string Effect { get; set; }
-
-        /// <summary>What each level adds (0.25 = +25%; for the offline hours, hours).</summary>
-        public double ValuePerLevel { get; set; }
-
-        public int MaxLevel { get; set; }
-
-        /// <summary>Moedas of level 1; level N costs base_cost × cost_growth^(N−1).</summary>
-        public long BaseCost { get; set; }
+        /// <summary>Level N cost base_cost × cost_growth^(N−1).</summary>
+        public double BaseCost { get; set; }
 
         public double CostGrowth { get; set; }
-    }
 
-    /// <summary>The effect keys a general upgrade can have (upgrades.json → effect). Stored keys, never shown.</summary>
-    public static class UpgradeEffects
-    {
-        /// <summary>+% on the whole Crew's Moedas.</summary>
-        public const string CrewCoins = "crew_coins";
-
-        /// <summary>+% on the NPC sale price of every fish (Fishing Box and Aquarium); the Market between players is untouched.</summary>
-        public const string FishSale = "fish_sale";
-
-        /// <summary>Hours added to the Crew's offline cap (at the reduced rate).</summary>
-        public const string CrewOfflineHours = "crew_offline_hours";
-
-        /// <summary>+% on the Crew's Fisher XP.</summary>
-        public const string CrewXp = "crew_xp";
-
-        /// <summary>+% on the Moedas of selling the Fishing Box (the fish just caught).</summary>
-        public const string FishingCoins = "fishing_coins";
-
-        public static readonly IReadOnlyList<string> All = new[] { CrewCoins, FishSale, CrewOfflineHours, CrewXp, FishingCoins };
+        public int MaxLevel { get; set; }
     }
 
     // ---------------------------------------------------------------- pass.json

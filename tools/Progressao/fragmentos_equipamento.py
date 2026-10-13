@@ -10,7 +10,8 @@ Uso:
       # --gravar, escreve docs/propostas/fragmentos_equipamento.json
 
 Regras (as mesmas do jogo, GameService/Shop/RodFragmentRules.cs e ClothingRules.cs; o simulador é
-simular_progressao.py, com a Tripulação e as Melhorias de simular_melhorias.py, como passe_fragmentos.py):
+simular_progressao.py, pelo jogador de referência de jogador.py, como passe_fragmentos.py; até o A-172 com a
+Tripulação e as Melhorias, que saíram do jogo):
   - cada vara (menos a inicial) cai no ÚLTIMO mapa que a vara anterior alcança (o de maior nível entre os que pedem no
     máximo a categoria anterior): a vara que libera o próximo mapa sempre cai num mapa que o jogador já pesca;
   - chance da vara: o jogador de referência (4 vezes por dia, PERFIL_REFERENCIA) monta cada vara no mesmo dia em que a
@@ -30,9 +31,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import curva_niveis as C  # noqa: E402
 import passe_fragmentos as P  # noqa: E402
-import simular_melhorias as M  # noqa: E402
+import jogador as J  # noqa: E402
 import simular_progressao as S  # noqa: E402
-import simular_tripulacao as T  # noqa: E402
 
 ROOT = S.ROOT
 OUT = os.path.join(ROOT, 'docs', 'propostas', 'fragmentos_equipamento.json')
@@ -112,7 +112,7 @@ class Game(P.Game):
 
 def play(profile, days, legacy=False, clothing=True, rod_chances=None, clothing_chance=None, level_growth=None, pass_cfg=None):
     """passe_fragmentos.play with the rules adjusted in memory (nothing is written)."""
-    g = Game(M.load_json('crew.json'), M.load_json('upgrades.json'), pass_cfg, False)
+    g = Game(pass_cfg, False)
     r = g.rules
     if legacy:
         r.legacy_rod_prices = dict(PRECOS_ANTIGOS)
@@ -126,11 +126,11 @@ def play(profile, days, legacy=False, clothing=True, rod_chances=None, clothing_
             r.clothing['level_xp']['growth'] = level_growth
     for rid, chance in (rod_chances or {}).items():
         next(x for x in r.rods if x['id'] == rid)['fragment_drop_chance'] = chance
-    sessions = T.PROFILES[profile][1]
+    sessions = J.PROFILES[profile][1]
     end = days * 86400.0
     if sessions is None:
         while g.t < end and g.p.level < r.max_level:
-            g.online(T.step_for(g.t) * 20, T.step_for(g.t))
+            g.online(J.step_for(g.t) * 20, J.step_for(g.t))
         return g
     last_end = None
     day = 0
@@ -235,7 +235,7 @@ def simular(days, gravar):
     out['gerado_por'] = 'tools/Progressao/fragmentos_equipamento.py'
     out['nota'] = ('Varas por fragmentos (M24-T32, A-163) e roupas (M24-T33, A-164). "antes": as varas compradas na Loja '
                    '(os preços de antes) e sem roupas; "agora": as varas por fragmentos e as roupas. Simulação por valor '
-                   'esperado com a pesca, a Tripulação e as Melhorias, sem o Passe e sem VIP, sempre no melhor mapa liberado. '
+                   'esperado só com a pesca (sem Tripulação nem Melhorias desde o A-172), sem o Passe e sem VIP, sempre no melhor mapa liberado. '
                    'Dias contados da meia-noite do primeiro dia.')
     out['varas'] = collections.OrderedDict()
     for r in rods:
@@ -256,12 +256,12 @@ def simular(days, gravar):
     out['xp_de_uso_total_ate_nv100'] = sum(xp_need)
 
     out['perfis'] = collections.OrderedDict()
-    for profile in T.PROFILES:
+    for profile in J.PROFILES:
         print('Simulando %s (antes e agora)…' % profile)
         before = play(profile, days, legacy=True, clothing=False)
         now = play(profile, days)
         row = collections.OrderedDict()
-        row['descricao'] = T.PROFILES[profile][0]
+        row['descricao'] = J.PROFILES[profile][0]
         row['varas'] = collections.OrderedDict()
         for r in rods:
             row['varas'][r['id']] = collections.OrderedDict([

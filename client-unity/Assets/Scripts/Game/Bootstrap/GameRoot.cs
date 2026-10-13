@@ -7,8 +7,6 @@ using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Arena;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
-using FishingIdle.GameService.Crew;
-using FishingIdle.GameService.Upgrades;
 using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
@@ -42,11 +40,6 @@ namespace FishingIdle.Game.Bootstrap
 
         private float _nextSyncAt;
 
-        /// <summary>How often the Crew's income is credited (it keeps fractions, so the cadence changes nothing).</summary>
-        private const float CrewSyncIntervalSeconds = 1f;
-
-        private float _nextCrewSyncAt;
-
         public static GameRoot Instance { get; private set; }
 
         /// <summary>The running local game service. Null when startup failed.</summary>
@@ -63,18 +56,6 @@ namespace FishingIdle.Game.Bootstrap
 
         /// <summary>The "while you were away" summary waiting to be shown, or null.</summary>
         public OfflineReport WelcomeBack { get; set; }
-
-        /// <summary>What the Crew earned while the game was closed, waiting to be shown with <see cref="WelcomeBack"/>, or null.</summary>
-        public CrewOfflineReport CrewWelcome { get; set; }
-
-        /// <summary>The Crew's Moedas per second (all multipliers), refreshed with the player. Presentation only.</summary>
-        public double CrewCoinsPerSecond { get; private set; }
-
-        /// <summary>
-        /// Every Moeda the Crew credited since the game opened. The HUD uses it to tell the steady income (no "+N"
-        /// pop, no pulse every second) from a sale or a reward.
-        /// </summary>
-        public long CrewCoinsCredited { get; private set; }
 
         /// <summary>A finished Expedition waiting to be shown, or null.</summary>
         public ExpeditionResultView ExpeditionResult { get; private set; }
@@ -228,12 +209,6 @@ namespace FishingIdle.Game.Bootstrap
                 });
             }
 
-            if (IsRunning && Time.unscaledTime >= _nextCrewSyncAt)
-            {
-                _nextCrewSyncAt = Time.unscaledTime + CrewSyncIntervalSeconds;
-                Guard(SyncCrew);
-            }
-
             // A failure inside the sync stops the game service; nothing more to read this frame.
             if (!IsRunning)
             {
@@ -270,7 +245,6 @@ namespace FishingIdle.Game.Bootstrap
             if (paused && IsRunning)
             {
                 Guard(() => Game.Fishing.MarkSeen());
-                Guard(() => Game.Crew.MarkSeen());
             }
         }
 
@@ -279,7 +253,6 @@ namespace FishingIdle.Game.Bootstrap
             if (IsRunning)
             {
                 Guard(() => Game.Fishing.MarkSeen());
-                Guard(() => Game.Crew.MarkSeen());
             }
         }
 
@@ -912,99 +885,6 @@ namespace FishingIdle.Game.Bootstrap
             });
         }
 
-        // ------------------------------------------------------------------ Crew intents (M24-T05)
-
-        public CrewView GetCrew(CrewBuyMode mode) => IsRunning ? Game.Crew.GetCrew(mode) : null;
-
-        /// <summary>Hires crew members. Returns true when it happened.</summary>
-        public bool HireCrew(string memberId, CrewBuyMode mode)
-        {
-            var hired = false;
-            Guard(() =>
-            {
-                var result = Game.Crew.Hire(memberId, mode);
-                if (!result.Succeeded)
-                {
-                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
-                    return;
-                }
-
-                hired = true;
-                var hire = result.Value;
-                Toasts.Push(GameTexts.Crew.Hired(hire.Name, hire.NamePlural, hire.Bought), ToastKind.Info);
-                if (hire.MilestoneReached > 0)
-                {
-                    Toasts.Push(GameTexts.Crew.MilestoneToast(hire.NamePlural, hire.MilestoneReached, Format.Factor(hire.MilestoneMultiplier)), ToastKind.Important, notify: true);
-                }
-
-                if (hire.FleetMilestoneReached > 0)
-                {
-                    Toasts.Push(GameTexts.Crew.FleetMilestoneToast(hire.FleetMilestoneReached, Format.Factor(hire.FleetMilestoneMultiplier)), ToastKind.Important, notify: true);
-                }
-
-                if (hire.UnlockedName != null)
-                {
-                    Toasts.Push(GameTexts.Crew.Unlocked(hire.UnlockedName), ToastKind.Important, notify: true);
-                }
-
-                Refresh();
-            });
-            return hired;
-        }
-
-        // ------------------------------------------------------------------ Upgrade intents (M24-T06)
-
-        public UpgradesView GetUpgrades() => IsRunning ? Game.Upgrades.GetUpgrades() : null;
-
-        /// <summary>Buys an Upgrade (a Crew member's ×2 or the next level of a general one). Returns true when it happened.</summary>
-        public bool BuyUpgrade(string upgradeId)
-        {
-            var bought = false;
-            Guard(() =>
-            {
-                var result = Game.Upgrades.Buy(upgradeId);
-                if (!result.Succeeded)
-                {
-                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
-                    return;
-                }
-
-                bought = true;
-                var upgrade = result.Value;
-                var effect = GameTexts.Upgrades.Effect(upgrade.EffectKey, upgrade.EffectValue, upgrade.MemberName);
-                Toasts.Push(upgrade.IsCrewUpgrade
-                    ? GameTexts.Upgrades.BoughtToast(upgrade.Name, effect)
-                    : GameTexts.Upgrades.LevelToast(upgrade.Name, upgrade.Level, effect), ToastKind.Info);
-                Refresh();
-            });
-            return bought;
-        }
-
-        /// <summary>Credits the Crew's income; level-ups from its XP get the same toasts as fishing ones.</summary>
-        private void SyncCrew()
-        {
-            var update = Game.Crew.Sync();
-            TakeOfflineReport();
-            if (!update.HasChanges)
-            {
-                return;
-            }
-
-            CrewCoinsCredited += update.CoinsGained;
-            foreach (var level in update.LevelsReached)
-            {
-                Toasts.Push(GameTexts.Toasts.LevelUp(level), ToastKind.LevelUp, notify: true);
-                Celebrations.Show(GameTexts.Celebration.LevelUp(level), GameTexts.Celebration.LevelUpLine, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
-            }
-
-            PushPassMilestones(update.LevelsReached);
-            Player = Game.Player.GetPlayer();
-            if (update.LevelsReached.Count > 0)
-            {
-                Pass = Game.Pass.GetPass();
-            }
-        }
-
         // ------------------------------------------------------------------ Map, Shop and rod intents
 
         public MapsView GetMaps() => IsRunning ? Game.Maps.GetMaps() : null;
@@ -1451,6 +1331,7 @@ namespace FishingIdle.Game.Bootstrap
                 Debug.Log("[FishingIdle] Game service started. Config " + Game.Session.Config.Version +
                           ", save at " + Game.Session.SaveLocation);
                 AnnounceSaveStatus(Game.Session.LoadStatus);
+                AnnounceCrewRefund(Game.Session.CrewRefund);
                 Refresh();
                 Tutorial = Game.Tutorial.Get();
                 TakeOfflineReport();
@@ -1463,14 +1344,6 @@ namespace FishingIdle.Game.Bootstrap
 
         private void TakeOfflineReport()
         {
-            // The Crew's summary (M24-T05) joins the fishing one in the same "Bem-vindo de volta".
-            var crew = Game.Crew.TakeOfflineReport();
-            if (crew != null)
-            {
-                CrewWelcome = crew;
-                Refresh();
-            }
-
             var report = Game.Fishing.TakeOfflineReport();
             if (report == null)
             {
@@ -1480,6 +1353,22 @@ namespace FishingIdle.Game.Bootstrap
             WelcomeBack = report;
             Refresh();
             BoxChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// A save from before the Crew and the Upgrades left the game (M24-T46, A-172): one notice with the Moedas given
+        /// back. Shown once, because the save no longer has them after this start.
+        /// </summary>
+        private void AnnounceCrewRefund(CrewRemovalChange refund)
+        {
+            if (refund == null || !refund.HadData)
+            {
+                return;
+            }
+
+            Toasts.Push(refund.CoinsRefunded > 0
+                ? GameTexts.Startup.CrewRemovedRefund(Format.Number(refund.CoinsRefunded))
+                : GameTexts.Startup.CrewRemoved, ToastKind.Important, notify: true);
         }
 
         private void AnnounceSaveStatus(SaveLoadStatus status)
@@ -1519,7 +1408,6 @@ namespace FishingIdle.Game.Bootstrap
             Clothing = Game.Clothing.GetClothing();
             Vip = Game.Vip.GetVip();
             Pass = Game.Pass.GetPass();
-            CrewCoinsPerSecond = Game.Crew.GetCrew(CrewBuyMode.One).CoinsPerSecond;
         }
 
         /// <summary>

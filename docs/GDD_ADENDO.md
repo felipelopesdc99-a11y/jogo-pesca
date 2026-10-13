@@ -1933,6 +1933,8 @@ balanço lento da câmera continua. A preferência antiga (`fishingidle.zoom`) f
 
 ### A-152 · Novo escopo: idle de crescimento rápido
 
+*Atualizado em 12/10/2026 (A-172): a Tripulação e as Melhorias saíram do jogo (decisão do proprietário). O crescimento vem da pesca, dos equipamentos, das roupas e do Passe; a meta de ~60 dias até o Nv.1000 continua (curva do Pescador versão 4).*
+
 Decisão do proprietário em 10/10/2026. A ilha 2D foi descartada e o jogo volta a ser idle puro, no estilo de
 crescimento rápido de dinheiro, experiência e níveis:
 
@@ -1951,6 +1953,8 @@ antes (10/10/2026). Os números de cada etapa ficam em /config e são ajustados 
 
 ### A-153 · Etapa 1 do novo escopo: itens sem nível, Pescador até o Nv.1000
 **Seção do GDD:** 7, 17, 19 · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 12/10/2026 (A-172): a Tripulação saiu do jogo; o XP do Pescador vem só da pesca. Os tempos com a Tripulação citados abaixo são históricos.*
 
 Decisão do proprietário em 10/10/2026 (M24-T09 e M24-T03), primeira etapa do A-152:
 
@@ -1994,6 +1998,8 @@ Decisão do proprietário em 10/10/2026 (M24-T09 e M24-T03), primeira etapa do A
 **Seção do GDD:** 10, 17, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
 
 *Atualizado em 12/10/2026 (A-160, A-169, A-170): a pesca offline citada abaixo faz 1 tentativa a cada 20 s (15 s com o VIP), não mais 1 por minuto. A Tripulação abre pela aba Tripulação do menu de cima e a janela usa o padrão "Diário de bordo"; a renda por segundo aparece na placa pendurada embaixo das abas.*
+
+*Atualizado em 12/10/2026 (A-172): **RETIRADO.** A Tripulação saiu do jogo por decisão do proprietário ("Não vai ter tripulação, retira isso do jogo"). Quem tinha tripulantes recebeu de volta as Moedas que gastou neles. O texto abaixo fica só como histórico.*
 
 Decisão do proprietário em 10/10/2026 (M24-T05 e M24-T08), segunda etapa do A-152. Números de partida aprovados por
 ele, em `config/crew.json`, para ajustar jogando.
@@ -2073,6 +2079,8 @@ ele, em `config/crew.json`, para ajustar jogando.
 
 ### A-155 · Etapa 3 do novo escopo: Melhorias compradas
 **Seção do GDD:** 10, 17, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 12/10/2026 (A-172): **RETIRADO.** As Melhorias (as da Tripulação e as gerais: Rádio do Porto, Freguesia na Feira, Caixa Térmica, Sonar de Cardume e Maré Boa) saíram do jogo junto com a Tripulação, por decisão do proprietário. Quem tinha comprado recebeu de volta as Moedas. A venda de peixe ao NPC voltou ao preço sem multiplicador. O texto abaixo fica só como histórico.*
 
 Decisão do proprietário em 10/10/2026 (M24-T06 e M24-T11), terceira etapa do A-152: Melhorias compradas com Moedas
 que multiplicam a renda. Números de partida em `config/upgrades.json`, para ajustar jogando. Nenhuma Melhoria pede
@@ -2161,6 +2169,8 @@ nível do Pescador (como os itens, A-153).
 
 ### A-156 · Etapa 4 do novo escopo: varas, barcos e peixes até o Nv.100
 **Seção do GDD:** 13, 19, 22, 24 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 12/10/2026 (A-172): os tempos abaixo que contam com a Tripulação e as Melhorias são históricos; o ritmo de hoje (só a pesca) está no A-172.*
 
 Pedido do proprietário em 10/10/2026 (M24-T13): "o foco vai ser ter níveis mais altos nos peixes, nos barcos, nas
 varas, então diminuir preço para melhorar o nível das coisas, mas aumentar para até nv 100 e começar dando pequenas
@@ -2331,6 +2341,8 @@ novos); o barco **sai da Loja**. Números em `config/equipment.json`, gerados po
 
 *Atualizado em 12/10/2026 (A-169, A-170): o Passe abre pelo atalho redondo "Passe" na lateral direita (com a contagem de recompensas prontas); o botão na barra de cima saiu. A janela usa o padrão "Diário de bordo".*
 
+*Atualizado em 12/10/2026 (A-172): as Moedas e as Conchas de cada marco foram regeradas pela renda da pesca, sem a Tripulação (`passe_fragmentos.py passe`): grátis no Nv.10 1.710 Moedas (eram 2.460), no Nv.100 230 mil (544 mil), no Nv.500 3,12 mi (981 mi) e no Nv.1000 3,24 mi (1,11 tri). Dólares e fragmentos não mudaram.*
+
 > **Atualizado em 12/10/2026 (A-168):** com a volta para 5 barcos, os fragmentos do Passe são só dos barcos 1 a 5: Nv.10
 > → Remo Valente, … Nv.50 → Horizonte Dourado, Nv.60 → Remo Valente de novo (o barco que o Mapa 6 dá), … Nv.100 →
 > Horizonte Dourado, e assim por diante. `config/pass.json` foi regerado pelo script.
@@ -2416,6 +2428,8 @@ sugestões para ajustar jogando.
 para 0,233333, a Caixa para 8.640, as iscas para 180 e os fragmentos para 0,43%–0,67%. Os raros por hora continuam os
 deste item. Os números abaixo são os de 11/10/2026.*
 
+*Atualizado em 12/10/2026 (A-172): os números com a Tripulação e as Melhorias citados abaixo são históricos.*
+
 Decisão do proprietário em 11/10/2026 (M24-T22): "a ideia é aumentar a quantidade de peixes pescados e diminuir a
 chance de pegar mais raros". Respostas dele: **o dobro de peixes por hora**; peixes raros por hora **um pouco menos que
 hoje** (~70%); Moedas e XP por hora **sobem junto** (o valor e o XP de cada peixe não mudam). Números em `/config`.
@@ -2493,6 +2507,8 @@ hoje** (~70%); Moedas e XP por hora **sobem junto** (o valor e o XP de cada peix
 **Seção do GDD:** 7, 10, 17, 22 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
 *Atualizado em 12/10/2026 (A-161): as iscas passaram a ter 999 tentativas por compra; as 180 abaixo valeram só até o A-161.*
+
+*Atualizado em 12/10/2026 (A-172): os números com a Tripulação e as Melhorias citados abaixo são históricos. A Caixa de Pesca continua com 8.640 peixes.*
 
 Decisão do proprietário em 12/10/2026 (M24-T27): "Vamos mudar para pesca a cada 10 segundos on-line e 20 segundos
 off-line, mantendo o buff do vip off-line que vai ser 15 segundos cada pesca, a ideia é aumentar número de peixes
@@ -2577,6 +2593,8 @@ de pesca online". Números em `/config`.
 ### A-161 · Três iscas (+5%, +10%, +15%) com 999 tentativas
 **Seção do GDD:** 7, 22 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
+*Atualizado em 12/10/2026 (A-172): a simulação citada abaixo contava com a Tripulação e as Melhorias, que saíram do jogo.*
+
 Decisão do proprietário em 12/10/2026 (M24-T30): "A ideia é o jogador conseguir ir aumentando essa chance de pesca com
 barco, vara, equipamentos e iscas, todo nível precisa ser gasto moedas e coral, iscas vai ter 3 modelos 5-10-15% de
 chance a mais de capturar/morder, vão ser 999x por compra e vão ficar um pouquinho mais caro, não tanto". Respostas
@@ -2633,6 +2651,8 @@ dele: "coral" = **Conchas** (a moeda que já existe); as 3 iscas novas **substit
 ### A-162 · Curva do Pescador: Nv.1000 em ~60 dias
 **Seção do GDD:** 17, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
+*Atualizado em 12/10/2026 (A-172): a curva passou para a **versão 4**: os níveis 1 a 249 iguais e o resto recalibrado sem a Tripulação e as Melhorias, para o Nv.1000 continuar em ~60 dias com o jogo aberto (sem roupas). Números no A-172.*
+
 Decisão do proprietário em 12/10/2026 (M24-T31): "60 dias pro lvl 1000". Depois da pesca a cada 10 s (A-160) e das
 iscas novas (A-161), o Nv.1000 chegava em ~50 dias com o jogo sempre aberto. Números em `config/progression.json`
 (`fisher.xp_table`, curva versão 3), gerados por `tools/Progressao/calibrar_xp.py --gravar`.
@@ -2674,6 +2694,8 @@ iscas novas (A-161), o Nv.1000 chegava em ~50 dias com o jogo sempre aberto. Nú
 
 ### A-163 · Varas por fragmentos
 **Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-172): os dias citados abaixo foram simulados com a Tripulação e as Melhorias; as chances de fragmento não mudaram.*
 
 Decisão do proprietário em 12/10/2026 (M24-T32): "Vai dropar fragmentos de equipamentos. Então vai dropar fragmento de
 barco, vai dropar fragmento de vara, …". As varas **saem da Loja**, como os barcos (A-157): cada vara (menos o Caniço
@@ -2731,6 +2753,8 @@ continuam subindo de nível com Moedas e Conchas (A-156). Números em `config/ro
 **Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
 *Atualizado em 12/10/2026: a OD-067 foi resolvida; o proprietário manteve a Calça como está (opção a) e a curva do Pescador não muda.*
+
+*Atualizado em 12/10/2026 (A-172): sem a Tripulação e com a curva versão 4, com as roupas o Nv.1000 vem em ~54 dias com o jogo aberto (era ~55).*
 
 Decisão do proprietário em 12/10/2026 (M24-T33): "… coloca fragmento de roupa. Fragmento de roupa já vai englobar tudo
 isso. Vai ter luva, calça, bota, chapéu, camiseta." Respostas dele: **um** fragmento de roupa serve para qualquer peça (o
@@ -2797,6 +2821,8 @@ tamanho, camiseta = Conchas, calça = XP); a roupa "sobe usando ela, upa com o t
 **Seção do GDD:** 24–30 (Cardume e Arena), 7 (HUD) · novo escopo pedido pelo proprietário · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
 *Atualizado em 12/10/2026 (A-167, A-169): o botão do Boss e a pílula de contagem saíram da barra de cima. O Boss Mundial fica dentro do menu Eventos; durante o evento, o atalho redondo Eventos (lateral direita) vira "Boss Mundial", dourado, e abre direto a janela do Boss.*
+
+*Atualizado em 12/10/2026 (A-172): a renda de referência das faixas foi regerada a partir do Passe novo (só a pesca): Nv.1 10.260 Moedas/h (eram 14.760), Nv.1000 19,4 mi/h (eram 6,7 tri/h).*
 
 Pedido do proprietário em 12/10/2026 (M24-T29): "quero criar um Boss mundial para todos conseguirem atacar, todo dia às
 19:00, ele tem vida infinita, a ideia é todos conseguirem atacar com seu cardume e conseguir recompensas de acordo com o
@@ -2924,6 +2950,8 @@ vazia ou travada sem explicação:
 **Seção do GDD:** 7 e 8 (menus e tela) · escolha do proprietário em 12/10/2026 (exemplo 2, "Abas em cima, placa embaixo
 delas") · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
+*Atualizado em 12/10/2026 (A-172): a aba Tripulação saiu: são **4 abas** (Pesca, Aventura, Comércio, Perfil), um pouco mais largas (160 px), centralizadas, com as cores de antes. A placa pendurada mostra só "MOEDAS" e o total contando (não há mais renda por segundo).*
+
 Muda o A-100, o A-139 e o A-167 (a fileira de 11 botões da barra de cima). Nenhum menu, moeda ou regra nova.
 
 - **Faixa de cima** (escura, 80 px, com acabamento de madeira embaixo): à esquerda o **cartão do jogador** (retrato, nome,
@@ -2957,6 +2985,8 @@ Muda o A-100, o A-139 e o A-167 (a fileira de 11 botões da barra de cima). Nenh
 
 ### A-170 · Janelas no padrão "Diário de bordo"
 **Seção do GDD:** 21 (interface) · Bíblia de Arte, seções 3 e 13 · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-172): a janela Tripulação saiu do jogo.*
 
 O proprietário escolheu o padrão 3 "Diário de bordo" para todas as janelas internas. **Isto troca, nas janelas, o painel
 azul-marinho da Bíblia de Arte (seções 3 e 13) por papel claro numa moldura de madeira** — decisão dele, registrada
@@ -3017,3 +3047,58 @@ Decidido na revisão de integridade de 12/10/2026 (M24-T45).
   discreta no canto de baixo à esquerda (só sem janela aberta) dizendo quanto falta para o jogo voltar a andar.
 - **Selos** ("Nv. X", "NOVA ESPÉCIE", "RECORDE", posição no Cardume) usam sempre as cores da noite, com texto escuro
   sobre o turquesa (cerca de 9:1), para ficarem legíveis tanto no papel quanto nas cenas.
+
+### A-172 · A Tripulação e as Melhorias saíram do jogo
+**Seção do GDD:** 10, 17, 19 (novo escopo A-152) · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (aguardando o CI, não aberto no Unity)
+
+Decisão do proprietário em 12/10/2026 (M24-T46): "Não vai ter tripulação, retira isso do jogo". Perguntado, ele escolheu
+tirar também as **Melhorias gerais** e **manter a meta de ~60 dias até o Nv.1000** (sem roupas; ~55 com roupas, OD-067),
+que a Tripulação ajudava a cumprir. Nenhum sistema, moeda ou raridade novo.
+
+- **O que saiu:** a Tripulação (os 10 tripulantes, a renda de Moedas e de XP por segundo com o jogo aberto e fechado, os
+  marcos e o marco da frota), as 50 Melhorias da Tripulação e as 5 Melhorias gerais (Rádio do Porto, Freguesia na Feira,
+  Caixa Térmica, Sonar de Cardume e Maré Boa). Com elas saíram a janela Tripulação (abas Tripulantes e Melhorias), a aba
+  Tripulação do menu de cima, a parte "Sua Tripulação trabalhou" do "Bem-vindo de volta" e os avisos de contratação, de
+  marco e de compra. `config/crew.json` e `config/upgrades.json` não existem mais.
+- **Venda de peixe ao NPC:** sem a Freguesia na Feira e a Maré Boa, a Caixa de Pesca, o Aquário e o peixe achado na
+  Expedição vendem pelo preço de `economy.json` (sem multiplicador). O Mercado entre jogadores não mudou.
+- **Mercado e Leilão simulados:** o menor preço de um vendedor simulado agora é o **preço de venda ao NPC + 1 Moeda**
+  (antes era o preço com a Freguesia na Feira no máximo + 1). O objetivo continua: comprar peixe de um vendedor simulado e
+  revender ao jogo nunca dá lucro (TD-052, TD-053).
+- **Menu de cima:** 4 abas (Pesca, Aventura, Comércio, Perfil), centralizadas, 160 px cada (eram 140) com 14 px entre
+  elas; as cores de cada aba não mudaram (saiu o azul da Tripulação). A placa pendurada embaixo das abas mostra
+  **"MOEDAS"** e o total contando, com o "+N" de um ganho (antes: "RENDA DA TRIPULAÇÃO", a renda por segundo e as Moedas).
+- **Quem já jogava** (save versão 20 ou mais antigo, TD-053): ao abrir o jogo, recebe de volta **todas as Moedas que gastou**
+  na Tripulação e nas Melhorias, calculadas pelos números salvos e pelas curvas de preço de antes (guardadas em
+  `economy.json → crew_removal_refund` só para essa conta): cada tripulante, o preço das unidades que tinha; cada Melhoria
+  da Tripulação comprada, o preço dela; cada Melhoria geral, a soma dos níveis comprados. Nenhuma das duas custava Conchas.
+  Aparece **um aviso** (uma vez): "A Tripulação e as Melhorias saíram do jogo. Você recebeu de volta N Moedas, tudo o que
+  gastou nelas." Quem nunca contratou ninguém vê "Você não tinha gastado nada nelas." O XP e os níveis que a Tripulação deu
+  ficam; a renda da Tripulação do tempo em que o jogo ficou fechado desde a última vez não é paga.
+- **Ritmo do Pescador** (o jogador de referência de `tools/Progressao/jogador.py`: só a pesca, níveis de vara e de barco,
+  barcos e varas por fragmentos e iscas; sem Passe e sem VIP). A curva do Pescador passou para a **versão 4**
+  (`calibrar_xp.py --manter-ate 250 --metas 500:14.6d,750:33.3d,1000:60d`): os níveis 1 a 249 pedem o mesmo XP de antes
+  e os seguintes foram recalibrados; do Nv.1 ao Nv.1000 são **217.677.170 XP** (eram 229.596.770).
+
+  | Nv.1000 (dias) | Com Tripulação (antes) | Sem Tripulação, curva 3 | **Agora (curva 4)** |
+  |---|---|---|---|
+  | Jogo aberto, sem roupas | 59,6 | 63,2 | **60,0** |
+  | Jogo aberto, com roupas | 54,6 | 57,1 | **54,3** |
+  | 4 vezes por dia (30 min), sem roupas | 107,8 | 117,9 | **112,3** |
+  | 4 vezes por dia, com roupas | 99,3 | 106,3 | **100,9** |
+  | 1 vez por dia (30 min), sem roupas | 123,8 | 129,9 | **123,8** |
+  | 1 vez por dia, com roupas | 112,8 | 115,8 | **110,8** |
+
+  Com o jogo aberto e sem roupas: Nv.10 em ~20 min, Nv.100 em ~0,5 dia, Nv.250 em ~3,3 dias (iguais), Nv.500 em ~14,6
+  dias (era 14,2), Nv.750 em ~33,3 dias (era 32,9). Quem abre 4 vezes por dia chega um pouco depois do que chegava com a
+  Tripulação (ela rendia também com o jogo fechado). XP para o próximo nível: Nv.250 94.500 (era 92.300), Nv.500 223.000
+  (224.000), Nv.750 337.000 (360.000), Nv.999 457.000 (504.000).
+- **Quem já joga** (curva 3 → 4, TD-038): até o Nv.249 nada muda. Acima, o XP total já ganho vira o nível equivalente na
+  curva nova, **sem nunca baixar o nível**: um Nv.500 continua Nv.500 (com o XP dentro do nível); um Nv.750 sobe para o
+  Nv.757. Não há aviso na tela.
+- **Passe do Pescador e Boss Mundial:** as Moedas e Conchas de cada marco do Passe eram ~10 min da renda com a Tripulação
+  (no Nv.1000, 1,11 tri de Moedas); foram regeradas pela renda da pesca (`passe_fragmentos.py passe`): Nv.10 1.710, Nv.100
+  230 mil, Nv.500 3,12 mi, Nv.1000 3,24 mi. A renda de referência das faixas do Boss vem do Passe (`boss_mundial.py`).
+  Dólares e fragmentos do Passe não mudaram.
+- **Arte:** os ícones `ico_tripulacao` e `ico_aba_tripulacao` saíram do jogo; os pedidos de arte da Tripulação e das
+  Melhorias em `docs/ASSETS_PENDENTES.md` estão marcados RETIRADO (não pedir).

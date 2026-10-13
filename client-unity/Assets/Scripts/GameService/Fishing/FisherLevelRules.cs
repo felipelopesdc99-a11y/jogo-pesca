@@ -13,14 +13,14 @@ namespace FishingIdle.GameService.Fishing
     }
 
     /// <summary>
-    /// Fisher level rules shared by fishing, the Crew and loading a save: adding XP and the move of an older save to the
+    /// Fisher level rules shared by fishing and loading a save: adding XP and the move of an older save to the
     /// current XP curve (M24-T03, TD-038). Since M24-T17 (A-158) the level milestones pay nothing by themselves: their
     /// Dólares (A-111) are in the free track of the Passe do Pescador, claimed there.
     /// </summary>
     public static class FisherLevelRules
     {
         /// <summary>
-        /// Adds Fisher XP from any source (fishing, the Crew): counts it in the total (TD-038) and climbs the levels it
+        /// Adds Fisher XP (since M24-T46 the fishing is its only source): counts it in the total (TD-038) and climbs the levels it
         /// reaches (each one added to <paramref name="levelsReached"/>). At the max level the XP still counts in the total.
         /// </summary>
         internal static void AddXp(GameConfig config, PlayerSave save, long xp, List<int> levelsReached)

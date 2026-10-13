@@ -45,14 +45,12 @@ public sealed class MarketTests
     }
 
     [Fact]
-    public void A_simulated_fish_never_sells_to_the_game_for_more_than_it_cost_even_with_the_max_Freguesia_na_Feira()
+    public void A_simulated_fish_never_sells_to_the_game_for_more_than_it_cost()
     {
-        // Review of 12/10/2026: the bots' floor ignored the Freguesia na Feira (up to ×2 on the Aquarium sale), so buying
-        // a simulated fish and selling it to the game gave a profit (TD-052).
+        // TD-052: buying a simulated fish and selling it to the game never profits. Since the Upgrades left the game
+        // (M24-T46, TD-053) nothing multiplies the NPC price, so the floor is the NPC price + 1 Moeda.
         var (game, clock, _) = Trader();
         var config = game.Session.Config;
-        var max = FishingIdle.GameService.Upgrades.UpgradeRules.MaxFishSaleMultiplier(config);
-        Assert.True(max > 1.0);
         clock.AdvanceSeconds(3 * 3600);
         game.Market.Update();
 
@@ -61,21 +59,17 @@ public sealed class MarketTests
         var fishAuctions = state.Auctions.Where(a => a.Goods.Kind == MarketGoods.KindFish).ToList();
         Assert.NotEmpty(fishListings);
         Assert.NotEmpty(fishAuctions);
-        long Best(MarketGoods g)
+        long Npc(MarketGoods g)
         {
             config.TryGetSpecies(g.Fish.SpeciesId, out var species);
-            return FishingIdle.GameService.Fishing.CatchRules.SalePrice(config, species, g.Fish.SizeMm, max);
+            return FishingIdle.GameService.Fishing.CatchRules.SalePrice(config, species, g.Fish.SizeMm);
         }
 
-        Assert.All(fishListings, l => Assert.True(l.PriceCoins > Best(l.Goods)));
-        Assert.All(fishAuctions, a => Assert.True(a.StartingBidCoins > Best(a.Goods)));
+        Assert.All(fishListings, l => Assert.True(l.PriceCoins > Npc(l.Goods)));
+        Assert.All(fishAuctions, a => Assert.True(a.StartingBidCoins > Npc(a.Goods)));
+        Assert.All(fishListings, l => Assert.Equal(Npc(l.Goods) + 1, MarketRules.BotFloor(config, l.Goods)));
 
-        // End to end: with the Freguesia na Feira at its max level, buy the cheapest simulated fish and sell it back.
-        foreach (var upgrade in config.Upgrades.GeneralUpgrades.Where(u => u.Effect == UpgradeEffects.FishSale))
-        {
-            game.Session.Save.Upgrades.Levels[upgrade.Id] = upgrade.MaxLevel;
-        }
-
+        // End to end: buy the cheapest simulated fish and sell it back to the game.
         game.Session.Save.Coins = 100_000_000;
         var cheapest = game.Market.Search(new MarketQuery()).Where(l => l.Goods.IsFish).OrderBy(l => l.PriceCoins).First();
         var before = game.Player.GetPlayer().Coins;

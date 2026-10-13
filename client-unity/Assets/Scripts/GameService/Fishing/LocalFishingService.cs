@@ -4,7 +4,6 @@ using System.Linq;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Persistence;
-using FishingIdle.GameService.Upgrades;
 
 namespace FishingIdle.GameService.Fishing
 {
@@ -182,7 +181,7 @@ namespace FishingIdle.GameService.Fishing
         {
             return Save.FishingBox
                 .OrderByDescending(c => c.Id)
-                .Select(c => CatchViews.Create(Config, c, BoxSaleMultiplier))
+                .Select(c => CatchViews.Create(Config, c))
                 .ToList();
         }
 
@@ -197,7 +196,7 @@ namespace FishingIdle.GameService.Fishing
             var wanted = new HashSet<long>(catchIds);
             foreach (var entry in Save.FishingBox.Where(c => wanted.Contains(c.Id)))
             {
-                var view = CatchViews.Create(Config, entry, BoxSaleMultiplier);
+                var view = CatchViews.Create(Config, entry);
                 preview.Count++;
                 preview.TotalCoins += view.SalePriceCoins;
                 if (view.IsProtected)
@@ -229,8 +228,6 @@ namespace FishingIdle.GameService.Fishing
                 return ServiceResult<SaleResult>.Fail(ServiceError.CatchNotFound);
             }
 
-            // Freguesia na Feira × Maré Boa (M24-T06): the same price each card shows.
-            var multiplier = BoxSaleMultiplier;
             long total = 0;
             foreach (var entry in entries)
             {
@@ -239,7 +236,7 @@ namespace FishingIdle.GameService.Fishing
                     return ServiceResult<SaleResult>.Fail(ServiceError.SpeciesMissingFromConfig);
                 }
 
-                total = SafeAdd(total, CatchRules.SalePrice(Config, species, entry.SizeMm, multiplier));
+                total = SafeAdd(total, CatchRules.SalePrice(Config, species, entry.SizeMm));
             }
 
             Save.FishingBox.RemoveAll(c => wanted.Contains(c.Id));
@@ -577,19 +574,16 @@ namespace FishingIdle.GameService.Fishing
                 var clothesXp = clothingXp > 0 ? (long)Math.Round(rolled.FisherXp * clothingXp, MidpointRounding.AwayFromZero) : 0;
                 AddFisherXp(rolled.FisherXp + vipXp + clothesXp, update);
             }
-            var view = CatchViews.Create(Config, entry, BoxSaleMultiplier);
+            var view = CatchViews.Create(Config, entry);
             view.PreviousRecordCm = previousRecordMm / 10.0;
             update.NewCatches.Add(view);
         }
-
-        /// <summary>What the Upgrades multiply a Fishing Box catch's NPC price by: Freguesia na Feira × Maré Boa (M24-T06).</summary>
-        private double BoxSaleMultiplier => UpgradeRules.BoxSaleMultiplier(Config, Save.Upgrades);
 
         private static long SafeAdd(long a, long b) => b > long.MaxValue - a ? long.MaxValue : a + b;
 
         private void AddFisherXp(long xp, FishingUpdate update)
         {
-            // Shared with the Crew (M24-T05): total XP and levels (the milestones' rewards are in the Passe do Pescador).
+            // Total XP and levels (the milestones' rewards are in the Passe do Pescador).
             update.XpGained += xp;
             FisherLevelRules.AddXp(Config, Save, xp, update.LevelsReached);
         }

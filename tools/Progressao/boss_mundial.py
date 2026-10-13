@@ -5,8 +5,8 @@ Uso:
       # reescreve config/world_boss.json → reference_income a partir de config/pass.json
 
 Conta (sem simulação longa, de propósito):
-  - as Moedas grátis de cada marco do Passe do Pescador são ~10 minutos da renda (Tripulação + pesca) de quem abre o
-    jogo 4 vezes por dia ao chegar àquele nível (tools/Progressao/passe_fragmentos.py); então a renda por hora é 6 × elas;
+  - as Moedas grátis de cada marco do Passe do Pescador são ~10 minutos da renda da pesca (desde o A-172 não
+    há Tripulação) de quem abre o jogo 4 vezes por dia ao chegar àquele nível (tools/Progressao/passe_fragmentos.py); então a renda por hora é 6 × elas;
   - as Conchas grátis do marco são ~30 minutos das Conchas da pesca; por hora, 2 × elas;
   - o nível 1 usa a linha do primeiro marco (Nv.10).
 As faixas (world_boss.json → bands) dão income_minutes / shell_minutes dessa renda. O proprietário ajusta jogando.

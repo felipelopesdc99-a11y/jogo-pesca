@@ -488,7 +488,10 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > reflexo, sem sombra projetada, sem texto. Estilo "Lago Dourado — Clean Premium": limpo, arredondado. Arquivo:
 > ui_loja_boia.png
 
-## Tripulação: retratos e ícone do menu (M24-T08, A-154, pedido em 10/10/2026)
+## Tripulação: retratos e ícone do menu (M24-T08, A-154, pedido em 10/10/2026) — RETIRADO, não pedir
+
+**RETIRADO em 12/10/2026 (M24-T46, A-172).** A Tripulação saiu do jogo. **Não pedir** os retratos `trip_crew_01` a
+`trip_crew_10` nem o `ico_tripulacao` (a cópia que estava no jogo foi apagada). O texto abaixo fica só como histórico.
 
 **12/10/2026:** `ico_tripulacao`, `ico_passe`, `ico_eventos` e `ico_boss` usam por enquanto cópias dos ícones novos do menu (`ico_aba_tripulacao`, `ico_atalho_passe`, `ico_atalho_eventos`, `ico_atalho_boss`), no mesmo estilo branco. Não precisam mais ser pedidos; uma arte própria pode substituir a cópia quando o proprietário quiser.
 
@@ -541,7 +544,10 @@ tamanho final ficam por minha conta):
 > jogo: a silhueta de dois pescadores lado a lado (um de chapéu de palha) na frente da proa de um barquinho, simples e
 > legível em 24 px. Sem texto, sem fundo, sem sombra. Arquivo: ico_tripulacao.png
 
-## Melhorias: ícones das Melhorias gerais (M24-T11, A-155, pedido em 10/10/2026)
+## Melhorias: ícones das Melhorias gerais (M24-T11, A-155, pedido em 10/10/2026) — RETIRADO, não pedir
+
+**RETIRADO em 12/10/2026 (M24-T46, A-172).** As Melhorias saíram do jogo junto com a Tripulação. **Não pedir** os
+ícones `melhoria_*`. O texto abaixo fica só como histórico.
 
 A aba "Melhorias" da janela da Tripulação já funciona com desenhos provisórios (`ASSET_PENDENTE` em
 `Game/UI/UpgradesPanel.cs`): as Melhorias da Tripulação usam o retrato do tripulante (pedido acima); as gerais
@@ -658,7 +664,7 @@ sozinho. A faixa e a placa pendurada são desenhadas pelo jogo (madeira lisa, se
 | Arquivo | O quê | Tamanho | Onde aparece |
 |---|---|---|---|
 | `Arte/Icones/ico_aba_pesca.png` | Aba Pesca | 256×256, branco sobre transparente → 32 px | Faixa de cima |
-| `Arte/Icones/ico_aba_tripulacao.png` | Aba Tripulação | 256×256, branco sobre transparente → 32 px | Faixa de cima |
+| ~~`Arte/Icones/ico_aba_tripulacao.png`~~ | ~~Aba Tripulação~~ — **RETIRADO em 12/10/2026 (A-172)**: a aba saiu do jogo e o arquivo foi apagado; não pedir | — | — |
 | `Arte/Icones/ico_aba_aventura.png` | Aba Aventura | 256×256, branco sobre transparente → 32 px | Faixa de cima |
 | `Arte/Icones/ico_aba_comercio.png` | Aba Comércio | 256×256, branco sobre transparente → 32 px | Faixa de cima |
 | `Arte/Icones/ico_aba_perfil.png` | Aba Perfil | 256×256, branco sobre transparente → 32 px | Faixa de cima |
@@ -674,7 +680,7 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 > Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: um anzol pendurado numa linha curta com uma pequena gota de água ao lado, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_aba_pesca.png
 
-> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: uma âncora com uma corda enrolada no cabo, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_aba_tripulacao.png
+> *(RETIRADO em 12/10/2026, A-172: a aba Tripulação saiu do jogo; não pedir o `ico_aba_tripulacao`.)*
 
 > Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: uma bússola redonda com a agulha apontando para cima à direita, simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_aba_aventura.png
 

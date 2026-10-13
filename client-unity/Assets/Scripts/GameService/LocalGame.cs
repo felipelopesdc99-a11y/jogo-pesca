@@ -4,7 +4,6 @@ using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Arena;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
-using FishingIdle.GameService.Crew;
 using FishingIdle.GameService.Dev;
 using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
@@ -16,7 +15,6 @@ using FishingIdle.GameService.Profile;
 using FishingIdle.GameService.Ranking;
 using FishingIdle.GameService.Shop;
 using FishingIdle.GameService.Tutorial;
-using FishingIdle.GameService.Upgrades;
 using FishingIdle.GameService.Vip;
 using FishingIdle.GameService.WorldBoss;
 
@@ -54,12 +52,9 @@ namespace FishingIdle.GameService
             Ranking = new LocalRankingService(session);
             CurrencyTrade = new LocalCurrencyTradeService(session);
             Vip = new LocalVipService(session);
-            var crew = new LocalCrewService(session);
-            Crew = crew;
-            Upgrades = new LocalUpgradeService(session, crew);
             Pass = new LocalPassService(session, fishing);
             WorldBoss = new LocalWorldBossService(session, Cardume, fishing);
-            DevTools = new LocalDevToolsService(session, fishing, crew);
+            DevTools = new LocalDevToolsService(session, fishing);
         }
 
         public GameSession Session { get; }
@@ -82,12 +77,6 @@ namespace FishingIdle.GameService
         public IRankingService Ranking { get; }
         public ICurrencyTradeService CurrencyTrade { get; }
         public IVipService Vip { get; }
-
-        /// <summary>The automatic Crew (M24-T05): hired fishers and boats that earn Moedas and XP per second.</summary>
-        public ICrewService Crew { get; }
-
-        /// <summary>Upgrades bought with Moedas (M24-T06): the Crew members' ×2s and the general upgrades with levels.</summary>
-        public IUpgradeService Upgrades { get; }
 
         /// <summary>The Passe do Pescador (M24-T17): milestones every 10 Fisher levels, free and premium rewards.</summary>
         public IPassService Pass { get; }

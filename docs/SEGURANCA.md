@@ -100,6 +100,10 @@ ciclos são elegíveis a partir do carimbo de tempo autoritativo do início da s
 ciclo gravado, e processa apenas os ciclos que realmente passaram. Requisições a mais devolvem o
 mesmo estado.
 
+*A Tripulação e as Melhorias saíram do jogo em 12/10/2026 (M24-T46, TD-053); os dois parágrafos abaixo ficam como
+histórico. O reembolso de um save antigo vem só do que está gravado nele e dos preços do config, somado com teto
+(`SafeMath`), e acontece uma vez: depois os campos somem do save.*
+
 **Tripulação acelerada (M24, TD-039).** O cliente só pede "sincronizar" ou "contratar"; nunca diz quanto a
 Tripulação rendeu. O serviço paga do cursor gravado (`LastCreditedAtMs`) até agora, pelo relógio que nunca volta
 (TD-030), e move o cursor: pedir de novo no mesmo instante não paga nada. Relógio voltado não paga nem tira; relógio

@@ -117,9 +117,6 @@ namespace FishingIdle.Game.Visual
             Buy = "comprar", Sort = "ordenar", Feed = "alimentar", Home = "inicio", Waves = "ondas", Compact = "compacto",
             Coin = "moeda", Shell = "concha", Pause = "pausa", Search = "buscar", Boat = "barco", Bait = "isca", Dollar = "dolar";
 
-        /// <summary>The Crew's menu icon (M24-T08). ASSET_PENDENTE: ico_tripulacao.png; until it exists the menu shows the boat.</summary>
-        public const string Crew = "tripulacao";
-
         /// <summary>The Eventos menu icon (M24-T39). ASSET_PENDENTE: ico_eventos.png; until it exists the menu shows the clock.</summary>
         public const string Events = "eventos";
     }

@@ -82,503 +82,503 @@
   "reference_income": [
     {
       "level": 1,
-      "coins_per_hour": 14760,
+      "coins_per_hour": 10260,
       "shells_per_hour": 18
     },
     {
       "level": 20,
-      "coins_per_hour": 175200,
+      "coins_per_hour": 129600,
       "shells_per_hour": 24
     },
     {
       "level": 30,
-      "coins_per_hour": 594000,
-      "shells_per_hour": 32
+      "coins_per_hour": 133200,
+      "shells_per_hour": 26
     },
     {
       "level": 40,
-      "coins_per_hour": 594000,
-      "shells_per_hour": 32
+      "coins_per_hour": 133200,
+      "shells_per_hour": 26
     },
     {
       "level": 50,
-      "coins_per_hour": 594000,
-      "shells_per_hour": 32
+      "coins_per_hour": 133200,
+      "shells_per_hour": 26
     },
     {
       "level": 60,
-      "coins_per_hour": 906000,
-      "shells_per_hour": 48
+      "coins_per_hour": 1356000,
+      "shells_per_hour": 50
     },
     {
       "level": 70,
-      "coins_per_hour": 906000,
-      "shells_per_hour": 48
+      "coins_per_hour": 1356000,
+      "shells_per_hour": 50
     },
     {
       "level": 80,
-      "coins_per_hour": 3264000,
-      "shells_per_hour": 50
+      "coins_per_hour": 1380000,
+      "shells_per_hour": 60
     },
     {
       "level": 90,
-      "coins_per_hour": 3264000,
-      "shells_per_hour": 50
+      "coins_per_hour": 1380000,
+      "shells_per_hour": 60
     },
     {
       "level": 100,
-      "coins_per_hour": 3264000,
-      "shells_per_hour": 50
+      "coins_per_hour": 1380000,
+      "shells_per_hour": 60
     },
     {
       "level": 110,
-      "coins_per_hour": 13920000,
-      "shells_per_hour": 100
+      "coins_per_hour": 5268000,
+      "shells_per_hour": 88
     },
     {
       "level": 120,
-      "coins_per_hour": 17760000,
-      "shells_per_hour": 100
+      "coins_per_hour": 5268000,
+      "shells_per_hour": 90
     },
     {
       "level": 130,
-      "coins_per_hour": 23700000,
-      "shells_per_hour": 124
+      "coins_per_hour": 6240000,
+      "shells_per_hour": 122
     },
     {
       "level": 140,
-      "coins_per_hour": 29820000,
+      "coins_per_hour": 6420000,
       "shells_per_hour": 128
     },
     {
       "level": 150,
-      "coins_per_hour": 29820000,
+      "coins_per_hour": 6420000,
       "shells_per_hour": 128
     },
     {
       "level": 160,
-      "coins_per_hour": 66000000,
-      "shells_per_hour": 164
+      "coins_per_hour": 11520000,
+      "shells_per_hour": 146
     },
     {
       "level": 170,
-      "coins_per_hour": 72000000,
-      "shells_per_hour": 170
+      "coins_per_hour": 11520000,
+      "shells_per_hour": 148
     },
     {
       "level": 180,
-      "coins_per_hour": 73800000,
-      "shells_per_hour": 172
+      "coins_per_hour": 13620000,
+      "shells_per_hour": 184
     },
     {
       "level": 190,
-      "coins_per_hour": 109200000,
-      "shells_per_hour": 182
-    },
-    {
-      "level": 200,
-      "coins_per_hour": 135000000,
-      "shells_per_hour": 182
-    },
-    {
-      "level": 210,
-      "coins_per_hour": 154800000,
+      "coins_per_hour": 13980000,
       "shells_per_hour": 190
     },
     {
+      "level": 200,
+      "coins_per_hour": 15420000,
+      "shells_per_hour": 196
+    },
+    {
+      "level": 210,
+      "coins_per_hour": 16200000,
+      "shells_per_hour": 196
+    },
+    {
       "level": 220,
-      "coins_per_hour": 221400000,
-      "shells_per_hour": 200
+      "coins_per_hour": 16320000,
+      "shells_per_hour": 196
     },
     {
       "level": 230,
-      "coins_per_hour": 221400000,
+      "coins_per_hour": 16440000,
       "shells_per_hour": 200
     },
     {
       "level": 240,
-      "coins_per_hour": 221400000,
-      "shells_per_hour": 200
+      "coins_per_hour": 16560000,
+      "shells_per_hour": 202
     },
     {
       "level": 250,
-      "coins_per_hour": 324600000,
-      "shells_per_hour": 208
+      "coins_per_hour": 16920000,
+      "shells_per_hour": 204
     },
     {
       "level": 260,
-      "coins_per_hour": 361800000,
+      "coins_per_hour": 17220000,
       "shells_per_hour": 210
     },
     {
       "level": 270,
-      "coins_per_hour": 417000000,
+      "coins_per_hour": 17280000,
       "shells_per_hour": 210
     },
     {
       "level": 280,
-      "coins_per_hour": 451200000,
-      "shells_per_hour": 214
+      "coins_per_hour": 17280000,
+      "shells_per_hour": 212
     },
     {
       "level": 290,
-      "coins_per_hour": 553200000,
-      "shells_per_hour": 220
+      "coins_per_hour": 17580000,
+      "shells_per_hour": 216
     },
     {
       "level": 300,
-      "coins_per_hour": 585600000,
+      "coins_per_hour": 17760000,
       "shells_per_hour": 220
     },
     {
       "level": 310,
-      "coins_per_hour": 816000000,
-      "shells_per_hour": 228
+      "coins_per_hour": 17880000,
+      "shells_per_hour": 222
     },
     {
       "level": 320,
-      "coins_per_hour": 936000000,
-      "shells_per_hour": 230
+      "coins_per_hour": 17880000,
+      "shells_per_hour": 222
     },
     {
       "level": 330,
-      "coins_per_hour": 1032000000,
-      "shells_per_hour": 234
+      "coins_per_hour": 17940000,
+      "shells_per_hour": 224
     },
     {
       "level": 340,
-      "coins_per_hour": 1032000000,
-      "shells_per_hour": 234
+      "coins_per_hour": 18000000,
+      "shells_per_hour": 228
     },
     {
       "level": 350,
-      "coins_per_hour": 1032000000,
-      "shells_per_hour": 234
+      "coins_per_hour": 18000000,
+      "shells_per_hour": 228
     },
     {
       "level": 360,
-      "coins_per_hour": 1032000000,
-      "shells_per_hour": 234
+      "coins_per_hour": 18060000,
+      "shells_per_hour": 230
     },
     {
       "level": 370,
-      "coins_per_hour": 1596000000,
-      "shells_per_hour": 242
+      "coins_per_hour": 18120000,
+      "shells_per_hour": 230
     },
     {
       "level": 380,
-      "coins_per_hour": 1818000000,
-      "shells_per_hour": 246
+      "coins_per_hour": 18120000,
+      "shells_per_hour": 234
     },
     {
       "level": 390,
-      "coins_per_hour": 1950000000,
-      "shells_per_hour": 248
+      "coins_per_hour": 18120000,
+      "shells_per_hour": 234
     },
     {
       "level": 400,
-      "coins_per_hour": 1980000000,
-      "shells_per_hour": 248
+      "coins_per_hour": 18240000,
+      "shells_per_hour": 236
     },
     {
       "level": 410,
-      "coins_per_hour": 2004000000,
-      "shells_per_hour": 248
+      "coins_per_hour": 18240000,
+      "shells_per_hour": 236
     },
     {
       "level": 420,
-      "coins_per_hour": 2484000000,
-      "shells_per_hour": 254
+      "coins_per_hour": 18240000,
+      "shells_per_hour": 238
     },
     {
       "level": 430,
-      "coins_per_hour": 2670000000,
-      "shells_per_hour": 254
+      "coins_per_hour": 18300000,
+      "shells_per_hour": 240
     },
     {
       "level": 440,
-      "coins_per_hour": 3180000000,
-      "shells_per_hour": 260
+      "coins_per_hour": 18480000,
+      "shells_per_hour": 242
     },
     {
       "level": 450,
-      "coins_per_hour": 3306000000,
-      "shells_per_hour": 260
+      "coins_per_hour": 18540000,
+      "shells_per_hour": 242
     },
     {
       "level": 460,
-      "coins_per_hour": 4500000000,
-      "shells_per_hour": 260
+      "coins_per_hour": 18540000,
+      "shells_per_hour": 244
     },
     {
       "level": 470,
-      "coins_per_hour": 5010000000,
-      "shells_per_hour": 270
+      "coins_per_hour": 18660000,
+      "shells_per_hour": 246
     },
     {
       "level": 480,
-      "coins_per_hour": 5010000000,
-      "shells_per_hour": 270
+      "coins_per_hour": 18660000,
+      "shells_per_hour": 246
     },
     {
       "level": 490,
-      "coins_per_hour": 5886000000,
-      "shells_per_hour": 272
+      "coins_per_hour": 18720000,
+      "shells_per_hour": 248
     },
     {
       "level": 500,
-      "coins_per_hour": 5886000000,
-      "shells_per_hour": 272
+      "coins_per_hour": 18720000,
+      "shells_per_hour": 248
     },
     {
       "level": 510,
-      "coins_per_hour": 5886000000,
-      "shells_per_hour": 272
+      "coins_per_hour": 18720000,
+      "shells_per_hour": 248
     },
     {
       "level": 520,
-      "coins_per_hour": 5886000000,
-      "shells_per_hour": 272
+      "coins_per_hour": 18780000,
+      "shells_per_hour": 252
     },
     {
       "level": 530,
-      "coins_per_hour": 5886000000,
-      "shells_per_hour": 272
+      "coins_per_hour": 18780000,
+      "shells_per_hour": 252
     },
     {
       "level": 540,
-      "coins_per_hour": 8460000000,
-      "shells_per_hour": 282
+      "coins_per_hour": 18840000,
+      "shells_per_hour": 266
     },
     {
       "level": 550,
-      "coins_per_hour": 9180000000,
-      "shells_per_hour": 300
+      "coins_per_hour": 18840000,
+      "shells_per_hour": 280
     },
     {
       "level": 560,
-      "coins_per_hour": 9420000000,
-      "shells_per_hour": 310
+      "coins_per_hour": 18900000,
+      "shells_per_hour": 284
     },
     {
       "level": 570,
-      "coins_per_hour": 9540000000,
-      "shells_per_hour": 316
+      "coins_per_hour": 18900000,
+      "shells_per_hour": 288
     },
     {
       "level": 580,
-      "coins_per_hour": 9660000000,
-      "shells_per_hour": 318
+      "coins_per_hour": 18900000,
+      "shells_per_hour": 294
     },
     {
       "level": 590,
-      "coins_per_hour": 12120000000,
-      "shells_per_hour": 328
+      "coins_per_hour": 18900000,
+      "shells_per_hour": 296
     },
     {
       "level": 600,
-      "coins_per_hour": 13500000000,
-      "shells_per_hour": 332
+      "coins_per_hour": 18900000,
+      "shells_per_hour": 298
     },
     {
       "level": 610,
-      "coins_per_hour": 13920000000,
-      "shells_per_hour": 334
+      "coins_per_hour": 18900000,
+      "shells_per_hour": 302
     },
     {
       "level": 620,
-      "coins_per_hour": 14160000000,
-      "shells_per_hour": 336
+      "coins_per_hour": 18960000,
+      "shells_per_hour": 302
     },
     {
       "level": 630,
-      "coins_per_hour": 14400000000,
-      "shells_per_hour": 336
+      "coins_per_hour": 19020000,
+      "shells_per_hour": 304
     },
     {
       "level": 640,
-      "coins_per_hour": 14580000000,
-      "shells_per_hour": 338
+      "coins_per_hour": 19020000,
+      "shells_per_hour": 304
     },
     {
       "level": 650,
-      "coins_per_hour": 14760000000,
-      "shells_per_hour": 338
+      "coins_per_hour": 19020000,
+      "shells_per_hour": 308
     },
     {
       "level": 660,
-      "coins_per_hour": 14880000000,
-      "shells_per_hour": 340
+      "coins_per_hour": 19080000,
+      "shells_per_hour": 308
     },
     {
       "level": 670,
-      "coins_per_hour": 15000000000,
-      "shells_per_hour": 340
+      "coins_per_hour": 19080000,
+      "shells_per_hour": 310
     },
     {
       "level": 680,
-      "coins_per_hour": 39660000000,
-      "shells_per_hour": 366
+      "coins_per_hour": 19080000,
+      "shells_per_hour": 310
     },
     {
       "level": 690,
-      "coins_per_hour": 45540000000,
-      "shells_per_hour": 370
+      "coins_per_hour": 19080000,
+      "shells_per_hour": 314
     },
     {
       "level": 700,
-      "coins_per_hour": 59820000000,
-      "shells_per_hour": 378
+      "coins_per_hour": 19140000,
+      "shells_per_hour": 314
     },
     {
       "level": 710,
-      "coins_per_hour": 62400000000,
-      "shells_per_hour": 378
+      "coins_per_hour": 19140000,
+      "shells_per_hour": 316
     },
     {
       "level": 720,
-      "coins_per_hour": 64200000000,
-      "shells_per_hour": 378
+      "coins_per_hour": 19140000,
+      "shells_per_hour": 316
     },
     {
       "level": 730,
-      "coins_per_hour": 66000000000,
-      "shells_per_hour": 382
+      "coins_per_hour": 19140000,
+      "shells_per_hour": 320
     },
     {
       "level": 740,
-      "coins_per_hour": 67200000000,
-      "shells_per_hour": 384
+      "coins_per_hour": 19140000,
+      "shells_per_hour": 320
     },
     {
       "level": 750,
-      "coins_per_hour": 69000000000,
-      "shells_per_hour": 384
+      "coins_per_hour": 19140000,
+      "shells_per_hour": 320
     },
     {
       "level": 760,
-      "coins_per_hour": 69000000000,
-      "shells_per_hour": 384
+      "coins_per_hour": 19200000,
+      "shells_per_hour": 322
     },
     {
       "level": 770,
-      "coins_per_hour": 190800000000,
-      "shells_per_hour": 400
+      "coins_per_hour": 19200000,
+      "shells_per_hour": 322
     },
     {
       "level": 780,
-      "coins_per_hour": 289800000000,
-      "shells_per_hour": 420
+      "coins_per_hour": 19200000,
+      "shells_per_hour": 326
     },
     {
       "level": 790,
-      "coins_per_hour": 407400000000,
-      "shells_per_hour": 432
+      "coins_per_hour": 19200000,
+      "shells_per_hour": 326
     },
     {
       "level": 800,
-      "coins_per_hour": 488400000000,
-      "shells_per_hour": 436
+      "coins_per_hour": 19200000,
+      "shells_per_hour": 326
     },
     {
       "level": 810,
-      "coins_per_hour": 511200000000,
-      "shells_per_hour": 436
+      "coins_per_hour": 19260000,
+      "shells_per_hour": 326
     },
     {
       "level": 820,
-      "coins_per_hour": 524400000000,
-      "shells_per_hour": 436
+      "coins_per_hour": 19260000,
+      "shells_per_hour": 326
     },
     {
       "level": 830,
-      "coins_per_hour": 720000000000,
-      "shells_per_hour": 446
+      "coins_per_hour": 19260000,
+      "shells_per_hour": 330
     },
     {
       "level": 840,
-      "coins_per_hour": 870000000000,
-      "shells_per_hour": 450
+      "coins_per_hour": 19260000,
+      "shells_per_hour": 330
     },
     {
       "level": 850,
-      "coins_per_hour": 900000000000,
-      "shells_per_hour": 454
+      "coins_per_hour": 19260000,
+      "shells_per_hour": 332
     },
     {
       "level": 860,
-      "coins_per_hour": 900000000000,
-      "shells_per_hour": 454
+      "coins_per_hour": 19320000,
+      "shells_per_hour": 332
     },
     {
       "level": 870,
-      "coins_per_hour": 1260000000000,
-      "shells_per_hour": 462
+      "coins_per_hour": 19320000,
+      "shells_per_hour": 332
     },
     {
       "level": 880,
-      "coins_per_hour": 1344000000000,
-      "shells_per_hour": 466
+      "coins_per_hour": 19320000,
+      "shells_per_hour": 334
     },
     {
       "level": 890,
-      "coins_per_hour": 1404000000000,
-      "shells_per_hour": 466
+      "coins_per_hour": 19320000,
+      "shells_per_hour": 334
     },
     {
       "level": 900,
-      "coins_per_hour": 1440000000000,
-      "shells_per_hour": 466
+      "coins_per_hour": 19320000,
+      "shells_per_hour": 336
     },
     {
       "level": 910,
-      "coins_per_hour": 1470000000000,
-      "shells_per_hour": 466
+      "coins_per_hour": 19320000,
+      "shells_per_hour": 336
     },
     {
       "level": 920,
-      "coins_per_hour": 1494000000000,
-      "shells_per_hour": 466
+      "coins_per_hour": 19380000,
+      "shells_per_hour": 336
     },
     {
       "level": 930,
-      "coins_per_hour": 1512000000000,
-      "shells_per_hour": 470
+      "coins_per_hour": 19380000,
+      "shells_per_hour": 336
     },
     {
       "level": 940,
-      "coins_per_hour": 1542000000000,
-      "shells_per_hour": 470
+      "coins_per_hour": 19380000,
+      "shells_per_hour": 340
     },
     {
       "level": 950,
-      "coins_per_hour": 1560000000000,
-      "shells_per_hour": 470
+      "coins_per_hour": 19380000,
+      "shells_per_hour": 340
     },
     {
       "level": 960,
-      "coins_per_hour": 5064000000000,
-      "shells_per_hour": 472
+      "coins_per_hour": 19380000,
+      "shells_per_hour": 340
     },
     {
       "level": 970,
-      "coins_per_hour": 6060000000000,
-      "shells_per_hour": 472
+      "coins_per_hour": 19380000,
+      "shells_per_hour": 340
     },
     {
       "level": 980,
-      "coins_per_hour": 6660000000000,
-      "shells_per_hour": 472
+      "coins_per_hour": 19380000,
+      "shells_per_hour": 340
     },
     {
       "level": 990,
-      "coins_per_hour": 6660000000000,
-      "shells_per_hour": 472
+      "coins_per_hour": 19440000,
+      "shells_per_hour": 344
     },
     {
       "level": 1000,
-      "coins_per_hour": 6660000000000,
-      "shells_per_hour": 472
+      "coins_per_hour": 19440000,
+      "shells_per_hour": 344
     }
   ]
 }
