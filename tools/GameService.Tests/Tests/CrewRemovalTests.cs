@@ -1,4 +1,5 @@
 using FishingIdle.GameService.Config;
+using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Persistence;
 using Newtonsoft.Json.Linq;
 using Xunit;
