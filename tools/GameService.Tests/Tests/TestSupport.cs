@@ -176,9 +176,9 @@ internal static class TestSupport
     }
 
     /// <summary>
-    /// Gives a rod the way the game does since M24-T58 (A-180): all the fragments it needs and "Montar". The rod before it,
-    /// when it is not in the Inventory, is lent only for the assembly and taken back, so a test gets just the rod it asked
-    /// for. Then, as before M24-T58, the rod is equipped when its tier is higher than the rod in use.
+    /// Gives a rod the way the game does since M24-T58 (A-180): all the fragments it needs and "Montar". When the rod before
+    /// it is not in the Inventory, the rod is built the way "Montar" builds it (the service would refuse), so a test gets
+    /// just the rod it asked for. Then, as before M24-T58, the rod is equipped when its tier is higher than the rod in use.
     /// </summary>
     public static FishingIdle.GameService.Shop.RodFragmentGainView GiveRod(LocalGame game, string rodId)
     {
@@ -186,23 +186,34 @@ internal static class TestSupport
         var save = game.Session.Save;
         config.TryGetRod(rodId, out var rod);
         var previous = FishingIdle.GameService.Shop.RodFragmentRules.Previous(config, rod);
-        FishingIdle.GameService.Persistence.InventoryItem lent = null;
-        if (previous != null && !FishingIdle.GameService.Shop.RodFragmentRules.InInventory(save, previous.Id))
-        {
-            lent = new FishingIdle.GameService.Persistence.InventoryItem { Id = -1, Kind = FishingIdle.GameService.Persistence.InventoryItem.KindRod, RodId = previous.Id, Level = 1 };
-            save.Inventory.Add(lent);
-        }
-
         var gain = FishingIdle.GameService.Shop.RodFragmentRules.Add(config, save, rod, rod.FragmentsRequired, game.Session.Clock.UtcNowMs);
-        var result = game.Shop.AssembleRod(rodId);
-        if (lent != null)
+        if (gain == null)
         {
-            save.Inventory.Remove(lent);
+            throw new InvalidOperationException("Rod " + rodId + " takes no fragments.");
         }
 
-        if (gain == null || !result.Succeeded)
+        if (previous == null || FishingIdle.GameService.Shop.RodFragmentRules.InInventory(save, previous.Id))
         {
-            throw new InvalidOperationException("Rod " + rodId + " was not assembled: " + result.Error + ".");
+            var result = game.Shop.AssembleRod(rodId);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("Rod " + rodId + " was not assembled: " + result.Error + ".");
+            }
+        }
+        else
+        {
+            // Without the rod before it the service refuses (that is tested elsewhere): the test gets the rod the way
+            // "Montar" builds it, without lending a copy (a borrowed item would break the save's item ids).
+            Xunit.Assert.Equal(ServiceError.RodNeedsPrevious, game.Shop.AssembleRod(rodId).Error);
+            save.RodFragments[rodId] -= rod.FragmentsRequired;
+            save.Inventory.Add(new FishingIdle.GameService.Persistence.InventoryItem
+            {
+                Id = save.NextItemId++,
+                Kind = FishingIdle.GameService.Persistence.InventoryItem.KindRod,
+                RodId = rodId,
+                Level = 1,
+                AcquiredAtMs = game.Session.Clock.UtcNowMs,
+            });
         }
 
         var item = save.Inventory.Last(i => i.Kind == FishingIdle.GameService.Persistence.InventoryItem.KindRod && i.RodId == rodId);
