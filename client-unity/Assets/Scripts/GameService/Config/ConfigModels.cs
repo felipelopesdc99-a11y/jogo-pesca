@@ -108,8 +108,11 @@ namespace FishingIdle.GameService.Config
     public sealed class GenesConfig
     {
         public int MaxValue { get; set; } = 31;
-        public double StatMultiplierMin { get; set; } = 0.9;
-        public double StatMultiplierMax { get; set; } = 1.1;
+        public double StatMultiplierMin { get; set; } = 0.8;
+        public double StatMultiplierMax { get; set; } = 1.3;
+
+        /// <summary>The gene that gives ×1,00; below it the attribute drops towards the minimum, above it rises to the maximum.</summary>
+        public int StatMultiplierNeutralGene { get; set; } = 16;
 
         /// <summary>The value every gene of a fish from a save before version 23 gets (TD-056).</summary>
         public int MigrationNeutralValue { get; set; } = 16;

@@ -3323,6 +3323,8 @@ sistema novo: ela mostra o que a pesca offline já dava.
   peça). A tela só soma o que já vem por fragmento (o último de cada barco ou vara diz o progresso).
 
 ### A-176 · Genes: cada peixe é único
+
+*Atualizado em 13/10/2026 (decisão do proprietário: "se vier algo ruim precisa ser realmente ruim e se for bom, realmente bom"): cada gene agora vai de **×0,80 (gene 0, −20%)** a **×1,30 (gene 31, +30%)**, em duas retas que se encontram no gene 16 (×1,00). Os peixes migrados (16 em tudo) ficam exatamente neutros. Na média de todos os peixes os atributos sobem ~2%. As linhas abaixo que falam em ×0,90 a ×1,10 são o histórico.*
 **Seção do GDD:** 13 (atributos do peixe), 11 (Caixa de Pesca), 12 (Aquário), 33 (Mercado) · pedido do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
 
 Pedido do proprietário (M24-T52): "caçar exemplares melhores é o que prendia no jogo. Vamos adicionar os genes." Antes,

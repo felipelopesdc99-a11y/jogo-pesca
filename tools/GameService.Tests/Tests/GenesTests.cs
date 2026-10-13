@@ -118,18 +118,24 @@ public sealed class GenesTests
     public void A_gene_scales_its_own_attribute_from_090_to_110()
     {
         var config = Config;
-        Assert.Equal(0.90, GeneRules.Multiplier(config, 0), 9);
-        Assert.Equal(1.10, GeneRules.Multiplier(config, 31), 9);
-        Assert.Equal(0.90 + 0.20 * 16 / 31.0, GeneRules.Multiplier(config, 16), 9);
-        Assert.InRange(GeneRules.Multiplier(config, 16), 1.0, 1.004);   // the neutral gene of the migration: ×1,003
+        // Owner (13/10/2026): a bad gene is really bad (−20%), a great one really good (+30%), 16 is neutral.
+        Assert.Equal(0.80, GeneRules.Multiplier(config, 0), 9);
+        Assert.Equal(1.30, GeneRules.Multiplier(config, 31), 9);
+        Assert.Equal(1.00, GeneRules.Multiplier(config, 16), 9);   // the neutral gene of the migration
+        Assert.Equal(0.90, GeneRules.Multiplier(config, 8), 9);
+        Assert.Equal(1.02, GeneRules.Multiplier(config, 17), 9);
+        for (var g = 1; g <= 31; g++)
+        {
+            Assert.True(GeneRules.Multiplier(config, g) > GeneRules.Multiplier(config, g - 1));
+        }
 
         config.TryGetSpecies("tilapia", out var tilapia);
         var plain = FishRules.Stats(config, tilapia, 420, 5, "adult");
         var mixed = FishRules.Stats(config, tilapia, 420, 5, "adult", new[] { 31, 0, 16, 31 });
-        Assert.Equal(plain.Hp * 1.10, mixed.Hp, 6);
-        Assert.Equal(plain.Attack * 0.90, mixed.Attack, 6);
+        Assert.Equal(plain.Hp * 1.30, mixed.Hp, 6);
+        Assert.Equal(plain.Attack * 0.80, mixed.Attack, 6);
         Assert.Equal(plain.Defense * GeneRules.Multiplier(config, 16), mixed.Defense, 6);
-        Assert.Equal(plain.Speed * 1.10, mixed.Speed, 6);
+        Assert.Equal(plain.Speed * 1.30, mixed.Speed, 6);
 
         // A broken set (wrong length, out of range) counts as neutral, never as a crash or a free bonus.
         var broken = FishRules.Stats(config, tilapia, 420, 5, "adult", new[] { 99, 99 });
@@ -138,7 +144,7 @@ public sealed class GenesTests
     }
 
     [Fact]
-    public void On_average_the_genes_leave_the_balance_where_it_was()
+    public void On_average_the_genes_move_the_balance_only_a_little()
     {
         var config = Config;
         config.TryGetSpecies("tilapia", out var tilapia);
@@ -155,10 +161,10 @@ public sealed class GenesTests
             speed += s.Speed / plain.Speed;
         }
 
-        Assert.InRange(hp / fish, 0.997, 1.003);
-        Assert.InRange(attack / fish, 0.997, 1.003);
-        Assert.InRange(defense / fish, 0.997, 1.003);
-        Assert.InRange(speed / fish, 0.997, 1.003);
+        Assert.InRange(hp / fish, 1.015, 1.03);   // ~×1,022: 17 genes below neutral (avg ×0,90), 15 above (avg ×1,16)
+        Assert.InRange(attack / fish, 1.015, 1.03);   // ~×1,022: 17 genes below neutral (avg ×0,90), 15 above (avg ×1,16)
+        Assert.InRange(defense / fish, 1.015, 1.03);   // ~×1,022: 17 genes below neutral (avg ×0,90), 15 above (avg ×1,16)
+        Assert.InRange(speed / fish, 1.015, 1.03);   // ~×1,022: 17 genes below neutral (avg ×0,90), 15 above (avg ×1,16)
     }
 
     [Fact]
@@ -352,7 +358,7 @@ public sealed class GenesTests
                 }
 
                 var ratio = fighter.Stats.Attack / fighter.Stats.Hp / (species.BaseStats.Attack / species.BaseStats.Hp);
-                Assert.InRange(ratio, 0.9 / 1.1 - 1e-9, 1.1 / 0.9 + 1e-9);
+                Assert.InRange(ratio, 0.8 / 1.3 - 1e-9, 1.3 / 0.8 + 1e-9);
                 if (Math.Abs(ratio - 1) > 1e-6)
                 {
                     moved++;
@@ -402,13 +408,13 @@ public sealed class GenesTests
         Assert.All(save.Market.MyListings.Select(l => l.Goods.Fish).Where(f => f != null), f => Assert.Equal(neutral, f.Genes));
         Assert.All(save.Market.BotListings.Select(l => l.Goods.Fish).Where(f => f != null), f => Assert.Equal(neutral, f.Genes));
 
-        // Neither stronger nor weaker in any relevant way: ×1,003 on each attribute, 2 stars, no celebration.
+        // Neither stronger nor weaker: ×1,00 on each attribute, 2 stars, no celebration.
         var config = opened.Session.Config;
         var fish = save.Aquarium.Single(f => f.Id == kept[0].FishId);
         config.TryGetSpecies(fish.SpeciesId, out var species);
         var before = FishRules.Stats(config, species, fish.SizeMm, fish.Level, fish.SizeCategoryId);
         var view = opened.Aquarium.GetFish(fish.Id);
-        Assert.InRange(view.Stats.Attack / before.Attack, 1.0, 1.004);
+        Assert.Equal(1.0, view.Stats.Attack / before.Attack, 9);
         Assert.Equal(2, view.Genes.Stars);
         Assert.False(view.Genes.IsCelebrated);
 
@@ -427,8 +433,9 @@ public sealed class GenesTests
     {
         var genes = Config.Progression.Genes;
         Assert.Equal(31, genes.MaxValue);
-        Assert.Equal(0.90, genes.StatMultiplierMin, 9);
-        Assert.Equal(1.10, genes.StatMultiplierMax, 9);
+        Assert.Equal(0.80, genes.StatMultiplierMin, 9);
+        Assert.Equal(1.30, genes.StatMultiplierMax, 9);
+        Assert.Equal(16, genes.StatMultiplierNeutralGene);
         Assert.Equal(16, genes.MigrationNeutralValue);
         Assert.Equal(new[] { 1, 2, 3, 4, 5 }, genes.QualityStars.Select(b => b.Stars));
         Assert.Equal(new[] { 0.0, 30, 55, 75, 90 }, genes.QualityStars.Select(b => b.MinPercent));

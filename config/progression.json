@@ -4657,11 +4657,12 @@
   "genes": {
     "note": "Genes (M24-T52, A-176, pedido do proprietário em 13/10/2026: \"caçar exemplares melhores é o que prendia no jogo\"). Cada peixe nasce com 4 genes, um por atributo de combate (Vida, Ataque, Defesa e Velocidade), cada um de 0 a max_value, sorteados de forma uniforme e independente na captura, pelo sorteio do serviço. São permanentes: guardados no peixe da Caixa de Pesca, do Aquário e do Mercado. Valem também para os peixes dos jogadores simulados (Mercado, Leilão e Arena).",
     "max_value": 31,
-    "stat_multiplier_min": 0.9,
-    "stat_multiplier_max": 1.1,
-    "stat_note": "Cada atributo derivado é multiplicado por stat_multiplier_min + (stat_multiplier_max − stat_multiplier_min) × gene ÷ max_value: gene 0 = ×0,90, gene 31 = ×1,10, e a média de todos os peixes fica em ×1,00, então a Arena, o Boss Mundial, os Clãs e as simulações não mudam na média. Entra na mesma conta da espécie, da raridade, do tamanho e do nível; o atributo nunca é gravado pronto. O preço de venda ao jogo (NPC) não depende dos genes.",
+    "stat_multiplier_min": 0.8,
+    "stat_multiplier_max": 1.3,
+    "stat_multiplier_neutral_gene": 16,
+    "stat_note": "Cada atributo derivado é multiplicado pelo fator do seu gene, em duas retas que se encontram no gene neutro: de stat_multiplier_min no gene 0 até ×1,00 no stat_multiplier_neutral_gene, e daí até stat_multiplier_max no gene max_value. Hoje: gene 0 = ×0,80 (−20%), gene 16 = ×1,00, gene 31 = ×1,30 (+30%) — decisão do proprietário em 13/10/2026 (\"se vier algo ruim precisa ser realmente ruim e se for bom, realmente bom\"; antes era ×0,90 a ×1,10). Na média de todos os peixes fica ~×1,02. Entra na mesma conta da espécie, da raridade, do tamanho e do nível; o atributo nunca é gravado pronto. O preço de venda ao jogo (NPC) não depende dos genes.",
     "migration_neutral_value": 16,
-    "migration_note": "Peixes de saves anteriores à versão 23 (Caixa, Aquário, Mercado, Cardume e Clã) recebem este valor nos 4 genes: ×1,003, quase neutro, para ninguém ganhar nem perder força de forma relevante (TD-056).",
+    "migration_note": "Peixes de saves anteriores à versão 23 (Caixa, Aquário, Mercado, Cardume e Clã) recebem este valor nos 4 genes: ×1,00, neutro, para ninguém ganhar nem perder força de forma relevante (TD-056).",
     "quality_stars": [
       {
         "stars": 1,

@@ -1195,7 +1195,8 @@ namespace FishingIdle.GameService.Config
         private static bool GenesValid(GenesConfig genes, out int topStars)
         {
             topStars = 0;
-            if (genes.MaxValue < 1 || genes.MaxValue > 255 || genes.StatMultiplierMin <= 0 || genes.StatMultiplierMax < genes.StatMultiplierMin
+            if (genes.MaxValue < 1 || genes.MaxValue > 255 || genes.StatMultiplierMin <= 0 || genes.StatMultiplierMin > 1 || genes.StatMultiplierMax < 1
+                || genes.StatMultiplierNeutralGene < 1 || genes.StatMultiplierNeutralGene >= genes.MaxValue
                 || genes.StatMultiplierMax > 10 || genes.MigrationNeutralValue < 0 || genes.MigrationNeutralValue > genes.MaxValue)
             {
                 return false;

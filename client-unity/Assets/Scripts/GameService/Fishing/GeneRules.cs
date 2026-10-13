@@ -110,17 +110,22 @@ namespace FishingIdle.GameService.Fishing
         }
 
         /// <summary>
-        /// The factor one gene puts on its attribute: min + (max − min) × gene ÷ max_value (0 → ×0,90, 31 → ×1,10).
-        /// A gene out of range is clamped.
+        /// The factor one gene puts on its attribute, in two straight lines that meet at the neutral gene (×1,00):
+        /// from stat_multiplier_min at gene 0 up to ×1,00 at stat_multiplier_neutral_gene, then up to
+        /// stat_multiplier_max at max_value (owner, 13/10/2026: 0 → ×0,80, 16 → ×1,00, 31 → ×1,30). A gene out of range
+        /// is clamped.
         /// </summary>
         public static double Multiplier(GameConfig config, int gene)
         {
             var g = config?.Progression?.Genes;
             var max = MaxOf(config);
-            var min = g?.StatMultiplierMin ?? 0.9;
-            var top = g?.StatMultiplierMax ?? 1.1;
+            var min = g?.StatMultiplierMin ?? 0.8;
+            var top = g?.StatMultiplierMax ?? 1.3;
+            var neutral = Math.Max(1, Math.Min(max - 1, g?.StatMultiplierNeutralGene ?? (max + 1) / 2));
             var clamped = Math.Max(0, Math.Min(max, gene));
-            return min + (top - min) * clamped / max;
+            return clamped <= neutral
+                ? min + (1.0 - min) * clamped / neutral
+                : 1.0 + (top - 1.0) * (clamped - neutral) / (max - neutral);
         }
 
         /// <summary>The quality, 0–1, and the stars of a set of genes (the view of an unusable set treats it as neutral).</summary>
