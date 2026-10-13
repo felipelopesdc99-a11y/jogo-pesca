@@ -3220,3 +3220,60 @@ fragmentos** (eram 15 / 25 / 35 / 45 / 60). Barcos e roupas não mudaram.
   Os mapas voltam a abrir cedo (Mapa 10 no dia ~1,8 / ~3,8 / ~5,8) e o Nv.1000 fica quase como em 12/10 (~54,8 / ~102,3
   / ~109,8 dias). Barcos e roupas também chegam antes, porque com as varas mais cedo o jogador puxa mais peixes por hora
   (a vara soma na Chance de Sucesso da Captura). As 5 roupas continuam sendo o mais demorado.
+
+### A-174 · Clãs
+**Seção do GDD:** novo (pedido do proprietário) · decisão do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário em 13/10/2026 (M24-T49): "Vamos adicionar os clans, jogadores podem entrar ou criar um clan,
+máximo de 10 jogadores por enquanto (pode comprar + espaço), jogadores ganham bônus padrão de 1% de xp por estarem em
+um clan (nível 100 pra cima), top 3, 2, 1 ganha recompensas em dólares, conchas, fragmentos, moedas todos os dias às
+00:00, para ser o melhor clan precisa ser o que tem o cardume mais forte em conjunto, cada membro tem oportunidade de
+colocar 1 peixe no cardume do clan (esse peixe também pode ficar no seu cardume)." Perguntado, respondeu: tudo pronto
+nas regras, mas o ranking entre clãs e os prêmios ficam desligados no jogo local até haver servidor, sem clãs de bots;
+só Pescador Nv.100+ cria ou entra; criar e comprar vagas custam Dólares. TD-055.
+
+- **Onde fica:** sub-aba **"Clã"** do Perfil. Com o Perfil ou o Clã aberto, aparece embaixo da aba Perfil "Perfil | Clã"
+  (como "Expedição | Arena | Eventos" na Aventura). Janela no padrão "Diário de bordo" (A-170), com o "i" que explica
+  tudo e, no cabeçalho, "N/M membros". Ícone provisório: o da Honra (`ASSET_PENDENTE: ico_cla`).
+- **Abaixo do Nv.100:** a janela mostra "Clãs a partir do Nv.100", quanto falta (barra Nv.X de 100) e o bônus de +1%.
+  Criar e entrar são recusados ("Só Pescadores do Nv.100 para cima podem criar ou entrar num clã.").
+- **Sem clã (Nv.100+):** "Criar um clã": o nome (3 a 20 caracteres: letras, números, espaço, ponto, hífen e sublinhado;
+  espaços repetidos viram um; não pode repetir o nome de outro clã, sem diferença entre maiúsculas e minúsculas) e o botão
+  "Criar clã · 50 Dólares" (desligado sem Dólares; "Você tem N Dólares" embaixo). Quem cria vira o **dono**. "Entrar num
+  clã": "A lista de clãs para entrar aparece quando o jogo estiver online. Por enquanto, crie o seu." A regra de entrar (por
+  id do clã, que serve de convite) está pronta no serviço: precisa do Nv.100, de não estar em outro clã e de vaga livre;
+  entrar é de graça.
+- **No clã:** em cima, o nome, o dono, a **Força do clã** e "Bônus do clã: +1% de XP de Pescador"; à direita "Comprar
+  vaga · N Dólares" (só o dono; "Só o dono compra vagas." para os outros; "O clã já tem o máximo de vagas." no limite) e
+  "Sair do clã" (com confirmação). No meio, o **Cardume do Clã**: o seu peixe (espécie, nível, Força e "Também no seu
+  Cardume (posição N)" quando estiver lá) com "Trocar" e "Tirar", ou "Escolher peixe". A escolha abre a lista do Aquário,
+  os mais fortes primeiro. Embaixo, os **membros** ("N/M membros" e "10 vagas + X compradas (máximo 50)"), o dono
+  primeiro, cada um com o nível e o peixe que colocou (ou "Sem peixe no Cardume do Clã").
+- **Vagas:** todo clã começa com 10. O dono compra vagas extras com Dólares: a 1ª custa 20 e cada uma seguinte 1,5 vez a
+  anterior, arredondado (20, 30, 45, 68, 101 …), até 50 vagas no total.
+- **Bônus de XP:** quem está num clã ganha **+1% de XP de Pescador** em cada peixe pescado, com o jogo aberto e fechado.
+  A fração de ponto é guardada e somada no próximo peixe, para ser +1% exato mesmo nos peixes de pouco XP. Sair do clã
+  tira o bônus. Não vale para Expedições nem para as recompensas.
+- **Cardume do Clã:** cada membro coloca **1 peixe** do Aquário. O peixe **não sai** do Aquário nem do Cardume pessoal.
+  Vendido, usado como alimento ou anunciado no Mercado/Leilão, ele sai do Cardume do Clã (aviso: "Seu peixe saiu do
+  Aquário e deixou o Cardume do Clã."). A **Força de um peixe** é a mesma do Cardume (Ataque, Defesa, Vida e Velocidade
+  com os pesos da Arena), sem o bônus de Cardume completo, que é de 6 peixes; a **Força do clã** é a soma dos peixes dos
+  membros.
+- **Ranking diário e prêmios:** o ranking dos clãs é pela Força do clã e fecha **todo dia às 00:00 (horário de
+  Brasília)**. Um clã sem peixe no Cardume não entra. Os 3 primeiros ganham, para **cada membro** (números provisórios):
+  1º 25 Dólares, 60 minutos de renda em Moedas e em Conchas, 3 Fragmentos de Roupa e 3 fragmentos de barco; 2º 15
+  Dólares, 45 min, 2 e 2; 3º 10 Dólares, 30 min, 1 e 1. As Moedas e Conchas seguem a renda de referência do nível de cada
+  um (a mesma do Boss Mundial); os fragmentos de barco são do barco do mapa mais alto que o nível libera (o mesmo do Boss).
+  Fragmentos de vara não entram (o Boss também não dá). A janela mostra esse bloco e o tempo até as 00:00.
+- **Desligado no jogo local:** o ranking entre clãs e os prêmios (`clans.json → ranking.online_rewards_enabled: false`,
+  como o top 10 do Boss Mundial). A janela diz "O ranking entre clãs e os prêmios ligam quando o jogo estiver online." O
+  dia fecha às 00:00 sem pagar nada e nada fica guardado para pagar depois. Com a chave ligada (servidor), o jogo mostra a
+  lista dos clãs e o último prêmio, e o aviso "Clã em Nº lugar no ranking de ontem: …".
+- **Sair:** o dono que sai sozinho fecha o clã (o nome fica livre; os Dólares não voltam). Com outros membros, o clã passa
+  para o membro mais antigo.
+- **Decisões pequenas tomadas na implementação** (registradas aqui): sub-aba no Perfil; nome de 3 a 20 caracteres com
+  as regras do nome do jogador; 1 vaga extra por compra e máximo de 50 vagas; clã sem peixe fora do ranking; empate
+  decidido pelo clã mais antigo; o +1% com a fração guardada; prêmio do 3º lugar é o mínimo e não há prêmio do 4º em
+  diante; o jogo local paga no máximo um dia (o último) se ficar fechado vários dias; dono que sai passa o clã ao membro
+  mais antigo; entrar é de graça. Os números (preços, máximo, prêmios) são provisórios e estão no OD-071.
+- **Quem já jogava** (save v21): abre sem clã (save v22).

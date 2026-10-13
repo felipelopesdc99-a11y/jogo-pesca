@@ -81,6 +81,17 @@ namespace FishingIdle.GameService.Core
         ClothingNotFound,
         ClothingAlreadyOwned,
         NotEnoughClothingFragments,
+
+        // Clãs (M24-T49, A-174)
+        ClanLevelTooLow,
+        AlreadyInClan,
+        NotInClan,
+        InvalidClanName,
+        ClanNameTaken,
+        ClanNotFound,
+        ClanFull,
+        NotClanOwner,
+        ClanSlotsMaxed,
     }
 
     /// <summary>

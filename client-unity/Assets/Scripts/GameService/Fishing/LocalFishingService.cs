@@ -566,7 +566,10 @@ namespace FishingIdle.GameService.Fishing
                 update.VipXpGained += vipXp;
                 // The Calça (M24-T33, A-164): +% of the fish's own XP, rounded to the nearest point.
                 var clothesXp = clothingXp > 0 ? (long)Math.Round(rolled.FisherXp * clothingXp, MidpointRounding.AwayFromZero) : 0;
-                AddFisherXp(rolled.FisherXp + vipXp + clothesXp, update);
+                // The Clãs (M24-T49, A-174): +1% of the fish's own XP for a member (the fraction carries to the next fish).
+                var clanXp = Clans.ClanRules.TakeBonusXp(Config, Save, rolled.FisherXp);
+                update.ClanXpGained += clanXp;
+                AddFisherXp(SafeAdd(SafeAdd(rolled.FisherXp + vipXp, clothesXp), clanXp), update);
             }
             var view = CatchViews.Create(Config, entry);
             view.PreviousRecordCm = previousRecordMm / 10.0;

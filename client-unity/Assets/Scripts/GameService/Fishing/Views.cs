@@ -120,6 +120,9 @@ namespace FishingIdle.GameService.Fishing
 
         /// <summary>The part of <see cref="XpGained"/> that came from the VIP bonus (A-110).</summary>
         public long VipXpGained { get; internal set; }
+
+        /// <summary>The part of <see cref="XpGained"/> that came from the clan's bonus (M24-T49, A-174).</summary>
+        public long ClanXpGained { get; internal set; }
         public long ShellsGained { get; internal set; }
 
         /// <summary>Boat fragments the catches dropped (M24-T16, A-157), one entry per drop, in order.</summary>

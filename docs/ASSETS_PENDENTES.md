@@ -758,6 +758,22 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > a 104 px na largura e de 24 a 168 px na altura) precisa ser uniforme, porque vai esticar. Sem texto, sem ícone, sem
 > sombra projetada. Arquivo: ui_diario_marcador.png
 
+## Clãs (M24-T49, A-174, pedido em 13/10/2026)
+
+`ASSET_PENDENTE`. Enquanto o arquivo não existe, a janela Clã usa o ícone da Honra (`ico_honra`). Quando o arquivo
+existir, o jogo passa a usá-lo sozinho. A sub-aba "Clã" (embaixo da aba Perfil) é só texto, como as outras sub-abas.
+
+| Arquivo | O quê | Tamanho | Onde aparece |
+|---|---|---|---|
+| `Arte/Icones/ico_cla.png` | Ícone do Clã no cabeçalho da janela | 256×256, branco sobre transparente (como os outros ícones do menu, A-139) → 32 a 40 px | Etiqueta (cabeçalho) da janela Clã |
+
+Pedido pronto para colar no ChatGPT:
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras
+> cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: um escudo com
+> uma bandeirinha em cima e dois peixes cruzados no centro, simples e legível em 32 px. Sem texto, sem números, sem
+> fundo, sem sombra. Arquivo: ico_cla.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

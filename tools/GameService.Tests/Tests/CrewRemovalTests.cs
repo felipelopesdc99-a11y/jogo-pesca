@@ -74,7 +74,8 @@ public sealed class CrewRemovalTests
     [Fact]
     public void The_save_is_version_21_and_the_config_keeps_the_old_prices_only_for_the_refund()
     {
-        Assert.Equal(21, PlayerSave.CurrentVersion);
+        // Version 21 removed the Crew; later versions (22: the Clãs, M24-T49) keep it removed.
+        Assert.True(PlayerSave.CurrentVersion >= 21);
         var refund = Config.Economy.CrewRemovalRefund;
         Assert.NotNull(refund);
         Assert.Equal(10, refund.CrewMembers.Count);
@@ -114,7 +115,7 @@ public sealed class CrewRemovalTests
 
         // The file written after opening has neither field, and opening again refunds nothing more.
         var json = JObject.Parse(File.ReadAllText(Path.Combine(dir, JsonFilePlayerRepository.SaveFileName)));
-        Assert.Equal(21, (int)json["save_version"]!);
+        Assert.Equal(PlayerSave.CurrentVersion, (int)json["save_version"]!);
         Assert.Null(json["crew"]);
         Assert.Null(json["upgrades"]);
 

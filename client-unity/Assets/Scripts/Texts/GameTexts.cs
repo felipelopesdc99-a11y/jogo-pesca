@@ -51,6 +51,9 @@ namespace FishingIdle.Texts
             public const string Profile = "Perfil";
             public const string Events = "Eventos";
 
+            // The Clãs (M24-T49, A-174): a sub-tab of Perfil.
+            public const string Clan = "Clã";
+
             // The top menu (M24-T43, A-169): four big tabs grouping the menus (the Tripulação tab left with the Crew,
             // M24-T46, A-172), and the round shortcuts on the right.
             public const string Adventure = "Aventura";
@@ -870,6 +873,94 @@ namespace FishingIdle.Texts
             public static string BoatAssembled(string boat) => "Barco montado: " + boat + "!";
         }
 
+        // ------------------------------------------------------------------ Clãs (M24-T49, A-174)
+
+        public static class Clan
+        {
+            public const string Title = "Clã";
+            public static string Info(int minLevel, string bonus, int baseMembers) =>
+                "Pescadores do Nv." + minLevel + " para cima podem criar um clã (com Dólares) ou entrar num. Todo clã começa com " +
+                baseMembers + " vagas; o dono pode comprar mais vagas com Dólares, cada uma mais cara. Quem está num clã ganha +" + bonus +
+                " de XP de Pescador em cada peixe pescado. Cada membro coloca 1 peixe do Aquário no Cardume do Clã: o peixe continua " +
+                "no seu Aquário e no seu Cardume. A Força do clã é a soma da Força desses peixes, com a mesma regra do Cardume. Todo dia " +
+                "às 00:00 (horário de Brasília) os 3 clãs mais fortes ganham prêmios: isso liga quando o jogo estiver online.";
+            public static string Counter(int members, int capacity) => members + "/" + capacity + " membros";
+
+            // Below the level / without a clan
+            public static string LevelTitle(int level) => "Clãs a partir do Nv." + level;
+            public static string LevelRequired(int level, int current) => "Só Pescadores do Nv." + level + " para cima podem criar ou entrar num clã. Você está no Nv." + current + ".";
+            public static string LevelProgress(int current, int level) => "Nv." + current + " de " + level;
+            public const string NoClanTitle = "Você ainda não tem clã";
+            public const string CreateTitle = "Criar um clã";
+            public const string NameLabel = "Nome do clã";
+            public static string NameRule(int min, int max) => "De " + min + " a " + max + " caracteres: letras, números, espaço, ponto, hífen ou sublinhado. Não pode repetir o nome de outro clã.";
+            public static string CreateButton(string cost) => "Criar clã · " + cost + " Dólares";
+            public static string YourDollars(string amount) => "Você tem " + amount + " Dólares";
+            public const string JoinTitle = "Entrar num clã";
+            public const string JoinOnline = "A lista de clãs para entrar aparece quando o jogo estiver online. Por enquanto, crie o seu.";
+            public static string BonusLine(string bonus) => "Quem está num clã ganha +" + bonus + " de XP de Pescador em cada peixe.";
+
+            // The clan
+            public static string OwnerLine(string owner) => "Dono: " + owner;
+            public static string BonusActive(string bonus) => "Bônus do clã: +" + bonus + " de XP de Pescador";
+            public const string Members = "Membros";
+            public const string Owner = "Dono";
+            public const string You = "(você)";
+            public const string NoFish = "Sem peixe no Cardume do Clã";
+            public static string MemberFish(string species, int level, string strength) => species + " · Nv." + level + " · Força " + strength;
+            public static string MemberLevel(int level) => "Pescador Nv." + level;
+            public static string SlotsLine(int baseMembers, int extra, int max) => baseMembers + " vagas + " + extra + " compradas (máximo " + max + ")";
+            public static string BuySlot(string price) => "Comprar vaga · " + price + " Dólares";
+            public const string SlotsMaxed = "O clã já tem o máximo de vagas.";
+            public const string OnlyOwnerBuys = "Só o dono compra vagas.";
+            public const string Leave = "Sair do clã";
+            public const string Strength = "Força do clã";
+            public static string StrengthValue(string value) => "Força " + value;
+
+            // The clan's Cardume
+            public const string ClanCardume = "Cardume do Clã";
+            public const string ClanCardumeHint = "Cada membro coloca 1 peixe. Ele continua no seu Aquário e no seu Cardume.";
+            public const string YourFish = "Seu peixe";
+            public const string NoFishYet = "Você ainda não colocou um peixe no Cardume do Clã.";
+            public const string ChooseFish = "Escolher peixe";
+            public const string ChangeFish = "Trocar";
+            public const string RemoveFish = "Tirar";
+            public static string InYourCardume(int position) => "Também no seu Cardume (posição " + position + ")";
+            public const string PickTitle = "Escolha o peixe do Cardume do Clã";
+            public const string PickHint = "Os mais fortes primeiro. O peixe não sai do Aquário nem do seu Cardume.";
+            public const string PickEmpty = "Seu Aquário está vazio. Guarde peixes da Caixa de Pesca no Aquário.";
+            public const string Pick = "Escolher";
+            public const string Picked = "No clã";
+            public static string PickLine(string size, int level) => size + " · Nv." + level;
+
+            // Ranking and the top 3
+            public const string Ranking = "Ranking diário dos clãs";
+            public static string RankingReset(string countdown) => "Fecha todo dia às 00:00 (Brasília) · faltam " + countdown;
+            public const string RewardsTitle = "Prêmios do top 3 (cada membro recebe)";
+            public static string Rank(int rank) => rank + "º";
+            public const string RewardsOffline = "O ranking entre clãs e os prêmios ligam quando o jogo estiver online.";
+            public const string RankingEmpty = "Nenhum clã com peixe no Cardume ainda.";
+            public static string RankLine(int rank, string name, string strength, int members) => rank + "º  " + name + " · Força " + strength + " · " + members + " membros";
+            public static string LastResult(string date, int rank, string items) => "Último prêmio (" + date + "): " + rank + "º lugar · " + items;
+            public static string LastResultNoPrize(string date, int rank) => rank > 0 ? "Último dia (" + date + "): " + rank + "º lugar, sem prêmio" : "Último dia (" + date + "): sem colocação";
+
+            // Leave confirmation
+            public const string LeaveTitle = "Sair do clã?";
+            public const string LeaveAlone = "Você é o único membro: o clã fecha e o nome fica livre. Os Dólares gastos não voltam.";
+            public const string LeaveOwner = "Você é o dono: o membro mais antigo passa a ser o dono.";
+            public const string LeaveMember = "Você sai do clã e deixa de ganhar o bônus de XP.";
+            public const string LeaveConfirm = "Sair";
+
+            // Notices
+            public static string CreatedToast(string name) => "Clã criado: " + name + "!";
+            public const string LeftToast = "Você saiu do clã.";
+            public static string SlotBoughtToast(int capacity) => "Vaga comprada: o clã agora tem " + capacity + " vagas.";
+            public const string FishSetToast = "Peixe colocado no Cardume do Clã.";
+            public const string FishClearedToast = "Peixe tirado do Cardume do Clã.";
+            public const string FishLeftToast = "Seu peixe saiu do Aquário e deixou o Cardume do Clã.";
+            public static string PaidToast(int rank, string items) => "Clã em " + rank + "º lugar no ranking de ontem: " + items;
+        }
+
         // ------------------------------------------------------------------ gear: boats, baits, Catch Success (docs/SISTEMA_SUCESSO_PESCA.md)
 
         public static class Gear
@@ -1295,6 +1386,15 @@ namespace FishingIdle.Texts
                 case "ClothingNotFound": return "Essa peça de roupa não existe.";
                 case "ClothingAlreadyOwned": return "Você já montou esta peça.";
                 case "NotEnoughClothingFragments": return "Faltam Fragmentos de Roupa para montar esta peça.";
+                case "ClanLevelTooLow": return "Só Pescadores do Nv.100 para cima podem criar ou entrar num clã.";
+                case "AlreadyInClan": return "Você já está num clã. Saia dele antes.";
+                case "NotInClan": return "Você não está num clã.";
+                case "InvalidClanName": return "Nome de clã inválido: use de 3 a 20 caracteres (letras, números, espaço, ponto, hífen ou sublinhado).";
+                case "ClanNameTaken": return "Já existe um clã com esse nome. Escolha outro.";
+                case "ClanNotFound": return "Esse clã não existe mais.";
+                case "ClanFull": return "Esse clã está cheio: não há vaga livre.";
+                case "NotClanOwner": return "Só o dono do clã pode comprar vagas.";
+                case "ClanSlotsMaxed": return "O clã já tem o máximo de vagas.";
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
                 case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";
@@ -1387,6 +1487,11 @@ namespace FishingIdle.Texts
             public const string WorldBossBands = "world_boss.json: \"bands\" precisa ter de 1 a 20 faixas, com damage_percent maior que 0 e até 100, em ordem crescente, e nenhum valor negativo.";
             public const string WorldBossRanking = "world_boss.json: \"ranking.dollars_by_rank\" precisa existir, com no máximo 100 valores e nenhum negativo.";
             public const string WorldBossIncome = "world_boss.json: \"reference_income\" precisa começar no level 1, com os levels em ordem crescente e nenhum valor negativo.";
+            public const string ClansMembership = "clans.json: \"membership\" precisa de min_fisher_level entre 1 e o nível máximo do Pescador, base_members de 1 a 1.000 e max_members entre base_members e 1.000.";
+            public const string ClansCosts = "clans.json: \"costs\" precisa de create_dollars de 0 ou mais, extra_slot_first_dollars de pelo menos 1 e extra_slot_growth entre 1 e 10.";
+            public const string ClansName = "clans.json: \"name\" precisa de min_length de pelo menos 1 e max_length entre min_length e 40.";
+            public const string ClansXpBonus = "clans.json: \"xp_bonus\" precisa ficar entre 0 e 1 (0,01 = +1%).";
+            public const string ClansRanking = "clans.json: \"ranking\" precisa de utc_offset_minutes entre −720 e 840 e de 1 a 10 recompensas em rewards_by_rank, sem valores negativos.";
             public static string PassBoatUnknown(int level, string boat) => "pass.json: o marco do Nv." + level + " dá fragmentos do barco \"" + (boat ?? "") + "\", que não existe em equipment.json (ou é o barco inicial).";
             public static string UnknownSizeInRarity(string rarity, string size) => "progression.json: a raridade \"" + rarity + "\" cita o tamanho \"" + (size ?? "") + "\" em size_weight_multipliers, que não existe em size.categories.";
             public static string UnknownRarity(string species, string rarity) => "fish_catalog.json: a espécie \"" + species + "\" usa a raridade \"" + (rarity ?? "") + "\", que não existe em progression.json.";

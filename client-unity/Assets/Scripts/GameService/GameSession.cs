@@ -344,6 +344,12 @@ namespace FishingIdle.GameService
                 }
             }
 
+            // The Clãs (M24-T49): a clan reference that points nowhere is cleared, a missing fish leaves the clan's Cardume.
+            if (Save.Clans != null && Clans.ClanRules.Repair(Save))
+            {
+                _log("Clan state repaired on load.");
+            }
+
             if (Save.Pass != null && string.IsNullOrEmpty(Save.Pass.PassId))
             {
                 Save.Pass.PassId = Config.Pass.PassId;

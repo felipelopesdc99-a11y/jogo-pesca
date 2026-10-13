@@ -90,6 +90,7 @@ namespace FishingIdle.Game.UI
         private PassWindow _pass;
         private WorldBossWindow _boss;
         private EventsWindow _events;
+        private ClanWindow _clan;
         private bool _showNotifications;
         private bool _showSettings;
         private bool _compact;
@@ -122,6 +123,7 @@ namespace FishingIdle.Game.UI
         // The sub-tabs' labels and widths, kept between frames (no arrays built every frame).
         private static readonly string[] AdventureSubTabs = { GameTexts.Navigation.Expedition, GameTexts.Navigation.Arena, GameTexts.Navigation.Events };
         private static readonly string[] TradeSubTabs = { GameTexts.Navigation.Market, GameTexts.Navigation.Shop };
+        private static readonly string[] ProfileSubTabs = { GameTexts.Navigation.Profile, GameTexts.Navigation.Clan };
         private readonly float[] _subTabWidths = new float[3];
         private readonly GUIContent _measure = new GUIContent();
 
@@ -160,6 +162,7 @@ namespace FishingIdle.Game.UI
             _pass = new PassWindow(_root);
             _boss = new WorldBossWindow(_root);
             _events = new EventsWindow(_root);
+            _clan = new ClanWindow(_root);
             _events.OpenBoss = () =>
             {
                 CloseAllWindows();
@@ -493,6 +496,11 @@ namespace FishingIdle.Game.UI
                     _expedition.Close();
                     Event.current.Use();
                 }
+                else if (_clan.IsOpen)
+                {
+                    _clan.Close();
+                    Event.current.Use();
+                }
                 else if (_profile.IsOpen)
                 {
                     _profile.Close();
@@ -521,7 +529,7 @@ namespace FishingIdle.Game.UI
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
             var welcomeDialog = _root.Tutorial != null && _root.Tutorial.Active && _root.Tutorial.Step == TutorialSteps.Welcome;
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _pass.IsOpen || _boss.IsOpen || _events.IsOpen || WelcomeBackPending || welcomeDialog;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _pass.IsOpen || _boss.IsOpen || _events.IsOpen || _clan.IsOpen || WelcomeBackPending || welcomeDialog;
             _root.WindowOpen = windowOpen;
             GUI.enabled = !windowOpen;
             if (!windowOpen)
@@ -567,6 +575,7 @@ namespace FishingIdle.Game.UI
             _box.Draw(skin, _width, _height);
             _aquarium.Draw(skin, _width, _height);
             _profile.Draw(skin, _width, _height);
+            _clan.Draw(skin, _width, _height);
             _map.Draw(skin, _width, _height);
             _shop.Draw(skin, _width, _height);
             _expedition.Draw(skin, _width, _height);
@@ -629,7 +638,7 @@ namespace FishingIdle.Game.UI
         private bool AnyWindowDialog()
         {
             return _box.HasDialog || _aquarium.HasDialog || _profile.HasDialog || _map.HasDialog || _shop.HasDialog
-                || _expedition.HasDialog || _arena.HasDialog || _market.HasDialog;
+                || _expedition.HasDialog || _arena.HasDialog || _market.HasDialog || _clan.HasDialog;
         }
 
         /// <summary>Queues the exact-value tooltip of a wallet amount (player card); it is drawn at the end of OnGUI.</summary>
@@ -685,7 +694,7 @@ namespace FishingIdle.Game.UI
         {
             if (_expedition.IsOpen || _arena.IsOpen || _events.IsOpen || _boss.IsOpen) return GroupAdventure;
             if (_market.IsOpen || _shop.IsOpen) return GroupTrade;
-            if (_profile.IsOpen) return GroupProfile;
+            if (_profile.IsOpen || _clan.IsOpen) return GroupProfile;
             if (_box.IsOpen || _aquarium.IsOpen || _map.IsOpen || _pass.IsOpen || _ranking.IsOpen) return NoGroup;
             return GroupFishing;
         }
@@ -865,6 +874,12 @@ namespace FishingIdle.Game.UI
                 labels = TradeSubTabs;
                 active = _market.IsOpen ? 0 : 1;
             }
+            else if (group == GroupProfile)
+            {
+                // Perfil | Clã (M24-T49, A-174).
+                labels = ProfileSubTabs;
+                active = _profile.IsOpen ? 0 : 1;
+            }
             else
             {
                 return;
@@ -897,10 +912,15 @@ namespace FishingIdle.Game.UI
                         if (i == 1) _arena.Open();
                         if (i == 2) _events.Open();
                     }
-                    else
+                    else if (group == GroupTrade)
                     {
                         if (i == 0) _market.Open();
                         if (i == 1) _shop.Open();
+                    }
+                    else
+                    {
+                        if (i == 0) _profile.Open();
+                        if (i == 1) _clan.Open();
                     }
                 }
 
@@ -1181,6 +1201,7 @@ namespace FishingIdle.Game.UI
             CloseFully(() => _pass.IsOpen, _pass.Close);
             CloseFully(() => _boss.IsOpen, _boss.Close);
             CloseFully(() => _events.IsOpen, _events.Close);
+            CloseFully(() => _clan.IsOpen, _clan.Close);
 
             // A panel left open would sit on top of the window and catch its clicks.
             _showNotifications = false;

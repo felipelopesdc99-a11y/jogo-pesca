@@ -112,6 +112,7 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IGearService` | `LocalGearService` | Barcos e iscas: iscas compradas, usar, guardar; barcos só usar e melhorar o nível (`UpgradeBoat`, M24-T13) — desde o M24-T16 eles vêm de fragmentos (`BoatFragmentRules`, TD-042) e a oferta mostra fragmentos e chance; equipamento em uso e chance de puxar por raridade |
 | `IPassService` | `LocalPassService` | Passe do Pescador (M24-T17, A-158, TD-042): marcos de `pass.json`, resgatar um ou todos, comprar o Premium com Dólares (libera os marcos já passados); `IsMilestone` para o aviso de nível |
 | `IWorldBossService` | `LocalWorldBossService` | Boss Mundial (M24-T29, A-165, TD-049): `Update` (chamado pelo jogo aberto a cada sincronização) abre o dia, credita os ataques devidos do Cardume, sobe de faixa e paga uma vez quando a janela fecha; `GetWorldBoss` monta a tela. Regras puras em `WorldBossRules` (dia e janela no fuso do config, dano com `BattleEngine.HitDamage`, faixas, renda de referência, barco do mapa mais alto, Dólares por posição) |
+| `IClanService` | `LocalClanService` | Clãs (M24-T49, A-174, TD-055): `Create` (Nv.100+, paga Dólares, nome validado e sem repetir), `Join` (por id, o "convite"; pronto para o servidor), `Leave` (clã vazio fecha; dono que sai passa o clã ao membro mais antigo), `BuySlot` (só o dono, preço crescente, até `max_members`), `SetFish`/`ClearFish` (1 peixe do Aquário no Cardume do Clã, sem tirá-lo do Aquário nem do Cardume), `GetFishCandidates`, `Update` (fecha o dia do ranking às 00:00 de Brasília e, só com `online_rewards_enabled`, paga o top 3 uma vez). Regras puras em `ClanRules` (vagas e preço, nome, `TakeBonusXp` com a fração guardada em `ClanState.XpCarry`, Força do peixe pela regra do Cardume, Força do clã com `SafeMath`, dia no fuso do config, ordem do ranking). O +1% de XP entra em `LocalFishingService.ApplyCatch` (`FishingUpdate.ClanXpGained`); peixe vendido, comido ou anunciado sai do Cardume do Clã (`ClanRules.DropMissingFish`, chamado pelo Aquário, pelo Mercado, pelo Leilão, pelo `Update` e na carga) |
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
 | `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
 | `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
@@ -196,7 +197,8 @@ Aleatoriedade puramente visual (nuvens, pássaros) usa `UnityEngine.Random` livr
 - O jogo carrega todos os arquivos de `GameConfigLoader.RequiredFiles`: `fish_catalog`, `maps`,
   `progression`, `rods`, `economy`, `arena`, `expeditions`, `arena_bots` (adversários simulados do
   MVP local), `market_bots` (vendedores e compradores simulados do Mercado), `equipment` (barcos e
-  iscas, desde a V0.2), `pass` (o Passe do Pescador, M24-T17) e `world_boss` (o Boss Mundial, M24-T29). O
+  iscas, desde a V0.2), `pass` (o Passe do Pescador, M24-T17), `world_boss` (o Boss Mundial, M24-T29) e `clans` (os
+  Clãs, M24-T49, validado por `GameConfigValidator.ValidateClans`). O
   `crew.json` e o `upgrades.json` (Tripulação e Melhorias) saíram no M24-T46 (TD-053); os preços deles ficam só em
   `economy.json → crew_removal_refund`, para o reembolso dos saves antigos. O Painel de Desenvolvimento usa a mesma lista
   (o `pass.json` ainda não tem seção própria no Painel de Balanceamento: edita-se à mão, ou se gera de novo com o
@@ -258,7 +260,10 @@ o nível até onde os Dólares do A-111 já foram pagos: mín(nível, 100) na mi
 vazios e as varas do Inventário continuam com o nível (TD-048); v19 adiciona o Boss Mundial (`WorldBossState`: o dia
 do evento no fuso de Brasília, dano, ataques, último índice de ataque processado, dano máximo do dia, faixa, `Paid` e o
 que foi pago; um registro só, trocado no evento do dia seguinte depois de pago; saves antigos entram com ele vazio);
-v20 marca o modelo de barcos (`BoatModelVersion`; saves antigos entram com 1, os 10 barcos de antes). A conversão dos
+v20 marca o modelo de barcos (`BoatModelVersion`; saves antigos entram com 1, os 10 barcos de antes); v22 adiciona
+os Clãs (`ClanState`: `MyClanId`, `KnownClans` — no jogo local só o clã do próprio jogador, o lugar onde o servidor vai
+pôr a lista —, `NextClanNumber`, `XpCarry`, `RankingDay` e `LastResult`; saves antigos entram sem clã, e a carga limpa
+um `MyClanId` que não aponta para um clã com o jogador, `ClanRules.Repair`). A conversão dos
 barcos 6 a 10 em fragmentos, Moedas e Conchas (A-168) precisa do config e por isso não fica em `SaveMigrations`: roda
 uma vez ao abrir a sessão, em `Persistence/BoatModelMigration.MoveToCurrentModel`, antes de os níveis de barco serem
 limitados ao config (TD-051), como a das iscas (`BaitModelMigration`, v17, TD-046); v21 tira a Tripulação e as Melhorias
@@ -499,6 +504,12 @@ Cada passo está em `SaveMigrations.Upgrade`.
   barco (`TryGetBoatForMap`, `MapsOf`). Os fragmentos caem em qualquer mapa, e a `ShopWindow` mostra "Caem em todos os
   mapas" e a chance de cada item. Os
   barcos removidos e o que eles viram ficam em `equipment.json → boat_migration` (lido pela `BoatModelMigration`).
+- **Clãs na tela** (M24-T49, A-174): `GameRoot.SyncClan` chama `Game.Clans.Update()` na sincronização de 0,25 s (fecha
+  o dia do ranking e avisa um pagamento ou um peixe que saiu), `GameRoot.Clan` é atualizado com o jogador, e as
+  intenções são `CreateClan`, `LeaveClan`, `BuyClanSlot`, `SetClanFish`, `ClearClanFish` e `ClanFishCandidates`. A
+  `UI/ClanWindow` é uma sub-aba do Perfil (o `Hud` mostra "Perfil | Clã" embaixo da aba Perfil quando uma das duas está
+  aberta) e só lê `GameRoot.Clan`: o requisito do Nv.100, "Criar um clã", o clã (resumo, Cardume do Clã, membros) e o
+  bloco do ranking diário com os prêmios do top 3; tem dois diálogos próprios (escolher o peixe e "Sair do clã?").
 - **Menu Eventos** (M24-T39, A-167): `UI/EventsWindow` mostra os eventos em cartões (hoje só o Boss Mundial), lendo
   `GameRoot.WorldBoss`; "Abrir" abre a `WorldBossWindow`, e o "‹ Eventos" dela volta. Um evento novo acrescenta o tipo
   em `EventsWindow.EventKind` e um desenhador de cartão; nenhuma regra mora na janela.

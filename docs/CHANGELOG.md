@@ -3,6 +3,30 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.8] — 13/10/2026
+
+Clãs, pedido do proprietário (M24-T49, A-174, TD-055). Save versão 22. Não compilado localmente; verificado no CI. Não
+aberto no Unity.
+
+### Adicionado
+
+- **Clãs** (sub-aba "Clã" do Perfil): Pescadores do Nv.100 para cima criam um clã (50 Dólares, nome de 3 a 20
+  caracteres sem repetir) ou entram num (por id/convite; a lista de clãs aparece quando o jogo estiver online). Todo clã
+  tem 10 vagas; o dono compra vagas extras com Dólares (20, 30, 45 … até 50 vagas). Quem está num clã ganha **+1% de XP
+  de Pescador** em cada peixe.
+- **Cardume do Clã:** cada membro coloca 1 peixe do Aquário (ele continua no Aquário e no Cardume pessoal); a Força do
+  clã é a soma da Força desses peixes, com a regra do Cardume. Peixe vendido, usado como alimento ou anunciado sai do
+  Cardume do Clã.
+- **Ranking diário dos clãs** às 00:00 (Brasília) com prêmios para o top 3 (Dólares, Moedas, Conchas, Fragmentos de
+  Roupa e fragmentos de barco, para cada membro). **Desligado no jogo local** (`clans.json →
+  ranking.online_rewards_enabled`), como o top 10 do Boss Mundial; a janela avisa que liga quando o jogo estiver online.
+- `config/clans.json` com os números provisórios (OD-071). Pedido de arte do ícone `ico_cla` em
+  `docs/ASSETS_PENDENTES.md` (por enquanto, o ícone da Honra).
+
+### Mudado
+
+- Save versão 22: quem já jogava abre sem clã.
+
 ## [0.2.0-m24.7] — 13/10/2026
 
 As varas pedem menos fragmentos, por decisão do proprietário (OD-070, opção c; M24-T48, A-173). Save continua na versão

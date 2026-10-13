@@ -73,6 +73,7 @@ namespace FishingIdle.GameService.Market
                 var blocker = FishBlocker(fish.Id);
                 if (blocker != ServiceError.None) return ServiceResult<AuctionView>.Fail(blocker);
                 Save.Aquarium.Remove(fish);
+                Clans.ClanRules.DropMissingFish(Save);
                 goods = new MarketGoods { Kind = MarketGoods.KindFish, Fish = fish };
             }
             else

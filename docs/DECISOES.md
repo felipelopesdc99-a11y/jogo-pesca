@@ -1233,3 +1233,43 @@ carga por `RodFragmentRules.AssembleReady` (que já existia para "um config que 
 o número novo; o resto fica como extra (`FewerRodFragmentsTests`). O Passe **não** acompanha a queda: os fragmentos de vara
 dele ficam fixos em `passe_fragmentos.py → PASSE_FRAG_VARAS` (3 / 4 / 6 / 7 / 9, os 15% de antes), porque a opção (c)
 foi simulada e aprovada com eles; `FRAG_VARA_GRATIS` só vale para uma vara fora da tabela.
+
+## TD-055 · Clãs: um serviço pronto para o servidor e os prêmios do ranking só online (13/10/2026)
+
+**Origem.** M24-T49 (A-174): o proprietário pediu os clãs (criar ou entrar, 10 vagas e vagas compradas, +1% de XP,
+Cardume do Clã com 1 peixe por membro, ranking diário com prêmios para o top 3). Respondeu: "pronto só para online" (o
+ranking entre clãs e os prêmios ficam desligados no jogo local, sem clãs simulados), só Pescador Nv.100+ e criar e
+comprar vagas com Dólares.
+
+**Decisão.**
+- **Um serviço como os outros.** `IClanService` / `LocalClanService` com intenções (`Create`, `Join`, `Leave`, `BuySlot`,
+  `SetFish`, `ClearFish`) e `Update` chamado pela sincronização do jogo; regras puras em `ClanRules`. A versão remota
+  terá a mesma interface sobre HTTP.
+- **A lista de clãs mora no save no jogo local** (`ClanState.KnownClans`): é o lugar que o servidor vai ocupar. Hoje ela
+  só tem o clã que o jogador criou; os testes põem clãs de "outros jogadores" nela para provar `Join`, o limite de vagas,
+  o dono que sai e o ranking. Os membros de fora guardam nome, nível e a Força do peixe como o servidor informaria; o do
+  jogador lê o peixe do Aquário na hora (a Força muda com o nível do peixe).
+- **Força pela regra existente.** A Força de um peixe é a do Cardume (`CardumeRules.RawStrength` com os pesos do
+  `arena.json`, mostrada com `CardumeRules.Display`), sem o bônus de Cardume completo (é um peixe só); a do clã é a soma
+  com `SafeMath`. Nenhuma fórmula nova.
+- **O peixe não é movido.** O Cardume do Clã guarda só o id do peixe (`ClanMemberRecord.FishId`); ele continua no Aquário
+  e no Cardume pessoal. Quando ele deixa o Aquário (venda, alimento, Mercado, Leilão), `ClanRules.DropMissingFish` zera o
+  id — chamado nesses pontos, no `Update` e na carga.
+- **+1% exato.** O bônus de XP guarda a fração de ponto (`ClanState.XpCarry`) e a soma no próximo peixe, em vez de
+  arredondar peixe a peixe como a Calça: arredondando, peixes de menos de 50 XP (os mapas do começo) dariam 0.
+- **Ranking por dia de Brasília.** O dia fecha às 00:00 no fuso de `clans.json → ranking.utc_offset_minutes` (−180),
+  pelo `IClock` (TD-030). O jogo local fecha o dia na primeira atualização depois da meia-noite e paga no máximo um dia
+  (o último); o servidor vai fotografar a Força às 00:00 e pagar cada dia. Um clã sem peixe no Cardume (Força 0) não
+  entra no ranking.
+- **Prêmios só com `online_rewards_enabled`** (como o top 10 do Boss Mundial, TD-049): no jogo local só existe o clã do
+  jogador, que seria sempre o 1º. Com a chave desligada o dia fecha sem ranking e sem pagamento (nada fica guardado para
+  pagar depois). Os prêmios: Dólares, Moedas e Conchas em minutos da renda de referência do Boss Mundial
+  (`world_boss.json → reference_income`, pelo nível de cada membro), Fragmentos de Roupa e fragmentos do barco do Boss
+  (o do mapa mais alto liberado) — o mesmo pacote do Boss e do Passe, sem moeda ou item novo.
+- **Save v22** com `ClanState`; um save antigo entra sem clã (TD-050: o jogo sempre abre).
+
+**Por quê.** Separar a regra da tela e guardar a lista de clãs onde o servidor vai ficar deixa a troca para o online
+pequena; reaproveitar a Força do Cardume e o pacote de prêmios do Boss evita inventar fórmula ou recompensa.
+
+**Rever se.** O jogo ganhar servidor (ligar `online_rewards_enabled`, mover `KnownClans` para ele e fotografar o
+ranking às 00:00), ou o proprietário mudar os números provisórios (OD-071).

@@ -1066,4 +1066,66 @@ namespace FishingIdle.GameService.Config
         public long CoinsPerHour { get; set; }
         public long ShellsPerHour { get; set; }
     }
+
+    /// <summary>
+    /// Clãs (clans.json, M24-T49, A-174): Fisher Nv.100+ only, created with Dólares, 10 places plus extra ones bought by the
+    /// owner, +1% Fisher XP for members, one fish per member in the clan's Cardume, and a daily ranking at 00:00 (Brasília)
+    /// whose top 3 rewards are paid only with a server (online_rewards_enabled).
+    /// </summary>
+    public sealed class ClansConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+        public ClanMembershipConfig Membership { get; set; }
+        public ClanCostsConfig Costs { get; set; }
+        public ClanNameConfig Name { get; set; }
+
+        /// <summary>Extra Fisher XP of each fish caught while in a clan (0.01 = +1%).</summary>
+        public double XpBonus { get; set; }
+        public ClanRankingConfig Ranking { get; set; }
+    }
+
+    public sealed class ClanMembershipConfig
+    {
+        public int MinFisherLevel { get; set; }
+        public int BaseMembers { get; set; }
+        public int MaxMembers { get; set; }
+    }
+
+    public sealed class ClanCostsConfig
+    {
+        public long CreateDollars { get; set; }
+        public long ExtraSlotFirstDollars { get; set; }
+        public double ExtraSlotGrowth { get; set; }
+    }
+
+    public sealed class ClanNameConfig
+    {
+        public int MinLength { get; set; }
+        public int MaxLength { get; set; }
+    }
+
+    public sealed class ClanRankingConfig
+    {
+        /// <summary>The ranking's fixed time zone (−180 = Brasília, UTC−3); the day closes at 00:00 there.</summary>
+        public int UtcOffsetMinutes { get; set; }
+
+        /// <summary>Off in the local game (only the player's clan exists); on only with a server and real players.</summary>
+        public bool OnlineRewardsEnabled { get; set; }
+
+        /// <summary>The 1st, 2nd and 3rd clans' rewards, paid to each member.</summary>
+        public List<ClanRewardConfig> RewardsByRank { get; set; }
+    }
+
+    public sealed class ClanRewardConfig
+    {
+        public long Dollars { get; set; }
+
+        /// <summary>Minutes of the member's reference income (world_boss.json → reference_income) in Moedas / Conchas.</summary>
+        public double IncomeMinutes { get; set; }
+        public double ShellMinutes { get; set; }
+        public int ClothingFragments { get; set; }
+
+        /// <summary>Fragments of the boat of the highest map the member's Fisher level unlocks (the Boss Mundial's boat).</summary>
+        public int BoatFragments { get; set; }
+    }
 }

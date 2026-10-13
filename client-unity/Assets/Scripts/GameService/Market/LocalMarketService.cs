@@ -169,6 +169,7 @@ namespace FishingIdle.GameService.Market
 
             // The fish leaves the Aquarium: listed goods cannot be used anywhere else (GDD section 33).
             Save.Aquarium.Remove(fish);
+            Clans.ClanRules.DropMissingFish(Save);
             var listing = NewPlayerListing(new MarketGoods { Kind = MarketGoods.KindFish, Fish = fish }, priceCoins);
             _session.Persist();
             _session.Log("Listed fish " + fish.Id + " for " + priceCoins + " coins (listing " + listing.Id + ").");

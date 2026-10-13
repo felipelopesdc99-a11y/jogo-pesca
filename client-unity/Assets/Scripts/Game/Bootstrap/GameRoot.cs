@@ -5,6 +5,7 @@ using FishingIdle.Game.UI;
 using FishingIdle.GameService;
 using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Arena;
+using FishingIdle.GameService.Clans;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Expeditions;
@@ -195,6 +196,7 @@ namespace FishingIdle.Game.Bootstrap
 
                     RefreshTutorial();
                     SyncWorldBoss();
+                    SyncClan();
 
                     var marketNews = Game.Market.Update();
                     foreach (var news in marketNews)
@@ -995,6 +997,81 @@ namespace FishingIdle.Game.Bootstrap
             Refresh();
         }
 
+        // ------------------------------------------------------------------ Clãs (M24-T49, A-174)
+
+        /// <summary>The clan as the service last returned it (refreshed with the player). Presentation only.</summary>
+        public ClanView Clan { get; private set; }
+
+        /// <summary>Lets the service close a ranking day at 00:00 (Brasília) and shows what it paid.</summary>
+        private void SyncClan()
+        {
+            var update = Game.Clans.Update();
+            if (update.FishRemoved)
+            {
+                Toasts.Push(GameTexts.Clan.FishLeftToast, ToastKind.Info);
+                Clan = Game.Clans.GetClan();
+            }
+
+            var paid = update.Paid;
+            if (paid == null)
+            {
+                return;
+            }
+
+            var items = new List<string>();
+            if (paid.Dollars > 0) items.Add(GameTexts.WorldBoss.ItemDollars(Format.Number(paid.Dollars)));
+            if (paid.Coins > 0) items.Add(GameTexts.WorldBoss.ItemCoins(Format.Short(paid.Coins)));
+            if (paid.Shells > 0) items.Add(GameTexts.WorldBoss.ItemShells(Format.Number(paid.Shells)));
+            if (paid.ClothingFragments > 0) items.Add(GameTexts.WorldBoss.ItemClothing(paid.ClothingFragments));
+            if (paid.BoatFragments > 0) items.Add(GameTexts.WorldBoss.ItemBoat(Format.Number(paid.BoatFragments), paid.BoatName));
+            Toasts.Push(GameTexts.Clan.PaidToast(paid.Rank, string.Join(", ", items)), ToastKind.Coins, notify: true);
+            if (paid.BoatAssembled)
+            {
+                Toasts.Push(GameTexts.Gear.BoatAssembledToast(paid.BoatName), ToastKind.Important, notify: true);
+                Celebrations.Show(GameTexts.Gear.BoatAssembledTitle, paid.BoatName, FishingIdle.Game.Visual.VisualTheme.Current.Reward);
+            }
+
+            Refresh();
+        }
+
+        /// <summary>The Aquarium fish the player can put in the clan's Cardume (asked when the picker opens).</summary>
+        public List<ClanFishView> ClanFishCandidates()
+        {
+            List<ClanFishView> list = null;
+            Guard(() => list = Game.Clans.GetFishCandidates());
+            return list ?? new List<ClanFishView>();
+        }
+
+        /// <summary>Creates a clan; true when it was created (the window clears the name field).</summary>
+        public bool CreateClan(string name) => ClanIntent(() => Game.Clans.Create(name), v => GameTexts.Clan.CreatedToast(v.Clan != null ? v.Clan.Name : name));
+
+        public void LeaveClan() => ClanIntent(() => Game.Clans.Leave(), _ => GameTexts.Clan.LeftToast);
+
+        public void BuyClanSlot() => ClanIntent(() => Game.Clans.BuySlot(), v => GameTexts.Clan.SlotBoughtToast(v.Clan != null ? v.Clan.Capacity : 0));
+
+        public void SetClanFish(long fishId) => ClanIntent(() => Game.Clans.SetFish(fishId), _ => GameTexts.Clan.FishSetToast);
+
+        public void ClearClanFish() => ClanIntent(() => Game.Clans.ClearFish(), _ => GameTexts.Clan.FishClearedToast);
+
+        private bool ClanIntent(Func<ServiceResult<ClanView>> call, Func<ClanView, string> success)
+        {
+            var ok = false;
+            Guard(() =>
+            {
+                var result = call();
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                ok = true;
+                Refresh();
+                Toasts.Push(success(result.Value), ToastKind.Important);
+            });
+            return ok;
+        }
+
         // ------------------------------------------------------------------ Passe do Pescador (M24-T17)
 
         /// <summary>The pass as the service last returned it (refreshed with the player). Presentation only.</summary>
@@ -1408,6 +1485,7 @@ namespace FishingIdle.Game.Bootstrap
             Clothing = Game.Clothing.GetClothing();
             Vip = Game.Vip.GetVip();
             Pass = Game.Pass.GetPass();
+            Clan = Game.Clans.GetClan();
         }
 
         /// <summary>

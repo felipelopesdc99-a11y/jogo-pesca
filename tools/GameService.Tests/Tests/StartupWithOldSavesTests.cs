@@ -178,6 +178,11 @@ public class StartupWithOldSavesTests
             json["upgrades"] = new JObject { ["levels"] = new JObject { ["crew_01_up_1"] = 1, ["fair_customers"] = 2 } };
         }
 
+        if (version <= 21)
+        {
+            json.Remove("clans");
+        }
+
         if (version <= 18)
         {
             json.Remove("world_boss");
@@ -279,6 +284,7 @@ public class StartupWithOldSavesTests
         game.Tutorial.Get();
         game.WorldBoss.Update();
         game.WorldBoss.GetWorldBoss();
+        game.Clans.Update();
         game.Market.Update();
         Refresh(game);
     }
@@ -293,6 +299,7 @@ public class StartupWithOldSavesTests
         game.Clothing.GetClothing();
         game.Vip.GetVip();
         game.Pass.GetPass();
+        game.Clans.GetClan();
     }
 
     /// <summary>What each window asks the service for when it opens.</summary>
@@ -325,5 +332,7 @@ public class StartupWithOldSavesTests
         game.WorldBoss.GetWorldBoss();
         game.Clothing.GetClothing();
         game.Vip.GetVip();
+        game.Clans.GetClan();
+        game.Clans.GetFishCandidates();
     }
 }

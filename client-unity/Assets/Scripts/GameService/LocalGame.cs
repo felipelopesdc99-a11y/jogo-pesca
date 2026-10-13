@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using FishingIdle.GameService.Aquarium;
 using FishingIdle.GameService.Arena;
+using FishingIdle.GameService.Clans;
 using FishingIdle.GameService.Config;
 using FishingIdle.GameService.Core;
 using FishingIdle.GameService.Dev;
@@ -54,6 +55,7 @@ namespace FishingIdle.GameService
             Vip = new LocalVipService(session);
             Pass = new LocalPassService(session, fishing);
             WorldBoss = new LocalWorldBossService(session, Cardume, fishing);
+            Clans = new LocalClanService(session, aquarium, fishing);
             DevTools = new LocalDevToolsService(session, fishing);
         }
 
@@ -83,6 +85,9 @@ namespace FishingIdle.GameService
 
         /// <summary>The Boss Mundial (M24-T29): every day at 19:00 (Brasília), 10 minutes of automatic Cardume attacks.</summary>
         public IWorldBossService WorldBoss { get; }
+
+        /// <summary>The Clãs (M24-T49): create or join (Nv.100+), places, the clan's Cardume and the daily ranking at 00:00.</summary>
+        public IClanService Clans { get; }
 
         /// <summary>The owner's test tools (A-123); they refuse everything unless Session.DevToolsEnabled is on.</summary>
         public IDevToolsService DevTools { get; }

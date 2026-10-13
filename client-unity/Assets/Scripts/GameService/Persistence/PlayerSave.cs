@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 21;
+        public const int CurrentVersion = 22;
 
         /// <remarks>
         /// A file without save_version is read as version 1, so it runs every migration instead of skipping them all
@@ -201,6 +201,9 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>The Boss Mundial of the last day the player took part (M24-T29, A-165). Added in save version 19.</summary>
         public WorldBossState WorldBoss { get; set; } = new WorldBossState();
 
+        /// <summary>The Clãs (M24-T49, A-174): the player's clan and the local clan list. Added in save version 22.</summary>
+        public ClanState Clans { get; set; } = new ClanState();
+
         /// <summary>The equipped rod item, or null if the reference is broken.</summary>
         public InventoryItem EquippedRodItem()
         {
@@ -303,6 +306,84 @@ namespace FishingIdle.GameService.Persistence
         public long PaidBoatFragments { get; set; }
         public string PaidBoatId { get; set; }
         public long PaidDollars { get; set; }
+    }
+
+    /// <summary>
+    /// The Clãs (M24-T49, A-174, TD-055). In the local game this is also the stand-in for the future server's clan list
+    /// (<see cref="KnownClans"/>): it holds only the clan the player created (no simulated clans); with a server, the list,
+    /// the other members and their fish come from it and only <see cref="MyClanId"/> is the player's.
+    /// </summary>
+    public sealed class ClanState
+    {
+        /// <summary>The clan the player is in, or null.</summary>
+        public string MyClanId { get; set; }
+
+        /// <summary>The clans this game knows. Local: only the player's own (0 or 1).</summary>
+        public List<ClanRecord> KnownClans { get; set; } = new List<ClanRecord>();
+
+        /// <summary>Numbers the local clan ids ("clan_1" …); never reused.</summary>
+        public long NextClanNumber { get; set; } = 1;
+
+        /// <summary>The fraction of a Fisher XP point of the clan bonus not given yet (0 to 1), added to the next fish.</summary>
+        public double XpCarry { get; set; }
+
+        /// <summary>The ranking day in progress (days since 01/01/1970 in Brasília); 0 = not started yet.</summary>
+        public long RankingDay { get; set; }
+
+        /// <summary>The last closed ranking day the player was in a clan: its rank and what it paid (null = none yet).</summary>
+        public ClanRankingResult LastResult { get; set; }
+    }
+
+    public sealed class ClanRecord
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+
+        /// <summary>The owner's player id (the only one who buys places).</summary>
+        public string OwnerId { get; set; }
+        public long CreatedAtMs { get; set; }
+
+        /// <summary>Places bought on top of clans.json → membership.base_members.</summary>
+        public int ExtraSlots { get; set; }
+        public List<ClanMemberRecord> Members { get; set; } = new List<ClanMemberRecord>();
+    }
+
+    public sealed class ClanMemberRecord
+    {
+        public string PlayerId { get; set; }
+
+        /// <summary>Name and Fisher level when last seen (the player's own are read from the save).</summary>
+        public string Name { get; set; }
+        public int FisherLevel { get; set; }
+        public long JoinedAtMs { get; set; }
+
+        /// <summary>The player's own fish in the clan's Cardume: an Aquarium fish id, 0 = none.</summary>
+        public long FishId { get; set; }
+
+        /// <summary>Another member's fish as the server reports it (species, level and Strength); unused for the player.</summary>
+        public string FishSpeciesId { get; set; }
+        public int FishLevel { get; set; }
+        public long FishStrength { get; set; }
+    }
+
+    /// <summary>One closed ranking day: the player's clan rank and the rewards paid (all 0 while the online rewards are off).</summary>
+    public sealed class ClanRankingResult
+    {
+        public long Day { get; set; }
+        public string ClanName { get; set; }
+
+        /// <summary>The clan's place that day (0 = not ranked).</summary>
+        public int Rank { get; set; }
+        public long Strength { get; set; }
+
+        /// <summary>Whether the online rewards were on (with them off nothing is paid).</summary>
+        public bool RewardsOn { get; set; }
+        public long Dollars { get; set; }
+        public long Coins { get; set; }
+        public long Shells { get; set; }
+        public long ClothingFragments { get; set; }
+        public long BoatFragments { get; set; }
+        public string BoatId { get; set; }
     }
 
     /// <summary>

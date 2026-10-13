@@ -151,7 +151,7 @@ namespace FishingIdle.GameService.WorldBoss
 
         public static long Shells(WorldBossConfig boss, WorldBossBandConfig band, int fisherLevel) => Minutes(IncomeAt(boss, fisherLevel).ShellsPerHour, band.ShellMinutes);
 
-        private static long Minutes(long perHour, double minutes)
+        internal static long Minutes(long perHour, double minutes)
         {
             var value = Math.Round(perHour * minutes / 60.0, MidpointRounding.AwayFromZero);
             return value >= long.MaxValue ? long.MaxValue : Math.Max(0L, (long)value);

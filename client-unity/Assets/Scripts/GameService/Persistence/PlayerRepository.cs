@@ -460,6 +460,13 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 21;
             }
 
+            if (save.SaveVersion == 21)
+            {
+                // v22: the Clãs (M24-T49, A-174). A save from before is in no clan.
+                save.Clans = new ClanState();
+                save.SaveVersion = 22;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BoatLevels = save.BoatLevels ?? new Dictionary<string, int>();
             save.BoatFragments = save.BoatFragments ?? new Dictionary<string, long>();
@@ -468,6 +475,15 @@ namespace FishingIdle.GameService.Persistence
             save.Clothing.Pieces = save.Clothing.Pieces ?? new Dictionary<string, ClothingPieceState>();
             save.Pass = save.Pass ?? new PassState();
             save.WorldBoss = save.WorldBoss ?? new WorldBossState();
+            save.Clans = save.Clans ?? new ClanState();
+            save.Clans.KnownClans = save.Clans.KnownClans ?? new List<ClanRecord>();
+            save.Clans.KnownClans.RemoveAll(c => c == null);
+            foreach (var clan in save.Clans.KnownClans)
+            {
+                clan.Members = clan.Members ?? new List<ClanMemberRecord>();
+                clan.Members.RemoveAll(m => m == null);
+            }
+
             save.Pass.FreeClaimed = save.Pass.FreeClaimed ?? new List<int>();
             save.Pass.PremiumClaimed = save.Pass.PremiumClaimed ?? new List<int>();
             save.BaitCharges = save.BaitCharges ?? new Dictionary<string, int>();
@@ -612,6 +628,22 @@ namespace FishingIdle.GameService.Persistence
                 || save.WorldBoss.Rank < 0 || double.IsNaN(save.WorldBoss.ReferenceDamage) || save.WorldBoss.ReferenceDamage < 0
                 || save.WorldBoss.PaidCoins < 0 || save.WorldBoss.PaidShells < 0 || save.WorldBoss.PaidDollars < 0
                 || save.WorldBoss.PaidClothingFragments < 0 || save.WorldBoss.PaidBoatFragments < 0)) problems.Add("world boss malformed");
+            if (save.Clans != null && save.Clans.KnownClans != null)
+            {
+                var clans = save.Clans.KnownClans.Where(c => c != null).ToList();
+                var clanIds = clans.Select(c => c.Id).ToList();
+                if (clanIds.Any(string.IsNullOrWhiteSpace) || clanIds.Count != clanIds.Distinct().Count()) problems.Add("clans have empty or duplicate ids");
+                if (clans.Any(c => c.ExtraSlots < 0 || (c.Members != null && c.Members.Any(m => m != null && (m.FishStrength < 0 || m.FishId < 0 || m.FishLevel < 0)))))
+                {
+                    problems.Add("clans negative values");
+                }
+
+                if (save.Clans.RankingDay < 0 || (save.Clans.LastResult != null && (save.Clans.LastResult.Dollars < 0 || save.Clans.LastResult.Coins < 0
+                    || save.Clans.LastResult.Shells < 0 || save.Clans.LastResult.ClothingFragments < 0 || save.Clans.LastResult.BoatFragments < 0)))
+                {
+                    problems.Add("clan ranking malformed");
+                }
+            }
 
             return problems;
         }

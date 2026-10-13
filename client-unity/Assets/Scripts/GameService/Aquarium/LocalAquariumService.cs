@@ -317,7 +317,7 @@ namespace FishingIdle.GameService.Aquarium
             return ServiceResult<FeedPreview>.Ok(preview);
         }
 
-        /// <summary>Consumed or sold fish leave their Cardume position empty.</summary>
+        /// <summary>Consumed or sold fish leave their Cardume position empty (and the clan's Cardume, M24-T49).</summary>
         private void RemoveFromCardume(HashSet<long> fishIds)
         {
             for (var i = 0; i < Save.CardumeSlots.Count; i++)
@@ -327,6 +327,8 @@ namespace FishingIdle.GameService.Aquarium
                     Save.CardumeSlots[i] = 0;
                 }
             }
+
+            Clans.ClanRules.DropMissingFish(Save);
         }
 
         internal FishView ToView(FishInstance fish)

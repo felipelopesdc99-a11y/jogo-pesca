@@ -1297,5 +1297,56 @@ namespace FishingIdle.GameService.Config
 
             return errors;
         }
+
+        /// <summary>clans.json (M24-T49, A-174): membership inside the Fisher's levels, sane prices, a name rule and 1 to 10 rewards.</summary>
+        public static List<string> ValidateClans(ClansConfig clans, int fisherMaxLevel)
+        {
+            var errors = new List<string>();
+            if (clans == null)
+            {
+                errors.Add(V.ConfigFileMissing(GameConfigLoader.ClansFile));
+                return errors;
+            }
+
+            var m = clans.Membership;
+            if (m == null || m.MinFisherLevel < 1 || (fisherMaxLevel > 0 && m.MinFisherLevel > fisherMaxLevel)
+                || m.BaseMembers < 1 || m.BaseMembers > 1000 || m.MaxMembers < m.BaseMembers || m.MaxMembers > 1000)
+            {
+                errors.Add(V.ClansMembership);
+            }
+
+            var c = clans.Costs;
+            if (c == null || c.CreateDollars < 0 || c.ExtraSlotFirstDollars < 1 || !(c.ExtraSlotGrowth >= 1) || c.ExtraSlotGrowth > 10)
+            {
+                errors.Add(V.ClansCosts);
+            }
+
+            var n = clans.Name;
+            if (n == null || n.MinLength < 1 || n.MaxLength < n.MinLength || n.MaxLength > 40)
+            {
+                errors.Add(V.ClansName);
+            }
+
+            if (!(clans.XpBonus >= 0) || clans.XpBonus > 1)
+            {
+                errors.Add(V.ClansXpBonus);
+            }
+
+            var r = clans.Ranking;
+            var rankingOk = r != null && r.UtcOffsetMinutes >= -720 && r.UtcOffsetMinutes <= 840
+                            && r.RewardsByRank != null && r.RewardsByRank.Count >= 1 && r.RewardsByRank.Count <= 10;
+            foreach (var reward in r?.RewardsByRank ?? new List<ClanRewardConfig>())
+            {
+                rankingOk &= reward != null && reward.Dollars >= 0 && reward.IncomeMinutes >= 0 && reward.ShellMinutes >= 0
+                             && reward.IncomeMinutes <= 100000 && reward.ShellMinutes <= 100000 && reward.ClothingFragments >= 0 && reward.BoatFragments >= 0;
+            }
+
+            if (!rankingOk)
+            {
+                errors.Add(V.ClansRanking);
+            }
+
+            return errors;
+        }
     }
 }

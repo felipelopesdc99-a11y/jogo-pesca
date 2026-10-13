@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-13T15:00:00Z",
+  "updated_at": "2026-10-13T18:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -669,6 +669,14 @@
       "status": "RESOLVED",
       "resolved_at": "2026-10-13T15:00:00Z",
       "resolution": "Decisão do proprietário em 13/10/2026: opção (c). A chance continua 0,1% por peixe em qualquer mapa e as varas 1 a 5 pedem 5 / 8 / 12 / 15 / 20 fragmentos (eram 15 / 25 / 35 / 45 / 60); o Passe continua dando 3 / 4 / 6 / 7 / 9 fragmentos de vara. Re-simulado: Mapa 10 no dia ~1,8 / ~3,8 / ~5,8 e Nv.1000 em ~54,8 / ~102,3 / ~109,8 dias (jogo aberto / 4 vezes por dia / 1 vez por dia) (M24-T48, A-173)."
+    },
+    {
+      "id": "OD-071",
+      "task_id": "M24-T50",
+      "title": "Preços e prêmios dos clãs",
+      "detail": "Os clãs (A-174) estão com números provisórios em config/clans.json. Hoje: criar um clã custa 50 Dólares; cada vaga extra custa 20 Dólares e cada uma seguinte 1,5 vez a anterior (20, 30, 45, 68, 101 …), até 50 vagas no total; prêmios do ranking diário para cada membro: 1º 25 Dólares + 60 min de renda em Moedas e em Conchas + 3 Fragmentos de Roupa + 3 fragmentos de barco; 2º 15 + 45 min + 2 + 2; 3º 10 + 30 min + 1 + 1 (os prêmios só ligam com o jogo online). Para comparar: até o Nv.100 o Passe grátis dá 100 Dólares, e o VIP e o Premium do Passe custam 100 cada. Opções: (a) ficam assim; (b) criar mais barato (por exemplo 20 Dólares) ou mais caro (100); (c) outro limite de vagas; (d) outros prêmios.",
+      "raised_at": "2026-10-13T18:00:00Z",
+      "status": "OPEN"
     }
   ],
   "milestones": [
@@ -4957,7 +4965,31 @@
             "M24-T47"
           ],
           "updated_at": "2026-10-13T15:00:00Z",
-          "completion_notes": "OD-070 resolvido com a opção (c) do proprietário. config/rods.json: fragments_required das varas 1 a 5 = 5 / 8 / 12 / 15 / 20 (eram 15 / 25 / 35 / 45 / 60); fragment_drop_chance continua 0,001 em qualquer mapa; nota em fragment_rules. Passe: os fragmentos de vara ficaram iguais (grátis 3 / 4 / 6 / 7 / 9, premium o dobro), porque a opção (c) foi simulada com eles; config/pass.json não mudou. Geradores: fragmentos_equipamento.py (FRAGMENTOS_VARAS novo) e passe_fragmentos.py (PASSE_FRAG_VARAS fixa os fragmentos de vara do Passe) não desfazem nada (conferido rodando os dois; as outras diferenças que eles gerariam já existiam e não foram gravadas). Saves: nada de código novo; RodFragmentRules.AssembleReady já monta na carga a vara cujos fragmentos guardados chegam ao número novo, gastando só ele (o resto fica como extra; uma vara só por id; a de categoria maior entra em uso). Simulação (fragmentos_qualquer_mapa.py, agora com três regras: 12/10, varas 15 a 60 e agora; docs/propostas/fragmentos_qualquer_mapa.json; pesca + Passe grátis, sem Boss nem Premium): todos os 15 itens em 19,0 / 35,8 / 39,8 dias (jogo aberto / 4×/dia / 1×/dia; com varas 15 a 60 eram 20,5 / 38,3 / 41,8); varas em 11 h a 1,8 / 1,3 a 3,8 / 1,8 a 5,8 dias; barcos 1,8 a 3,5 / 3,9 a 7,3 / 5,8 a 8,8; Mapa 10 abre no dia 1,8 / 3,8 / 5,8 (eram 7,7 / 14,8 / 16,8); Nv.1000 em 54,8 / 102,3 / 109,8 (eram 58,5 / 108,8 / 117,8; em 12/10, 53,8 / 100,3 / 109,8). Testes: RodsAndClothingByFragments (números novos das varas, Passe com os números fixos, teste de fragmentos da vara 2 sem montar), FewerRodFragmentsTests (save com fragmentos acima do número novo monta ao abrir, sem perder nenhum). A-173 (atualizado), TD-054 (atualizado), config/README, ROADMAP.md. Não compilado localmente (sem .NET); verificado no CI (GitHub). Não aberto no Unity."
+          "completion_notes": "OD-070 resolvido com a opção (c) do proprietário. config/rods.json: fragments_required das varas 1 a 5 = 5 / 8 / 12 / 15 / 20 (eram 15 / 25 / 35 / 45 / 60); fragment_drop_chance continua 0,001 em qualquer mapa; nota em fragment_rules. Passe: os fragmentos de vara ficaram iguais (grátis 3 / 4 / 6 / 7 / 9, premium o dobro), porque a opção (c) foi simulada com eles; config/pass.json não mudou. Geradores: fragmentos_equipamento.py (FRAGMENTOS_VARAS novo) e passe_fragmentos.py (PASSE_FRAG_VARAS fixa os fragmentos de vara do Passe) não desfazem nada (conferido rodando os dois; as outras diferenças que eles gerariam já existiam e não foram gravadas). Saves: nada de código novo; RodFragmentRules.AssembleReady já monta na carga a vara cujos fragmentos guardados chegam ao número novo, gastando só ele (o resto fica como extra; uma vara só por id; a de categoria maior entra em uso). Simulação (fragmentos_qualquer_mapa.py, agora com três regras: 12/10, varas 15 a 60 e agora; docs/propostas/fragmentos_qualquer_mapa.json; pesca + Passe grátis, sem Boss nem Premium): todos os 15 itens em 19,0 / 35,8 / 39,8 dias (jogo aberto / 4×/dia / 1×/dia; com varas 15 a 60 eram 20,5 / 38,3 / 41,8); varas em 11 h a 1,8 / 1,3 a 3,8 / 1,8 a 5,8 dias; barcos 1,8 a 3,5 / 3,9 a 7,3 / 5,8 a 8,8; Mapa 10 abre no dia 1,8 / 3,8 / 5,8 (eram 7,7 / 14,8 / 16,8); Nv.1000 em 54,8 / 102,3 / 109,8 (eram 58,5 / 108,8 / 117,8; em 12/10, 53,8 / 100,3 / 109,8). Testes: RodsAndClothingByFragments (números novos das varas, Passe com os números fixos, teste de fragmentos da vara 2 sem montar), FewerRodFragmentsTests (save com fragmentos acima do número novo monta ao abrir, sem perder nenhum). A-173 (atualizado), TD-054 (atualizado), config/README, ROADMAP.md. Não compilado localmente (sem .NET); verificado no CI (GitHub) no commit afd7a04: 409 testes passando e 0 erros e 0 avisos no jogo, no Painel e no Simulador. Não aberto no Unity."
+        },
+        {
+          "id": "M24-T49",
+          "title": "Clãs: criar ou entrar (Nv.100+), vagas com Dólares, +1% de XP, Cardume do Clã e ranking diário",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (13/10/2026): \"Vamos adicionar os clans, jogadores podem entrar ou criar um clan, máximo de 10 jogadores por enquanto (pode comprar + espaço), jogadores ganham bônus padrão de 1% de xp por estarem em um clan (nível 100 pra cima), top 3, 2, 1 ganha recompensas em dólares, conchas, fragmentos, moedas todos os dias às 00:00, para ser o melhor clan precisa ser o que tem o cardume mais forte em conjunto, cada membro tem oportunidade de colocar 1 peixe no cardume do clan (esse peixe também pode ficar no seu cardume).\" Respostas: \"pronto só para online\" (ranking entre clãs e prêmios desligados no jogo local, sem clãs de bots); só Pescador Nv.100+ cria ou entra, bônus +1% de XP de pesca; criar e comprar vagas custam Dólares (números provisórios em config).",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T29",
+            "M24-T48"
+          ],
+          "updated_at": "2026-10-13T18:00:00Z",
+          "completion_notes": "Serviço: IClanService/LocalClanService (Create, Join por id, Leave, BuySlot, SetFish, ClearFish, GetFishCandidates, Update) e ClanRules (vagas e preço crescente, nome limpo e validado sem repetir, TakeBonusXp com a fração guardada, Força do peixe pela regra do Cardume sem o bônus 6/6, Força do clã com SafeMath, dia de Brasília, ordem do ranking); LocalGame.Clans. +1% de XP em LocalFishingService.ApplyCatch (FishingUpdate.ClanXpGained). Peixe vendido, comido, anunciado ou no Leilão sai do Cardume do Clã (DropMissingFish no Aquário, Mercado, Leilão, Update e carga). Ranking: fecha às 00:00 (Brasília, IClock); só com clans.json → ranking.online_rewards_enabled (false no local) paga o top 3 uma vez (Dólares, Moedas e Conchas pela renda de referência do Boss, Fragmentos de Roupa e fragmentos do barco do Boss). Config: config/clans.json (Nv.100, 10 vagas, máximo 50, criar 50 Dólares, vaga 20 × 1,5^n, nome 3 a 20, +1%, prêmios 25/15/10 Dólares, 60/45/30 min, 3/2/1 e 3/2/1 fragmentos), GameConfigLoader.ClansFile e GameConfigValidator.ValidateClans. Save v22 (ClanState: MyClanId, KnownClans, NextClanNumber, XpCarry, RankingDay, LastResult), migração v21→v22 sem clã, ClanRules.Repair na carga, SaveValidator. Tela: sub-aba \"Clã\" do Perfil (Hud: \"Perfil | Clã\"), UI/ClanWindow no padrão Diário de bordo (requisito do Nv.100, criar clã, clã com Força, bônus, Comprar vaga, Sair com confirmação, Cardume do Clã com escolher/trocar/tirar, membros e vagas, ranking e prêmios do top 3 com o aviso de que ligam online), GameRoot.SyncClan e intenções; textos em GameTexts.Clan, Navigation.Clan, erros e validação. Testes (ClanTests, 17): config e validador, Nv.100, custo em Dólares e recusa sem Dólares, nome, limite de 10 e vagas compradas, preço crescente e máximo, sair e dono, peixe no clã sem sair do Aquário e do Cardume, Força = soma, peixe vendido e anunciado sai, +1% só no clã (exato com a fração), ranking desligado no local, top 3 pago com a chave ligada às 00:00 de Brasília e uma vez só, 4º sem prêmio, fuso, migração v21→v22, referência quebrada limpa na carga, valores enormes; StartupWithOldSaves (saves 11 a 21 sem clãs) e CrewRemoval ajustados à v22. A-174, TD-055, BASE_TECNICA, SEGURANCA, config/README, ASSETS_PENDENTES (ico_cla, ASSET_PENDENTE). Números provisórios: OD-071. Não compilado localmente (sem .NET); verificado no CI (GitHub). Não aberto no Unity."
+        },
+        {
+          "id": "M24-T50",
+          "title": "Números dos clãs (preços, vagas e prêmios)",
+          "subsystem": "config",
+          "description": "Os números dos clãs (A-174) são provisórios: criar 50 Dólares, vaga extra 20 Dólares × 1,5 a cada vaga, máximo de 50 vagas, prêmios do top 3 por membro (25/15/10 Dólares, 60/45/30 minutos de renda em Moedas e em Conchas, 3/2/1 Fragmentos de Roupa e 3/2/1 fragmentos de barco). Decidir os valores (OD-071).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T49"
+          ],
+          "updated_at": "2026-10-13T18:00:00Z"
         }
       ],
       "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."

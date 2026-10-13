@@ -34,6 +34,29 @@ como a arquitetura definitiva.
 - **Dólares do top 10** só com `online_rewards_enabled`, desligado no jogo local (no ranking local só existe o jogador).
   Com o servidor, o ranking, o dano e o pagamento passam a ser dele.
 
+### Clãs (M24-T49, A-174, TD-055)
+
+No jogo local só existe o clã do próprio jogador, e os prêmios do top 3 estão desligados (`online_rewards_enabled`);
+o que segue é o que o servidor precisa garantir quando os clãs forem online.
+
+- **O servidor é dono da lista de clãs, dos membros e dos peixes.** O cliente manda só intenções (criar com um nome,
+  entrar por um id/convite, sair, comprar vaga, escolher o peixe). Nível do Pescador, Dólares, vagas e dono são
+  conferidos no servidor; o nome é limpo, validado e conferido contra os outros clãs (maiúsculas e minúsculas iguais)
+  numa transação, para dois jogadores não criarem o mesmo nome ao mesmo tempo.
+- **A Força vem do peixe que o servidor guarda**, calculada por ele com a regra do Cardume (`ClanRules.FishStrength`),
+  nunca de um número mandado pelo cliente. O peixe precisa ser do jogador e estar no Aquário dele: vendido, comido,
+  anunciado ou trocado, sai do Cardume do Clã na mesma transação (`DropMissingFish`).
+- **Um peixe, um clã, um membro.** Um jogador está em um clã só e coloca 1 peixe; o servidor recusa o mesmo jogador
+  duas vezes no clã e não deixa uma conta entrar em vários clãs para empurrar a Força de outros.
+- **Ranking fechado no servidor às 00:00 de Brasília**, com uma foto da Força de cada clã naquele momento (o jogo local
+  ordena na primeira atualização depois da meia-noite). Cada membro recebe o prêmio do dia uma vez só (o pagamento e a
+  marcação do dia pago na mesma transação). Quem entra depois das 00:00 não recebe o prêmio do dia que já fechou.
+- **Abusos a observar:** entrar e sair de clãs perto das 00:00 para pegar o prêmio de um clã forte (o servidor pode
+  exigir algumas horas no clã antes do fechamento — decisão do proprietário quando for online); contas falsas para
+  encher vagas ou somar Força; nomes ofensivos (lista de palavras proibidas e denúncia, no servidor).
+- **O bônus de +1% de XP** vale para quem está num clã no servidor; o cliente não decide se tem o bônus. A fração de
+  ponto guardada (`XpCarry`) fica entre 0 e 1 e nunca vira XP sozinha.
+
 ### Passe do Pescador (M24-T17, A-158, TD-042)
 
 - **Cada marco se resgata uma vez só.** O save guarda os níveis resgatados em cada faixa (`PassState.FreeClaimed` e
