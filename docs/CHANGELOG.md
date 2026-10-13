@@ -3,6 +3,16 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.14] — 13/10/2026
+
+Genes mais fortes, decisão do proprietário. Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- Cada gene agora mexe de **−20% (gene 0)** a **+30% (gene 31)** no seu atributo; o gene 16 é neutro. Antes era de
+  −10% a +10%. Um peixe com genes ruins fica realmente fraco e um 5 estrelas, realmente forte. Os peixes que vieram de
+  saves antigos (genes 16) ficam exatamente como estavam. Na média, os atributos sobem ~2%.
+
 ## [0.2.0-m24.13] — 13/10/2026
 
 Genes: cada peixe é único, pedido do proprietário (M24-T52, A-176). Save v23. Verificado no CI, não aberto no Unity.
