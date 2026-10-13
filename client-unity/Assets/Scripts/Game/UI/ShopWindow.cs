@@ -253,7 +253,7 @@ namespace FishingIdle.Game.UI
                         {
                             Id = piece.PieceId, Name = piece.Name,
                             Sub = piece.Owned ? GameTexts.Shop.LevelOf(piece.Level, piece.MaxLevel) : GameTexts.Gear.ClothingAxisName(piece.Axis),
-                            // ASSET_PENDENTE: Roupas/gloves … Roupas/shirt (the star icon until the art arrives).
+                            // Roupas/gloves … Roupas/shirt (art delivered 13/10/2026; the star icon if a file is missing).
                             Art = "Roupas/" + piece.PieceId, Icon = Icons.Star, Tier = 0, Square = true,
                             FragmentsHave = clothing.Fragments, FragmentsNeed = clothing.NextCost, OwnedText = GameTexts.Gear.Wearing,
                             Tag = piece.Owned ? TagKind.Owned : TagKind.Fragments,
@@ -572,6 +572,10 @@ namespace FishingIdle.Game.UI
             }
         }
 
+        /// <summary>Resources/Arte path of the fragment icon of a wall item: clothing pieces share frag_roupa.</summary>
+        private static string FragmentArt(WallItem item) =>
+            item.Art != null && item.Art.StartsWith("Roupas/", System.StringComparison.Ordinal) ? "Fragmentos/frag_roupa" : "Fragmentos/frag_" + item.Id;
+
         private static string FragmentsTag(WallItem item) => GameTexts.Gear.FragmentsTag(Format.Number(item.FragmentsHave), Format.Number(item.FragmentsNeed));
 
         private static string TagText(WallItem item)
@@ -623,8 +627,17 @@ namespace FishingIdle.Game.UI
                     GUI.Label(line, GameTexts.Shop.Free, skin.SmallGoldLine);
                     break;
                 case TagKind.Fragments:
-                    // ASSET_PENDENTE: the fragment icons (frag_boat_NN, frag_rod_NN, frag_roupa); the item's icon until they arrive.
-                    skin.DrawIcon(new Rect(x, line.y + 1f, 18f, 18f), item.Icon, UiSkin.Gold);
+                    // The fragment icon (frag_boat_NN, frag_rod_NN, frag_roupa); the item's icon if the file is missing.
+                    var fragmentArt = ArtAssets.Texture(FragmentArt(item));
+                    if (fragmentArt != null)
+                    {
+                        GUI.DrawTexture(new Rect(x, line.y + 1f, 18f, 18f), fragmentArt, ScaleMode.ScaleToFit, true);
+                    }
+                    else
+                    {
+                        skin.DrawIcon(new Rect(x, line.y + 1f, 18f, 18f), item.Icon, UiSkin.Gold);
+                    }
+
                     GUI.Label(new Rect(x + 24f, line.y, line.width - 24f, 20f), FragmentsTag(item), skin.SmallGoldLine);
                     break;
                 default:

@@ -3,6 +3,17 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.9] — 13/10/2026
+
+Artes das roupas, dos fragmentos e do Boss Mundial, feitas pelo proprietário no ChatGPT. Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- Loja → Roupas mostra as 5 peças (luvas, chapéu, botas, camiseta e calça) no lugar da estrela.
+- Os fragmentos dos 5 barcos, das 5 varas e o Fragmento de Roupa ganharam ícone próprio no Passe e na Loja (ao lado da
+  contagem de fragmentos).
+- A janela do Boss Mundial mostra o Leviatã do Abismo no lugar do disco provisório.
+
 ## [0.2.0-m24.8] — 13/10/2026
 
 Clãs, pedido do proprietário (M24-T49, A-174, TD-055). Save versão 22. Não compilado localmente; verificado no CI. Não

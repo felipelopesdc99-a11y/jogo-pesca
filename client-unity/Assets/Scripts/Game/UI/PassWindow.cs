@@ -288,7 +288,7 @@ namespace FishingIdle.Game.UI
 
             if (reward.Fragments > 0)
             {
-                // ASSET_PENDENTE: frag_boat_NN; the boat icon until it arrives.
+                // frag_boat_NN (art delivered 13/10/2026); the boat icon if the file is missing.
                 var art = ArtAssets.Texture(FragmentFolder + reward.BoatId);
                 if (art != null)
                 {
@@ -306,7 +306,7 @@ namespace FishingIdle.Game.UI
 
             if (reward.RodFragments > 0)
             {
-                // ASSET_PENDENTE: frag_rod_NN; the rod icon until it arrives.
+                // frag_rod_NN (art delivered 13/10/2026); the rod icon if the file is missing.
                 var art = ArtAssets.Texture(FragmentFolder + reward.RodId);
                 if (art != null)
                 {
@@ -324,7 +324,7 @@ namespace FishingIdle.Game.UI
 
             if (reward.ClothingFragments > 0)
             {
-                // ASSET_PENDENTE: frag_roupa; the star icon until it arrives.
+                // frag_roupa (art delivered 13/10/2026); the star icon if the file is missing.
                 var art = ArtAssets.Texture(ClothingFragmentArt);
                 if (art != null)
                 {

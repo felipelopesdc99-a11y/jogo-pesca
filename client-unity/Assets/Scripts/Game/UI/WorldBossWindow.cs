@@ -211,7 +211,7 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                // Clean placeholder: a deep disc with the attack icon (ASSET_PENDENTE).
+                // Fallback if Boss/boss_mundial is missing: a deep disc with the attack icon.
                 var d = Mathf.Min(drawn.width, drawn.height) - 8f;
                 var disc = new Rect(drawn.center.x - d / 2f, drawn.center.y - d / 2f, d, d);
                 skin.DrawGlow(disc, UiSkin.Danger, view.Open ? 0.45f : 0.2f);

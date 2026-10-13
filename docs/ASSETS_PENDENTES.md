@@ -577,6 +577,8 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 ## Barcos por fragmentos e Passe do Pescador (M24-T16/T17, A-157 e A-158, pedido em 11/10/2026)
 
+**Chegaram em 13/10/2026 e estão no jogo:** `frag_boat_01` a `frag_boat_05` (`ico_passe` já usa a cópia do atalho).
+
 `ASSET_PENDENTE`. Enquanto os arquivos não existem: o fragmento usa o ícone do barco; o cabeçalho da janela do Passe usa a estrela.
 Os barcos 6 a 10 saíram do jogo em 12/10/2026 (M24-T42, A-168): os pedidos de arte deles foram retirados.
 
@@ -592,6 +594,8 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > Ícone de menu para um jogo idle de pesca mobile, no mesmo estilo dos outros ícones do menu (traço simples, branco sobre transparente): um bilhete de passe com a borda picotada e um anzol desenhado no meio, com uma pequena estrela no canto. PNG com fundo transparente, legível em 36 px, sem texto. Arquivo: ico_passe.png
 
 ## Varas e roupas por fragmentos (M24-T32/T33, A-163 e A-164, pedido em 12/10/2026)
+
+**Chegaram em 13/10/2026 e estão no jogo:** as 5 roupas, `frag_roupa` e `frag_rod_01` a `frag_rod_05`. A Loja passou a mostrar o ícone do fragmento ao lado da contagem.
 
 `ASSET_PENDENTE`. Enquanto os arquivos não existem: o fragmento de vara usa o ícone da vara; as 5 roupas e o Fragmento
 de Roupa usam o ícone da estrela (na Loja → Roupas, no Passe e nos avisos). As roupas não aparecem no pescador da cena
@@ -620,6 +624,8 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 > Ícone quadrado de item de um jogo idle de pesca mobile, PNG 256×256 px com fundo transparente: um fragmento de vara de pesca — um pedaço de vara com um passador de linha e a ponta quebrada — com um brilho suave na cor da vara (troque a cor para cada vara: 01 verde-musgo, 02 dourado, 03 turquesa, 04 azul-royal, 05 azul-noite com dourado). Objeto centralizado, ocupando cerca de 80% da imagem, sem moldura, sem texto, sem sombra projetada, legível em 20 px. Estilo "Lago Dourado — Clean Premium": pintura digital limpa, contornos suaves, cores profundas (azul-noite #0A1422, turquesa #25C4C1, dourado #F6B93B como acento), luz suave de cima. Arquivos: frag_rod_01.png … frag_rod_05.png
 
 ## Boss Mundial (M24-T29, A-165, pedido em 12/10/2026)
+
+**Chegou em 13/10/2026 e está no jogo:** `boss_mundial` (`ico_boss` já usa a cópia do atalho).
 
 `ASSET_PENDENTE`. Enquanto os arquivos não existem: o botão do HUD usa o ícone de ataque (`ico_atacar`) e a janela
 desenha o Boss como um disco escuro com borda vermelha e o ícone de ataque no meio. Desde o A-167 o Boss fica dentro do
