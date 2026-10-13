@@ -55,12 +55,24 @@ conversa com o ChatGPT; os pedidos terminam com "Siga o guia de estilo … Arqui
 >
 > Responda só "Entendido" agora e espere o primeiro pedido.
 
-Novos pedidos desta lista que ainda não têm seção própria (prioridade B, menus sem arte; o jogo ainda não lê estes
-arquivos — o código passa a usá-los quando chegarem): `Arte/UI/merc_feira_porto.png` (1600×500), `Arte/Icones/ico_leilao.png`
-(256×256, branco), `Arte/UI/arena_fundo.png` (1600×900), `Arte/UI/arena_vs.png` (512×512), `Arte/UI/caixa_cena.png`
-(1600×500), `Arte/UI/passe_faixa.png` (1600×500), `Arte/UI/passe_premium_selo.png` (256×256), `Arte/UI/eventos_quadro.png`
-(1600×900), `Arte/UI/cla_brasao.png` (512×512), `Arte/UI/cla_fundo.png` (1600×900), `Arte/UI/perfil_carteira.png` (1200×700).
-Pódio da Arena em arquivos separados: `Arte/Arena/podio_1.png` (400×420), `podio_2.png` (400×320), `podio_3.png` (400×250).
+**Recebidas em 13/10/2026 e no jogo** (prioridade B, menus sem arte; M24-T57, A-179). Sem um arquivo, a janela volta
+ao visual anterior:
+
+| Arquivo | Onde entrou |
+|---|---|
+| `Arte/UI/merc_feira_porto.png` (1600×500) | Faixa no topo do Mercado, à esquerda do painel lateral |
+| `Arte/Icones/ico_leilao.png` (256×256, branco) | Marcador Leilão do Mercado, "Seu leilão", botões de lance e de leiloar |
+| `Arte/UI/arena_fundo.png` (1600×900) | Fundo da batalha da Arena e da tela VS |
+| `Arte/UI/arena_vs.png` (512×512) | Emblema do "VS" na aba Adversários e na tela VS |
+| `Arte/UI/caixa_cena.png` (1600×500) | Faixa no topo da Caixa de Pesca |
+| `Arte/UI/passe_faixa.png` (1600×500) | Fundo do resumo do Passe do Pescador |
+| `Arte/UI/passe_premium_selo.png` (256×256) | Rótulo da fileira Premium do Passe |
+| `Arte/UI/eventos_quadro.png` (1600×900) | Fundo da janela Eventos (cartões na cortiça) |
+| `Arte/UI/cla_brasao.png` (512×512) | Brasão no topo da coluna do Clã (nome na fita) |
+| `Arte/UI/cla_fundo.png` (1600×900) | Cena no topo da coluna do Clã |
+| `Arte/UI/perfil_carteira.png` (chegou com 1106×501) | Cartão do jogador no cabeçalho do Perfil |
+
+Ainda pendentes desta lista: pódio da Arena em arquivos separados: `Arte/Arena/podio_1.png` (400×420), `podio_2.png` (400×320), `podio_3.png` (400×250).
 Avatares: `Arte/Avatares/avatar_01.png` a `avatar_06.png` (512×512, fundo transparente).
 
 ## Como trocar uma arte
@@ -202,7 +214,8 @@ da cena continua o mesmo para todos: trocar o barco da cena pelo barco em uso é
 
 ### Arena e Mercado
 
-Hoje usam os ícones e os cards de peixe; não há arte própria pendente. Retratos dos adversários da
+Usam os ícones e os cards de peixe; desde 13/10/2026 também a feira do porto, a arena submersa, o emblema do VS e o
+ícone do Leilão (A-179, tabela no começo deste documento). Retratos dos adversários da
 Arena ficam como ícone até existir um sistema de avatar (não faz parte da V0.1).
 
 ---

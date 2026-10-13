@@ -3462,3 +3462,34 @@ nenhuma regra, e o momento do golpe é o mesmo que a janela já recebia do servi
 - **Sem os arquivos:** sem as poses, volta ao Boss parado (`boss_mundial`) com o tremor; sem ele, ao disco escuro com o
   ícone de ataque. Sem o fundo, a cena fica azul-noite como antes. O jogo não tem opção de "movimento reduzido"; se um
   dia tiver, o Boss deve respeitá-la.
+
+### A-179 · Artes dos menus: Mercado, Arena, Caixa de Pesca, Passe, Eventos, Clã e Perfil
+
+**Seção do GDD:** 21 (interface) · Bíblia de Arte, seções 3 e 13 · artes mandadas pelo proprietário em 13/10/2026 (M24-T57) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+As 11 artes de prioridade B entraram no padrão "Diário de bordo" (A-170): cena própria vira foto presa na folha (borda
+branca e sombra), recortada para caber (nunca esticada). Nada que já existia saiu da tela; sem um arquivo, a janela
+volta ao visual anterior. Texto claro sobre foto ganha véu ou placa azul-noite, com contraste medido na própria arte
+(4,5:1 ou mais para texto pequeno).
+
+- **Mercado** (`merc_feira_porto`): faixa de 110 px no topo do conteúdo, à esquerda do painel lateral. O painel lateral
+  (detalhe, preço, lance) agora tem a altura inteira em todas as abas. No Leilão, a faixa "Seu leilão" fica à esquerda
+  do painel, com as Moedas reservadas na linha de cima.
+- **Leilão** (`ico_leilao`): no marcador Leilão, em "Seu leilão", no botão de dar lance e no de leiloar.
+- **Caixa de Pesca** (`caixa_cena`): faixa de 110 px acima das abas de raridade (72 px se os menus precisarem de uma
+  linha própria); a grade continua com duas linhas de cartas.
+- **Passe** (`passe_faixa`): o resumo (nível, próximo marco, Premium, Resgatar tudo) fica sobre o pôr do sol, com 150 px
+  e véu azul-noite forte sob o texto e mais leve sob o botão da direita. **Selo Premium** (`passe_premium_selo`): no
+  rótulo da fileira Premium, acima da palavra; apagado e com cadeado até o Premium ser comprado.
+- **Arena** (`arena_fundo`): fundo da batalha, com véu leve e placas escuras sob os nomes e os números de dano; e fundo
+  da tela VS, com o azul e o vermelho por cima, mais escuros. **Emblema** (`arena_vs`): no lugar do disco dourado entre
+  os Cardumes da aba Adversários e atrás do "VS" grande da tela VS; o "VS" é texto do jogo, contornado em azul-noite.
+- **Eventos** (`eventos_quadro`): o quadro de avisos cobre a janela; os cartões dos eventos ficam pregados na cortiça,
+  no centro, um pouco mais altos (o "Abrir" vai para baixo, à direita, e o texto usa a largura toda).
+- **Clã** (`cla_fundo` e `cla_brasao`): o porto à noite como foto no topo da coluna do clã, com o brasão à esquerda,
+  nos três estados (nível insuficiente, sem clã, no clã). No clã, o resumo (nome, dono, Força, bônus e ações) fica
+  sobre a foto, e o nome também vai na fita do brasão quando cabe inteiro.
+- **Perfil** (`perfil_carteira`): o cartão de couro é o cartão do jogador no cabeçalho de todas as abas (inclusive o
+  Resumo): avatar na moldura da esquerda, nome com "Editar", nível com a barra de XP e a linha de XP/mapa/VIP escritos
+  por cima. O meio do couro estica conforme a largura; a moldura e a âncora mantêm a forma. As moedas continuam à
+  direita.

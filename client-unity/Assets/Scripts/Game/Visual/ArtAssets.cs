@@ -119,5 +119,13 @@ namespace FishingIdle.Game.Visual
 
         /// <summary>The Eventos menu icon (M24-T39). ASSET_PENDENTE: ico_eventos.png; until it exists the menu shows the clock.</summary>
         public const string Events = "eventos";
+
+        /// <summary>The Leilão icon (ico_leilao, received 13/10/2026, A-179).</summary>
+        public const string Auction = "leilao";
+
+        private static string _auctionIcon;
+
+        /// <summary>The Leilão icon when its file exists, otherwise the hourglass (looked up once).</summary>
+        public static string AuctionOrFallback => _auctionIcon ?? (_auctionIcon = ArtAssets.Icon(Auction) != null ? Auction : Hourglass);
     }
 }

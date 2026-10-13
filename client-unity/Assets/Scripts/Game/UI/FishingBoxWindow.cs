@@ -26,6 +26,10 @@ namespace FishingIdle.Game.UI
         private const float TabHeight = 44f;
         private const float MenuWidth = 196f;
 
+        // The deck with the ice chest (A-179): a short strip on top, so the grid keeps two full rows of cards.
+        private const string BannerArt = "UI/caixa_cena";
+        private const float BannerHeight = 110f, BannerLowHeight = 72f, BannerGap = 18f;
+
         /// <summary>The Box orders (A-119): the five the owner chose in the mock-up "Exemplo 2".</summary>
         private enum SortOrder
         {
@@ -149,6 +153,14 @@ namespace FishingIdle.Game.UI
             // Tabs and menus share a row on a wide window; on a narrow one the menus go to a short row below,
             // next to how many fish the filter shows.
             var sameRow = TabsWidth(skin) + 16f + menusWidth <= right - left;
+
+            // The scene strip; lower when the menus need their own row, so the grid keeps about two rows of cards.
+            var bannerHeight = sameRow ? BannerHeight : BannerLowHeight;
+            if (WindowFrame.PhotoArt(skin, new Rect(left, tabsY, right - left, bannerHeight), BannerArt) != null)
+            {
+                tabsY += bannerHeight + BannerGap;
+            }
+
             DrawRarityTabs(skin, new Rect(left, tabsY, sameRow ? right - left - menusWidth - 16f : right - left, TabHeight));
             var menusY = sameRow ? tabsY + 4f : tabsY + TabHeight + 8f;
             if (!sameRow)

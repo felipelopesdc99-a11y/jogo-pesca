@@ -14,8 +14,9 @@ namespace FishingIdle.Game.UI
     /// </summary>
     /// <remarks>
     /// Shows what the pass service returns; nothing here decides a reward or whether it can be claimed. Only the columns
-    /// in view are drawn (the track has 100). Art is provisional (ASSET_PENDENTE: ico_passe, the fragment icon of each boat
-    /// in Resources/Arte/Fragmentos/frag_boat_NN; requests in docs/ASSETS_PENDENTES.md).
+    /// in view are drawn (the track has 100). Art (Resources/Arte): ico_passe, the fragment icons in Fragmentos/, and since
+    /// A-179 the strip passe_faixa behind the summary and the seal passe_premium_selo of the Premium row; each falls back to
+    /// the drawn look when its file is missing.
     /// </remarks>
     public sealed class PassWindow
     {
@@ -28,8 +29,13 @@ namespace FishingIdle.Game.UI
         /// <summary>The Fragmento de Roupa icon (M24-T33). Missing = the star icon.</summary>
         private const string ClothingFragmentArt = "Fragmentos/frag_roupa";
 
-        /// <summary>The pass icon (ASSET_PENDENTE: ico_passe.png; the star until it arrives).</summary>
+        /// <summary>The pass icon (ico_passe.png; the star if the file is missing).</summary>
         private const string PassIcon = "passe";
+
+        // A-179: the sunset strip behind the summary (taller, with a navy veil under the light text) and the seal of
+        // the Premium row. Missing files = the plain summary and the star / padlock icon.
+        private const string BannerArt = "UI/passe_faixa", PremiumSealArt = "UI/passe_premium_selo";
+        private const float SummaryArtHeight = 150f, SealSize = 72f;
 
         private readonly GameRoot _root;
         private PassView _view;
@@ -83,8 +89,11 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            DrawSummary(skin, new Rect(area.x, area.y, area.width, SummaryHeight), view);
-            DrawTrack(skin, new Rect(area.x, area.y + SummaryHeight + Gap, area.width, area.height - SummaryHeight - Gap), view);
+            var banner = ArtAssets.Texture(BannerArt);
+            var summaryHeight = banner != null ? SummaryArtHeight : SummaryHeight;
+            var gap = banner != null ? Gap + 6f : Gap;
+            DrawSummary(skin, new Rect(area.x, area.y, area.width, summaryHeight), view, banner != null);
+            DrawTrack(skin, new Rect(area.x, area.y + summaryHeight + gap, area.width, area.height - summaryHeight - gap), view);
         }
 
         private void Refresh()
@@ -95,10 +104,33 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ summary
 
-        /// <summary>Left: the level and the next milestone with its bar. Middle: the premium. Right: "Resgatar tudo".</summary>
-        private void DrawSummary(UiSkin skin, Rect rect, PassView view)
+        /// <summary>
+        /// Left: the level and the next milestone with its bar. Middle: the premium. Right: "Resgatar tudo". With the
+        /// strip art, it is drawn on the photo in night colours, over a navy veil (A-179).
+        /// </summary>
+        private void DrawSummary(UiSkin skin, Rect rect, PassView view, bool onArt)
         {
+            if (onArt && WindowFrame.PhotoArt(skin, rect, BannerArt) != null)
+            {
+                // Strong where the text is (level, next milestone, the Dólares line), lighter on the right, where only
+                // the "Resgatar tudo" button sits.
+                var split = rect.width * 0.72f;
+                WindowFrame.Veil(skin, new Rect(rect.x, rect.y, split, rect.height), 0.84f, 0.72f);
+                WindowFrame.Veil(skin, new Rect(rect.x + split, rect.y, rect.width - split, rect.height), 0.72f, 0.3f);
+                using (UiSkin.NightScope())
+                {
+                    DrawSummaryBody(skin, new Rect(rect.x, rect.y + (rect.height - SummaryHeight) / 2f, rect.width, SummaryHeight), view);
+                }
+
+                return;
+            }
+
             skin.Inset(rect);
+            DrawSummaryBody(skin, rect, view);
+        }
+
+        private void DrawSummaryBody(UiSkin skin, Rect rect, PassView view)
+        {
             var x = rect.x + 20f;
             var leftWidth = rect.width * 0.38f;
             GUI.Label(new Rect(x, rect.y + 12f, leftWidth, 30f), GameTexts.Pass.YourLevel(view.FisherLevel), skin.Heading);
@@ -163,7 +195,10 @@ namespace FishingIdle.Game.UI
             var freeLabel = new Rect(rect.x, rowsTop, LabelColumn - 10f, rowHeight);
             var premiumLabel = new Rect(rect.x, rowsTop + rowHeight + Gap, LabelColumn - 10f, rowHeight);
             RowLabel(skin, freeLabel, GameTexts.Pass.Free, null, UiSkin.Accent);
-            RowLabel(skin, premiumLabel, GameTexts.Pass.PremiumRow, view.Premium ? Icons.Star : Icons.Lock, UiSkin.Gold);
+            if (!PremiumSeal(skin, premiumLabel, view.Premium))
+            {
+                RowLabel(skin, premiumLabel, GameTexts.Pass.PremiumRow, view.Premium ? Icons.Star : Icons.Lock, UiSkin.Gold);
+            }
 
             var track = new Rect(rect.x + LabelColumn, rect.y, rect.width - LabelColumn, rect.height);
             var contentWidth = count * (Column + ColumnGap);
@@ -219,6 +254,36 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.Label(new Rect(rect.x + 12f, y, rect.width - 16f, 28f), text, skin.CenterBold);
+        }
+
+        /// <summary>
+        /// The Premium row label with its seal (passe_premium_selo, A-179): the seal over the word, dimmed with a padlock
+        /// until the premium is bought. Returns false when the file is missing (the caller draws the plain label).
+        /// </summary>
+        private static bool PremiumSeal(UiSkin skin, Rect rect, bool premium)
+        {
+            var seal = ArtAssets.Texture(PremiumSealArt);
+            if (seal == null)
+            {
+                return false;
+            }
+
+            GUI.Box(rect, GUIContent.none, skin.Card);
+            GUI.DrawTexture(new Rect(rect.x + 6f, rect.y + 10f, 4f, rect.height - 20f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Gold, 0, 2f);
+            var size = Mathf.Min(SealSize, rect.width - 24f, rect.height - 56f);
+            var top = rect.center.y - (size + 6f + 28f) / 2f;
+            var sealRect = new Rect(rect.x + 4f + (rect.width - 4f - size) / 2f, top, size, size);
+            GUI.DrawTexture(sealRect, seal, ScaleMode.ScaleToFit, true, 0, premium ? Color.white : new Color(1f, 1f, 1f, 0.5f), 0, 0);
+            if (!premium)
+            {
+                var lockSize = Mathf.Round(size * 0.36f);
+                var lockRect = new Rect(sealRect.xMax - lockSize + 2f, sealRect.yMax - lockSize + 2f, lockSize, lockSize);
+                GUI.DrawTexture(lockRect, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.OnSheet(new Color(0.06f, 0.11f, 0.2f, 0.92f)), 0, lockSize / 2f);
+                skin.DrawIconExact(new Rect(lockRect.x + lockSize * 0.2f, lockRect.y + lockSize * 0.2f, lockSize * 0.6f, lockSize * 0.6f), Icons.Lock, Color.white);
+            }
+
+            GUI.Label(new Rect(rect.x + 12f, sealRect.yMax + 6f, rect.width - 16f, 28f), GameTexts.Pass.PremiumRow, skin.CenterBold);
+            return true;
         }
 
         /// <summary>"Nv.40" over the column: gold when reached, outlined in turquoise when it is the next one.</summary>

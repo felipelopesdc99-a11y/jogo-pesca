@@ -3,6 +3,21 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.17] — 13/10/2026
+
+Artes dos menus que ainda não tinham visual próprio (M24-T57, A-179). Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- **Mercado**: a feira do porto numa faixa no topo; o painel lateral ganhou a altura inteira em todas as abas. Ícone
+  novo do **Leilão** no marcador e nos botões de lance e de leiloar.
+- **Caixa de Pesca**: o convés com a caixa de gelo numa faixa no topo.
+- **Passe do Pescador**: o resumo sobre o pôr do sol; selo dourado na fileira Premium (com cadeado até comprar).
+- **Arena**: a arena submersa atrás da batalha e da tela VS; o emblema dos dois peixes no "VS".
+- **Eventos**: os cartões pregados no quadro de cortiça.
+- **Clã**: o porto à noite com o brasão no topo; o nome do clã também vai na fita do brasão.
+- **Perfil**: o cartão de couro azul com a moldura do avatar no cabeçalho.
+
 ## [0.2.0-m24.16] — 13/10/2026
 
 Boss Mundial animado, pedido do proprietário (M24-T56, A-178), e artes que chegaram. Verificado no CI, não aberto no Unity.

@@ -24,6 +24,11 @@ namespace FishingIdle.Game.UI
         private const float Gap = 12f;
         private const float SidePanelWidth = 330f;
 
+        // The harbour market scene (A-179): a strip on top of the content, left of the side panel; the side panel keeps
+        // the full height, where the buy, sell and bid forms need it.
+        private const string BannerArt = "UI/merc_feira_porto";
+        private const float BannerHeight = 110f, BannerGap = 18f;
+
         private enum Tab
         {
             Buy,
@@ -132,7 +137,15 @@ namespace FishingIdle.Game.UI
             }
 
             DrawTabs(skin);
+            _full = area;
             var content = area;
+            var hasSide = _tab != Tab.Withdraw && _tab != Tab.Currency;
+            var banner = new Rect(area.x, area.y, hasSide ? area.width - SidePanelWidth - 16 : area.width, BannerHeight);
+            if (WindowFrame.PhotoArt(skin, banner, BannerArt) != null)
+            {
+                content = new Rect(area.x, area.y + BannerHeight + BannerGap, area.width, area.height - BannerHeight - BannerGap);
+            }
+
             switch (_tab)
             {
                 case Tab.Sell: DrawSell(skin, content); break;
@@ -172,6 +185,12 @@ namespace FishingIdle.Game.UI
         private static readonly Tab[] TabOrder = { Tab.Buy, Tab.Sell, Tab.Mine, Tab.Auction, Tab.Withdraw, Tab.Currency };
         private static readonly string[] TabIcons = { Icons.Market, Icons.Sell, Icons.Box, Icons.Hourglass, Icons.Arrow, Icons.Dollar };
 
+        // The whole content area of this frame (the side panels use its full height, under or beside the banner).
+        private Rect _full;
+
+        /// <summary>The side panel on the right of the content: full height, next to the banner (A-179).</summary>
+        private Rect SideRect() => new Rect(_full.xMax - SidePanelWidth, _full.y, SidePanelWidth, _full.height);
+
         /// <summary>The six tabs as bookmarks on the side of the diary (A-170).</summary>
         private void DrawTabs(UiSkin skin)
         {
@@ -185,6 +204,7 @@ namespace FishingIdle.Game.UI
                 GameTexts.Market.TabCurrency,
             };
 
+            TabIcons[3] = Icons.AuctionOrFallback;
             var clicked = WindowFrame.Bookmarks(skin, labels, TabIcons, System.Array.IndexOf(TabOrder, _tab));
             if (clicked >= 0 && TabOrder[clicked] != _tab)
             {
@@ -242,7 +262,7 @@ namespace FishingIdle.Game.UI
                 });
             }
 
-            var side = new Rect(area.xMax - SidePanelWidth, area.y, SidePanelWidth, area.height);
+            var side = SideRect();
             var selected = _results.FirstOrDefault(l => l.ListingId == _selectedListing);
             if (selected == null)
             {
@@ -561,7 +581,7 @@ namespace FishingIdle.Game.UI
                 });
             }
 
-            var side = new Rect(area.xMax - SidePanelWidth, area.y, SidePanelWidth, area.height);
+            var side = SideRect();
             GUI.Box(side, GUIContent.none, skin.Card);
             var candidate = _candidates.FirstOrDefault(c => c.SourceId == _selectedCandidate && c.IsFish == _selectedCandidateIsFish);
             if (candidate == null)
@@ -651,7 +671,7 @@ namespace FishingIdle.Game.UI
 
             GUI.EndScrollView();
 
-            var side = new Rect(area.xMax - SidePanelWidth, area.y, SidePanelWidth, area.height);
+            var side = SideRect();
             GUI.Box(side, GUIContent.none, skin.Card);
             GUI.Label(new Rect(side.x + 20, side.y + 16, side.width - 40, 24), GameTexts.Market.RecentSales, skin.Heading);
             var sales = _market.Events.Where(e => e.Sold).ToList();
@@ -683,15 +703,26 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // Strip: the player's own auction (or the button to create one) and the coins locked in bids.
-            var strip = new Rect(area.x, area.y, area.width, 78);
+            // Strip: the player's own auction (or the button to create one) and the coins locked in bids. It takes the
+            // width left of the side panel, which keeps the full height (A-179); the coins sit on the strip's top line.
+            var left = area.width - SidePanelWidth - 16;
+            var strip = new Rect(area.x, area.y, left, 78);
             GUI.Box(strip, GUIContent.none, skin.Card);
-            GUI.Label(new Rect(strip.x + 18, strip.y + 10, 200, 20), GameTexts.Market.MyAuction, skin.SmallMuted);
+            skin.DrawIcon(new Rect(strip.x + 18, strip.y + 10, 20, 20), Icons.AuctionOrFallback, UiSkin.Accent);
+            GUI.Label(new Rect(strip.x + 44, strip.y + 10, 200, 20), GameTexts.Market.MyAuction, skin.SmallMuted);
+            if (_auctions.ReservedCoins > 0)
+            {
+                GUI.Label(new Rect(strip.xMax - 318, strip.y + 8, 300, 22), GameTexts.Market.Reserved(Format.Number(_auctions.ReservedCoins)), skin.SmallGoldRight);
+            }
+
             var mine = _auctions.Mine;
+            var actionWidth = Mathf.Min(280f, strip.width * 0.36f);
+            var action = new Rect(strip.xMax - 18 - actionWidth, strip.y + 32, actionWidth, 40);
             if (mine == null)
             {
-                GUI.Label(new Rect(strip.x + 18, strip.y + 34, 400, 24), GameTexts.Market.NoMyAuction, skin.Body);
-                if (!_creatingAuction && skin.IconButton(new Rect(strip.x + 440, strip.y + 20, 200, 40), Icons.Add, GameTexts.Market.CreateAuction, skin.ButtonPrimary))
+                var noneWidth = action.x - 16 - (strip.x + 18);
+                GUI.Label(new Rect(strip.x + 18, strip.y + 40, noneWidth, 24), FishCard.Fit(GameTexts.Market.NoMyAuction, skin.Body, noneWidth), skin.Body);
+                if (!_creatingAuction && skin.IconButton(action, Icons.Add, GameTexts.Market.CreateAuction, skin.ButtonPrimary))
                 {
                     _creatingAuction = true;
                     _search = string.Empty;
@@ -703,14 +734,17 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                GoodsIcon(skin, new Rect(strip.x + 18, strip.y + 30, 70, 40), mine.Goods);
-                GUI.Label(new Rect(strip.x + 100, strip.y + 32, 260, 22), mine.Goods.Name, skin.BodyBold);
+                GoodsIcon(skin, new Rect(strip.x + 18, strip.y + 32, 70, 40), mine.Goods);
+                var nameWidth = Mathf.Min(200f, (action.x - 16 - (strip.x + 100)) * 0.48f);
+                GUI.Label(new Rect(strip.x + 100, strip.y + 40, nameWidth, 22), FishCard.Fit(mine.Goods.Name, skin.BodyBold, nameWidth), skin.BodyBold);
+                var bx = strip.x + 100 + nameWidth + 12;
+                var bw = Mathf.Max(80f, action.x - 16 - bx);
                 var bid = mine.BidCount == 0 ? GameTexts.Market.NoBids : GameTexts.Market.BidAt(Format.Number(mine.HighestBidCoins)) + " · " + GameTexts.Market.BidCount(mine.BidCount);
-                GUI.Label(new Rect(strip.x + 370, strip.y + 14, 300, 22), bid, skin.SmallGold);
-                GUI.Label(new Rect(strip.x + 370, strip.y + 40, 300, 22), GameTexts.Market.EndsIn(Format.TimeLeft(mine.RemainingSeconds)), skin.SmallMuted);
+                GUI.Label(new Rect(bx, strip.y + 32, bw, 22), FishCard.Fit(bid, skin.SmallGold, bw), skin.SmallGold);
+                GUI.Label(new Rect(bx, strip.y + 54, bw, 22), FishCard.Fit(GameTexts.Market.EndsIn(Format.TimeLeft(mine.RemainingSeconds)), skin.SmallMuted, bw), skin.SmallMuted);
                 if (mine.CanEndNow)
                 {
-                    if (GUI.Button(new Rect(strip.x + 690, strip.y + 18, 300, 42), GameTexts.Market.EndNow(Format.Number(mine.EndNowNetCoins)), skin.Button))
+                    if (GUI.Button(action, GameTexts.Market.EndNow(Format.Number(mine.EndNowNetCoins)), skin.Button))
                     {
                         _root.EndAuctionNow(mine.AuctionId);
                         _nextRefresh = 0f;
@@ -718,16 +752,11 @@ namespace FishingIdle.Game.UI
                 }
                 else
                 {
-                    GUI.Label(new Rect(strip.x + 690, strip.y + 18, 320, 44), GameTexts.ServiceErrorMessage(ServiceError.AuctionHasNoBids.ToString()), skin.SmallMuted);
+                    GUI.Label(new Rect(action.x, action.y - 4, action.width, 44), GameTexts.ServiceErrorMessage(ServiceError.AuctionHasNoBids.ToString()), skin.SmallMuted);
                 }
             }
 
-            if (_auctions.ReservedCoins > 0)
-            {
-                GUI.Label(new Rect(strip.xMax - 300, strip.y + 30, 280, 22), GameTexts.Market.Reserved(Format.Number(_auctions.ReservedCoins)), skin.SmallGoldRight);
-            }
-
-            var body = new Rect(area.x, area.y + 92, area.width, area.height - 92);
+            var body = new Rect(area.x, area.y + 92, left, area.height - 92);
             if (_creatingAuction)
             {
                 DrawCreateAuction(skin, body);
@@ -735,8 +764,8 @@ namespace FishingIdle.Game.UI
             }
 
             // The note shares its row with the search box, so it gets room for four lines of the small text (A-149).
-            GUI.Label(new Rect(body.x, body.y, body.width - SidePanelWidth - 16 - 320, 84), GameTexts.Market.AuctionNote(AuctionHours(), Format.Percent(_auctions.MinIncrementRatio, 0), Format.Percent(_auctions.BidFeeRatio, 0), Format.Duration(_auctions.AntiSnipeResetSeconds)), skin.SmallMuted);
-            var grid = new Rect(body.x, body.y + 90, body.width - SidePanelWidth - 16, body.height - 90);
+            GUI.Label(new Rect(body.x, body.y, body.width - 320 - 16, 84), GameTexts.Market.AuctionNote(AuctionHours(), Format.Percent(_auctions.MinIncrementRatio, 0), Format.Percent(_auctions.BidFeeRatio, 0), Format.Duration(_auctions.AntiSnipeResetSeconds)), skin.SmallMuted);
+            var grid = new Rect(body.x, body.y + 90, body.width, body.height - 90);
             DrawSearch(skin, grid.xMax, body.y, "busca_leilao");
             var shownAuctions = _auctions.Open.Where(a => NameSearch.Matches(a.Goods.Name, _search)).ToList();
             if (shownAuctions.Count == 0)
@@ -758,7 +787,7 @@ namespace FishingIdle.Game.UI
                 });
             }
 
-            var side = new Rect(body.xMax - SidePanelWidth, body.y, SidePanelWidth, body.height);
+            var side = SideRect();
             GUI.Box(side, GUIContent.none, skin.Card);
             var selected = _auctions.Open.FirstOrDefault(a => a.AuctionId == _selectedAuction);
             if (selected == null)
@@ -788,7 +817,7 @@ namespace FishingIdle.Game.UI
             var fee = (long)Math.Round(amount * _auctions.BidFeeRatio, MidpointRounding.AwayFromZero);
             GUI.Label(new Rect(x, bottom - 84, w, 20), GameTexts.Market.BidFee(_auctions.BidFeeRatio, Format.Number(fee)), skin.SmallMuted);
             GUI.enabled = amount >= selected.MinNextBidCoins && _auctions.Coins >= amount + fee;
-            if (skin.IconButton(new Rect(x, bottom - 44, w, 44), Icons.Honor, GameTexts.Market.PlaceBid, skin.ButtonPrimary))
+            if (skin.IconButton(new Rect(x, bottom - 44, w, 44), Icons.AuctionOrFallback, GameTexts.Market.PlaceBid, skin.ButtonPrimary))
             {
                 _root.PlaceBid(selected.AuctionId, amount);
                 _nextRefresh = 0f;
@@ -808,8 +837,8 @@ namespace FishingIdle.Game.UI
             }
 
             // Room for three lines of the small text between "Voltar" and the search box (A-149).
-            GUI.Label(new Rect(area.x + 240, area.y, area.width - SidePanelWidth - 260 - 320, 64), GameTexts.Market.StartAuctionNote(AuctionHours()), skin.SmallMuted);
-            var grid = new Rect(area.x, area.y + 70, area.width - SidePanelWidth - 16, area.height - 70);
+            GUI.Label(new Rect(area.x + 240, area.y, area.width - 260 - 320, 64), GameTexts.Market.StartAuctionNote(AuctionHours()), skin.SmallMuted);
+            var grid = new Rect(area.x, area.y + 70, area.width, area.height - 70);
             DrawSearch(skin, grid.xMax, area.y, "busca_leilao_criar");
             var shownCandidates = _candidates.Where(c => NameSearch.Matches(c.Goods.Name, _search)).ToList();
             if (shownCandidates.Count == 0 && _candidates.Count > 0)
@@ -835,7 +864,7 @@ namespace FishingIdle.Game.UI
                 GUI.color = previous;
             });
 
-            var side = new Rect(area.xMax - SidePanelWidth, area.y, SidePanelWidth, area.height);
+            var side = SideRect();
             GUI.Box(side, GUIContent.none, skin.Card);
             var candidate = _candidates.FirstOrDefault(c => c.SourceId == _selectedCandidate && c.IsFish == _selectedCandidateIsFish);
             if (candidate == null)
@@ -861,7 +890,7 @@ namespace FishingIdle.Game.UI
             _priceText = Digits(GUI.TextField(new Rect(x, bottom - 88, w, 32), _priceText, 12), false);
             var start = ParseLong(_priceText) ?? 0;
             GUI.enabled = start >= _market.MinimumPriceCoins;
-            if (skin.IconButton(new Rect(x, bottom - 44, w, 44), Icons.Hourglass, GameTexts.Market.StartAuctionFor(_auctions.DurationHours), skin.ButtonPrimary))
+            if (skin.IconButton(new Rect(x, bottom - 44, w, 44), Icons.AuctionOrFallback, GameTexts.Market.StartAuctionFor(_auctions.DurationHours), skin.ButtonPrimary))
             {
                 if (_root.StartAuction(candidate.IsFish, candidate.SourceId, start))
                 {

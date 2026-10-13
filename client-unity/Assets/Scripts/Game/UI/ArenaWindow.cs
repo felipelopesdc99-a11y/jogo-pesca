@@ -57,6 +57,10 @@ namespace FishingIdle.Game.UI
 
         // VS intro before the replay (presentation only).
         private const float IntroSeconds = 1.2f;
+
+        // A-179: the underwater arena behind the battle and the VS screen, and the duel emblem under the "VS". Missing
+        // files = the plain night panel, the blue/red split and the gold disc.
+        private const string ArenaArt = "UI/arena_fundo", VsArt = "UI/arena_vs";
         private float _introStart;
         private float _introUntil;
         private int _introOpponentRank;
@@ -648,6 +652,18 @@ namespace FishingIdle.Game.UI
             var line = new Color(UiSkin.Gold.r, UiSkin.Gold.g, UiSkin.Gold.b, 0.25f);
             GUI.DrawTexture(new Rect(cx - 1, column.y + 12, 2, column.height - 24), skin.White, ScaleMode.StretchToFill, true, 0, line, 0, 1);
 
+            var emblem = ArtAssets.Texture(VsArt);
+            if (emblem != null)
+            {
+                // The duel emblem with the "VS" over it, outlined so it reads on the gold and turquoise (A-179).
+                var e = Mathf.Min(column.width - 4f, 112f);
+                var badge = new Rect(cx - e / 2f, column.center.y - e / 2f, e, e);
+                skin.DrawGlow(badge, UiSkin.Gold, 0.3f);
+                GUI.DrawTexture(badge, emblem, ScaleMode.ScaleToFit, true);
+                WindowFrame.OutlinedLabel(badge, GameTexts.Arena.VsMark, skin.VsMark);
+                return;
+            }
+
             var d = Mathf.Min(column.width - 8f, 84f);
             var disc = new Rect(cx - d / 2f, column.center.y - d / 2f, d, d);
             skin.DrawGlow(disc, UiSkin.Gold, 0.35f);
@@ -996,7 +1012,23 @@ namespace FishingIdle.Game.UI
             red.a = 1f;
             var cx = panel.center.x;
             var slant = panel.height * 0.18f;
-            GUI.DrawTexture(panel, skin.White, ScaleMode.StretchToFill, true, 0, blue, 0, 16);
+            var arena = ArtAssets.Texture(ArenaArt);
+            if (arena != null)
+            {
+                // The arena shows through both colours (A-179): the split is a darker tinted veil over the art, and the
+                // small lines (positions, "Clique…") get a navy plate, so they keep 4.5:1.
+                GUI.DrawTexture(panel, arena, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 16);
+                blue = Color.Lerp(UiSkin.Night, UiSkin.Accent, 0.22f);
+                red = Color.Lerp(UiSkin.Night, UiSkin.Danger, 0.3f);
+                blue.a = 0.8f;
+                red.a = 0.8f;
+                GUI.DrawTexture(new Rect(panel.x, panel.y, cx + slant - panel.x, panel.height), skin.White, ScaleMode.StretchToFill, true, 0, blue, Vector4.zero, new Vector4(16f, 0f, 0f, 16f));
+            }
+            else
+            {
+                GUI.DrawTexture(panel, skin.White, ScaleMode.StretchToFill, true, 0, blue, 0, 16);
+            }
+
             var redRect = new Rect(cx + slant, panel.y, panel.xMax - cx - slant, panel.height);
             GUI.DrawTexture(redRect, skin.White, ScaleMode.StretchToFill, true, 0, red, Vector4.zero, new Vector4(0f, 16f, 16f, 0f));
             GUI.DrawTexture(new Rect(cx - slant, panel.y, slant * 2f, panel.height), skin.Diagonal, ScaleMode.StretchToFill, true, 0, red, 0, 0);
@@ -1008,8 +1040,9 @@ namespace FishingIdle.Game.UI
             var sideW = panel.width * 0.4f;
             var avatarSize = Mathf.Min(200f, panel.height * 0.3f);
             var top = panel.y + panel.height * 0.16f;
-            IntroSide(skin, panel.x + panel.width * 0.25f - slide, top, avatarSize, sideW, _profile?.AvatarId, PlayerName, _battle.RankBefore, _battle.PlayerTeam, false, UiSkin.Accent);
-            IntroSide(skin, panel.x + panel.width * 0.75f + slide, top, avatarSize, sideW, null, _battle.OpponentName, _introOpponentRank, _battle.OpponentTeam, true, UiSkin.Danger);
+            var plates = arena != null;
+            IntroSide(skin, panel.x + panel.width * 0.25f - slide, top, avatarSize, sideW, _profile?.AvatarId, PlayerName, _battle.RankBefore, _battle.PlayerTeam, false, UiSkin.Accent, plates);
+            IntroSide(skin, panel.x + panel.width * 0.75f + slide, top, avatarSize, sideW, null, _battle.OpponentName, _introOpponentRank, _battle.OpponentTeam, true, UiSkin.Danger, plates);
 
             // The "VS" scales down into place and fades in.
             var vsT = Mathf.Clamp01((t - 0.1f) / 0.4f);
@@ -1026,25 +1059,50 @@ namespace FishingIdle.Game.UI
                 var pivot = new Vector3(vs.center.x, vs.center.y, 0f);
                 GUI.matrix = before * Matrix4x4.TRS(pivot, Quaternion.identity, new Vector3(scale, scale, 1f)) * Matrix4x4.TRS(-pivot, Quaternion.identity, Vector3.one);
                 GUI.color = new Color(color.r, color.g, color.b, color.a * vsEase);
-                GUI.contentColor = new Color(0f, 0f, 0f, 0.55f);
-                GUI.Label(new Rect(vs.x + 3f, vs.y + 4f, vs.width, vs.height), GameTexts.Arena.VsMark, skin.VsDisplay);
-                GUI.contentColor = content;
-                GUI.Label(vs, GameTexts.Arena.VsMark, skin.VsDisplay);
+                var emblem = ArtAssets.Texture(VsArt);
+                if (emblem != null)
+                {
+                    // The duel emblem behind the "VS" (A-179); the word keeps a dark outline to read on it.
+                    var e = Mathf.Min(240f, avatarSize * 1.2f);
+                    GUI.DrawTexture(new Rect(vs.center.x - e / 2f, vs.center.y - e / 2f, e, e), emblem, ScaleMode.ScaleToFit, true);
+                    WindowFrame.OutlinedLabel(vs, GameTexts.Arena.VsMark, skin.VsDisplay);
+                }
+                else
+                {
+                    GUI.contentColor = new Color(0f, 0f, 0f, 0.55f);
+                    GUI.Label(new Rect(vs.x + 3f, vs.y + 4f, vs.width, vs.height), GameTexts.Arena.VsMark, skin.VsDisplay);
+                    GUI.contentColor = content;
+                    GUI.Label(vs, GameTexts.Arena.VsMark, skin.VsDisplay);
+                }
+
                 GUI.color = color;
                 GUI.matrix = before;
+            }
+
+            if (plates)
+            {
+                var skipWidth = skin.SmallMutedCenter.CalcSize(new GUIContent(GameTexts.Arena.IntroSkip)).x + 28f;
+                Plate(skin, new Rect(panel.center.x - skipWidth / 2f, panel.yMax - 42f, skipWidth, 26f), 0.72f);
             }
 
             GUI.Label(new Rect(panel.x, panel.yMax - 40f, panel.width, 22f), GameTexts.Arena.IntroSkip, skin.SmallMutedCenter);
         }
 
         /// <summary>One side of the VS screen: big avatar, name, position and the team in a row.</summary>
-        private static void IntroSide(UiSkin skin, float cx, float top, float size, float width, string avatarId, string name, int rank, List<Fighter> team, bool flipped, Color ring)
+        private static void IntroSide(UiSkin skin, float cx, float top, float size, float width, string avatarId, string name, int rank, List<Fighter> team, bool flipped, Color ring, bool plate)
         {
             var avatar = new Rect(cx - size / 2f, top, size, size);
             skin.DrawGlow(avatar, ring, 0.4f);
             AvatarFrame(skin, avatar, avatarId, ring);
             GUI.Label(new Rect(cx - width / 2f, avatar.yMax + 14f, width, 36f), FishCard.Fit(name, skin.TitleCenter, width), skin.TitleCenter);
-            GUI.Label(new Rect(cx - width / 2f, avatar.yMax + 52f, width, 22f), GameTexts.Arena.RankOf(rank), skin.SmallGoldCenter);
+            var rankText = GameTexts.Arena.RankOf(rank);
+            if (plate)
+            {
+                var rankWidth = skin.SmallGoldCenter.CalcSize(new GUIContent(rankText)).x + 28f;
+                Plate(skin, new Rect(cx - rankWidth / 2f, avatar.yMax + 50f, rankWidth, 26f), 0.72f);
+            }
+
+            GUI.Label(new Rect(cx - width / 2f, avatar.yMax + 52f, width, 22f), rankText, skin.SmallGoldCenter);
 
             const int count = 6;
             const float gap = 6f;
@@ -1096,8 +1154,19 @@ namespace FishingIdle.Game.UI
             // The battle is a scene on the diary sheet, in night colours (A-170).
             WindowFrame.Photo(skin, area);
             using var night = UiSkin.NightScope();
-            GUI.Box(area, GUIContent.none, skin.PanelSolid);
+            var arena = ArtAssets.Texture(ArenaArt);
+            if (arena != null)
+            {
+                // The underwater arena (A-179) under a light navy veil; the names and numbers carry their own dark plate.
+                GUI.DrawTexture(area, arena, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 4f);
+                WindowFrame.Veil(skin, area, 0.38f, 0.38f);
+            }
+            else
+            {
+                GUI.Box(area, GUIContent.none, skin.PanelSolid);
+            }
 
+            _arenaArt = arena != null;
             var cx = area.x + area.width / 2f;
             var cy = area.y + area.height / 2f - 40f;
             DrawSide(skin, _battle.PlayerTeam, 0, cx, cy, -1f);
@@ -1150,6 +1219,16 @@ namespace FishingIdle.Game.UI
             }
         }
 
+        // True while the replay is drawn on the arena art: its labels get a dark plate (A-179).
+        private bool _arenaArt;
+
+        /// <summary>A small navy plate under a label drawn on the arena art (contrast of 4.5:1 or more, A-179).</summary>
+        private static void Plate(UiSkin skin, Rect rect, float alpha)
+        {
+            var night = UiSkin.SceneNight;
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(night.r, night.g, night.b, alpha), 0, rect.height / 2f);
+        }
+
         /// <summary>A mirrored 3 front + 3 back formation (GDD section 26). direction −1 = left side.</summary>
         private void DrawSide(UiSkin skin, List<Fighter> team, int side, float cx, float cy, float direction)
         {
@@ -1182,6 +1261,11 @@ namespace FishingIdle.Game.UI
                 var max = _maxHp[side][i];
                 skin.Bar(new Rect(x - 60, y + 38, 120, 8), max > 0 ? (float)(hp / max) : 0f, false);
                 var fighterLabel = fighter.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + fighter.Level;
+                if (_arenaArt)
+                {
+                    Plate(skin, new Rect(x - 74, y + 48, 148, UiSkin.SmallLine + 4f), 0.78f);
+                }
+
                 UiSkin.ShadowLabel(new Rect(x - 70, y + 50, 140, UiSkin.SmallLine), FishCard.Fit(fighterLabel, skin.SmallMutedCenter, 140f), skin.SmallMutedCenter);
 
                 // Damage numbers float up and fade.
@@ -1190,6 +1274,11 @@ namespace FishingIdle.Game.UI
                     var t = Time.unscaledTime - hit.at;
                     var c = GUI.color;
                     GUI.color = c * new Color(1f, 1f, 1f, 1f - t / 0.9f);
+                    if (_arenaArt)
+                    {
+                        Plate(skin, new Rect(x - 34, y - 60 - t * 40f, 68, 24), 0.75f);
+                    }
+
                     UiSkin.ShadowLabel(new Rect(x - 40, y - 60 - t * 40f, 80, 24), "-" + Format.Number((long)System.Math.Round(hit.dmg)), skin.SmallGold);
                     GUI.color = c;
                 }

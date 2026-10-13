@@ -120,11 +120,16 @@ namespace FishingIdle.Editor
             }
         }
 
-        /// <summary>The opaque full-window scenes in Arte/UI (Expedition chart and harbour).</summary>
+        /// <summary>
+        /// The opaque scenes in Arte/UI: the Expedition chart and harbour and, since A-179, the menu scenes (Mercado, Arena,
+        /// Caixa de Pesca, Passe, Eventos, Clã).
+        /// </summary>
         internal static bool UiScene(string path)
         {
             var file = System.IO.Path.GetFileNameWithoutExtension(path);
-            return file == "ui_exp_carta" || file == "ui_exp_porto";
+            return file == "ui_exp_carta" || file == "ui_exp_porto"
+                || file == "merc_feira_porto" || file == "arena_fundo" || file == "caixa_cena"
+                || file == "passe_faixa" || file == "eventos_quadro" || file == "cla_fundo";
         }
 
         /// <summary>The interface frames drawn as 9-slice (UiSkin.NineSlice).</summary>

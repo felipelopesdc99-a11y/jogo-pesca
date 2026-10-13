@@ -277,14 +277,18 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ header and Summary (A-121)
 
+        // A-179: the player card (perfil_carteira, navy leather with a photo frame on the left). The avatar shows through
+        // the frame's hole; name, level and the XP line are written on the leather. Drawn as 9-slice: the frame (left) and
+        // the anchor (right) keep their shape, the plain leather between them stretches. Missing file = the drawn portrait.
+        private const string PlayerCardArt = "UI/perfil_carteira";
+        private const float PlayerCardHeight = 106f, CardLeftSlice = 440f, CardRightSlice = 200f;
+
+        /// <summary>The transparent photo hole of the card, in the picture's pixels (1106×501).</summary>
+        private static readonly Rect CardHole = new Rect(77f, 90f, 321f, 328f);
+
         private void DrawHeader(UiSkin skin, Rect panel)
         {
             var player = _root.Player;
-            var portrait = new Rect(panel.x + 28, panel.y + 20, 84, 84);
-            GUI.DrawTexture(portrait, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.OnSheet(new Color(0.06f, 0.11f, 0.2f, 1f)), 0, 18);
-            AvatarArt.Draw(skin, new Rect(portrait.x + 3, portrait.y + 3, 78, 78), _profile.AvatarId, 15);
-
-            GUI.DrawTexture(portrait, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 18);
 
             // The wallet, right to left from the seal; whatever is left goes to the name and the level.
             var wallet = new[]
@@ -315,14 +319,52 @@ namespace FishingIdle.Game.UI
                 wx = tile.x - 8;
             }
 
+            var card = ArtAssets.Texture(PlayerCardArt);
+            if (card != null)
+            {
+                var cardRect = new Rect(panel.x + 20, panel.y + 16, Mathf.Max(380f, wx - 12 - (panel.x + 20)), PlayerCardHeight);
+                var k = cardRect.height / card.height;
+                var hole = new Rect(cardRect.x + CardHole.x * k, cardRect.y + CardHole.y * k, CardHole.width * k, CardHole.height * k);
+
+                // The avatar under the card, a little larger than the hole so the frame covers its edge.
+                var under = new Rect(hole.x - 2, hole.y - 2, hole.width + 4, hole.height + 4);
+                GUI.DrawTexture(under, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.11f, 0.2f, 1f), 0, 4);
+                AvatarArt.Draw(skin, under, _profile.AvatarId, 4);
+                GUI.DrawTexture(new Rect(cardRect.x + 2, cardRect.y + 5, cardRect.width, cardRect.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.28f), 0, 12);
+                UiSkin.NineSlice(cardRect, card, CardLeftSlice, CardRightSlice, card.height / 2f, card.height / 2f, k);
+
+                // Light text on the navy leather (white at 18:1, the muted line at 10:1).
+                var cx = cardRect.x + CardLeftSlice * k + 8;
+                using (UiSkin.NightScope())
+                {
+                    DrawIdentity(skin, player, hole, cx, Mathf.Max(120f, cardRect.xMax - 26 - cx), cardRect.y + 10);
+                }
+
+                return;
+            }
+
+            var portrait = new Rect(panel.x + 28, panel.y + 20, 84, 84);
+            GUI.DrawTexture(portrait, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.OnSheet(new Color(0.06f, 0.11f, 0.2f, 1f)), 0, 18);
+            AvatarArt.Draw(skin, new Rect(portrait.x + 3, portrait.y + 3, 78, 78), _profile.AvatarId, 15);
+
+            GUI.DrawTexture(portrait, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 18);
+
             var tx = portrait.xMax + 16;
-            var tw2 = Mathf.Max(120f, wx - 12 - tx);
+            DrawIdentity(skin, player, portrait, tx, Mathf.Max(120f, wx - 12 - tx), panel.y + 18);
+        }
+
+        /// <summary>
+        /// Name with "Editar", the level badge with the XP bar, and the XP / map / VIP line, from (<paramref name="tx"/>,
+        /// <paramref name="top"/>) in <paramref name="tw2"/> px. A click on <paramref name="portrait"/> also edits.
+        /// </summary>
+        private void DrawIdentity(UiSkin skin, FishingIdle.GameService.Fishing.PlayerView player, Rect portrait, float tx, float tw2, float top)
+        {
             var nameText = FishCard.Fit(_profile.PlayerName, skin.Title, tw2 - 96);
-            GUI.Label(new Rect(tx, panel.y + 18, tw2 - 90, 36), nameText, skin.Title);
+            GUI.Label(new Rect(tx, top, tw2 - 90, 36), nameText, skin.Title);
 
             // Name and avatar (M18-T03): a small "Editar" next to the name, or a click on the portrait.
             var nw = Mathf.Min(tw2 - 96, skin.Title.CalcSize(new GUIContent(nameText)).x);
-            if (GUI.Button(new Rect(tx + nw + 10, panel.y + 24, 80, 26), GameTexts.Profile.Edit, skin.Chip)
+            if (GUI.Button(new Rect(tx + nw + 10, top + 6, 80, 26), GameTexts.Profile.Edit, skin.Chip)
                 || GUI.Button(portrait, GUIContent.none, GUIStyle.none))
             {
                 _editing = true;
@@ -335,7 +377,7 @@ namespace FishingIdle.Game.UI
             // Level badge and XP bar.
             var level = GameTexts.Player.LevelShort + " " + _profile.FisherLevel;
             var lw = skin.SmallBold.CalcSize(new GUIContent(level)).x + 16;
-            var badge = new Rect(tx, panel.y + 58, lw, 22);
+            var badge = new Rect(tx, top + 40, lw, 22);
             // A seal in its night colours, also on the sheet (the paper ink under dark text did not read).
             GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.NightAccent, 0, 8);
             UiSkin.ColoredLabel(new Rect(badge.x + 8, badge.y + 1, lw, UiSkin.SmallLine), level, skin.SmallBold, UiSkin.SceneNight, false);
@@ -352,11 +394,11 @@ namespace FishingIdle.Game.UI
             var vipText = vip != null && vip.Active ? GameTexts.Profile.VipUntil(Format.Date(System.DateTimeOffset.FromUnixTimeMilliseconds(vip.UntilMs).LocalDateTime)) : null;
             var vipWidth = vipText != null ? skin.PillWidth(vipText, true) : 0f;
             var lineWidth = tw2 - (vipWidth > 0 ? vipWidth + 10 : 0);
-            GUI.Label(new Rect(tx, panel.y + 84, lineWidth, 20), FishCard.Fit(line, skin.SmallMuted, lineWidth), skin.SmallMuted);
+            GUI.Label(new Rect(tx, top + 66, lineWidth, 20), FishCard.Fit(line, skin.SmallMuted, lineWidth), skin.SmallMuted);
             if (vipText != null)
             {
                 var used = Mathf.Min(lineWidth, skin.SmallMuted.CalcSize(new GUIContent(line)).x);
-                skin.AccentPill(new Rect(tx + used + 10, panel.y + 83, vipWidth, 20), vipText, UiSkin.Gold, Icons.Star);
+                skin.AccentPill(new Rect(tx + used + 10, top + 65, vipWidth, 20), vipText, UiSkin.Gold, Icons.Star);
             }
         }
 

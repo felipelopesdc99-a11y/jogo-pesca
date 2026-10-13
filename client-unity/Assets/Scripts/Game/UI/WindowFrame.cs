@@ -345,6 +345,73 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
+        /// A window's own picture (Resources/Arte/<paramref name="artPath"/>) set on the sheet like a photo (A-170, A-179):
+        /// the white border with its shadow, then the art covering <paramref name="rect"/> (ScaleAndCrop: cropped to fit,
+        /// never stretched). Returns the texture, or null when the file is missing (nothing is drawn; the caller keeps
+        /// its old look).
+        /// </summary>
+        public static Texture2D PhotoArt(UiSkin skin, Rect rect, string artPath)
+        {
+            var art = ArtAssets.Texture(artPath);
+            if (art == null || rect.width <= 0f || rect.height <= 0f)
+            {
+                return null;
+            }
+
+            Photo(skin, rect);
+            GUI.DrawTexture(rect, art, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 4f);
+            return art;
+        }
+
+        /// <summary>
+        /// A navy veil over part of a photo, so light text reads on it (A-179): <paramref name="left"/> alpha at the left
+        /// edge easing to <paramref name="right"/> at the right edge, in 12 bands (no texture, no allocation).
+        /// </summary>
+        public static void Veil(UiSkin skin, Rect rect, float left, float right)
+        {
+            const int bands = 12;
+            var night = UiSkin.SceneNight;
+            var bandWidth = rect.width / bands;
+            for (var i = 0; i < bands; i++)
+            {
+                var alpha = Mathf.Lerp(left, right, (i + 0.5f) / bands);
+                var radius = i == 0 || i == bands - 1 ? 4f : 0f;
+                Fill(skin, new Rect(rect.x + i * bandWidth, rect.y, bandWidth + (i < bands - 1 ? 1f : 0f), rect.height), new Color(night.r, night.g, night.b, alpha), radius);
+            }
+        }
+
+        /// <summary>
+        /// Where a region of a picture lands when it is drawn ScaleAndCrop into <paramref name="drawn"/>:
+        /// <paramref name="region"/> is in the picture's pixels (top-left origin). Used to put cards on a part of the art
+        /// (the cork of the Eventos board).
+        /// </summary>
+        public static Rect CropMap(Rect drawn, Texture art, Rect region)
+        {
+            var scale = Mathf.Max(drawn.width / art.width, drawn.height / art.height);
+            var ox = drawn.x + (drawn.width - art.width * scale) / 2f;
+            var oy = drawn.y + (drawn.height - art.height * scale) / 2f;
+            var r = Rect.MinMaxRect(ox + region.xMin * scale, oy + region.yMin * scale, ox + region.xMax * scale, oy + region.yMax * scale);
+            return Rect.MinMaxRect(Mathf.Max(r.xMin, drawn.xMin), Mathf.Max(r.yMin, drawn.yMin), Mathf.Min(r.xMax, drawn.xMax), Mathf.Min(r.yMax, drawn.yMax));
+        }
+
+        /// <summary>
+        /// Text with a dark outline (four 2 px offsets in navy, then the text), for a word drawn on a busy picture such as
+        /// the "VS" over the duel emblem (A-179).
+        /// </summary>
+        public static void OutlinedLabel(Rect rect, string text, GUIStyle style)
+        {
+            var previous = GUI.contentColor;
+            var night = UiSkin.SceneNight;
+            GUI.contentColor = new Color(night.r, night.g, night.b, previous.a * 0.95f);
+            GUI.Label(new Rect(rect.x - 2f, rect.y, rect.width, rect.height), text, style);
+            GUI.Label(new Rect(rect.x + 2f, rect.y, rect.width, rect.height), text, style);
+            GUI.Label(new Rect(rect.x, rect.y - 2f, rect.width, rect.height), text, style);
+            GUI.Label(new Rect(rect.x, rect.y + 3f, rect.width, rect.height), text, style);
+            GUI.contentColor = previous;
+            GUI.Label(rect, text, style);
+        }
+
+        /// <summary>
         /// The footer of a sheet: a dashed line over the bottom <paramref name="height"/> px of <paramref name="area"/>,
         /// where the main action goes. Returns the footer rect (below the line).
         /// </summary>

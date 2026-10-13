@@ -18,7 +18,8 @@ namespace FishingIdle.Game.UI
     /// </summary>
     /// <remarks>
     /// Shows what the clan service returned (GameRoot.Clan); decides nothing. Icon ico_cla (received 13/10/2026; the
-    /// Honra icon only if the file is missing).
+    /// Honra icon only if the file is missing). Since A-179 the clan column opens with the night harbour (cla_fundo) and the
+    /// crest (cla_brasao) as a photo on the sheet; without the files, the plain sunken panels.
     /// </remarks>
     public sealed class ClanWindow
     {
@@ -26,6 +27,16 @@ namespace FishingIdle.Game.UI
 
         /// <summary>The clan icon (ico_cla.png, received 13/10/2026; the Honra icon if the file is missing).</summary>
         private const string ClanIcon = "cla";
+
+        // A-179: the harbour at night (cla_fundo) as a photo on top of the clan column, with the crest (cla_brasao) on
+        // its left; in a clan, the name goes on the crest's ribbon too. Missing files = the plain sunken panels.
+        private const string SceneArt = "UI/cla_fundo", CrestArt = "UI/cla_brasao";
+        private const float SceneHeight = 176f, SceneGap = 18f;
+
+        /// <summary>The blank ribbon of the crest, in the picture's pixels (512×512).</summary>
+        private static readonly Rect Ribbon = new Rect(116f, 390f, 280f, 44f);
+
+        private static GUIStyle _ribbon;
 
         private readonly GameRoot _root;
         private string _nameDraft = string.Empty;
@@ -125,6 +136,7 @@ namespace FishingIdle.Game.UI
 
         private static void DrawLevelRequired(UiSkin skin, Rect rect, ClanView view)
         {
+            rect = SceneOnTop(skin, rect, null);
             skin.Inset(rect);
             var x = rect.x + Pad;
             var w = rect.width - Pad * 2f;
@@ -143,6 +155,7 @@ namespace FishingIdle.Game.UI
 
         private void DrawNoClan(UiSkin skin, Rect rect, ClanView view)
         {
+            rect = SceneOnTop(skin, rect, null);
             skin.Inset(rect);
             var x = rect.x + Pad;
             var w = rect.width - Pad * 2f;
@@ -194,55 +207,129 @@ namespace FishingIdle.Game.UI
         {
             var clan = view.Clan;
 
-            // Summary: name, owner, Strength, the XP bonus, and the actions.
-            const float summaryHeight = 132f;
+            // Summary: name, owner, Strength, the XP bonus, and the actions. With the art, it is the night harbour with
+            // the crest on the left and the text in night colours over a veil (A-179).
+            var onArt = ArtAssets.Texture(SceneArt) != null;
+            var summaryHeight = onArt ? SceneHeight : 132f;
             var summary = new Rect(rect.x, rect.y, rect.width, summaryHeight);
-            skin.Inset(summary);
-            var x = summary.x + Pad;
-            var w = summary.width - Pad * 2f;
-            var actionsWidth = 300f;
-            var textWidth = w - actionsWidth - Gap;
-            GUI.Label(new Rect(x, summary.y + 12f, textWidth, 32f), FishCard.Fit(clan.Name, skin.Heading, textWidth), skin.Heading);
-            GUI.Label(new Rect(x, summary.y + 46f, textWidth, UiSkin.SmallLine), FishCard.Fit(GameTexts.Clan.OwnerLine(clan.OwnerName ?? string.Empty), skin.SmallMuted, textWidth), skin.SmallMuted);
-            GUI.Label(new Rect(x, summary.y + 70f, textWidth, UiSkin.SmallLine), GameTexts.Clan.Strength + ": " + Format.Number(clan.Strength), skin.SmallBold);
-            if (view.XpBonusActive)
+            var crestWidth = 0f;
+            if (onArt)
             {
-                GUI.Label(new Rect(x, summary.y + 96f, textWidth, UiSkin.SmallLine), FishCard.Fit(GameTexts.Clan.BonusActive(Format.PercentShort(view.XpBonus)), skin.SmallGoldLine, textWidth), skin.SmallGoldLine);
-            }
-
-            var ax = summary.xMax - Pad - actionsWidth;
-            var buy = new Rect(ax, summary.y + 14f, actionsWidth, 44f);
-            var canBuy = clan.BuySlotBlocker == ServiceError.None;
-            var enabled = GUI.enabled;
-            if (clan.NextSlotPriceDollars > 0 && clan.IsOwner)
-            {
-                GUI.enabled = enabled && canBuy;
-                if (skin.IconButton(buy, Icons.Add, GameTexts.Clan.BuySlot(Format.Number(clan.NextSlotPriceDollars)), canBuy ? skin.ButtonPrimary : skin.Button))
-                {
-                    _root.BuyClanSlot();
-                }
-
-                GUI.enabled = enabled;
+                crestWidth = Scene(skin, summary, clan.Name);
+                WindowFrame.Veil(skin, new Rect(summary.x + crestWidth, summary.y, summary.width - crestWidth, summary.height), 0.68f, 0.68f);
             }
             else
             {
-                var note = clan.IsOwner ? GameTexts.Clan.SlotsMaxed : GameTexts.Clan.OnlyOwnerBuys;
-                GUI.Label(new Rect(ax, summary.y + 18f, actionsWidth, 40f), note, skin.SmallMuted);
+                skin.Inset(summary);
             }
 
-            if (GUI.Button(new Rect(ax, summary.y + 70f, actionsWidth, 40f), GameTexts.Clan.Leave, skin.ButtonDanger))
+            // The summary's text and actions in night colours on the photo; the paper mode comes back after it.
+            using (onArt ? UiSkin.NightScope() : new UiSkin.Scope(UiSkin.Paper))
             {
-                _confirmLeave = true;
+                var x = summary.x + Pad + crestWidth;
+                var w = summary.width - Pad * 2f - crestWidth;
+                var top = onArt ? summary.y + (summaryHeight - 132f) / 2f : summary.y;
+                var actionsWidth = Mathf.Min(300f, w * 0.46f);
+                var textWidth = w - actionsWidth - Gap;
+                GUI.Label(new Rect(x, top + 12f, textWidth, 32f), FishCard.Fit(clan.Name, skin.Heading, textWidth), skin.Heading);
+                GUI.Label(new Rect(x, top + 46f, textWidth, UiSkin.SmallLine), FishCard.Fit(GameTexts.Clan.OwnerLine(clan.OwnerName ?? string.Empty), skin.SmallMuted, textWidth), skin.SmallMuted);
+                GUI.Label(new Rect(x, top + 70f, textWidth, UiSkin.SmallLine), GameTexts.Clan.Strength + ": " + Format.Number(clan.Strength), skin.SmallBold);
+                if (view.XpBonusActive)
+                {
+                    GUI.Label(new Rect(x, top + 96f, textWidth, UiSkin.SmallLine), FishCard.Fit(GameTexts.Clan.BonusActive(Format.PercentShort(view.XpBonus)), skin.SmallGoldLine, textWidth), skin.SmallGoldLine);
+                }
+
+                var ax = summary.xMax - Pad - actionsWidth;
+                var buy = new Rect(ax, top + 14f, actionsWidth, 44f);
+                var canBuy = clan.BuySlotBlocker == ServiceError.None;
+                var enabled = GUI.enabled;
+                if (clan.NextSlotPriceDollars > 0 && clan.IsOwner)
+                {
+                    GUI.enabled = enabled && canBuy;
+                    if (skin.IconButton(buy, Icons.Add, GameTexts.Clan.BuySlot(Format.Number(clan.NextSlotPriceDollars)), canBuy ? skin.ButtonPrimary : skin.Button))
+                    {
+                        _root.BuyClanSlot();
+                    }
+
+                    GUI.enabled = enabled;
+                }
+                else
+                {
+                    var note = clan.IsOwner ? GameTexts.Clan.SlotsMaxed : GameTexts.Clan.OnlyOwnerBuys;
+                    GUI.Label(new Rect(ax, top + 18f, actionsWidth, 40f), note, skin.SmallMuted);
+                }
+
+                if (GUI.Button(new Rect(ax, top + 70f, actionsWidth, 40f), GameTexts.Clan.Leave, skin.ButtonDanger))
+                {
+                    _confirmLeave = true;
+                }
             }
 
             // The clan's Cardume: the player's fish.
             const float fishHeight = 132f;
-            var fishRect = new Rect(rect.x, summary.yMax + Gap, rect.width, fishHeight);
+            var fishRect = new Rect(rect.x, summary.yMax + (onArt ? SceneGap : Gap), rect.width, fishHeight);
             DrawMyFish(skin, fishRect, clan);
 
             // Members and places.
             var membersRect = new Rect(rect.x, fishRect.yMax + Gap, rect.width, rect.yMax - fishRect.yMax - Gap);
             DrawMembers(skin, membersRect, clan);
+        }
+
+        /// <summary>
+        /// Without a clan: the night harbour with the crest as a photo on top of <paramref name="rect"/> (A-179); returns
+        /// the room left under it, or <paramref name="rect"/> itself when the art is missing.
+        /// </summary>
+        private static Rect SceneOnTop(UiSkin skin, Rect rect, string name)
+        {
+            var scene = new Rect(rect.x, rect.y, rect.width, SceneHeight);
+            if (ArtAssets.Texture(SceneArt) == null)
+            {
+                return rect;
+            }
+
+            Scene(skin, scene, name);
+            return new Rect(rect.x, scene.yMax + SceneGap, rect.width, rect.height - SceneHeight - SceneGap);
+        }
+
+        /// <summary>
+        /// The night harbour as a photo filling <paramref name="rect"/> and the crest on its left, with <paramref name="name"/>
+        /// (if any) on the ribbon when it fits. Returns the width the crest takes from the left edge (0 without the crest).
+        /// </summary>
+        private static float Scene(UiSkin skin, Rect rect, string name)
+        {
+            if (WindowFrame.PhotoArt(skin, rect, SceneArt) == null)
+            {
+                return 0f;
+            }
+
+            var crest = ArtAssets.Texture(CrestArt);
+            if (crest == null)
+            {
+                return 0f;
+            }
+
+            var size = rect.height - 12f;
+            var crestRect = new Rect(rect.x + 14f, rect.y + 6f, size, size);
+            GUI.DrawTexture(crestRect, crest, ScaleMode.ScaleToFit, true);
+            if (!string.IsNullOrEmpty(name))
+            {
+                if (_ribbon == null || _ribbon.font != skin.SmallBold.font)
+                {
+                    // Fixed dark ink (not tracked: the ribbon is light in both modes).
+                    _ribbon = new GUIStyle(skin.SmallBold) { fontSize = UiSkin.ChipSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
+                    _ribbon.normal.textColor = UiSkin.Ink;
+                }
+
+                // The ribbon is light: dark ink on it, only when the whole name fits (the full name is beside the crest).
+                var k = size / crest.width;
+                var ribbon = new Rect(crestRect.x + Ribbon.x * k, crestRect.y + Ribbon.y * k, Ribbon.width * k, Ribbon.height * k);
+                if (_ribbon.CalcSize(new GUIContent(name)).x <= ribbon.width)
+                {
+                    GUI.Label(new Rect(ribbon.x, ribbon.y - 3f, ribbon.width, ribbon.height + 6f), name, _ribbon);
+                }
+            }
+
+            return size + 20f;
         }
 
         private void DrawMyFish(UiSkin skin, Rect rect, ClanInfoView clan)

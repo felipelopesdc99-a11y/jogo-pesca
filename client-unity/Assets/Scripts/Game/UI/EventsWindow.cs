@@ -15,11 +15,20 @@ namespace FishingIdle.Game.UI
     /// <remarks>
     /// Shows what the service returned in the last sync (GameRoot.WorldBoss); decides nothing. A new event adds its kind to
     /// <see cref="EventKind"/> and one card drawer. Icon provisional (ASSET_PENDENTE: ico_eventos; request in
-    /// docs/ASSETS_PENDENTES.md).
+    /// docs/ASSETS_PENDENTES.md). Since A-179 the cards sit on the cork of the notice board (eventos_quadro); without the
+    /// file, on the plain sheet.
     /// </remarks>
     public sealed class EventsWindow
     {
         private const float CardHeight = 196f, CardPad = 6f, CardGap = 12f, ScrollBar = 18f, ArtSize = 112f, OpenWidth = 168f;
+
+        // A-179: the notice board (eventos_quadro) covers the content like a photo; the cards are pinned on its cork,
+        // a little taller there so "Abrir" goes under the text and the lines get the cork's whole width.
+        private const string BoardArt = "UI/eventos_quadro";
+        private const float BoardCardHeight = 232f;
+
+        /// <summary>The cork of the board, in the picture's pixels (1600×900; the frame and the edge notes stay around it).</summary>
+        private static readonly Rect Cork = new Rect(250f, 130f, 1120f, 585f);
 
         private enum EventKind
         {
@@ -66,17 +75,29 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var contentHeight = Kinds.Length * (CardHeight + CardGap) - CardGap + CardPad * 2f;
-            var scrolls = contentHeight > area.height;
-            var inner = area.width - (scrolls ? ScrollBar : 0f);
-            _scroll = GUI.BeginScrollView(area, _scroll, new Rect(0f, 0f, inner, Mathf.Max(contentHeight, area.height - 1f)));
+            var board = WindowFrame.PhotoArt(skin, area, BoardArt);
+            var onBoard = board != null;
+            var list = onBoard ? WindowFrame.CropMap(area, board, Cork) : area;
+            var cardHeight = onBoard ? BoardCardHeight : CardHeight;
+            var contentHeight = Kinds.Length * (cardHeight + CardGap) - CardGap + CardPad * 2f;
+            var scrolls = contentHeight > list.height;
+            var inner = list.width - (scrolls ? ScrollBar : 0f);
+            _scroll = GUI.BeginScrollView(list, _scroll, new Rect(0f, 0f, inner, Mathf.Max(contentHeight, list.height - 1f)));
+            // On the board, a short list sits in the middle of the cork.
+            var top = onBoard && !scrolls ? (list.height - contentHeight) / 2f : 0f;
             for (var i = 0; i < Kinds.Length; i++)
             {
-                var card = new Rect(CardPad, CardPad + i * (CardHeight + CardGap), inner - CardPad * 2f, CardHeight);
+                var card = new Rect(CardPad, top + CardPad + i * (cardHeight + CardGap), inner - CardPad * 2f, cardHeight);
+                if (onBoard)
+                {
+                    // A soft shadow under the card, as if pinned to the cork.
+                    GUI.DrawTexture(new Rect(card.x + 3f, card.y + 5f, card.width, card.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.3f), 0, 12f);
+                }
+
                 switch (Kinds[i])
                 {
                     case EventKind.WorldBoss:
-                        DrawBossCard(skin, card, _root.WorldBoss);
+                        DrawBossCard(skin, card, _root.WorldBoss, onBoard);
                         break;
                 }
             }
@@ -87,7 +108,7 @@ namespace FishingIdle.Game.UI
         /// <summary>How many events are happening now (the header counter and the gold dot of the menu button).</summary>
         private int Happening() => _root.WorldBoss != null && _root.WorldBoss.Open ? 1 : 0;
 
-        private void DrawBossCard(UiSkin skin, Rect rect, WorldBossView view)
+        private void DrawBossCard(UiSkin skin, Rect rect, WorldBossView view, bool tall)
         {
             var open = view != null && view.Open;
             if (open)
@@ -104,9 +125,12 @@ namespace FishingIdle.Game.UI
             var icon = WorldBossWindow.NavIcon;
             skin.DrawIconExact(new Rect(disc.center.x - 30f, disc.center.y - 30f, 60f, 60f), icon, icon == Icons.Attack ? UiSkin.NightDanger : Color.white);
 
-            var button = new Rect(rect.xMax - 20f - OpenWidth, rect.center.y - 22f, OpenWidth, 44f);
+            // On the board the card is narrower and taller: "Abrir" goes to the bottom right, under the text.
+            var button = tall
+                ? new Rect(rect.xMax - 20f - OpenWidth, rect.yMax - 16f - 44f, OpenWidth, 44f)
+                : new Rect(rect.xMax - 20f - OpenWidth, rect.center.y - 22f, OpenWidth, 44f);
             var x = disc.xMax + 20f;
-            var w = button.x - 20f - x;
+            var w = (tall ? rect.xMax : button.x) - 20f - x;
             var y = rect.y + 16f;
 
             // Title and, during the event, the "AGORA" pill.
