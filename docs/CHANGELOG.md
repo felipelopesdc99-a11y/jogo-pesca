@@ -6,7 +6,7 @@ raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 ## [0.2.0-m24.6] — 13/10/2026
 
 Todos os fragmentos caem em qualquer mapa, com 0,1% cada, por decisão do proprietário (M24-T47, A-173, TD-054). Save
-continua na versão 21. Não compilado localmente; verificado no CI. Não aberto no Unity.
+continua na versão 21. Não compilado localmente; verificado no CI (408 testes, commit a739477). Não aberto no Unity.
 
 ### Mudado
 
