@@ -241,7 +241,7 @@ public sealed class MissionsTests
         Assert.Equal(1, Mission(game, "mission_072").Current);
 
         MissionTracker.OnCatch(config, save, new BoxCatch { SpeciesId = "lambari", SizeMm = 100, SizeCategoryId = "small", Genes = new[] { 0, 0, 0, 31 } }, recordBeaten: true);
-        Assert.Equal(1, save.Missions.RecordSpecies.Count);
+        Assert.Single(save.Missions.RecordSpecies);
         Assert.Equal(2, MissionTracker.Get(save, MissionCounterKeys.CatchPerfectGene));
         Assert.Equal(1, MissionTracker.Get(save, MissionCounterKeys.CatchPerfectSpecimen));
     }
@@ -620,11 +620,17 @@ public sealed class MissionsTests
         Assert.False(Ready(again, "mission_034"));
         Assert.True(again.Missions.ReadyCount >= 15);
         Assert.Empty(again.Missions.TakeNewlyReady());
-        Assert.True(again.Missions.ClaimAll().Succeeded);
+        var paid = again.Missions.ClaimAll();
+        Assert.True(paid.Succeeded, paid.ErrorMessage);
+        var claimed = migrated.Missions.Claimed.ToList();
+        // The rewards themselves may reach a goal (Conchas, Moedas): those are new and ready, the paid ones are not.
+        var readyAfterClaim = again.Missions.ReadyCount;
 
         // Opening again does not seed twice nor pay again.
         var (third, _, _) = TestSupport.NewGame(saveDir: dir, clock: clock);
         Assert.Equal(20, MissionTracker.Get(third.Session.Save, MissionCounterKeys.BoxSold));
-        Assert.Equal(0, third.Missions.ReadyCount);
+        Assert.Equal(readyAfterClaim, third.Missions.ReadyCount);
+        Assert.All(claimed, id => Assert.False(Ready(third, id), id));
+        Assert.All(claimed, id => Assert.Equal(ServiceError.MissionAlreadyClaimed, third.Missions.Claim(id).Error));
     }
 }

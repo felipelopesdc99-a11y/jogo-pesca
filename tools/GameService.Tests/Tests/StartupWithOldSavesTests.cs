@@ -60,7 +60,12 @@ public class StartupWithOldSavesTests
         var config = game.Session.Config;
         Assert.All(save.FishingBox, c => Assert.True(FishingIdle.GameService.Fishing.GeneRules.IsValid(config, c.Genes)));
         Assert.All(save.Aquarium, f => Assert.True(FishingIdle.GameService.Fishing.GeneRules.IsValid(config, f.Genes)));
-        Assert.Contains(save.Aquarium, f => f.Genes.All(g => g == 16));
+        if (version <= 22)
+        {
+            // Saves from before the genes (M24-T52): the old fish got the neutral 16/16/16/16.
+            Assert.Contains(save.Aquarium, f => f.Genes.All(g => g == 16));
+        }
+
         // The Crew and the Upgrades of versions 13 to 20 were refunded and cleared (M24-T46, A-172).
         Assert.Null(save.RetiredCrew);
         Assert.Null(save.RetiredUpgrades);
