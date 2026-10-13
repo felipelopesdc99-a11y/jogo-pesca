@@ -1226,3 +1226,10 @@ de testar. Manter o `map_id` dos barcos evita mudar o Boss e o Passe, que não f
 
 **Rever se.** O proprietário escolher outra opção do OD-070 (chance maior para as varas ou menos fragmentos), ou quiser
 uma chance só para tudo.
+
+*Atualizado em 13/10/2026 (OD-070 resolvido, opção c; M24-T48):* as varas pedem 5 / 8 / 12 / 15 / 20 fragmentos, com a
+mesma chance de 0,1%. Nada mudou no código do jogo: um save com mais fragmentos guardados que o número novo é montado na
+carga por `RodFragmentRules.AssembleReady` (que já existia para "um config que baixou fragments_required"), gastando só
+o número novo; o resto fica como extra (`FewerRodFragmentsTests`). O Passe **não** acompanha a queda: os fragmentos de vara
+dele ficam fixos em `passe_fragmentos.py → PASSE_FRAG_VARAS` (3 / 4 / 6 / 7 / 9, os 15% de antes), porque a opção (c)
+foi simulada e aprovada com eles; `FRAG_VARA_GRATIS` só vale para uma vara fora da tabela.

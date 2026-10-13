@@ -92,8 +92,9 @@ public sealed class RodsAndClothingByFragmentsTests
         {
             Assert.True(GameConfig.IsFragmentRod(rod));
             Assert.Equal(0.001, rod.FragmentDropChance, 9);
-            Assert.True(rod.FragmentsRequired >= 10);
         });
+        // OD-070, option c (13/10/2026, M24-T48): rods 1 to 5 ask for 5 / 8 / 12 / 15 / 20 fragments (were 15 to 60).
+        Assert.Equal(new[] { 5, 8, 12, 15, 20 }, config.FragmentRods.Select(r => r.FragmentsRequired));
         Assert.All(config.FragmentBoats, boat => Assert.Equal(0.001, boat.FragmentDropChance, 9));
         Assert.Equal(0.001, config.Clothing.FragmentDropChance, 9);
     }
@@ -147,6 +148,8 @@ public sealed class RodsAndClothingByFragmentsTests
             NoDrops(rods, equipment);
             RodJson(rods, "rod_01")["fragment_drop_chance"] = 1.0;
             RodJson(rods, "rod_02")["fragment_drop_chance"] = 1.0;
+            // Rod 2 only counts its fragments here (since OD-070 it asks for 8, which this test would reach).
+            RodJson(rods, "rod_02")["fragments_required"] = 1_000_000;
         });
         var (game, clock, _) = TestSupport.NewGame(config);
         var required = config.Rods.Rods.Single(r => r.Id == "rod_01").FragmentsRequired;
@@ -650,15 +653,17 @@ public sealed class RodsAndClothingByFragmentsTests
     {
         var config = Real;
         var expected = new Dictionary<int, string> { [10] = "rod_01", [30] = "rod_02", [50] = "rod_03", [70] = "rod_04", [90] = "rod_05" };
+        // Since OD-070 (M24-T48) the rods ask for fewer fragments, but the pass keeps what it gave (15% of the old 15 to 60).
+        var passFragments = new Dictionary<string, int> { ["rod_01"] = 3, ["rod_02"] = 4, ["rod_03"] = 6, ["rod_04"] = 7, ["rod_05"] = 9 };
         foreach (var m in config.Pass.Milestones)
         {
             Assert.True(m.Free.ClothingFragments > 0, "Nv." + m.Level);
             Assert.True(m.Premium.ClothingFragments > m.Free.ClothingFragments, "Nv." + m.Level);
             if (expected.TryGetValue(m.Level, out var rodId))
             {
-                config.TryGetRod(rodId, out var rod);
+                Assert.True(config.TryGetRod(rodId, out _));
                 Assert.Equal(rodId, m.Free.RodId);
-                Assert.Equal((int)Math.Ceiling(rod.FragmentsRequired * 0.15), m.Free.RodFragments);
+                Assert.Equal(passFragments[rodId], m.Free.RodFragments);
                 Assert.Equal(m.Free.RodFragments * 2, m.Premium.RodFragments);
             }
             else

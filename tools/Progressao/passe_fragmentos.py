@@ -31,8 +31,9 @@ Como os números são gerados (ajuste as constantes abaixo e rode "gerar" de nov
     Nv.110 = barco 1 …), o mesmo que dar o barco que cada mapa dá (M24-T42, A-168: os mapas 6 a 10 dão os barcos 1 a 5). Grátis: FRAG_GRATIS_ATE_100 dos fragmentos que o barco
     pede até o Nv.100 e FRAG_GRATIS_DEPOIS depois; o premium, o dobro (arredondado para cima);
   - fragmentos de vara (M24-T32, A-163): no marco do nível que libera o primeiro mapa que pede cada vara (Nv.10 = Vara 1,
-    Nv.30 = Vara 2, Nv.50 = Vara 3, Nv.70 = Vara 4, Nv.90 = Vara 5), FRAG_VARA_GRATIS dos fragmentos que a vara pede; o
-    premium, o dobro (arredondado para cima). Só esses 5 marcos: depois do Nv.90 todas as varas já liberaram o mapa delas;
+    Nv.30 = Vara 2, Nv.50 = Vara 3, Nv.70 = Vara 4, Nv.90 = Vara 5), PASSE_FRAG_VARAS (desde 13/10/2026, OD-070: os 15%
+    dos fragmentos que cada vara pedia antes, 3 / 4 / 6 / 7 / 9; FRAG_VARA_GRATIS para outra vara); o premium, o dobro
+    (arredondado para cima). Só esses 5 marcos: depois do Nv.90 todas as varas já liberaram o mapa delas;
   - Fragmentos de Roupa (M24-T33, A-164): em todo marco, ROUPA_ATE_100 (grátis, até o Nv.100) e ROUPA_DEPOIS (grátis,
     depois); o premium, o dobro.
 """
@@ -70,6 +71,10 @@ DOLARES_PREMIUM = (50, 10)           # premium: a cada 50 níveis, 10 Dólares
 FRAG_GRATIS_ATE_100 = 0.15
 FRAG_GRATIS_DEPOIS = 0.10
 FRAG_VARA_GRATIS = 0.15
+# Since 13/10/2026 (OD-070, option c; M24-T48) the rods ask for 5 / 8 / 12 / 15 / 20 fragments, but the pass keeps the
+# free rod fragments it gave before (15% of the old 15 / 25 / 35 / 45 / 60): the owner chose (c) on the simulation that
+# kept them. FRAG_VARA_GRATIS only counts for a rod missing here.
+PASSE_FRAG_VARAS = {'rod_01': 3, 'rod_02': 4, 'rod_03': 6, 'rod_04': 7, 'rod_05': 9}
 ROUPA_ATE_100 = 2
 ROUPA_DEPOIS = 1
 
@@ -262,7 +267,7 @@ def build_pass(reference, boats_by_map, rod_at=None):
                                            ('dollars', prem_dollars), ('boat_id', boat['id']), ('fragments', int(math.ceil(frags * PREMIUM_MULT)))])
         rod = (rod_at or {}).get(lvl)
         if rod:
-            rod_frags = max(1, int(math.ceil(rod['fragments_required'] * FRAG_VARA_GRATIS)))
+            rod_frags = PASSE_FRAG_VARAS.get(rod['id']) or max(1, int(math.ceil(rod['fragments_required'] * FRAG_VARA_GRATIS)))
             free['rod_id'] = rod['id']
             free['rod_fragments'] = rod_frags
             premium['rod_id'] = rod['id']

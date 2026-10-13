@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-13T12:00:00Z",
+  "updated_at": "2026-10-13T15:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -666,7 +666,9 @@
       "title": "Varas com 0,1% chegam bem mais tarde e atrasam os mapas",
       "detail": "Com todos os fragmentos em qualquer mapa a 0,1% (A-173), as varas, que abrem os mapas (minimum_rod_tier), chegam bem mais tarde. Simulado (pesca + Passe grátis, sem Boss): com o jogo aberto o Mapa 2 abre no dia ~2,6 (antes ~2 horas) e o Mapa 10 no dia ~7,7 (antes ~20 horas); 4 vezes por dia, Mapa 2 no dia ~5,3 (antes ~12 h) e Mapa 10 no ~14,8 (antes ~2,3); 1 vez por dia, Mapa 2 no ~6,8 (antes ~1,8) e Mapa 10 no ~16,8 (antes ~5,8). O Nv.1000 vem em ~58,5 / ~108,8 / ~117,8 dias (antes ~53,8 / ~100,3 / ~109,8). Nada trava; só fica mais lento no começo. Opções: (a) fica assim (0,1% em tudo); (b) só as varas com chance maior, por exemplo 0,5% (barcos e roupa ficam 0,1%): Mapa 10 em ~1,7 / ~3,8 / ~4,8 dias e Nv.1000 em ~54,8 / ~102,3 / ~109,8 dias, quase como antes; (c) as varas pedem menos fragmentos, por exemplo 5 / 8 / 12 / 15 / 20 (eram 15 a 60), com 0,1%: Mapa 10 em ~1,8 / ~3,8 / ~5,8 dias e Nv.1000 em ~54,8 / ~102,3 / ~109,8 dias. Os números de (b) e (c) são de uma simulação rápida, sem mudar nada no jogo.",
       "raised_at": "2026-10-13T12:00:00Z",
-      "status": "OPEN"
+      "status": "RESOLVED",
+      "resolved_at": "2026-10-13T15:00:00Z",
+      "resolution": "Decisão do proprietário em 13/10/2026: opção (c). A chance continua 0,1% por peixe em qualquer mapa e as varas 1 a 5 pedem 5 / 8 / 12 / 15 / 20 fragmentos (eram 15 / 25 / 35 / 45 / 60); o Passe continua dando 3 / 4 / 6 / 7 / 9 fragmentos de vara. Re-simulado: Mapa 10 no dia ~1,8 / ~3,8 / ~5,8 e Nv.1000 em ~54,8 / ~102,3 / ~109,8 dias (jogo aberto / 4 vezes por dia / 1 vez por dia) (M24-T48, A-173)."
     }
   ],
   "milestones": [
@@ -4950,11 +4952,12 @@
           "title": "Ritmo das varas com 0,1% (liberação dos mapas)",
           "subsystem": "config",
           "description": "Com 0,1% em qualquer mapa (M24-T47, A-173) as varas chegam bem mais tarde e os mapas abrem mais tarde (Mapa 10 no dia ~7,7 com o jogo aberto, era ~20 horas; Nv.1000 em ~58,5 dias, era ~53,8). Nada trava. Decidir se fica assim ou se as varas ganham chance maior ou pedem menos fragmentos (OD-070).",
-          "status": "NEEDS_OWNER_DECISION",
+          "status": "DONE",
           "dependencies": [
             "M24-T47"
           ],
-          "updated_at": "2026-10-13T12:00:00Z"
+          "updated_at": "2026-10-13T15:00:00Z",
+          "completion_notes": "OD-070 resolvido com a opção (c) do proprietário. config/rods.json: fragments_required das varas 1 a 5 = 5 / 8 / 12 / 15 / 20 (eram 15 / 25 / 35 / 45 / 60); fragment_drop_chance continua 0,001 em qualquer mapa; nota em fragment_rules. Passe: os fragmentos de vara ficaram iguais (grátis 3 / 4 / 6 / 7 / 9, premium o dobro), porque a opção (c) foi simulada com eles; config/pass.json não mudou. Geradores: fragmentos_equipamento.py (FRAGMENTOS_VARAS novo) e passe_fragmentos.py (PASSE_FRAG_VARAS fixa os fragmentos de vara do Passe) não desfazem nada (conferido rodando os dois; as outras diferenças que eles gerariam já existiam e não foram gravadas). Saves: nada de código novo; RodFragmentRules.AssembleReady já monta na carga a vara cujos fragmentos guardados chegam ao número novo, gastando só ele (o resto fica como extra; uma vara só por id; a de categoria maior entra em uso). Simulação (fragmentos_qualquer_mapa.py, agora com três regras: 12/10, varas 15 a 60 e agora; docs/propostas/fragmentos_qualquer_mapa.json; pesca + Passe grátis, sem Boss nem Premium): todos os 15 itens em 19,0 / 35,8 / 39,8 dias (jogo aberto / 4×/dia / 1×/dia; com varas 15 a 60 eram 20,5 / 38,3 / 41,8); varas em 11 h a 1,8 / 1,3 a 3,8 / 1,8 a 5,8 dias; barcos 1,8 a 3,5 / 3,9 a 7,3 / 5,8 a 8,8; Mapa 10 abre no dia 1,8 / 3,8 / 5,8 (eram 7,7 / 14,8 / 16,8); Nv.1000 em 54,8 / 102,3 / 109,8 (eram 58,5 / 108,8 / 117,8; em 12/10, 53,8 / 100,3 / 109,8). Testes: RodsAndClothingByFragments (números novos das varas, Passe com os números fixos, teste de fragmentos da vara 2 sem montar), FewerRodFragmentsTests (save com fragmentos acima do número novo monta ao abrir, sem perder nenhum). A-173 (atualizado), TD-054 (atualizado), config/README, ROADMAP.md. Não compilado localmente (sem .NET); verificado no CI (GitHub). Não aberto no Unity."
         }
       ],
       "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."

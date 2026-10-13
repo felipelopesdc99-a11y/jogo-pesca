@@ -42,7 +42,9 @@ PERFIL_REFERENCIA = 'quatro_vezes'
 PRECOS_ANTIGOS = collections.OrderedDict([
     ('rod_01', (2500, 5)), ('rod_02', (90000, 40)), ('rod_03', (730000, 85)), ('rod_04', (3280000, 180)), ('rod_05', (15610000, 650)),
 ])
-FRAGMENTOS_VARAS = {'rod_01': 15, 'rod_02': 25, 'rod_03': 35, 'rod_04': 45, 'rod_05': 60}
+# Since 13/10/2026 (OD-070, option c; M24-T48, A-173) the rods ask for fewer fragments (were 15 / 25 / 35 / 45 / 60),
+# so that at 0,1% per fish on every map they still open the maps early.
+FRAGMENTOS_VARAS = {'rod_01': 5, 'rod_02': 8, 'rod_03': 12, 'rod_04': 15, 'rod_05': 20}
 CUSTO_ROUPAS = [15, 25, 40, 60, 80]       # fragmentos da 1ª, 2ª … 5ª peça montada (qualquer peça)
 DIAS_ROUPAS = 30.0                        # 4 vezes por dia, sem o Passe: as 5 peças
 DIAS_NV100_ROUPA = 60.0                   # jogo aberto: a 1ª peça no Nv.100

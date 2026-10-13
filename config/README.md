@@ -151,7 +151,10 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
   hoje sem calibrar.
 - **Todo nível custa Moedas e Conchas (M24-T30):** `upgrade_cost.shells_first` das varas e dos barcos precisa ser pelo
   menos 1; o jogo recusa um config com 0.
-- A Vara 1 **não é mais vendida** (M24-T32, A-163): monta com **15 fragmentos** que caem pescando em qualquer mapa (0,1%
+- A Vara 1 **não é mais vendida** (M24-T32, A-163): monta com **5 fragmentos** (eram 15 até o OD-070, opção c, em
+  13/10/2026; as varas 1 a 5 pedem 5 / 8 / 12 / 15 / 20, `fragments_required`, gravado por
+  `fragmentos_equipamento.py gerar` → `FRAGMENTOS_VARAS`; o Passe continua dando 3 / 4 / 6 / 7 / 9 fragmentos de vara,
+  `passe_fragmentos.py` → `PASSE_FRAG_VARAS`) que caem pescando em qualquer mapa (0,1%
   por peixe puxado desde o M24-T47, A-173; era 3,7% só no Lago Sereno) e no Passe; os 2.500 Moedas de antes ficaram só como valor de referência no Mercado
   (`acquisition.market_reference_coins`). Desde o M24-T13 ela vai até o **Nv.100**: o 1º nível custa **500**
   Moedas e 1 Concha (antes 1.500 e 2), do Nv.1 ao 30 são ~156 mil Moedas e 44 Conchas, e do 1 ao 100 ~1,5 bi Moedas

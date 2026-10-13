@@ -2,7 +2,8 @@
 
 Uso:
   python3 tools/Progressao/fragmentos_qualquer_mapa.py simular [--dias 400] [--gravar]
-      # simula os 3 jeitos de jogar (tools/Progressao/jogador.py) com a regra de antes e com a de hoje e, com --gravar,
+      # simula os 3 jeitos de jogar (tools/Progressao/jogador.py) com a regra de antes, com a do M24-T47 (varas pedindo
+      # 15 a 60 fragmentos) e com a de hoje (varas pedindo 5 / 8 / 12 / 15 / 20, OD-070 opção c) e, com --gravar,
       # escreve docs/propostas/fragmentos_qualquer_mapa.json
 
 A regra de hoje (decisão do proprietário em 13/10/2026): em qualquer mapa, cada peixe puxado (online e offline) tem
@@ -49,6 +50,8 @@ ANTES_VARAS = {
     'map_09': ('rod_05', 0.0163),
 }
 ANTES_ROUPA = 0.0017
+# The rods' fragments_required of M24-T47 (before OD-070, option c, 13/10/2026): only to compare.
+VARAS_15_A_60 = {'rod_01': 15, 'rod_02': 25, 'rod_03': 35, 'rod_04': 45, 'rod_05': 60}
 
 
 class Game(P.Game):
@@ -75,6 +78,13 @@ def regra_antes(rules):
         rules.clothing['fragment_drop_chance'] = ANTES_ROUPA
 
 
+def varas_15_a_60(rules):
+    """Puts the rods' fragments_required of M24-T47 in `rules` (in memory only)."""
+    for rod in rules.fragment_rods:
+        if rod['id'] in VARAS_15_A_60:
+            rod['fragments_required'] = VARAS_15_A_60[rod['id']]
+
+
 def done(g):
     """Every boat, rod and clothing piece assembled."""
     r, p = g.rules, g.p
@@ -85,8 +95,11 @@ def done(g):
 def play(profile, days, antes, pass_cfg):
     """jogador.play, but it goes on past the Nv.1000 until every item is assembled (or `days`)."""
     g = Game(pass_cfg)
-    if antes:
+    if antes == 'antes':
         regra_antes(g.rules)
+        varas_15_a_60(g.rules)
+    elif antes == 'varas_15_a_60':
+        varas_15_a_60(g.rules)
     sessions = J.PROFILES[profile][1]
     end = days * 86400.0
     finished = lambda: done(g) and g.p.level >= g.rules.max_level  # noqa: E731
@@ -150,7 +163,9 @@ def simular(days, gravar):
     out['gerado_por'] = 'tools/Progressao/fragmentos_qualquer_mapa.py simular'
     out['nota'] = ('Fragmentos em qualquer mapa (M24-T47, A-173). Dias contados da meia-noite do primeiro dia, por valor '
                    'esperado (sem sorte). "antes": cada barco e cada vara só no mapa deles (a regra até 12/10/2026); '
-                   '"agora": todos em qualquer mapa, 0,1%% cada. Conta a pesca (online e offline, continuando depois do '
+                   '"varas_15_a_60": todos em qualquer mapa, 0,1%% cada, com as varas pedindo 15 / 25 / 35 / 45 / 60 '
+                   'fragmentos (M24-T47); "agora": o mesmo com as varas pedindo 5 / 8 / 12 / 15 / 20 (OD-070, opção c, '
+                   'M24-T48; o Passe continua dando 3 / 4 / 6 / 7 / 9 fragmentos de vara). Conta a pesca (online e offline, continuando depois do '
                    'Nv.1000) e o Passe grátis; não conta o Boss Mundial nem o Premium. null = não chegou em %d dias.' % days)
     out['chances_agora'] = collections.OrderedDict(
         [(b['id'], b.get('fragment_drop_chance')) for b in rules.fragment_boats]
@@ -163,7 +178,7 @@ def simular(days, gravar):
     out['perfis'] = collections.OrderedDict()
     for profile in J.PROFILES:
         row = collections.OrderedDict([('descricao', J.PROFILES[profile][0])])
-        for key, antes in (('antes', True), ('agora', False)):
+        for key, antes in (('antes', 'antes'), ('varas_15_a_60', 'varas_15_a_60'), ('agora', None)):
             print('Simulando %s (%s)…' % (profile, key))
             res = resultado(play(profile, days, antes, pass_cfg))
             row[key] = res

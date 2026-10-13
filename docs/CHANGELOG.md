@@ -3,6 +3,24 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.7] — 13/10/2026
+
+As varas pedem menos fragmentos, por decisão do proprietário (OD-070, opção c; M24-T48, A-173). Save continua na versão
+21. Não compilado localmente; verificado no CI. Não aberto no Unity.
+
+### Mudado
+
+- **Varas por fragmentos:** as varas 1 a 5 pedem **5 / 8 / 12 / 15 / 20** fragmentos (eram 15 / 25 / 35 / 45 / 60). A
+  chance continua 0,1% por peixe em qualquer mapa. O Passe continua dando os mesmos fragmentos de vara (3 / 4 / 6 / 7 / 9
+  no grátis; o dobro no premium).
+- **Quem já tinha fragmentos:** ao abrir o jogo, a vara cujos fragmentos guardados já bastam é montada (Nv.1); gasta só o
+  número novo e o resto fica como extra.
+- **Ritmo** (pesca + Passe grátis, sem Boss): Mapa 10 abre no dia ~1,8 / ~3,8 / ~5,8 (jogo aberto / 4 vezes por dia / 1
+  vez por dia; eram ~7,7 / ~14,8 / ~16,8); Nv.1000 em ~54,8 / ~102,3 / ~109,8 dias (eram ~58,5 / ~108,8 / ~117,8); todos
+  os 15 itens em ~19,0 / ~35,8 / ~39,8 dias (eram ~20,5 / ~38,3 / ~41,8).
+- `tools/Progressao/fragmentos_qualquer_mapa.py` compara três regras (12/10, varas 15 a 60 e agora); os geradores
+  guardam os números novos.
+
 ## [0.2.0-m24.6] — 13/10/2026
 
 Todos os fragmentos caem em qualquer mapa, com 0,1% cada, por decisão do proprietário (M24-T47, A-173, TD-054). Save

@@ -3172,3 +3172,51 @@ fragmentos).
 
   Com o jogo aberto, o Mapa 2 abre no dia ~2,6 (antes em ~2 horas) e o Mapa 10 no dia ~7,7 (antes em ~20 horas); o
   Nv.1000 vem ~5 a 8 dias depois (+7% a +9%). Nada foi rebalanceado além da chance; as opções estão no OD-070.
+
+*Atualizado em 13/10/2026 (OD-070, opção c; M24-T48): as varas pedem menos fragmentos.* O proprietário escolheu a opção
+(c) do OD-070: a chance continua **0,1% por peixe em qualquer mapa**, mas as varas 1 a 5 pedem **5 / 8 / 12 / 15 / 20
+fragmentos** (eram 15 / 25 / 35 / 45 / 60). Barcos e roupas não mudaram.
+
+- **Passe do Pescador:** continua dando os mesmos fragmentos de vara de antes (grátis 3 / 4 / 6 / 7 / 9 nos Nv.10 / 30
+  / 50 / 70 / 90; premium o dobro). Foi com eles que a opção (c) foi simulada; agora o grátis do Nv.10 já é mais da metade
+  da Vara 1.
+- **Quem já tinha fragmentos de vara:** ao abrir o jogo, cada vara cujos fragmentos guardados já chegam ao número novo
+  é montada sozinha (entra no Inventário no Nv.1 e, se for de categoria maior, passa a ser usada). Gasta só o número
+  novo; o que sobra fica guardado como extra. Só uma vara de cada é montada (34 fragmentos da Vara 3 montam uma e ficam
+  22 extras). Uma vara que o jogador já tinha não muda e os extras dela ficam iguais. Não há aviso além do de sempre.
+- **Quanto tempo leva agora** (o mesmo jogador de referência e a mesma simulação de cima, refeita;
+  `docs/propostas/fragmentos_qualquer_mapa.json` traz as três regras: 12/10, "varas 15 a 60" e agora):
+
+  | Dia em que monta (h = horas): varas 15 a 60 → **agora** | Jogo aberto | 4 vezes por dia | 1 vez por dia |
+  |---|---|---|---|
+  | Barco 1 · Remo Valente | 2,9 → **1,8** | 5,9 → **3,9** | 6,8 → **5,8** |
+  | Barco 2 · Rastro Azul | 3,4 → **2,0** | 6,8 → **4,3** | 7,8 → **5,8** |
+  | Barco 3 · Proa Selvagem | 3,7 → **2,3** | 7,5 → **4,8** | 9,8 → **6,8** |
+  | Barco 4 · Costa Nobre | 4,6 → **3,1** | 8,9 → **6,3** | 10,8 → **7,8** |
+  | Barco 5 · Horizonte Dourado | 5,2 → **3,5** | 10,3 → **7,3** | 11,8 → **8,8** |
+  | Vara 1 · Ponta Selvagem (5 frag.) | 2,6 → **11,0 h** | 5,3 → **1,3** | 6,8 → **1,8** |
+  | Vara 2 · Maré Dourada (8) | 4,0 → **19,7 h** | 7,8 → **1,9** | 8,8 → **2,8** |
+  | Vara 3 · Corrente Mestra (12) | 5,0 → **1,1** | 9,8 → **2,5** | 11,8 → **3,8** |
+  | Vara 4 · Atlântico Nobre (15) | 6,1 → **1,4** | 11,8 → **3,3** | 13,8 → **4,8** |
+  | Vara 5 · Soberana Abissal (20) | 7,7 → **1,8** | 14,8 → **3,8** | 16,8 → **5,8** |
+  | 1ª roupa (Luvas, 15 frag.) | 1,0 → **15,6 h** | 2,3 → **1,8** | 2,8 → **2,8** |
+  | 2ª roupa (Chapéu, 25) | 3,5 → **2,1** | 6,9 → **4,3** | 8,8 → **5,8** |
+  | 3ª roupa (Calça, 40) | 7,2 → **5,4** | 13,8 → **10,5** | 15,8 → **12,8** |
+  | 4ª roupa (Botas, 60) | 12,6 → **11,1** | 23,8 → **21,3** | 26,8 → **23,8** |
+  | 5ª roupa (Camiseta, 80) | 20,5 → **19,0** | 38,3 → **35,8** | 41,8 → **39,8** |
+  | **Todos os 15 itens** | 20,5 → **19,0** | 38,3 → **35,8** | 41,8 → **39,8** |
+
+  | Dia em que o mapa abre (h = horas): 12/10 → varas 15 a 60 → **agora** | Jogo aberto | 4 vezes por dia | 1 vez por dia |
+  |---|---|---|---|
+  | Mapa 2 · Rio Selvagem (Nv.10, Vara 1) | 1,9 h → 2,6 → **11,0 h** | 12,0 h → 5,3 → **1,3** | 1,8 → 6,8 → **1,8** |
+  | Mapa 4 · Estuário das Marés (Nv.30, Vara 2) | 4,6 h → 4,0 → **19,7 h** | 18,0 h → 7,8 → **1,9** | 2,8 → 8,8 → **2,8** |
+  | Mapa 6 · Arquipélago do Sol (Nv.50, Vara 3) | 6,2 h → 5,0 → **1,1** | 22,1 h → 9,8 → **2,5** | 3,8 → 11,8 → **3,8** |
+  | Mapa 8 · Banco das Baleias (Nv.70, Vara 4) | 10,1 h → 6,1 → **1,4** | 1,3 → 11,8 → **3,3** | 4,8 → 13,8 → **4,8** |
+  | Mapa 10 · Abismo Atlântico (Nv.90, Vara 5) | 20,2 h → 7,7 → **1,8** | 2,3 → 14,8 → **3,8** | 5,8 → 16,8 → **5,8** |
+  | Pescador Nv.100 | 10,1 h → 2,9 → **23,3 h** | 1,3 → 5,8 → **2,3** | 3,8 → 7,8 → **3,8** |
+  | Pescador Nv.500 | 13,2 → 17,9 → **14,2** | 25,3 → 33,9 → **26,9** | 29,8 → 37,8 → **30,8** |
+  | Pescador Nv.1000 | 53,8 → 58,5 → **54,8** | 100,3 → 108,8 → **102,3** | 109,8 → 117,8 → **109,8** |
+
+  Os mapas voltam a abrir cedo (Mapa 10 no dia ~1,8 / ~3,8 / ~5,8) e o Nv.1000 fica quase como em 12/10 (~54,8 / ~102,3
+  / ~109,8 dias). Barcos e roupas também chegam antes, porque com as varas mais cedo o jogador puxa mais peixes por hora
+  (a vara soma na Chance de Sucesso da Captura). As 5 roupas continuam sendo o mais demorado.
