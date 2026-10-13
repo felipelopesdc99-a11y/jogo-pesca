@@ -95,6 +95,7 @@ namespace FishingIdle.GameService.Market
                 EndsAtMs = Now + DurationMs,
             };
             State.Auctions.Add(auction);
+            Missions.MissionTracker.OnMarketListing(Save);
             _session.Persist();
             _session.Log("Started auction " + auction.Id + " at " + startingBidCoins + " coins.");
             return ServiceResult<AuctionView>.Ok(ToView(auction));
@@ -146,6 +147,7 @@ namespace FishingIdle.GameService.Market
             Save.Coins -= amountCoins + fee;
             ApplyBid(auction, PlayerBidder, amountCoins, Now);
             auction.PlayerBid = true;
+            Missions.MissionTracker.OnAuctionBid(Save);
             _session.Persist();
             _session.Log("Bid " + amountCoins + " (fee " + fee + ") on auction " + auction.Id + ".");
             return ServiceResult<BidResult>.Ok(new BidResult { Auction = ToView(auction), FeeCoins = fee, NewBalance = Save.Coins });
@@ -348,6 +350,7 @@ namespace FishingIdle.GameService.Market
             {
                 var fee = (long)Math.Round(auction.HighestBidCoins * sellerFeeRatio, MidpointRounding.AwayFromZero);
                 Save.Coins += auction.HighestBidCoins - fee;
+                Missions.MissionTracker.OnMarketSold(Config, Save, auction.Goods);
                 AddEvent(new MarketEvent { AtMs = at, Kind = MarketEvent.KindAuctionSold, Goods = auction.Goods, PriceCoins = auction.HighestBidCoins, FeeCoins = fee, CounterpartName = auction.HighestBidder });
             }
             else if (mine)
@@ -365,6 +368,7 @@ namespace FishingIdle.GameService.Market
                 }
 
                 AddWithdrawal(auction.Goods, WithdrawalItem.ReasonAuctionWon, at);
+                Missions.MissionTracker.OnAuctionWon(Save, auction.BidCount);
                 AddEvent(new MarketEvent { AtMs = at, Kind = MarketEvent.KindAuctionWon, Goods = auction.Goods, PriceCoins = auction.HighestBidCoins, CounterpartName = auction.SellerName });
             }
             else if (auction.PlayerBid)

@@ -70,6 +70,7 @@ namespace FishingIdle.GameService.Shop
 
             var left = Charges(save, bait.Id) - 1;
             save.BaitCharges[bait.Id] = left;
+            Missions.MissionTracker.OnBaitUsed(save, bait.Id);
             if (left <= 0)
             {
                 update.BaitRanOut = bait.DisplayName;

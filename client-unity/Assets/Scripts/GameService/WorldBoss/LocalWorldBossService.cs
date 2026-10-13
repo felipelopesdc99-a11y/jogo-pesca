@@ -262,6 +262,9 @@ namespace FishingIdle.GameService.WorldBoss
                             State.Band = band;
                             update.BandReached = band;
                         }
+
+                        // The Missões (M24-T54): attacks, the event days and the best band.
+                        Missions.MissionTracker.OnBossAttacks(Save, today, credit, State.Band);
                     }
 
                     State.LastAttackIndex = index;

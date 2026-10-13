@@ -819,6 +819,20 @@ O pedido pronto foi entregue ao proprietário em 13/10/2026 num arquivo à parte
 > Assunto do meio para a direita; o terço esquerdo só com água e céu. Sem texto, sem pessoas em close, sem moldura.
 > Arquivo: bemvindo_cena.png
 
+## Atalho Missões (M24-T54, A-177, pedido em 13/10/2026)
+
+`ASSET_PENDENTE`. Enquanto o arquivo não existe, o atalho redondo "Missões" (na coluna da direita, depois do Passe) e a
+etiqueta da janela Missões usam o ícone de confirmar (✓) do jogo. Quando o arquivo existir, o jogo passa a usá-lo sozinho,
+no atalho e na etiqueta.
+
+| Arquivo | O quê | Tamanho | Onde aparece |
+|---|---|---|---|
+| `Arte/Icones/ico_atalho_missoes.png` | Atalho Missões | 256×256, branco sobre transparente → 36 px | Coluna de atalhos à direita e etiqueta da janela Missões |
+
+Pedido pronto para colar no ChatGPT:
+
+> Ícone de menu para jogo mobile, PNG 256×256 px com fundo transparente, desenho BRANCO chapado (#FFFFFF) sem outras cores, traço único com cantos arredondados, no mesmo estilo dos ícones de Pesca, Mapa e Loja do jogo: uma prancheta com uma folha presa e três linhas de lista, a primeira com um sinal de visto (✓), simples e legível em 32 px. Sem texto, sem números, sem fundo, sem sombra. Arquivo: ico_atalho_missoes.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

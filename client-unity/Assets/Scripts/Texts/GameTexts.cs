@@ -59,6 +59,7 @@ namespace FishingIdle.Texts
             public const string Adventure = "Aventura";
             public const string Trade = "Comércio";
             public const string PassShort = "Passe";
+            public const string Missions = "Missões";
             public const string CoinsTitle = "MOEDAS";
             public const string OpenProfile = "Abrir o Perfil";
         }
@@ -848,6 +849,217 @@ namespace FishingIdle.Texts
             public static string ItemDollars(string amount) => "+" + amount + " Dólares";
         }
 
+        // ------------------------------------------------------------------ Missões (M24-T54, A-177)
+
+        public static class Missions
+        {
+            public const string Title = "Missões";
+            public const string Info =
+                "São 100 missões que acompanham o jogo inteiro, do primeiro peixe ao Nv.1000, todas à vista desde o começo. " +
+                "Cada uma mostra o que fazer, o quanto falta (\"X / Y\") e o prêmio: Moedas e Conchas, que crescem ao longo da lista, e Dólares nas mais difíceis. " +
+                "Quando uma missão é concluída ela fica pronta: aperte Resgatar nela ou Resgatar todas. Cada prêmio é pago uma vez só. " +
+                "Uma missão concluída continua concluída, mesmo que depois você gaste as Moedas ou venda o peixe. " +
+                "As missões marcadas \"Liga quando o jogo estiver online\" precisam de outros jogadores de verdade (o seu Clã) e só contam com o jogo online.";
+            public const string TabActive = "Em andamento";
+            public const string TabReady = "Prontas";
+            public const string TabDone = "Concluídas";
+            public const string Claim = "Resgatar";
+            public const string Done = "Concluída";
+            public const string Ready = "Pronta!";
+            public const string OnlineOnly = "Liga quando o jogo estiver online";
+            public const string EmptyActive = "Nenhuma missão em andamento: todas foram concluídas!";
+            public const string EmptyReady = "Nenhuma missão pronta para resgatar agora. Continue jogando!";
+            public const string NothingToClaim = "Nada para resgatar";
+            public const string EmptyDone = "Nenhuma missão concluída ainda. Resgate as prontas para vê-las aqui.";
+            public static string ClaimAll(int count) => "Resgatar todas (" + count + ")";
+            public static string Counter(int claimed, int total) => claimed + " / " + total + " concluídas";
+            /// <summary>"3 / 10", "523.000 / 1 mi", "431 mi / 1 bi": big numbers in short form so the bar's label fits.</summary>
+            public static string Progress(long current, long target) => Format.Short(current) + " / " + Format.Short(target);
+            public static string NumberLabel(int number) => "Nº " + number;
+            public static string BestRank(long rank) => rank > 0 ? "Sua melhor posição: " + Format.Number(rank) + "º" : "Você ainda não está no Ranking";
+            public static string ReadyToast(string text) => "Missão concluída: " + text + ". Resgate em Missões!";
+            public static string ReadyManyToast(int count) => count + " missões concluídas. Resgate em Missões!";
+            public static string ClaimedItems(int count, string items) => (count == 1 ? "Missão resgatada: " : count + " missões resgatadas: ") + items;
+            public static string ItemCoins(string amount) => "+" + amount + " Moedas";
+            public static string ItemShells(string amount) => "+" + amount + " Conchas";
+            public static string ItemDollars(string amount) => "+" + amount + (amount == "1" ? " Dólar" : " Dólares");
+
+            /// <summary>A species above Comum with its rarity: "Tubarão-boca-grande (Mítico)".</summary>
+            public static string WithRarity(string name, string rarity) => name + " (" + rarity + ")";
+
+            /// <summary>
+            /// The goal of a mission in PT-BR, from its type (missions.json), its target and the name it points at (species,
+            /// rarity, size, map, rod, boat or bait, from /config). <paramref name="number"/> is the stars, the fish level or the
+            /// top gene value; <paramref name="all"/> = "todas" / "a faixa máxima".
+            /// </summary>
+            public static string Objective(string type, long target, string name, int number, bool all, bool fishOnly, bool contested)
+            {
+                var one = target == 1;
+                var n = Format.Number(target);
+                switch (type)
+                {
+                    case "catch_count": return one ? "Pesque 1 peixe" : "Pesque " + Amount(target, "peixes");
+                    case "catch_species":
+                        return one ? "Pesque " + Article(name) + " " + name : "Pesque " + n + " " + Plural(name);
+                    case "catch_rarity":
+                        return one ? "Pesque o primeiro peixe " + name : "Pesque " + n + " peixes " + Plural(name);
+                    case "catch_size_category":
+                        return one ? "Pesque um peixe de tamanho " + name : "Pesque " + n + " peixes de tamanho " + name;
+                    case "catch_gene_stars":
+                        return one ? "Pesque um peixe " + number + " estrelas" : "Pesque " + n + " peixes " + number + " estrelas";
+                    case "catch_perfect_gene":
+                        return one ? "Pesque um peixe com um gene perfeito (" + number + ")" : "Pesque " + n + " peixes com um gene perfeito (" + number + ")";
+                    case "catch_perfect_specimen":
+                        return one ? "Pesque um Exemplar perfeito (os 4 genes em " + number + ")" : "Pesque " + n + " Exemplares perfeitos (os 4 genes em " + number + ")";
+                    case "fisher_level": return "Chegue ao Nv." + target + " de Pescador";
+                    case "coins_held": return "Junte " + Amount(target, "Moedas");
+                    case "shells_held": return "Junte " + Amount(target, "Conchas");
+                    case "dollars_spent": return "Gaste " + Amount(target, "Dólares");
+                    case "box_sell": return one ? "Venda 1 peixe da Caixa de Pesca" : "Venda " + n + " peixes da Caixa de Pesca";
+                    case "aquarium_keep": return one ? "Guarde 1 peixe no Aquário" : "Guarde " + n + " peixes no Aquário";
+                    case "fish_feed": return one ? "Alimente um peixe do Aquário pela primeira vez" : "Alimente peixes do Aquário " + n + " vezes";
+                    case "fish_level": return "Suba um peixe do Aquário ao Nv." + target;
+                    case "cardume_size": return "Monte seu Cardume com " + n + " peixes";
+                    case "cardume_strength": return "Alcance " + Amount(target, "de força no Cardume");
+                    case "cardume_all_rarity_min": return "Monte um Cardume completo só com peixes " + Plural(name) + " ou melhores";
+                    case "cardume_gene_stars": return "Tenha " + n + " peixes " + number + " estrelas no Cardume ao mesmo tempo";
+                    case "cardume_all_level": return "Tenha um Cardume completo com todos os peixes no Nv." + number;
+                    case "map_unlocked": return "Libere " + Article(name) + " " + name;
+                    case "encyclopedia_species":
+                        return all ? "Registre todas as espécies na Enciclopédia" : "Registre " + n + " espécies na Enciclopédia";
+                    case "map_all_species": return "Pesque todas as " + n + " espécies " + Of(name) + " " + name;
+                    case "rarity_all_species": return "Pesque todas as espécies " + FemininePlural(name);
+                    case "size_records": return one ? "Bata o recorde de tamanho de uma espécie" : "Bata o recorde de tamanho de " + n + " espécies diferentes";
+                    case "rod_assembled": return "Monte a vara " + name;
+                    case "boat_assembled": return "Monte o barco " + name;
+                    case "boats_all": return "Monte todos os " + n + " barcos";
+                    case "clothing_assembled":
+                        return all ? "Monte todas as peças de roupa" : one ? "Monte a primeira peça de roupa" : "Monte as " + n + " peças de roupa";
+                    case "clothing_max_level":
+                        return all ? "Suba todas as roupas ao nível máximo" : one ? "Suba uma peça de roupa ao nível máximo" : "Suba " + n + " peças de roupa ao nível máximo";
+                    case "bait_used": return one ? "Use uma isca " + name : "Use a isca " + name + " " + n + " vezes";
+                    case "pass_rewards_claimed": return one ? "Pegue 1 recompensa do Passe do Pescador" : "Pegue " + n + " recompensas do Passe do Pescador";
+                    case "expedition_started": return one ? "Mande o Cardume na primeira Expedição" : "Mande o Cardume em " + n + " Expedições";
+                    case "expeditions_completed": return one ? "Complete uma Expedição" : "Complete " + n + " Expedições";
+                    case "arena_duels": return one ? "Faça seu primeiro duelo na Arena" : "Faça " + n + " duelos na Arena";
+                    case "arena_wins": return one ? "Ganhe 1 duelo na Arena" : "Ganhe " + n + " duelos na Arena";
+                    case "arena_win_streak": return "Ganhe " + n + " duelos seguidos na Arena";
+                    case "arena_distinct_opponents": return "Ataque " + n + " jogadores diferentes na Arena";
+                    case "arena_win_stronger":
+                        return one ? "Vença um jogador mais forte que você na Arena" : "Vença " + n + " jogadores mais fortes que você na Arena";
+                    case "arena_rank_top": return "Chegue ao top " + n + " do Ranking da Arena";
+                    case "market_listing": return one ? "Coloque o primeiro anúncio no Mercado" : "Coloque " + n + " anúncios no Mercado";
+                    case "market_buy":
+                        if (fishOnly)
+                        {
+                            return one ? "Compre um peixe anunciado por outro jogador no Mercado" : "Compre " + n + " peixes de outros jogadores no Mercado";
+                        }
+
+                        return one ? "Compre um item no Mercado" : "Compre " + n + " itens no Mercado";
+                    case "market_sell":
+                        if (name != null)
+                        {
+                            return one ? "Venda 1 peixe " + name + " no Mercado" : "Venda " + n + " peixes " + Plural(name) + " no Mercado";
+                        }
+
+                        return one ? "Venda um peixe para outro jogador no Mercado" : "Venda " + n + " peixes no Mercado";
+                    case "auction_bid": return one ? "Dê um lance num Leilão" : "Dê " + n + " lances em Leilões";
+                    case "auction_won":
+                        if (contested)
+                        {
+                            return one ? "Ganhe um Leilão contra outros jogadores" : "Ganhe " + n + " Leilões contra outros jogadores";
+                        }
+
+                        return one ? "Ganhe um Leilão" : "Ganhe " + n + " Leilões";
+                    case "boss_attack": return one ? "Ataque o Boss Mundial pela primeira vez" : "Ataque o Boss Mundial " + n + " vezes";
+                    case "boss_band": return all ? "Chegue à faixa máxima de dano do Boss Mundial" : "Chegue à faixa " + n + " de dano do Boss Mundial";
+                    case "boss_days": return "Ataque o Boss Mundial em " + n + " dias diferentes";
+                    case "clan_join": return "Entre em um Clã ou crie o seu";
+                    case "clan_fish": return "Coloque seu melhor peixe no Cardume do Clã";
+                    case "clan_same_day_boss": return "Ataque o Boss Mundial no mesmo dia que outro membro do seu Clã";
+                    case "clan_rank_top": return "Fique no top " + n + " de Clãs no ranking diário";
+                    case "profile_visit": return one ? "Visite o perfil de outro jogador" : "Visite o perfil de outros jogadores " + n + " vezes";
+                    default: return type;
+                }
+            }
+
+            /// <summary>"10.000 Moedas", "1 milhão de Moedas", "2 bilhões de peixes": round millions and billions in words.</summary>
+            public static string Amount(long value, string noun)
+            {
+                if (value >= 1_000_000_000L && value % 1_000_000_000L == 0)
+                {
+                    var b = value / 1_000_000_000L;
+                    return Format.Number(b) + (b == 1 ? " bilhão de " : " bilhões de ") + StripDe(noun);
+                }
+
+                if (value >= 1_000_000L && value % 1_000_000L == 0)
+                {
+                    var m = value / 1_000_000L;
+                    return Format.Number(m) + (m == 1 ? " milhão de " : " milhões de ") + StripDe(noun);
+                }
+
+                return Format.Number(value) + " " + noun;
+            }
+
+            private static string StripDe(string noun) => noun.StartsWith("de ", System.StringComparison.Ordinal) ? noun.Substring(3) : noun;
+
+            /// <summary>The article of a name by its first word: "a" for one ending in "a" (Costa, Piranha), otherwise "o".</summary>
+            public static string Article(string name)
+            {
+                return FirstWord(name).EndsWith("a", System.StringComparison.Ordinal) ? "a" : "o";
+            }
+
+            /// <summary>"do" or "da" (de + the article).</summary>
+            public static string Of(string name) => Article(name) == "a" ? "da" : "do";
+
+            /// <summary>
+            /// PT-BR plural of a name, on its first word when it has a hyphen or a space ("Lambari" → "Lambaris", "Raro" →
+            /// "Raros", "Tubarão-boca-grande" → "Tubarões-boca-grande", "Comum" → "Comuns").
+            /// </summary>
+            public static string Plural(string name)
+            {
+                if (string.IsNullOrEmpty(name))
+                {
+                    return name ?? string.Empty;
+                }
+
+                var word = FirstWord(name);
+                var rest = name.Substring(word.Length);
+                string plural;
+                if (word.EndsWith("ão", System.StringComparison.Ordinal)) plural = word.Substring(0, word.Length - 2) + "ões";
+                else if (word.EndsWith("m", System.StringComparison.Ordinal)) plural = word.Substring(0, word.Length - 1) + "ns";
+                else if (word.EndsWith("l", System.StringComparison.Ordinal)) plural = word.Substring(0, word.Length - 1) + "is";
+                else if (word.EndsWith("r", System.StringComparison.Ordinal) || word.EndsWith("z", System.StringComparison.Ordinal)) plural = word + "es";
+                else if (word.EndsWith("s", System.StringComparison.Ordinal)) plural = word;
+                else plural = word + "s";
+                return plural + rest;
+            }
+
+            /// <summary>Feminine plural of a rarity ("Lendário" → "Lendárias", "Comum" → "Comuns").</summary>
+            public static string FemininePlural(string name)
+            {
+                if (string.IsNullOrEmpty(name))
+                {
+                    return name ?? string.Empty;
+                }
+
+                return name.EndsWith("o", System.StringComparison.Ordinal) ? name.Substring(0, name.Length - 1) + "as" : Plural(name);
+            }
+
+            private static string FirstWord(string name)
+            {
+                if (string.IsNullOrEmpty(name))
+                {
+                    return string.Empty;
+                }
+
+                var cut = name.IndexOfAny(Separators);
+                return cut > 0 ? name.Substring(0, cut) : name;
+            }
+
+            private static readonly char[] Separators = { '-', ' ' };
+        }
+
         // ------------------------------------------------------------------ Eventos (M24-T39, A-167)
 
         public static class Events
@@ -1465,6 +1677,10 @@ namespace FishingIdle.Texts
                 case "ClanFull": return "Esse clã está cheio: não há vaga livre.";
                 case "NotClanOwner": return "Só o dono do clã pode comprar vagas.";
                 case "ClanSlotsMaxed": return "O clã já tem o máximo de vagas.";
+                case "MissionNotFound": return "Essa missão não existe.";
+                case "MissionNotReady": return "Essa missão ainda não foi concluída.";
+                case "MissionAlreadyClaimed": return "O prêmio dessa missão já foi resgatado.";
+                case "MissionNothingToClaim": return "Nenhuma missão pronta para resgatar.";
                 case "RodAtMaxLevel": return "Esta vara já está no nível máximo.";
                 case "RodHasNoLevels": return "Esta vara não tem níveis para melhorar.";
                 case "RodEquipped": return "Equipe outra vara antes de vender ou destruir esta.";
@@ -1561,6 +1777,10 @@ namespace FishingIdle.Texts
             public const string ClansCosts = "clans.json: \"costs\" precisa de create_dollars de 0 ou mais, extra_slot_first_dollars de pelo menos 1 e extra_slot_growth entre 1 e 10.";
             public const string ClansName = "clans.json: \"name\" precisa de min_length de pelo menos 1 e max_length entre min_length e 40.";
             public const string ClansXpBonus = "clans.json: \"xp_bonus\" precisa ficar entre 0 e 1 (0,01 = +1%).";
+            public static string MissionUnknownType(string id, string type) => "missions.json: a missão \"" + id + "\" tem um tipo que o jogo não conhece (\"" + (type ?? "") + "\").";
+            public static string MissionReward(string id) => "missions.json: a missão \"" + id + "\" precisa de um prêmio (reward) com Moedas, Conchas ou Dólares, sem valores negativos.";
+            public static string MissionTarget(string id) => "missions.json: a missão \"" + id + "\" precisa de um target de pelo menos 1 (0 só nos tipos que aceitam \"todas\").";
+            public static string MissionParameter(string id, string what) => "missions.json: a missão \"" + id + "\" tem \"" + what + "\" faltando ou inválido.";
             public const string ClansRanking = "clans.json: \"ranking\" precisa de utc_offset_minutes entre −720 e 840 e de 1 a 10 recompensas em rewards_by_rank, sem valores negativos.";
             public static string PassBoatUnknown(int level, string boat) => "pass.json: o marco do Nv." + level + " dá fragmentos do barco \"" + (boat ?? "") + "\", que não existe em equipment.json (ou é o barco inicial).";
             public static string UnknownSizeInRarity(string rarity, string size) => "progression.json: a raridade \"" + rarity + "\" cita o tamanho \"" + (size ?? "") + "\" em size_weight_multipliers, que não existe em size.categories.";

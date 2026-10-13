@@ -92,6 +92,12 @@ namespace FishingIdle.GameService
         /// <summary>Raised after the save is reset, so services can drop anything they cached.</summary>
         internal event Action SaveReset;
 
+        /// <summary>
+        /// Raised by every <see cref="Persist"/> just before the save is written: the Missões (M24-T54) mark the goals the
+        /// change reached, in the same write.
+        /// </summary>
+        internal event Action BeforePersist;
+
         internal void Log(string message) => _log(message);
 
         /// <summary>Writes the current state. Called by services after every mutation.</summary>
@@ -103,6 +109,7 @@ namespace FishingIdle.GameService
                 return;
             }
 
+            BeforePersist?.Invoke();
             Save.UpdatedAtMs = Clock.UtcNowMs;
             _repository.Save(Save);
         }
@@ -275,6 +282,14 @@ namespace FishingIdle.GameService
             if (neutralGenes > 0)
             {
                 _log("Genes: " + neutralGenes + " fish without genes got the neutral value " + Config.Progression.Genes.MigrationNeutralValue + ".");
+            }
+
+            // The Missões (M24-T54, A-177): a save from before version 24 fills the counters its state already shows, after the
+            // genes above (the stars of the fish it has); the missions those prove reached show up ready to claim.
+            if (Save.Missions != null && Save.Missions.SeedPending)
+            {
+                var seeded = Persistence.MissionMigration.SeedFromSave(Config, Save);
+                _log("Missions: counters seeded from the old save (" + seeded + " counters).");
             }
 
             // Levels and charges stay inside what the config allows (an edited save, or a config that

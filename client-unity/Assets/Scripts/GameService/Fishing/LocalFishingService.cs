@@ -243,6 +243,7 @@ namespace FishingIdle.GameService.Fishing
             Save.Coins = SafeAdd(Save.Coins, total);
             Save.Stats.FishSold += entries.Count;
             Save.Stats.CoinsFromSales = SafeAdd(Save.Stats.CoinsFromSales, total);
+            Missions.MissionTracker.OnBoxSold(Save, entries.Count);
             _session.Persist();
             _session.Log("Sold " + entries.Count + " catches for " + total + " coins.");
 
@@ -605,6 +606,8 @@ namespace FishingIdle.GameService.Fishing
             if (rolled.SizeCategory.Id == "exceptional") Save.Stats.ExceptionalCatches++;
             if (rolled.SizeCategory.Id == "perfect") Save.Stats.PerfectCatches++;
             if (!CatchRules.IsCommon(rolled.Species)) Save.Stats.RareCatches++;
+            // The Missões (M24-T54): size, gene stars, perfect genes and a beaten size record of every catch in the Box.
+            Missions.MissionTracker.OnCatch(Config, Save, entry, (flags & BoxCatchFlags.PersonalRecord) != 0);
             Save.Shells = SafeAdd(Save.Shells, rolled.Shells);
             update.ShellsGained = SafeAdd(update.ShellsGained, rolled.Shells);
 

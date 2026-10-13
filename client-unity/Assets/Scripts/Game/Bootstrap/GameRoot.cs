@@ -12,6 +12,7 @@ using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Market;
+using FishingIdle.GameService.Missions;
 using FishingIdle.GameService.Pass;
 using FishingIdle.GameService.WorldBoss;
 using FishingIdle.GameService.Persistence;
@@ -197,6 +198,7 @@ namespace FishingIdle.Game.Bootstrap
                     RefreshTutorial();
                     SyncWorldBoss();
                     SyncClan();
+                    SyncMissions();
 
                     var marketNews = Game.Market.Update();
                     foreach (var news in marketNews)
@@ -1072,6 +1074,58 @@ namespace FishingIdle.Game.Bootstrap
             return ok;
         }
 
+        // ------------------------------------------------------------------ Missões (M24-T54, A-177)
+
+        /// <summary>How many missions are ready to claim (the shortcut's badge), as the service last said.</summary>
+        public int MissionsReady { get; private set; }
+
+        public void ClaimMission(string missionId) => MissionIntent(() => Game.Missions.Claim(missionId));
+
+        public void ClaimAllMissions() => MissionIntent(() => Game.Missions.ClaimAll());
+
+        /// <summary>"Ver perfil" on an Arena opponent: the service counts the visit (Missões) and the window shows the profile.</summary>
+        public void VisitProfile(string participantId)
+        {
+            Guard(() => Game.Arena.VisitProfile(participantId));
+        }
+
+        /// <summary>A notice for each mission that has just become ready (one notice when several at once), and the badge.</summary>
+        private void SyncMissions()
+        {
+            var ready = Game.Missions.TakeNewlyReady();
+            if (ready.Count == 1)
+            {
+                Toasts.Push(GameTexts.Missions.ReadyToast(ready[0].Text), ToastKind.Important, notify: true);
+            }
+            else if (ready.Count > 1)
+            {
+                Toasts.Push(GameTexts.Missions.ReadyManyToast(ready.Count), ToastKind.Important, notify: true);
+            }
+
+            MissionsReady = Game.Missions.ReadyCount;
+        }
+
+        private void MissionIntent(Func<ServiceResult<MissionClaimResult>> call)
+        {
+            Guard(() =>
+            {
+                var result = call();
+                if (!result.Succeeded)
+                {
+                    Toasts.Push(result.ErrorMessage, ToastKind.Warning);
+                    return;
+                }
+
+                var claim = result.Value;
+                var items = new List<string>();
+                if (claim.Coins > 0) items.Add(GameTexts.Missions.ItemCoins(Format.Short(claim.Coins)));
+                if (claim.Shells > 0) items.Add(GameTexts.Missions.ItemShells(Format.Number(claim.Shells)));
+                if (claim.Dollars > 0) items.Add(GameTexts.Missions.ItemDollars(Format.Number(claim.Dollars)));
+                Toasts.Push(GameTexts.Missions.ClaimedItems(claim.Claimed, string.Join(", ", items)), ToastKind.Coins);
+                Refresh();
+            });
+        }
+
         // ------------------------------------------------------------------ Passe do Pescador (M24-T17)
 
         /// <summary>The pass as the service last returned it (refreshed with the player). Presentation only.</summary>
@@ -1486,6 +1540,7 @@ namespace FishingIdle.Game.Bootstrap
             Vip = Game.Vip.GetVip();
             Pass = Game.Pass.GetPass();
             Clan = Game.Clans.GetClan();
+            MissionsReady = Game.Missions.ReadyCount;
         }
 
         /// <summary>

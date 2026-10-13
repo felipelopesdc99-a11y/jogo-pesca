@@ -48,12 +48,13 @@ namespace FishingIdle.GameService.Config
         public const string PassFile = "pass.json";
         public const string WorldBossFile = "world_boss.json";
         public const string ClansFile = "clans.json";
+        public const string MissionsFile = "missions.json";
 
         /// <summary>The files the implemented milestones need, in a stable order.</summary>
         public static readonly IReadOnlyList<string> RequiredFiles = new[]
         {
             FishCatalogFile, MapsFile, ProgressionFile, RodsFile, EconomyFile, ArenaFile, ExpeditionsFile, ArenaBotsFile, MarketBotsFile, EquipmentFile, PassFile, WorldBossFile,
-            ClansFile,
+            ClansFile, MissionsFile,
         };
 
         public static ConfigLoadResult LoadFromDirectory(string directory)
@@ -115,6 +116,7 @@ namespace FishingIdle.GameService.Config
             var pass = Parse<PassConfig>(texts, PassFile, errors);
             var worldBoss = Parse<WorldBossConfig>(texts, WorldBossFile, errors);
             var clans = Parse<ClansConfig>(texts, ClansFile, errors);
+            var missions = Parse<MissionsConfig>(texts, MissionsFile, errors);
 
             if (errors.Count > 0)
             {
@@ -124,12 +126,13 @@ namespace FishingIdle.GameService.Config
             errors.AddRange(GameConfigValidator.Validate(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots, equipment, pass));
             errors.AddRange(GameConfigValidator.ValidateWorldBoss(worldBoss));
             errors.AddRange(GameConfigValidator.ValidateClans(clans, progression?.Fisher?.MaxLevel ?? 0));
+            errors.AddRange(GameConfigValidator.ValidateMissions(missions, fishCatalog, maps, progression, rods, equipment, worldBoss));
             if (errors.Count > 0)
             {
                 return new ConfigLoadResult(null, errors);
             }
 
-            var config = new GameConfig(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots, equipment, pass, worldBoss, clans, Fingerprint(texts));
+            var config = new GameConfig(fishCatalog, maps, progression, rods, economy, arena, expeditions, bots, marketBots, equipment, pass, worldBoss, clans, missions, Fingerprint(texts));
             return new ConfigLoadResult(config, errors);
         }
 

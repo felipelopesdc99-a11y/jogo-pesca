@@ -1399,5 +1399,142 @@ namespace FishingIdle.GameService.Config
 
             return errors;
         }
+
+        /// <summary>
+        /// missions.json (M24-T54, A-177): unique ids, known types, the parameters each type needs pointing at things the
+        /// config has, sane targets and non-negative rewards.
+        /// </summary>
+        public static List<string> ValidateMissions(MissionsConfig missions, FishCatalogConfig fish, MapsConfig maps, ProgressionConfig progression,
+            RodsConfig rods, EquipmentConfig equipment, WorldBossConfig boss)
+        {
+            var errors = new List<string>();
+            const string file = GameConfigLoader.MissionsFile;
+            if (missions == null)
+            {
+                errors.Add(V.ConfigFileMissing(file));
+                return errors;
+            }
+
+            if (missions.Missions == null || missions.Missions.Count == 0)
+            {
+                errors.Add(V.Missing(file, "missions"));
+                return errors;
+            }
+
+            var species = new HashSet<string>((fish?.Species ?? new List<SpeciesConfig>()).Where(x => x != null).Select(x => x.Id), StringComparer.Ordinal);
+            var mapIds = new HashSet<string>((maps?.Maps ?? new List<MapConfig>()).Where(x => x != null).Select(x => x.Id), StringComparer.Ordinal);
+            var rarities = new HashSet<string>((progression?.Rarity?.Tiers ?? new List<RarityTierConfig>()).Where(x => x != null).Select(x => x.Id), StringComparer.Ordinal);
+            var sizes = new HashSet<string>((progression?.Size?.Categories ?? new List<SizeCategoryConfig>()).Where(x => x != null).Select(x => x.Id), StringComparer.Ordinal);
+            var rodIds = new HashSet<string>((rods?.Rods ?? new List<RodConfig>()).Where(x => x != null).Select(x => x.Id), StringComparer.Ordinal);
+            var boatIds = new HashSet<string>((equipment?.Boats ?? new List<BoatConfig>()).Where(x => x != null).Select(x => x.Id), StringComparer.Ordinal);
+            var baitIds = new HashSet<string>((equipment?.Baits ?? new List<BaitConfig>()).Where(x => x != null).Select(x => x.Id), StringComparer.Ordinal);
+            var stars = progression?.Genes?.QualityStars?.Count ?? 5;
+            var bands = boss?.Bands?.Count ?? 0;
+            var fishMax = progression?.FishLevel?.MaxLevel ?? 100;
+            var fisherMax = progression?.Fisher?.MaxLevel ?? 1000;
+
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var m in missions.Missions)
+            {
+                if (m == null || string.IsNullOrWhiteSpace(m.Id) || !ids.Add(m.Id))
+                {
+                    errors.Add(V.DuplicateOrEmptyId(file, "missions", m?.Id));
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(m.Type) || !Missions.MissionTypes.All.Contains(m.Type))
+                {
+                    errors.Add(V.MissionUnknownType(m.Id, m.Type));
+                    continue;
+                }
+
+                var r = m.Reward;
+                if (r == null || r.Coins < 0 || r.Shells < 0 || r.Dollars < 0 || r.Coins + r.Shells + r.Dollars <= 0)
+                {
+                    errors.Add(V.MissionReward(m.Id));
+                }
+
+                var computed = Missions.MissionTypes.ComputedTarget.Contains(m.Type);
+                var zeroAll = Missions.MissionTypes.ZeroMeansAll.Contains(m.Type);
+                if (!computed && (m.Target < 0 || (m.Target == 0 && !zeroAll)))
+                {
+                    errors.Add(V.MissionTarget(m.Id));
+                }
+
+                bool Need(bool ok, string what)
+                {
+                    if (!ok)
+                    {
+                        errors.Add(V.MissionParameter(m.Id, what));
+                    }
+
+                    return ok;
+                }
+
+                switch (m.Type)
+                {
+                    case Missions.MissionTypes.CatchSpecies:
+                        Need(m.SpeciesId != null && species.Contains(m.SpeciesId), "species_id");
+                        break;
+                    case Missions.MissionTypes.CatchRarity:
+                    case Missions.MissionTypes.RarityAllSpecies:
+                    case Missions.MissionTypes.CardumeAllRarityMin:
+                        Need(m.Rarity != null && rarities.Contains(m.Rarity), "rarity");
+                        break;
+                    case Missions.MissionTypes.MarketSell:
+                        Need(m.Rarity == null || rarities.Contains(m.Rarity), "rarity");
+                        break;
+                    case Missions.MissionTypes.CatchSizeCategory:
+                        Need(m.SizeCategory != null && sizes.Contains(m.SizeCategory), "size_category");
+                        break;
+                    case Missions.MissionTypes.CatchGeneStars:
+                    case Missions.MissionTypes.CardumeGeneStars:
+                        Need(m.Stars >= 1 && m.Stars <= stars, "stars");
+                        break;
+                    case Missions.MissionTypes.CardumeAllLevel:
+                        Need(m.Level >= 1 && m.Level <= fishMax, "level");
+                        break;
+                    case Missions.MissionTypes.FishLevel:
+                        Need(m.Target <= fishMax, "target");
+                        break;
+                    case Missions.MissionTypes.FisherLevel:
+                        Need(m.Target <= fisherMax, "target");
+                        break;
+                    case Missions.MissionTypes.MapUnlocked:
+                    case Missions.MissionTypes.MapAllSpecies:
+                        Need(m.MapId != null && mapIds.Contains(m.MapId), "map_id");
+                        break;
+                    case Missions.MissionTypes.RodAssembled:
+                        Need(m.RodId != null && rodIds.Contains(m.RodId), "rod_id");
+                        break;
+                    case Missions.MissionTypes.BoatAssembled:
+                        Need(m.BoatId != null && boatIds.Contains(m.BoatId), "boat_id");
+                        break;
+                    case Missions.MissionTypes.BaitUsed:
+                        Need(m.BaitId != null && baitIds.Contains(m.BaitId), "bait_id");
+                        break;
+                    case Missions.MissionTypes.BossBand:
+                        Need(m.Target <= bands, "target");
+                        break;
+                    case Missions.MissionTypes.MarketBuy:
+                        Need(m.GoodsKind == null || m.GoodsKind == "fish", "goods_kind");
+                        break;
+                    case Missions.MissionTypes.ClothingAssembled:
+                    case Missions.MissionTypes.ClothingMaxLevel:
+                        Need(m.Target <= (equipment?.Clothing?.Pieces?.Count ?? 0), "target");
+                        break;
+                    case Missions.MissionTypes.EncyclopediaSpecies:
+                        Need(m.Target <= species.Count, "target");
+                        break;
+                }
+
+                if (m.ReferenceLevel < 0 || m.ReferenceLevel > fisherMax)
+                {
+                    errors.Add(V.MissionParameter(m.Id, "reference_level"));
+                }
+            }
+
+            return errors;
+        }
     }
 }

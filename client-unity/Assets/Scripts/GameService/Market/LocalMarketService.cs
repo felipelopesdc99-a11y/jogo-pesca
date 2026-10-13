@@ -232,6 +232,7 @@ namespace FishingIdle.GameService.Market
             }
 
             var entry = AddWithdrawal(listing.Goods, WithdrawalItem.ReasonBought, Now);
+            Missions.MissionTracker.OnMarketBuy(Save, listing.Goods);
             _session.Persist();
             _session.Log("Bought listing " + listing.Id + " for " + listing.PriceCoins + " coins.");
             return ServiceResult<MarketPurchase>.Ok(new MarketPurchase { Item = ToView(entry), PricePaid = listing.PriceCoins, NewBalance = Save.Coins });
@@ -548,6 +549,7 @@ namespace FishingIdle.GameService.Market
             State.MyListings.Remove(listing);
             var fee = MarketRules.SaleFee(Config, listing.PriceCoins);
             Save.Coins += listing.PriceCoins - fee;
+            Missions.MissionTracker.OnMarketSold(Config, Save, listing.Goods);
             AddEvent(new MarketEvent
             {
                 AtMs = at,
@@ -609,6 +611,7 @@ namespace FishingIdle.GameService.Market
                 Goods = goods,
             };
             State.MyListings.Add(listing);
+            Missions.MissionTracker.OnMarketListing(Save);
             return listing;
         }
 

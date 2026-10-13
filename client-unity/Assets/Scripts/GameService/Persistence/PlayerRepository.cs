@@ -474,6 +474,15 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 23;
             }
 
+            if (save.SaveVersion == 23)
+            {
+                // v24: the Missões (M24-T54, A-177). The counters start at zero; GameSession fills the ones the save already
+                // shows (Persistence.MissionMigration, it needs the config) and the missions the state proves are reached show
+                // up ready to claim.
+                save.Missions = new MissionState { SeedPending = true };
+                save.SaveVersion = 24;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BoatLevels = save.BoatLevels ?? new Dictionary<string, int>();
             save.BoatFragments = save.BoatFragments ?? new Dictionary<string, long>();
@@ -484,6 +493,12 @@ namespace FishingIdle.GameService.Persistence
             save.WorldBoss = save.WorldBoss ?? new WorldBossState();
             save.Clans = save.Clans ?? new ClanState();
             save.Clans.KnownClans = save.Clans.KnownClans ?? new List<ClanRecord>();
+            save.Missions = save.Missions ?? new MissionState();
+            save.Missions.Counters = save.Missions.Counters ?? new Dictionary<string, long>();
+            save.Missions.ArenaOpponents = save.Missions.ArenaOpponents ?? new List<string>();
+            save.Missions.RecordSpecies = save.Missions.RecordSpecies ?? new List<string>();
+            save.Missions.Completed = save.Missions.Completed ?? new List<string>();
+            save.Missions.Claimed = save.Missions.Claimed ?? new List<string>();
             save.Clans.KnownClans.RemoveAll(c => c == null);
             foreach (var clan in save.Clans.KnownClans)
             {
@@ -651,6 +666,9 @@ namespace FishingIdle.GameService.Persistence
                     problems.Add("clan ranking malformed");
                 }
             }
+
+            if (save.Missions == null || save.Missions.Counters == null || save.Missions.Completed == null || save.Missions.Claimed == null) problems.Add("missions missing");
+            else if (save.Missions.Counters.Any(c => string.IsNullOrWhiteSpace(c.Key) || c.Value < 0)) problems.Add("mission counters malformed");
 
             return problems;
         }

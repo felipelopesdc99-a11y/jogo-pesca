@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 23;
+        public const int CurrentVersion = 24;
 
         /// <remarks>
         /// A file without save_version is read as version 1, so it runs every migration instead of skipping them all
@@ -204,6 +204,9 @@ namespace FishingIdle.GameService.Persistence
         /// <summary>The Clãs (M24-T49, A-174): the player's clan and the local clan list. Added in save version 22.</summary>
         public ClanState Clans { get; set; } = new ClanState();
 
+        /// <summary>The Missões (M24-T54, A-177): event counters, the missions completed and the ones claimed. Added in save version 24.</summary>
+        public MissionState Missions { get; set; } = new MissionState();
+
         /// <summary>The equipped rod item, or null if the reference is broken.</summary>
         public InventoryItem EquippedRodItem()
         {
@@ -274,6 +277,35 @@ namespace FishingIdle.GameService.Persistence
         /// version 16 migration; 0 for a new player.
         /// </summary>
         public int LegacyDollarsUpToLevel { get; set; }
+    }
+
+    /// <summary>
+    /// The Missões (M24-T54, A-177). Only what the player did: the goals and rewards come from missions.json, so a balance
+    /// change applies to missions not claimed yet. A completed mission stays completed (sticky) even if the state it read
+    /// goes back down (Moedas spent, a fish sold); it is paid once, when claimed.
+    /// </summary>
+    public sealed class MissionState
+    {
+        /// <summary>Event counters by key (Missions.MissionCounterKeys): catches by size and stars, sales, duels, bids…</summary>
+        public Dictionary<string, long> Counters { get; set; } = new Dictionary<string, long>();
+
+        /// <summary>Arena participants the player has attacked (for "Ataque N jogadores diferentes"), capped.</summary>
+        public List<string> ArenaOpponents { get; set; } = new List<string>();
+
+        /// <summary>Species whose size record the player has beaten (a catch bigger than the previous record).</summary>
+        public List<string> RecordSpecies { get; set; } = new List<string>();
+
+        /// <summary>Missions whose goal was reached (ready to claim or already claimed), by id. Never removed.</summary>
+        public List<string> Completed { get; set; } = new List<string>();
+
+        /// <summary>Missions whose reward was paid, by id. Never paid twice.</summary>
+        public List<string> Claimed { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Set by the version 24 migration: GameSession fills the counters it can from what the old save already shows
+        /// (Persistence.MissionMigration, it needs the config), then clears it. False for a new player.
+        /// </summary>
+        public bool SeedPending { get; set; }
     }
 
     /// <summary>

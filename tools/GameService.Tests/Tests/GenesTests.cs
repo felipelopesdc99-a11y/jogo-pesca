@@ -401,7 +401,7 @@ public sealed class GenesTests
         Assert.Equal(SaveLoadStatus.Loaded, opened.Session.LoadStatus);
         var save = opened.Session.Save;
         Assert.Equal(PlayerSave.CurrentVersion, save.SaveVersion);
-        Assert.Equal(23, PlayerSave.CurrentVersion);
+        Assert.True(PlayerSave.CurrentVersion >= 23);
         var neutral = new[] { 16, 16, 16, 16 };
         Assert.All(save.FishingBox, c => Assert.Equal(neutral, c.Genes));
         Assert.All(save.Aquarium, f => Assert.Equal(neutral, f.Genes));

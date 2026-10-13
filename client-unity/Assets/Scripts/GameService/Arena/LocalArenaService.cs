@@ -120,6 +120,12 @@ namespace FishingIdle.GameService.Arena
 
         /// <summary>Buys an Arena Shop item with Honor (OD-009): Conchas or Dólares, some with a weekly limit.</summary>
         ServiceResult<ArenaShopItemView> BuyShopItem(string itemId);
+
+        /// <summary>
+        /// The player opened another participant's profile ("Ver perfil", M18-T02). Counts for the Missões (M24-T54);
+        /// refuses the player's own id and anyone not in the ranking.
+        /// </summary>
+        ServiceResult<bool> VisitProfile(string participantId);
     }
 
     public sealed class LocalArenaService : IArenaService
@@ -286,6 +292,7 @@ namespace FishingIdle.GameService.Arena
                 HonorChange = honor,
             };
             AddHistory(record);
+            Missions.MissionTracker.OnArenaAttack(Save, opponentId, won, record.RankBefore, record.RankAfter);
 
             // A new set only after an attack (GDD section 28).
             State.Opponents.Clear();
@@ -537,6 +544,19 @@ namespace FishingIdle.GameService.Arena
             }
 
             return view;
+        }
+
+        public ServiceResult<bool> VisitProfile(string participantId)
+        {
+            EnsureInitialized();
+            if (string.IsNullOrEmpty(participantId) || participantId == ArenaBots.PlayerId || !State.Ranking.Contains(participantId))
+            {
+                return ServiceResult<bool>.Fail(ServiceError.OpponentNotFound);
+            }
+
+            Missions.MissionTracker.OnProfileVisit(Save);
+            _session.Persist();
+            return ServiceResult<bool>.Ok(true);
         }
 
         public ServiceResult<ArenaShopItemView> BuyShopItem(string itemId)

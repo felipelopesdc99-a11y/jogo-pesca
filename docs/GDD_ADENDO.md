@@ -3370,3 +3370,67 @@ dois peixes da mesma espécie só diferiam pelo tamanho e pelo nível. Agora cad
   estrelas que celebram), `feeding.valuable_feed_rules.gene_stars_at_or_above` e `economy.json →
   fishing_box.bulk_sale_protection.gene_stars_at_or_above` (5).
 - **Próximo passo proposto:** o Temperamento (OD-072), à espera da decisão do proprietário.
+
+### A-177 · Missões: 100 missões do começo ao fim do jogo
+
+**Seção do GDD:** nenhuma específica (o GDD não tem missões; pedido direto do proprietário em 13/10/2026) · **Situação:** No jogo (verificado no CI, não aberto no Unity); prêmios a confirmar (OD-073)
+
+Pedido do proprietário (M24-T54): "Vamos agora adicionar missões ao jogo, 100 missões envolvendo tudo que tem no jogo …
+início, meio e fim de jogo … sem especificar de qual parte do jogo ela é", mais "10 missões sociais". A lista aprovada é
+`docs/propostas/missoes_100.txt` (100 itens, na ordem natural do jogo). Prêmios: "Moedas e Conchas (Dólares para missões
+difíceis), crescendo ao longo do jogo."
+
+- **Onde fica:** um atalho redondo novo, **"Missões"**, na coluna da direita, logo abaixo do Passe (Mapa, Aquário, Passe,
+  Missões, Eventos, Ranking), com a bolinha vermelha do número de missões prontas para resgatar (como o Passe). Ícone
+  provisório (✓) até chegar o `ico_atalho_missoes` (ASSET_PENDENTE, pedido em `docs/ASSETS_PENDENTES.md`).
+- **Janela "Missões"** no padrão Diário de bordo, com o "i" explicando e o contador "X / 100 concluídas". Três marcadores
+  laterais: **Em andamento**, **Prontas** e **Concluídas** (cada um com quantas tem); abre em "Prontas" quando há alguma.
+  Em cima, **"Resgatar todas (N)"**. A lista rola; cada cartão mostra o número ("Nº 12"), o que fazer ("Pesque 100
+  peixes"), uma barra com **"X / Y"**, o prêmio com os ícones de Moeda, Concha e Dólar e, à direita, **Resgatar** (pronta,
+  com borda dourada) ou o selo **Concluída** (já resgatada).
+- **Todas as 100 aparecem desde o começo**, sem fases nem desbloqueio: o jogador vê o caminho inteiro. Elas não dizem
+  de que parte do jogo são.
+- **Concluída fica concluída.** Ao alcançar o alvo a missão fica pronta e continua pronta mesmo que o estado volte (gastar
+  as Moedas de "Junte 1 milhão", vender o peixe do Nv.100, tirar um peixe do Cardume). O prêmio é pago **uma vez**, ao
+  apertar Resgatar. Ao ficar pronta, um aviso: "Missão concluída: … Resgate em Missões!" (várias de uma vez: "N missões
+  concluídas").
+- **O que conta** (decidido na implementação, dentro do que a lista diz):
+  - "Pesque N peixes", espécies, raridades, tamanhos e genes contam **toda captura posta na Caixa de Pesca**: online,
+    offline e o peixe achado na Expedição (o mesmo que a estatística "peixes pescados"). Raridade e tamanho contam a
+    exata ("peixe Raro" é Raro; "tamanho Grande" é Grande). "Um peixe 4 estrelas" aceita 4 ou 5 estrelas.
+  - "Venda N peixes da Caixa de Pesca" conta a venda da Caixa ao jogo; "Guarde 1 peixe no Aquário" conta todo peixe que
+    já entrou no Aquário.
+  - "Libere o mapa" é chegar ao nível que libera o mapa (o jogo libera por nível). "Monte a vara/o barco" vale também
+    para uma vara comprada no Mercado.
+  - "Vença um jogador mais forte que você na Arena" = vencer quem está **acima** de você no Ranking da Arena (a força dos
+    adversários não aparece no jogo; a posição é o que mostra quem é mais forte). "Top 100/top 10 do Ranking da Arena" =
+    a melhor posição que você já teve.
+  - "Coloque o primeiro anúncio no Mercado" conta anúncio de preço fixo e leilão. "Venda N peixes no Mercado" conta só
+    peixes (anúncio ou leilão vendido). "Ganhe um Leilão contra outros jogadores" = um leilão que você ganhou e em que
+    mais alguém deu lance.
+  - "Gaste 100 Dólares": VIP, Premium do Passe, criar clã e vagas do clã. Pôr Dólares à venda não é gastar.
+  - "Bata o recorde de tamanho de 20 espécies diferentes" = 20 espécies em que você pescou um peixe maior que o seu
+    recorde anterior.
+  - "Chegue à faixa 3 / máxima de dano do Boss Mundial" = a melhor faixa de um dia; "faixa máxima" é a última do config.
+- **Missões sociais no jogo local** (decisão registrada aqui): enquanto o jogo é local, os adversários da Arena, os
+  vendedores e compradores do Mercado e os licitantes do Leilão são **jogadores simulados**, e contam como "outro
+  jogador": visitar o perfil de um adversário da Arena ("Ver perfil"), comprar um peixe anunciado por outro jogador,
+  vender um peixe para outro jogador e ganhar um leilão contra outros jogadores funcionam já. Criar ou entrar num clã e
+  pôr um peixe no Cardume do Clã também (o clã local existe). Só duas dependem de outras pessoas de verdade, que o jogo
+  local não tem: **"Ataque o Boss Mundial no mesmo dia que outro membro do seu Clã"** e **"Fique no top 3 de Clãs no
+  ranking diário"** (no jogo local o seu clã é o único e seria sempre o 1º). Elas ficam marcadas **"Liga quando o jogo
+  estiver online"**, aparecem na lista e nunca concluem no jogo local.
+- **Prêmios (provisórios, OD-073):** Moedas e Conchas em todas, crescendo ao longo da lista (nenhuma paga menos que a de
+  cima); **Dólares em 18 missões difíceis** (primeiro Épico, Excepcional, 5 estrelas, gene perfeito, primeiro Lendário,
+  Perfeição, faixa máxima do Boss, top 10 da Arena, os 5 barcos, todas as roupas no máximo, Nv.500, todas as espécies,
+  todas as Lendárias, o Mítico, Cardume completo no Nv.100, 1 milhão de peixes, Exemplar perfeito e Nv.1000), **170
+  Dólares no total** (o Passe grátis dá 100 até o Nv.100). As Moedas de cada missão são de ~10 minutos (a 1ª) a ~60
+  minutos (a 100ª) da renda da pesca do jogador de referência ao chegar àquela missão; as Conchas, o triplo desses
+  minutos em Conchas (o mesmo jeito do Passe). Exemplos: "Pesque 10 peixes" 1.700 Moedas e 9 Conchas; "Chegue ao Nv.100"
+  230.000 Moedas e 72 Conchas; "Chegue ao Nv.1000" 19 milhões de Moedas, 1.000 Conchas e 20 Dólares.
+- **Quem já jogava** (save de antes): as missões que o save já prova aparecem **prontas para resgatar** ao abrir — nível,
+  Moedas, Conchas, Enciclopédia, mapas, equipamentos montados, Aquário, Cardume, Passe, clã — e também o que dá para
+  contar do que o save guarda (peixes vendidos, Expedições, os últimos 30 duelos, o último dia do Boss, os peixes
+  Excepcionais e Perfeição, os genes dos peixes que você tem). O resto começa do zero.
+- **Números em `/config`:** `missions.json` (tipo, alvo, parâmetros, `online_only` e prêmio de cada missão), gerado por
+  `tools/Progressao/missoes.py gerar`.

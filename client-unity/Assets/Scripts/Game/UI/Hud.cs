@@ -18,7 +18,7 @@ namespace FishingIdle.Game.UI
     /// Layout follows GDD section 8 with the top menu chosen by the owner on 12/10/2026 (M24-T43, A-169): a thin
     /// strip with the player card on the left (Moedas, Conchas, Dólares; a click opens the Perfil), four big coloured
     /// tabs in the centre (Pesca, Aventura, Comércio, Perfil; the Tripulação left the game in M24-T46, A-172) and the bell
-    /// and options on the right; a small plaque with the Moedas hanging under it; the round shortcuts (Mapa, Aquário, Passe, Eventos, Ranking) in a column
+    /// and options on the right; a small plaque with the Moedas hanging under it; the round shortcuts (Mapa, Aquário, Passe, Missões, Eventos, Ranking) in a column
     /// on the right, the toasts left of them; the tutorial hint on the left. Everything is laid out on a 1080-pixel-tall
     /// virtual canvas and scaled.
     /// </remarks>
@@ -88,6 +88,7 @@ namespace FishingIdle.Game.UI
         private MarketWindow _market;
         private RankingWindow _ranking;
         private PassWindow _pass;
+        private MissionsWindow _missions;
         private WorldBossWindow _boss;
         private EventsWindow _events;
         private ClanWindow _clan;
@@ -160,6 +161,7 @@ namespace FishingIdle.Game.UI
             _market = new MarketWindow(_root);
             _ranking = new RankingWindow(_root);
             _pass = new PassWindow(_root);
+            _missions = new MissionsWindow(_root);
             _boss = new WorldBossWindow(_root);
             _events = new EventsWindow(_root);
             _clan = new ClanWindow(_root);
@@ -508,6 +510,11 @@ namespace FishingIdle.Game.UI
                     _pass.Close();
                     Event.current.Use();
                 }
+                else if (_missions.IsOpen)
+                {
+                    _missions.Close();
+                    Event.current.Use();
+                }
                 else if (_arena.IsOpen)
                 {
                     _arena.Close();
@@ -563,7 +570,7 @@ namespace FishingIdle.Game.UI
 
             // While a window is open, it owns the input; the HUD underneath is shown but inert.
             var welcomeDialog = _root.Tutorial != null && _root.Tutorial.Active && _root.Tutorial.Step == TutorialSteps.Welcome;
-            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _pass.IsOpen || _boss.IsOpen || _events.IsOpen || _clan.IsOpen || WelcomeBackPending || welcomeDialog;
+            var windowOpen = _box.IsOpen || _aquarium.IsOpen || _profile.IsOpen || _map.IsOpen || _shop.IsOpen || _expedition.IsOpen || _arena.IsOpen || _market.IsOpen || _ranking.IsOpen || _pass.IsOpen || _missions.IsOpen || _boss.IsOpen || _events.IsOpen || _clan.IsOpen || WelcomeBackPending || welcomeDialog;
             _root.WindowOpen = windowOpen;
             GUI.enabled = !windowOpen;
             if (!windowOpen)
@@ -617,6 +624,7 @@ namespace FishingIdle.Game.UI
             _market.Draw(skin, _width, _height);
             _ranking.Draw(skin, _width, _height);
             _pass.Draw(skin, _width, _height);
+            _missions.Draw(skin, _width, _height);
             _boss.Draw(skin, _width, _height);
             _events.Draw(skin, _width, _height);
             // The "Como funciona" balloon of a window header, over the window body (A-148).
@@ -729,7 +737,7 @@ namespace FishingIdle.Game.UI
             if (_expedition.IsOpen || _arena.IsOpen || _events.IsOpen || _boss.IsOpen) return GroupAdventure;
             if (_market.IsOpen || _shop.IsOpen) return GroupTrade;
             if (_profile.IsOpen || _clan.IsOpen) return GroupProfile;
-            if (_box.IsOpen || _aquarium.IsOpen || _map.IsOpen || _pass.IsOpen || _ranking.IsOpen) return NoGroup;
+            if (_box.IsOpen || _aquarium.IsOpen || _map.IsOpen || _pass.IsOpen || _missions.IsOpen || _ranking.IsOpen) return NoGroup;
             return GroupFishing;
         }
 
@@ -968,7 +976,7 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// The round shortcuts in a column on the right: Mapa, Aquário, Passe do Pescador, Eventos (the Boss Mundial, gold and
+        /// The round shortcuts in a column on the right: Mapa, Aquário, Passe do Pescador, Missões, Eventos (the Boss Mundial, gold and
         /// breathing with the time left, while it happens) and Ranking. With a window open they stay beside it, clickable:
         /// a click closes the window and opens the shortcut's one (inert only under a window's own dialog).
         /// </summary>
@@ -1016,6 +1024,19 @@ namespace FishingIdle.Game.UI
             if (ready > 0)
             {
                 TopMenuArt.Badge(skin, pass, ready, UiSkin.Danger);
+            }
+
+            // Missões (M24-T54, A-177): with the count of missions ready to claim, like the Passe.
+            var missions = Next();
+            if (TopMenuArt.RoundButton(skin, missions, MissionsWindow.NavIcon, GameTexts.Navigation.Missions, TopMenuArt.Round.Blue, _missions.IsOpen))
+            {
+                CloseAllWindows();
+                _missions.Open();
+            }
+
+            if (_root.MissionsReady > 0)
+            {
+                TopMenuArt.Badge(skin, missions, _root.MissionsReady, UiSkin.Danger);
             }
 
             var events = Next();
@@ -1233,6 +1254,7 @@ namespace FishingIdle.Game.UI
             CloseFully(() => _market.IsOpen, _market.Close);
             CloseFully(() => _ranking.IsOpen, _ranking.Close);
             CloseFully(() => _pass.IsOpen, _pass.Close);
+            CloseFully(() => _missions.IsOpen, _missions.Close);
             CloseFully(() => _boss.IsOpen, _boss.Close);
             CloseFully(() => _events.IsOpen, _events.Close);
             CloseFully(() => _clan.IsOpen, _clan.Close);

@@ -625,6 +625,8 @@ namespace FishingIdle.Game.UI
                 if (GUI.Button(new Rect(right - bw, panel.y + 6, bw, size), FishCard.Fit(GameTexts.Arena.ViewProfile, skin.Chip, bw - 16), skin.Chip))
                 {
                     _viewing = opponent;
+                    // The service counts the visit (Missões, M24-T54); the profile shows the same either way.
+                    _root.VisitProfile(opponent.ParticipantId);
                 }
 
                 right -= bw + 10;

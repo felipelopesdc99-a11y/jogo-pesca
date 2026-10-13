@@ -239,6 +239,7 @@ namespace FishingIdle.GameService.Pass
 
             var price = Config.Pass.PremiumPriceDollars;
             Save.Dollars -= price;
+            Missions.MissionTracker.OnDollarsSpent(Save, price);
             State.Premium = true;
             State.PremiumBoughtAtMs = _session.Clock.UtcNowMs;
             _session.Persist();

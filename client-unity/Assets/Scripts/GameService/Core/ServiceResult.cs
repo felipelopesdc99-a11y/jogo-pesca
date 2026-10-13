@@ -92,6 +92,12 @@ namespace FishingIdle.GameService.Core
         ClanFull,
         NotClanOwner,
         ClanSlotsMaxed,
+
+        // Missões (M24-T54, A-177)
+        MissionNotFound,
+        MissionNotReady,
+        MissionAlreadyClaimed,
+        MissionNothingToClaim,
     }
 
     /// <summary>

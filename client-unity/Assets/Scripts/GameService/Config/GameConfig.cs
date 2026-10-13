@@ -43,8 +43,10 @@ namespace FishingIdle.GameService.Config
             PassConfig pass,
             WorldBossConfig worldBoss,
             ClansConfig clans,
+            MissionsConfig missions,
             string version)
         {
+            Missions = missions;
             Pass = pass;
             WorldBoss = worldBoss;
             Clans = clans;
@@ -112,6 +114,9 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>The Clãs (clans.json, M24-T49, A-174).</summary>
         public ClansConfig Clans { get; }
+
+        /// <summary>The Missões (M24-T54, A-177), in the order they are listed.</summary>
+        public MissionsConfig Missions { get; }
 
         /// <summary>The pass milestone reached at exactly <paramref name="level"/>, or null.</summary>
         public PassMilestoneConfig PassMilestoneAt(int level) => _passMilestones.TryGetValue(level, out var m) ? m : null;

@@ -10,6 +10,7 @@ using FishingIdle.GameService.Expeditions;
 using FishingIdle.GameService.Fishing;
 using FishingIdle.GameService.Maps;
 using FishingIdle.GameService.Market;
+using FishingIdle.GameService.Missions;
 using FishingIdle.GameService.Pass;
 using FishingIdle.GameService.Persistence;
 using FishingIdle.GameService.Profile;
@@ -57,6 +58,8 @@ namespace FishingIdle.GameService
             WorldBoss = new LocalWorldBossService(session, Cardume, fishing);
             Clans = new LocalClanService(session, aquarium, fishing);
             DevTools = new LocalDevToolsService(session, fishing);
+            // Last: its first look at the missions reads what every service above has repaired on load.
+            Missions = new LocalMissionService(session);
         }
 
         public GameSession Session { get; }
@@ -88,6 +91,9 @@ namespace FishingIdle.GameService
 
         /// <summary>The Clãs (M24-T49): create or join (Nv.100+), places, the clan's Cardume and the daily ranking at 00:00.</summary>
         public IClanService Clans { get; }
+
+        /// <summary>The Missões (M24-T54, A-177): 100 goals with Moedas, Conchas and Dólares, claimed once.</summary>
+        public IMissionService Missions { get; }
 
         /// <summary>The owner's test tools (A-123); they refuse everything unless Session.DevToolsEnabled is on.</summary>
         public IDevToolsService DevTools { get; }

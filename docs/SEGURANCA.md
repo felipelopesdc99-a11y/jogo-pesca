@@ -88,6 +88,17 @@ o que segue é o que o servidor precisa garantir quando os clãs forem online.
 - **Sem dinheiro de graça.** O preço de venda ao jogo não depende dos genes, então um peixe de genes altos não vira
   Moedas a mais; o valor dele está na força e no Mercado entre jogadores.
 
+### Missões (M24-T54, A-177, TD-057)
+
+- **Progresso e prêmio só no serviço** (no futuro, só no servidor). A tela não diz que uma missão foi concluída nem
+  quanto ela paga: ela pede `GetMissions` e manda a intenção "resgatar" com o id. O serviço confere se a missão está em
+  `Completed`, se não está em `Claimed`, marca como resgatada antes de pagar e soma com `SafeMath` (Moedas, Conchas e
+  Dólares nunca dão a volta). Repetir o pedido devolve "já resgatado" e não paga de novo.
+- **Contadores só por eventos do serviço.** Nenhuma intenção do cliente soma contador: eles sobem dentro dos serviços
+  que fazem a ação (pesca, venda, duelo, lance…). Um save editado com contador negativo é recusado pelo validador do save.
+- **Online-only não se completa no cliente.** As missões que dependem de outros jogadores de verdade (Boss no mesmo dia
+  que outro membro do Clã, top 3 de Clãs) nunca concluem no jogo local; com servidor, é ele que sabe e conclui.
+
 ### Pesca offline do VIP (A-160, TD-045)
 
 - **O ciclo de 15 s vale só enquanto o VIP vale.** O serviço calcula a pesca offline tentativa por tentativa com o
@@ -213,4 +224,5 @@ como uma tarefa `BLOCKED` em `docs/roadmap.json`, com o subsistema afetado, para
 lista de atenção da Visão geral em vez de ficar perdido numa conversa.
 
 
+- **Missões (13/10/2026):** os contadores, as missões concluídas e as resgatadas ficam no save e, com servidor, no registro do jogador no servidor; apagar o save local não pode dar os prêmios de novo a uma conta online.
 - **Clãs, primeiro clã grátis (13/10/2026):** o contador de clãs criados (`ClansCreated`) é por jogador e só sobe. No servidor ele fica no registro do jogador, nunca no cliente; senão bastaria apagar o save para criar clãs de graça.

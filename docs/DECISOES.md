@@ -1307,3 +1307,40 @@ sempre abre, sem perda" (TD-050).
 
 **Rever se.** O proprietário aprovar o Temperamento (OD-072) — ele entraria como mais um dado do peixe, com a mesma
 migração neutra — ou se o jogo ganhar servidor (aí só o servidor sorteia os genes).
+
+## TD-057 · Missões: progresso lido do save, contadores por eventos e conclusão na gravação (13/10/2026)
+
+**Origem.** M24-T54 (A-177): o proprietário pediu 100 missões (90 de progressão e 10 sociais) com prêmios crescentes.
+
+**Decisão.**
+- **Um tipo de objetivo por chave técnica** (`Missions/MissionTypes`, 53 tipos) e os parâmetros em `config/missions.json`;
+  o texto é montado por `GameTexts.Missions.Objective` a partir do tipo, do alvo e do nome que está no config. Assim o
+  proprietário muda alvo, espécie ou prêmio no config sem mexer em código, e os nomes continuam vindo de `/config`.
+- **Ler o estado quando o save já mostra; contar só o que ele não guarda.** `MissionRules` lê nível, Moedas, Enciclopédia
+  (`SpeciesRecords.TimesCaught` também dá as capturas por espécie e por raridade), mapas, varas, barcos, roupas, Aquário,
+  Cardume (com a Força pela mesma regra da tela do Cardume), Passe, clã e posição na Arena. Os eventos que o save não
+  guarda (tamanho e estrelas de cada captura, isca usada, Dólares gastos, duelos, sequência, adversários, anúncios,
+  compras, vendas, lances, leilões ganhos, ataques ao Boss, dias e melhor faixa, recordes batidos, visitas de perfil)
+  viram contadores em `PlayerSave.Missions.Counters` (um dicionário de chave técnica → número, `SafeMath`), somados por
+  `MissionTracker`, chamado só pelos serviços que fazem a ação. Um dicionário evita um campo novo no save para cada tipo.
+- **Conclusão na gravação.** `GameSession.Persist` dispara `BeforePersist`; o serviço de missões olha só as missões ainda
+  não concluídas e marca as que chegaram ao alvo antes de gravar. Toda mudança das regras grava o save, então nenhum alvo
+  alcançado por um instante (as Moedas antes de uma compra) se perde, a conclusão vai na mesma escrita, e a tela não
+  precisa perguntar a cada quadro. Concluída é para sempre (`Completed`); pago uma vez (`Claimed`, marcado antes de pagar).
+- **Online-only por flag.** `online_only` no config; `LocalMissionService.Online` é falso, então essas missões mostram o
+  progresso 0 e nunca concluem no jogo local. No local, jogadores simulados (Arena, Mercado, Leilão) contam como "outro
+  jogador"; o Clã não tem outros membros locais, por isso as duas missões de Clã com outras pessoas são online-only.
+- **Save v24 sem perda.** A migração v23 → v24 só cria o estado com `SeedPending`; ao abrir, `MissionMigration.SeedFromSave`
+  (precisa do config, para as estrelas dos genes e a raridade das espécies) enche cada contador com o que o save antigo
+  prova — nunca mais — e roda uma vez. Na primeira olhada, as missões que o estado cumpre ficam prontas sem aviso (só o
+  número no atalho), para não encher a tela de avisos.
+- **Prêmios por script.** `tools/Progressao/missoes.py gerar` usa o jogador de referência (4 vezes por dia, com o Passe
+  grátis) e o nível em que cada missão deve ser feita para dar N minutos da renda da pesca (10 → 60) e o triplo em
+  Conchas, com 2 algarismos significativos e nunca menos que a missão de cima; os Dólares ficam numa tabela do script.
+
+**Por quê.** Ler o estado dá conclusão retroativa de graça e não duplica o que o save já sabe; contadores só para eventos
+mantêm o save pequeno; concluir na gravação é simples, barato (a gravação já serializa o save inteiro) e não depende da
+tela; a flag `online_only` deixa as missões sociais prontas para o servidor sem inventar nada no local.
+
+**Rever se.** O jogo ganhar servidor (aí o servidor soma os contadores, conclui e paga; as missões online-only passam a
+contar) ou o proprietário mudar os prêmios (OD-073) ou a lista.

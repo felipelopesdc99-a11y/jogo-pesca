@@ -113,8 +113,9 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 | `IPassService` | `LocalPassService` | Passe do Pescador (M24-T17, A-158, TD-042): marcos de `pass.json`, resgatar um ou todos, comprar o Premium com Dólares (libera os marcos já passados); `IsMilestone` para o aviso de nível |
 | `IWorldBossService` | `LocalWorldBossService` | Boss Mundial (M24-T29, A-165, TD-049): `Update` (chamado pelo jogo aberto a cada sincronização) abre o dia, credita os ataques devidos do Cardume, sobe de faixa e paga uma vez quando a janela fecha; `GetWorldBoss` monta a tela. Regras puras em `WorldBossRules` (dia e janela no fuso do config, dano com `BattleEngine.HitDamage`, faixas, renda de referência, barco do mapa mais alto, Dólares por posição) |
 | `IClanService` | `LocalClanService` | Clãs (M24-T49, A-174, TD-055): `Create` (Nv.100+, paga Dólares, nome validado e sem repetir), `Join` (por id, o "convite"; pronto para o servidor), `Leave` (clã vazio fecha; dono que sai passa o clã ao membro mais antigo), `BuySlot` (só o dono, preço crescente, até `max_members`), `SetFish`/`ClearFish` (1 peixe do Aquário no Cardume do Clã, sem tirá-lo do Aquário nem do Cardume), `GetFishCandidates`, `Update` (fecha o dia do ranking às 00:00 de Brasília e, só com `online_rewards_enabled`, paga o top 3 uma vez). Regras puras em `ClanRules` (vagas e preço, nome, `TakeBonusXp` com a fração guardada em `ClanState.XpCarry`, Força do peixe pela regra do Cardume, Força do clã com `SafeMath`, dia no fuso do config, ordem do ranking). O +1% de XP entra em `LocalFishingService.ApplyCatch` (`FishingUpdate.ClanXpGained`); peixe vendido, comido ou anunciado sai do Cardume do Clã (`ClanRules.DropMissingFish`, chamado pelo Aquário, pelo Mercado, pelo Leilão, pelo `Update` e na carga) |
+| `IMissionService` | `LocalMissionService` | Missões (M24-T54, A-177, TD-057): `GetMissions` (as 100 de `missions.json`, na ordem, com progresso "X / Y", prêmio, pronta, resgatada e `OnlineOnly`), `ReadyCount` (o número do atalho, sem alocar), `Claim`/`ClaimAll` (paga uma vez, com `SafeMath`) e `TakeNewlyReady` (os avisos). Progresso em `MissionRules` (pura: lê o estado do save ou os contadores); contadores somados por `MissionTracker`, chamado pelos serviços (ganchos abaixo); a conclusão é marcada em `GameSession.BeforePersist`, antes de cada gravação |
 | `IExpeditionService` | `LocalExpeditionService` | Expedições: partida, travas do Cardume, pagamento na volta (online ou ao abrir) |
-| `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico |
+| `IArenaService` | `LocalArenaService` | Arena: ranking, Energia, Honra, adversários, ataques, ataques recebidos, histórico; `VisitProfile` registra o "Ver perfil" de um adversário (Missões) |
 | `IMarketService` | `LocalMarketService` | Mercado: busca com filtros, anunciar, comprar, cancelar, Itens a Retirar, vendedores e compradores simulados |
 | `IAuctionService` | `LocalMarketService` | Leilão: criar (1 por vez, 6 h), lances com reserva e taxa, último minuto, encerrar antes |
 | `ICurrencyTradeService` | `LocalCurrencyTradeService` | Venda de Conchas e Dólares por Moedas: anunciar (a quantidade sai da carteira) e cancelar; no MVP local não há ofertas nem compradores (`CurrencyTradeView.LocalOnly`) |
@@ -128,6 +129,29 @@ PT-BR e o jogo mostra essa lista na tela, em vez de rodar com valores quebrados.
 
 Cada sistema novo segue o mesmo desenho: uma interface `I...Service`, uma implementação
 `Local...Service` que trabalha sobre a `GameSession`, e visões somente-leitura para a tela.
+
+### Como as Missões funcionam (M24-T54, A-177, TD-057)
+
+- **Dados:** `config/missions.json` (100 missões; tipo, alvo, parâmetros, `online_only`, `reference_level` e prêmio),
+  validado por `GameConfigValidator.ValidateMissions`; os tipos são as chaves de `Missions/MissionTypes`. O texto vem de
+  `GameTexts.Missions.Objective` (tipo + alvo + nome do config), montado pelo serviço na visão.
+- **Progresso:** `Missions/MissionRules.Progress` lê o estado quando ele mostra (nível, Moedas, Conchas, Enciclopédia,
+  `SpeciesRecords.TimesCaught` por espécie e por raridade, mapas pelo nível, varas, barcos e roupas montados, Aquário,
+  Cardume e a sua Força, Passe, clã, posição na Arena) e os contadores de `PlayerSave.Missions` para eventos.
+- **Ganchos** (`Missions/MissionTracker`, só somam contadores): `LocalFishingService.ApplyCatch` (toda captura posta na
+  Caixa, online, offline e achada na Expedição: tamanho, estrelas dos genes, gene perfeito, Exemplar perfeito, recorde
+  batido) e `SellCatches`; `GearRules.SpendAttempt` (isca usada); `LocalAquariumService.Feed`; Dólares gastos no VIP, no
+  Premium do Passe, ao criar clã e ao comprar vaga; `LocalExpeditionService.Update` (Expedição concluída);
+  `LocalArenaService.Attack` (duelo, vitória, sequência, adversário, vitória que sobe no ranking) e `VisitProfile`;
+  `LocalMarketService` (anúncio e leilão criados, compra, venda de peixe a um comprador) e os leilões (lance, leilão
+  ganho, disputado quando teve 2 lances ou mais); `LocalWorldBossService.Update` (ataques, dias, melhor faixa).
+- **Conclusão:** `GameSession.Persist` dispara `BeforePersist` antes de gravar; `LocalMissionService` olha as missões
+  ainda não concluídas e põe em `Completed` as que chegaram ao alvo (gravado na mesma escrita, então um alvo alcançado
+  por um instante nunca se perde) e guarda um aviso para `TakeNewlyReady`. Concluída fica concluída. `Claim` marca em
+  `Claimed` antes de pagar. Online-only nunca conclui no jogo local (`LocalMissionService.Online` é falso).
+- **Tela:** `UI/MissionsWindow` (Diário de bordo, marcadores Em andamento / Prontas / Concluídas, só os cartões à vista,
+  textos montados ao atualizar, 1 vez por segundo) e o atalho redondo "Missões" no `Hud` com `GameRoot.MissionsReady`;
+  `GameRoot.SyncMissions` (a cada sincronização) mostra os avisos.
 
 ### Como a pesca online funciona
 
@@ -273,7 +297,13 @@ pôr a lista —, `NextClanNumber`, `XpCarry`, `RankingDay` e `LastResult`; save
 um `MyClanId` que não aponta para um clã com o jogador, `ClanRules.Repair`); v23 adiciona os genes (M24-T52, A-176,
 TD-056: `BoxCatch.Genes`, chave `"g"`, e `FishInstance.Genes`, 4 inteiros de 0 a 31 na ordem Vida, Ataque, Defesa,
 Velocidade); a migração v22 → v23 só sobe a versão e, ao abrir a sessão, `Persistence/GeneMigration.GiveMissingGenes`
-dá `progression.json → genes.migration_neutral_value` (16) a todo peixe sem genes válidos (Caixa, Aquário e Mercado). A conversão dos
+dá `progression.json → genes.migration_neutral_value` (16) a todo peixe sem genes válidos (Caixa, Aquário e Mercado); v24 adiciona
+as Missões (M24-T54, A-177, TD-057: `MissionState` com `Counters` — contadores de eventos por chave técnica, por exemplo
+`catch_size:large`, `bait:bait_01`, `arena_wins` —, `ArenaOpponents`, `RecordSpecies`, `Completed`, `Claimed` e
+`SeedPending`); a migração v23 → v24 cria o estado com `SeedPending = true` e, ao abrir a sessão (depois dos genes),
+`Persistence/MissionMigration.SeedFromSave` enche cada contador com o que o save antigo já prova (estatísticas, peixes da
+Caixa e do Aquário, histórico da Arena, listas e notícias do Mercado, último dia do Boss, Premium do Passe) e o serviço
+de missões marca prontas as missões que o estado já cumpre. A conversão dos
 barcos 6 a 10 em fragmentos, Moedas e Conchas (A-168) precisa do config e por isso não fica em `SaveMigrations`: roda
 uma vez ao abrir a sessão, em `Persistence/BoatModelMigration.MoveToCurrentModel`, antes de os níveis de barco serem
 limitados ao config (TD-051), como a das iscas (`BaitModelMigration`, v17, TD-046); v21 tira a Tripulação e as Melhorias

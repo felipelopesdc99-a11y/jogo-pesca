@@ -213,6 +213,7 @@ namespace FishingIdle.GameService.Expeditions
 
             Save.LastExpedition = result;
             Save.Expedition = new ExpeditionState();
+            Missions.MissionTracker.OnExpeditionCompleted(Save);
             _session.Persist();
             _session.Log("Expedition " + result.ExpeditionId + " finished: " + result.Coins + " coins, fish " + result.FoundCatchId + ".");
             return ToView(result);

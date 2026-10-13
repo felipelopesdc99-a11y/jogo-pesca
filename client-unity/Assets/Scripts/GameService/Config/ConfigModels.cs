@@ -1169,4 +1169,71 @@ namespace FishingIdle.GameService.Config
         /// <summary>Fragments of the boat of the highest map the member's Fisher level unlocks (the Boss Mundial's boat).</summary>
         public int BoatFragments { get; set; }
     }
+
+    // ---------------------------------------------------------------- missions.json (M24-T54, A-177)
+
+    /// <summary>
+    /// The Missões (missions.json, M24-T54, A-177): 100 goals over the whole game, all visible from the start, each with a
+    /// reward of Moedas and Conchas (and Dólares in the hard ones) claimed once. The types are technical keys
+    /// (<see cref="FishingIdle.GameService.Missions.MissionTypes"/>); the text the player reads is built by GameTexts.Missions from the type and
+    /// the parameters.
+    /// </summary>
+    public sealed class MissionsConfig
+    {
+        public int ConfigSchemaVersion { get; set; }
+
+        /// <summary>In the order they are listed to the player (the natural order of the game).</summary>
+        public List<MissionConfig> Missions { get; set; }
+    }
+
+    public sealed class MissionConfig
+    {
+        /// <summary>Stable id ("mission_001"): the save keeps the completed and claimed ones by it.</summary>
+        public string Id { get; set; }
+
+        /// <summary>The objective, a key of <see cref="FishingIdle.GameService.Missions.MissionTypes"/>.</summary>
+        public string Type { get; set; }
+
+        /// <summary>How many (fish, levels, Moedas …). 0 in the types that accept it means "all" (see config/README.md).</summary>
+        public long Target { get; set; }
+
+        // Parameters: each type uses the ones it needs (GameConfigValidator.ValidateMissions checks them).
+        public string SpeciesId { get; set; }
+        public string Rarity { get; set; }
+        public string SizeCategory { get; set; }
+        public string MapId { get; set; }
+        public string RodId { get; set; }
+        public string BoatId { get; set; }
+        public string BaitId { get; set; }
+
+        /// <summary>"fish" to count only fish (market_buy); null = anything.</summary>
+        public string GoodsKind { get; set; }
+
+        /// <summary>Gene stars (catch_gene_stars, cardume_gene_stars).</summary>
+        public int Stars { get; set; }
+
+        /// <summary>A fish level (cardume_all_level).</summary>
+        public int Level { get; set; }
+
+        /// <summary>auction_won: only auctions someone else also bid on.</summary>
+        public bool Contested { get; set; }
+
+        /// <summary>Completes only with the game online (other real players); the local game shows it, never completes it.</summary>
+        public bool OnlineOnly { get; set; }
+
+        /// <summary>
+        /// The Fisher level the reference player is expected to reach it at (tools/Progressao/missoes.py uses it to size the
+        /// reward). Not read by the game.
+        /// </summary>
+        public int ReferenceLevel { get; set; }
+
+        public MissionRewardConfig Reward { get; set; }
+    }
+
+    public sealed class MissionRewardConfig
+    {
+        public long Coins { get; set; }
+        public long Shells { get; set; }
+        public long Dollars { get; set; }
+    }
 }

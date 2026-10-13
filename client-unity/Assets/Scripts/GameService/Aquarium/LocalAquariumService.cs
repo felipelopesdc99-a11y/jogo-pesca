@@ -133,6 +133,7 @@ namespace FishingIdle.GameService.Aquarium
             target.Level = preview.LevelAfter;
             target.Xp = preview.XpAfter;
             target.InvestedXp += preview.XpGained - preview.WastedXp;
+            Missions.MissionTracker.OnFed(Save);
 
             var boxIds = new HashSet<long>(boxFood.Select(c => c.Id));
             var fishIds = new HashSet<long>(fishFood.Select(f => f.Id));

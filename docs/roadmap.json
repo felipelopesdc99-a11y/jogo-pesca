@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-13T16:30:00Z",
+  "updated_at": "2026-10-13T23:30:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -684,6 +684,14 @@
       "title": "Temperamento dos peixes depois dos genes",
       "detail": "Com os genes no jogo (A-176), a proposta seguinte é o Temperamento: cada peixe nasce com 1 de 12 temperamentos, sorteado na captura e permanente. 4 são neutros (não mudam nada) e 8 sobem um atributo em 10% e descem outro em 10% (por exemplo \"Bravo\": Ataque +10%, Defesa −10%; \"Calmo\": Defesa +10%, Velocidade −10%). Combina com os genes: um peixe com genes ótimos de Ataque pode vir com um temperamento que derruba o Ataque e ter que ser vendido, como você disse. O preço de venda ao jogo continua igual; os peixes que já existem ficariam com um temperamento neutro. Opções: (a) entra assim (12 temperamentos, ±10%); (b) entra com outros números (por exemplo ±5% ou menos temperamentos); (c) não entra por enquanto. Nada foi implementado.",
       "raised_at": "2026-10-13T22:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-073",
+      "task_id": "M24-T55",
+      "title": "Prêmios das missões",
+      "detail": "As 100 missões (A-177) pagam Moedas e Conchas em todas, crescendo ao longo da lista, e Dólares só nas difíceis. Hoje (provisório): Moedas = de ~10 minutos (missão 1) a ~60 minutos (missão 100) da renda da pesca de quem abre o jogo 4 vezes por dia, no nível em que a missão deve ser feita; Conchas = o triplo desses minutos em Conchas da pesca. Resumo: missões 1 a 10 (começo): 1.700 a 2.500 Moedas e 9 a 14 Conchas; 11 a 32 (até o Nv.50): 2.600 a 64.000 Moedas e 14 a 42 Conchas; 33 a 50 (Nv.100 a ~180): 220.000 a 8,1 milhões de Moedas e 71 a 290 Conchas; 51 a 75 (~Nv.190 a 450): 8,9 a 15 milhões e 300 a 570 Conchas; 76 a 100 (fim, até o Nv.1000): 15 a 19 milhões e 590 a 1.000 Conchas. Total: ~780 milhões de Moedas e 34.780 Conchas. Dólares em 18 missões, 170 no total: 5 (primeiro Épico, Excepcional, 5 estrelas, gene perfeito, faixa máxima do Boss, os 5 barcos, todas as roupas no máximo), 10 (primeiro Lendário, Perfeição, top 10 da Arena, Nv.500, todas as Lendárias, o Mítico, Cardume completo no Nv.100, 1 milhão de peixes), 15 (todas as espécies) e 20 (Exemplar perfeito e Nv.1000). Para comparar: o Passe grátis dá 100 Dólares até o Nv.100; o VIP e o Premium do Passe custam 100 cada. Lista completa: python3 tools/Progressao/missoes.py lista. Opções: (a) ficam assim; (b) mais ou menos Moedas e Conchas (por exemplo 5 a 30 minutos, ou 20 a 120); (c) mais ou menos Dólares, ou em outras missões; (d) outro prêmio.",
+      "raised_at": "2026-10-13T23:30:00Z",
       "status": "OPEN"
     }
   ],
@@ -5033,6 +5041,29 @@
             "M24-T52"
           ],
           "updated_at": "2026-10-13T22:00:00Z"
+        },
+        {
+          "id": "M24-T54",
+          "title": "Missões: 100 missões do começo ao fim do jogo, com prêmios em Moedas, Conchas e Dólares",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (13/10/2026): \"Vamos agora adicionar missões ao jogo, 100 missões envolvendo tudo que tem no jogo … início, meio e fim de jogo … sem especificar de qual parte do jogo ela é\", mais 10 missões sociais. Lista aprovada em docs/propostas/missoes_100.txt. Prêmios: \"Moedas e Conchas (Dólares para missões difíceis), crescendo ao longo do jogo.\" (A-177, TD-057). ASSET_PENDENTE: ico_atalho_missoes (atalho redondo e etiqueta da janela).",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T52"
+          ],
+          "updated_at": "2026-10-13T23:30:00Z",
+          "completion_notes": "Config: config/missions.json (100 missões na ordem da lista, ids mission_001 a mission_100, tipo, alvo, parâmetros, online_only, reference_level e prêmio), validado por GameConfigValidator.ValidateMissions (tipo conhecido, parâmetros apontando para o que existe no config, alvo, prêmio sem negativo) e gerado por tools/Progressao/missoes.py gerar (jogador de referência 4 vezes por dia com o Passe grátis; Moedas = 10 a 60 min da renda da pesca no nível de referência, Conchas = o triplo em minutos de Conchas, 2 algarismos significativos, nunca menos que a missão de cima; Dólares em 18 missões difíceis, 170 no total); missoes.py lista escreve a lista legível. Serviço: GameService/Missions (MissionTypes com 53 tipos e as chaves dos contadores; MissionRules, puro: progresso pelo estado do save ou pelos contadores; MissionTracker, os ganchos; LocalMissionService/IMissionService: GetMissions, ReadyCount sem alocação, Claim e ClaimAll pagando uma vez com SafeMath, TakeNewlyReady). Conclusão marcada em GameSession.BeforePersist, antes de cada gravação (sticky em MissionState.Completed). Ganchos: captura posta na Caixa (online, offline e Expedição: tamanho, estrelas, gene perfeito, Exemplar perfeito, recorde batido), venda da Caixa, isca usada, alimentar, Dólares gastos (VIP, Premium do Passe, criar clã, vaga), Expedição concluída, ataque na Arena (duelo, vitória, sequência, adversários, vitória que sobe), IArenaService.VisitProfile (\"Ver perfil\"), anúncio e leilão criados, compra, peixe vendido a um comprador (anúncio ou leilão), lance, leilão ganho (disputado com 2 lances ou mais) e ataques ao Boss (dias e melhor faixa). Online-only: mission_092 (Boss no mesmo dia que outro membro do Clã) e mission_099 (top 3 de Clãs), que nunca concluem no jogo local; os jogadores simulados da Arena, do Mercado e do Leilão contam como \"outro jogador\". Save v24: PlayerSave.Missions (MissionState: Counters, ArenaOpponents, RecordSpecies, Completed, Claimed, SeedPending), migração v23→v24 e Persistence/MissionMigration.SeedFromSave na carga (contadores do que o save antigo prova: estatísticas, Caixa e Aquário, histórico da Arena, Mercado, último dia do Boss, Premium do Passe); as missões que o estado cumpre aparecem prontas, sem enxurrada de avisos. Tela: UI/MissionsWindow (Diário de bordo, marcadores Em andamento / Prontas / Concluídas com contagem, Resgatar todas, cartões com Nº, texto, barra \"X / Y\", prêmio com ícones, Resgatar ou selo Concluída, \"Liga quando o jogo estiver online\", melhor posição na Arena; só os cartões à vista, textos montados ao atualizar), atalho redondo \"Missões\" no Hud depois do Passe com a contagem de prontas, avisos em GameRoot.SyncMissions, \"Ver perfil\" da Arena chama o serviço. Textos em GameTexts.Missions (objetivos montados por tipo, com plural e \"1 milhão\"/\"1 bilhão\"), Navigation.Missions, mensagens de erro e de validação. Testes (MissionsTests, 19; StartupWithOldSavesTests com as missões): config e validação, textos, alvo exato, resgate uma vez, incompleta recusada, pesca online e offline, genes, estado, sticky, Aquário e Cardume, vendas, isca, Dólares, Expedição, Clã, Arena e perfil, Mercado e Leilão, Boss, online-only, SafeMath, persistência e migração v23→v24 com conclusão retroativa. Pedido de arte em docs/ASSETS_PENDENTES.md. Compilado no CI; o visual só fica verificado quando o proprietário apertar Play."
+        },
+        {
+          "id": "M24-T55",
+          "title": "Prêmios das missões (provisórios)",
+          "subsystem": "config",
+          "description": "Os prêmios das 100 missões (A-177) estão provisórios em config/missions.json, gerados por tools/Progressao/missoes.py. Decidir se ficam assim ou se mudam (OD-073).",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T54"
+          ],
+          "updated_at": "2026-10-13T23:30:00Z"
         }
       ],
       "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."

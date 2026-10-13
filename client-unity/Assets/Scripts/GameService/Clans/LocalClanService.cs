@@ -348,6 +348,7 @@ namespace FishingIdle.GameService.Clans
             var now = _session.Clock.UtcNowMs;
             var price = ClanRules.CreatePrice(Config, Save);
             Save.Dollars -= price;
+            Missions.MissionTracker.OnDollarsSpent(Save, price);
             state.ClansCreated = Math.Max(state.ClansCreated, state.NextClanNumber - 1) + 1;
             var clan = new ClanRecord
             {
@@ -445,6 +446,7 @@ namespace FishingIdle.GameService.Clans
 
             var price = ClanRules.SlotPrice(Config, clan.ExtraSlots);
             Save.Dollars -= price;
+            Missions.MissionTracker.OnDollarsSpent(Save, price);
             clan.ExtraSlots++;
             _session.Persist();
             _session.Log("Clan " + clan.Id + ": place " + ClanRules.Capacity(Config, clan) + " bought for " + price + " dollars.");

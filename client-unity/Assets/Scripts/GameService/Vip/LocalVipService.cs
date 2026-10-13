@@ -99,6 +99,7 @@ namespace FishingIdle.GameService.Vip
             var now = _session.Clock.UtcNowMs;
             var start = Math.Max(now, Save.VipUntilMs);
             Save.Dollars -= vip.PriceDollars;
+            Missions.MissionTracker.OnDollarsSpent(Save, vip.PriceDollars);
             Save.VipUntilMs = start + (long)Math.Round(vip.DurationDays * 86400000.0);
             _session.Persist();
             _session.Log("Bought VIP for " + vip.PriceDollars + " dollars; active until " + Save.VipUntilMs + ".");

@@ -3,6 +3,32 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.15] — 13/10/2026
+
+Missões, pedido do proprietário (M24-T54, A-177). Save v24. Verificado no CI, não aberto no Unity.
+
+### Adicionado
+
+- **100 missões** que acompanham o jogo inteiro, do primeiro peixe ao Nv.1000, na ordem da lista aprovada, **todas à
+  vista desde o começo**: pescar, vender, Aquário, Cardume, genes, mapas, Enciclopédia, varas, barcos, roupas, iscas,
+  Passe, Expedições, Arena, Mercado, Leilão, Boss Mundial e Clã, mais as 10 sociais.
+- Atalho redondo **"Missões"** na coluna da direita (depois do Passe), com a bolinha do número de missões prontas.
+- Janela **"Missões"** no padrão Diário de bordo: marcadores **Em andamento / Prontas / Concluídas**, **Resgatar
+  todas**, e um cartão por missão com o que fazer, a barra **"X / Y"**, o prêmio (Moedas, Conchas e, nas difíceis,
+  Dólares) e **Resgatar** ou o selo **Concluída**. Aviso quando uma missão fica pronta.
+- Prêmios **provisórios** (OD-073): Moedas e Conchas crescendo ao longo da lista (de 1.700 Moedas e 9 Conchas a 19
+  milhões de Moedas e 1.000 Conchas) e **Dólares em 18 missões difíceis, 170 no total**.
+- Duas missões de Clã com outros jogadores (Boss no mesmo dia que outro membro, top 3 de Clãs) mostram **"Liga quando o
+  jogo estiver online"**; as outras sociais já contam com os jogadores simulados da Arena, do Mercado e do Leilão.
+- "Ver perfil" de um adversário da Arena conta para a missão de visitar o perfil de outro jogador.
+- Arte pendente: `ico_atalho_missoes` (pedido pronto em `docs/ASSETS_PENDENTES.md`); até chegar, o atalho usa o ✓.
+
+### Mudado
+
+- Save **v24**. Quem já jogava abre com as missões que o save já prova **prontas para resgatar** (nível, Moedas,
+  Enciclopédia, mapas, equipamentos, Aquário, Cardume, Passe, clã, vendas, Expedições, duelos recentes, Boss).
+- Proposta para decidir: os prêmios das missões (OD-073).
+
 ## [0.2.0-m24.14] — 13/10/2026
 
 Genes mais fortes, decisão do proprietário. Verificado no CI, não aberto no Unity.

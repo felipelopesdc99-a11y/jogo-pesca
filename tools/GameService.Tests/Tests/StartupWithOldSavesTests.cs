@@ -65,6 +65,11 @@ public class StartupWithOldSavesTests
         Assert.Null(save.RetiredCrew);
         Assert.Null(save.RetiredUpgrades);
         Assert.Equal(version >= 13, game.Session.CrewRefund != null && game.Session.CrewRefund.CoinsRefunded > 0);
+        // The Missões (M24-T54, A-177): what the old save shows is already done (Nv.60, the Moedas, the boat, the rods).
+        var missions = game.Missions.GetMissions();
+        Assert.False(save.Missions.SeedPending);
+        Assert.All(new[] { "mission_004", "mission_011", "mission_029", "mission_052", "mission_058" },
+            id => Assert.True(missions.Missions.Single(m => m.Id == id).Ready || missions.Missions.Single(m => m.Id == id).Claimed, id));
 
         // Closing and opening again (what the owner does after the first run) loads the migrated save as it is.
         game.Fishing.MarkSeen();
@@ -183,6 +188,12 @@ public class StartupWithOldSavesTests
             json["upgrades"] = new JObject { ["levels"] = new JObject { ["crew_01_up_1"] = 1, ["fair_customers"] = 2 } };
         }
 
+        if (version <= 23)
+        {
+            // Before the Missões (M24-T54): no counters, nothing completed.
+            json.Remove("missions");
+        }
+
         if (version <= 22)
         {
             // Before the genes (M24-T52): no fish had them.
@@ -297,6 +308,7 @@ public class StartupWithOldSavesTests
         game.WorldBoss.GetWorldBoss();
         game.Clans.Update();
         game.Market.Update();
+        game.Missions.TakeNewlyReady();
         Refresh(game);
     }
 
@@ -311,6 +323,7 @@ public class StartupWithOldSavesTests
         game.Vip.GetVip();
         game.Pass.GetPass();
         game.Clans.GetClan();
+        _ = game.Missions.ReadyCount;
     }
 
     /// <summary>What each window asks the service for when it opens.</summary>
@@ -334,6 +347,7 @@ public class StartupWithOldSavesTests
         game.Market.GetSellCandidates();
         game.Auctions.GetAuctions();
         game.CurrencyTrade.GetCurrencyTrade();
+        game.Missions.GetMissions();
         foreach (RankingCategory category in Enum.GetValues(typeof(RankingCategory)))
         {
             game.Ranking.GetRanking(category);
