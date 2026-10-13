@@ -3434,3 +3434,31 @@ difíceis), crescendo ao longo do jogo."
   Excepcionais e Perfeição, os genes dos peixes que você tem). O resto começa do zero.
 - **Números em `/config`:** `missions.json` (tipo, alvo, parâmetros, `online_only` e prêmio de cada missão), gerado por
   `tools/Progressao/missoes.py gerar`.
+
+
+### A-178 · Boss Mundial animado
+
+**Seção do GDD:** nenhuma específica (complementa o A-165; pedido do proprietário em 13/10/2026) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário (M24-T56): "deixar o Boss Mundial meio animado". As artes vieram do ChatGPT
+(`Resources/Arte/Boss/`: 3 poses, fundo do abismo, estouro de água e bolhas). É só apresentação: o Boss não muda
+nenhuma regra, e o momento do golpe é o mesmo que a janela já recebia do serviço (o número de ataques subindo).
+
+- **Cena:** o fundo do abismo ocupa a cena inteira do Boss (Cardume e Boss), recortado para caber, como uma foto presa
+  na folha do Diário de bordo (A-170), com um véu azul-noite leve por cima para o texto ler bem.
+- **Parado:** o Boss alterna devagar entre a pose parada e a pose "respirando" (boca entreaberta, luzes mais acesas),
+  um ciclo de **2,4 s** com passagem suave (uma pose se dissolve na outra, nunca troca seca), e balança na água o tempo
+  todo: sobe e desce ~4 px (3,6 s) e inclina ~1,6° (5,2 s).
+- **Golpe do Cardume** (durante o evento, a cada ataque): a pose de ataque aparece por **0,6 s** com um bote de ~16 px
+  para a esquerda e volta, um **lampejo avermelhado** curto no corpo (~0,2 s, com um brilho vermelho atrás), o
+  **estouro de água** no corpo, um pouco atrás da cabeça (cresce de 0,6 a 1,1 e some em 0,5 s), e um tremor curto e
+  suave (~2,5 px, antes 4 px). Os números de dano continuam subindo como antes.
+- **Bolhas:** 4 grupos de bolhas sobem devagar em volta do Boss, em loop, quase transparentes, cada um numa posição e
+  velocidade; um passa na frente do Boss.
+- **Fora do horário:** o Boss só respira e balança, **mais escuro**, sem bote, lampejo nem estouro; as bolhas ficam
+  mais fracas e o fundo mais escuro.
+- **Poses alinhadas:** as três poses vieram com enquadramentos um pouco diferentes; o jogo mede, uma vez ao abrir, a
+  parte visível de cada uma e desenha todas com a mesma largura e o mesmo centro, para o Boss não "pular" ao trocar.
+- **Sem os arquivos:** sem as poses, volta ao Boss parado (`boss_mundial`) com o tremor; sem ele, ao disco escuro com o
+  ícone de ataque. Sem o fundo, a cena fica azul-noite como antes. O jogo não tem opção de "movimento reduzido"; se um
+  dia tiver, o Boss deve respeitá-la.

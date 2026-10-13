@@ -16,7 +16,7 @@ namespace FishingIdle.Game.UI
     /// <remarks>
     /// Shows what the mission service returns (progress, rewards, what is ready); decides nothing. The texts of each row are
     /// built when the list is refreshed (once a second while open), never per frame; only the cards in view are drawn. Icon
-    /// provisional (ASSET_PENDENTE: ico_atalho_missoes; request in docs/ASSETS_PENDENTES.md).
+    /// ico_atalho_missoes (received 13/10/2026; the confirm icon only if the file is missing).
     /// </remarks>
     public sealed class MissionsWindow
     {

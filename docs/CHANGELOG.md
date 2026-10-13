@@ -3,6 +3,23 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.16] — 13/10/2026
+
+Boss Mundial animado, pedido do proprietário (M24-T56, A-178), e artes que chegaram. Verificado no CI, não aberto no Unity.
+
+### Adicionado
+
+- **Boss Mundial animado**: o fundo do abismo atrás da cena; o Boss respira (passa devagar da pose parada para a pose de
+  boca entreaberta e volta, a cada 2,4 s), balança na água e solta bolhas. A cada golpe do Cardume ele dá um bote para
+  a esquerda com a boca escancarada, pisca em vermelho e um estouro de água aparece no corpo. Fora do horário do evento
+  ele só respira, mais escuro.
+
+### Mudado
+
+- Chegaram e já estão no jogo: o ícone do atalho **Missões** (`ico_atalho_missoes`), o ícone do **Clã** (`ico_cla`) e a
+  cena do **Bem-vindo de volta** (`bemvindo_cena`), além das artes do Boss animado.
+- O tremor do Boss ao levar um golpe ficou mais suave.
+
 ## [0.2.0-m24.15] — 13/10/2026
 
 Missões, pedido do proprietário (M24-T54, A-177). Save v24. Verificado no CI, não aberto no Unity.

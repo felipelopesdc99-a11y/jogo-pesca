@@ -27,7 +27,7 @@ namespace FishingIdle.Game.UI
         // Presentation only: the count-up at the opening, and from when the box counts as "almost full" for the warning.
         private const float CountUpSeconds = 0.9f, AlmostFullRatio = 0.9f;
 
-        // ASSET_PENDENTE: bemvindo_cena (1600×700, docs/ASSETS_PENDENTES.md); a scene drawn by the code until it exists.
+        // bemvindo_cena (1600×700, received 13/10/2026); a scene drawn by the code only if the file is missing.
         private const string SceneArt = "UI/bemvindo_cena";
         private const string FragmentFolder = "Fragmentos/frag_", ClothingFragmentArt = "Fragmentos/frag_roupa";
 
@@ -524,7 +524,7 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>The fallback scene (ASSET_PENDENTE bemvindo_cena): a calm lake at dusk, a low sun, a few glints.</summary>
+        /// <summary>The fallback scene (if bemvindo_cena is missing): a calm lake at dusk, a low sun, a few glints.</summary>
         private static void DrawDrawnScene(UiSkin skin, Rect r)
         {
             var sky = new Color(0.086f, 0.188f, 0.306f);

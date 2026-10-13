@@ -17,8 +17,8 @@ namespace FishingIdle.Game.UI
     /// </summary>
     /// <remarks>
     /// Shows what the service returned in the last sync (GameRoot.WorldBoss); the attacks happen in the service, also with
-    /// this window closed. Art is provisional (ASSET_PENDENTE: the boss art Resources/Arte/Boss/boss_mundial and the icon
-    /// ico_boss; requests in docs/ASSETS_PENDENTES.md).
+    /// this window closed. The boss is animated by <see cref="WorldBossScene"/> (M24-T56, A-178: poses, sway, bubbles, the
+    /// attack pose and burst on each attack); without its files, the still Boss/boss_mundial with a small shake.
     /// </remarks>
     public sealed class WorldBossWindow
     {
@@ -29,6 +29,7 @@ namespace FishingIdle.Game.UI
 
         private readonly GameRoot _root;
         private readonly List<(float at, int position, long damage)> _hits = new List<(float at, int position, long damage)>();
+        private readonly WorldBossScene _scene = new WorldBossScene();
         private int _attacksSeen = -1;
 
         public WorldBossWindow(GameRoot root)
@@ -49,6 +50,7 @@ namespace FishingIdle.Game.UI
             IsOpen = true;
             _attacksSeen = -1;
             _hits.Clear();
+            _scene.Reset();
         }
 
         public void Close() => IsOpen = false;
@@ -110,6 +112,7 @@ namespace FishingIdle.Game.UI
         {
             if (_attacksSeen >= 0 && view.Open && view.Attacks > _attacksSeen)
             {
+                _scene.Attack();
                 foreach (var fish in view.Team)
                 {
                     if (fish != null && fish.LastDamage > 0)
@@ -132,6 +135,7 @@ namespace FishingIdle.Game.UI
             using var night = UiSkin.NightScope();
             GUI.Box(rect, GUIContent.none, skin.PanelSolid);
             skin.Inset(rect);
+            WorldBossScene.DrawBackground(rect, view.Open);
             var half = rect.width / 2f;
             var left = new Rect(rect.x + 16f, rect.y + 12f, half - 70f, rect.height - 24f);
             var right = new Rect(rect.x + half + 54f, rect.y + 12f, half - 70f, rect.height - 24f);
@@ -197,19 +201,20 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>The boss (provisional art until boss_mundial exists), its name, "Vida infinita", and the damage floating up.</summary>
+        /// <summary>The boss (animated, A-178; the still boss_mundial if the poses are missing), its name, "Vida infinita", and the damage floating up.</summary>
         private void DrawBoss(UiSkin skin, Rect rect, WorldBossView view)
         {
             GUI.Label(new Rect(rect.x, rect.y, rect.width, 26f), FishCard.Fit(view.BossName, skin.BodyBold, rect.width), skin.BodyBold);
             var body = new Rect(rect.x, rect.y + 30f, rect.width, rect.height - 30f - 34f);
-            var tex = ArtAssets.Texture(BossArt);
+            var animated = _scene.DrawBoss(skin, body, view.Open);
+            var tex = animated ? null : ArtAssets.Texture(BossArt);
             var shake = view.Open && _hits.Count > 0 && Time.unscaledTime - _hits[_hits.Count - 1].at < 0.15f ? 4f : 0f;
             var drawn = new Rect(body.x + shake, body.y, body.width, body.height);
             if (tex != null)
             {
                 GUI.DrawTexture(drawn, tex, ScaleMode.ScaleToFit, true);
             }
-            else
+            else if (!animated)
             {
                 // Fallback if Boss/boss_mundial is missing: a deep disc with the attack icon.
                 var d = Mathf.Min(drawn.width, drawn.height) - 8f;

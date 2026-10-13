@@ -5064,6 +5064,18 @@
             "M24-T54"
           ],
           "updated_at": "2026-10-13T23:30:00Z"
+        },
+        {
+          "id": "M24-T56",
+          "title": "Boss Mundial animado",
+          "subsystem": "client",
+          "description": "Pedido do proprietário em 13/10/2026: \"deixar o Boss Mundial meio animado\". Com as artes do ChatGPT (3 poses, fundo do abismo, estouro de água, bolhas), o Boss respira, balança na água, solta bolhas e reage a cada golpe do Cardume (A-178). Só apresentação.",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T29"
+          ],
+          "updated_at": "2026-10-14T01:00:00Z",
+          "completion_notes": "Tela: UI/WorldBossScene (nova) chamada pela WorldBossWindow. Fundo boss_fundo_abismo na cena inteira (ScaleAndCrop, cantos de 10 px, véu azul-noite 18% aberto / 45% fechado). Boss: boss_pose_parado ↔ boss_pose_respira em ciclo de 2,4 s com dissolve suave (segura nas pontas), balanço de 4 px (3,6 s) e inclinação de 1,6° (5,2 s) com GUIUtility.RotateAroundPivot. A cada ataque (o mesmo sinal de antes: WorldBossView.Attacks subindo no TrackHits): boss_pose_ataque por 0,6 s com bote de 16 px para a esquerda, lampejo avermelhado de 0,22 s com brilho vermelho atrás, boss_impacto no corpo (0,6→1,1 e fade em 0,5 s) e tremor de 2,5 px. 4 grupos de boss_bolhas subindo em loop (posições e velocidades variadas por um padrão fixo, sem sorteio), um na frente do Boss. Fechado: só respira e balança, mais escuro. Poses alinhadas pela área visível (bounds do alfa) medida uma vez ao carregar (cópia pequena num RenderTexture, porque a arte é importada sem leitura), todas com a mesma largura e o mesmo centro. Relógio Time.unscaledTime; sem alocação por quadro. Sem as poses, volta ao boss_mundial com tremor (e ao disco se faltar). Também registrados como recebidos: ico_atalho_missoes, ico_cla e bemvindo_cena (comentários sem ASSET_PENDENTE). Nenhum texto novo. Compilado no CI; o visual só fica verificado quando o proprietário apertar Play."
         }
       ],
       "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."

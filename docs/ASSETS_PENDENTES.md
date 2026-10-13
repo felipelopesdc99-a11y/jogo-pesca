@@ -799,8 +799,7 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 ## Clãs (M24-T49, A-174, pedido em 13/10/2026)
 
-`ASSET_PENDENTE`. Enquanto o arquivo não existe, a janela Clã usa o ícone da Honra (`ico_honra`). Quando o arquivo
-existir, o jogo passa a usá-lo sozinho. A sub-aba "Clã" (embaixo da aba Perfil) é só texto, como as outras sub-abas.
+**Recebido em 13/10/2026 e no jogo:** `ico_cla`. O ícone da Honra (`ico_honra`) só aparece se o arquivo faltar. A sub-aba "Clã" (embaixo da aba Perfil) é só texto, como as outras sub-abas.
 
 | Arquivo | O quê | Tamanho | Onde aparece |
 |---|---|---|---|
@@ -816,7 +815,7 @@ Pedido pronto para colar no ChatGPT:
 
 ## Boss Mundial animado (pedido do proprietário em 13/10/2026)
 
-`ASSET_PENDENTE`. Pedido: "deixar o Boss Mundial meio animado". Plano: o jogo alterna 3 poses do mesmo Boss (parado,
+**Recebido em 13/10/2026 e no jogo** (M24-T56, A-178): as 3 poses, o fundo, o estouro e as bolhas. Pedido: "deixar o Boss Mundial meio animado". Plano: o jogo alterna 3 poses do mesmo Boss (parado,
 respirando, atacando a cada golpe do Cardume), balança o corpo devagar, pisca ao ser acertado, solta bolhas e mostra um
 estouro a cada ataque. O movimento é do código; a arte são as poses e os efeitos. As 3 poses são pedidas como EDIÇÃO da
 imagem atual (`boss_mundial.png` anexada no ChatGPT), para o Boss sair igual em todas.
@@ -834,7 +833,7 @@ Os pedidos prontos estão no arquivo `pedidos_boss_animado.txt` entregue ao prop
 
 ## Relatório "Bem-vindo de volta" (M24-T51, A-175, pedido em 13/10/2026)
 
-`ASSET_PENDENTE`. Uma faixa de cena no topo do relatório da pesca offline, presa no papel como uma foto (padrão A-170).
+**Recebido em 13/10/2026 e no jogo:** `bemvindo_cena`. A cena desenhada pelo código só aparece se o arquivo faltar. Uma faixa de cena no topo do relatório da pesca offline, presa no papel como uma foto (padrão A-170).
 Até o arquivo chegar, o jogo desenha um lago ao entardecer com o sol baixo. O texto ("Você ficou fora por…") fica por
 cima, no lado esquerdo, sobre uma sombra escura que o código já põe: a arte não precisa de espaço vazio, só de não ter
 nada importante no terço esquerdo. A imagem é cortada para caber (fica entre ~7:1 e ~9:1 na tela), então o assunto vai
@@ -854,7 +853,7 @@ O pedido pronto foi entregue ao proprietário em 13/10/2026 num arquivo à parte
 
 ## Atalho Missões (M24-T54, A-177, pedido em 13/10/2026)
 
-`ASSET_PENDENTE`. Enquanto o arquivo não existe, o atalho redondo "Missões" (na coluna da direita, depois do Passe) e a
+**Recebido em 13/10/2026 e no jogo:** `ico_atalho_missoes`. Se o arquivo faltar, o atalho redondo "Missões" (na coluna da direita, depois do Passe) e a
 etiqueta da janela Missões usam o ícone de confirmar (✓) do jogo. Quando o arquivo existir, o jogo passa a usá-lo sozinho,
 no atalho e na etiqueta.
 

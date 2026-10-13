@@ -17,14 +17,14 @@ namespace FishingIdle.Game.UI
     /// ranking block with the top 3 rewards and the notice that they turn on with the online game.
     /// </summary>
     /// <remarks>
-    /// Shows what the clan service returned (GameRoot.Clan); decides nothing. Icon provisional (ASSET_PENDENTE: ico_cla, the
-    /// Honra icon until it exists; request in docs/ASSETS_PENDENTES.md).
+    /// Shows what the clan service returned (GameRoot.Clan); decides nothing. Icon ico_cla (received 13/10/2026; the
+    /// Honra icon only if the file is missing).
     /// </remarks>
     public sealed class ClanWindow
     {
         private const float Gap = 16f, Pad = 18f, MemberRow = 58f, ScrollBar = 18f, PickRow = 64f;
 
-        /// <summary>The clan icon (ASSET_PENDENTE: ico_cla.png; the Honra icon until it arrives).</summary>
+        /// <summary>The clan icon (ico_cla.png, received 13/10/2026; the Honra icon if the file is missing).</summary>
         private const string ClanIcon = "cla";
 
         private readonly GameRoot _root;
