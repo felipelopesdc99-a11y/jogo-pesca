@@ -780,6 +780,25 @@ Pedido pronto para colar no ChatGPT:
 > uma bandeirinha em cima e dois peixes cruzados no centro, simples e legível em 32 px. Sem texto, sem números, sem
 > fundo, sem sombra. Arquivo: ico_cla.png
 
+
+## Boss Mundial animado (pedido do proprietário em 13/10/2026)
+
+`ASSET_PENDENTE`. Pedido: "deixar o Boss Mundial meio animado". Plano: o jogo alterna 3 poses do mesmo Boss (parado,
+respirando, atacando a cada golpe do Cardume), balança o corpo devagar, pisca ao ser acertado, solta bolhas e mostra um
+estouro a cada ataque. O movimento é do código; a arte são as poses e os efeitos. As 3 poses são pedidas como EDIÇÃO da
+imagem atual (`boss_mundial.png` anexada no ChatGPT), para o Boss sair igual em todas.
+
+| Arquivo | O quê | Tamanho |
+|---|---|---|
+| `Arte/Boss/boss_pose_parado.png` | Boca quase fechada, barbatanas recolhidas | 1024×768 |
+| `Arte/Boss/boss_pose_respira.png` | Boca meio aberta, luzes mais acesas | 1024×768 |
+| `Arte/Boss/boss_pose_ataque.png` | Boca escancarada, bote para a esquerda | 1024×768 |
+| `Arte/Boss/boss_fundo_abismo.png` | Fundo do abismo, sem criatura | 1600×900 |
+| `Arte/Boss/boss_impacto.png` | Estouro de água do golpe | 512×512 |
+| `Arte/Boss/boss_bolhas.png` | Grupo de bolhas subindo | 256×256 |
+
+Os pedidos prontos estão no arquivo `pedidos_boss_animado.txt` entregue ao proprietário em 13/10/2026.
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).
