@@ -107,8 +107,11 @@ namespace FishingIdle.GameService.Fishing
         /// <summary>Catches the Fishing Box asks to confirm before a bulk sale (rare, Exceptional…).</summary>
         public bool IsProtected { get; internal set; }
 
-        /// <summary>Deserves the special glow: Exceptional size, higher rarity or a first catch.</summary>
+        /// <summary>Deserves the special glow: Exceptional size, higher rarity, a first catch or top genes (M24-T52).</summary>
         public bool IsImportant { get; internal set; }
+
+        /// <summary>The catch's genes, quality and stars (M24-T52, A-176).</summary>
+        public GeneView Genes { get; internal set; }
     }
 
     /// <summary>Everything that happened as a result of a sync, start or stop.</summary>

@@ -592,6 +592,9 @@ namespace FishingIdle.GameService.Fishing
                 Flags = flags,
             };
 
+            // The genes (M24-T52, A-176): their own stream (seed and catch id), so every other roll of the cycle is unchanged.
+            entry.Genes = GeneRules.IsValid(Config, rolled.Genes) ? (int[])rolled.Genes.Clone() : GeneRules.RollForCatch(Config, Save.RngSeed, entry.Id);
+
             // M18-T07: notable catches remember which balance numbers produced them.
             if (!CatchRules.IsCommon(rolled.Species) || rolled.SizeCategory.Special)
             {

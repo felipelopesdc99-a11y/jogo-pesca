@@ -85,7 +85,7 @@
     "capacity": 8640,
     "capacity_note": "OD-025 (decisão do proprietário, 07/10/2026): a Caixa de Pesca guarda até capacity peixes (cabe um dia inteiro de pesca offline). Cheia, a pesca não puxa mais peixes (nem gasta isca) até o jogador vender ou guardar algum. Peixes achados em Expedição ou retirados do Mercado ainda entram. 0 = sem limite. Era 1.500; dobrou para 3.000 em 11/10/2026 (M24-T22, A-159) junto com o ciclo de pesca na metade, para continuar cabendo um dia inteiro de pesca offline (24 h a cada 30 s = 2.880 tentativas) e as mesmas horas de pesca online. Desde 12/10/2026 (M24-T27, A-160, decisão do proprietário: \"caixa de pesca comporta 1 dia de pesca online\") são 8.640 peixes = 24 h de pesca online a cada 10 s; cabe também um dia inteiro de pesca offline (24 h a cada 20 s = 4.320 tentativas, ou 5.760 com o VIP a cada 15 s).",
     "bulk_sale_protection": {
-      "note": "Peixes que disparam a confirmação única \"Revisar peixes / Confirmar\" quando entram numa venda da Caixa de Pesca (seção 11 do GDD). Por raridade e por categoria de tamanho.",
+      "note": "Peixes que disparam a confirmação única \"Revisar peixes / Confirmar\" quando entram numa venda da Caixa de Pesca (seção 11 do GDD). Por raridade e por categoria de tamanho. Desde 13/10/2026 (M24-T52, A-176) também por qualidade de genes: gene_stars_at_or_above estrelas ou mais (0 = desligado).",
       "rarities": [
         "rare",
         "epic",
@@ -95,7 +95,8 @@
       "size_categories": [
         "exceptional",
         "perfect"
-      ]
+      ],
+      "gene_stars_at_or_above": 5
     }
   },
   "aquarium": {

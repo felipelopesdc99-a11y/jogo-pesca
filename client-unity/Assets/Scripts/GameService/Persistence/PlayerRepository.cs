@@ -467,6 +467,13 @@ namespace FishingIdle.GameService.Persistence
                 save.SaveVersion = 22;
             }
 
+            if (save.SaveVersion == 22)
+            {
+                // v23: the genes (M24-T52, A-176). The fish of a save from before have none: GameSession gives each the
+                // neutral genes of the config (16/16/16/16) when it loads the save (GeneMigration, it needs the config).
+                save.SaveVersion = 23;
+            }
+
             save.OwnedBoatIds = save.OwnedBoatIds ?? new List<string>();
             save.BoatLevels = save.BoatLevels ?? new Dictionary<string, int>();
             save.BoatFragments = save.BoatFragments ?? new Dictionary<string, long>();

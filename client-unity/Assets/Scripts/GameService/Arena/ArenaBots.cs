@@ -69,7 +69,8 @@ namespace FishingIdle.GameService.Arena
                     RarityId = species.Rarity,
                     RarityName = rarity?.DisplayName ?? species.Rarity,
                     Level = Math.Max(1, Math.Min(config.Progression.FishLevel.MaxLevel, level)),
-                    Stats = FishRules.Stats(config, species, mm, level),
+                    // The bots' fish have genes too (M24-T52), from a stream of their own so the rest of the bot is unchanged.
+                    Stats = FishRules.Stats(config, species, mm, level, null, GeneRules.Roll(config, Rng.For(BotSeed ^ GeneRules.CatchSalt, index, i))),
                 });
             }
 

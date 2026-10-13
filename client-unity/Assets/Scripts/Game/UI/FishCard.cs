@@ -1,5 +1,6 @@
 using FishingIdle.Game.Scene;
 using FishingIdle.Game.Visual;
+using FishingIdle.GameService.Fishing;
 using FishingIdle.Texts;
 using UnityEngine;
 
@@ -30,6 +31,8 @@ namespace FishingIdle.Game.UI
         public bool Silhouette;
         /// <summary>Optional art instead of the species (e.g. a rod in the Market).</summary>
         public Texture2D Art;
+        /// <summary>The fish's genes (M24-T52, A-176): the quality stars under the seal. Null = no stars (a rod).</summary>
+        public GeneView Genes;
     }
 
     /// <summary>
@@ -113,8 +116,15 @@ namespace FishingIdle.Game.UI
             var nameY = cursor - 21f;
             cursor = nameY - 4f;
 
-            // Fish art first, numbers second (GDD section 44).
+            // The quality stars of the genes (M24-T52, A-176), small, under the rarity seal.
             var artTop = y + 26f;
+            if (m.Genes != null && !m.Silhouette)
+            {
+                GeneUi.Stars(skin, new Rect(x, artTop, w, 14f), m.Genes, 12f);
+                artTop += 16f;
+            }
+
+            // Fish art first, numbers second (GDD section 44).
             var art = new Rect(x + 4, artTop, w - 8, Mathf.Max(20f, cursor - artTop));
             var bob = hovered ? Mathf.Sin(Time.unscaledTime * 3f) * 1.5f : 0f;
             if (exceptional && !m.Silhouette)

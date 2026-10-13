@@ -3,7 +3,7 @@ using FishingIdle.GameService.Config;
 
 namespace FishingIdle.GameService.Fishing
 {
-    /// <summary>The four combat attributes. No hidden rolls: derived only from species, rarity, size and level.</summary>
+    /// <summary>The four combat attributes, derived from species, rarity, size, level and the fish's genes (M24-T52), never stored.</summary>
     public sealed class FishStats
     {
         public double Hp { get; internal set; }
@@ -21,10 +21,12 @@ namespace FishingIdle.GameService.Fishing
     {
         /// <summary>
         /// attribute = base × rarity multiplier × (1 + size influence × (percentile − 0,5))
-        ///           × (1 + level bonus) × size category multiplier (Perfeição: +5%). The level bonus is 0 at Nv.1
-        ///           and grows on a curve up to Nv.100 (GameConfig.FishStatBonus, M24-T13).
+        ///           × (1 + level bonus) × size category multiplier (Perfeição: +5%) × gene multiplier. The level bonus is 0
+        ///           at Nv.1 and grows on a curve up to Nv.100 (GameConfig.FishStatBonus, M24-T13). Each attribute has its own
+        ///           gene (M24-T52, A-176: ×0,90 at gene 0 to ×1,10 at gene 31, GeneRules.Multiplier); with
+        ///           <paramref name="genes"/> null (a species' reference numbers, the Encyclopedia) there is no gene factor.
         /// </summary>
-        public static FishStats Stats(GameConfig config, SpeciesConfig species, int sizeMm, int level, string sizeCategoryId = null)
+        public static FishStats Stats(GameConfig config, SpeciesConfig species, int sizeMm, int level, string sizeCategoryId = null, int[] genes = null)
         {
             config.TryGetRarity(species.Rarity, out var rarity);
             var rarityFactor = rarity?.StatMultiplier ?? 1.0;
@@ -34,13 +36,23 @@ namespace FishingIdle.GameService.Fishing
             var factor = rarityFactor * sizeFactor * levelFactor * categoryFactor;
             var b = species.BaseStats;
 
+            if (genes != null && !GeneRules.IsValid(config, genes))
+            {
+                genes = GeneRules.Neutral(config);
+            }
+
             return new FishStats
             {
-                Hp = b.Hp * factor,
-                Attack = b.Attack * factor,
-                Defense = b.Defense * factor,
-                Speed = b.Speed * factor,
+                Hp = b.Hp * factor * GeneFactor(config, genes, GeneRules.Hp),
+                Attack = b.Attack * factor * GeneFactor(config, genes, GeneRules.Attack),
+                Defense = b.Defense * factor * GeneFactor(config, genes, GeneRules.Defense),
+                Speed = b.Speed * factor * GeneFactor(config, genes, GeneRules.Speed),
             };
+        }
+
+        private static double GeneFactor(GameConfig config, int[] genes, int index)
+        {
+            return genes == null ? 1.0 : GeneRules.Multiplier(config, genes[index]);
         }
 
         /// <summary>
@@ -56,8 +68,11 @@ namespace FishingIdle.GameService.Fishing
             return own + recovered;
         }
 
-        /// <summary>Whether consuming this fish should ask for confirmation (progression.json → feeding).</summary>
-        public static bool IsValuableFood(GameConfig config, string rarityId, string sizeCategoryId, int level)
+        /// <summary>
+        /// Whether consuming this fish (or selling it in a batch from the Aquarium) should ask for confirmation
+        /// (progression.json → feeding). <paramref name="geneStars"/>: the fish's gene quality (M24-T52), 0 = not counted.
+        /// </summary>
+        public static bool IsValuableFood(GameConfig config, string rarityId, string sizeCategoryId, int level, int geneStars = 0)
         {
             var feeding = config.Progression.Feeding;
             if (!feeding.WarnOnValuableFeed)
@@ -66,6 +81,11 @@ namespace FishingIdle.GameService.Fishing
             }
 
             var rules = feeding.ValuableFeedRules;
+            if (rules.GeneStarsAtOrAbove > 0 && geneStars >= rules.GeneStarsAtOrAbove)
+            {
+                return true;
+            }
+
             var minRank = config.RarityRank(rules.RarityAtOrAbove);
             if (minRank >= 0 && config.RarityRank(rarityId) >= minRank)
             {

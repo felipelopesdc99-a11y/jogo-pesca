@@ -135,6 +135,9 @@ namespace FishingIdle.GameService.Market
         SizeDescending,
         SizeAscending,
         Newest,
+
+        /// <summary>Best genes first (M24-T52, A-176); rods after the fish.</summary>
+        QualityDescending,
     }
 
     /// <summary>Buy-tab search: every filter is optional and they combine (GDD section 34).</summary>

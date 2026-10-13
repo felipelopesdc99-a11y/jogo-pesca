@@ -201,6 +201,16 @@ namespace FishingIdle.Game.UI
                 _lastCatchAt = Time.unscaledTime;
                 var size = Format.SizeCm(c.SizeCm);
                 var icon = Art.FishTexture(c.SpeciesId);
+                // Genes (M24-T52, A-176): a 5-star fish or a perfect specimen gets its own warning; a perfect gene only a
+                // note at the end of the catch's line (about 1 fish in 8 has one: a toast of its own would be noise).
+                if (c.Genes != null && c.Genes.IsCelebrated)
+                {
+                    _root.Toasts.Push(c.Genes.IsPerfectSpecimen ? GameTexts.Toasts.PerfectSpecimen(c.SpeciesName) : GameTexts.Toasts.TopGenes(c.SpeciesName, c.Genes.Stars),
+                        ToastKind.Important, icon, notify: true, sound: SoundCue.RareCatch);
+                    continue;
+                }
+
+                var perfectGenes = GeneUi.PerfectAttributes(c.Genes);
                 if (c.IsNewSpecies)
                 {
                     _root.Toasts.Push(GameTexts.Toasts.NewSpecies(c.SpeciesName), ToastKind.Important, icon, notify: true, sound: SoundCue.RareCatch);
@@ -219,7 +229,8 @@ namespace FishingIdle.Game.UI
                 }
                 else
                 {
-                    _root.Toasts.Push(GameTexts.Toasts.Catch(c.SpeciesName, size, c.SizeCategoryName), ToastKind.Catch, icon);
+                    _root.Toasts.Push(GameTexts.Toasts.Catch(c.SpeciesName, size, c.SizeCategoryName) + (perfectGenes != null ? GameTexts.Toasts.PerfectGenes(perfectGenes) : string.Empty),
+                        ToastKind.Catch, icon);
                 }
             }
 
@@ -362,6 +373,23 @@ namespace FishingIdle.Game.UI
                 {
                     _root.Celebrations.Show(GameTexts.Celebration.RarityCatch(best.RarityId), GameTexts.Celebration.RareLine(best.SpeciesName, best.RarityName, size), theme.Rarity(best.RarityId), art);
                 }
+            }
+
+            // Genes (M24-T52, A-176): the best-genes catch of the batch (5 stars, or the perfect specimen) gets its own banner.
+            CatchView topGenes = null;
+            foreach (var c in update.NewCatches)
+            {
+                if (c.Genes != null && c.Genes.IsCelebrated && (topGenes == null || c.Genes.Total > topGenes.Genes.Total))
+                {
+                    topGenes = c;
+                }
+            }
+
+            if (topGenes != null)
+            {
+                var genes = topGenes.Genes;
+                _root.Celebrations.Show(genes.IsPerfectSpecimen ? GameTexts.Celebration.PerfectSpecimen : GameTexts.Celebration.TopGenes(genes.Stars),
+                    GameTexts.Celebration.GenesLine(topGenes.SpeciesName, Format.Percent(genes.Quality, 0)), theme.Reward, Art.FishTexture(topGenes.SpeciesId));
             }
 
             foreach (var level in update.LevelsReached)

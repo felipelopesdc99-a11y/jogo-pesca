@@ -270,6 +270,13 @@ namespace FishingIdle.GameService
                      + boats.ShellsRefunded + " shells), " + boats.FragmentsMoved + " fragments moved to today's boats.");
             }
 
+            // Fish from before the genes (M24-T52, A-176, TD-056) get the neutral 16/16/16/16; a broken set too.
+            var neutralGenes = Persistence.GeneMigration.GiveMissingGenes(Config, Save);
+            if (neutralGenes > 0)
+            {
+                _log("Genes: " + neutralGenes + " fish without genes got the neutral value " + Config.Progression.Genes.MigrationNeutralValue + ".");
+            }
+
             // Levels and charges stay inside what the config allows (an edited save, or a config that
             // lowered a maximum, cannot leave a fish or a rod above the top level).
             var fishMax = Config.Progression.FishLevel.MaxLevel;

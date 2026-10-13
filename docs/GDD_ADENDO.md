@@ -3321,3 +3321,50 @@ sistema novo: ela mostra o que a pesca offline já dava.
 - **Números do serviço** (no `OfflineReport`, calculados quando o relatório é feito): valor da pesca, nível do Pescador
   antes e depois, ocupação e limite da Caixa, peixes por raridade e Fragmentos de Roupa (os que tem e o custo da próxima
   peça). A tela só soma o que já vem por fragmento (o último de cada barco ou vara diz o progresso).
+
+### A-176 · Genes: cada peixe é único
+**Seção do GDD:** 13 (atributos do peixe), 11 (Caixa de Pesca), 12 (Aquário), 33 (Mercado) · pedido do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário (M24-T52): "caçar exemplares melhores é o que prendia no jogo. Vamos adicionar os genes." Antes,
+dois peixes da mesma espécie só diferiam pelo tamanho e pelo nível. Agora cada peixe nasce com genes e é único.
+
+- **4 genes por peixe**, um para cada atributo de combate: **Vida, Ataque, Defesa e Velocidade**. Cada um vai de **0 a
+  31**, sorteado na captura de forma uniforme e independente (pelo sorteio do serviço). Os genes são **permanentes**:
+  ficam no peixe na Caixa de Pesca, no Aquário, no Cardume, no Clã e no Mercado, e nunca mudam.
+- **Efeito:** cada gene multiplica o seu atributo entre **×0,90 (gene 0)** e **×1,10 (gene 31)**, em linha reta. A média
+  de todos os peixes fica em ×1,00, então a Arena, o Boss Mundial, os Clãs e as Expedições não mudam na média; o que
+  muda é que agora existem peixes melhores e piores da mesma espécie. Entra na mesma conta da espécie, da raridade, do
+  tamanho e do nível.
+- **Qualidade:** a soma dos 4 genes (0 a 124) vira um percentual de 0% a 100% e **estrelas de 1 a 5**: 1★ abaixo de
+  30%, 2★ de 30%, 3★ de 55%, 4★ de 75% e 5★ de 90%. Com o sorteio uniforme, sai 1★ em 9,6% dos peixes, 2★ em 53,7%,
+  3★ em 31,7%, 4★ em 4,8% e **5★ em 0,17% (cerca de 1 a cada 575 peixes)**.
+- **Gene perfeito** é um gene 31 (aparece em dourado; ~12% dos peixes têm pelo menos um). Os 4 genes em 31 são o
+  **Exemplar perfeito** (~1 em 1 milhão): é o sonho da caça.
+- **Preço de venda ao jogo (NPC) não muda** com os genes: a economia fica igual. No Mercado entre jogadores, as estrelas
+  e os genes aparecem no anúncio para o comprador decidir (e o Mercado ganhou a ordem "Melhor qualidade").
+- **Onde aparece:**
+  - **Cartão do peixe** (Caixa de Pesca, Aquário, Mercado, destaques do "Bem-vindo de volta", peixe achado na Expedição,
+    escolha de alimento): 5 estrelinhas sob o selo de raridade, as ganhas em dourado e as outras apagadas.
+  - **Ficha do peixe** (Aquário no Tanque e nas Cartas, Mercado): o título "Atributos" ganha as estrelas e "Qualidade
+    72%" (ou o selo dourado "EXEMPLAR PERFEITO"); cada atributo mostra uma barrinha com o seu gene, "27/31", e o valor;
+    o gene 31 fica em dourado. No Cardume do Perfil, as estrelas aparecem ao lado do nível.
+  - **Caixa de Pesca:** ordem "Melhor qualidade" (genes mais altos primeiro) e o menu "Qualidade: Todas / 5 estrelas / 4
+    estrelas ou mais / 3 estrelas ou mais / 2 estrelas ou mais", que combina com raridade, tamanho e busca.
+  - **Aquário:** a ordem "Qualidade" e um botão "Qualidade: …" que a cada clique mostra menos peixes e melhores (Todas →
+    5 → 4+ → 3+ → 2+ → Todas).
+  - **Avisos:** pescar um peixe de 5 estrelas (ou o Exemplar perfeito) dá um aviso com som e a celebração dourada
+    "Exemplar de 5 estrelas!" (ou "Exemplar perfeito!") com o peixe e "genes 93%". Um gene perfeito sozinho não tem aviso
+    próprio (seria 1 peixe em 8): só aparece no fim da linha da captura ("· gene perfeito: Ataque").
+  - **"Bem-vindo de volta":** os peixes de 5 estrelas entram nos destaques primeiro, e o título diz "1 exemplar de 5
+    estrelas".
+  - **"Como funciona"** (o "i") da Caixa de Pesca e do Aquário explica os genes em 3 frases; o do Mercado também.
+- **Proteção:** um peixe de 5 estrelas na Caixa de Pesca pede a confirmação "Revisar peixes / Confirmar" antes de uma
+  venda em lote, como os raros e os de tamanho especial. No Aquário, um peixe de 5 estrelas pede confirmação antes de
+  virar alimento ou de ser vendido em lote.
+- **Peixes que já existiam** (saves de antes) recebem genes neutros **16/16/16/16**: ×1,003 em cada atributo, 2 estrelas,
+  quase exatamente a força que tinham. Não ganham nem perdem nada relevante.
+- **Peixes dos jogadores simulados** (Mercado, Leilão e adversários da Arena) também têm genes sorteados, com a mesma regra.
+- **Números em `/config`:** `progression.json → genes` (máximo 31, ×0,90 a ×1,10, valor neutro 16, faixas das estrelas,
+  estrelas que celebram), `feeding.valuable_feed_rules.gene_stars_at_or_above` e `economy.json →
+  fishing_box.bulk_sale_protection.gene_stars_at_or_above` (5).
+- **Próximo passo proposto:** o Temperamento (OD-072), à espera da decisão do proprietário.

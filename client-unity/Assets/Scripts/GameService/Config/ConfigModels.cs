@@ -96,6 +96,35 @@ namespace FishingIdle.GameService.Config
 
         /// <summary>Name rules and the avatars the player can pick (M18-T03).</summary>
         public PlayerIdentityConfig PlayerIdentity { get; set; }
+
+        /// <summary>The four genes of every fish (M24-T52, A-176).</summary>
+        public GenesConfig Genes { get; set; }
+    }
+
+    /// <summary>
+    /// Genes (M24-T52, A-176): four per fish (Vida, Ataque, Defesa, Velocidade), 0 to <see cref="MaxValue"/> each, rolled
+    /// uniformly at capture. Each scales its attribute between <see cref="StatMultiplierMin"/> and <see cref="StatMultiplierMax"/>.
+    /// </summary>
+    public sealed class GenesConfig
+    {
+        public int MaxValue { get; set; } = 31;
+        public double StatMultiplierMin { get; set; } = 0.9;
+        public double StatMultiplierMax { get; set; } = 1.1;
+
+        /// <summary>The value every gene of a fish from a save before version 23 gets (TD-056).</summary>
+        public int MigrationNeutralValue { get; set; } = 16;
+
+        /// <summary>Quality bands, ascending: the stars of the highest band whose min_percent was reached.</summary>
+        public List<GeneStarsConfig> QualityStars { get; set; } = new List<GeneStarsConfig>();
+
+        /// <summary>A catch with this many stars or more is celebrated and highlighted (0 = off).</summary>
+        public int CelebrateMinStars { get; set; }
+    }
+
+    public sealed class GeneStarsConfig
+    {
+        public int Stars { get; set; }
+        public double MinPercent { get; set; }
     }
 
     public sealed class PlayerIdentityConfig
@@ -140,6 +169,9 @@ namespace FishingIdle.GameService.Config
         public string RarityAtOrAbove { get; set; }
         public List<string> SizeCategories { get; set; }
         public int MinLevel { get; set; }
+
+        /// <summary>Gene quality (stars) from which a fish asks before being consumed or sold in bulk (M24-T52; 0 = off).</summary>
+        public int GeneStarsAtOrAbove { get; set; }
     }
 
     public sealed class FisherConfig
@@ -454,6 +486,9 @@ namespace FishingIdle.GameService.Config
     {
         public List<string> Rarities { get; set; }
         public List<string> SizeCategories { get; set; }
+
+        /// <summary>Gene quality (stars) from which a Fishing Box catch asks before a bulk sale (M24-T52; 0 = off).</summary>
+        public int GeneStarsAtOrAbove { get; set; }
     }
 
     // ---------------------------------------------------------------- arena.json (Cardume parts)

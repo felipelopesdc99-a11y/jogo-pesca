@@ -196,9 +196,12 @@ namespace FishingIdle.Game.UI
                 _rarityTotal += r.Count;
             }
 
-            // The highlights: the most valuable of the important catches, as fish cards.
+            // The highlights: the important catches as fish cards, the best genes (5 stars, M24-T52) first, then the most valuable.
             Best.Clear();
-            foreach (var c in catches.Where(c => c.IsImportant).OrderByDescending(c => c.SalePriceCoins).Take(4))
+            foreach (var c in catches.Where(c => c.IsImportant)
+                         .OrderByDescending(c => c.Genes != null && c.Genes.IsCelebrated)
+                         .ThenByDescending(c => c.Genes != null && c.Genes.IsCelebrated ? c.Genes.Total : 0)
+                         .ThenByDescending(c => c.SalePriceCoins).Take(4))
             {
                 var model = new FishCardModel
                 {
@@ -211,6 +214,7 @@ namespace FishingIdle.Game.UI
                     SizeCategoryName = c.SizeCategoryName,
                     Bar = (float)c.SizePercentile,
                     Coins = Format.Short(c.SalePriceCoins),
+                    Genes = c.Genes,
                 };
                 FishCard.StatusBadge(model, c.IsNewSpecies, c.IsPersonalRecord);
                 Best.Add(model);
@@ -218,8 +222,12 @@ namespace FishingIdle.Game.UI
 
             var species = catches.Count(c => c.IsNewSpecies);
             var records = catches.Count(c => c.IsPersonalRecord);
-            _bestNote = species > 0 && records > 0 ? GameTexts.Offline.NewSpecies(species) + GameTexts.Offline.Separator + GameTexts.Offline.Records(records)
-                : species > 0 ? GameTexts.Offline.NewSpecies(species) : records > 0 ? GameTexts.Offline.Records(records) : null;
+            var topGenes = catches.Where(c => c.Genes != null && c.Genes.IsCelebrated).ToList();
+            var notes = new List<string>();
+            if (species > 0) notes.Add(GameTexts.Offline.NewSpecies(species));
+            if (records > 0) notes.Add(GameTexts.Offline.Records(records));
+            if (topGenes.Count > 0) notes.Add(GameTexts.Offline.TopGenes(topGenes.Count, topGenes.Min(c => c.Genes.Stars)));
+            _bestNote = notes.Count > 0 ? string.Join(GameTexts.Offline.Separator, notes) : null;
 
             BuildGear(report, update);
             BuildWarnings(report, update);

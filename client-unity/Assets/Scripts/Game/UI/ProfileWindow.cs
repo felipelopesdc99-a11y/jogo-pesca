@@ -1317,6 +1317,13 @@ namespace FishingIdle.Game.UI
                 var ty = rect.yMax - 74;
                 GUI.Label(new Rect(rect.x + 12, ty, rect.width - 24, 22), FishCard.Fit(slot.Fish.SpeciesName, skin.BodyBold, rect.width - 24), skin.BodyBold);
                 GUI.Label(new Rect(rect.x + 12, ty + 21, rect.width - 24, UiSkin.SmallLine), GameTexts.Player.LevelShort + " " + slot.Fish.Level, skin.SmallMuted);
+                // The quality stars of the genes (M24-T52) at the end of the level line.
+                var slotStars = slot.Fish.Genes != null ? GeneUi.StarsWidth(slot.Fish.Genes.MaxStars, 12f) : 0f;
+                if (slotStars > 0f && slotStars + 50f <= rect.width - 24)
+                {
+                    GeneUi.Stars(skin, new Rect(rect.xMax - 12 - slotStars, ty + 24, slotStars, 14f), slot.Fish.Genes, 12f);
+                }
+
                 skin.Bar(new Rect(rect.x + 12, ty + 46, rect.width - 24, 6), Mathf.Clamp01(slot.Strength / maxStrength), accent);
                 GUI.Label(new Rect(rect.x + 12, ty + 53, rect.width - 24, UiSkin.SmallLine), GameTexts.Cardume.StrengthShort(Format.Number(slot.Strength)), skin.SmallMutedRight);
                 sx += slotW + 12f;

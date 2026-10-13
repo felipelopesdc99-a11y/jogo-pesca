@@ -101,6 +101,8 @@ namespace FishingIdle.GameService.Aquarium
                     CaughtAtMs = entry.CaughtAtMs,
                     KeptAtMs = now,
                     SourceCatchId = entry.Id,
+                    // The genes go with the fish for good (M24-T52, A-176).
+                    Genes = GeneRules.IsValid(Config, entry.Genes) ? (int[])entry.Genes.Clone() : GeneRules.Neutral(Config),
                 };
                 Save.Aquarium.Add(fish);
                 result.Kept.Add(ToView(fish));
@@ -282,7 +284,7 @@ namespace FishingIdle.GameService.Aquarium
                 }
 
                 preview.XpGained += FishRules.FeedValue(Config, species, c.SizeMm, 0);
-                if (FishRules.IsValuableFood(Config, species.Rarity, c.SizeCategoryId, 1))
+                if (FishRules.IsValuableFood(Config, species.Rarity, c.SizeCategoryId, 1, GeneRules.StarsOf(Config, c.Genes)))
                 {
                     preview.ValuableFood.Add(species.DisplayName + " · " + FishingIdle.Texts.Format.SizeCm(c.SizeMm / 10.0));
                 }
@@ -296,7 +298,7 @@ namespace FishingIdle.GameService.Aquarium
                 }
 
                 preview.XpGained += FishRules.FeedValue(Config, species, f.SizeMm, f.InvestedXp);
-                if (FishRules.IsValuableFood(Config, species.Rarity, f.SizeCategoryId, f.Level))
+                if (FishRules.IsValuableFood(Config, species.Rarity, f.SizeCategoryId, f.Level, GeneRules.StarsOf(Config, f.Genes)))
                 {
                     preview.ValuableFood.Add(species.DisplayName + " · " + FishingIdle.Texts.GameTexts.Player.LevelShort + " " + f.Level);
                 }
@@ -349,6 +351,7 @@ namespace FishingIdle.GameService.Aquarium
                 CaughtAtMs = fish.CaughtAtMs,
                 KeptAtMs = fish.KeptAtMs,
                 Stats = new FishStats(),
+                Genes = GeneRules.View(Config, fish.Genes),
                 // Fish on the Market may have no id yet (0 is also an empty Cardume position).
                 CardumePosition = fish.Id > 0 ? Save.CardumeSlots.IndexOf(fish.Id) + 1 : 0,
             };
@@ -366,13 +369,13 @@ namespace FishingIdle.GameService.Aquarium
                 view.SpeciesMinCm = species.SizeCm.Min;
                 view.SpeciesMaxCm = species.SizeCm.Max;
                 view.SizePercentile = CatchRules.Percentile(species, fish.SizeMm);
-                view.Stats = FishRules.Stats(Config, species, fish.SizeMm, fish.Level, fish.SizeCategoryId);
+                view.Stats = FishRules.Stats(Config, species, fish.SizeMm, fish.Level, fish.SizeCategoryId, GeneRules.IsValid(Config, fish.Genes) ? fish.Genes : GeneRules.Neutral(Config));
                 view.SalePriceCoins = CatchRules.SalePrice(Config, species, fish.SizeMm);
                 view.FeedXp = FishRules.FeedValue(Config, species, fish.SizeMm, fish.InvestedXp);
-                view.IsValuableFood = FishRules.IsValuableFood(Config, species.Rarity, fish.SizeCategoryId, fish.Level);
+                view.IsValuableFood = FishRules.IsValuableFood(Config, species.Rarity, fish.SizeCategoryId, fish.Level, view.Genes.Stars);
             }
 
-            view.IsImportant = Config.IsSpecialSize(fish.SizeCategoryId) || (view.RarityId != null && Config.RarityRank(view.RarityId) > 0);
+            view.IsImportant = Config.IsSpecialSize(fish.SizeCategoryId) || (view.RarityId != null && Config.RarityRank(view.RarityId) > 0) || view.Genes.IsCelebrated;
             return view;
         }
 
@@ -386,6 +389,9 @@ namespace FishingIdle.GameService.Aquarium
                     return fish.OrderBy(f => f.SpeciesName, StringComparer.CurrentCulture).ThenByDescending(f => f.SizeCm);
                 case AquariumSort.Newest:
                     return fish.OrderByDescending(f => f.FishId);
+                case AquariumSort.Quality:
+                    // The hunt (M24-T52): best genes first, then the most perfect genes, then the newest.
+                    return fish.OrderByDescending(f => f.Genes?.Total ?? 0).ThenByDescending(f => f.Genes?.PerfectCount ?? 0).ThenByDescending(f => f.FishId);
                 default:
                     // Size categories are listed smallest → largest in config; show the largest first.
                     var order = Config.SizeCategories.Select((c, i) => new { c.Id, i }).ToDictionary(x => x.Id, x => x.i);

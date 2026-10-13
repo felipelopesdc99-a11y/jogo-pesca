@@ -56,6 +56,11 @@ public class StartupWithOldSavesTests
         Assert.True(save.FisherLevel >= 60);
         Assert.True(save.Dollars >= 60);
         Assert.Contains("boat_02", save.OwnedBoatIds);
+        // Every fish has genes after opening (M24-T52, TD-056): the old ones the neutral 16/16/16/16.
+        var config = game.Session.Config;
+        Assert.All(save.FishingBox, c => Assert.True(FishingIdle.GameService.Fishing.GeneRules.IsValid(config, c.Genes)));
+        Assert.All(save.Aquarium, f => Assert.True(FishingIdle.GameService.Fishing.GeneRules.IsValid(config, f.Genes)));
+        Assert.Contains(save.Aquarium, f => f.Genes.All(g => g == 16));
         // The Crew and the Upgrades of versions 13 to 20 were refunded and cleared (M24-T46, A-172).
         Assert.Null(save.RetiredCrew);
         Assert.Null(save.RetiredUpgrades);
@@ -176,6 +181,12 @@ public class StartupWithOldSavesTests
         {
             // The Upgrades of versions 14 to 20 (M24-T06): the Ajudante's first ×2 and two levels of the Freguesia na Feira.
             json["upgrades"] = new JObject { ["levels"] = new JObject { ["crew_01_up_1"] = 1, ["fair_customers"] = 2 } };
+        }
+
+        if (version <= 22)
+        {
+            // Before the genes (M24-T52): no fish had them.
+            GenesTests.StripGenes(json);
         }
 
         if (version <= 21)

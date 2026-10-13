@@ -134,7 +134,7 @@ namespace FishingIdle.GameService.Clans
                 return 0;
             }
 
-            var stats = FishRules.Stats(config, species, fish.SizeMm, fish.Level, fish.SizeCategoryId);
+            var stats = FishRules.Stats(config, species, fish.SizeMm, fish.Level, fish.SizeCategoryId, GeneRules.IsValid(config, fish.Genes) ? fish.Genes : GeneRules.Neutral(config));
             return Math.Max(0L, CardumeRules.Display(config, CardumeRules.RawStrength(config, stats)));
         }
 

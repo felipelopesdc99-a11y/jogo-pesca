@@ -101,6 +101,9 @@ namespace FishingIdle.GameService.Market
                 case MarketSort.Newest:
                     results = results.OrderByDescending(v => v.ListedAtMs).ThenByDescending(v => v.ListingId);
                     break;
+                case MarketSort.QualityDescending:
+                    results = results.OrderByDescending(v => v.Goods.Fish?.Genes?.Total ?? -1).ThenBy(v => v.PriceCoins).ThenBy(v => v.ListingId);
+                    break;
                 default:
                     results = results.OrderBy(v => v.PriceCoins).ThenBy(v => v.ListingId);
                     break;
@@ -395,7 +398,7 @@ namespace FishingIdle.GameService.Market
         {
             var supply = Config.MarketBots.Supply;
             var seller = RandomTraderName(rng);
-            var goods = NewBotGoods(rng, supply.RodListingChance, listedAt);
+            var goods = NewBotGoods(rng, supply.RodListingChance, listedAt, Rng.For(Save.RngSeed ^ SupplySalt, State.BotListingsCreated, 1));
 
             // Never below what the game could pay, so buying a simulated listing to resell it to the game never profits (TD-052).
             var floor = MarketRules.BotFloor(Config, goods);
@@ -437,8 +440,11 @@ namespace FishingIdle.GameService.Market
             return null;
         }
 
-        /// <summary>A fish from any map (sometimes levelled) or, with <paramref name="rodChance"/>, a tradable rod.</summary>
-        private MarketGoods NewBotGoods(Rng rng, double rodChance, long at)
+        /// <summary>
+        /// A fish from any map (sometimes levelled) or, with <paramref name="rodChance"/>, a tradable rod. A fish's genes
+        /// (M24-T52) come from <paramref name="geneRng"/>, a stream of their own, so the other rolls stay as they were.
+        /// </summary>
+        private MarketGoods NewBotGoods(Rng rng, double rodChance, long at, Rng geneRng)
         {
             var rods = Config.Rods.Rods.Where(r => r.TradableOnMarket).ToList();
             var rodRoll = rng.NextDouble();
@@ -476,6 +482,7 @@ namespace FishingIdle.GameService.Market
                     InvestedXp = MarketRules.FishXpToReach(Config, fishLevel),
                     CaughtAtMs = at,
                     KeptAtMs = at,
+                    Genes = GeneRules.Roll(Config, geneRng),
                 },
             };
         }

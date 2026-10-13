@@ -3,6 +3,33 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.13] — 13/10/2026
+
+Genes: cada peixe é único, pedido do proprietário (M24-T52, A-176). Save v23. Verificado no CI, não aberto no Unity.
+
+### Adicionado
+
+- Cada peixe nasce com **4 genes**, um para cada atributo (**Vida, Ataque, Defesa e Velocidade**), de **0 a 31**,
+  sorteados na captura e permanentes. Cada gene muda o seu atributo de **−10% (gene 0) a +10% (gene 31)**; na média, a
+  força dos peixes fica a mesma de antes.
+- **Estrelas de qualidade (1 a 5)** pela soma dos genes: 5 estrelas é raro (cerca de 1 a cada 575 peixes). Gene 31 é o
+  **gene perfeito**, em dourado; os 4 em 31 são o **Exemplar perfeito**.
+- As estrelas aparecem no **cartão de todo peixe** (Caixa de Pesca, Aquário, Mercado, destaques, Expedição); a **ficha**
+  do Aquário e do Mercado mostra "Qualidade 72%" e cada atributo com o seu gene ("Ataque 27/31").
+- **Caixa de Pesca:** ordem "Melhor qualidade" e filtro "Qualidade" (5 estrelas, 4 ou mais…). **Aquário:** ordem
+  "Qualidade" e botão de filtro por estrelas. **Mercado:** ordem "Melhor qualidade" e os genes no anúncio.
+- Pescar um peixe de **5 estrelas** dá aviso e celebração ("Exemplar de 5 estrelas!"); um gene perfeito aparece na linha
+  da captura. No "Bem-vindo de volta", os 5 estrelas entram primeiro nos destaques.
+- Peixes de 5 estrelas pedem confirmação antes de uma venda em lote e antes de virar alimento.
+- Os peixes do Mercado, do Leilão e da Arena também têm genes.
+- O "i" (Como funciona) da Caixa de Pesca, do Aquário e do Mercado explica os genes.
+
+### Mudado
+
+- Save **v23**. Os peixes que você já tinha recebem genes neutros **16/16/16/16** (2 estrelas, quase a mesma força de
+  antes). O preço de venda ao jogo não muda com os genes.
+- Proposta para decidir: o **Temperamento** dos peixes (OD-072).
+
 ## [0.2.0-m24.12] — 13/10/2026
 
 Relatório "Bem-vindo de volta", pedido do proprietário (M24-T51, A-175). Verificado no CI, não aberto no Unity.

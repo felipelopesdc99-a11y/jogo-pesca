@@ -304,7 +304,7 @@ public sealed class ClanTests
         var config = game.Session.Config;
         var instance = save.Aquarium.Single(f => f.Id == fish[0]);
         config.TryGetSpecies(instance.SpeciesId, out var species);
-        var stats = FishRules.Stats(config, species, instance.SizeMm, instance.Level, instance.SizeCategoryId);
+        var stats = FishRules.Stats(config, species, instance.SizeMm, instance.Level, instance.SizeCategoryId, instance.Genes);
         var expected = CardumeRules.Display(config, CardumeRules.RawStrength(config, stats));
         Assert.True(expected > 0);
         Assert.Equal(expected, mine.Strength);

@@ -14,7 +14,7 @@ namespace FishingIdle.GameService.Persistence
     public sealed class PlayerSave
     {
         /// <summary>Format version of this file. Bump when the shape changes; see SaveMigrations.</summary>
-        public const int CurrentVersion = 22;
+        public const int CurrentVersion = 23;
 
         /// <remarks>
         /// A file without save_version is read as version 1, so it runs every migration instead of skipping them all
@@ -698,12 +698,18 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>Balance version the catch was made with (M18-T07); only on notable catches, null otherwise.</summary>
         [JsonProperty("bv", NullValueHandling = NullValueHandling.Ignore)] public string BalanceVersion { get; set; }
+
+        /// <summary>
+        /// The four genes (M24-T52, A-176): Vida, Ataque, Defesa, Velocidade, each 0–31, rolled at capture and permanent.
+        /// They go with the fish to the Aquarium. Null only in a save before version 23 (GeneMigration fills them).
+        /// </summary>
+        [JsonProperty("g", NullValueHandling = NullValueHandling.Ignore)] public int[] Genes { get; set; }
     }
 
     /// <summary>
     /// A fish the player kept. It exists only from the moment it is moved to the Aquarium and keeps
     /// its identity until consumed or sold. Combat stats are not stored: they are derived from
-    /// species, rarity, size and level, so identical inputs always give identical stats.
+    /// species, rarity, size, level and genes, so identical inputs always give identical stats.
     /// </summary>
     public sealed class FishInstance
     {
@@ -727,6 +733,12 @@ namespace FishingIdle.GameService.Persistence
 
         /// <summary>The Fishing Box catch it came from, for audit.</summary>
         public long SourceCatchId { get; set; }
+
+        /// <summary>
+        /// The four genes (M24-T52, A-176): Vida, Ataque, Defesa, Velocidade, each 0–31, from the catch and permanent (also on
+        /// the Market). Null only in a save before version 23 (GeneMigration fills them).
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public int[] Genes { get; set; }
     }
 
     public static class BoxCatchFlags

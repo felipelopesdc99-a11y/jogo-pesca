@@ -240,7 +240,7 @@ namespace FishingIdle.GameService.Market
         {
             var bots = Config.MarketBots.Auctions;
             var seller = RandomTraderName(rng);
-            var goods = NewBotGoods(rng, bots.RodAuctionChance, startedAt);
+            var goods = NewBotGoods(rng, bots.RodAuctionChance, startedAt, Rng.For(Save.RngSeed ^ AuctionSupplySalt, State.BotAuctionsCreated, 1));
             var ratio = bots.StartingBidRatio.Min + rng.NextDouble() * (bots.StartingBidRatio.Max - bots.StartingBidRatio.Min);
 
             // Never below what the game could pay, so winning at the starting bid cannot be resold to the game at a profit (TD-052).

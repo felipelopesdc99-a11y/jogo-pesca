@@ -20,6 +20,7 @@ namespace FishingIdle.GameService.Fishing
                 CaughtAtMs = entry.CaughtAtMs,
                 IsNewSpecies = (entry.Flags & BoxCatchFlags.NewSpecies) != 0,
                 IsPersonalRecord = (entry.Flags & BoxCatchFlags.PersonalRecord) != 0,
+                Genes = GeneRules.View(config, entry.Genes),
             };
 
             if (config.TryGetSizeCategory(entry.SizeCategoryId, out var category))
@@ -42,10 +43,11 @@ namespace FishingIdle.GameService.Fishing
             var protection = config.Economy.FishingBox.BulkSaleProtection;
             view.IsProtected =
                 (protection.Rarities != null && view.RarityId != null && protection.Rarities.Contains(view.RarityId)) ||
-                (protection.SizeCategories != null && protection.SizeCategories.Contains(entry.SizeCategoryId));
+                (protection.SizeCategories != null && protection.SizeCategories.Contains(entry.SizeCategoryId)) ||
+                (protection.GeneStarsAtOrAbove > 0 && view.Genes.Stars >= protection.GeneStarsAtOrAbove);
 
-            view.IsValuableFood = FishRules.IsValuableFood(config, view.RarityId, entry.SizeCategoryId, 1);
-            view.IsImportant = view.IsProtected || view.IsNewSpecies || config.IsSpecialSize(entry.SizeCategoryId);
+            view.IsValuableFood = FishRules.IsValuableFood(config, view.RarityId, entry.SizeCategoryId, 1, view.Genes.Stars);
+            view.IsImportant = view.IsProtected || view.IsNewSpecies || config.IsSpecialSize(entry.SizeCategoryId) || view.Genes.IsCelebrated;
             return view;
         }
     }

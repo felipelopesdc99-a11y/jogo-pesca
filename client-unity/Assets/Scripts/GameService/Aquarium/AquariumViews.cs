@@ -11,6 +11,9 @@ namespace FishingIdle.GameService.Aquarium
         Level,
         Species,
         Newest,
+
+        /// <summary>Best genes first (M24-T52, A-176).</summary>
+        Quality,
     }
 
     /// <summary>Read-only view of a kept fish, with its derived attributes.</summary>
@@ -51,6 +54,9 @@ namespace FishingIdle.GameService.Aquarium
 
         /// <summary>Cardume position (1–6), or 0 when not in the Cardume.</summary>
         public int CardumePosition { get; internal set; }
+
+        /// <summary>The fish's genes, quality and stars (M24-T52, A-176).</summary>
+        public GeneView Genes { get; internal set; }
     }
 
     public sealed class AquariumView

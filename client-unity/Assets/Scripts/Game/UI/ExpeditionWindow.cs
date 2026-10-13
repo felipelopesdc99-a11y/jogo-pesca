@@ -847,6 +847,7 @@ namespace FishingIdle.Game.UI
                     SizeCategoryName = fish.SizeCategoryName,
                     Bar = (float)fish.SizePercentile,
                     Coins = Format.Short(fish.SalePriceCoins),
+                    Genes = fish.Genes,
                 };
                 FishCard.StatusBadge(model, fish.IsNewSpecies, fish.IsPersonalRecord);
                 var card = new Rect(rect.center.x - 106, y, 212, 196);

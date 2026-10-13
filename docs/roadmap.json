@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-13T20:00:00Z",
+  "updated_at": "2026-10-13T22:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -676,6 +676,14 @@
       "title": "Preços e prêmios dos clãs",
       "detail": "Os clãs (A-174) estão com números provisórios em config/clans.json. Hoje: o primeiro clã de cada jogador é grátis e cada clã criado depois custa 50 Dólares (decidido pelo proprietário em 13/10/2026); cada vaga extra custa 20 Dólares e cada uma seguinte 1,5 vez a anterior (20, 30, 45, 68, 101), até 15 vagas no total (10 + até 5 compradas: decidido pelo proprietário em 13/10/2026); prêmios do ranking diário para cada membro: 1º 25 Dólares + 60 min de renda em Moedas e em Conchas + 3 Fragmentos de Roupa + 3 fragmentos de barco; 2º 15 + 45 min + 2 + 2; 3º 10 + 30 min + 1 + 1 (os prêmios só ligam com o jogo online). Para comparar: até o Nv.100 o Passe grátis dá 100 Dólares, e o VIP e o Premium do Passe custam 100 cada. Opções: (a) ficam assim; (b) recriar mais barato ou mais caro que 50 Dólares; (d) outros prêmios.",
       "raised_at": "2026-10-13T18:00:00Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "OD-072",
+      "task_id": "M24-T53",
+      "title": "Temperamento dos peixes depois dos genes",
+      "detail": "Com os genes no jogo (A-176), a proposta seguinte é o Temperamento: cada peixe nasce com 1 de 12 temperamentos, sorteado na captura e permanente. 4 são neutros (não mudam nada) e 8 sobem um atributo em 10% e descem outro em 10% (por exemplo \"Bravo\": Ataque +10%, Defesa −10%; \"Calmo\": Defesa +10%, Velocidade −10%). Combina com os genes: um peixe com genes ótimos de Ataque pode vir com um temperamento que derruba o Ataque e ter que ser vendido, como você disse. O preço de venda ao jogo continua igual; os peixes que já existem ficariam com um temperamento neutro. Opções: (a) entra assim (12 temperamentos, ±10%); (b) entra com outros números (por exemplo ±5% ou menos temperamentos); (c) não entra por enquanto. Nada foi implementado.",
+      "raised_at": "2026-10-13T22:00:00Z",
       "status": "OPEN"
     }
   ],
@@ -5002,6 +5010,29 @@
           ],
           "updated_at": "2026-10-13T20:00:00Z",
           "completion_notes": "Serviço: OfflineReport ganhou SaleValueCoins (soma do preço de venda ao NPC das capturas offline), FisherLevelBefore/After, FishingBoxCount/Capacity/Full, Rarities (RarityCountView, na ordem das raridades do progression.json, só as pescadas) e ClothingFragmentsHave/Need (custo da próxima peça), preenchidos em LocalFishingService.FillOfflineSummary quando o relatório é feito. Tela: UI/WelcomeBackDialog reescrita no padrão Diário de bordo (WindowFrame.Panel/Header/Footer): faixa de cena como foto (arte bemvindo_cena quando existir, senão lago ao entardecer desenhado pelo código, ASSET_PENDENTE), cartões de números grandes (Peixes pescados com espécies novas, Valor da pesca em Moedas, XP de Pescador com \"Nv. X → Y!\" e brilho dourado ao subir, Conchas) com contagem de 0,9 s ao abrir, barra de raridades nas cores de raridade com legenda, até 4 cartas de destaque (FishCard, selos NOVA ESPÉCIE/RECORDE), cartões de fragmentos com os ícones frag_boat_NN/frag_rod_NN/frag_roupa, +N e barra até montar (MONTADO!/MONTADA!, sobras, roupa pronta para montar), roupas que subiram de nível, avisos (Caixa cheia ou acima de 90% com barra e botão Abrir a Caixa, tentativas paradas, isca que acabou, peixes que escaparam) e rodapé com Abrir a Caixa de Pesca e Continuar; rola quando não cabe (~1200×600); tudo calculado uma vez por relatório. Esc fecha o relatório (Hud). Textos em GameTexts.Offline. Testes (OfflineSummaryTests, 6): valor = soma dos preços e = PreviewSale, nível antes/depois, raridades somam e seguem a ordem, ocupação da Caixa, Caixa cheia offline, Fragmentos de Roupa e custo da próxima peça. Pedido de arte em docs/ASSETS_PENDENTES.md. Compilado no CI; o visual só fica verificado quando o proprietário apertar Play."
+        },
+        {
+          "id": "M24-T52",
+          "title": "Genes: cada peixe é único (4 genes de 0 a 31 e estrelas de qualidade)",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (13/10/2026), como no PokeIdle: \"caçar exemplares melhores é o que prendia no jogo. Vamos adicionar os genes.\" Cada peixe nasce com 4 genes (Vida, Ataque, Defesa, Velocidade), de 0 a 31, sorteados na captura e permanentes; cada gene multiplica o seu atributo de ×0,90 a ×1,10; qualidade em % e estrelas de 1 a 5; saves antigos com genes neutros 16; preço ao NPC igual (A-176, TD-056).",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T51"
+          ],
+          "updated_at": "2026-10-13T22:00:00Z",
+          "completion_notes": "Serviço: Fishing/GeneRules (Roll uniforme 0–31 com o Rng do serviço; RollForCatch num fluxo próprio da semente e do id da captura, sem mudar espécie, tamanho, Conchas nem fragmentos do ciclo; Multiplier ×0,90 a ×1,10; View com total, qualidade, estrelas, genes perfeitos, Exemplar perfeito e IsCelebrated; Neutral 16) e GeneView em CatchView.Genes e FishView.Genes. FishRules.Stats ganhou o fator de gene por atributo (null = sem fator, na Enciclopédia); Aquário, Cardume, Arena, Boss, Clã (ClanRules.FishStrength) e Mercado usam os genes do peixe. Genes gravados em BoxCatch.Genes (\"g\") e FishInstance.Genes, copiados ao guardar no Aquário e levados pelo Mercado. Peixes simulados com genes: Mercado e Leilão (fluxo do anúncio, índice 1) e Arena (fluxo dos bots por peixe), sem mudar nenhum outro sorteio. Preço NPC sem genes. Proteção: 5★ pede confirmação na venda em lote da Caixa (economy.json → bulk_sale_protection.gene_stars_at_or_above) e ao alimentar ou vender em lote no Aquário (feeding.valuable_feed_rules.gene_stars_at_or_above); 5★ conta como importante (destaque). Ordens: AquariumSort.Quality e MarketSort.QualityDescending. Config: progression.json → genes (max_value 31, 0,90/1,10, migration_neutral_value 16, quality_stars 0/30/55/75/90%, celebrate_min_stars 5) e validação (GenesInvalid, GeneProtectionInvalid). Save v23: migração v22→v23 e Persistence/GeneMigration na carga (16/16/16/16 a todo peixe sem genes válidos: Caixa, Aquário, anúncios, itens a retirar, leilões e notícias; idempotente). Telas (UI/GeneUi novo, textos em GameTexts.Genes, Box, Aquarium, Market, Toasts, Celebration e Offline): estrelas no FishCard (Caixa, Aquário, Mercado, destaques do Bem-vindo de volta, Expedição, escolha de alimento), ficha do Aquário (Tanque e Cartas) e do Mercado com estrelas, \"Qualidade 72%\" ou EXEMPLAR PERFEITO e cada atributo com barrinha e \"27/31\" (31 em dourado), estrelas na lista de Cartas e no Cardume do Perfil; Caixa com ordem \"Melhor qualidade\" e menu Qualidade; Aquário com ordem Qualidade e botão de filtro por estrelas; aviso e celebração \"Exemplar de 5 estrelas!\"/\"Exemplar perfeito!\" e \"· gene perfeito: Ataque\" na linha da captura; Bem-vindo de volta com os 5★ primeiro nos destaques; \"Como funciona\" da Caixa, do Aquário e do Mercado explica os genes. Testes (GenesTests, 18 testes com 31 casos): uniforme 0–31 por gene, independência (correlação e todos os pares), média ~1,0 em 100 mil peixes, 0 → ×0,90, 31 → ×1,10, 16 neutro, conjunto quebrado = neutro, estrelas nas faixas e frequências, Exemplar perfeito, genes guardados e mantidos ao salvar e carregar, Aquário e Força do clã com os genes, preço NPC igual, proteção 5★, ordem por qualidade (Aquário e Mercado), Mercado/Leilão e Arena com genes, migração v22→v23 com 16 e idempotente, validação do config; StartupWithOldSaves tira os genes dos saves 11 a 22 e confere que todos os peixes os recebem; ClanTests usa os genes. A-176, TD-056, BASE_TECNICA, SEGURANCA, config/README, ROADMAP.md. Próximo passo proposto: Temperamento (OD-072). Não compilado localmente (sem .NET); verificado no CI (GitHub). O visual só fica verificado quando o proprietário apertar Play."
+        },
+        {
+          "id": "M24-T53",
+          "title": "Temperamento dos peixes (proposta)",
+          "subsystem": "config",
+          "description": "Próximo passo depois dos genes (A-176), proposto ao proprietário: cada peixe nasce com 1 de 12 temperamentos, permanente; 4 neutros e 8 que sobem um atributo 10% e descem outro 10%; o preço ao NPC não muda. O proprietário achou interessante (\"um peixe forte para ataque pode vir com defesa e ter que ser vendido\"), mas pediu os genes primeiro. Decidir se entra (OD-072). Nada implementado.",
+          "status": "NEEDS_OWNER_DECISION",
+          "dependencies": [
+            "M24-T52"
+          ],
+          "updated_at": "2026-10-13T22:00:00Z"
         }
       ],
       "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."

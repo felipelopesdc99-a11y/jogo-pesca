@@ -76,6 +76,18 @@ o que segue é o que o servidor precisa garantir quando os clãs forem online.
   captura nunca muda por causa do fragmento e a tela não sorteia nada. Peixe que escapa, Caixa cheia e Expedição não dão
   fragmento. Montar é do serviço (automático para barco e vara; a roupa, por pedido, conferindo os fragmentos).
 
+### Genes (M24-T52, A-176, TD-056)
+
+- **Sorteados só pelo serviço** (no futuro, só pelo servidor). Os 4 genes de uma captura saem do `Rng` do serviço, num
+  fluxo da semente do save e do id da captura (`GeneRules.RollForCatch`): o mesmo id dá sempre os mesmos genes, então
+  repetir um pedido ou um ciclo não sorteia de novo. A tela nunca sorteia, nunca escolhe e nunca calcula atributo,
+  qualidade ou estrelas: recebe o `GeneView` pronto.
+- **Nada de genes de fora.** Nenhuma intenção do cliente recebe genes; a captura nasce com eles, o Aquário copia os da
+  captura e o Mercado leva o peixe inteiro. Um save editado com genes fora de 0–31 ou com o número errado de genes
+  vale como neutro (16) no cálculo e é corrigido para 16 ao abrir (`GeneMigration`), nunca como bônus.
+- **Sem dinheiro de graça.** O preço de venda ao jogo não depende dos genes, então um peixe de genes altos não vira
+  Moedas a mais; o valor dele está na força e no Mercado entre jogadores.
+
 ### Pesca offline do VIP (A-160, TD-045)
 
 - **O ciclo de 15 s vale só enquanto o VIP vale.** O serviço calcula a pesca offline tentativa por tentativa com o

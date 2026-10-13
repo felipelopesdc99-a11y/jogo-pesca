@@ -1273,3 +1273,37 @@ pequena; reaproveitar a Força do Cardume e o pacote de prêmios do Boss evita i
 
 **Rever se.** O jogo ganhar servidor (ligar `online_rewards_enabled`, mover `KnownClans` para ele e fotografar o
 ranking às 00:00), ou o proprietário mudar os números provisórios (OD-071).
+
+## TD-056 · Genes: guardados no peixe, sorteados num fluxo próprio, neutros na migração (13/10/2026)
+
+**Origem.** M24-T52 (A-176): o proprietário pediu genes para cada peixe ser único ("caçar exemplares melhores é o que
+prendia no jogo").
+
+**Decisão.**
+- **Os genes são dado do peixe; os atributos continuam derivados.** `BoxCatch.Genes` (chave curta `"g"`, a Caixa é
+  compacta) e `FishInstance.Genes` guardam os 4 valores (Vida, Ataque, Defesa, Velocidade). Os atributos nunca são
+  gravados: `FishRules.Stats` multiplica cada um pelo seu `GeneRules.Multiplier` na mesma conta de espécie, raridade,
+  tamanho e nível. Assim uma mudança do config (×0,90 a ×1,10) vale para todos os peixes que já existem.
+- **Sorteio num fluxo próprio.** Os genes de uma captura vêm de `Rng.For(semente ^ sal dos genes, id da captura, 1)`
+  (`GeneRules.RollForCatch`), não do `Rng` do ciclo. Por isso a espécie, o tamanho, as Conchas e os fragmentos de cada
+  ciclo continuam exatamente os mesmos de antes, e o mesmo id sempre dá os mesmos genes (repetir um ciclo não sorteia de
+  novo). Os peixes do Mercado e do Leilão simulados usam o fluxo do anúncio com índice 1; os da Arena, o da semente dos
+  bots com o índice do peixe: nenhum outro sorteio muda.
+- **Neutros na migração (16/16/16/16).** Save v23: a migração v22 → v23 só sobe a versão; ao abrir a sessão,
+  `Persistence/GeneMigration.GiveMissingGenes` (precisa do config, como as outras conversões) dá
+  `genes.migration_neutral_value` a todo peixe sem genes válidos — Caixa, Aquário (e por ele o Cardume e o Clã), anúncios,
+  itens a retirar, leilões e notícias do Mercado. Ela só preenche o que falta, então rodar de novo não muda nada.
+  Por que 16 e não um sorteio: sortear daria a quem já jogava peixes 5★ de graça e tiraria força de outros (o Cardume de
+  hoje ficaria mais fraco sem o jogador fazer nada); 16 é o valor inteiro mais perto do meio (×1,003) e dá a mesma força
+  de antes. Um conjunto quebrado (tamanho errado, fora de 0–31) também vira neutro, nunca erro nem bônus.
+- **Qualidade e estrelas só no serviço.** `GeneRules.View` entrega o `GeneView` (genes, total, qualidade 0–1, estrelas,
+  genes perfeitos, Exemplar perfeito, se celebra) em `CatchView.Genes` e `FishView.Genes`; a tela só desenha e ordena
+  pelo que recebe.
+- **Preço NPC intocado.** `CatchRules.SalePrice` não recebe genes: a economia não muda.
+
+**Por quê.** Guardar só os genes (e não os atributos) mantém a regra "nada derivável é gravado" e deixa o balanceamento
+em `/config`; o fluxo próprio evita que adicionar um sorteio mude todos os outros; os genes neutros respeitam o "o jogo
+sempre abre, sem perda" (TD-050).
+
+**Rever se.** O proprietário aprovar o Temperamento (OD-072) — ele entraria como mais um dado do peixe, com a mesma
+migração neutra — ou se o jogo ganhar servidor (aí só o servidor sorteia os genes).

@@ -34,7 +34,7 @@ namespace FishingIdle.Game.UI
             Currency,
         }
 
-        private static readonly MarketSort[] Sorts = { MarketSort.PriceAscending, MarketSort.PriceDescending, MarketSort.SizeDescending, MarketSort.SizeAscending, MarketSort.Newest };
+        private static readonly MarketSort[] Sorts = { MarketSort.PriceAscending, MarketSort.PriceDescending, MarketSort.SizeDescending, MarketSort.SizeAscending, MarketSort.Newest, MarketSort.QualityDescending };
 
         private readonly GameRoot _root;
         private Tab _tab;
@@ -942,10 +942,11 @@ namespace FishingIdle.Game.UI
             {
                 var f = goods.Fish;
                 InfoRow(skin, x, ref y, w, GameTexts.Aquarium.Level, GameTexts.Aquarium.LevelOf(f.Level, f.MaxLevel));
-                InfoRow(skin, x, ref y, w, GameTexts.Aquarium.Hp, Format.Decimal(f.Stats.Hp, 0));
-                InfoRow(skin, x, ref y, w, GameTexts.Aquarium.Attack, Format.Decimal(f.Stats.Attack, 1));
-                InfoRow(skin, x, ref y, w, GameTexts.Aquarium.Defense, Format.Decimal(f.Stats.Defense, 1));
-                InfoRow(skin, x, ref y, w, GameTexts.Aquarium.Speed, Format.Decimal(f.Stats.Speed, 0));
+                // The genes are on the listing so the buyer can choose (M24-T52, A-176): stars, quality and each gene.
+                GeneUi.Heading(skin, new Rect(x, y, w, 22), GameTexts.Genes.Title, f.Genes);
+                y += 24;
+                y = GeneUi.AttributeRows(skin, x, y, w, 24f, f.Genes, Format.Decimal(f.Stats.Hp, 0), Format.Decimal(f.Stats.Attack, 1),
+                    Format.Decimal(f.Stats.Defense, 1), Format.Decimal(f.Stats.Speed, 0));
             }
             else if (goods.Rod != null)
             {
@@ -1015,6 +1016,7 @@ namespace FishingIdle.Game.UI
                 Badge = badge,
                 BadgeColor = badgeColor ?? Color.white,
                 Art = fish == null ? GoodsArt(goods) ?? skin.White : null,
+                Genes = fish?.Genes,
             });
         }
 
@@ -1064,6 +1066,7 @@ namespace FishingIdle.Game.UI
                 case MarketSort.SizeDescending: return GameTexts.Market.SortSizeDesc;
                 case MarketSort.SizeAscending: return GameTexts.Market.SortSizeAsc;
                 case MarketSort.Newest: return GameTexts.Market.SortNewest;
+                case MarketSort.QualityDescending: return GameTexts.Market.SortQuality;
                 default: return GameTexts.Market.SortPriceAsc;
             }
         }

@@ -34,6 +34,7 @@ namespace FishingIdle.Game.UI
             Largest,
             Rarest,
             Species,
+            Quality,
         }
 
         private const float SortItemHeight = 52f;
@@ -44,6 +45,7 @@ namespace FishingIdle.Game.UI
             None,
             Size,
             Sort,
+            Quality,
         }
 
         private Menu _menu;
@@ -59,6 +61,8 @@ namespace FishingIdle.Game.UI
         // null = every rarity / every size. Review mode shows only the valuable fish of a pending sale.
         private string _rarityFilter;
         private string _sizeFilter;
+        // The quality filter (M24-T52): the least stars a fish needs to show; 0 = every fish.
+        private int _starsFilter;
         private bool _review;
         private string _search = string.Empty;
         private SortOrder _sort;
@@ -84,6 +88,7 @@ namespace FishingIdle.Game.UI
             _dirty = true;
             _rarityFilter = null;
             _sizeFilter = null;
+            _starsFilter = 0;
             _review = false;
             _search = string.Empty;
             _sort = SortOrder.Newest;
@@ -121,7 +126,7 @@ namespace FishingIdle.Game.UI
             var capacity = owner != null ? owner.FishingBoxCapacity : 0;
             var boxCount = owner != null ? owner.FishingBoxCount : _catches.Count;
             // A-148: the fish count is a counter, next to the sign; the search (300 + 16) keeps its place.
-            if (WindowFrame.Header(skin, panel, GameTexts.Box.Title, null, Icons.Box, capacity > 0 ? GameTexts.Box.CountOf(boxCount, capacity) : GameTexts.Box.Count(_catches.Count), 316f))
+            if (WindowFrame.Header(skin, panel, GameTexts.Box.Title, GeneUi.WithInfo(GameTexts.Box.Info, _root), Icons.Box, capacity > 0 ? GameTexts.Box.CountOf(boxCount, capacity) : GameTexts.Box.Count(_catches.Count), 316f))
             {
                 Close();
             }
@@ -139,7 +144,7 @@ namespace FishingIdle.Game.UI
             var left = panel.x + 28;
             var right = panel.xMax - 28;
             var tabsY = panel.y + 82;
-            var menusWidth = 2 * MenuWidth + 10f;
+            var menusWidth = 3 * MenuWidth + 20f;
 
             // Tabs and menus share a row on a wide window; on a narrow one the menus go to a short row below,
             // next to how many fish the filter shows.
@@ -151,8 +156,14 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(left + 4f, menusY + 9f, right - left - menusWidth - 20f, 20f), GameTexts.Box.Showing(_visible.Count), skin.SmallMuted);
             }
 
-            var sizeMenu = new Rect(right - menusWidth, menusY, MenuWidth, 36f);
+            var qualityMenu = new Rect(right - menusWidth, menusY, MenuWidth, 36f);
+            var sizeMenu = new Rect(qualityMenu.xMax + 10f, menusY, MenuWidth, 36f);
             var sortMenu = new Rect(right - MenuWidth, menusY, MenuWidth, 36f);
+            if (MenuButton(skin, qualityMenu, GameTexts.Genes.FilterMenu(StarsName(_starsFilter)), _menu == Menu.Quality, _starsFilter > 0 ? UiSkin.Gold : (Color?)null, Icons.Star))
+            {
+                _menu = _menu == Menu.Quality ? Menu.None : Menu.Quality;
+            }
+
             var sortListWidth = 320f;
             if (MenuButton(skin, sizeMenu, GameTexts.Box.SizeMenu(SizeName(_sizeFilter)), _menu == Menu.Size, _sizeFilter != null ? UiSkin.SizeColor(_sizeFilter) : (Color?)null))
             {
@@ -167,9 +178,11 @@ namespace FishingIdle.Game.UI
             // The open menu sits over the grid: its clicks are handled before the grid so a card under it
             // is never picked by mistake, and it is drawn after the grid so it shows on top.
             var sizeRect = new Rect(sizeMenu.x, sizeMenu.yMax + 4f, MenuWidth, _sizeFilters.Count * SizeItemHeight + 12f);
-            var sortRect = new Rect(sortMenu.xMax - sortListWidth, sortMenu.yMax + 4f, sortListWidth, 5 * SortItemHeight + 12f);
+            var sortRect = new Rect(sortMenu.xMax - sortListWidth, sortMenu.yMax + 4f, sortListWidth, SortCount * SortItemHeight + 12f);
+            var qualityRect = new Rect(qualityMenu.x, qualityMenu.yMax + 4f, MenuWidth, (TopStars() + 1) * SizeItemHeight + 12f);
             if (_menu == Menu.Size) DrawSizeMenu(skin, sizeRect, true);
             else if (_menu == Menu.Sort) DrawSortMenu(skin, sortRect, true);
+            else if (_menu == Menu.Quality) DrawQualityMenu(skin, qualityRect, true);
 
             // Grid, aligned with the tabs above it.
             var gridTop = (sameRow ? tabsY + TabHeight : menusY + 36f) + 14f;
@@ -178,6 +191,7 @@ namespace FishingIdle.Game.UI
 
             if (_menu == Menu.Size) DrawSizeMenu(skin, sizeRect, false);
             else if (_menu == Menu.Sort) DrawSortMenu(skin, sortRect, false);
+            else if (_menu == Menu.Quality) DrawQualityMenu(skin, qualityRect, false);
 
             // Footer
             DrawFooter(skin, panel, boxCount, capacity);
@@ -240,6 +254,7 @@ namespace FishingIdle.Game.UI
                 Bar = (float)c.SizePercentile,
                 Coins = Format.Short(c.SalePriceCoins),
                 Selected = _selected.Contains(c.CatchId),
+                Genes = c.Genes,
             };
             FishCard.StatusBadge(model, c.IsNewSpecies, c.IsPersonalRecord);
 
@@ -552,10 +567,48 @@ namespace FishingIdle.Game.UI
             MenuList(skin, rect, items, input, SortItemHeight);
         }
 
+        private static readonly int SortCount = System.Enum.GetValues(typeof(SortOrder)).Length;
+
+        /// <summary>The top star count of the config (genes.quality_stars), 5.</summary>
+        private int TopStars()
+        {
+            var bands = _root.Game?.Session.Config?.Progression?.Genes?.QualityStars;
+            return bands != null && bands.Count > 0 ? bands.Count : 5;
+        }
+
+        private string StarsName(int stars)
+        {
+            return stars <= 0 ? GameTexts.Genes.FilterAll : GameTexts.Genes.FilterAtLeast(stars, TopStars());
+        }
+
+        /// <summary>The quality filter (M24-T52): every fish, or the top stars, then "N estrelas ou mais" down to 2.</summary>
+        private void DrawQualityMenu(UiSkin skin, Rect rect, bool input)
+        {
+            var items = new List<MenuEntry>();
+            var top = TopStars();
+            items.Add(new MenuEntry(GameTexts.Genes.FilterAll, null, null, UiSkin.Accent, _starsFilter == 0, () =>
+            {
+                _starsFilter = 0;
+                FiltersChanged();
+            }));
+            for (var stars = top; stars >= 2; stars--)
+            {
+                var picked = stars;
+                items.Add(new MenuEntry(StarsName(stars), null, null, UiSkin.Gold, _starsFilter == stars, () =>
+                {
+                    _starsFilter = picked;
+                    FiltersChanged();
+                }));
+            }
+
+            MenuList(skin, rect, items, input, SizeItemHeight);
+        }
+
         private static string SortName(SortOrder order)
         {
             switch (order)
             {
+                case SortOrder.Quality: return GameTexts.Box.SortQuality;
                 case SortOrder.Valuable: return GameTexts.Box.SortValuable;
                 case SortOrder.Largest: return GameTexts.Box.SortLargest;
                 case SortOrder.Rarest: return GameTexts.Box.SortRarest;
@@ -572,6 +625,7 @@ namespace FishingIdle.Game.UI
                 case SortOrder.Largest: return GameTexts.Box.SortLargestHint;
                 case SortOrder.Rarest: return GameTexts.Box.SortRarestHint;
                 case SortOrder.Species: return GameTexts.Box.SortSpeciesHint;
+                case SortOrder.Quality: return GameTexts.Box.SortQualityHint;
                 default: return GameTexts.Box.SortNewestHint;
             }
         }
@@ -584,6 +638,7 @@ namespace FishingIdle.Game.UI
                 case SortOrder.Largest: return Icons.Level;
                 case SortOrder.Rarest: return Icons.Star;
                 case SortOrder.Species: return Icons.Fish;
+                case SortOrder.Quality: return Icons.Star;
                 default: return Icons.Clock;
             }
         }
@@ -729,6 +784,11 @@ namespace FishingIdle.Game.UI
                     query = query.Where(c => c.SizeCategoryId == _sizeFilter);
                 }
 
+                if (_starsFilter > 0)
+                {
+                    query = query.Where(c => c.Genes != null && c.Genes.Stars >= _starsFilter);
+                }
+
                 if (!string.IsNullOrWhiteSpace(_search))
                 {
                     query = query.Where(c => NameSearch.Matches(c.SpeciesName, _search));
@@ -751,6 +811,10 @@ namespace FishingIdle.Game.UI
                     break;
                 case SortOrder.Species:
                     query = query.OrderBy(c => c.SpeciesName, System.StringComparer.Create(System.Globalization.CultureInfo.GetCultureInfo("pt-BR"), true)).ThenByDescending(c => c.SalePriceCoins);
+                    break;
+                case SortOrder.Quality:
+                    // The hunt (M24-T52): the best genes first, then the most perfect genes, then the newest.
+                    query = query.OrderByDescending(c => c.Genes?.Total ?? 0).ThenByDescending(c => c.Genes?.PerfectCount ?? 0).ThenByDescending(c => c.CatchId);
                     break;
                 default:
                     query = query.OrderByDescending(c => c.CatchId);

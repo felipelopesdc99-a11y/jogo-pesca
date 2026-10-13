@@ -233,10 +233,17 @@ Regras:
   temporário e avisa.
 - Valores derivados do config (preço, XP, nomes) não são gravados; só o que é do jogador.
 - A Caixa de Pesca é compacta (seção 11 do GDD): cada captura guarda id, espécie, milímetros,
-  categoria, hora e marcas (espécie nova, recorde). Não é um peixe completo.
+  categoria, hora, marcas (espécie nova, recorde) e, desde a v23, os 4 genes (`"g"`). Não é um peixe completo.
 - O Aquário (desde a versão 2 do save) guarda peixes completos (`FishInstance`): id, espécie,
-  milímetros, categoria, nível, XP do nível, XP investido, datas e a captura de origem. Os atributos
-  nunca são gravados; `FishRules.Stats` os calcula.
+  milímetros, categoria, nível, XP do nível, XP investido, datas, a captura de origem e, desde a v23, os genes. Os
+  atributos nunca são gravados; `FishRules.Stats` os calcula: base da espécie × raridade × tamanho × nível × categoria
+  de tamanho × o multiplicador do gene de cada atributo (`GeneRules.Multiplier`, ×0,90 no gene 0 a ×1,10 no 31;
+  M24-T52, A-176, TD-056). Sem genes (`null`, os números de referência da Enciclopédia) não há fator de gene.
+- Genes (`Fishing/GeneRules`): sorteados uma vez, quando a captura entra na Caixa (`LocalFishingService.ApplyCatch`,
+  fluxo próprio `GeneRules.RollForCatch(semente, id da captura)`, sem mexer nos outros sorteios do ciclo), copiados para o
+  peixe ao guardar no Aquário e levados junto pelo Mercado. Peixes simulados (Mercado, Leilão, Arena) sorteiam com
+  fluxos próprios do anúncio ou do bot. `GeneRules.View` faz o `GeneView` (qualidade, estrelas, genes perfeitos) que vai
+  em `CatchView.Genes` e `FishView.Genes`; as telas desenham com `UI/GeneUi` e nunca calculam.
 - Desde a versão 3, a vara é um item do Inventário (`InventoryItem`) e o slot de Vara guarda o id
   desse item (`EquippedRodItemId`). O Cardume é uma lista de 6 ids de peixes do Aquário (0 = vazio);
   o bônus 6/6 e a Força são calculados na hora (`CardumeRules`) e nunca gravados.
@@ -263,7 +270,10 @@ que foi pago; um registro só, trocado no evento do dia seguinte depois de pago;
 v20 marca o modelo de barcos (`BoatModelVersion`; saves antigos entram com 1, os 10 barcos de antes); v22 adiciona
 os Clãs (`ClanState`: `MyClanId`, `KnownClans` — no jogo local só o clã do próprio jogador, o lugar onde o servidor vai
 pôr a lista —, `NextClanNumber`, `XpCarry`, `RankingDay` e `LastResult`; saves antigos entram sem clã, e a carga limpa
-um `MyClanId` que não aponta para um clã com o jogador, `ClanRules.Repair`). A conversão dos
+um `MyClanId` que não aponta para um clã com o jogador, `ClanRules.Repair`); v23 adiciona os genes (M24-T52, A-176,
+TD-056: `BoxCatch.Genes`, chave `"g"`, e `FishInstance.Genes`, 4 inteiros de 0 a 31 na ordem Vida, Ataque, Defesa,
+Velocidade); a migração v22 → v23 só sobe a versão e, ao abrir a sessão, `Persistence/GeneMigration.GiveMissingGenes`
+dá `progression.json → genes.migration_neutral_value` (16) a todo peixe sem genes válidos (Caixa, Aquário e Mercado). A conversão dos
 barcos 6 a 10 em fragmentos, Moedas e Conchas (A-168) precisa do config e por isso não fica em `SaveMigrations`: roda
 uma vez ao abrir a sessão, em `Persistence/BoatModelMigration.MoveToCurrentModel`, antes de os níveis de barco serem
 limitados ao config (TD-051), como a das iscas (`BaitModelMigration`, v17, TD-046); v21 tira a Tripulação e as Melhorias

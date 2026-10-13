@@ -235,6 +235,28 @@ namespace FishingIdle.GameService.Config
                 errors.Add(V.ChanceOutOfRange(GameConfigLoader.ProgressionFile, "feeding.invested_xp_recovery_ratio"));
             }
 
+            // ---- genes (M24-T52, A-176)
+            var genes = progression.Genes;
+            var topStars = 0;
+            if (genes == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.ProgressionFile, "genes"));
+            }
+            else if (!GenesValid(genes, out topStars))
+            {
+                errors.Add(V.GenesInvalid);
+            }
+
+            if (genes != null && topStars > 0)
+            {
+                var feedStars = progression.Feeding?.ValuableFeedRules?.GeneStarsAtOrAbove ?? 0;
+                var saleStars = economy?.FishingBox?.BulkSaleProtection?.GeneStarsAtOrAbove ?? 0;
+                if (feedStars < 0 || feedStars > topStars || saleStars < 0 || saleStars > topStars)
+                {
+                    errors.Add(V.GeneProtectionInvalid);
+                }
+            }
+
             if (progression.Size?.StatInfluence == null)
             {
                 errors.Add(V.Missing(GameConfigLoader.ProgressionFile, "size.stat_influence"));
@@ -1169,6 +1191,34 @@ namespace FishingIdle.GameService.Config
         }
 
         /// <summary>The map of the old levels 1–10 (curve 1) to the current curve: 10 levels, never going down, inside 1..max.</summary>
+        /// <summary>The genes section (M24-T52): ranges, and star bands 1, 2, 3… with min_percent rising from 0 to at most 100.</summary>
+        private static bool GenesValid(GenesConfig genes, out int topStars)
+        {
+            topStars = 0;
+            if (genes.MaxValue < 1 || genes.MaxValue > 255 || genes.StatMultiplierMin <= 0 || genes.StatMultiplierMax < genes.StatMultiplierMin
+                || genes.StatMultiplierMax > 10 || genes.MigrationNeutralValue < 0 || genes.MigrationNeutralValue > genes.MaxValue)
+            {
+                return false;
+            }
+
+            var bands = genes.QualityStars;
+            if (bands == null || bands.Count == 0 || bands.Count > 10 || bands[0] == null || bands[0].MinPercent != 0)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < bands.Count; i++)
+            {
+                if (bands[i] == null || bands[i].Stars != i + 1 || bands[i].MinPercent > 100 || (i > 0 && bands[i].MinPercent <= bands[i - 1].MinPercent))
+                {
+                    return false;
+                }
+            }
+
+            topStars = bands.Count;
+            return genes.CelebrateMinStars >= 0 && genes.CelebrateMinStars <= topStars;
+        }
+
         private static bool LegacyLevelsValid(List<int> legacy, int maxLevel)
         {
             if (legacy == null || legacy.Count != 10 || legacy[0] < 1 || legacy.Any(l => l > maxLevel))

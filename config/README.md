@@ -6,7 +6,7 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 |---|---|
 | `fish_catalog.json` | Dados próprios da espécie: raridade, faixa de tamanho, atributos base, valor de venda, XP de alimento, XP do Pescador |
 | `maps.json` | Mapas, pools de peixes por mapa com pesos de captura, nível de desbloqueio, vara mínima, regras de viagem |
-| `progression.json` | Curva de XP do Pescador, curva de XP do peixe (até o Nv.100) e bônus de atributo por nível do peixe, distribuição de tamanho, regras de modificador de raridade/tamanho/nível, regras de alimentação, intervalos de pesca |
+| `progression.json` | Curva de XP do Pescador, curva de XP do peixe (até o Nv.100) e bônus de atributo por nível do peixe, distribuição de tamanho, regras de modificador de raridade/tamanho/nível, regras de alimentação, intervalos de pesca, genes dos peixes (`genes`, M24-T52) |
 | `rods.json` | Definições das varas, bônus no Nv.1 e no Nv.100 (com a curva entre eles), custo de cada nível (Moedas e Conchas), regras de revenda; varas por fragmentos (quantos fragmentos montam e a chance por peixe puxado, em qualquer mapa desde o M24-T47; o valor de referência no Mercado) |
 | `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário, VIP (preço em Dólares, dias, bônus de XP offline e o ciclo da pesca offline com VIP, `offline_cycle_seconds`); `crew_removal_refund`: os preços da Tripulação e das Melhorias de antes, só para devolver as Moedas a quem já jogava (M24-T46, A-172; não mudam nada no jogo de hoje) |
 | `arena.json` | Energia, seleção de oponentes, Honra, constantes de combate, formação, regras de Cardume, métrica de Força, Loja da Arena |
@@ -61,6 +61,15 @@ Onde fica cada coisa no painel:
 - **Os atributos base valem para nível 1, tamanho no percentil 0,50, antes dos modificadores de
   raridade, tamanho e nível.** O servidor aplica esses modificadores usando o `progression.json`;
   ele nunca grava atributos derivados de forma redundante.
+- **Genes (M24-T52, A-176, TD-056):** `progression.json → genes`. Cada peixe nasce com 4 genes (Vida, Ataque, Defesa,
+  Velocidade) de 0 a `max_value` (31), sorteados uniformes e independentes na captura. Cada gene multiplica o seu
+  atributo entre `stat_multiplier_min` (0,90, gene 0) e `stat_multiplier_max` (1,10, gene 31), em linha reta: a média
+  fica em ×1,00. `migration_neutral_value` (16) é o que recebem os peixes de saves anteriores. `quality_stars` são as
+  faixas das estrelas pela qualidade (soma ÷ 124): 1★ de 0%, 2★ de 30%, 3★ de 55%, 4★ de 75%, 5★ de 90% (sai 5★ em
+  ~0,17% dos peixes). `celebrate_min_stars` (5): a partir de quantas estrelas a captura é celebrada e vira destaque no
+  "Bem-vindo de volta". A proteção na venda em lote da Caixa (`economy.json → fishing_box.bulk_sale_protection.
+  gene_stars_at_or_above`) e no alimento e venda em lote do Aquário (`progression.json → feeding.valuable_feed_rules.
+  gene_stars_at_or_above`) ficam em 5 (0 desliga). O preço de venda ao jogo não depende dos genes.
 - **Tamanho Perfeição:** acima do Excepcional, com `draw_weight` 0,01 (1 em cada 100 dos dois) e
   `stat_multiplier` 1,05 (+5% em todos os atributos). Qualquer categoria de tamanho pode ter um
   `stat_multiplier` (1 quando não tem) e `special: true` (selo, celebração e proteção na venda).

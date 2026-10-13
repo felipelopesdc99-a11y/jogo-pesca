@@ -44,7 +44,7 @@ namespace FishingIdle.Game.UI
         private const string GlassArt = "UI/ui_aquarium_glass";
         private const float GlassArtBorder = 32f;
 
-        private static readonly AquariumSort[] Sorts = { AquariumSort.Size, AquariumSort.Level, AquariumSort.Species, AquariumSort.Newest };
+        private static readonly AquariumSort[] Sorts = { AquariumSort.Size, AquariumSort.Level, AquariumSort.Species, AquariumSort.Newest, AquariumSort.Quality };
 
         // Plants that already exist (Arte/Vivos/Plantas): x across the tank, height as a share of the water.
         private static readonly (string Path, float X, float Height)[] Plants =
@@ -76,6 +76,8 @@ namespace FishingIdle.Game.UI
         private readonly GameRoot _root;
         private AquariumView _aquarium;
         private AquariumSort _sort = AquariumSort.Size;
+        // The quality filter (M24-T52): the least stars a fish needs to show; 0 = every fish.
+        private int _starsFilter;
         private long _selectedId;
         private FishView _selected;
         private Vector2 _scroll;
@@ -210,7 +212,7 @@ namespace FishingIdle.Game.UI
             var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f, true);
             // A-148: the fish count is a counter, next to the label; the search (300 + 16) keeps its place. Tanque and
             // Cartas are bookmarks on the side of the diary (A-170).
-            if (WindowFrame.Header(skin, panel, GameTexts.Aquarium.Title, null, Icons.Aquarium,
+            if (WindowFrame.Header(skin, panel, GameTexts.Aquarium.Title, GeneUi.WithInfo(GameTexts.Aquarium.Info, _root), Icons.Aquarium,
                     GameTexts.Aquarium.Count(_aquarium.Count, _aquarium.Capacity), 316f))
             {
                 Close();
@@ -276,6 +278,10 @@ namespace FishingIdle.Game.UI
                 chipsEnd += skin.Chip.CalcSize(new GUIContent(SortName(sort))).x + 8 + 8;
             }
 
+            var qualityLabel = new GUIContent(GameTexts.Genes.FilterChip(StarsName(_starsFilter)));
+            var qualityWidth = skin.Chip.CalcSize(qualityLabel).x + 34f;
+            chipsEnd += qualityWidth + 8;
+
             var multiIconOnly = chipsEnd > area.xMax - multiWidth - 8;
             if (multiIconOnly)
             {
@@ -302,6 +308,16 @@ namespace FishingIdle.Game.UI
                 }
 
                 x += w + 8;
+            }
+
+            // The quality filter (M24-T52): each click shows fewer, better fish (all → 5 → 4+ → 3+ → 2+ → all).
+            var qualityRect = new Rect(x, area.y, qualityWidth, 32);
+            if (skin.IconButton(qualityRect, Icons.Star, qualityLabel.text, _starsFilter > 0 ? skin.ChipActive : skin.Chip))
+            {
+                _starsFilter = NextStarsFilter(_starsFilter);
+                _scroll = Vector2.zero;
+                _cardsScroll = Vector2.zero;
+                RefreshShown();
             }
 
             // "Selecionar vários": turns clicks into a selection to sell.
@@ -986,23 +1002,24 @@ namespace FishingIdle.Game.UI
             }
 
             y += 38;
-            GUI.Label(new Rect(x, y, w, 22), GameTexts.Aquarium.Stats, skin.BodyBold);
+            // The attributes with the quality stars, and each one's gene (M24-T52, A-176).
+            GeneUi.Heading(skin, new Rect(x, y, w, 22), GameTexts.Aquarium.Stats, fish.Genes);
             y += 26;
+            var genes = fish.Genes;
+            var max = genes?.Max ?? 31;
             if (twoColumns)
             {
                 var colW = (w - 20f) / 2f;
-                var y2 = y;
-                StatRow(skin, x, ref y, colW, GameTexts.Aquarium.Hp, fish.Stats.Hp);
-                StatRow(skin, x, ref y, colW, GameTexts.Aquarium.Defense, fish.Stats.Defense);
-                StatRow(skin, x + colW + 20f, ref y2, colW, GameTexts.Aquarium.Attack, fish.Stats.Attack);
-                StatRow(skin, x + colW + 20f, ref y2, colW, GameTexts.Aquarium.Speed, fish.Stats.Speed);
+                GeneUi.AttributeRow(skin, x, y, colW, 22f, GameTexts.Aquarium.Hp, genes?.Hp ?? 0, max, StatText(fish.Stats.Hp));
+                GeneUi.AttributeRow(skin, x + colW + 20f, y, colW, 22f, GameTexts.Aquarium.Attack, genes?.Attack ?? 0, max, StatText(fish.Stats.Attack));
+                y += 22;
+                GeneUi.AttributeRow(skin, x, y, colW, 22f, GameTexts.Aquarium.Defense, genes?.Defense ?? 0, max, StatText(fish.Stats.Defense));
+                GeneUi.AttributeRow(skin, x + colW + 20f, y, colW, 22f, GameTexts.Aquarium.Speed, genes?.Speed ?? 0, max, StatText(fish.Stats.Speed));
+                y += 22;
             }
             else
             {
-                StatRow(skin, x, ref y, w, GameTexts.Aquarium.Hp, fish.Stats.Hp);
-                StatRow(skin, x, ref y, w, GameTexts.Aquarium.Attack, fish.Stats.Attack);
-                StatRow(skin, x, ref y, w, GameTexts.Aquarium.Defense, fish.Stats.Defense);
-                StatRow(skin, x, ref y, w, GameTexts.Aquarium.Speed, fish.Stats.Speed);
+                y = GeneUi.AttributeRows(skin, x, y, w, 22f, genes, StatText(fish.Stats.Hp), StatText(fish.Stats.Attack), StatText(fish.Stats.Defense), StatText(fish.Stats.Speed));
             }
 
             y += 6;
@@ -1026,14 +1043,29 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        private static void StatRow(UiSkin skin, float x, ref float y, float w, string label, double value)
+        private static string StatText(double value) => Format.Number((long)Math.Round(value));
+
+        /// <summary>The next step of the quality filter: all → top stars → one less … → 2 → all.</summary>
+        private int NextStarsFilter(int current)
         {
-            var text = Format.Number((long)Math.Round(value));
-            var vw = Mathf.Min(w, skin.SmallRight.CalcSize(new GUIContent(text)).x + 4f);
-            var lw = Mathf.Max(0f, w - vw - 6f);
-            GUI.Label(new Rect(x, y, lw, 20), UI.FishCard.Fit(label, skin.SmallMuted, lw), skin.SmallMuted);
-            GUI.Label(new Rect(x + w - vw, y, vw, 20), text, skin.SmallRight);
-            y += 22;
+            var top = TopStars();
+            if (current <= 0)
+            {
+                return top;
+            }
+
+            return current - 1 >= 2 ? current - 1 : 0;
+        }
+
+        private int TopStars()
+        {
+            var bands = _root.Game?.Session.Config?.Progression?.Genes?.QualityStars;
+            return bands != null && bands.Count > 0 ? bands.Count : 5;
+        }
+
+        private string StarsName(int stars)
+        {
+            return stars <= 0 ? GameTexts.Genes.FilterAll : GameTexts.Genes.FilterAtLeast(stars, TopStars());
         }
 
         private static void InfoRow(UiSkin skin, float x, ref float y, float w, string label, string value)
@@ -1233,7 +1265,14 @@ namespace FishingIdle.Game.UI
             var tw = r.xMax - 10f - (rightWidth > 0f ? rightWidth + 6f : 0f) - tx;
             var text = CardText(skin, f, tw);
             GUI.Label(new Rect(tx, r.y + 10f, tw, 22f), text.Name, skin.BodyBold);
-            GUI.Label(new Rect(tx, r.y + 34f, tw, 20f), text.Line, skin.SmallMuted);
+            // The quality stars (M24-T52) at the end of the level line, when the check is not there.
+            var listStars = f.Genes != null && !marked ? GeneUi.StarsWidth(f.Genes.MaxStars, 12f) : 0f;
+            var lineWidth = listStars > 0f ? Mathf.Max(0f, r.xMax - 10f - listStars - 6f - tx) : tw;
+            GUI.Label(new Rect(tx, r.y + 34f, lineWidth, 20f), UI.FishCard.Fit(text.Line, skin.SmallMuted, lineWidth), skin.SmallMuted);
+            if (listStars > 0f)
+            {
+                GeneUi.Stars(skin, new Rect(r.xMax - 10f - listStars, r.y + 37f, listStars, 14f), f.Genes, 12f);
+            }
 
             if (GUI.Button(r, GUIContent.none, GUIStyle.none))
             {
@@ -1364,6 +1403,14 @@ namespace FishingIdle.Game.UI
                 skin.AccentPill(new Rect(x + pillWidth + 8f, y, Mathf.Min(skin.PillWidth(sizeLabel, false), sizeRoom), 22f), sizeLabel, sizeColor);
             }
 
+            // The quality stars of the genes (M24-T52) at the end of the seals' row, when they fit.
+            var heroStars = GeneUi.StarsWidth(fish.Genes?.MaxStars ?? 5, 16f);
+            var sealsEnd = x + pillWidth + 8f + (exceptional ? skin.Badge.CalcSize(new GUIContent(sizeLabel)).x + 10f : skin.PillWidth(sizeLabel, false));
+            if (fish.Genes != null && sealsEnd + 12f + heroStars <= x + w)
+            {
+                GeneUi.Stars(skin, new Rect(x + w - heroStars, y + 1f, heroStars, 20f), fish.Genes, 16f);
+            }
+
             y += 30f;
 
             // Size inside the species range (GDD section 14).
@@ -1405,10 +1452,12 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x + w - noteWidth, y + 3f, noteWidth, 20f), UI.FishCard.Fit(GameTexts.Aquarium.CardsStatsNote, skin.SmallMutedRightLine, noteWidth), skin.SmallMutedRightLine);
             y += 26f;
             var stats = fish.Stats;
-            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Hp, stats?.Hp ?? 0d, _statMax[0], accent);
-            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Attack, stats?.Attack ?? 0d, _statMax[1], accent);
-            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Defense, stats?.Defense ?? 0d, _statMax[2], accent);
-            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Speed, stats?.Speed ?? 0d, _statMax[3], accent);
+            var g = fish.Genes;
+            var gMax = g?.Max ?? 31;
+            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Hp, stats?.Hp ?? 0d, _statMax[0], accent, g?.Hp ?? 0, gMax);
+            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Attack, stats?.Attack ?? 0d, _statMax[1], accent, g?.Attack ?? 0, gMax);
+            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Defense, stats?.Defense ?? 0d, _statMax[2], accent, g?.Defense ?? 0, gMax);
+            HeroStat(skin, x, ref y, w, rowH, GameTexts.Aquarium.Speed, stats?.Speed ?? 0d, _statMax[3], accent, g?.Speed ?? 0, gMax);
             y += 4f;
 
             // Sale value (with the coin), food value, date and the Cardume position.
@@ -1438,13 +1487,15 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        private static void HeroStat(UiSkin skin, float x, ref float y, float w, float rowH, string label, double value, double max, Color color)
+        /// <summary>One attribute: the bar on the scale of the strongest kept fish, its gene ("27/31", gold at the top) and the value.</summary>
+        private static void HeroStat(UiSkin skin, float x, ref float y, float w, float rowH, string label, double value, double max, Color color, int gene, int geneMax)
         {
             var labelWidth = Mathf.Min(100f, w * 0.32f);
-            const float valueWidth = 60f;
+            const float valueWidth = 60f, geneWidth = 46f;
             var ty = y + (rowH - 20f) / 2f;
             GUI.Label(new Rect(x, ty, labelWidth, 20f), UI.FishCard.Fit(label, skin.SmallMuted, labelWidth), skin.SmallMuted);
-            skin.Bar(new Rect(x + labelWidth + 6f, ty + 6f, w - labelWidth - valueWidth - 12f, 8f), max > 0d ? (float)(value / max) : 0f, color);
+            skin.Bar(new Rect(x + labelWidth + 6f, ty + 6f, w - labelWidth - valueWidth - geneWidth - 16f, 8f), max > 0d ? (float)(value / max) : 0f, color);
+            GUI.Label(new Rect(x + w - valueWidth - geneWidth - 4f, ty, geneWidth, 20f), GameTexts.Genes.Value(gene, geneMax), gene >= geneMax ? skin.SmallGoldRight : skin.SmallMutedRight);
             GUI.Label(new Rect(x + w - valueWidth, ty, valueWidth, 20f), Format.Number((long)Math.Round(value)), skin.SmallRight);
             y += rowH;
         }
@@ -1696,7 +1747,7 @@ namespace FishingIdle.Game.UI
                     if (FishCard(skin, rect, fish.SpeciesId, fish.SpeciesName,
                         GameTexts.Player.LevelShort + " " + fish.Level + " · " + Format.SizeCm(fish.SizeCm) + " · " + fish.SizeCategoryName, (float)fish.SizePercentile,
                         GameTexts.Aquarium.FeedXp(Format.Number(fish.FeedXp)), fish.RarityId, fish.RarityName,
-                        _foodFish.Contains(fish.FishId), fish.IsValuableFood, fish.SizeCategoryId, fish.SizeCategoryName))
+                        _foodFish.Contains(fish.FishId), fish.IsValuableFood, fish.SizeCategoryId, fish.SizeCategoryName, fish.Genes))
                     {
                         Toggle(_foodFish, fish.FishId);
                     }
@@ -1709,7 +1760,7 @@ namespace FishingIdle.Game.UI
                     if (FishCard(skin, rect, c.SpeciesId, c.SpeciesName,
                         Format.SizeCm(c.SizeCm) + " · " + c.SizeCategoryName, (float)c.SizePercentile,
                         GameTexts.Aquarium.FeedXp(Format.Number(c.FeedXp)), c.RarityId, c.RarityName,
-                        _foodBox.Contains(c.CatchId), c.IsValuableFood, c.SizeCategoryId, c.SizeCategoryName))
+                        _foodBox.Contains(c.CatchId), c.IsValuableFood, c.SizeCategoryId, c.SizeCategoryName, c.Genes))
                     {
                         Toggle(_foodBox, c.CatchId);
                     }
@@ -1974,7 +2025,9 @@ namespace FishingIdle.Game.UI
         /// <summary>The fish that match the search, in the current order; the first ones swim.</summary>
         private void RefreshShown()
         {
-            _shown = _aquarium == null ? new List<FishView>() : _aquarium.Fish.Where(f => NameSearch.Matches(f.SpeciesName, _search)).ToList();
+            _shown = _aquarium == null ? new List<FishView>() : _aquarium.Fish
+                .Where(f => NameSearch.Matches(f.SpeciesName, _search) && (_starsFilter <= 0 || (f.Genes != null && f.Genes.Stars >= _starsFilter)))
+                .ToList();
             _logMinCm = float.MaxValue;
             _logMaxCm = float.MinValue;
             for (var i = 0; i < _shown.Count && i < MaxSwimming; i++)
@@ -2002,6 +2055,7 @@ namespace FishingIdle.Game.UI
                 case AquariumSort.Level: return GameTexts.Aquarium.SortLevel;
                 case AquariumSort.Species: return GameTexts.Aquarium.SortSpecies;
                 case AquariumSort.Newest: return GameTexts.Aquarium.SortNewest;
+                case AquariumSort.Quality: return GameTexts.Aquarium.SortQuality;
                 default: return GameTexts.Aquarium.SortSize;
             }
         }
@@ -2035,7 +2089,8 @@ namespace FishingIdle.Game.UI
 
         /// <summary>One fish card (the official template). Returns true when clicked.</summary>
         private static bool FishCard(UiSkin skin, Rect rect, string speciesId, string name, string line, float sizeFraction,
-            string corner, string rarityId, string rarityName, bool selected, bool important, string sizeCategoryId, string sizeCategoryName)
+            string corner, string rarityId, string rarityName, bool selected, bool important, string sizeCategoryId, string sizeCategoryName,
+            FishingIdle.GameService.Fishing.GeneView genes = null)
         {
             return UI.FishCard.Draw(skin, rect, new FishCardModel
             {
@@ -2049,6 +2104,7 @@ namespace FishingIdle.Game.UI
                 Bar = sizeFraction,
                 Footer = corner,
                 Selected = selected,
+                Genes = genes,
             });
         }
     }

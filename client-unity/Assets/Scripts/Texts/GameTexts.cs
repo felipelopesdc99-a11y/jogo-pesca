@@ -95,6 +95,7 @@ namespace FishingIdle.Texts
         public static class Box
         {
             public const string Title = "Caixa de Pesca";
+            public const string Info = "Os peixes que você pesca esperam aqui até você vender ou guardar no Aquário. Na venda em lote, os peixes valiosos (raros, de tamanho especial ou de genes de elite) pedem uma confirmação antes.";
             public const string Open = "Caixa de Pesca";
             public const string Close = "Fechar";
             public const string Empty = "A Caixa de Pesca está vazia. Os peixes que você pescar aparecem aqui.";
@@ -124,6 +125,8 @@ namespace FishingIdle.Texts
             public const string SortLargestHint = "Pelo tamanho em relação à espécie";
             public const string SortRarestHint = "Mítico → Comum, e o maior de cada";
             public const string SortSpeciesHint = "Mesmos peixes juntos, de A a Z";
+            public const string SortQuality = "Melhor qualidade";
+            public const string SortQualityHint = "Genes mais altos primeiro";
             public static string SizeMenu(string size) => "Tamanho: " + size;
             public static string Showing(int count) => count == 1 ? "1 peixe neste filtro" : Format.Number(count) + " peixes neste filtro";
             public static string SortMenu(string order) => "Ordem: " + order;
@@ -137,6 +140,35 @@ namespace FishingIdle.Texts
             public static string SkippedFull(long attempts) => "A Caixa encheu: " + Format.Number(attempts) + (attempts == 1 ? " tentativa ficou" : " tentativas ficaram") + " sem pescar.";
             public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : Format.Number(count) + " selecionados") + " · " + coins + " Moedas";
             public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : Format.Number(count) + " peixes vendidos") + " por " + coins + " Moedas.";
+        }
+
+        // ------------------------------------------------------------------ Genes (M24-T52, addendum A-176)
+
+        public static class Genes
+        {
+            public const string Title = "Genes";
+            public const string Quality = "Qualidade";
+            public const string PerfectGene = "Gene perfeito";
+            public const string PerfectSpecimen = "EXEMPLAR PERFEITO";
+
+            /// <summary>One gene against the maximum, e.g. "27/31".</summary>
+            public static string Value(int gene, int max) => gene + "/" + max;
+
+            /// <summary>The quality next to the stars, e.g. "Qualidade 72%".</summary>
+            public static string QualityLine(string percent) => "Qualidade " + percent;
+            public static string StarsName(int stars) => stars == 1 ? "1 estrela" : stars + " estrelas";
+
+            // The quality filter of the Fishing Box and the Aquarium.
+            public const string FilterAll = "Todas";
+            public static string FilterMenu(string value) => "Qualidade: " + value;
+            public static string FilterAtLeast(int stars, int top) => stars >= top ? StarsName(stars) : stars + " estrelas ou mais";
+            public static string FilterChip(string value) => "Qualidade: " + value;
+
+            /// <summary>The genes paragraph of the "Como funciona" notes (Caixa de Pesca, Aquário).</summary>
+            public static string Info(int max, string down, string up, int topStars) =>
+                "Genes: cada peixe nasce com 4 genes, um para cada atributo (Vida, Ataque, Defesa e Velocidade), de 0 a " + max +
+                ". Cada gene muda o seu atributo de " + down + " a " + up + "; " + max + " é o gene perfeito, em dourado. As estrelas (1 a " + topStars +
+                ") resumem a qualidade dos 4 genes: um peixe de " + topStars + " estrelas é raro, e caçar exemplares melhores é o que deixa o Cardume mais forte. Os genes nunca mudam e não mexem no preço de venda.";
         }
 
         // ------------------------------------------------------------------ Ranking (addendum A-100)
@@ -175,6 +207,7 @@ namespace FishingIdle.Texts
         public static class Aquarium
         {
             public const string Title = "Aquário";
+            public const string Info = "Os peixes que você guardou ficam aqui: alimente-os para subir de nível e escolha os melhores para o Cardume. Atributos vêm da espécie, da raridade, do tamanho, do nível e dos genes.";
             public const string Empty = "O Aquário está vazio. Na Caixa de Pesca, selecione peixes e clique em \"Guardar no Aquário\".";
             public const string KeepSelected = "Guardar no Aquário";
             public const string SortLabel = "Ordenar:";
@@ -182,6 +215,7 @@ namespace FishingIdle.Texts
             public const string SortLevel = "Nível";
             public const string SortSpecies = "Espécie";
             public const string SortNewest = "Mais recentes";
+            public const string SortQuality = "Qualidade";
             public const string PickFish = "Clique num peixe para ver a ficha dele.";
             public const string Size = "Tamanho";
             public const string Level = "Nível";
@@ -196,7 +230,7 @@ namespace FishingIdle.Texts
             public const string Feed = "Alimentar";
             public const string Sell = "Vender";
             public const string MaxLevelReached = "Nível máximo";
-            public const string StatsNote = "Atributos vêm da espécie, da raridade, do tamanho e do nível. Dois peixes iguais nesses quatro pontos são sempre iguais.";
+            public const string StatsNote = "Atributos vêm da espécie, da raridade, do tamanho, do nível e dos genes. Dois peixes iguais nesses cinco pontos são sempre iguais.";
 
             public const string FeedTitle = "Alimentar";
             public const string FeedFromBox = "Da Caixa de Pesca";
@@ -286,6 +320,7 @@ namespace FishingIdle.Texts
             public const string Best = "Destaques";
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
             public static string Records(int count) => count == 1 ? "1 recorde de tamanho" : count + " recordes de tamanho";
+            public static string TopGenes(int count, int stars) => count == 1 ? "1 exemplar de " + stars + " estrelas" : count + " exemplares de " + stars + " estrelas";
             public const string Separator = " · ";
             public const string Equipment = "Fragmentos e equipamento";
             public static string Gained(string amount) => "+" + amount;
@@ -453,7 +488,8 @@ namespace FishingIdle.Texts
         public static class Market
         {
             public const string Title = "Mercado";
-            public const string Note = "Compre e venda peixes e varas. Tudo o que sai do Mercado — compras, anúncios cancelados ou vencidos — espera em Itens a Retirar. No jogo local, os outros jogadores são simulados.";
+            public const string Note = "Compre e venda peixes e varas. Tudo o que sai do Mercado — compras, anúncios cancelados ou vencidos — espera em Itens a Retirar. No jogo local, os outros jogadores são simulados.\n\nCada peixe tem genes: as estrelas no cartão mostram a qualidade, e a ficha mostra o gene de cada atributo (de 0 a 31). Compare antes de comprar; o preço de venda ao jogo não muda com os genes.";
+            public const string SortQuality = "Melhor qualidade";
             public const string TabBuy = "Comprar";
             public const string TabSell = "Vender";
             public const string TabMine = "Meus Anúncios";
@@ -1289,6 +1325,10 @@ namespace FishingIdle.Texts
             public static string Perfect(string species) => "Perfeição: " + species + "! O maior possível, com +5% em todos os atributos.";
             public static string PerfectWithSize(string species, string size) => "Perfeição: " + species + ", " + size + "! O maior possível, com +5% em todos os atributos.";
             public static string LevelUp(int level) => "Você subiu para o Nível " + level + "!";
+            public static string TopGenes(string species, int stars) => "Exemplar de " + stars + " estrelas: " + species + "! Genes de elite.";
+            public static string PerfectSpecimen(string species) => "Exemplar perfeito: " + species + "! Os 4 genes no máximo.";
+            /// <summary>Added to a catch toast when the fish has perfect genes (M24-T52), e.g. " · gene perfeito: Ataque".</summary>
+            public static string PerfectGenes(string attributes) => " · gene perfeito: " + attributes;
             public static string Shells(string amount) => "+" + amount + (amount == "1" ? " Concha" : " Conchas");
             public static string Dollars(string amount) => "+" + amount + (amount == "1" ? " Dólar" : " Dólares");
             public static string PassMilestone(int level) => "Passe do Pescador: marco do Nv." + level + " alcançado. Resgate no Passe!";
@@ -1321,6 +1361,9 @@ namespace FishingIdle.Texts
             public const string Perfect = "Perfeição!";
             public const string Record = "Novo recorde!";
             public const string NewSpecies = "Nova espécie!";
+            public static string TopGenes(int stars) => "Exemplar de " + stars + " estrelas!";
+            public const string PerfectSpecimen = "Exemplar perfeito!";
+            public static string GenesLine(string species, string quality) => species + " · genes " + quality;
             public static string LevelUp(int level) => "Nível " + level + "!";
             public const string AuctionWon = "Você venceu o leilão!";
             public static string CatchLine(string species, string size) => species + " · " + size;
@@ -1530,6 +1573,8 @@ namespace FishingIdle.Texts
             public static string MapRodCatchesNothing(string map, string rod) => "maps.json / rods.json: com a vara \"" + rod + "\" o mapa \"" + map + "\" não teria nenhum peixe para pescar (nenhuma raridade em comum). Ajuste o pool do mapa ou as raridades da vara.";
             public static string UnknownRodRarity(string rod, string rarity) => "rods.json: a vara \"" + rod + "\" cita a raridade \"" + rarity + "\", que não existe em progression.json.";
             public static string BadIntRange(string file, string what) => file + ": \"" + what + "\" precisa ter mínimo ≥ 0 e máximo ≥ mínimo.";
+            public const string GenesInvalid = "progression.json: \"genes\" precisa de max_value de 1 a 255, stat_multiplier_min maior que 0 e stat_multiplier_max entre o mínimo e 10, migration_neutral_value entre 0 e max_value, quality_stars com estrelas 1, 2, 3… em ordem (a primeira em min_percent 0, as seguintes subindo até 100) e celebrate_min_stars entre 0 e a maior estrela.";
+            public const string GeneProtectionInvalid = "progression.json / economy.json: \"gene_stars_at_or_above\" (em feeding.valuable_feed_rules e em fishing_box.bulk_sale_protection) precisa ficar entre 0 (desligado) e a maior estrela de genes.quality_stars.";
             public static string CrewRefundInvalid(string what) => "economy.json: \"crew_removal_refund." + what + "\" está inválido (cada linha precisa de id único, base_cost ≥ 0 e cost_growth acima de 1 nos tripulantes; unlock_count e cost_factor ≥ 0 nas Melhorias de tripulante; cost_growth de 1 a 1.000 e max_level de 0 a 1.000 nas Melhorias gerais).";
         }
 

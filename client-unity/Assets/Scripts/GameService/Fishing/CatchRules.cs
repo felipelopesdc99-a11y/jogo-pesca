@@ -14,6 +14,12 @@ namespace FishingIdle.GameService.Fishing
         public int SizeMm { get; internal set; }
         public long FisherXp { get; internal set; }
         public long Shells { get; internal set; }
+
+        /// <summary>
+        /// Fixed genes for this catch (M24-T52), or null to roll them when it enters the Fishing Box (the normal case:
+        /// LocalFishingService rolls them from their own stream, GeneRules.RollForCatch).
+        /// </summary>
+        public int[] Genes { get; internal set; }
     }
 
     /// <summary>

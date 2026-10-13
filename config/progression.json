@@ -4608,8 +4608,10 @@
         "exceptional",
         "perfect"
       ],
-      "min_level": 8
-    }
+      "min_level": 8,
+      "gene_stars_at_or_above": 5
+    },
+    "valuable_feed_rules_genes_note": "gene_stars_at_or_above (M24-T52, A-176): um peixe com essa qualidade de genes (estrelas) ou mais também pede confirmação antes de virar alimento ou de ser vendido em lote no Aquário. 0 = desligado."
   },
   "fishing": {
     "online_cycle_seconds": 10,
@@ -4651,5 +4653,39 @@
         "display_name": "Capitã do Abismo"
       }
     ]
+  },
+  "genes": {
+    "note": "Genes (M24-T52, A-176, pedido do proprietário em 13/10/2026: \"caçar exemplares melhores é o que prendia no jogo\"). Cada peixe nasce com 4 genes, um por atributo de combate (Vida, Ataque, Defesa e Velocidade), cada um de 0 a max_value, sorteados de forma uniforme e independente na captura, pelo sorteio do serviço. São permanentes: guardados no peixe da Caixa de Pesca, do Aquário e do Mercado. Valem também para os peixes dos jogadores simulados (Mercado, Leilão e Arena).",
+    "max_value": 31,
+    "stat_multiplier_min": 0.9,
+    "stat_multiplier_max": 1.1,
+    "stat_note": "Cada atributo derivado é multiplicado por stat_multiplier_min + (stat_multiplier_max − stat_multiplier_min) × gene ÷ max_value: gene 0 = ×0,90, gene 31 = ×1,10, e a média de todos os peixes fica em ×1,00, então a Arena, o Boss Mundial, os Clãs e as simulações não mudam na média. Entra na mesma conta da espécie, da raridade, do tamanho e do nível; o atributo nunca é gravado pronto. O preço de venda ao jogo (NPC) não depende dos genes.",
+    "migration_neutral_value": 16,
+    "migration_note": "Peixes de saves anteriores à versão 23 (Caixa, Aquário, Mercado, Cardume e Clã) recebem este valor nos 4 genes: ×1,003, quase neutro, para ninguém ganhar nem perder força de forma relevante (TD-056).",
+    "quality_stars": [
+      {
+        "stars": 1,
+        "min_percent": 0
+      },
+      {
+        "stars": 2,
+        "min_percent": 30
+      },
+      {
+        "stars": 3,
+        "min_percent": 55
+      },
+      {
+        "stars": 4,
+        "min_percent": 75
+      },
+      {
+        "stars": 5,
+        "min_percent": 90
+      }
+    ],
+    "quality_note": "Qualidade = soma dos 4 genes ÷ (4 × max_value), em %. As estrelas usam a maior faixa cuja min_percent foi alcançada. Com genes uniformes de 0 a 31, sai em média: 1★ 9,6%, 2★ 53,7%, 3★ 31,7%, 4★ 4,8% e 5★ 0,17% (1 a cada ~575 peixes). Um gene 31 é \"gene perfeito\" (11,9% dos peixes têm pelo menos um); os 4 em 31 são o \"Exemplar perfeito\" (1 em ~1 milhão).",
+    "celebrate_min_stars": 5,
+    "celebrate_note": "Um peixe pescado com essa qualidade (estrelas) ou mais ganha a celebração na tela e aparece entre os destaques do relatório \"Bem-vindo de volta\". 0 = desligado."
   }
 }
