@@ -3,6 +3,20 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.12] — 13/10/2026
+
+Relatório "Bem-vindo de volta", pedido do proprietário (M24-T51, A-175). Verificado no CI, não aberto no Unity.
+
+### Mudado
+
+- A tela de quando você volta virou um **relatório** no padrão "Diário de bordo": uma faixa de cena com o tempo fora
+  (e o limite de 24 h, quando passou), cartões com números grandes que sobem ao abrir (**peixes pescados**, **valor da
+  pesca** em Moedas se vender tudo, **XP** com "Nv. X → Y!" quando subiu de nível, **Conchas**), uma barra com os peixes
+  **por raridade**, os **destaques** em cartas de peixe (com nova espécie e recorde), os **fragmentos** de cada barco,
+  vara e roupa com o ícone e a barrinha até montar ("Montado!"), e os **avisos** (Caixa de Pesca cheia ou quase, com
+  botão para abrir; isca que acabou; peixes que escaparam). Rola quando não cabe na tela. Esc fecha.
+- Arte pendente: `bemvindo_cena` (1600×700); até chegar, o jogo desenha um lago ao entardecer.
+
 ## [0.2.0-m24.11] — 13/10/2026
 
 Primeiro clã grátis, decisão do proprietário. Verificado no CI, não aberto no Unity.

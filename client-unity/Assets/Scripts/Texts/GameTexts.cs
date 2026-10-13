@@ -261,26 +261,51 @@ namespace FishingIdle.Texts
             public const string Title = "Bem-vindo de volta!";
             public const string Continue = "Continuar";
             public const string OpenBox = "Abrir a Caixa de Pesca";
-            public const string Best = "Destaques";
-            public const string NothingCaught = "Nenhum peixe desta vez.";
+            public const string OpenBoxShort = "Abrir a Caixa";
             public static string Note(string cycle, string cap) => "Enquanto o jogo fica fechado, o pescador continua: 1 tentativa a cada " + cycle + ", por até " + cap + ", com a mesma chance de puxar. Os peixes esperam na Caixa de Pesca.";
             public static string NoteWithVip(string vipCycle, string cycle, string cap) => "Enquanto o jogo fica fechado, o pescador continua: 1 tentativa a cada " + vipCycle + " com o VIP (" + cycle + " sem ele), por até " + cap + ", com a mesma chance de puxar. Os peixes esperam na Caixa de Pesca.";
-
-            public static string Away(string duration) => "Você ficou fora por " + duration + ".";
             public static string Hours(double hours) => hours == 1 ? "1 hora" : Format.Decimal(hours, 0) + " horas";
-            public static string CappedAt(string duration) => "Só contam as primeiras " + duration + " de pesca offline.";
-            public static string Caught(int count) => count == 1 ? "1 peixe pescado" : Format.Number(count) + " peixes pescados";
-            public static string Xp(string xp) => "+" + xp + " XP de Pescador";
-            public static string XpWithVip(string xp, string vipXp) => "+" + xp + " XP de Pescador (+" + vipXp + " do VIP)";
-            public static string Levels(int level) => "Subiu para o Nível " + level + "!";
-            public static string Fragments(string amount, string boat) => "+" + amount + (amount == "1" ? " fragmento de barco: " : " fragmentos de barco: ") + boat;
-            public static string BoatAssembled(string boat) => "Barco montado: " + boat + "!";
-            // Rods and clothing by fragments (M24-T32/T33, A-163/A-164).
-            public static string RodFragments(string amount, string rod) => "+" + amount + (amount == "1" ? " fragmento de vara: " : " fragmentos de vara: ") + rod;
-            public static string RodAssembled(string rod) => "Vara montada: " + rod + "!";
-            public static string ClothingFragments(string amount) => "+" + amount + (amount == "1" ? " Fragmento de Roupa" : " Fragmentos de Roupa");
-            public static string ClothingLevels(string pieces) => "Roupas subiram de nível: " + pieces;
+
+            // The report (M24-T51, A-175): the scene strip on top.
+            public static string SceneAway(string duration) => "Você ficou fora por " + duration;
+            public static string SceneCapped(string duration) => "Contaram as primeiras " + duration + ", o limite da pesca offline.";
+            public const string SceneKept = "O pescador continuou na água enquanto você esteve fora.";
+            public const string SceneNothing = "O pescador ficou na água, mas nenhum peixe veio desta vez.";
+
+            // The big number cards.
+            public const string StatFish = "Peixes pescados";
+            public const string StatValue = "Valor da pesca";
+            public const string StatValueSub = "se vender tudo";
+            public const string StatXp = "XP de Pescador";
+            public static string StatXpVip(string vipXp) => "+" + vipXp + " do VIP";
+            public static string StatLevel(int from, int to) => "Nv. " + from + " → " + to + "!";
+            public const string StatShells = "Conchas";
+
+            // Rarities, highlights, fragments and warnings.
+            public const string Rarities = "Peixes por raridade";
+            public const string Best = "Destaques";
             public static string NewSpecies(int count) => count == 1 ? "1 espécie nova" : count + " espécies novas";
+            public static string Records(int count) => count == 1 ? "1 recorde de tamanho" : count + " recordes de tamanho";
+            public const string Separator = " · ";
+            public const string Equipment = "Fragmentos e equipamento";
+            public static string Gained(string amount) => "+" + amount;
+            public static string Progress(string have, string need) => have + "/" + need;
+            public const string BoatFragments = "Fragmentos de barco";
+            public const string RodFragments = "Fragmentos de vara";
+            public const string ClothingFragmentsName = "Fragmentos de Roupa";
+            public const string ClothingFragmentsKind = "Para montar uma roupa";
+            public const string ClothingReady = "Já dá para montar uma roupa!";
+            public const string ClothingAllAssembled = "Todas as roupas montadas";
+            public static string Extras(string amount) => "Já é seu · " + amount + " de sobra";
+            public const string BoatAssembledTag = "MONTADO!";
+            public const string RodAssembledTag = "MONTADA!";
+            public const string BoatAssembledKind = "Barco montado!";
+            public const string RodAssembledKind = "Vara montada!";
+            public static string ClothingLevels(string pieces) => "Roupas subiram de nível: " + pieces;
+            public static string PieceLevel(string piece, int level) => piece + " Nv." + level;
+            public const string Warnings = "Avisos";
+            public static string BoxFull(string count, string capacity) => "Caixa de Pesca cheia (" + count + "/" + capacity + "): a pesca para até você vender.";
+            public static string BoxAlmostFull(string count, string capacity) => "Caixa de Pesca quase cheia (" + count + "/" + capacity + ").";
             public static string Escaped(int count) => count == 1 ? "1 peixe escapou" : Format.Number(count) + " peixes escaparam";
         }
 

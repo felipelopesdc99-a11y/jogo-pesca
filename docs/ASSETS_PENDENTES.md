@@ -799,6 +799,26 @@ imagem atual (`boss_mundial.png` anexada no ChatGPT), para o Boss sair igual em 
 
 Os pedidos prontos estão no arquivo `pedidos_boss_animado.txt` entregue ao proprietário em 13/10/2026.
 
+## Relatório "Bem-vindo de volta" (M24-T51, A-175, pedido em 13/10/2026)
+
+`ASSET_PENDENTE`. Uma faixa de cena no topo do relatório da pesca offline, presa no papel como uma foto (padrão A-170).
+Até o arquivo chegar, o jogo desenha um lago ao entardecer com o sol baixo. O texto ("Você ficou fora por…") fica por
+cima, no lado esquerdo, sobre uma sombra escura que o código já põe: a arte não precisa de espaço vazio, só de não ter
+nada importante no terço esquerdo. A imagem é cortada para caber (fica entre ~7:1 e ~9:1 na tela), então o assunto vai
+no meio da altura.
+
+| Arquivo | O quê | Tamanho | Onde aparece |
+|---|---|---|---|
+| `Arte/UI/bemvindo_cena.png` | Lago ao amanhecer com o barco do pescador e a Caixa de Pesca cheia | 1600×700 | Faixa no topo do Bem-vindo de volta |
+
+O pedido pronto foi entregue ao proprietário em 13/10/2026 num arquivo à parte. Resumo para colar no ChatGPT:
+
+> Ilustração horizontal 1600×700 px, PNG, estilo "Lago Dourado — Clean Premium" de jogo mobile (cores limpas, luz
+> dourada suave, sem contorno grosso): um lago calmo ao amanhecer, um barquinho de madeira com a vara de pesca apoiada e
+> uma caixa de pesca cheia de peixes brilhando, céu azul-noite (#16304E) clareando para dourado (#F6B93B) no horizonte.
+> Assunto do meio para a direita; o terço esquerdo só com água e céu. Sem texto, sem pessoas em close, sem moldura.
+> Arquivo: bemvindo_cena.png
+
 ## Som ambiente dos mapas
 
 Desde 08/10/2026 cada mapa tem 1 gravação provisória feita com sons reais (TD-036, `tools/Audio/mixar_ambiente.py`).

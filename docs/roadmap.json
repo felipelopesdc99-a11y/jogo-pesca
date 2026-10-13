@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-13T14:30:00Z",
+  "updated_at": "2026-10-13T20:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -4990,6 +4990,18 @@
             "M24-T49"
           ],
           "updated_at": "2026-10-13T18:00:00Z"
+        },
+        {
+          "id": "M24-T51",
+          "title": "Relatório \"Bem-vindo de volta\" com cena, números grandes, raridades, fragmentos e avisos",
+          "subsystem": "client",
+          "description": "Pedido do proprietário (13/10/2026): \"Relatório de quando ficou fora já existe, não? Se existir pode melhorar ele.\" A tela de retorno da pesca offline (A-035) era uma lista de linhas; virar um relatório de jogo idle, fácil de ler num relance, sem sistema novo (A-175). ASSET_PENDENTE: bemvindo_cena (1600×700, faixa no topo do Bem-vindo de volta).",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T49"
+          ],
+          "updated_at": "2026-10-13T20:00:00Z",
+          "completion_notes": "Serviço: OfflineReport ganhou SaleValueCoins (soma do preço de venda ao NPC das capturas offline), FisherLevelBefore/After, FishingBoxCount/Capacity/Full, Rarities (RarityCountView, na ordem das raridades do progression.json, só as pescadas) e ClothingFragmentsHave/Need (custo da próxima peça), preenchidos em LocalFishingService.FillOfflineSummary quando o relatório é feito. Tela: UI/WelcomeBackDialog reescrita no padrão Diário de bordo (WindowFrame.Panel/Header/Footer): faixa de cena como foto (arte bemvindo_cena quando existir, senão lago ao entardecer desenhado pelo código, ASSET_PENDENTE), cartões de números grandes (Peixes pescados com espécies novas, Valor da pesca em Moedas, XP de Pescador com \"Nv. X → Y!\" e brilho dourado ao subir, Conchas) com contagem de 0,9 s ao abrir, barra de raridades nas cores de raridade com legenda, até 4 cartas de destaque (FishCard, selos NOVA ESPÉCIE/RECORDE), cartões de fragmentos com os ícones frag_boat_NN/frag_rod_NN/frag_roupa, +N e barra até montar (MONTADO!/MONTADA!, sobras, roupa pronta para montar), roupas que subiram de nível, avisos (Caixa cheia ou acima de 90% com barra e botão Abrir a Caixa, tentativas paradas, isca que acabou, peixes que escaparam) e rodapé com Abrir a Caixa de Pesca e Continuar; rola quando não cabe (~1200×600); tudo calculado uma vez por relatório. Esc fecha o relatório (Hud). Textos em GameTexts.Offline. Testes (OfflineSummaryTests, 6): valor = soma dos preços e = PreviewSale, nível antes/depois, raridades somam e seguem a ordem, ocupação da Caixa, Caixa cheia offline, Fragmentos de Roupa e custo da próxima peça. Pedido de arte em docs/ASSETS_PENDENTES.md. Compilado no CI; o visual só fica verificado quando o proprietário apertar Play."
         }
       ],
       "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."

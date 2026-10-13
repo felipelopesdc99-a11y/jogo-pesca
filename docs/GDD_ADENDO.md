@@ -293,6 +293,8 @@ pesca estava parada, ou se o jogo fechou no meio de uma viagem, não há pesca o
 ### A-035 · Tela de retorno
 **Seção do GDD:** 10 · **Situação:** Em vigor
 
+*Atualizado em 13/10/2026 (A-175): a tela virou um relatório no padrão "Diário de bordo", com faixa de cena, cartões de números grandes, raridades, destaques, fragmentos e avisos.*
+
 Aparece ao voltar, se houve pelo menos um ciclo offline: tempo fora (e o aviso de limite de 24 h,
 quando passou), peixes pescados, XP, espécies novas, Conchas, subida de nível e até 4 capturas em
 destaque. Botões: "Abrir a Caixa de Pesca" e "Continuar".
@@ -3279,3 +3281,43 @@ só Pescador Nv.100+ cria ou entra; criar e comprar vagas custam Dólares. TD-05
   diante; o jogo local paga no máximo um dia (o último) se ficar fechado vários dias; dono que sai passa o clã ao membro
   mais antigo; entrar é de graça. Os números (preços, máximo, prêmios) são provisórios e estão no OD-071.
 - **Quem já jogava** (save v21): abre sem clã (save v22).
+
+### A-175 · Relatório "Bem-vindo de volta"
+**Seção do GDD:** 10 (pesca offline) · Bíblia de Arte, seção 16.8 · pedido do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário (M24-T51): "Relatório de quando ficou fora já existe, não? Se existir pode melhorar ele." A tela
+de retorno (A-035) era uma lista de linhas de texto; virou um relatório de jogo idle, para ler num relance. Nenhum
+sistema novo: ela mostra o que a pesca offline já dava.
+
+- **Janela:** padrão "Diário de bordo" (A-170): moldura de madeira, papel, etiqueta "Bem-vindo de volta!" com o ícone do
+  relógio e o lacre que fecha (igual a "Continuar"; Esc também fecha). No quadro de 1080 de altura do HUD (A-149) a janela tem
+  920 de largura (texto em 864) em qualquer tela, de ~1200×600 a ~1320×840; a altura acompanha o relatório até 960 e,
+  quando ele é mais longo (muitos fragmentos e avisos), o corpo rola e o rodapé com os botões fica parado.
+- **Faixa de cena** no topo, presa no papel como uma foto: "Você ficou fora por 8 h 12 min" em letra grande e, embaixo,
+  "Contaram as primeiras 24 h, o limite da pesca offline." quando passou do limite (senão "O pescador continuou na água
+  enquanto você esteve fora."). Altura 124. Arte `bemvindo_cena` (1600×700,
+  `ASSET_PENDENTE`); até ela chegar, o código desenha um lago ao entardecer com o sol baixo e reflexos que se mexem
+  devagar. Uma sombra escura à esquerda mantém o texto claro legível sobre qualquer arte.
+- **Cartões de números grandes** (uma fileira, 2 a 4 cartões de papel branco): **Peixes pescados** (com "N espécies
+  novas"), **Valor da pesca** em Moedas ("se vender tudo": a soma do preço de venda ao NPC de cada peixe
+  pescado fora, calculada pelo serviço), **XP de Pescador** (com "Nv. 12 → 14!" em dourado e brilho no cartão quando
+  subiu de nível, ou "+N do VIP") e **Conchas**. Os números sobem de 0 até o valor em 0,9 s ao abrir (só apresentação);
+  um número que não cabe no cartão usa a forma curta (1,2 mi).
+- **Peixes por raridade:** uma barra dividida nas cores de raridade (só as que vieram, na ordem das raridades), que cresce
+  ao abrir; cada raridade tem pelo menos 8 px, para um Lendário no meio de centenas de Comuns aparecer. Embaixo, a
+  legenda "● Comum 532 ● Raro 7 …".
+- **Destaques:** até 4 cartas de peixe (a mesma carta da Caixa de Pesca), as capturas importantes de maior valor, com os
+  selos "NOVA ESPÉCIE" e "RECORDE"; ao lado do título, "2 espécies novas · 1 recorde de tamanho".
+- **Fragmentos e equipamento** (2 colunas): um cartão por barco e por vara que soltou fragmentos e um para os
+  Fragmentos de Roupa, com o ícone do fragmento (`frag_boat_NN`, `frag_rod_NN`, `frag_roupa`), "+N" em dourado e a
+  barrinha até montar ("12/40"). Montou: borda dourada, selo "MONTADO!" / "MONTADA!" e "Barco montado!". Já tinha o
+  item: "Já é seu · N de sobra". Roupa: "Já dá para montar uma roupa!" quando os fragmentos alcançam o custo da próxima
+  peça, ou "Todas as roupas montadas". Embaixo, as roupas que subiram de nível ("Luvas Nv.3, Botas Nv.2").
+- **Avisos:** Caixa de Pesca cheia ou quase (a partir de 90% do limite; "Caixa de Pesca cheia (8.640/8.640): a pesca
+  para até você vender.") com a barra de ocupação e o botão "Abrir a Caixa"; as tentativas que pararam por Caixa cheia; a
+  isca que acabou; e, numa linha discreta, os peixes que escaparam.
+- **Rodapé:** linha tracejada, "Abrir a Caixa de Pesca" (quando a Caixa tem peixe) e "Continuar". A explicação da pesca
+  offline (1 tentativa a cada 20 s, 15 s com o VIP, até 24 h) fica no fim do relatório, em letra pequena.
+- **Números do serviço** (no `OfflineReport`, calculados quando o relatório é feito): valor da pesca, nível do Pescador
+  antes e depois, ocupação e limite da Caixa, peixes por raridade e Fragmentos de Roupa (os que tem e o custo da próxima
+  peça). A tela só soma o que já vem por fragmento (o último de cada barco ou vara diz o progresso).

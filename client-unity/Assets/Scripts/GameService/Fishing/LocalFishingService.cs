@@ -361,6 +361,7 @@ namespace FishingIdle.GameService.Fishing
             var counted = Math.Min(away, capMs);
             var endMs = fromMs + counted;
             var fishing = Save.Fishing;
+            var levelBefore = Save.FisherLevel;
 
             var update = new FishingUpdate();
             long cycles = 0;
@@ -407,7 +408,53 @@ namespace FishingIdle.GameService.Fishing
                     CapHours = Config.Fishing.OfflineAccumulationCapHours,
                     Update = update,
                 };
+                FillOfflineSummary(_pendingOffline, levelBefore);
                 _session.Log("Offline fishing: " + cycles + " attempts (" + vipCycles + " at the VIP cycle) for " + (counted / 1000) + " s away.");
+            }
+        }
+
+        /// <summary>
+        /// The numbers of the "Bem-vindo de volta" summary (M24-T51, A-175): the sale value of the catches, the Fisher's
+        /// levels, the Fishing Box, the catches by rarity and the Fragmentos de Roupa. The screen only shows them.
+        /// </summary>
+        private void FillOfflineSummary(OfflineReport report, int levelBefore)
+        {
+            var catches = report.Update.NewCatches;
+            long value = 0;
+            foreach (var c in catches)
+            {
+                value = SafeAdd(value, c.SalePriceCoins);
+            }
+
+            report.SaleValueCoins = value;
+            report.FisherLevelBefore = levelBefore;
+            report.FisherLevelAfter = Save.FisherLevel;
+            report.FishingBoxCount = Save.FishingBox.Count;
+            report.FishingBoxCapacity = Config.Economy.FishingBox?.Capacity ?? 0;
+            report.ClothingFragmentsHave = Save.Clothing?.Fragments ?? 0;
+            report.ClothingFragmentsNeed = Shop.ClothingRules.NextCost(Config, Save);
+
+            var tiers = Config.Progression.Rarity?.Tiers;
+            if (tiers == null)
+            {
+                return;
+            }
+
+            foreach (var tier in tiers)
+            {
+                var count = 0;
+                foreach (var c in catches)
+                {
+                    if (c.RarityId == tier.Id)
+                    {
+                        count++;
+                    }
+                }
+
+                if (count > 0)
+                {
+                    report.Rarities.Add(new RarityCountView { RarityId = tier.Id, RarityName = tier.DisplayName, Count = count });
+                }
             }
         }
 

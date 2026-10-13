@@ -459,6 +459,12 @@ namespace FishingIdle.Game.UI
                 {
                     Event.current.Use();
                 }
+                else if (WelcomeBackPending)
+                {
+                    // The "Bem-vindo de volta" report sits over everything: Esc closes it like "Continuar" (A-175).
+                    _root.WelcomeBack = null;
+                    Event.current.Use();
+                }
                 else if (_boss.IsOpen)
                 {
                     _boss.Close();

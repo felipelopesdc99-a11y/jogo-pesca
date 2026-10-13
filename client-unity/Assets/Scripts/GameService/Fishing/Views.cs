@@ -194,6 +194,35 @@ namespace FishingIdle.GameService.Fishing
         /// <summary>How many hours away count for offline fishing at most (config).</summary>
         public double CapHours { get; internal set; }
         public FishingUpdate Update { get; internal set; }
+
+        // The summary's own numbers (M24-T51, A-175), worked out by the service when the report is made.
+
+        /// <summary>What the fish caught offline are worth sold to the NPC: the sum of their sale prices, in Moedas.</summary>
+        public long SaleValueCoins { get; internal set; }
+
+        /// <summary>The Fisher's level before and after the offline fishing (equal when no level was reached).</summary>
+        public int FisherLevelBefore { get; internal set; }
+        public int FisherLevelAfter { get; internal set; }
+
+        /// <summary>Catches in the Fishing Box and its limit when the report was made (0 = no limit).</summary>
+        public int FishingBoxCount { get; internal set; }
+        public int FishingBoxCapacity { get; internal set; }
+        public bool FishingBoxFull => FishingBoxCapacity > 0 && FishingBoxCount >= FishingBoxCapacity;
+
+        /// <summary>The catches by rarity, in the order of the rarity tiers (progression.json); only the rarities caught.</summary>
+        public List<RarityCountView> Rarities { get; } = new List<RarityCountView>();
+
+        /// <summary>Fragmentos de Roupa the player has and what the next piece costs (0 when every piece is assembled).</summary>
+        public long ClothingFragmentsHave { get; internal set; }
+        public int ClothingFragmentsNeed { get; internal set; }
+    }
+
+    /// <summary>How many catches of one rarity (the offline summary, A-175).</summary>
+    public sealed class RarityCountView
+    {
+        public string RarityId { get; internal set; }
+        public string RarityName { get; internal set; }
+        public int Count { get; internal set; }
     }
 
     public sealed class SalePreview
