@@ -5,12 +5,50 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
 | Arquivo | Responsável por |
 |---|---|
 | `fish_catalog.json` | Dados próprios da espécie: raridade, faixa de tamanho, atributos base, valor de venda, XP de alimento, XP do Pescador |
-| `maps.json` | Mapas, pools de peixes por mapa com pesos de captura, nível de desbloqueio, vara mínima, regras de viagem |
-| `progression.json` | Curva de XP do Pescador, curva de XP do peixe, distribuição de tamanho, regras de modificador de raridade/tamanho/nível, regras de alimentação, intervalos de pesca |
-| `rods.json` | Definições das varas, bônus por nível interno, custos de melhoria, regras de revenda |
-| `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, valores de Mercado e Leilão, limite do Aquário |
+| `maps.json` | Mapas, pools de peixes por mapa com pesos de captura, nível de desbloqueio (a única trava de um mapa desde o M24-T58), regras de viagem |
+| `progression.json` | Curva de XP do Pescador, curva de XP do peixe (até o Nv.100) e bônus de atributo por nível do peixe, distribuição de tamanho, regras de modificador de raridade/tamanho/nível, regras de alimentação, intervalos de pesca, genes dos peixes (`genes`, M24-T52) |
+| `rods.json` | Definições das varas, bônus no Nv.1 e no Nv.100 (com a curva entre eles), custo de cada nível (Moedas e Conchas), regras de revenda; varas por fragmentos (quantos fragmentos montam e a chance por peixe puxado, em qualquer mapa desde o M24-T47; o valor de referência no Mercado) |
+| `economy.json` | Moedas, fórmula de venda ao NPC, obtenção de Conchas, peixes que pedem confirmação na venda da Caixa, valores de Mercado e Leilão, limite do Aquário, VIP (preço em Dólares, dias, bônus de XP offline e o ciclo da pesca offline com VIP, `offline_cycle_seconds`); `crew_removal_refund`: os preços da Tripulação e das Melhorias de antes, só para devolver as Moedas a quem já jogava (M24-T46, A-172; não mudam nada no jogo de hoje) |
 | `arena.json` | Energia, seleção de oponentes, Honra, constantes de combate, formação, regras de Cardume, métrica de Força, Loja da Arena |
 | `expeditions.json` | Durações, Força Recomendada, curvas de eficiência, recompensas |
+| `arena_bots.json` | Só no jogo local: como os 200 adversários simulados da Arena são montados e com que frequência atacam você |
+| `market_bots.json` | Só no jogo local: vendedores e compradores simulados do Mercado (quantos anúncios, preços de referência, chance de vender) |
+| `equipment.json` | Barcos, iscas e roupas: bônus na Chance de Sucesso da Captura, preço e tentativas de cada isca; barcos por fragmentos (quantos fragmentos montam e a chance por peixe puxado, em qualquer mapa desde o M24-T47; o mapa de cada barco, que hoje só diz de qual barco o Boss dá fragmentos; se a pesca offline também dá), níveis dos barcos (bônus no Nv.1 e no Nv.100, custo de cada nível); roupas (`clothing`: chance do Fragmento de Roupa, custo de cada peça na ordem de montagem, bônus de cada peça no Nv.1 e no Nv.100 e o XP de uso de cada nível) |
+| `pass.json` | O Passe do Pescador (M24-T17): o preço do Premium em Dólares e os 100 marcos (Nv.10 ao Nv.1000), cada um com a recompensa grátis e a Premium (Moedas, Conchas, Dólares, fragmentos de um barco, de uma vara e de roupa). Gerado por `tools/Progressao/passe_fragmentos.py gerar` (só o passe, sem mexer nos barcos: `passe_fragmentos.py passe`; resultado da simulação em `docs/propostas/passe_fragmentos.json`) |
+| `world_boss.json` | O Boss Mundial (M24-T29, A-165): nome (sugestão, OD-069), horário (19:00 de Brasília, UTC−3 fixo, por 10 minutos), intervalo dos ataques automáticos do Cardume (3 s), quantos ataques atrasados contam depois de um travamento, a defesa do Boss, as 6 faixas de dano (porcentagem do dano máximo do dia e a recompensa de cada uma: minutos de renda em Moedas e Conchas, Fragmentos de Roupa e fragmentos de barco), os Dólares do top 1 a 10 e a chave `online_rewards_enabled` (desligada no jogo local), e a renda de referência por nível, gerada por `tools/Progressao/boss_mundial.py` a partir do `pass.json` |
+| `missions.json` | As Missões (M24-T54, A-177, TD-057): as 100 missões na ordem da lista aprovada, cada uma com `id` estável (`mission_001` …), `type` (o objetivo, chave técnica; a lista dos tipos está em `types_note`), `target` (quantos; 0 = "todas" nos tipos que aceitam), os parâmetros do tipo (`species_id`, `rarity`, `size_category`, `map_id`, `rod_id`, `boat_id`, `bait_id`, `goods_kind`, `stars`, `level`, `contested`), `online_only` (só conclui com o jogo online), `reference_level` (o nível em que o jogador de referência deve concluir; só o script usa) e `reward` (`coins`, `shells`, `dollars`). Prêmios provisórios (OD-073), gerados por `tools/Progressao/missoes.py gerar`; `missoes.py lista` escreve a lista legível |
+| `clans.json` | Os Clãs (M24-T49, A-174, TD-055): nível mínimo para criar ou entrar (`membership.min_fisher_level`, Nv.100), vagas de todo clã (`base_members`, 10) e o máximo com as compradas (`max_members`), o preço em Dólares de criar (`costs.create_dollars`) e das vagas extras (a 1ª `extra_slot_first_dollars`, cada uma seguinte `extra_slot_growth` vezes a anterior), o tamanho do nome (`name`), o bônus de XP de Pescador de quem está num clã (`xp_bonus`, 0,01 = +1%) e o ranking diário (`ranking`: fuso de Brasília, fecha às 00:00; `rewards_by_rank` do 1º ao 3º clã, que cada membro recebe: Dólares, minutos da renda de referência do `world_boss.json` em Moedas e Conchas, Fragmentos de Roupa e fragmentos do barco do Boss; e a chave `online_rewards_enabled`, desligada no jogo local). Números provisórios (OD-071) |
+
+## Como editar
+
+O jeito mais fácil é pelo **Painel de Desenvolvimento dentro do Unity** (menu Fishing Idle → Painel
+de Desenvolvimento → Balanceamento). Ele valida tudo antes de gravar, só altera os valores que você
+mudou e, com o jogo rodando, aplica na hora. Editar os arquivos à mão também funciona: o jogo valida
+ao apertar Play e, se algo estiver errado, mostra a lista de problemas na tela.
+
+Onde fica cada coisa no painel:
+
+| Quero mudar… | Seção do painel | Arquivo |
+|---|---|---|
+| Preço de venda, tamanho, XP e atributos de um peixe | Espécies | `fish_catalog.json` |
+| Chance de cada peixe em cada mapa | Mapas e chances | `maps.json` |
+| Chance de Pequeno, Adulto, Grande e Excepcional | Distribuição de tamanho | `progression.json` |
+| Quanto o Raro vale a mais (venda, atributos, XP) e a chance de tamanho por raridade | Raridades | `progression.json` |
+| Quanto cada raridade morde na pesca (o 0,233333 do A-160; era 0,35 no A-159) | Raridades (coluna "Na pesca") | `progression.json` |
+| Chance de puxar o peixe (por raridade, mínimo e máximo), barcos e iscas, e o simulador | Sucesso da pesca | `progression.json`, `equipment.json` |
+| Bônus de puxar de cada vara no Nv.1 e no Nv.100 | Varas (coluna "Puxar") | `rods.json` |
+| Tempo de pesca | Pesca | `progression.json` |
+| Níveis do Pescador e do peixe | XP do Pescador | `progression.json` |
+| Varas (bônus, curva, nível máximo e custo de cada nível; fragmentos e chance por peixe) | Varas | `rods.json` |
+| Roupas (chance do Fragmento de Roupa, XP de uso, bônus de cada peça no Nv.1 e no Nv.100) | Sucesso da pesca → Roupas (o custo de cada peça: edite o arquivo) | `equipment.json` |
+| Barcos (bônus no Nv.1 e no máximo, fragmentos e chance por peixe, custo de cada nível) | Sucesso da pesca → Barcos | `equipment.json` |
+| Preço mínimo, multiplicador geral do preço de venda dos peixes, Conchas, Aquário, Mercado | Economia | `economy.json` |
+| Preço, duração, bônus de XP e ciclo offline do VIP | Economia → `vip` | `economy.json` |
+| Arena, Cardume, Expedições | Outros arquivos | `arena.json`, `expeditions.json`… |
+| Boss Mundial (horário, intervalo, faixas, Dólares do top 10) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play. Mudou o `pass.json`? Rode `tools/Progressao/boss_mundial.py` | `world_boss.json` |
+| Clãs (nível, vagas, preços em Dólares, bônus de XP, prêmios do top 3) | Ainda sem seção no painel: edite o arquivo; o jogo valida ao apertar Play | `clans.json` |
+| Missões (alvos e prêmios em Moedas, Conchas e Dólares) | Ainda sem seção no painel: edite o arquivo, ou ajuste `tools/Progressao/missoes.py` e rode `missoes.py gerar`; o jogo valida ao apertar Play | `missions.json` |
+| Passe do Pescador (recompensas, preço do Premium) | Ainda sem seção no painel: edite o arquivo ou gere de novo com o script; o jogo valida ao apertar Play | `pass.json` |
 
 ## Regras
 
@@ -18,11 +56,40 @@ Todo valor em que o jogo se apoia mora aqui, nunca dentro do código do jogo (re
   um mapa. O `fish_catalog.json` guarda somente o que é verdade sobre uma espécie independentemente
   de onde ela seja pescada, então uma espécie que apareça em dois mapas nunca é duplicada.
 - **`balance_status: "PROVISÓRIO"`** em todo arquivo significa que os números são um balanceamento
-  inicial com hierarquia clara, a ser ajustado por simulação e pelo painel (seção 46 do GDD). A
+  inicial com hierarquia clara, a ser ajustado por simulação e pelo painel (seção 46 do GDD). Para ver
+  os números atuais medidos, rode `./ops/scripts/simular.sh` (relatório em
+  `docs/relatorios/SIMULACAO_BALANCEAMENTO.md`). A
   *estrutura* não é provisória.
 - **Os atributos base valem para nível 1, tamanho no percentil 0,50, antes dos modificadores de
   raridade, tamanho e nível.** O servidor aplica esses modificadores usando o `progression.json`;
   ele nunca grava atributos derivados de forma redundante.
+- **Genes (M24-T52, A-176, TD-056):** `progression.json → genes`. Cada peixe nasce com 4 genes (Vida, Ataque, Defesa,
+  Velocidade) de 0 a `max_value` (31), sorteados uniformes e independentes na captura. Cada gene multiplica o seu
+  atributo entre `stat_multiplier_min` (0,90, gene 0) e `stat_multiplier_max` (1,10, gene 31), em linha reta: a média
+  fica em ×1,00. `migration_neutral_value` (16) é o que recebem os peixes de saves anteriores. `quality_stars` são as
+  faixas das estrelas pela qualidade (soma ÷ 124): 1★ de 0%, 2★ de 30%, 3★ de 55%, 4★ de 75%, 5★ de 90% (sai 5★ em
+  ~0,17% dos peixes). `celebrate_min_stars` (5): a partir de quantas estrelas a captura é celebrada e vira destaque no
+  "Bem-vindo de volta". A proteção na venda em lote da Caixa (`economy.json → fishing_box.bulk_sale_protection.
+  gene_stars_at_or_above`) e no alimento e venda em lote do Aquário (`progression.json → feeding.valuable_feed_rules.
+  gene_stars_at_or_above`) ficam em 5 (0 desliga). O preço de venda ao jogo não depende dos genes.
+- **Tamanho Perfeição:** acima do Excepcional, com `draw_weight` 0,01 (1 em cada 100 dos dois) e
+  `stat_multiplier` 1,05 (+5% em todos os atributos). Qualquer categoria de tamanho pode ter um
+  `stat_multiplier` (1 quando não tem) e `special: true` (selo, celebração e proteção na venda).
+- **Tamanho por raridade:** cada raridade pode ter `size_weight_multipliers` (em
+  `progression.json → rarity.tiers`), que multiplica o `draw_weight` de cada categoria de tamanho
+  para os peixes dessa raridade. O que não estiver listado fica 1. Hoje o Raro tem Grande × 0,85 e
+  Excepcional × 0,7 (GDD_ADENDO A-083). Campo opcional: arquivos sem ele continuam valendo.
+- **Mordida na pesca por raridade (M24-T22, A-159, TD-043):** `rarity.tiers[].fishing_bite_multiplier` (0,233333 no
+  Raro, Épico, Lendário e Mítico desde o M24-T27, A-160; era 0,35) multiplica a chance de um peixe daquela raridade
+  morder **na pesca** (online e offline), depois dos pesos do mapa e do bônus de raridade da vara; os Comuns completam o
+  resto. Com o ciclo de 10 s (`fishing.online_cycle_seconds` 10 e `offline_cycle_seconds` 20), cada raridade continua
+  com os mesmos peixes por hora do ciclo de 15 s (0,35 × 10/15) e ~70% dos do ciclo de 30 s. Para manter os raros por
+  hora ao mudar o ciclo, mude este número na mesma proporção. Expedições e os vendedores do Mercado usam os pesos do mapa
+  sem ele. Ausente = 1; não vale para o Comum.
+- **Ciclo de pesca (M24-T27, A-160):** `progression.json → fishing.online_cycle_seconds` (10) e
+  `offline_cycle_seconds` (20); com o VIP ativo, a pesca offline usa `economy.json → vip.offline_cycle_seconds` (15; 0 =
+  o VIP não muda o ciclo). A Caixa de Pesca (`economy.json → fishing_box.capacity`, 8.640) guarda 1 dia de pesca online;
+  as iscas (`equipment.json → baits[].charges`, 999 desde o M24-T30) duram 2,8 h online.
 - Todo arquivo carrega `config_schema_version`. Aumente-o quando o *formato* do arquivo mudar, não
   quando um número mudar.
 
@@ -43,9 +110,165 @@ servidor os serve somente para leitura em `GET /api/dev/config`.
 
 ## Calibragem provisória registrada
 
-- O XP do Pescador do nível 1 ao 10 soma **2000 XP**, mirando cerca de 240 capturas no Mapa 1
-  (aproximadamente 2 horas de pesca online).
-- O XP do Pescador do nível 1 ao 100 soma **711.000 XP**, contra uma meta de cerca de 90 dias. É o
-  valor com maior chance de precisar de recalibragem quando houver dados reais de jogo.
-- O XP do peixe do nível 1 ao 10 soma **995 XP**.
-- A Vara 1 custa **2.500** Moedas para comprar e **138.050** Moedas para ir do nível interno 1 ao 10.
+- *Histórico, substituído pelo A-153 e pelo A-162 (números de hoje logo abaixo, na curva do Pescador):* o XP do
+  Pescador do nível 1 ao 10 somava **2000 XP**, mirando cerca de 240 tentativas no Mapa 1
+  (aproximadamente 2 horas de pesca online). Hoje: Nv.1 → 10 = **990 XP**; até o Nv.100 = **309.220 XP**; até o
+  Nv.1000 = **229.596.770 XP** (curva versão 3). Desde a V0.2 só metade delas vira peixe no começo
+  (Chance de Sucesso da Captura), e por isso o XP, o valor e o XP como alimento das espécies foram
+  dobrados (30/09/2026, `docs/GDD_ADENDO.md` A-092).
+- Mapas 3 e 4 (V0.2, `docs/PROGRESSAO_MAPAS_3_4.md`): venda, XP e XP como alimento das espécies
+  multiplicados por 1,75 (Pantanal Dourado) e 1,55 (Estuário das Marés) em relação ao documento, para o
+  Nível 20→30 e o 30→40 ficarem perto de 3,8 h e 4,0 h online com a Chance de Sucesso (A-093).
+- Chance de Sucesso da Captura: Comum 50%, Raro 38%, Épico 24%, entre 5% e 95%.
+  *Histórico (30/09/2026), substituído pelo A-156, A-157, A-161, A-163 e A-168:* barcos de +3% a +15%, iscas de +5% a
+  +15% por 100 tentativas, Vara 1 de +2% a +12%. Hoje: 5 barcos de **+2% a +10%** no Nv.1 (3× no Nv.100), três iscas de
+  **+5%, +10% e +15%** com **999 tentativas** por compra, e varas com níveis até o Nv.100 (Vara 1: +1,5% no Nv.1, +24%
+  no Nv.100).
+- *Histórico, substituído pelo A-109, A-153, A-162 e A-172:* o XP do Pescador do nível 1 ao 100 somava **711.000 XP**,
+  contra uma meta de cerca de 90 dias. Hoje são **309.220 XP** até o Nv.100 (~0,5 dia com o jogo aberto) e
+  **217.677.170 XP** até o Nv.1000 (~60 dias).
+- O XP do peixe do nível 1 ao 10 somava **3.885 XP** (A-132). Desde 10/10/2026 (M24-T13, A-156) o peixe vai até o
+  **Nv.100**: do Nv.1 ao 100 são **36.160 XP** (~930 Comuns de 39 XP); o Nv.41, que tem a força do Nv.10 de antes
+  (+36%), pede **2.465 XP** (~63 Comuns).
+- **Mais peixes, menos raros (11/10/2026, M24-T22, A-159):** ciclo de pesca na metade (online 30 → 15 s, offline 60 →
+  30 s, limite offline de 24 h igual), `fishing_bite_multiplier` 0,35 nas raridades acima de Comum, Caixa de Pesca de
+  1.500 para 3.000 peixes, iscas de 60 para 120 tentativas pelo mesmo preço, chance de fragmento ~metade e o Passe
+  regerado. O Nv.10 do Pescador chega em ~30 min online (era ~1 h); o Nv.1000 com a Tripulação e as Melhorias, em
+  ~57 / ~102 / ~119 dias (jogo aberto / 4 vezes / 1 vez por dia; eram ~50 / ~92 / ~106), porque no fim do jogo os raros
+  valiam mais que o dobro de Comuns (OD-063).
+- **Pesca a cada 10 s (12/10/2026, M24-T27, A-160):** online 15 → 10 s, offline 30 → 20 s, 15 s offline com o VIP
+  (`vip.offline_cycle_seconds`); `fishing_bite_multiplier` 0,35 → 0,233333 (raros por hora iguais, chance por peixe
+  2/3); Caixa de Pesca 3.000 → 8.640 (1 dia de pesca online); iscas 120 → 180 tentativas pelo mesmo preço; chance de
+  fragmento ÷1,5 (0,43% a 0,67%) e o Passe regerado. Nv.10 em ~20 min online; Nv.1000 com a Tripulação e as Melhorias em
+  ~50 / ~91 / ~106 dias (eram ~57 / ~102 / ~119).
+- **Três iscas (12/10/2026, M24-T30, A-161, TD-046):** `equipment.json → baits` tem exatamente Terra Viva (+5%),
+  Maré Viva (+10%) e Ouro de Maré (+15%), 999 tentativas por compra, 23.000 / 100.000 / 200.000 Moedas e 13 / 33 / 55
+  Conchas: por tentativa, ~10% a 20% mais caro que as iscas de antes pelo mesmo bônus. `bait_migration` guarda a versão
+  do modelo de iscas (`bait_model_version`, 2) e as iscas de antes (`legacy_baits`), usadas só para converter um save
+  antigo pelo valor em Moedas. Retorno de cada isca por estágio: `python3 tools/Progressao/simular_iscas.py`
+  (`--precos A,B,C` testa outro custo por tentativa sem mexer no config).
+- **Curva do Pescador: Nv.1000 em ~60 dias (12/10/2026, M24-T31, A-162, TD-047):** `progression.json → fisher`
+  na curva versão 3 (`xp_curve_version`): os níveis 1 a 99 iguais aos de antes e o resto regerado por
+  `python3 tools/Progressao/calibrar_xp.py --gravar` (`--manter-ate 100`, `--metas 250:3.67d,500:14.6d,750:33.3d,1000:60d`),
+  medido com a Tripulação e as Melhorias, jogo aberto, sem Passe e sem VIP. Nv.1000 em ~60 / ~108 / ~124 dias (jogo
+  aberto / 4 vezes / 1 vez por dia; eram ~50 / ~91 / ~105); do Nv.1 ao Nv.1000, 229.596.770 XP. Trocar a curva de novo
+  pede subir `xp_curve_version` (os saves são convertidos pelo XP total, sem baixar nível) e regerar o `pass.json`.
+- **Sem Tripulação e sem Melhorias (12/10/2026, M24-T46, A-172, TD-053):** `crew.json` e `upgrades.json` saíram; a venda
+  ao NPC não tem mais multiplicador. Para manter a meta, a curva do Pescador foi para a **versão 4**: os níveis 1 a 249
+  iguais e o resto regerado por `python3 tools/Progressao/calibrar_xp.py --manter-ate 250 --metas
+  500:14.6d,750:33.3d,1000:60d --gravar`, medido pelo jogador de referência de `tools/Progressao/jogador.py` (só a pesca,
+  **sem roupas**, jogo aberto, sem Passe e sem VIP). Nv.1000 em ~60,0 / ~112 / ~124 dias sem roupas e ~54,3 / ~101 / ~111
+  com roupas (jogo aberto / 4 vezes / 1 vez por dia; sem o ajuste seriam 63,2 / 118 / 130 e 57,1 / 106 / 116); do Nv.1 ao
+  Nv.1000, 217.677.170 XP. `pass.json` (Moedas e Conchas, `passe_fragmentos.py passe`) e `world_boss.json →
+  reference_income` (`boss_mundial.py`) regerados pela renda só da pesca. `--so-relatorio` mostra os tempos da tabela de
+  hoje sem calibrar.
+- **Todo nível custa Moedas e Conchas (M24-T30):** `upgrade_cost.shells_first` das varas e dos barcos precisa ser pelo
+  menos 1; o jogo recusa um config com 0.
+- A Vara 1 **não é mais vendida** (M24-T32, A-163): monta com **5 fragmentos** (eram 15 até o OD-070, opção c, em
+  13/10/2026; as varas 1 a 5 pedem 5 / 8 / 12 / 15 / 20, `fragments_required`, gravado por
+  `fragmentos_equipamento.py gerar` → `FRAGMENTOS_VARAS`; o Passe continua dando 3 / 4 / 6 / 7 / 9 fragmentos de vara,
+  `passe_fragmentos.py` → `PASSE_FRAG_VARAS`) que caem pescando em qualquer mapa (0,1%
+  por peixe puxado desde o M24-T47, A-173; era 3,7% só no Lago Sereno) e no Passe; os 2.500 Moedas de antes ficaram só como valor de referência no Mercado
+  (`acquisition.market_reference_coins`). Desde o M24-T13 ela vai até o **Nv.100**: o 1º nível custa **500**
+  Moedas e 1 Concha (antes 1.500 e 2), do Nv.1 ao 30 são ~156 mil Moedas e 44 Conchas, e do 1 ao 100 ~1,5 bi Moedas
+  e 588 Conchas.
+
+## Níveis até o Nv.100 (varas, barcos e peixes)
+
+Desde 10/10/2026 (M24-T13, A-156, TD-041). Os números são gerados por `tools/Progressao/niveis_100.py gerar` (os
+"botões" ficam no começo do script) e o ritmo é simulado por `tools/Progressao/niveis_100.py simular --gravar`
+(resultado em `docs/propostas/niveis_100.json`).
+
+- **Bônus.** Cada vara com nível tem `bonuses_at_level_1` (o bônus de antes no Nv.1) e `bonuses_at_max_level` (3× o
+  bônus do Nv.10 de antes). Cada barco com nível tem `catch_success_bonus` (Nv.1, o de antes) e
+  `catch_success_bonus_at_max_level` (3×). Entre os dois, o bônus no nível N é
+  `Nv.1 + (máx − Nv.1) × ((N − 1) ÷ (nível máximo − 1)) ^ expoente`, com o expoente em
+  `rods.json → upgrade_rules.bonus_curve_exponent` e `equipment.json → boat_levels.bonus_curve_exponent` (1,2: cada
+  nível soma um pouco mais que o anterior, começando com passos pequenos). O peixe usa a mesma curva com
+  `progression.json → fish_level.stat_bonus_at_max_level_percent` (108%) e `stat_bonus_curve_exponent`.
+- **Custo.** `upgrade_cost` em cada vara e barco: o nível N → N + 1 custa `coins_first × coins_growth ^ (N − 1)`
+  Moedas e `shells_first × shells_growth ^ (N − 1)` Conchas, arredondados (abaixo de 1.000 para o inteiro, no mínimo
+  1; a partir de 1.000, para 3 algarismos: 12.345 vira 12.300).
+- **Nível máximo.** `rods.json → upgrade_rules.internal_levels.max`, `equipment.json → boat_levels.max_level` e
+  `progression.json → fish_level.max_level` (os três em 100). O barco inicial não tem nível (`has_levels: false`).
+- **Teto da chance.** A Chance de Sucesso da Captura continua entre `fishing.catch_success_min` e
+  `catch_success_max` (5% e 95%), mesmo com a vara e o barco no Nv.100 e a melhor isca.
+- **Migração.** `legacy_levels_v1` (em cada vara e em `fish_level`) diz para qual nível novo vai quem estava no nível
+  1 a 10 da curva antiga (`level_curve_version` 1): o menor nível cujo bônus é maior ou igual ao de antes em todos os
+  eixos. Se a curva mudar de novo, gere um mapa novo e aumente `level_curve_version`.
+- **Outros números ajustados para a mesma força de antes:** adversários da Arena (`arena_bots.json →
+  top_fish_level` 10 → 41), peixes à venda no Mercado (`market_bots.json → max_fish_level` 6 → 26, prêmio por nível
+  0,15 → 0,0337), varas à venda no Mercado (`max_rod_level` 41, novo) e o aviso de "peixe valioso" ao alimentar
+  (`progression.json → feeding.valuable_feed_rules.min_level` 2 → 8).
+
+## Barcos por fragmentos e Passe do Pescador
+
+Desde 11/10/2026 (M24-T16 e M24-T17, A-157 e A-158, TD-042). Números gerados por
+`tools/Progressao/passe_fragmentos.py gerar` (os "botões" ficam no começo do script); o ritmo é simulado por
+`tools/Progressao/passe_fragmentos.py simular --gravar` (resultado em `docs/propostas/passe_fragmentos.json`).
+
+**Desde 13/10/2026 (M24-T58, A-180) nada é montado sozinho, e os mapas abrem só pelo nível.** Juntar os
+`fragments_required` de um barco ou de uma vara não monta mais nada: o jogador aperta **Montar** (Loja → Barcos ou
+Varas), e só pode montar tendo o item anterior — o Barco N pede o Barco N − 1 (o Barco 1 pede o barco inicial, que todo
+jogador tem) e a Vara N pede a Vara N − 1 **no Inventário** (a Vara 1 pede a Vara Inicial). Montar gasta só
+`fragments_required`; o resto fica guardado, sem limite. O item montado entra no Nv.1 e **não** passa a ser usado sozinho
+(o barco com Usar; a vara com Equipar). A ordem é a dos `tier`. Os mapas não têm mais `minimum_rod_tier`: abrem só com
+`unlock_fisher_level`; a vara em uso decide apenas quais raridades do mapa ela pesca (`rods.json → can_catch_rarities`),
+e o validador confere que toda vara pesca alguma coisa em todo mapa. As roupas já eram montadas pelo jogador, peça
+escolhida por ele (A-164), e continuam iguais.
+
+**Desde 13/10/2026 (M24-T47, A-173, TD-054) todo fragmento cai em qualquer mapa.** Cada peixe puxado (online e offline;
+Expedições não) faz um sorteio para **cada** barco, **cada** vara e o Fragmento de Roupa, cada um com o seu
+`fragment_drop_chance` — hoje **0,001 (0,1%)** em todos, a chance pedida pelo proprietário. Para mudar, edite o
+`fragment_drop_chance` de cada barco (`equipment.json → boats`), de cada vara (`rods.json → rods`) e da roupa
+(`equipment.json → clothing`); os geradores não mexem mais nas chances. Quantos dias leva para montar tudo:
+`tools/Progressao/fragmentos_qualquer_mapa.py simular --gravar` (resultado em
+`docs/propostas/fragmentos_qualquer_mapa.json`). As linhas abaixo que falam de "mapa onde cai" e de chances por mapa são
+a regra de antes, para o histórico.
+
+- **Barcos não são vendidos.** São **5 barcos** (mais o inicial) desde o M24-T42 (A-168, TD-051). Cada um tem **dois
+  mapas**: `map_id` (um dos Mapas 1 a 5) e `extra_fragment_maps` (lista de `{map_id}`, hoje um dos Mapas 6 a 10); desde o
+  M24-T47 eles só dizem de qual barco o Boss Mundial dá fragmentos (o do mapa mais alto liberado) e o Passe usa a mesma
+  ordem. Até o M24-T46 os fragmentos caíam só nesses mapas, cada um com a sua chance (descrito a seguir). `fragments_required` diz quantos montam o barco (20 no Remo Valente
+  até 55 no Horizonte Dourado). Chance de um peixe puxado dar 1 fragmento: **0,43% a 0,52%** nos Mapas 1 a 5 e **0,53% a
+  0,67%** nos Mapas 6 a 10 (ciclo de 10 s, M24-T27; eram 0,64% a 1,03% com o de 15 s e 1,3% a 2,4% com o de 30 s). O
+  validador confere que cada mapa dá um barco só, contando os dois campos. O script grava com 4 casas e mexe só no
+  `map_id` principal; a chance dos mapas extras é a que o mapa já tinha. O barco inicial não tem `map_id`.
+  `boat_fragments.drop_on_offline_fishing` diz se a pesca offline também dá fragmentos (sim).
+- **`boat_migration`** (`boat_model_version` 2 e `removed_boats`: id, `fragments_go_to`, `fragments_required`,
+  `upgrade_cost` de cada barco 6 a 10 que saiu) é usado só para converter, uma vez, um save que ainda tinha os 10 barcos
+  (save v20, `BoatModelMigration`).
+- **Como a chance foi calibrada.** Com os 10 barcos de antes, para quem abre o jogo 4 vezes por dia e pesca no mapa do
+  barco, montar levava ~2 dias no Mapa 1 e ~10 no Mapa 10 (`DIAS_ALVO_PRIMEIRO` e `DIAS_ALVO_ULTIMO` no script).
+- **Passe.** `premium_price_dollars` (100) e `milestones`: `level` e as recompensas `free` e `premium`, cada uma com
+  `coins`, `shells`, `dollars`, `boat_id` e `fragments` (0 = não dá). Os níveis precisam estar em ordem crescente, até
+  o nível máximo do Pescador; `boat_id` precisa existir e não pode ser o barco inicial. Os Dólares de nível do A-111
+  (`fisher.dollars_per_levels`, que saiu do `progression.json`) estão em `free.dollars` do Nv.10 ao Nv.100.
+- `pass_id` identifica o passe no save; temporadas ainda não existem (OD-059).
+- Desde 12/10/2026 (M24-T32/T33) a recompensa também pode ter `rod_id` e `rod_fragments` (fragmentos de uma vara, que
+  precisa existir e não ser a Vara Inicial) e `clothing_fragments` (Fragmentos de Roupa).
+
+## Varas e roupas por fragmentos
+
+Desde 12/10/2026 (M24-T32 e M24-T33, A-163 e A-164, TD-048). Números gerados por
+`tools/Progressao/fragmentos_equipamento.py gerar` (os "botões" ficam no começo do script); o ritmo é simulado por
+`tools/Progressao/fragmentos_equipamento.py simular --gravar` (resultado em `docs/propostas/fragmentos_equipamento.json`).
+Depois de mudar varas ou roupas, rode também `passe_fragmentos.py gerar` (o Passe dá fragmentos delas).
+
+- **Varas não são vendidas.** Cada vara menos a inicial tem `acquisition.method` `"fragments"`, `fragments_required` (15 a
+  60) e `fragment_drop_chance` (0,1% por peixe puxado, em qualquer mapa, desde o M24-T47; até o M24-T46 havia também
+  `fragment_map_id`, o único mapa onde ela caía, com 1,63% a 7%). `acquisition.market_reference_coins` é o valor da vara no Mercado e
+  na revenda (o preço que ela tinha na Loja). `fragment_rules.drop_on_offline_fishing` diz se a pesca offline também dá
+  fragmentos (sim). A Vara Inicial é `"free_claim_in_shop"` e não tem mapa.
+- **A progressão não pode travar.** Desde o M24-T58 (A-180) nenhum mapa pede vara (`minimum_rod_tier` saiu do
+  `maps.json`); o validador confere que toda vara pesca alguma raridade em todo mapa. Até então, cada mapa pedia uma
+  categoria mínima de vara, e o jogo recusava um config em que essa vara não caísse pescando.
+- **Como a chance era calibrada (até o M24-T46).** Quem abria o jogo 4 vezes por dia montava cada vara no mesmo dia em que
+  comprava antes (`PRECOS_ANTIGOS` no script guarda os preços de antes, só para comparar).
+- **Roupas** (`equipment.json → clothing`): `fragment_drop_chance` (0,1% desde o M24-T47, era 0,17%: um tipo só de
+  fragmento, em todos os mapas),
+  `drop_on_offline_fishing`, `fragments_to_assemble` (custo da 1ª, 2ª … peça montada, qualquer peça: 15, 25, 40, 60, 80),
+  `max_level` (100) e `bonus_curve_exponent` (a curva das varas), `use_xp_per_fish` (pontos de uso por peixe puxado) e
+  `level_xp` (`first` × `growth` ^ (N − 1) pontos do nível N para o N + 1, arredondado como os preços), e `pieces` (id,
+  nome, descrição, `bonus_axis` — `catch_success`, `rarity_efficiency`, `size_quality`, `shell_yield` ou `fisher_xp` — e o
+  bônus no Nv.1 e no Nv.100). O jogo recusa um eixo desconhecido, uma chance fora de 0 a 1 e bônus que diminuem.

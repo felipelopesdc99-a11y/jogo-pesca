@@ -2,165 +2,359 @@
   "config_file": "rods",
   "config_schema_version": 1,
   "balance_status": "PROVISÓRIO",
-  "description": "Definições das varas e custos de melhoria. A V0.1 implementa apenas o Tier 0 (Vara Inicial) e o Tier 1 (Vara 1). A escada de tiers de longo prazo fica registrada como referência e de propósito não tem nenhuma vara definida.",
+  "description": "Definições das varas e custos de melhoria. A Vara Inicial (Tier 0) é de todos (resgatada de graça no tutorial); desde 12/10/2026 (M24-T32, A-163) as outras varas não são vendidas: cada uma é montada com fragmentos que caem pescando em qualquer mapa (desde 13/10/2026, M24-T47, A-173). A escada de tiers de longo prazo fica registrada como referência.",
   "upgrade_rules": {
     "internal_levels": {
       "min": 1,
-      "max": 10
+      "max": 100
     },
-    "purchase_model": "Pagar Moedas para comprar o próximo nível diretamente.",
+    "purchase_model": "Pagar Moedas e Conchas para comprar o próximo nível diretamente.",
     "has_xp_bar": false,
     "has_failure_chance": false,
+    "reference_keys_note": "Referência: o jogo não lê has_failure_chance nem uses_shells (melhorar não falha, e cada nível pede as Conchas de upgrade_cost).",
     "requires_materials": false,
-    "uses_shells": false
+    "uses_shells": true,
+    "uses_shells_note": "Desde 02/10/2026 (A-099) melhorar varas pede Conchas além das Moedas. Desde 12/10/2026 (M24-T32) as varas não são compradas: vêm de fragmentos.",
+    "bonus_curve_exponent": 1.2,
+    "level_curve_version": 2,
+    "level_curve_note": "Desde 10/10/2026 (M24-T13, A-156) as varas vão até o Nv.100. Cada vara guarda o bônus do Nv.1 (bonuses_at_level_1, o de antes) e o do Nv.100 (bonuses_at_max_level, ~3× o Nv.10 de antes); o bônus no nível N é Nv.1 + (Nv.100 − Nv.1) × ((N − 1) ÷ 99) ^ bonus_curve_exponent. Melhorar de N para N + 1 custa coins_first × coins_growth ^ (N − 1) Moedas e shells_first × shells_growth ^ (N − 1) Conchas, arredondados (abaixo de 1.000 para o inteiro; acima, para 3 algarismos). legacy_levels_v1 diz para qual nível novo vai uma vara que estava no nível 1 a 10 da curva antiga (o menor com bônus maior ou igual; level_curve_version 1). Números gerados por tools/Progressao/niveis_100.py."
   },
   "bonus_axes": {
     "note": "Só existem bônus ligados à pesca. Os bônus são modestos porque percentuais pequenos se acumulam ao longo de milhares de capturas.",
     "rarity_efficiency": {
-      "formula": "peso_efetivo(raro) = peso_base(raro) × (1 + rarity_efficiency)",
-      "clamp_note": "Escala a fatia rara do peso já existente no pool. Nunca pode introduzir uma raridade que o mapa não lista em available_rarities, e uma eficiência de +5% não pode transformar uma chance de 1% em 6%."
+      "formula": "peso_efetivo(espécie não Comum) = peso_base × (1 + rarity_efficiency), só para as raridades que a vara pode pegar; os Comuns ficam iguais e o pool é renormalizado.",
+      "clamp_note": "Escala a fatia não Comum (Raro e Épico) do peso já existente no pool. Nunca pode introduzir uma raridade que o mapa não lista em available_rarities, e uma eficiência de +5% não pode transformar uma chance de 1% em 6%."
     },
     "size_quality": {
       "formula": "draw_weight(grande) e draw_weight(excepcional) são multiplicados por (1 + size_quality); o peso restante é renormalizado."
     },
     "shell_yield": {
       "formula": "chance_de_concha = chance_base × (1 + shell_yield)"
+    },
+    "catch_success": {
+      "formula": "pontos percentuais somados à Chance de Sucesso da Captura (0,05 = +5%), junto com a chance-base da raridade, o barco e a isca."
     }
   },
+  "fragment_rules": {
+    "drop_on_offline_fishing": true,
+    "note": "Varas por fragmentos (M24-T32, A-163; desde 13/10/2026 em qualquer mapa, M24-T47, A-173). Cada vara (menos a inicial) tem fragments_required e fragment_drop_chance. Cada peixe puxado (não o que escapa), em qualquer mapa, tem fragment_drop_chance de dar 1 fragmento de CADA vara, num sorteio independente por vara, com o Rng do serviço na mesma tentativa, depois da captura e dos fragmentos de barco. Desde 13/10/2026 (M24-T58, A-180) nada é montado sozinho: com fragments_required fragmentos E a vara anterior no Inventário (a Vara 1 pede a Vara Inicial), o jogador aperta Montar; montar gasta só fragments_required (o resto fica guardado, sem limite) e a vara entra no Inventário no Nv.1, sem ser equipada. Os mapas abrem só pelo nível do Pescador (não pedem vara); a vara decide só quais raridades pesca (can_catch_rarities). drop_on_offline_fishing: a pesca offline também dá fragmentos; Expedições não. Depois de montada, os fragmentos daquela vara continuam caindo e ficam guardados como extras (se a vara for vendida, eles montam outra). acquisition.market_reference_coins é o valor de referência da vara no Mercado e na revenda (o preço que ela tinha na Loja). fragments_required gerado por tools/Progressao/fragmentos_equipamento.py gerar; fragment_drop_chance é a chance pedida pelo proprietário (0,001 = 0,1%), que o gerador mantém. Desde 13/10/2026 (OD-070, opção c; M24-T48) as varas pedem 5 / 8 / 12 / 15 / 20 fragmentos (eram 15 / 25 / 35 / 45 / 60), para os mapas abrirem cedo com 0,1%; um save com mais fragmentos que o novo número monta a vara ao abrir e o que sobra fica como extra."
+  },
   "tier_ladder_reference": {
-    "note": "Escada de progressão da seção 19 do GDD. As Varas 2 a 5 estão fora do escopo da V0.1 e de propósito não são definidas abaixo.",
-    "purchase_unlock_fisher_level": {
-      "rod_01": 10,
-      "rod_02": 30,
-      "rod_03": 50,
-      "rod_04": 70,
-      "rod_05": 90
-    }
+    "note": "Escada de progressão da seção 19 do GDD. O nível do Pescador libera os mapas (maps.json → unlock_fisher_level); desde 13/10/2026 (M24-T58, A-180) os mapas não pedem mais vara. As varas vêm de fragmentos (M24-T32, A-163), em qualquer mapa (M24-T47, A-173), e cada vara é montada a partir da anterior."
   },
   "rods": [
     {
       "id": "rod_00_starter",
-      "display_name": "Vara Inicial",
+      "display_name": "Caniço Manso",
+      "description": "Um equipamento simples e confiável para dar os primeiros passos na pesca.",
       "tier": 0,
       "implemented_in_v0_1": true,
       "acquisition": {
         "method": "free_claim_in_shop",
-        "purchase_cost_coins": 0,
-        "unlock_fisher_level": 1
+        "purchase_cost_coins": 0
       },
       "has_internal_levels": false,
       "can_catch_rarities": [
         "common"
       ],
-      "generates_shells": false,
+      "generates_shells": true,
       "bonuses": {
         "rarity_efficiency": 0.0,
         "size_quality": 0.0,
-        "shell_yield": 0.0
+        "shell_yield": 0.0,
+        "catch_success": 0.0
       },
       "npc_resale_value_coins": 0,
       "tradable_on_market": false
     },
     {
       "id": "rod_01",
-      "display_name": "Vara 1",
+      "display_name": "Ponta Selvagem",
+      "description": "Fibra resistente para encarar rios fortes, peixes maiores e águas mais exigentes.",
       "tier": 1,
       "implemented_in_v0_1": true,
       "acquisition": {
-        "method": "coin_purchase",
-        "purchase_cost_coins": 2500,
-        "unlock_fisher_level": 10
+        "method": "fragments",
+        "market_reference_coins": 2500
       },
+      "fragments_required": 5,
+      "fragment_drop_chance": 0.001,
       "has_internal_levels": true,
       "can_catch_rarities": [
         "common",
-        "rare"
+        "rare",
+        "epic"
       ],
       "generates_shells": true,
-      "bonuses_per_level": {
-        "note": "Os valores são o bônus total naquele nível interno, não um acréscimo por nível.",
-        "rarity_efficiency": [
-          0.0,
-          0.02,
-          0.04,
-          0.06,
-          0.08,
-          0.1,
-          0.13,
-          0.16,
-          0.19,
-          0.22
-        ],
-        "size_quality": [
-          0.0,
-          0.02,
-          0.04,
-          0.06,
-          0.08,
-          0.1,
-          0.12,
-          0.15,
-          0.18,
-          0.21
-        ],
-        "shell_yield": [
-          0.0,
-          0.05,
-          0.1,
-          0.15,
-          0.2,
-          0.26,
-          0.32,
-          0.38,
-          0.45,
-          0.52
-        ]
+      "bonuses_at_level_1": {
+        "rarity_efficiency": 0.0,
+        "size_quality": 0.0,
+        "shell_yield": 0.0,
+        "catch_success": 0.015
       },
-      "upgrade_costs": [
-        {
-          "to_level": 2,
-          "cost_coins": 1500
-        },
-        {
-          "to_level": 3,
-          "cost_coins": 2300
-        },
-        {
-          "to_level": 4,
-          "cost_coins": 3600
-        },
-        {
-          "to_level": 5,
-          "cost_coins": 5600
-        },
-        {
-          "to_level": 6,
-          "cost_coins": 8650
-        },
-        {
-          "to_level": 7,
-          "cost_coins": 13400
-        },
-        {
-          "to_level": 8,
-          "cost_coins": 20800
-        },
-        {
-          "to_level": 9,
-          "cost_coins": 32250
-        },
-        {
-          "to_level": 10,
-          "cost_coins": 49950
-        }
-      ],
+      "bonuses_at_max_level": {
+        "rarity_efficiency": 0.66,
+        "size_quality": 0.63,
+        "shell_yield": 1.56,
+        "catch_success": 0.24
+      },
+      "upgrade_cost": {
+        "coins_first": 500,
+        "coins_growth": 1.14,
+        "shells_first": 1,
+        "shells_growth": 1.03
+      },
       "npc_resale": {
         "base_value_ratio": 0.4,
         "upgrade_investment_ratio": 0.25,
-        "note": "A revenda ao NPC devolve 40% do custo de compra mais 25% do total de Moedas gasto nas melhorias de nível interno."
+        "note": "A revenda ao NPC devolve 40% do que a vara custou (0 numa vara montada com fragmentos, desde 12/10/2026, M24-T32; só as compradas antes têm custo) mais 25% do total de Moedas gasto nas melhorias de nível interno."
       },
       "tradable_on_market": true,
-      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus."
+      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus.",
+      "legacy_levels_v1": [
+        1,
+        7,
+        12,
+        16,
+        19,
+        24,
+        28,
+        32,
+        37,
+        41
+      ]
+    },
+    {
+      "id": "rod_02",
+      "display_name": "Maré Dourada",
+      "description": "Uma vara profissional, preparada para peixes grandes e águas salobras.",
+      "tier": 2,
+      "implemented_in_v0_1": false,
+      "acquisition": {
+        "method": "fragments",
+        "market_reference_coins": 90000
+      },
+      "fragments_required": 8,
+      "fragment_drop_chance": 0.001,
+      "has_internal_levels": true,
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic"
+      ],
+      "generates_shells": true,
+      "bonuses_at_level_1": {
+        "rarity_efficiency": 0.24,
+        "size_quality": 0.23,
+        "shell_yield": 0.55,
+        "catch_success": 0.055
+      },
+      "bonuses_at_max_level": {
+        "rarity_efficiency": 1.5,
+        "size_quality": 1.26,
+        "shell_yield": 3.3,
+        "catch_success": 0.405
+      },
+      "upgrade_cost": {
+        "coins_first": 3330,
+        "coins_growth": 1.14,
+        "shells_first": 3,
+        "shells_growth": 1.03
+      },
+      "npc_resale": {
+        "base_value_ratio": 0.4,
+        "upgrade_investment_ratio": 0.25,
+        "note": "A revenda ao NPC devolve 40% do que a vara custou (0 numa vara montada com fragmentos, desde 12/10/2026, M24-T32; só as compradas antes têm custo) mais 25% do total de Moedas gasto nas melhorias de nível interno."
+      },
+      "tradable_on_market": true,
+      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus.",
+      "legacy_levels_v1": [
+        1,
+        7,
+        11,
+        14,
+        18,
+        19,
+        21,
+        24,
+        27,
+        30
+      ]
+    },
+    {
+      "id": "rod_03",
+      "display_name": "Corrente Mestra",
+      "description": "Uma vara de mar aberto, feita para peixes rápidos e grandes longe da costa.",
+      "tier": 3,
+      "implemented_in_v0_1": false,
+      "acquisition": {
+        "method": "fragments",
+        "market_reference_coins": 730000
+      },
+      "fragments_required": 12,
+      "fragment_drop_chance": 0.001,
+      "has_internal_levels": true,
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "generates_shells": true,
+      "bonuses_at_level_1": {
+        "rarity_efficiency": 0.52,
+        "size_quality": 0.44,
+        "shell_yield": 1.15,
+        "catch_success": 0.08
+      },
+      "bonuses_at_max_level": {
+        "rarity_efficiency": 2.4,
+        "size_quality": 1.86,
+        "shell_yield": 5.25,
+        "catch_success": 0.48
+      },
+      "upgrade_cost": {
+        "coins_first": 36700,
+        "coins_growth": 1.14,
+        "shells_first": 5,
+        "shells_growth": 1.03
+      },
+      "npc_resale": {
+        "base_value_ratio": 0.4,
+        "upgrade_investment_ratio": 0.25,
+        "note": "A revenda ao NPC devolve 40% do que a vara custou (0 numa vara montada com fragmentos, desde 12/10/2026, M24-T32; só as compradas antes têm custo) mais 25% do total de Moedas gasto nas melhorias de nível interno."
+      },
+      "tradable_on_market": true,
+      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus.",
+      "legacy_levels_v1": [
+        1,
+        5,
+        7,
+        10,
+        12,
+        16,
+        18,
+        22,
+        24,
+        27
+      ]
+    },
+    {
+      "id": "rod_04",
+      "display_name": "Atlântico Nobre",
+      "description": "Uma vara de oceano profundo, forte e precisa para os maiores peixes do Atlântico.",
+      "tier": 4,
+      "implemented_in_v0_1": false,
+      "acquisition": {
+        "method": "fragments",
+        "market_reference_coins": 3280000
+      },
+      "fragments_required": 15,
+      "fragment_drop_chance": 0.001,
+      "has_internal_levels": true,
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "generates_shells": true,
+      "bonuses_at_level_1": {
+        "rarity_efficiency": 0.82,
+        "size_quality": 0.64,
+        "shell_yield": 1.8,
+        "catch_success": 0.12
+      },
+      "bonuses_at_max_level": {
+        "rarity_efficiency": 3.36,
+        "size_quality": 2.46,
+        "shell_yield": 7.5,
+        "catch_success": 0.639
+      },
+      "upgrade_cost": {
+        "coins_first": 160000,
+        "coins_growth": 1.14,
+        "shells_first": 11,
+        "shells_growth": 1.03
+      },
+      "npc_resale": {
+        "base_value_ratio": 0.4,
+        "upgrade_investment_ratio": 0.25,
+        "note": "A revenda ao NPC devolve 40% do que a vara custou (0 numa vara montada com fragmentos, desde 12/10/2026, M24-T32; só as compradas antes têm custo) mais 25% do total de Moedas gasto nas melhorias de nível interno."
+      },
+      "tradable_on_market": true,
+      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus.",
+      "legacy_levels_v1": [
+        1,
+        4,
+        8,
+        10,
+        13,
+        15,
+        18,
+        21,
+        22,
+        25
+      ]
+    },
+    {
+      "id": "rod_05",
+      "display_name": "Soberana Abissal",
+      "description": "A vara definitiva, feita para o abismo e para os peixes que quase ninguém vê.",
+      "tier": 5,
+      "implemented_in_v0_1": false,
+      "acquisition": {
+        "method": "fragments",
+        "market_reference_coins": 15610000
+      },
+      "fragments_required": 20,
+      "fragment_drop_chance": 0.001,
+      "has_internal_levels": true,
+      "can_catch_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary",
+        "mythic"
+      ],
+      "generates_shells": true,
+      "bonuses_at_level_1": {
+        "rarity_efficiency": 1.15,
+        "size_quality": 0.85,
+        "shell_yield": 2.6,
+        "catch_success": 0.167
+      },
+      "bonuses_at_max_level": {
+        "rarity_efficiency": 4.5,
+        "size_quality": 3.15,
+        "shell_yield": 10.5,
+        "catch_success": 0.801
+      },
+      "upgrade_cost": {
+        "coins_first": 663000,
+        "coins_growth": 1.14,
+        "shells_first": 41,
+        "shells_growth": 1.03
+      },
+      "npc_resale": {
+        "base_value_ratio": 0.4,
+        "upgrade_investment_ratio": 0.25,
+        "note": "A revenda ao NPC devolve 40% do que a vara custou (0 numa vara montada com fragmentos, desde 12/10/2026, M24-T32; só as compradas antes têm custo) mais 25% do total de Moedas gasto nas melhorias de nível interno."
+      },
+      "tradable_on_market": true,
+      "market_note": "Uma vara negociada mantém o tier, o nível interno e os bônus.",
+      "legacy_levels_v1": [
+        1,
+        5,
+        8,
+        11,
+        14,
+        15,
+        18,
+        19,
+        21,
+        23
+      ]
     }
   ]
 }

@@ -25,9 +25,9 @@ O `web/dev-console/package.json` repete a mesma string por exigência do npm. El
 | Parte | Significa |
 |---|---|
 | `0.` | Produto pré-lançamento. A V0.1 não é 1.0. |
-| `<menor>` | A versão do produto: `1` durante toda a V0.1. |
+| `<menor>` | A versão do produto: `1` durante a V0.1, `2` durante a V0.2. |
 | `<correção>` | Correções dentro de uma versão lançada. `0` até a V0.1 sair. |
-| `-m<milestone>` | O milestone do roadmap de onde o build saiu: `m0` a `m12`. |
+| `-m<milestone>` | O milestone do roadmap de onde o build saiu: `m0` a `m12` na V0.1; a V0.2 continua a numeração a partir de `m13`. |
 | `.<build>` | Contador interno de build, zerado quando o milestone muda. |
 
 Exemplos: `0.1.0-m0.1` (primeiro build do Milestone 0), `0.1.0-m7.3` (terceiro build da Arena),
@@ -45,6 +45,22 @@ Exemplos: `0.1.0-m0.1` (primeiro build do Milestone 0), `0.1.0-m7.3` (terceiro b
 Os componentes podem divergir: publicar uma correção só do cliente sobe apenas
 `components.client`. Eles compartilham a parte `-m<milestone>` porque são construídos e testados uns
 contra os outros.
+
+### Exceção registrada: M22 a M24 saíram como `m21` (08/10 a 12/10/2026)
+
+De 08/10/2026 a 12/10/2026 o trabalho do M22, M23 e M24 foi publicado com o sufixo do M21 (`0.2.0-m21.x`), só
+aumentando o contador. O `version.json` também ficou com `current_milestone` = `M21`, enquanto o roadmap já estava no
+M24. Esses números não são reescritos: o `docs/CHANGELOG.md` diz o que entrou em cada um.
+
+**Regra a partir da próxima versão.** Na V0.2 os milestones não "fecham" um por um antes do seguinte começar, então o
+sufixo acompanha o **milestone atual do roadmap** (`docs/roadmap.json → current_milestone`), não o último fechado:
+
+1. `-m<n>` do cliente = o `current_milestone` do roadmap no momento do build (hoje `M24` → `0.2.0-m24.<build>`).
+2. Quando o `-m<n>` muda, o contador depois do ponto volta a 1 (a próxima versão é `0.2.0-m24.1`); fora isso, + 1 por
+   versão.
+3. `version.json → current_milestone` é igual ao `current_milestone` do roadmap, na mesma mudança.
+4. `build.number` continua subindo + 1 a cada build, sem voltar a zero.
+5. Servidor e web continuam na última versão em que foram mexidos (adiados, M12).
 
 ## Canais
 

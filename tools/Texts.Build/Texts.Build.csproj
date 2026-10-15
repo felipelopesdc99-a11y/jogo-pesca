@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Compiles client-unity/Assets/Scripts/Texts on its own, as the FishingIdle.Texts assembly does in Unity
+    (it references nothing). Keeping it separate here makes the CI catch Texts depending on the game service,
+    or the game service reaching Texts' internal members — both compile in one project but fail in Unity.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <AssemblyName>FishingIdle.Texts</AssemblyName>
+    <RootNamespace>FishingIdle.Texts</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../client-unity/Assets/Scripts/Texts/**/*.cs" />
+  </ItemGroup>
+</Project>

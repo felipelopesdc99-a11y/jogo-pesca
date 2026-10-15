@@ -1,0 +1,554 @@
+using FishingIdle.GameService.Config;
+using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Pass;
+using FishingIdle.GameService.Persistence;
+using FishingIdle.GameService.Shop;
+using Newtonsoft.Json.Linq;
+using Xunit;
+
+namespace FishingIdle.GameService.Tests;
+
+/// <summary>
+/// Boats by fragments (M24-T16, A-157) and the Passe do Pescador (M24-T17, A-158): fragments per catch with the service's
+/// Rng, assembling a boat, boats out of the Shop, saves that keep their boats, the pass rewards, the premium bought with
+/// Dólares (also for the milestones already passed) and the Dólares of A-111 never paid twice.
+/// </summary>
+public sealed class BoatFragmentsAndPassTests
+{
+    private static GameConfig Config => TestSupport.RealConfig();
+
+    /// <summary>
+    /// The certain-catch config with the fragment chance of one boat (null = every boat) changed and the other boats at 0
+    /// (since M24-T47 every boat drops on every map), and, if asked, offline drops off.
+    /// </summary>
+    private static GameConfig WithFragmentChance(string boatId, double chance, bool dropOffline = true)
+    {
+        var texts = TestSupport.ConfigTexts();
+        var progression = JObject.Parse(texts[GameConfigLoader.ProgressionFile]);
+        foreach (var tier in progression["rarity"]!["tiers"]!)
+        {
+            tier["catch_success_base"] = 1.0;
+        }
+
+        progression["fishing"]!["catch_success_max"] = 1.0;
+        texts[GameConfigLoader.ProgressionFile] = progression.ToString();
+
+        var equipment = JObject.Parse(texts[GameConfigLoader.EquipmentFile]);
+        foreach (var boatJson in equipment["boats"]!.Where(b => b["fragment_drop_chance"] != null))
+        {
+            boatJson["fragment_drop_chance"] = boatId == null || (string)boatJson["id"]! == boatId ? chance : 0.0;
+        }
+
+        equipment["boat_fragments"]!["drop_on_offline_fishing"] = dropOffline;
+        texts[GameConfigLoader.EquipmentFile] = equipment.ToString();
+
+        var result = GameConfigLoader.LoadFromTexts(texts);
+        Assert.True(result.Succeeded, string.Join("\n", result.Errors));
+        return result.Config;
+    }
+
+    // ------------------------------------------------------------------ the 5 boats (M24-T42, A-168)
+
+    [Fact]
+    public void There_are_five_boats_each_with_its_maps_for_the_boss_and_all_drop_on_every_map()
+    {
+        var config = Config;
+        var boats = config.Equipment.Boats.OrderBy(b => b.Tier).ToList();
+        Assert.Equal(6, boats.Count);
+        Assert.Null(config.StarterBoat.MapId);
+        Assert.False(config.StarterBoat.HasLevels);
+        Assert.False(config.TryGetBoat("boat_06", out _));
+        Assert.False(config.TryGetBoat("boat_10", out _));
+
+        var maps = config.Maps.Maps.OrderBy(m => m.UnlockFisherLevel).ToList();
+        Assert.Equal(10, maps.Count);
+        for (var i = 0; i < 10; i++)
+        {
+            // Map 1 → boat 1 … map 5 → boat 5; map 6 → boat 1 … map 10 → boat 5 (the boat of the Boss Mundial's bands).
+            var boat = boats[i % 5 + 1];
+            Assert.True(config.TryGetBoatForMap(maps[i].Id, out var forMap));
+            Assert.Equal(boat.Id, forMap.Id);
+            if (i < 5)
+            {
+                Assert.Equal(maps[i].Id, boat.MapId);
+                Assert.True(boat.HasLevels);
+                Assert.Equal(boat.CatchSuccessBonus * 3, boat.CatchSuccessBonusAtMaxLevel, 6);
+                if (i > 0)
+                {
+                    Assert.True(boat.FragmentsRequired > boats[i].FragmentsRequired, boat.Id + " asks more fragments than the one before");
+                    Assert.True(boat.CatchSuccessBonus > boats[i].CatchSuccessBonus, boat.Id + " is better than the one before");
+                }
+            }
+            else
+            {
+                Assert.Contains(boat.ExtraFragmentMaps, e => e.MapId == maps[i].Id);
+            }
+        }
+
+        // M24-T47 (A-173): every boat drops on every map at 0,1% per fish pulled out.
+        Assert.Equal(boats.Skip(1).Select(b => b.Id), config.FragmentBoats.Select(b => b.Id));
+        Assert.All(config.FragmentBoats, b => Assert.Equal(0.001, b.FragmentDropChance, 9));
+        Assert.Equal(20, boats[1].FragmentsRequired);
+        Assert.Equal(55, boats[5].FragmentsRequired);
+    }
+
+    [Fact]
+    public void A_catch_on_any_map_can_drop_a_fragment_of_every_boat()
+    {
+        foreach (var (mapId, rodId) in new[] { ("map_01", (string)null), ("map_06", "rod_05"), ("map_10", "rod_05") })
+        {
+            var (game, clock, _) = TestSupport.NewGame(WithFragmentChance(null, 1.0));
+            var save = game.Session.Save;
+            save.CurrentMapId = mapId;
+            save.FisherLevel = game.Session.Config.Maps.Maps.Single(m => m.Id == mapId).UnlockFisherLevel;
+            if (rodId != null)
+            {
+                TestSupport.GiveRod(game, rodId);
+            }
+
+            game.Fishing.StartFishing();
+            clock.AdvanceSeconds(game.Session.Config.Fishing.OnlineCycleSeconds);
+            var update = game.Fishing.Sync();
+            Assert.Single(update.NewCatches);
+            // One roll per boat, in tier order, all from the same catch.
+            Assert.Equal(new[] { "boat_01", "boat_02", "boat_03", "boat_04", "boat_05" }, update.Fragments.Select(f => f.BoatId));
+            Assert.All(update.Fragments, f => Assert.Equal(1, f.Amount));
+        }
+
+        // Only boat 5 at 100%: a catch on map 1 (the map of boat 1) still drops boat 5.
+        var (one, oneClock, _) = TestSupport.NewGame(WithFragmentChance("boat_05", 1.0));
+        one.Fishing.StartFishing();
+        oneClock.AdvanceSeconds(one.Session.Config.Fishing.OnlineCycleSeconds);
+        Assert.Equal("boat_05", one.Fishing.Sync().Fragments.Single().BoatId);
+        Assert.Equal(1.0, one.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_05").FragmentChance, 9);
+        Assert.Equal(0.0, one.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01").FragmentChance, 9);
+    }
+
+    [Fact]
+    public void The_best_boat_at_level_100_still_stops_at_the_catch_success_ceiling()
+    {
+        var config = Config;
+        config.TryGetRod("rod_05", out var rod);
+        config.TryGetBoat("boat_05", out var boat);
+        var bonus = config.RodBonusesAt(rod, 100).CatchSuccess + config.BoatBonusAt(boat, 100);
+        foreach (var tier in config.Progression.Rarity.Tiers)
+        {
+            Assert.Equal(config.Fishing.CatchSuccessMax, Fishing.CatchRules.SuccessChance(config, tier.Id, bonus), 9);
+        }
+    }
+
+    [Fact]
+    public void Boats_are_not_sold_anymore()
+    {
+        Assert.Null(typeof(IGearService).GetMethod("BuyBoat"));
+        var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
+        game.Session.Save.Coins = long.MaxValue / 2;
+        game.Session.Save.Shells = long.MaxValue / 2;
+
+        var view = game.Gear.GetGear();
+        var boat1 = view.Boats.Single(b => b.BoatId == "boat_01");
+        Assert.False(boat1.Owned);
+        Assert.Equal(0.001, boat1.FragmentChance, 9);
+        Assert.Equal(0, view.Boats.Single(b => b.BoatId == "boat_00").FragmentsRequired);
+        Assert.Equal(0, boat1.Fragments);
+        Assert.Equal(20, boat1.FragmentsRequired);
+        Assert.Equal(ServiceError.BoatNotOwned, game.Gear.UseBoat("boat_01").Error);
+        Assert.Equal(ServiceError.BoatNotOwned, game.Gear.UpgradeBoat("boat_01").Error);
+    }
+
+    // ------------------------------------------------------------------ fragments per catch
+
+    [Fact]
+    public void Every_catch_can_drop_a_fragment_and_the_player_assembles_the_boat()
+    {
+        // With the chance at 100%, every fish pulled out gives 1 fragment of boat_01; with 20 the player can assemble it
+        // (M24-T58, A-180: nothing assembles by itself).
+        var (game, clock, _) = TestSupport.NewGame(WithFragmentChance("boat_01", 1.0));
+        var config = game.Session.Config;
+        game.Fishing.StartFishing();
+        var cycle = config.Fishing.OnlineCycleSeconds;
+
+        var fragments = new List<FragmentGainView>();
+        for (var i = 0; i < 19; i++)
+        {
+            clock.AdvanceSeconds(cycle);
+            fragments.AddRange(game.Fishing.Sync().Fragments);
+        }
+
+        Assert.Equal(19, fragments.Count);
+        Assert.All(fragments, f => Assert.Equal("boat_01", f.BoatId));
+        Assert.Equal(19, game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01").Fragments);
+        Assert.Equal("boat_00", game.Gear.GetGear().BoatId);
+
+        clock.AdvanceSeconds(cycle);
+        var last = game.Fishing.Sync().Fragments.Single();
+        Assert.True(last.Ready);
+        Assert.False(last.Owned);
+        Assert.Null(last.NeedsBoatName);
+        Assert.Equal(20, last.Have);
+
+        // Not assembled by itself, not even after more fragments: they keep adding up.
+        clock.AdvanceSeconds(cycle);
+        var more = game.Fishing.Sync().Fragments.Single();
+        Assert.False(more.Ready);
+        Assert.False(more.Owned);
+        var before = game.Gear.GetGear();
+        Assert.Equal("boat_00", before.BoatId);
+        Assert.False(before.Boats.Single(b => b.BoatId == "boat_01").Owned);
+        Assert.Equal(21, before.Boats.Single(b => b.BoatId == "boat_01").Fragments);
+        Assert.Equal(ServiceError.None, before.Boats.Single(b => b.BoatId == "boat_01").AssembleBlocker);
+
+        // "Montar" spends only the 20 it asks for; the boat is owned at Nv.1 but not put in use.
+        var assembled = game.Gear.AssembleBoat("boat_01");
+        Assert.True(assembled.Succeeded);
+        var boat = assembled.Value.Boats.Single(b => b.BoatId == "boat_01");
+        Assert.True(boat.Owned);
+        Assert.Equal(1, boat.Level);
+        Assert.Equal(1, boat.Fragments);
+        Assert.Equal("boat_00", assembled.Value.BoatId);
+        Assert.Equal(ServiceError.BoatAlreadyOwned, game.Gear.AssembleBoat("boat_01").Error);
+        Assert.Equal("boat_01", game.Gear.UseBoat("boat_01").Value.BoatId);
+
+        // After the boat is owned, new fragments are kept as extras.
+        clock.AdvanceSeconds(cycle);
+        var extra = game.Fishing.Sync().Fragments.Single();
+        Assert.False(extra.Ready);
+        Assert.True(extra.Owned);
+        Assert.Equal(2, game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01").Fragments);
+    }
+
+    [Fact]
+    public void The_fragment_roll_uses_the_service_rng_and_repeats_with_the_same_seed()
+    {
+        int Run(ulong seed)
+        {
+            var (game, clock, _) = TestSupport.NewGame(WithFragmentChance("boat_01", 0.3));
+            game.Session.Save.RngSeed = seed;
+            game.Fishing.StartFishing();
+            var total = 0;
+            for (var i = 0; i < 60; i++)
+            {
+                clock.AdvanceSeconds(game.Session.Config.Fishing.OnlineCycleSeconds);
+                total += game.Fishing.Sync().Fragments.Count;
+            }
+
+            return total;
+        }
+
+        var first = Run(777);
+        Assert.Equal(first, Run(777));
+        Assert.InRange(first, 5, 35);
+    }
+
+    [Fact]
+    public void A_zero_chance_drops_nothing()
+    {
+        var (game, clock, _) = TestSupport.NewGame(WithFragmentChance(null, 0.0));
+        game.Fishing.StartFishing();
+        var catches = TestSupport.PlayFor(game, clock, 600, game.Session.Config.Fishing.OnlineCycleSeconds);
+        Assert.NotEmpty(catches);
+        Assert.Empty(game.Session.Save.BoatFragments);
+    }
+
+    [Fact]
+    public void Offline_fishing_drops_fragments_when_the_config_allows_it()
+    {
+        foreach (var offline in new[] { true, false })
+        {
+            var saveDir = TestSupport.NewTempDirectory();
+            var clock = new ManualClock(TestSupport.StartMs);
+            var config = WithFragmentChance("boat_01", 1.0, offline);
+            var (game, _, _) = TestSupport.NewGame(config, saveDir, clock);
+            game.Fishing.StartFishing();
+            game.Fishing.MarkSeen();
+
+            // 10 offline cycles: fewer than the 20 fragments that assemble boat_01, so they all stay as fragments.
+            clock.AdvanceSeconds(10 * config.Fishing.OfflineCycleSeconds);
+            var (reopened, _, _) = TestSupport.NewGame(config, saveDir, clock);
+            var report = reopened.Fishing.TakeOfflineReport();
+            Assert.NotNull(report);
+            Assert.NotEmpty(report.Update.NewCatches);
+            if (offline)
+            {
+                Assert.Equal(report.Update.NewCatches.Count, report.Update.Fragments.Count);
+                Assert.Equal(report.Update.NewCatches.Count, BoatFragmentRules.Have(reopened.Session.Save, "boat_01"));
+            }
+            else
+            {
+                Assert.Empty(report.Update.Fragments);
+            }
+        }
+    }
+
+    [Fact]
+    public void A_boat_needs_the_boat_before_it_and_its_fragments()
+    {
+        // M24-T58 (A-180): boat N asks for boat N − 1 (boat 1 for the starter boat, which every player has).
+        var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
+        var config = game.Session.Config;
+        var save = game.Session.Save;
+        config.TryGetBoat("boat_02", out var two);
+        BoatFragmentRules.Add(config, save, two, two.FragmentsRequired + 3);
+
+        var view = game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_02");
+        Assert.Equal(ServiceError.BoatNeedsPrevious, view.AssembleBlocker);
+        Assert.Equal("Remo Valente", view.PreviousBoatName);
+        Assert.False(view.HasPreviousBoat);
+        Assert.Equal("Precisa do barco Remo Valente", FishingIdle.Texts.GameTexts.Gear.NeedsBoat(view.PreviousBoatName));
+        var refused = game.Gear.AssembleBoat("boat_02");
+        Assert.Equal(ServiceError.BoatNeedsPrevious, refused.Error);
+        Assert.False(string.IsNullOrEmpty(refused.ErrorMessage));
+        Assert.Equal(two.FragmentsRequired + 3, BoatFragmentRules.Have(save, "boat_02"));
+
+        // Boat 1 asks for the starter boat only, and its fragments.
+        var one = game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01");
+        Assert.Equal("Água Mansa", one.PreviousBoatName);
+        Assert.True(one.HasPreviousBoat);
+        Assert.Equal(ServiceError.NotEnoughBoatFragments, one.AssembleBlocker);
+        config.TryGetBoat("boat_01", out var first);
+        Assert.Equal("Remo Valente", BoatFragmentRules.Add(config, save, two, 1).NeedsBoatName);
+        BoatFragmentRules.Add(config, save, first, first.FragmentsRequired);
+        Assert.True(game.Gear.AssembleBoat("boat_01").Succeeded);
+
+        // With boat 1, boat 2 is assembled and only fragments_required are spent.
+        Assert.True(game.Gear.AssembleBoat("boat_02").Succeeded);
+        Assert.Equal(4, BoatFragmentRules.Have(save, "boat_02"));
+        Assert.Equal("boat_00", game.Gear.GetGear().BoatId);
+        Assert.Equal(ServiceError.BoatAlreadyOwned, game.Gear.AssembleBoat("boat_00").Error);
+        Assert.Equal(ServiceError.BoatNotFound, game.Gear.AssembleBoat("boat_99").Error);
+    }
+
+    [Fact]
+    public void The_starter_boat_takes_no_fragments_and_fragments_are_kept_between_sessions()
+    {
+        var (game, clock, dir) = TestSupport.NewGame(TestSupport.RealConfig());
+        var config = game.Session.Config;
+        Assert.Null(BoatFragmentRules.Add(config, game.Session.Save, config.StarterBoat, 5));
+
+        config.TryGetBoat("boat_03", out var boat);
+        var gain = BoatFragmentRules.Add(config, game.Session.Save, boat, 7);
+        Assert.Equal(7, gain.Have);
+        Assert.False(gain.Ready);
+        game.Session.Persist();
+
+        var reopened = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock).Game;
+        Assert.Equal(7, reopened.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_03").Fragments);
+        Assert.Contains("boat fragments malformed", SaveValidator.Validate(new PlayerSave
+        {
+            PlayerId = "p", CurrentMapId = "map_01", BoatFragments = new Dictionary<string, long> { ["boat_01"] = -1 },
+        }));
+    }
+
+    // ------------------------------------------------------------------ the pass
+
+    [Fact]
+    public void The_pass_has_100_milestones_with_the_old_level_dollars_in_the_free_track()
+    {
+        var pass = Config.Pass;
+        Assert.Equal(100, pass.Milestones.Count);
+        Assert.Equal(Enumerable.Range(1, 100).Select(i => i * 10), pass.Milestones.Select(m => m.Level));
+        Assert.Equal(100, pass.PremiumPriceDollars);
+
+        // A-111: 10 Dólares at Nv.10, 20, … 100, now in the free track; after that the pass sets them.
+        Assert.All(pass.Milestones.Where(m => m.Level <= 100), m => Assert.Equal(10, m.Free.Dollars));
+        Assert.Equal(100, pass.Milestones.Where(m => m.Level <= 100).Sum(m => m.Free.Dollars));
+        Assert.True(pass.Milestones.Where(m => m.Level > 100).Sum(m => m.Premium.Dollars) > pass.Milestones.Where(m => m.Level > 100).Sum(m => m.Free.Dollars));
+
+        // Fragments of the boat the matching map drops up to Nv.100 (maps 6 to 10 drop boats 1 to 5, A-168), then they take
+        // turns; only the 5 boats. Every reward has Moedas and Conchas, growing.
+        for (var i = 1; i <= 100; i++)
+        {
+            Assert.Equal("boat_" + ((i - 1) % 5 + 1).ToString("00"), pass.Milestones[i - 1].Free.BoatId);
+            Assert.Equal(pass.Milestones[i - 1].Free.BoatId, pass.Milestones[i - 1].Premium.BoatId);
+        }
+
+        Assert.All(pass.Milestones, m =>
+        {
+            Assert.True(m.Free.Coins > 0 && m.Free.Shells > 0 && m.Free.Fragments > 0);
+            Assert.True(m.Premium.Coins > m.Free.Coins && m.Premium.Fragments > m.Free.Fragments);
+        });
+        Assert.True(pass.Milestones[^1].Free.Coins > pass.Milestones[0].Free.Coins);
+    }
+
+    [Fact]
+    public void A_reached_milestone_is_claimed_once_and_gives_its_reward()
+    {
+        var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
+        var save = game.Session.Save;
+        var config = game.Session.Config;
+        Assert.Equal(config.Pass.PassId, save.Pass.PassId);
+        Assert.Equal(0, game.Pass.GetPass().ClaimableCount);
+        Assert.Equal(ServiceError.PassMilestoneNotReached, game.Pass.Claim(10, PassTrack.Free).Error);
+        Assert.Equal(ServiceError.PassMilestoneNotFound, game.Pass.Claim(15, PassTrack.Free).Error);
+        Assert.Equal(ServiceError.PassNothingToClaim, game.Pass.ClaimAll().Error);
+
+        save.FisherLevel = 10;
+        var view = game.Pass.GetPass();
+        Assert.Equal(1, view.ClaimableCount);
+        Assert.Equal(10, view.PreviousMilestoneLevel);
+        Assert.Equal(20, view.NextMilestoneLevel);
+        Assert.True(view.Milestones[0].Free.Claimable);
+        Assert.True(view.Milestones[0].Premium.Locked);
+        Assert.False(view.Milestones[0].Premium.Claimable);
+        Assert.Equal(ServiceError.PassPremiumLocked, game.Pass.Claim(10, PassTrack.Premium).Error);
+
+        var reward = config.PassMilestoneAt(10).Free;
+        var claim = game.Pass.Claim(10, PassTrack.Free);
+        Assert.True(claim.Succeeded, claim.ErrorMessage);
+        Assert.Equal(reward.Coins, save.Coins);
+        Assert.Equal(reward.Shells, save.Shells);
+        Assert.Equal(reward.Dollars, save.Dollars);
+        Assert.Equal(reward.Fragments, BoatFragmentRules.Have(save, reward.BoatId));
+        Assert.Equal(reward.Fragments, claim.Value.Fragments.Single().Amount);
+        Assert.Equal(ServiceError.PassAlreadyClaimed, game.Pass.Claim(10, PassTrack.Free).Error);
+        Assert.True(claim.Value.Pass.Milestones[0].Free.Claimed);
+        Assert.Equal(0, claim.Value.Pass.ClaimableCount);
+    }
+
+    [Fact]
+    public void The_premium_costs_dollars_and_opens_the_premium_of_the_milestones_already_passed()
+    {
+        var (game, clock, dir) = TestSupport.NewGame(TestSupport.RealConfig());
+        var save = game.Session.Save;
+        var config = game.Session.Config;
+        save.FisherLevel = 35;
+        Assert.True(game.Pass.ClaimAll().Succeeded);   // Nv.10, 20, 30 free
+        Assert.Equal(30, save.Dollars);
+        Assert.Equal(ServiceError.NotEnoughDollars, game.Pass.BuyPremium().Error);
+
+        save.Dollars = 120;
+        var bought = game.Pass.BuyPremium();
+        Assert.True(bought.Succeeded, bought.ErrorMessage);
+        Assert.Equal(20, save.Dollars);
+        Assert.True(bought.Value.Premium);
+        Assert.Equal(3, bought.Value.ClaimableCount);   // the premium of Nv.10, 20, 30
+        Assert.Equal(ServiceError.PassPremiumOwned, game.Pass.BuyPremium().Error);
+
+        var coins = save.Coins;
+        var all = game.Pass.ClaimAll();
+        Assert.True(all.Succeeded);
+        Assert.Equal(3, all.Value.Claimed);
+        Assert.Equal(new[] { 10, 20, 30 }.Sum(l => config.PassMilestoneAt(l).Premium.Coins), save.Coins - coins);
+
+        // Saved: reopening keeps the premium and what was claimed.
+        var reopened = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock).Game;
+        var view = reopened.Pass.GetPass();
+        Assert.True(view.Premium);
+        Assert.Equal(0, view.ClaimableCount);
+        Assert.Equal(new List<int> { 10, 20, 30 }, reopened.Session.Save.Pass.PremiumClaimed);
+    }
+
+    [Fact]
+    public void Pass_fragments_can_complete_a_boat_for_the_player_to_assemble()
+    {
+        var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
+        var save = game.Session.Save;
+        var config = game.Session.Config;
+        config.TryGetBoat("boat_01", out var boat);
+        BoatFragmentRules.Add(config, save, boat, boat.FragmentsRequired - 1);
+        save.FisherLevel = 10;
+
+        var claim = game.Pass.Claim(10, PassTrack.Free);
+        Assert.True(claim.Succeeded);
+        Assert.Contains(boat.DisplayName, claim.Value.BoatsReady);
+        Assert.False(game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01").Owned);
+        Assert.True(game.Gear.AssembleBoat("boat_01").Succeeded);
+        Assert.True(game.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_01").Owned);
+    }
+
+    // ------------------------------------------------------------------ save version 16
+
+    [Fact]
+    public void A_version_15_save_keeps_its_boats_and_never_gets_the_level_dollars_twice()
+    {
+        var (game, clock, dir) = TestSupport.NewGame(TestSupport.RealConfig());
+        var save = game.Session.Save;
+        TestSupport.GiveBoat(game, "boat_02");
+        save.BoatLevels["boat_02"] = 7;
+        save.FisherLevel = 60;
+        save.Dollars = 60;   // Nv.10 to Nv.60 paid by the old rule (A-111)
+        game.Session.Persist();
+
+        // The same player as a version 15 file: no fragments, no pass.
+        var path = Path.Combine(dir, JsonFilePlayerRepository.SaveFileName);
+        var json = JObject.Parse(File.ReadAllText(path));
+        json["save_version"] = 15;
+        json.Remove("boat_fragments");
+        json.Remove("pass");
+        File.WriteAllText(path, json.ToString());
+
+        var reopened = TestSupport.NewGame(TestSupport.RealConfig(), dir, clock).Game;
+        var moved = reopened.Session.Save;
+        Assert.Equal(PlayerSave.CurrentVersion, moved.SaveVersion);
+        Assert.Contains("boat_02", moved.OwnedBoatIds);
+        Assert.Equal(7, reopened.Gear.GetGear().Boats.Single(b => b.BoatId == "boat_02").Level);
+        Assert.Empty(moved.BoatFragments);
+        Assert.Equal(60, moved.Pass.LegacyDollarsUpToLevel);
+        Assert.Equal(reopened.Session.Config.Pass.PassId, moved.Pass.PassId);
+
+        // The milestones up to Nv.60 are claimable with everything but their Dólares.
+        var view = reopened.Pass.GetPass();
+        Assert.Equal(6, view.ClaimableCount);
+        Assert.All(view.Milestones.Take(6), m => Assert.True(m.Free.DollarsAlreadyPaid));
+        Assert.False(view.Milestones[6].Free.DollarsAlreadyPaid);
+        var claim = reopened.Pass.ClaimAll();
+        Assert.True(claim.Succeeded);
+        Assert.Equal(0, claim.Value.Dollars);
+        Assert.True(claim.Value.Coins > 0);
+        Assert.Equal(60, moved.Dollars);
+
+        // Nv.70 was never paid: the pass pays it.
+        moved.FisherLevel = 70;
+        Assert.Equal(10, reopened.Pass.Claim(70, PassTrack.Free).Value.Dollars);
+        Assert.Equal(70, moved.Dollars);
+
+        // Up to Nv.100 the total is the same as the old rule: 100 Dólares, never more.
+        moved.FisherLevel = 100;
+        reopened.Pass.ClaimAll();
+        Assert.Equal(100, moved.Dollars);
+        Assert.Contains("\"save_version\": " + PlayerSave.CurrentVersion, File.ReadAllText(path));
+    }
+
+    [Fact]
+    public void A_new_player_owes_no_legacy_dollars()
+    {
+        var (game, _, _) = TestSupport.NewGame(TestSupport.RealConfig());
+        var save = game.Session.Save;
+        Assert.Equal(0, save.Pass.LegacyDollarsUpToLevel);
+        save.FisherLevel = 100;
+        Assert.True(game.Pass.ClaimAll().Succeeded);
+        Assert.Equal(100, save.Dollars);
+    }
+
+    // ------------------------------------------------------------------ the config is checked
+
+    [Fact]
+    public void Broken_boat_and_pass_configs_are_rejected_in_portuguese()
+    {
+        var unknownMap = TestSupport.ConfigWith(GameConfigLoader.EquipmentFile, j => j.Replace("\"map_id\": \"map_03\"", "\"map_id\": \"map_99\""));
+        Assert.False(unknownMap.Succeeded);
+        Assert.Contains(unknownMap.Errors, e => e.Contains("boat_03") && e.Contains("map_id"));
+
+        var twice = TestSupport.ConfigWith(GameConfigLoader.EquipmentFile, j => j.Replace("\"map_id\": \"map_03\"", "\"map_id\": \"map_02\""));
+        Assert.False(twice.Succeeded);
+        Assert.Contains(twice.Errors, e => e.Contains("map_02") && e.Contains("mais de um barco"));
+
+        var pass = TestSupport.ConfigWith(GameConfigLoader.PassFile, j =>
+        {
+            var root = JObject.Parse(j);
+            root["milestones"]![0]!["free"]!["boat_id"] = "boat_99";
+            return root.ToString();
+        });
+        Assert.False(pass.Succeeded);
+        Assert.Contains(pass.Errors, e => e.Contains("pass.json") && e.Contains("boat_99"));
+
+        var order = TestSupport.ConfigWith(GameConfigLoader.PassFile, j =>
+        {
+            var root = JObject.Parse(j);
+            root["milestones"]![1]!["level"] = 5;
+            return root.ToString();
+        });
+        Assert.False(order.Succeeded);
+        Assert.Contains(order.Errors, e => e.Contains("pass.json") && e.Contains("ordem crescente"));
+    }
+}

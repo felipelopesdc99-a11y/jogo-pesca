@@ -1,0 +1,9 @@
+# Partes arquivadas (Milestone 12 — infraestrutura online adiada).
+# Ficam no repositório, mas as buscas do Claude Code (ripgrep) pulam estas pastas para não gastar
+# tokens. Para buscar dentro delas de propósito, use a busca com a opção de não ignorar arquivos.
+# Isto não afeta o git: os arquivos continuam versionados. Veja docs/DECISOES.md, TD-022.
+server/
+web/
+shared-contracts/
+client-unity/Assets/Scripts/Core/
+client-unity/Assets/Scripts/Diagnostics/

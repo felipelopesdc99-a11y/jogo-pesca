@@ -1,0 +1,1147 @@
+{
+  "config_file": "missions",
+  "config_schema_version": 1,
+  "balance_status": "PROVISÓRIO",
+  "description": "Missões (M24-T54, A-177, pedido do proprietário em 13/10/2026): 100 missões que acompanham o jogo inteiro, na ordem natural do jogo (docs/propostas/missoes_100.txt), todas visíveis desde o começo. Cada uma tem um tipo (chave técnica), o alvo e os parâmetros do tipo; o texto que o jogador lê é montado pelo jogo (GameTexts.Missions) a partir deles. Prêmios provisórios (OD-073): gerados por tools/Progressao/missoes.py gerar; pode editar à mão.",
+  "types_note": "Tipos: catch_count (peixes pescados), catch_species (species_id), catch_rarity (rarity), catch_size_category (size_category), catch_gene_stars (stars: peixes com pelo menos tantas estrelas), catch_perfect_gene, catch_perfect_specimen, fisher_level, coins_held, shells_held, dollars_spent, box_sell (peixes vendidos da Caixa), aquarium_keep, fish_feed, fish_level (nível de um peixe do Aquário), cardume_size, cardume_strength, cardume_all_rarity_min (rarity; o Cardume completo), cardume_gene_stars (stars), cardume_all_level (level), map_unlocked (map_id), encyclopedia_species (target 0 = todas), map_all_species (map_id), rarity_all_species (rarity), size_records (espécies com o recorde de tamanho batido), rod_assembled (rod_id), boat_assembled (boat_id), boats_all, clothing_assembled e clothing_max_level (target 0 = todas), bait_used (bait_id), pass_rewards_claimed, expedition_started, expeditions_completed, arena_duels, arena_wins, arena_win_streak, arena_distinct_opponents, arena_win_stronger (vencer quem está acima de você no Ranking), arena_rank_top (target = a posição), market_listing, market_buy (goods_kind \"fish\" = só peixes), market_sell (peixes; rarity opcional), auction_bid, auction_won (contested = alguém mais deu lance), boss_attack, boss_band (target 0 = a faixa máxima), boss_days, clan_join, clan_fish, clan_same_day_boss, clan_rank_top, profile_visit. reference_level: o nível do Pescador em que o jogador de referência deve concluir a missão (só o script usa).",
+  "rewards_note": "Prêmios: Moedas = N minutos da renda da pesca do jogador de referência (4 vezes por dia) ao chegar ao reference_level, com N de 10 (missão 1) a 60 (missão 100); Conchas = 3 × N minutos das Conchas da pesca; 2 algarismos significativos; nenhuma missão paga menos que a de cima. Dólares só nas 18 missões difíceis, 170 no total (o Passe grátis dá 100 até o Nv.100).",
+  "online_only_note": "online_only: a missão precisa de outros jogadores de verdade e só conclui com o jogo online; no jogo local ela aparece com \"Liga quando o jogo estiver online\". No jogo local, os adversários da Arena e os vendedores, compradores e licitantes do Mercado e do Leilão são jogadores simulados e contam como \"outro jogador\" (A-177); os do Clã não existem localmente: o Boss no mesmo dia que outro membro e o top 3 de Clãs ficam online_only.",
+  "missions": [
+    {
+      "id": "mission_001",
+      "type": "catch_count",
+      "target": 10,
+      "reference_level": 2,
+      "reward": {
+        "coins": 1700,
+        "shells": 9,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_002",
+      "type": "box_sell",
+      "target": 10,
+      "reference_level": 2,
+      "reward": {
+        "coins": 1800,
+        "shells": 10,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_003",
+      "type": "aquarium_keep",
+      "target": 1,
+      "reference_level": 3,
+      "reward": {
+        "coins": 1900,
+        "shells": 10,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_004",
+      "type": "fisher_level",
+      "target": 5,
+      "reference_level": 5,
+      "reward": {
+        "coins": 2000,
+        "shells": 11,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_005",
+      "type": "catch_species",
+      "target": 5,
+      "species_id": "lambari",
+      "reference_level": 5,
+      "reward": {
+        "coins": 2100,
+        "shells": 11,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_006",
+      "type": "catch_count",
+      "target": 100,
+      "reference_level": 8,
+      "reward": {
+        "coins": 2100,
+        "shells": 12,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_007",
+      "type": "fish_feed",
+      "target": 1,
+      "reference_level": 8,
+      "reward": {
+        "coins": 2200,
+        "shells": 12,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_008",
+      "type": "fish_level",
+      "target": 5,
+      "reference_level": 10,
+      "reward": {
+        "coins": 2300,
+        "shells": 13,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_009",
+      "type": "cardume_size",
+      "target": 3,
+      "reference_level": 10,
+      "reward": {
+        "coins": 2400,
+        "shells": 13,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_010",
+      "type": "catch_size_category",
+      "target": 1,
+      "size_category": "large",
+      "reference_level": 12,
+      "reward": {
+        "coins": 2500,
+        "shells": 14,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_011",
+      "type": "coins_held",
+      "target": 10000,
+      "reference_level": 15,
+      "reward": {
+        "coins": 2600,
+        "shells": 14,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_012",
+      "type": "bait_used",
+      "target": 1,
+      "bait_id": "bait_01",
+      "reference_level": 15,
+      "reward": {
+        "coins": 2700,
+        "shells": 15,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_013",
+      "type": "fisher_level",
+      "target": 25,
+      "reference_level": 25,
+      "reward": {
+        "coins": 2700,
+        "shells": 15,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_014",
+      "type": "encyclopedia_species",
+      "target": 10,
+      "reference_level": 25,
+      "reward": {
+        "coins": 2800,
+        "shells": 16,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_015",
+      "type": "catch_gene_stars",
+      "target": 1,
+      "stars": 4,
+      "reference_level": 25,
+      "reward": {
+        "coins": 2900,
+        "shells": 16,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_016",
+      "type": "rod_assembled",
+      "target": 1,
+      "rod_id": "rod_01",
+      "reference_level": 25,
+      "reward": {
+        "coins": 3000,
+        "shells": 17,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_017",
+      "type": "map_unlocked",
+      "target": 1,
+      "map_id": "map_02",
+      "reference_level": 25,
+      "reward": {
+        "coins": 3100,
+        "shells": 17,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_018",
+      "type": "arena_duels",
+      "target": 1,
+      "reference_level": 25,
+      "reward": {
+        "coins": 3200,
+        "shells": 18,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_019",
+      "type": "catch_count",
+      "target": 1000,
+      "reference_level": 30,
+      "reward": {
+        "coins": 3300,
+        "shells": 18,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_020",
+      "type": "catch_rarity",
+      "target": 1,
+      "rarity": "rare",
+      "reference_level": 30,
+      "reward": {
+        "coins": 3400,
+        "shells": 19,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_021",
+      "type": "expedition_started",
+      "target": 1,
+      "reference_level": 30,
+      "reward": {
+        "coins": 3400,
+        "shells": 19,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_022",
+      "type": "profile_visit",
+      "target": 1,
+      "reference_level": 30,
+      "reward": {
+        "coins": 3500,
+        "shells": 19,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_023",
+      "type": "arena_wins",
+      "target": 5,
+      "reference_level": 35,
+      "reward": {
+        "coins": 23000,
+        "shells": 20,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_024",
+      "type": "market_listing",
+      "target": 1,
+      "reference_level": 35,
+      "reward": {
+        "coins": 24000,
+        "shells": 21,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_025",
+      "type": "market_buy",
+      "target": 1,
+      "reference_level": 35,
+      "reward": {
+        "coins": 24000,
+        "shells": 21,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_026",
+      "type": "boat_assembled",
+      "target": 1,
+      "boat_id": "boat_01",
+      "reference_level": 40,
+      "reward": {
+        "coins": 46000,
+        "shells": 22,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_027",
+      "type": "clothing_assembled",
+      "target": 1,
+      "reference_level": 40,
+      "reward": {
+        "coins": 47000,
+        "shells": 22,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_028",
+      "type": "pass_rewards_claimed",
+      "target": 10,
+      "reference_level": 50,
+      "reward": {
+        "coins": 59000,
+        "shells": 39,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_029",
+      "type": "fisher_level",
+      "target": 50,
+      "reference_level": 50,
+      "reward": {
+        "coins": 61000,
+        "shells": 40,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_030",
+      "type": "map_all_species",
+      "target": 0,
+      "map_id": "map_01",
+      "reference_level": 50,
+      "reward": {
+        "coins": 62000,
+        "shells": 41,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_031",
+      "type": "shells_held",
+      "target": 100,
+      "reference_level": 50,
+      "reward": {
+        "coins": 63000,
+        "shells": 41,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_032",
+      "type": "map_unlocked",
+      "target": 1,
+      "map_id": "map_03",
+      "reference_level": 50,
+      "reward": {
+        "coins": 64000,
+        "shells": 42,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_033",
+      "type": "clan_join",
+      "target": 1,
+      "reference_level": 100,
+      "reward": {
+        "coins": 220000,
+        "shells": 71,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_034",
+      "type": "fisher_level",
+      "target": 100,
+      "reference_level": 100,
+      "reward": {
+        "coins": 230000,
+        "shells": 72,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_035",
+      "type": "catch_rarity",
+      "target": 1,
+      "rarity": "epic",
+      "reference_level": 100,
+      "reward": {
+        "coins": 230000,
+        "shells": 74,
+        "dollars": 5
+      }
+    },
+    {
+      "id": "mission_036",
+      "type": "catch_rarity",
+      "target": 50,
+      "rarity": "rare",
+      "reference_level": 110,
+      "reward": {
+        "coins": 810000,
+        "shells": 87,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_037",
+      "type": "bait_used",
+      "target": 1,
+      "bait_id": "bait_03",
+      "reference_level": 110,
+      "reward": {
+        "coins": 820000,
+        "shells": 89,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_038",
+      "type": "catch_count",
+      "target": 10000,
+      "reference_level": 120,
+      "reward": {
+        "coins": 840000,
+        "shells": 100,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_039",
+      "type": "fish_level",
+      "target": 25,
+      "reference_level": 120,
+      "reward": {
+        "coins": 850000,
+        "shells": 100,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_040",
+      "type": "catch_size_category",
+      "target": 1,
+      "size_category": "exceptional",
+      "reference_level": 130,
+      "reward": {
+        "coins": 1100000,
+        "shells": 150,
+        "dollars": 5
+      }
+    },
+    {
+      "id": "mission_041",
+      "type": "catch_gene_stars",
+      "target": 1,
+      "stars": 5,
+      "reference_level": 140,
+      "reward": {
+        "coins": 2800000,
+        "shells": 160,
+        "dollars": 5
+      }
+    },
+    {
+      "id": "mission_042",
+      "type": "catch_perfect_gene",
+      "target": 1,
+      "reference_level": 140,
+      "reward": {
+        "coins": 2800000,
+        "shells": 160,
+        "dollars": 5
+      }
+    },
+    {
+      "id": "mission_043",
+      "type": "boss_attack",
+      "target": 1,
+      "reference_level": 150,
+      "reward": {
+        "coins": 3500000,
+        "shells": 210,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_044",
+      "type": "clan_fish",
+      "target": 1,
+      "reference_level": 150,
+      "reward": {
+        "coins": 3600000,
+        "shells": 210,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_045",
+      "type": "boss_band",
+      "target": 3,
+      "reference_level": 160,
+      "reward": {
+        "coins": 4800000,
+        "shells": 210,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_046",
+      "type": "arena_wins",
+      "target": 50,
+      "reference_level": 170,
+      "reward": {
+        "coins": 5600000,
+        "shells": 220,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_047",
+      "type": "arena_win_streak",
+      "target": 3,
+      "reference_level": 170,
+      "reward": {
+        "coins": 5700000,
+        "shells": 220,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_048",
+      "type": "expeditions_completed",
+      "target": 10,
+      "reference_level": 180,
+      "reward": {
+        "coins": 7900000,
+        "shells": 280,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_049",
+      "type": "market_sell",
+      "target": 1,
+      "rarity": "rare",
+      "reference_level": 180,
+      "reward": {
+        "coins": 8000000,
+        "shells": 290,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_050",
+      "type": "auction_bid",
+      "target": 1,
+      "reference_level": 180,
+      "reward": {
+        "coins": 8100000,
+        "shells": 290,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_051",
+      "type": "rod_assembled",
+      "target": 1,
+      "rod_id": "rod_02",
+      "reference_level": 190,
+      "reward": {
+        "coins": 8900000,
+        "shells": 300,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_052",
+      "type": "boat_assembled",
+      "target": 1,
+      "boat_id": "boat_02",
+      "reference_level": 190,
+      "reward": {
+        "coins": 9000000,
+        "shells": 310,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_053",
+      "type": "arena_distinct_opponents",
+      "target": 10,
+      "reference_level": 200,
+      "reward": {
+        "coins": 9100000,
+        "shells": 320,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_054",
+      "type": "clothing_assembled",
+      "target": 5,
+      "reference_level": 200,
+      "reward": {
+        "coins": 9300000,
+        "shells": 320,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_055",
+      "type": "clothing_max_level",
+      "target": 1,
+      "reference_level": 220,
+      "reward": {
+        "coins": 9900000,
+        "shells": 350,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_056",
+      "type": "map_unlocked",
+      "target": 1,
+      "map_id": "map_05",
+      "reference_level": 220,
+      "reward": {
+        "coins": 10000000,
+        "shells": 350,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_057",
+      "type": "encyclopedia_species",
+      "target": 40,
+      "reference_level": 230,
+      "reward": {
+        "coins": 10000000,
+        "shells": 370,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_058",
+      "type": "coins_held",
+      "target": 1000000,
+      "reference_level": 230,
+      "reward": {
+        "coins": 10000000,
+        "shells": 370,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_059",
+      "type": "fisher_level",
+      "target": 250,
+      "reference_level": 250,
+      "reward": {
+        "coins": 11000000,
+        "shells": 400,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_060",
+      "type": "cardume_all_rarity_min",
+      "target": 0,
+      "rarity": "rare",
+      "reference_level": 250,
+      "reward": {
+        "coins": 11000000,
+        "shells": 410,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_061",
+      "type": "arena_win_stronger",
+      "target": 1,
+      "reference_level": 260,
+      "reward": {
+        "coins": 11000000,
+        "shells": 420,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_062",
+      "type": "cardume_strength",
+      "target": 100000,
+      "reference_level": 270,
+      "reward": {
+        "coins": 12000000,
+        "shells": 430,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_063",
+      "type": "arena_rank_top",
+      "target": 100,
+      "reference_level": 280,
+      "reward": {
+        "coins": 12000000,
+        "shells": 430,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_064",
+      "type": "pass_rewards_claimed",
+      "target": 50,
+      "reference_level": 300,
+      "reward": {
+        "coins": 12000000,
+        "shells": 450,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_065",
+      "type": "dollars_spent",
+      "target": 100,
+      "reference_level": 300,
+      "reward": {
+        "coins": 12000000,
+        "shells": 460,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_066",
+      "type": "catch_rarity",
+      "target": 1,
+      "rarity": "legendary",
+      "reference_level": 320,
+      "reward": {
+        "coins": 13000000,
+        "shells": 470,
+        "dollars": 10
+      }
+    },
+    {
+      "id": "mission_067",
+      "type": "map_unlocked",
+      "target": 1,
+      "map_id": "map_06",
+      "reference_level": 320,
+      "reward": {
+        "coins": 13000000,
+        "shells": 480,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_068",
+      "type": "catch_count",
+      "target": 100000,
+      "reference_level": 350,
+      "reward": {
+        "coins": 13000000,
+        "shells": 500,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_069",
+      "type": "market_buy",
+      "target": 1,
+      "goods_kind": "fish",
+      "reference_level": 350,
+      "reward": {
+        "coins": 13000000,
+        "shells": 500,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_070",
+      "type": "fish_level",
+      "target": 100,
+      "reference_level": 380,
+      "reward": {
+        "coins": 14000000,
+        "shells": 520,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_071",
+      "type": "catch_size_category",
+      "target": 1,
+      "size_category": "perfect",
+      "reference_level": 400,
+      "reward": {
+        "coins": 14000000,
+        "shells": 540,
+        "dollars": 10
+      }
+    },
+    {
+      "id": "mission_072",
+      "type": "catch_gene_stars",
+      "target": 10,
+      "stars": 5,
+      "reference_level": 400,
+      "reward": {
+        "coins": 14000000,
+        "shells": 540,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_073",
+      "type": "cardume_gene_stars",
+      "target": 3,
+      "stars": 5,
+      "reference_level": 420,
+      "reward": {
+        "coins": 14000000,
+        "shells": 550,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_074",
+      "type": "boss_days",
+      "target": 7,
+      "reference_level": 420,
+      "reward": {
+        "coins": 14000000,
+        "shells": 560,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_075",
+      "type": "boss_band",
+      "target": 0,
+      "reference_level": 450,
+      "reward": {
+        "coins": 15000000,
+        "shells": 570,
+        "dollars": 5
+      }
+    },
+    {
+      "id": "mission_076",
+      "type": "arena_wins",
+      "target": 500,
+      "reference_level": 480,
+      "reward": {
+        "coins": 15000000,
+        "shells": 590,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_077",
+      "type": "arena_rank_top",
+      "target": 10,
+      "reference_level": 500,
+      "reward": {
+        "coins": 15000000,
+        "shells": 600,
+        "dollars": 10
+      }
+    },
+    {
+      "id": "mission_078",
+      "type": "market_sell",
+      "target": 1,
+      "reference_level": 500,
+      "reward": {
+        "coins": 15000000,
+        "shells": 610,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_079",
+      "type": "expeditions_completed",
+      "target": 100,
+      "reference_level": 520,
+      "reward": {
+        "coins": 15000000,
+        "shells": 620,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_080",
+      "type": "market_sell",
+      "target": 50,
+      "reference_level": 520,
+      "reward": {
+        "coins": 16000000,
+        "shells": 630,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_081",
+      "type": "auction_won",
+      "target": 10,
+      "reference_level": 540,
+      "reward": {
+        "coins": 16000000,
+        "shells": 630,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_082",
+      "type": "rod_assembled",
+      "target": 1,
+      "rod_id": "rod_03",
+      "reference_level": 550,
+      "reward": {
+        "coins": 16000000,
+        "shells": 650,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_083",
+      "type": "rod_assembled",
+      "target": 1,
+      "rod_id": "rod_04",
+      "reference_level": 580,
+      "reward": {
+        "coins": 16000000,
+        "shells": 660,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_084",
+      "type": "rod_assembled",
+      "target": 1,
+      "rod_id": "rod_05",
+      "reference_level": 620,
+      "reward": {
+        "coins": 16000000,
+        "shells": 770,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_085",
+      "type": "auction_won",
+      "target": 1,
+      "contested": true,
+      "reference_level": 620,
+      "reward": {
+        "coins": 17000000,
+        "shells": 780,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_086",
+      "type": "boats_all",
+      "target": 0,
+      "reference_level": 650,
+      "reward": {
+        "coins": 17000000,
+        "shells": 810,
+        "dollars": 5
+      }
+    },
+    {
+      "id": "mission_087",
+      "type": "clothing_max_level",
+      "target": 0,
+      "reference_level": 680,
+      "reward": {
+        "coins": 17000000,
+        "shells": 820,
+        "dollars": 5
+      }
+    },
+    {
+      "id": "mission_088",
+      "type": "map_unlocked",
+      "target": 1,
+      "map_id": "map_10",
+      "reference_level": 700,
+      "reward": {
+        "coins": 17000000,
+        "shells": 840,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_089",
+      "type": "fisher_level",
+      "target": 500,
+      "reference_level": 700,
+      "reward": {
+        "coins": 17000000,
+        "shells": 850,
+        "dollars": 10
+      }
+    },
+    {
+      "id": "mission_090",
+      "type": "coins_held",
+      "target": 1000000000,
+      "reference_level": 720,
+      "reward": {
+        "coins": 18000000,
+        "shells": 860,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_091",
+      "type": "encyclopedia_species",
+      "target": 0,
+      "reference_level": 750,
+      "reward": {
+        "coins": 18000000,
+        "shells": 880,
+        "dollars": 15
+      }
+    },
+    {
+      "id": "mission_092",
+      "type": "clan_same_day_boss",
+      "target": 1,
+      "online_only": true,
+      "reference_level": 760,
+      "reward": {
+        "coins": 18000000,
+        "shells": 900,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_093",
+      "type": "rarity_all_species",
+      "target": 0,
+      "rarity": "legendary",
+      "reference_level": 780,
+      "reward": {
+        "coins": 18000000,
+        "shells": 910,
+        "dollars": 10
+      }
+    },
+    {
+      "id": "mission_094",
+      "type": "catch_species",
+      "target": 1,
+      "species_id": "tubarao_boca_grande",
+      "reference_level": 820,
+      "reward": {
+        "coins": 18000000,
+        "shells": 930,
+        "dollars": 10
+      }
+    },
+    {
+      "id": "mission_095",
+      "type": "size_records",
+      "target": 20,
+      "reference_level": 850,
+      "reward": {
+        "coins": 18000000,
+        "shells": 950,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_096",
+      "type": "cardume_all_level",
+      "target": 0,
+      "level": 100,
+      "reference_level": 880,
+      "reward": {
+        "coins": 19000000,
+        "shells": 970,
+        "dollars": 10
+      }
+    },
+    {
+      "id": "mission_097",
+      "type": "catch_count",
+      "target": 1000000,
+      "reference_level": 920,
+      "reward": {
+        "coins": 19000000,
+        "shells": 980,
+        "dollars": 10
+      }
+    },
+    {
+      "id": "mission_098",
+      "type": "catch_perfect_specimen",
+      "target": 1,
+      "reference_level": 960,
+      "reward": {
+        "coins": 19000000,
+        "shells": 1000,
+        "dollars": 20
+      }
+    },
+    {
+      "id": "mission_099",
+      "type": "clan_rank_top",
+      "target": 3,
+      "online_only": true,
+      "reference_level": 980,
+      "reward": {
+        "coins": 19000000,
+        "shells": 1000,
+        "dollars": 0
+      }
+    },
+    {
+      "id": "mission_100",
+      "type": "fisher_level",
+      "target": 1000,
+      "reference_level": 1000,
+      "reward": {
+        "coins": 19000000,
+        "shells": 1000,
+        "dollars": 20
+      }
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "_leia_me": "Paisagem viva (GDD_ADENDO A-078): plantas que balançam com o vento e animais que aparecem de vez em quando. Só cenário: nenhuma regra, recompensa ou mecânica. Os nomes dos campos são chaves técnicas e não devem ser traduzidos. Se este arquivo tiver erro, a cena fica sem plantas e animais extras e o jogo avisa no Console.",
+  "_ritmo": "Tempos em segundos. Aparece no máximo um animal por vez; depois que ele sai, a cena descansa um tempo sorteado entre rest_min e rest_max. Nada novo aparece com uma janela aberta, durante uma celebração ou numa viagem. Os efeitos pequenos (libélulas, sombras e saltos de peixe) ficam pelo menos small_gap segundos um do outro. Tudo fica mais raro ou mais frequente com ambient_life do tema_visual.json.",
+  "first_event_min": 12,
+  "first_event_max": 25,
+  "rest_min": 25,
+  "rest_max": 60,
+  "small_gap": 6,
+  "_vento": "Rajadas de vento atravessam a tela da esquerda para a direita a cada gust_min a gust_max segundos; entre elas, as plantas ficam quase paradas.",
+  "gust_min": 8,
+  "gust_max": 20,
+  "_posicoes": "side: left = x medido a partir da borda esquerda da tela, para dentro; right = a partir da borda direita, para dentro; center = x do mundo. y é a altura no mundo (o horizonte fica em 0,2; a base da tela em -5,4). height = altura da planta; bend = quanto ela verga numa rajada (graus); layer: shore = na margem do fundo (com reflexo), water = boiando na água, corner_back = atrás das moitas dos cantos, corner_front = na frente delas.",
+  "_animais": "weight = chance relativa de cada animal ser o próximo (maior = mais comum). Um animal nunca aparece duas vezes seguidas.",
+  "scenes": [
+    {
+      "scene": "LagoSereno",
+      "plants": [
+        { "art": "pinheiro_04", "side": "left", "x": 3.0, "y": 0.14, "height": 1.7, "bend": 1.2, "layer": "shore" },
+        { "art": "pinheiro_08", "side": "left", "x": 3.7, "y": 0.13, "height": 0.95, "bend": 1.4, "layer": "shore" },
+        { "art": "arvore_04", "side": "right", "x": 3.3, "y": 0.13, "height": 0.85, "bend": 1.2, "layer": "shore" },
+        { "art": "pinheiro_07", "side": "right", "x": 2.75, "y": 0.14, "height": 1.35, "bend": 1.2, "layer": "shore" },
+        { "art": "junco_05", "side": "left", "x": 2.5, "y": -5.25, "height": 1.9, "bend": 5, "layer": "corner_back" },
+        { "art": "junco_09", "side": "left", "x": 3.2, "y": -5.45, "height": 1.3, "bend": 6, "layer": "corner_front" },
+        { "art": "junco_08", "side": "right", "x": 2.9, "y": -5.2, "height": 1.8, "bend": 5, "layer": "corner_back" },
+        { "art": "junco_03", "side": "right", "x": 3.5, "y": -5.45, "height": 0.9, "bend": 6, "layer": "corner_front" },
+        { "art": "vitoria_02", "side": "left", "x": 4.7, "y": -4.75, "height": 0.5, "bend": 0, "layer": "water" },
+        { "art": "vitoria_04", "side": "left", "x": 5.9, "y": -4.2, "height": 0.26, "bend": 0, "layer": "water" },
+        { "art": "vitoria_03", "side": "right", "x": 5.0, "y": -4.85, "height": 0.36, "bend": 0, "layer": "water" },
+        { "art": "vitoria_08", "side": "right", "x": 4.35, "y": -4.3, "height": 0.2, "bend": 0, "layer": "water" }
+      ],
+      "spots": [
+        { "id": "heron", "side": "right", "x": 3.9, "y": -4.9 },
+        { "id": "turtle", "side": "right", "x": 0.75, "y": -4.42 },
+        { "id": "perch", "side": "left", "x": 1.75, "y": -3.45 },
+        { "id": "frog", "side": "left", "x": 4.7, "y": -4.62 },
+        { "id": "capybara", "side": "left", "x": 2.0, "y": 0.13 },
+        { "id": "ducks", "side": "center", "x": 0, "y": -0.9 }
+      ],
+      "animals": [
+        { "id": "ducks_flying", "weight": 3 },
+        { "id": "heron_flyover", "weight": 2 },
+        { "id": "swallows", "weight": 2.5 },
+        { "id": "ducks_swimming", "weight": 2 },
+        { "id": "heron_wading", "weight": 1.5 },
+        { "id": "kingfisher", "weight": 1.5 },
+        { "id": "capybaras", "weight": 1.5 },
+        { "id": "turtle", "weight": 1.5 },
+        { "id": "frog", "weight": 1.5 }
+      ]
+    },
+    {
+      "scene": "RioSelvagem",
+      "plants": [
+        { "art": "tropical_03", "side": "left", "x": 3.75, "y": 0.14, "height": 1.9, "bend": 1.4, "layer": "shore" },
+        { "art": "tropical_05", "side": "left", "x": 4.35, "y": 0.13, "height": 0.95, "bend": 1.8, "layer": "shore" },
+        { "art": "tropical_01", "side": "right", "x": 3.7, "y": 0.14, "height": 2.0, "bend": 1.4, "layer": "shore" },
+        { "art": "tropical_06", "side": "right", "x": 4.25, "y": 0.13, "height": 1.0, "bend": 1.8, "layer": "shore" },
+        { "art": "folhagem_03", "side": "left", "x": 2.8, "y": -5.3, "height": 1.6, "bend": 3.5, "layer": "corner_back" },
+        { "art": "folhagem_08", "side": "left", "x": 3.5, "y": -5.5, "height": 1.15, "bend": 4, "layer": "corner_front" },
+        { "art": "folhagem_01", "side": "right", "x": 3.1, "y": -5.3, "height": 1.5, "bend": 3.5, "layer": "corner_back" },
+        { "art": "folhagem_02", "side": "right", "x": 3.7, "y": -5.5, "height": 1.0, "bend": 4, "layer": "corner_front" }
+      ],
+      "spots": [
+        { "id": "heron", "side": "right", "x": 4.0, "y": -4.95 },
+        { "id": "turtle", "side": "right", "x": 2.3, "y": -4.82 },
+        { "id": "perch", "side": "left", "x": 1.8, "y": -3.0 },
+        { "id": "capybara", "side": "left", "x": 2.0, "y": 0.13 },
+        { "id": "ducks", "side": "center", "x": 0, "y": -1.0 },
+        { "id": "caiman", "side": "center", "x": 0, "y": -1.4 },
+        { "id": "caiman_bank", "side": "right", "x": 2.4, "y": 0.13 },
+        { "id": "monkey", "side": "left", "x": 2.2, "y": 1.62 },
+        { "id": "monkey_hanging", "side": "right", "x": 2.1, "y": 1.5 },
+        { "id": "howler", "side": "right", "x": 1.25, "y": 1.95 }
+      ],
+      "animals": [
+        { "id": "macaws", "weight": 3 },
+        { "id": "toucan", "weight": 2 },
+        { "id": "heron_flyover", "weight": 1.5 },
+        { "id": "swallows", "weight": 2 },
+        { "id": "ducks_flying", "weight": 1.5 },
+        { "id": "kingfisher", "weight": 1.5 },
+        { "id": "caiman", "weight": 1.5 },
+        { "id": "caiman_bank", "weight": 1 },
+        { "id": "capybaras", "weight": 1.5 },
+        { "id": "heron_wading", "weight": 1 },
+        { "id": "turtle", "weight": 1 },
+        { "id": "monkey", "weight": 1 },
+        { "id": "monkey_hanging", "weight": 1 },
+        { "id": "howler", "weight": 0.8 }
+      ]
+    },
+    {"scene": "PantanalDourado", "plants": [{"art": "carandaa_02", "side": "left", "x": 3.3, "y": 0.14, "height": 1.5, "bend": 1.0, "layer": "shore"}, {"art": "carandaa_04", "side": "right", "x": 3.1, "y": 0.14, "height": 1.3, "bend": 1.1, "layer": "shore"}, {"art": "aguape_02", "side": "left", "x": 4.6, "y": -4.7, "height": 0.45, "bend": 0, "layer": "water"}, {"art": "aguape_05", "side": "left", "x": 5.8, "y": -4.25, "height": 0.28, "bend": 0, "layer": "water"}, {"art": "aguape_01", "side": "left", "x": 3.9, "y": -3.9, "height": 0.22, "bend": 0, "layer": "water"}, {"art": "aguape_04", "side": "right", "x": 5.1, "y": -4.8, "height": 0.4, "bend": 0, "layer": "water"}, {"art": "aguape_03", "side": "right", "x": 4.2, "y": -4.2, "height": 0.3, "bend": 0, "layer": "water"}, {"art": "aguape_06", "side": "right", "x": 6.0, "y": -4.05, "height": 0.16, "bend": 0, "layer": "water"}], "spots": [{"id": "heron", "side": "right", "x": 4.0, "y": -4.95}, {"id": "capybara", "side": "left", "x": 2.0, "y": 0.13}, {"id": "ducks", "side": "center", "x": 0, "y": -1.0}, {"id": "caiman", "side": "center", "x": 0, "y": -1.4}], "animals": [{"id": "hyacinth_macaws", "weight": 2.5}, {"id": "jabiru_flyover", "weight": 2}, {"id": "spoonbills", "weight": 2}, {"id": "swallows", "weight": 1.5}, {"id": "jabiru_wading", "weight": 1.5}, {"id": "caiman", "weight": 1.5}, {"id": "capybaras", "weight": 1.5}, {"id": "ducks_flying", "weight": 1}, {"id": "ducks_swimming", "weight": 1}, {"id": "butterflies", "weight": 1.5}]},
+    {"scene": "EstuarioDasMares", "plants": [{"art": "beira_mangue_01", "side": "left", "x": 2.6, "y": -5.3, "height": 1.3, "bend": 4, "layer": "corner_back"}, {"art": "beira_mangue_06", "side": "right", "x": 3.0, "y": -5.3, "height": 1.2, "bend": 4, "layer": "corner_back"}, {"art": "beira_mangue_03", "side": "left", "x": 3.5, "y": -5.45, "height": 0.85, "bend": 5, "layer": "corner_front"}, {"art": "beira_mangue_05", "side": "right", "x": 3.6, "y": -5.45, "height": 0.8, "bend": 5, "layer": "corner_front"}], "spots": [{"id": "heron", "side": "right", "x": 4.0, "y": -4.95}, {"id": "crab", "side": "left", "x": 2.2, "y": -5.15}, {"id": "dolphin", "side": "center", "x": 0, "y": -0.7}], "animals": [{"id": "scarlet_ibis", "weight": 3}, {"id": "terns", "weight": 2.5}, {"id": "heron_flyover", "weight": 1.5}, {"id": "heron_wading", "weight": 1.5}, {"id": "fiddler_crab", "weight": 1.5}, {"id": "dolphin", "weight": 1.5}]},
+    {"scene": "CostaDeCoral", "plants": [{"art": "coqueiros_02", "side": "left", "x": 4.7, "y": 0.14, "height": 1.7, "bend": 1.6, "layer": "shore"}, {"art": "coqueiros_04", "side": "left", "x": 5.4, "y": 0.13, "height": 1.1, "bend": 1.8, "layer": "shore"}, {"art": "coqueiros_05", "side": "right", "x": 5.0, "y": 0.14, "height": 1.5, "bend": 1.6, "layer": "shore"}, {"art": "restinga_02", "side": "left", "x": 2.9, "y": -5.3, "height": 1.0, "bend": 4, "layer": "corner_back"}, {"art": "restinga_01", "side": "right", "x": 3.1, "y": -5.3, "height": 1.2, "bend": 4, "layer": "corner_back"}], "spots": [{"id": "dolphin", "side": "center", "x": 0, "y": -0.9}, {"id": "sea_turtle", "side": "center", "x": 0, "y": -1.6}], "animals": [{"id": "gulls", "weight": 3}, {"id": "terns", "weight": 2}, {"id": "sea_turtle", "weight": 2}, {"id": "spinner_dolphin", "weight": 1}]},
+    {"scene": "ArquipelagoDoSol", "plants": [{"art": "vegetacao_08", "side": "left", "x": 2.8, "y": -5.3, "height": 1.1, "bend": 4, "layer": "corner_back"}, {"art": "vegetacao_08", "side": "right", "x": 3.0, "y": -5.3, "height": 1.0, "bend": 4, "layer": "corner_back"}], "spots": [{"id": "dolphin", "side": "center", "x": 0, "y": -0.8}, {"id": "sea_turtle", "side": "center", "x": 0, "y": -1.5}], "animals": [{"id": "boobies", "weight": 3}, {"id": "frigatebird", "weight": 2}, {"id": "spinner_dolphin", "weight": 2.5}, {"id": "gulls", "weight": 1}, {"id": "sea_turtle", "weight": 0.8}]},
+    {"scene": "CorrenteAzul", "plants": [{"art": "sargaco_01", "side": "left", "x": 4.6, "y": -4.6, "height": 0.42, "bend": 0, "layer": "water"}, {"art": "sargaco_06", "side": "left", "x": 6.2, "y": -3.9, "height": 0.26, "bend": 0, "layer": "water"}, {"art": "sargaco_03", "side": "right", "x": 4.9, "y": -4.8, "height": 0.38, "bend": 0, "layer": "water"}, {"art": "sargaco_02", "side": "right", "x": 6.4, "y": -4.1, "height": 0.22, "bend": 0, "layer": "water"}], "spots": [{"id": "dolphin", "side": "center", "x": 0, "y": -0.9}], "animals": [{"id": "flying_fish", "weight": 3}, {"id": "shearwaters", "weight": 2.5}, {"id": "spinner_dolphin", "weight": 1.5}, {"id": "frigatebird", "weight": 0.8}]},
+    {"scene": "BancoDasBaleias", "plants": [], "spots": [{"id": "whale", "side": "center", "x": 0, "y": -0.35}, {"id": "dolphin", "side": "center", "x": 0, "y": -0.9}], "animals": [{"id": "humpback_spout", "weight": 3}, {"id": "humpback_breach", "weight": 1}, {"id": "terns", "weight": 2}, {"id": "boobies", "weight": 2}]},
+    {"scene": "TaludeNoturno", "plants": [], "spots": [{"id": "shadow", "side": "center", "x": 0, "y": -2.6}], "animals": [{"id": "petrels", "weight": 3}, {"id": "deep_shadow", "weight": 2}]},
+    {"scene": "AbismoAtlantico", "plants": [], "spots": [{"id": "shadow", "side": "center", "x": 0, "y": -3.0}], "animals": [{"id": "giant_shadow", "weight": 2}, {"id": "deep_shadow", "weight": 1}]}
+  ]
+}

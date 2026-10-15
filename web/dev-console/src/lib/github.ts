@@ -1,8 +1,8 @@
 /**
  * Reads the project's own repository from GitHub.
  *
- * This is what lets the console run somewhere with no checkout and no backend — deployed on a host
- * like Vercel — and still show current status: it reads the same `docs/roadmap.json` that every
+ * This is what lets the console run somewhere with no checkout and no backend and still show
+ * current status: it reads the same `docs/roadmap.json` that every
  * other source reads, straight from the repository, seconds after a commit is pushed.
  */
 

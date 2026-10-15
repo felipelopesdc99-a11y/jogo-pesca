@@ -1,0 +1,54 @@
+{
+  "config_file": "clans.json",
+  "config_schema_version": 1,
+  "balance_status": "PROVISÓRIO",
+  "description": "Clãs (M24-T49, A-174, pedido do proprietário em 13/10/2026). Só Pescadores do Nv.100 para cima podem criar ou entrar num clã. O primeiro clã de cada jogador é grátis; criar outro depois custa Dólares; o clã começa com 10 vagas e o dono compra vagas extras com Dólares, cada uma mais cara. Quem está num clã ganha +1% de XP de Pescador na pesca. Cada membro coloca 1 peixe do Aquário no Cardume do Clã (o peixe continua no Aquário e no Cardume pessoal); a Força do clã é a soma da Força desses peixes. Todo dia às 00:00 (horário de Brasília) os 3 clãs mais fortes ganham recompensas, só quando o jogo estiver online (ranking.online_rewards_enabled). Números provisórios, para o proprietário ajustar (OD-071).",
+  "membership": {
+    "min_fisher_level": 100,
+    "base_members": 10,
+    "max_members": 15,
+    "note": "min_fisher_level: nível do Pescador para criar ou entrar num clã (pedido do proprietário: Nv.100 para cima). base_members: vagas de todo clã novo (10). max_members: limite de vagas contando as compradas (15 = 10 + até 5 compradas, decisão do proprietário em 13/10/2026); o jogo recusa comprar além dele."
+  },
+  "costs": {
+    "first_create_dollars": 0,
+    "create_dollars": 50,
+    "extra_slot_first_dollars": 20,
+    "extra_slot_growth": 1.5,
+    "note": "first_create_dollars: Dólares do primeiro clã de cada jogador (0 = grátis, decisão do proprietário em 13/10/2026). create_dollars: Dólares de cada clã que o mesmo jogador criar depois do primeiro, mesmo que tenha apagado o anterior. Vagas extras (só o dono compra): a 1ª custa extra_slot_first_dollars e cada uma seguinte custa extra_slot_growth vezes a anterior, arredondado (20, 30, 45, 68, 101: as 5 vagas que dá para comprar). Números provisórios (OD-071)."
+  },
+  "name": {
+    "min_length": 3,
+    "max_length": 20,
+    "note": "Nome do clã: de min_length a max_length caracteres (letras, números, espaço, ponto, hífen e sublinhado; espaços repetidos viram um só), sem repetir o nome de outro clã (maiúsculas e minúsculas contam como iguais)."
+  },
+  "xp_bonus": 0.01,
+  "xp_bonus_note": "Bônus de XP de Pescador de quem está num clã: +xp_bonus do XP de cada peixe pescado (0,01 = +1%), com o jogo aberto e fechado, arredondado para o ponto mais próximo, como a Calça.",
+  "ranking": {
+    "utc_offset_minutes": -180,
+    "online_rewards_enabled": false,
+    "rewards_by_rank": [
+      {
+        "dollars": 25,
+        "income_minutes": 60,
+        "shell_minutes": 60,
+        "clothing_fragments": 3,
+        "boat_fragments": 3
+      },
+      {
+        "dollars": 15,
+        "income_minutes": 45,
+        "shell_minutes": 45,
+        "clothing_fragments": 2,
+        "boat_fragments": 2
+      },
+      {
+        "dollars": 10,
+        "income_minutes": 30,
+        "shell_minutes": 30,
+        "clothing_fragments": 1,
+        "boat_fragments": 1
+      }
+    ],
+    "note": "Ranking dos clãs pela Força do Cardume do Clã. Fecha todo dia às 00:00 no fuso utc_offset_minutes (−180 = Brasília, UTC−3, sem horário de verão), pelo relógio do jogo. rewards_by_rank: do 1º ao 3º clã; cada membro recebe: dollars = Dólares; income_minutes / shell_minutes = minutos da renda de referência do nível do Pescador dele (world_boss.json → reference_income, a mesma do Boss Mundial) em Moedas / Conchas; clothing_fragments = Fragmentos de Roupa; boat_fragments = fragmentos do barco do mapa mais alto que o nível dele libera (o mesmo barco do Boss Mundial). online_rewards_enabled: false no jogo local (só existe o clã do jogador, que seria sempre o 1º, como o top 10 do Boss Mundial); ligar só quando houver servidor com jogadores reais. Números provisórios (OD-071)."
+  }
+}

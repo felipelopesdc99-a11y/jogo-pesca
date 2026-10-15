@@ -1,0 +1,336 @@
+{
+  "config_file": "equipment.json",
+  "config_schema_version": 1,
+  "balance_status": "PROVISÓRIO",
+  "description": "Barcos e iscas (docs/SISTEMA_SUCESSO_PESCA.md). Os dois só aumentam a Chance de Sucesso da Captura, somando pontos percentuais à chance-base da raridade (progression.json → rarity.tiers → catch_success_base) e aos da vara (rods.json → catch_success). Desde 11/10/2026 (M24-T16, A-157) os barcos não são vendidos: cada barco é ligado a um mapa (map_id) e é montado com fragmentos que caem pescando naquele mapa. Iscas continuam na Loja, sem nível mínimo (M24-T09, A-153). Todos os números são provisórios. Desde 12/10/2026 (M24-T33, A-164) existem também as roupas (clothing): 5 peças montadas com Fragmentos de Roupa, que caem em todos os mapas.",
+  "boat_levels": {
+    "max_level": 100,
+    "bonus_curve_exponent": 1.2,
+    "note": "Desde 10/10/2026 (M24-T13, A-156) cada barco comprado tem nível, do 1 ao max_level. catch_success_bonus é o bônus no Nv.1 (o de antes) e catch_success_bonus_at_max_level o do nível máximo (~3×); o bônus no nível N é Nv.1 + (máx − Nv.1) × ((N − 1) ÷ (max_level − 1)) ^ bonus_curve_exponent. Melhorar de N para N + 1 custa coins_first × coins_growth ^ (N − 1) Moedas e shells_first × shells_growth ^ (N − 1) Conchas, arredondados como as varas. O barco inicial não tem nível (has_levels false): o bônus dele é 0. Números gerados por tools/Progressao/niveis_100.py."
+  },
+  "boat_fragments": {
+    "drop_on_offline_fishing": true,
+    "note": "Barcos por fragmentos (M24-T16, A-157; desde 13/10/2026 em qualquer mapa, M24-T47, A-173). Cada peixe pescado (puxado, não o que escapa), em qualquer mapa, tem fragment_drop_chance de dar 1 fragmento de CADA barco (menos o inicial), num sorteio independente por barco, com o Rng do serviço na mesma tentativa. Desde 13/10/2026 (M24-T58, A-180) nada é montado sozinho: com fragments_required fragmentos E o barco anterior (o Barco 1 pede o barco inicial, que todo jogador tem), o jogador aperta Montar; montar gasta só fragments_required (o resto fica guardado, sem limite) e o barco entra no Nv.1, sem passar a ser usado (o jogador aperta Usar). drop_on_offline_fishing: a pesca offline (A-034) também dá fragmentos, com a mesma chance; Expedições não dão. Depois de montado, os fragmentos daquele barco continuam caindo e ficam guardados como extras (o que fazer com eles é o OD-060). O Passe do Pescador (pass.json) e o Boss Mundial (world_boss.json) também dão fragmentos. map_id e extra_fragment_maps não decidem mais onde o barco cai: dizem de qual barco o Boss Mundial dá fragmentos (o do maior mapa liberado) e de qual barco é cada marco do Passe (passe_fragmentos.py). fragments_required gerado por tools/Progressao/passe_fragmentos.py gerar; fragment_drop_chance é a chance pedida pelo proprietário (0,001 = 0,1%), que o gerador mantém."
+  },
+  "boats": [
+    {
+      "id": "boat_00",
+      "display_name": "Água Mansa",
+      "description": "Uma canoa simples. Foi aqui que tudo começou.",
+      "tier": 0,
+      "catch_success_bonus": 0.0,
+      "has_levels": false,
+      "note": "Todo jogador já tem. Não é de nenhum mapa e não tem nível."
+    },
+    {
+      "id": "boat_01",
+      "display_name": "Remo Valente",
+      "description": "Mais firme e confiável para jornadas maiores.",
+      "tier": 1,
+      "map_id": "map_01",
+      "fragments_required": 20,
+      "fragment_drop_chance": 0.001,
+      "catch_success_bonus": 0.02,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.06,
+      "upgrade_cost": {
+        "coins_first": 600,
+        "coins_growth": 1.14,
+        "shells_first": 1,
+        "shells_growth": 1.03
+      },
+      "extra_fragment_maps": [
+        {
+          "map_id": "map_06"
+        }
+      ],
+      "extra_fragment_maps_note": "Desde 12/10/2026 (M24-T42, A-168) o map_06 era deste barco. Desde 13/10/2026 (M24-T47, A-173) os fragmentos caem em qualquer mapa: este campo só diz de qual barco o Boss Mundial dá fragmentos quando este é o maior mapa liberado."
+    },
+    {
+      "id": "boat_02",
+      "display_name": "Rastro Azul",
+      "description": "Seu primeiro motor muda a forma de explorar as águas.",
+      "tier": 2,
+      "map_id": "map_02",
+      "fragments_required": 25,
+      "fragment_drop_chance": 0.001,
+      "catch_success_bonus": 0.04,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.12,
+      "upgrade_cost": {
+        "coins_first": 2250,
+        "coins_growth": 1.14,
+        "shells_first": 1,
+        "shells_growth": 1.03
+      },
+      "extra_fragment_maps": [
+        {
+          "map_id": "map_07"
+        }
+      ],
+      "extra_fragment_maps_note": "Desde 12/10/2026 (M24-T42, A-168) o map_07 era deste barco. Desde 13/10/2026 (M24-T47, A-173) os fragmentos caem em qualquer mapa: este campo só diz de qual barco o Boss Mundial dá fragmentos quando este é o maior mapa liberado."
+    },
+    {
+      "id": "boat_03",
+      "display_name": "Proa Selvagem",
+      "description": "Feito para pescadores que já enfrentam peixes de verdade.",
+      "tier": 3,
+      "map_id": "map_03",
+      "fragments_required": 35,
+      "fragment_drop_chance": 0.001,
+      "catch_success_bonus": 0.06,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.18,
+      "upgrade_cost": {
+        "coins_first": 8000,
+        "coins_growth": 1.14,
+        "shells_first": 1,
+        "shells_growth": 1.03
+      },
+      "extra_fragment_maps": [
+        {
+          "map_id": "map_08"
+        }
+      ],
+      "extra_fragment_maps_note": "Desde 12/10/2026 (M24-T42, A-168) o map_08 era deste barco. Desde 13/10/2026 (M24-T47, A-173) os fragmentos caem em qualquer mapa: este campo só diz de qual barco o Boss Mundial dá fragmentos quando este é o maior mapa liberado."
+    },
+    {
+      "id": "boat_04",
+      "display_name": "Costa Nobre",
+      "description": "Conforto e estabilidade para águas mais exigentes.",
+      "tier": 4,
+      "map_id": "map_04",
+      "fragments_required": 45,
+      "fragment_drop_chance": 0.001,
+      "catch_success_bonus": 0.08,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.24,
+      "upgrade_cost": {
+        "coins_first": 30000,
+        "coins_growth": 1.14,
+        "shells_first": 6,
+        "shells_growth": 1.03
+      },
+      "extra_fragment_maps": [
+        {
+          "map_id": "map_09"
+        }
+      ],
+      "extra_fragment_maps_note": "Desde 12/10/2026 (M24-T42, A-168) o map_09 era deste barco. Desde 13/10/2026 (M24-T47, A-173) os fragmentos caem em qualquer mapa: este campo só diz de qual barco o Boss Mundial dá fragmentos quando este é o maior mapa liberado."
+    },
+    {
+      "id": "boat_05",
+      "display_name": "Horizonte Dourado",
+      "description": "O auge da pesca esportiva. Potência, controle e presença.",
+      "tier": 5,
+      "map_id": "map_05",
+      "fragments_required": 55,
+      "fragment_drop_chance": 0.001,
+      "catch_success_bonus": 0.1,
+      "has_levels": true,
+      "catch_success_bonus_at_max_level": 0.3,
+      "upgrade_cost": {
+        "coins_first": 125000,
+        "coins_growth": 1.14,
+        "shells_first": 25,
+        "shells_growth": 1.03
+      },
+      "extra_fragment_maps": [
+        {
+          "map_id": "map_10"
+        }
+      ],
+      "extra_fragment_maps_note": "Desde 12/10/2026 (M24-T42, A-168) o map_10 era deste barco. Desde 13/10/2026 (M24-T47, A-173) os fragmentos caem em qualquer mapa: este campo só diz de qual barco o Boss Mundial dá fragmentos quando este é o maior mapa liberado."
+    }
+  ],
+  "clothing": {
+    "fragment_drop_chance": 0.001,
+    "drop_on_offline_fishing": true,
+    "fragments_to_assemble": [
+      15,
+      25,
+      40,
+      60,
+      80
+    ],
+    "max_level": 100,
+    "bonus_curve_exponent": 1.2,
+    "use_xp_per_fish": 1,
+    "level_xp": {
+      "first": 10,
+      "growth": 1.0868
+    },
+    "pieces": [
+      {
+        "id": "gloves",
+        "display_name": "Luvas",
+        "description": "Firmeza na linha na hora de puxar o peixe.",
+        "bonus_axis": "catch_success",
+        "bonus_at_level_1": 0.005,
+        "bonus_at_max_level": 0.15
+      },
+      {
+        "id": "hat",
+        "display_name": "Chapéu",
+        "description": "Sombra nos olhos para enxergar os peixes raros.",
+        "bonus_axis": "rarity_efficiency",
+        "bonus_at_level_1": 0.02,
+        "bonus_at_max_level": 0.8
+      },
+      {
+        "id": "boots",
+        "display_name": "Botas",
+        "description": "Pé firme no barco para segurar os peixes grandes.",
+        "bonus_axis": "size_quality",
+        "bonus_at_level_1": 0.02,
+        "bonus_at_max_level": 0.6
+      },
+      {
+        "id": "shirt",
+        "display_name": "Camiseta",
+        "description": "Bolsos para guardar as Conchas que aparecem.",
+        "bonus_axis": "shell_yield",
+        "bonus_at_level_1": 0.05,
+        "bonus_at_max_level": 1.75
+      },
+      {
+        "id": "pants",
+        "display_name": "Calça",
+        "description": "Confortável para pescar o dia todo e aprender mais.",
+        "bonus_axis": "fisher_xp",
+        "bonus_at_level_1": 0.005,
+        "bonus_at_max_level": 0.1
+      }
+    ],
+    "note": "Roupas (M24-T33, A-164). Um tipo só de fragmento, o Fragmento de Roupa: cada peixe puxado em qualquer mapa tem fragment_drop_chance de dar 1, sorteado com o Rng do serviço na mesma tentativa, depois da captura e dos fragmentos de barco e de vara; drop_on_offline_fishing: a pesca offline também dá. O jogador escolhe qual peça montar; a 1ª peça montada custa fragments_to_assemble[0], a 2ª [1] … (crescente na ordem em que ele monta, qualquer peça). Peça montada fica equipada (um espaço por peça, as 5 juntas). Cada peça soma um bônus num eixo (bonus_axis): catch_success = pontos na Chance de Sucesso da Captura (como vara, barco e isca, até o teto de 95%); rarity_efficiency, size_quality e shell_yield somam aos da vara (rods.json → bonus_axes); fisher_xp = +% no XP de Pescador de cada peixe pescado. O bônus no nível N segue a curva das varas: Nv.1 + (máx − Nv.1) × ((N − 1) ÷ (max_level − 1)) ^ bonus_curve_exponent. O nível sobe com o uso, sem custo: cada peixe puxado (online ou offline) dá use_xp_per_fish de XP a cada peça montada; do nível N para N + 1 são level_xp.first × level_xp.growth ^ (N − 1), arredondado como os preços. Fragmentos que sobram depois das 5 peças ficam guardados (como os extras de barco, OD-060). fragment_drop_chance é a chance pedida pelo proprietário em 13/10/2026 (M24-T47, A-173: 0,001 = 0,1%, a mesma de cada barco e de cada vara); os outros números são gerados por tools/Progressao/fragmentos_equipamento.py gerar, que mantém a chance."
+  },
+  "baits_note": "Desde 12/10/2026 (M24-T30, A-161, decisão do proprietário) são exatamente 3 iscas: +5%, +10% e +15% de chance de puxar o peixe (o mesmo eixo de antes: somam pontos à Chance de Sucesso da Captura, com a vara e o barco, até o máximo de progression.json → fishing → catch_success_max). Cada compra é um pacote de charges = 999 tentativas; cada tentativa de pesca (online ou offline) gasta 1, pegando o peixe ou não. Quando acabam, a pesca continua sem isca. Iscas não têm nível nem nível mínimo (A-153). Preço: o custo POR TENTATIVA fica ~10% a 20% acima do que as iscas de antes cobravam pelo mesmo bônus (antes: +3% = 8,33 Moedas, +7% = 33,33, +10% = 83,33 por tentativa; +5% ficava em ~20,8 entre as duas primeiras; +15% segue a reta da última). Os nomes são os de antes, na mesma ordem de categoria. Retorno por estágio: tools/Progressao/simular_iscas.py.",
+  "baits": [
+    {
+      "id": "bait_01",
+      "display_name": "Terra Viva",
+      "description": "Simples, barata e eficiente. Um clássico que nunca sai de moda.",
+      "tier": 1,
+      "catch_success_bonus": 0.05,
+      "charges": 999,
+      "cost_coins": 23000,
+      "cost_shells": 13
+    },
+    {
+      "id": "bait_02",
+      "display_name": "Maré Viva",
+      "description": "Um atrativo melhor para peixes mais exigentes.",
+      "tier": 2,
+      "catch_success_bonus": 0.1,
+      "charges": 999,
+      "cost_coins": 100000,
+      "cost_shells": 33
+    },
+    {
+      "id": "bait_03",
+      "display_name": "Ouro de Maré",
+      "description": "Isca artificial de alto nível para maximizar suas chances.",
+      "tier": 3,
+      "catch_success_bonus": 0.15,
+      "charges": 999,
+      "cost_coins": 200000,
+      "cost_shells": 55
+    }
+  ],
+  "bait_migration": {
+    "bait_model_version": 2,
+    "legacy_baits": [
+      {
+        "id": "bait_01",
+        "display_name": "Terra Viva",
+        "catch_success_bonus": 0.03,
+        "charges": 180,
+        "cost_coins": 1500,
+        "cost_shells": 1
+      },
+      {
+        "id": "bait_02",
+        "display_name": "Maré Viva",
+        "catch_success_bonus": 0.07,
+        "charges": 180,
+        "cost_coins": 6000,
+        "cost_shells": 3
+      },
+      {
+        "id": "bait_03",
+        "display_name": "Ouro de Maré",
+        "catch_success_bonus": 0.1,
+        "charges": 180,
+        "cost_coins": 15000,
+        "cost_shells": 5
+      }
+    ],
+    "note": "Iscas de antes de 12/10/2026 (M24-T30, A-161). Um save com bait_model_version menor que este troca, ao abrir, cada isca de legacy_baits que ainda tem tentativas pela isca de hoje de bônus igual ou o mais próximo acima (a de maior bônus, se nenhuma for maior), com as tentativas convertidas pelo valor em Moedas: tentativas novas = tentativas antigas × (cost_coins ÷ charges antigos) ÷ (cost_coins ÷ charges de hoje), arredondado para cima. A isca em uso continua em uso (a nova). legacy_baits guarda os números de antes só para essa conta: não muda nada no jogo de hoje."
+  },
+  "boat_migration": {
+    "boat_model_version": 2,
+    "note": "Barcos de antes de 12/10/2026 (M24-T42, A-168): o jogo teve 10 barcos (um por mapa) e voltou para 5; os mapas 6 a 10 dão fragmentos dos barcos 1 a 5. Um save com boat_model_version menor que este troca, ao abrir: os fragmentos de um barco removido viram fragmentos do barco fragments_go_to; um barco removido já montado vira Moedas e Conchas (o que custou subir do Nv.1 ao nível dele, pela upgrade_cost abaixo e a curva de boat_levels) e os fragments_required que ele custou viram fragmentos do barco fragments_go_to; se ele estava em uso, o jogador passa a usar o melhor barco que tem. Fica guardado para converter saves antigos.",
+    "removed_boats": [
+      {
+        "id": "boat_06",
+        "display_name": "Vela do Sol",
+        "fragments_go_to": "boat_01",
+        "fragments_required": 70,
+        "upgrade_cost": {
+          "coins_first": 375000,
+          "coins_growth": 1.14,
+          "shells_first": 40,
+          "shells_growth": 1.03
+        }
+      },
+      {
+        "id": "boat_07",
+        "display_name": "Quilha Azul",
+        "fragments_go_to": "boat_02",
+        "fragments_required": 90,
+        "upgrade_cost": {
+          "coins_first": 1130000,
+          "coins_growth": 1.14,
+          "shells_first": 60,
+          "shells_growth": 1.03
+        }
+      },
+      {
+        "id": "boat_08",
+        "display_name": "Canto da Baleia",
+        "fragments_go_to": "boat_03",
+        "fragments_required": 120,
+        "upgrade_cost": {
+          "coins_first": 3380000,
+          "coins_growth": 1.14,
+          "shells_first": 90,
+          "shells_growth": 1.03
+        }
+      },
+      {
+        "id": "boat_09",
+        "display_name": "Farol Noturno",
+        "fragments_go_to": "boat_04",
+        "fragments_required": 155,
+        "upgrade_cost": {
+          "coins_first": 10100000,
+          "coins_growth": 1.14,
+          "shells_first": 135,
+          "shells_growth": 1.03
+        }
+      },
+      {
+        "id": "boat_10",
+        "display_name": "Titã do Atlântico",
+        "fragments_go_to": "boat_05",
+        "fragments_required": 200,
+        "upgrade_cost": {
+          "coins_first": 30400000,
+          "coins_growth": 1.14,
+          "shells_first": 200,
+          "shells_growth": 1.03
+        }
+      }
+    ]
+  }
+}

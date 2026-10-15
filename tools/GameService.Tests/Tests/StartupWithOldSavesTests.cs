@@ -1,0 +1,368 @@
+using System.Diagnostics;
+using FishingIdle.GameService;
+using FishingIdle.GameService.Aquarium;
+using FishingIdle.GameService.Core;
+using FishingIdle.GameService.Market;
+using FishingIdle.GameService.Persistence;
+using FishingIdle.GameService.Ranking;
+using Newtonsoft.Json.Linq;
+using Xunit;
+
+namespace FishingIdle.GameService.Tests;
+
+/// <summary>
+/// M24-T38: opening the game the way the Unity client does (GameRoot: start, the first frame, then the syncs every frame),
+/// with saves of every older version, "dirty" like a real player's (rods Nv.10 in the Inventory, on the Market and in an
+/// auction, old baits, fish Nv.10 in the Cardume, boats bought before fragments, Dólares paid by the old rule) and three
+/// days without opening; and with a brand-new save. Nothing may throw, the save must load (never be set aside) and the
+/// opening must be quick.
+/// </summary>
+public class StartupWithOldSavesTests
+{
+    // 19:05 in Brasília, three days after TestSupport.StartMs: the Boss Mundial is open on the first frame and closes
+    // (and pays) during the frames that follow.
+    private static readonly long ReopenAtMs = new DateTimeOffset(2026, 9, 24, 22, 5, 0, TimeSpan.Zero).ToUnixTimeMilliseconds();
+
+    public static IEnumerable<object[]> OldVersions()
+    {
+        for (var version = 11; version < PlayerSave.CurrentVersion; version++)
+        {
+            yield return new object[] { version };
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(OldVersions))]
+    public void An_old_dirty_save_opens_three_days_later_and_every_service_keeps_running(int version)
+    {
+        var (dir, clock) = WriteDirtySave(version);
+        clock.UtcNowMs = ReopenAtMs;
+
+        var watch = Stopwatch.StartNew();
+        var game = Open(dir, clock);
+        FirstFrame(game);
+        watch.Stop();
+        Assert.True(watch.Elapsed < TimeSpan.FromSeconds(2), "Opening a version " + version + " save took " + watch.Elapsed.TotalSeconds + " s.");
+        Assert.Equal(SaveLoadStatus.Loaded, game.Session.LoadStatus);
+
+        var run = Stopwatch.StartNew();
+        RunFrames(game, clock, frames: 80, stepSeconds: 15);
+        run.Stop();
+        Assert.True(run.Elapsed < TimeSpan.FromSeconds(10), "80 frames of a version " + version + " save took " + run.Elapsed.TotalSeconds + " s.");
+
+        var save = game.Session.Save;
+        Assert.Equal(PlayerSave.CurrentVersion, save.SaveVersion);
+        Assert.Empty(SaveValidator.Validate(save));
+        Assert.True(save.FisherLevel >= 60);
+        Assert.True(save.Dollars >= 60);
+        Assert.Contains("boat_02", save.OwnedBoatIds);
+        // Every fish has genes after opening (M24-T52, TD-056): the old ones the neutral 16/16/16/16.
+        var config = game.Session.Config;
+        Assert.All(save.FishingBox, c => Assert.True(FishingIdle.GameService.Fishing.GeneRules.IsValid(config, c.Genes)));
+        Assert.All(save.Aquarium, f => Assert.True(FishingIdle.GameService.Fishing.GeneRules.IsValid(config, f.Genes)));
+        if (version <= 22)
+        {
+            // Saves from before the genes (M24-T52): the old fish got the neutral 16/16/16/16.
+            Assert.Contains(save.Aquarium, f => f.Genes.All(g => g == 16));
+        }
+
+        // The Crew and the Upgrades of versions 13 to 20 were refunded and cleared (M24-T46, A-172).
+        Assert.Null(save.RetiredCrew);
+        Assert.Null(save.RetiredUpgrades);
+        Assert.Equal(version >= 13, game.Session.CrewRefund != null && game.Session.CrewRefund.CoinsRefunded > 0);
+        // The Missões (M24-T54, A-177): what the old save shows is already done (Nv.60, the Moedas, the boat, the rods).
+        var missions = game.Missions.GetMissions();
+        Assert.False(save.Missions.SeedPending);
+        Assert.All(new[] { "mission_004", "mission_011", "mission_029", "mission_052", "mission_058" },
+            id => Assert.True(missions.Missions.Single(m => m.Id == id).Ready || missions.Missions.Single(m => m.Id == id).Claimed, id));
+
+        // Closing and opening again (what the owner does after the first run) loads the migrated save as it is.
+        game.Fishing.MarkSeen();
+        game.Session.Persist();
+        var onDisk = JObject.Parse(File.ReadAllText(Path.Combine(dir, JsonFilePlayerRepository.SaveFileName)));
+        Assert.Null(onDisk["crew"]);
+        Assert.Null(onDisk["upgrades"]);
+        clock.AdvanceSeconds(3600);
+        var again = Open(dir, clock);
+        FirstFrame(again);
+        Assert.Equal(SaveLoadStatus.Loaded, again.Session.LoadStatus);
+        RunFrames(again, clock, frames: 5, stepSeconds: 1);
+    }
+
+    [Fact]
+    public void A_new_save_opens_plays_and_opens_again_three_days_later()
+    {
+        var dir = TestSupport.NewTempDirectory();
+        var clock = new ManualClock(TestSupport.StartMs);
+
+        var watch = Stopwatch.StartNew();
+        var game = Open(dir, clock);
+        FirstFrame(game);
+        watch.Stop();
+        Assert.True(watch.Elapsed < TimeSpan.FromSeconds(2), "Opening a new save took " + watch.Elapsed.TotalSeconds + " s.");
+        Assert.Equal(SaveLoadStatus.NotFound, game.Session.LoadStatus);
+        RunFrames(game, clock, frames: 20, stepSeconds: 1);
+
+        // The tutorial's first steps, then fishing, and the game closed for three days.
+        game.Tutorial.Skip();
+        Assert.True(game.Fishing.StartFishing().Succeeded);
+        RunFrames(game, clock, frames: 20, stepSeconds: 5);
+        game.Fishing.MarkSeen();
+        clock.UtcNowMs = ReopenAtMs;
+
+        var reopen = Stopwatch.StartNew();
+        var again = Open(dir, clock);
+        FirstFrame(again);
+        reopen.Stop();
+        Assert.True(reopen.Elapsed < TimeSpan.FromSeconds(2), "Reopening a new save took " + reopen.Elapsed.TotalSeconds + " s.");
+        Assert.Equal(SaveLoadStatus.Loaded, again.Session.LoadStatus);
+        RunFrames(again, clock, frames: 80, stepSeconds: 15);
+        Assert.Empty(SaveValidator.Validate(again.Session.Save));
+    }
+
+    // ------------------------------------------------------------------ the old save
+
+    /// <summary>
+    /// A player of the current version made "old": progress on every system the old versions had, then the file rewritten
+    /// as <paramref name="version"/> (the fields added after it removed, the old values put back).
+    /// </summary>
+    private static (string Dir, ManualClock Clock) WriteDirtySave(int version)
+    {
+        var (game, clock, dir) = TestSupport.NewGame(TestSupport.RealConfig());
+        var save = game.Session.Save;
+        game.Session.DevToolsEnabled = true;
+        save.Coins = 50_000_000;
+        save.Shells = 50_000;
+        save.FisherLevel = 60;
+        save.FisherXp = 0;
+        save.Dollars = 60;   // Nv.10 to Nv.60 paid by the old rule (A-111)
+
+        // Rods: three assembled (rod_03 ends up in use), all at the old top level (Nv.10).
+        TestSupport.GiveRod(game, "rod_01");
+        TestSupport.GiveRod(game, "rod_02");
+        TestSupport.GiveRod(game, "rod_03");
+        TestSupport.GiveBoat(game, "boat_02");
+        foreach (var item in save.Inventory.Where(i => i.Kind == InventoryItem.KindRod))
+        {
+            item.Level = 10;
+        }
+
+        // Fish Nv.10: six in the Cardume, the others for the Market and an auction.
+        game.DevTools.GiveFish("lambari", null, 9);
+        var kept = game.Aquarium.KeepCatches(game.Fishing.GetFishingBox().Select(c => c.CatchId).ToList()).Value.Kept;
+        foreach (var fish in save.Aquarium)
+        {
+            fish.Level = 10;
+            fish.Xp = 0;
+        }
+
+        for (var position = 1; position <= 6 && position <= kept.Count; position++)
+        {
+            game.Cardume.SetSlot(position, kept[position - 1].FishId);
+        }
+
+        var rods = save.Inventory.Where(i => i.Kind == InventoryItem.KindRod && i.Id != save.EquippedRodItemId && i.RodId != "rod_00_starter").ToList();
+        if (rods.Count > 0) game.Market.ListRod(rods[0].Id, 5_000);
+        if (rods.Count > 1) game.Auctions.StartAuction(false, rods[1].Id, 5_000);
+        if (kept.Count > 6) game.Market.ListFish(kept[6].FishId, 500);
+        if (kept.Count > 7) game.Auctions.StartAuction(true, kept[7].FishId, 500);
+
+        // Fishing on and an Expedition on its way.
+        game.Expeditions.Start("exp_30m");
+        game.Fishing.StartFishing();
+        game.Fishing.MarkSeen();
+        game.Session.Persist();
+
+        var path = Path.Combine(dir, JsonFilePlayerRepository.SaveFileName);
+        var json = JObject.Parse(File.ReadAllText(path));
+        json["save_version"] = version;
+        json["campo_de_uma_versao_antiga"] = 1;   // unknown fields of old files are ignored
+        if (version >= 13)
+        {
+            // The Crew of versions 13 to 20 (M24-T05): ten Ajudantes da Isca hired, as the old game wrote it.
+            json["crew"] = new JObject
+            {
+                ["units"] = new JObject { ["crew_01"] = 10 }, ["last_credited_at_ms"] = TestSupport.StartMs, ["coins_carry"] = 0.25,
+                ["xp_carry"] = 0.0, ["coins_earned"] = 1234, ["xp_earned"] = 5,
+            };
+        }
+
+        if (version >= 14)
+        {
+            // The Upgrades of versions 14 to 20 (M24-T06): the Ajudante's first ×2 and two levels of the Freguesia na Feira.
+            json["upgrades"] = new JObject { ["levels"] = new JObject { ["crew_01_up_1"] = 1, ["fair_customers"] = 2 } };
+        }
+
+        if (version <= 23)
+        {
+            // Before the Missões (M24-T54): no counters, nothing completed.
+            json.Remove("missions");
+        }
+
+        if (version <= 22)
+        {
+            // Before the genes (M24-T52): no fish had them.
+            GenesTests.StripGenes(json);
+        }
+
+        if (version <= 21)
+        {
+            json.Remove("clans");
+        }
+
+        if (version <= 18)
+        {
+            json.Remove("world_boss");
+        }
+
+        if (version <= 17)
+        {
+            json.Remove("rod_fragments");
+            json.Remove("clothing");
+        }
+
+        if (version <= 16)
+        {
+            // The old baits (model 1): charges left of two of them, one in use, and one empty entry.
+            json.Remove("bait_model_version");
+            json["bait_charges"] = new JObject { ["bait_02"] = 40, ["bait_03"] = 7, ["bait_01"] = 0 };
+            json["active_bait_id"] = "bait_02";
+        }
+
+        if (version <= 15)
+        {
+            // Boats were bought before the fragments: one more boat owned and in use.
+            json.Remove("boat_fragments");
+            json.Remove("pass");
+            ((JArray)json["owned_boat_ids"]).Add("boat_04");
+            json["boat_id"] = "boat_04";
+        }
+
+        if (version <= 14)
+        {
+            json.Remove("boat_levels");
+            json.Remove("rod_level_curve_version");
+            json.Remove("fish_level_curve_version");
+        }
+
+        if (version <= 11)
+        {
+            json.Remove("fisher_xp_curve_version");
+            json.Remove("fisher_xp_total");
+        }
+        else
+        {
+            json["fisher_xp_curve_version"] = version <= 15 ? 1 : 2;
+        }
+
+        File.WriteAllText(path, json.ToString());
+        File.Delete(Path.Combine(dir, JsonFilePlayerRepository.BackupFileName));
+        return (dir, clock);
+    }
+
+    // ------------------------------------------------------------------ what GameRoot does
+
+    private static LocalGame Open(string dir, ManualClock clock)
+    {
+        var result = LocalGame.Start(TestSupport.RealConfig(), new JsonFilePlayerRepository(dir), clock, _ => { });
+        Assert.True(result.Succeeded, string.Join("\n", result.Errors));
+        result.Game.Session.DevToolsEnabled = true;
+        return result.Game;
+    }
+
+    /// <summary>GameRoot.StartGameService and the first Update, then every window the player can open.</summary>
+    private static void FirstFrame(LocalGame game)
+    {
+        Refresh(game);
+        game.Tutorial.Get();
+        game.Fishing.TakeOfflineReport();
+        Frame(game);
+        Windows(game);
+    }
+
+    private static void RunFrames(LocalGame game, ManualClock clock, int frames, double stepSeconds)
+    {
+        for (var i = 0; i < frames; i++)
+        {
+            clock.AdvanceSeconds(stepSeconds);
+            Frame(game);
+            if (i % 20 == 0)
+            {
+                Windows(game);
+            }
+        }
+
+        // What the player clicks first after coming back: the pass rewards and the Expedition report.
+        game.Pass.ClaimAll();
+        game.Expeditions.AcknowledgeResult();
+        Frame(game);
+        Windows(game);
+    }
+
+    /// <summary>GameRoot.Update: the sync every 0,25 s.</summary>
+    private static void Frame(LocalGame game)
+    {
+        game.Maps.Update();
+        game.Fishing.Sync();
+        game.Fishing.TakeOfflineReport();
+        game.Expeditions.Update();
+        game.Expeditions.PendingResult();
+        game.Arena.Update();
+        game.Tutorial.Get();
+        game.WorldBoss.Update();
+        game.WorldBoss.GetWorldBoss();
+        game.Clans.Update();
+        game.Market.Update();
+        game.Missions.TakeNewlyReady();
+        Refresh(game);
+    }
+
+    /// <summary>GameRoot.Refresh.</summary>
+    private static void Refresh(LocalGame game)
+    {
+        game.Player.GetPlayer();
+        game.Fishing.GetStatus();
+        game.Maps.GetTravel();
+        game.Gear.GetGear();
+        game.Clothing.GetClothing();
+        game.Vip.GetVip();
+        game.Pass.GetPass();
+        game.Clans.GetClan();
+        _ = game.Missions.ReadyCount;
+    }
+
+    /// <summary>What each window asks the service for when it opens.</summary>
+    private static void Windows(LocalGame game)
+    {
+        game.Fishing.GetFishingBox();
+        foreach (AquariumSort sort in Enum.GetValues(typeof(AquariumSort)))
+        {
+            game.Aquarium.GetAquarium(sort);
+        }
+
+        game.Profile.GetProfile();
+        game.Cardume.GetCardume();
+        game.Maps.GetMaps();
+        game.Shop.GetShop();
+        game.Expeditions.GetExpeditions();
+        game.Arena.GetArena();
+        game.Market.GetMarket();
+        game.Market.Search(new MarketQuery());
+        game.Market.GetFilterOptions();
+        game.Market.GetSellCandidates();
+        game.Auctions.GetAuctions();
+        game.CurrencyTrade.GetCurrencyTrade();
+        game.Missions.GetMissions();
+        foreach (RankingCategory category in Enum.GetValues(typeof(RankingCategory)))
+        {
+            game.Ranking.GetRanking(category);
+        }
+
+        game.Pass.GetPass();
+        game.WorldBoss.GetWorldBoss();
+        game.Clothing.GetClothing();
+        game.Vip.GetVip();
+        game.Clans.GetClan();
+        game.Clans.GetFishCandidates();
+    }
+}
