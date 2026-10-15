@@ -1,0 +1,57 @@
+==> Regras do jogo: testes
+  Determining projects to restore...
+  Restored /home/runner/work/jogo-pesca/jogo-pesca/tools/Texts.Build/Texts.Build.csproj (in 77 ms).
+  Restored /home/runner/work/jogo-pesca/jogo-pesca/tools/GameService.Build/GameService.Build.csproj (in 718 ms).
+  Restored /home/runner/work/jogo-pesca/jogo-pesca/tools/GameService.Tests/FishingIdle.GameService.Tests.csproj (in 733 ms).
+  Texts.Build -> /home/runner/work/jogo-pesca/jogo-pesca/tools/Texts.Build/bin/Debug/netstandard2.1/FishingIdle.Texts.dll
+  GameService.Build -> /home/runner/work/jogo-pesca/jogo-pesca/tools/GameService.Build/bin/Debug/netstandard2.1/FishingIdle.GameService.dll
+/home/runner/work/jogo-pesca/jogo-pesca/tools/GameService.Tests/Tests/RodsAndClothingByFragmentsTests.cs(185,9): warning xUnit2013: Do not use Assert.Equal() to check for collection size. Use Assert.Single instead. (https://xunit.net/xunit.analyzers/rules/xUnit2013) [/home/runner/work/jogo-pesca/jogo-pesca/tools/GameService.Tests/FishingIdle.GameService.Tests.csproj]
+  FishingIdle.GameService.Tests -> /home/runner/work/jogo-pesca/jogo-pesca/tools/GameService.Tests/bin/Debug/net8.0/FishingIdle.GameService.Tests.dll
+Test run for /home/runner/work/jogo-pesca/jogo-pesca/tools/GameService.Tests/bin/Debug/net8.0/FishingIdle.GameService.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   492, Skipped:     0, Total:   492, Duration: 32 s - FishingIdle.GameService.Tests.dll (net8.0)
+
+==> Codigo do Unity: jogo
+  Determining projects to restore...
+  Restored /home/runner/work/jogo-pesca/jogo-pesca/tools/UnityCheck.Game/UnityCheck.Game.csproj (in 529 ms).
+  2 of 3 projects are up-to-date for restore.
+  Texts.Build -> /home/runner/work/jogo-pesca/jogo-pesca/tools/Texts.Build/bin/Debug/netstandard2.1/FishingIdle.Texts.dll
+  GameService.Build -> /home/runner/work/jogo-pesca/jogo-pesca/tools/GameService.Build/bin/Debug/netstandard2.1/FishingIdle.GameService.dll
+  UnityCheck.Game -> /home/runner/work/jogo-pesca/jogo-pesca/tools/UnityCheck.Game/bin/Debug/netstandard2.1/FishingIdle.Game.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.75
+
+==> Codigo do Unity: Painel (Editor)
+  Determining projects to restore...
+  Restored /home/runner/work/jogo-pesca/jogo-pesca/tools/UnityCheck.Editor/UnityCheck.Editor.csproj (in 633 ms).
+  3 of 4 projects are up-to-date for restore.
+  Texts.Build -> /home/runner/work/jogo-pesca/jogo-pesca/tools/Texts.Build/bin/Debug/netstandard2.1/FishingIdle.Texts.dll
+  GameService.Build -> /home/runner/work/jogo-pesca/jogo-pesca/tools/GameService.Build/bin/Debug/netstandard2.1/FishingIdle.GameService.dll
+  UnityCheck.Game -> /home/runner/work/jogo-pesca/jogo-pesca/tools/UnityCheck.Game/bin/Debug/netstandard2.1/FishingIdle.Game.dll
+  UnityCheck.Editor -> /home/runner/work/jogo-pesca/jogo-pesca/tools/UnityCheck.Editor/bin/Debug/netstandard2.1/FishingIdle.Editor.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.83
+
+==> Simulador
+  Determining projects to restore...
+  Restored /home/runner/work/jogo-pesca/jogo-pesca/tools/Simulador/FishingIdle.Simulador.csproj (in 284 ms).
+  2 of 3 projects are up-to-date for restore.
+  Texts.Build -> /home/runner/work/jogo-pesca/jogo-pesca/tools/Texts.Build/bin/Debug/netstandard2.1/FishingIdle.Texts.dll
+  GameService.Build -> /home/runner/work/jogo-pesca/jogo-pesca/tools/GameService.Build/bin/Debug/netstandard2.1/FishingIdle.GameService.dll
+  FishingIdle.Simulador -> /home/runner/work/jogo-pesca/jogo-pesca/tools/Simulador/bin/Debug/net8.0/FishingIdle.Simulador.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.00
+
