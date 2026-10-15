@@ -11,6 +11,11 @@ namespace FishingIdle.Game.UI
     /// </summary>
     public static class HeroSheet
     {
+        // Painted art (received 15/10/2026, A-181); without a file the drawn fallback below stays.
+        private const string AuraArt = "UI/ui_enc_aura";         // 512×512 white radial glow, tinted by rarity
+        private const string PedestalArt = "UI/ui_enc_pedestal"; // 328×61 stone and coral disc, cut to its edges
+        private const float PedestalMaxHeight = 44f;              // the room under the fish (34 px row + 10 px under its feet)
+
         /// <summary>The water backdrop of the stage, like the Cardume formation.</summary>
         public static void Backdrop(UiSkin skin, Rect rect)
         {
@@ -36,7 +41,15 @@ namespace FishingIdle.Game.UI
         /// <summary>Four soft stacked discs around <paramref name="centre"/>, in the rarity colour.</summary>
         public static void Aura(UiSkin skin, Vector2 centre, float diameter, Color color, float strength)
         {
-            // ASSET_PENDENTE: ui_enc_aura.png (soft radial white glow, tinted at runtime) replaces these soft discs.
+            var art = ArtAssets.Texture(AuraArt);
+            if (art != null)
+            {
+                // One soft glow in the rarity colour; the same overall strength as the four discs it replaces.
+                GUI.DrawTexture(new Rect(centre.x - diameter / 2f, centre.y - diameter / 2f, diameter, diameter), art, ScaleMode.StretchToFill, true, 0,
+                    new Color(color.r, color.g, color.b, Mathf.Clamp01(strength * 3f)), 0, 0);
+                return;
+            }
+
             for (var i = 0; i < 4; i++)
             {
                 var d = diameter * (1f - i * 0.18f);
@@ -53,7 +66,19 @@ namespace FishingIdle.Game.UI
         /// <summary>The pedestal seen from the front: its shadow, side and top face, the face rimmed in the rarity colour.</summary>
         public static void Pedestal(UiSkin skin, float centreX, float top, float width, Color rarity, float rimAlpha)
         {
-            // ASSET_PENDENTE: ui_enc_pedestal.png (stone/coral disc seen from the front, 480×96) replaces the drawn pedestal.
+            var art = ArtAssets.Texture(PedestalArt);
+            if (art != null)
+            {
+                // Kept in proportion (never squashed): as wide as asked unless the row is too low, then narrower.
+                // Its top face starts a little above the row so the fish stands on the disc; the aura carries the rarity.
+                var h = Mathf.Min(width * art.height / art.width, PedestalMaxHeight);
+                var w = h * art.width / art.height;
+                var r = new Rect(centreX - w / 2f, top - 10f, w, h);
+                GUI.DrawTexture(new Rect(r.x - 6f, r.yMax - h * 0.3f, w + 12f, h * 0.36f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.22f), 0, h * 0.18f);
+                GUI.DrawTexture(r, art, ScaleMode.StretchToFill, true);
+                return;
+            }
+
             GUI.DrawTexture(new Rect(centreX - width / 2f - 10f, top + 18f, width + 20f, 20f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.28f), 0, 10f);
             GUI.DrawTexture(new Rect(centreX - width / 2f, top + 10f, width, 22f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.07f, 0.13f, 0.21f, 1f), 0, 11f);
             var face = new Rect(centreX - width / 2f, top, width, 22f);

@@ -4,14 +4,14 @@
   "current_milestone": "M24",
   "convention": "0.<menor>.<correção>-m<milestone>.<build>  —  veja docs/VERSIONAMENTO.md",
   "components": {
-    "client": "0.2.0-m24.18",
+    "client": "0.2.0-m24.19",
     "server": "0.1.0-m0.4",
     "web": "0.1.0-m0.4"
   },
   "build": {
-    "number": 117,
+    "number": 118,
     "channel": "internal-dev",
-    "date": "2026-10-13",
+    "date": "2026-10-15",
     "commit": null
   },
   "downloads": {

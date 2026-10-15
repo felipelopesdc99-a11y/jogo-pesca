@@ -696,6 +696,12 @@ namespace FishingIdle.Game.UI
         private static readonly Color Silver = new Color(0.78f, 0.82f, 0.88f);
         private static readonly Color Bronze = new Color(0.80f, 0.52f, 0.30f);
 
+        private static readonly string[] PodiumArt = { "Arena/podio_1", "Arena/podio_2", "Arena/podio_3" };
+
+        /// <summary>Where the metal band sits down each pedestal file (share of its height), for the place label.</summary>
+        private static readonly float[] PodiumBand = { 0.55f, 0.59f, 0.62f };
+        private static readonly GUIContent PlaceContent = new GUIContent();
+
         private static Color MedalColor(int rank) => rank == 1 ? UiSkin.Gold : rank == 2 ? Silver : Bronze;
 
         private void DrawRanking(UiSkin skin, Rect area)
@@ -773,10 +779,14 @@ namespace FishingIdle.Game.UI
         /// <summary>Second, first and third side by side, the first one taller (A-112).</summary>
         private static void DrawPodium(UiSkin skin, Rect area, List<RankingEntryView> rows)
         {
-            // ASSET_PENDENTE: podium and medal art (docs/ASSETS_PENDENTES.md); clean blocks meanwhile.
+            // Painted pedestals (Arena/podio_1..3, received 15/10/2026, A-181), clean blocks without them. The three files
+            // share one scale, set by the tallest (1º) and the column width, so none is squashed and their heights keep
+            // the art's own steps.
             var gap = 16f;
             var w = Mathf.Min(260f, (area.width - gap * 2) / 3f);
             var x0 = area.x + (area.width - (w * 3 + gap * 2)) / 2f;
+            var first = ArtAssets.Texture("Arena/podio_1");
+            var artScale = first != null ? Mathf.Min(w * 0.94f / first.width, area.height * 0.45f / first.height) : 0f;
             var order = new[] { 2, 1, 3 };
             for (var k = 0; k < 3; k++)
             {
@@ -792,10 +802,23 @@ namespace FishingIdle.Game.UI
                 var x = x0 + k * (w + gap);
                 var block = new Rect(x, area.yMax - blockHeight, w, blockHeight);
 
-                var pedestal = ArtAssets.Texture("Arena/podio_" + rank);
+                var pedestal = first != null ? ArtAssets.Texture(PodiumArt[rank - 1]) : null;
                 if (pedestal != null)
                 {
+                    var pw = pedestal.width * artScale;
+                    var ph = pedestal.height * artScale;
+                    block = new Rect(x + (w - pw) / 2f, area.yMax - ph, pw, ph);
                     GUI.DrawTexture(block, pedestal, ScaleMode.StretchToFill, true);
+
+                    // The place on a small dark pill over the metal band (legible on gold, silver and bronze alike).
+                    var place = GameTexts.Arena.Place(rank);
+                    PlaceContent.text = place;
+                    var tw = skin.CenterBold.CalcSize(PlaceContent).x + 20f;
+                    var band = block.y + block.height * PodiumBand[rank - 1];
+                    var pill = new Rect(block.center.x - tw / 2f, band - 12f, tw, 24f);
+                    GUI.DrawTexture(pill, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.85f), 0, 12f);
+                    // Night gold for the 1º: UiSkin.Gold answers in ink on the sheet.
+                    UiSkin.ColoredLabel(pill, place, skin.CenterBold, rank == 1 ? UiSkin.NightReward : color, false);
                 }
                 else
                 {
@@ -806,7 +829,10 @@ namespace FishingIdle.Game.UI
                     GUI.color = previous;
                 }
 
-                UiSkin.ColoredLabel(new Rect(block.x, block.y + 8, block.width, 26), GameTexts.Arena.Place(rank), skin.CenterBold, color);
+                if (pedestal == null)
+                {
+                    UiSkin.ColoredLabel(new Rect(block.x, block.y + 8, block.width, 26), GameTexts.Arena.Place(rank), skin.CenterBold, color);
+                }
 
                 // Above the pedestal: medal, best fish, name.
                 var top = area.y;

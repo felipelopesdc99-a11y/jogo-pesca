@@ -3568,3 +3568,45 @@ não ser o NÍVEL do jogador." Muda o A-157, o A-163, o A-168 e o A-173 (montage
 
   Os mapas abrem bem antes (o nível chega antes da vara). O jogador pesca mais cedo em mapas melhores, mesmo com uma vara
   que não pega todas as raridades, e por isso tudo chega um pouco antes; o Nv.1000 muda menos de 1%.
+
+### A-181 · Artes das telas antigas: Mapa, Enciclopédia, Aquário, pódio da Arena e avatares
+
+**Seção do GDD:** 18, 20, 21, 28 (interface) · Bíblia de Arte, seções 3, 8 e 13 · artes mandadas pelo proprietário em 15/10/2026 (M24-T60) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+As 31 artes de prioridade C substituem os desenhos provisórios de A-141, A-143, A-144, A-112 e M18-T03. Nada que o
+jogo escreve (números, nomes, cadeados, selos de raridade, posições) saiu da tela; sem um arquivo, cada tela volta ao
+desenho provisório. A arte é carregada uma vez e guardada; nada novo é criado a cada quadro.
+
+- **Mapa** (`ui_map_sea_bg`): o mar pintado cobre a cena, recortado para caber (nunca esticado), no lugar do degradê;
+  as estrelas desenhadas saíram, porque o mar já tem o brilho da noite. **Ilhas** (`ui_map_island_01` a `_10`, uma por
+  mapa: `map_03` usa a `_03`): no medalhão e no painel do mapa escolhido, no lugar da miniatura recortada. O jogo
+  continua desenhando por cima o halo dourado, a moldura (turquesa, dourada ou cinza), o número e o cadeado; a ilha de
+  um mapa fechado fica apagada. Um disco de água fica sob a borda transparente da ilha, para a moldura sempre fechar.
+  **Barco** (`ui_map_boat`): parado, ao lado do mapa atual com a proa para a direita; viajando, vira para o lado em que
+  a rota segue (também na volta). Ele é desenhado um pouco maior que o ícone antigo e se afasta da ilha o mesmo tanto.
+- **Enciclopédia — álbum**: a **página** (`ui_enc_album_page`, 9-slice de 32 px) é azul-marinho; como as cenas do
+  "Diário de bordo" (A-170), o conteúdo dela passa às cores da noite (título, progresso, cartas e setas claros sobre o
+  azul). As **abas** (`ui_enc_binder_tab`, 9-slice 14/4/12 px: redonda à esquerda, reta onde encosta na página) são
+  pintadas com a mesma cor de antes (clara na ativa). A **moldura da carta** (`ui_enc_card_frame`, 9-slice de 24 px)
+  é pintada na cor da raridade, com a força de antes (fraca em Comum e Raro); ela é desenhada 7 px para fora da carta,
+  para a linha de fora cair logo dentro da borda (a linha dupla já é da arte). O **verso** (`ui_enc_card_back`) é o
+  fundo das cartas de espécie não descoberta, recortado para caber e com cantos de 12 px; a silhueta, o "?", o nome
+  provisório, o mapa e o aviso de ainda não pescado continuam por cima. Sem a página azul (folha clara), o verso não é
+  usado, para o texto escuro continuar legível.
+- **Ficha de herói** (Enciclopédia e modo cartas do Aquário): a **aura** (`ui_enc_aura`) é um brilho só, pintado na cor
+  da raridade com a mesma força dos quatro discos de antes. O **pedestal** (`ui_enc_pedestal`) mantém a proporção da
+  arte: até 44 px de altura (ele fica mais estreito se a fileira for baixa), começando 10 px acima da fileira para o
+  peixe pousar no disco. A borda na cor da raridade saiu do pedestal; a aura já mostra a raridade.
+- **Aquário**: a **água** (`ui_aquarium_bg`) cobre o tanque, recortada para caber. A **areia** (`ui_aquarium_sand`)
+  fica presa embaixo e começa 56 px acima da linha do fundo; ela é recortada (nas laterais, ou poucas linhas do topo
+  transparente), nunca esticada, e sobe junto quando a gaveta abre. As **bolhas** (`ui_aquarium_bubble`) sobem nas
+  mesmas colunas de antes. O **vidro** (`ui_aquarium_glass`, 9-slice de 36 px, porque os cantos da arte têm cerca de
+  34 px) forma a ficha, o painel de venda, a gaveta e os avisos; em painéis baixos (a gaveta fechada tem 38 px) os
+  cantos diminuem em vez de achatar.
+- **Pódio da Arena** (`Arena/podio_1` a `_3`): os três degraus usam a mesma escala, dada pelo 1º (até 45% da altura do
+  pódio e a largura da coluna), apoiados embaixo; as alturas seguem a própria arte, sem achatar. "1º/2º/3º lugar" fica
+  numa pílula azul-noite sobre a faixa de metal, na cor da medalha (legível no ouro, na prata e no bronze); medalha,
+  peixe e nome continuam acima do degrau.
+- **Avatares** (`Avatares/avatar_01` a `_06`): bustos de fundo transparente, inteiros, sobre um disco azul-mar calmo
+  em todas as molduras (redondas ou arredondadas): barra de cima, Perfil, Ranking, Arena e a escolha de avatar. No
+  círculo, só a ponta dos chapéus encosta na borda.

@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-14T04:00:00Z",
+  "updated_at": "2026-10-15T23:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -5120,6 +5120,18 @@
             "M24-T58"
           ],
           "updated_at": "2026-10-14T04:00:00Z"
+        },
+        {
+          "id": "M24-T60",
+          "title": "Artes das telas antigas: Mapa, Enciclopédia, Aquário, pódio da Arena e avatares",
+          "subsystem": "client",
+          "description": "O proprietário mandou em 15/10/2026 as 31 artes de prioridade C das telas que ainda usavam desenho provisório (Mapa A-141, Enciclopédia A-143, Aquário A-144, ficha de herói A-145, pódio da Arena e avatares). Ligar cada arte no lugar do desenho, com as bordas de 9-slice medidas nos arquivos recortados, sem achatar nada e mantendo o desenho provisório quando um arquivo faltar (A-181).",
+          "status": "DONE",
+          "dependencies": [
+            "M24-T57"
+          ],
+          "updated_at": "2026-10-15T23:00:00Z",
+          "completion_notes": "Mapa: ui_map_sea_bg no lugar do degradê e das estrelas; ui_map_island_01..10 (pelo número do map_id) no medalhão e no painel, com disco de água por baixo e moldura, número, halo e cadeado do jogo por cima; ui_map_boat no lugar do ícone, virado para a rota durante a viagem. Enciclopédia: página ui_enc_album_page (9-slice 32, conteúdo em cores da noite), abas ui_enc_binder_tab (9-slice 14/4/12, pintadas), moldura ui_enc_card_frame (9-slice 24, 7 px para fora, na cor da raridade) e verso ui_enc_card_back nas cartas não descobertas. Ficha de herói (Enciclopédia e cartas do Aquário): aura ui_enc_aura tingida e pedestal ui_enc_pedestal na proporção (até 44 px). Aquário: ui_aquarium_bg, areia ui_aquarium_sand presa embaixo sem esticar (ScaleAndCrop a 56 px acima do fundo), bolhas e vidro ui_aquarium_glass (9-slice 36, cantos menores em painéis baixos). Arena: podio_1..3 numa escala só, apoiados embaixo, com o lugar numa pílula sobre a faixa de metal. Avatares: disco azul-mar por trás dos bustos transparentes. Sem um arquivo, cada tela volta ao desenho provisório; texturas em cache. ASSETS_PENDENTES marca as 31 como recebidas. Prévias em HTML com as artes reais; compilado no CI, não aberto no Unity (só fica verificado quando o proprietário apertar Play)."
         }
       ],
       "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."

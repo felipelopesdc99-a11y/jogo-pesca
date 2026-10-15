@@ -31,8 +31,14 @@ namespace FishingIdle.Game.UI
         private float _tipWidth;
 
         private readonly Dictionary<string, string> _thumbPaths = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _islandPaths = new Dictionary<string, string>();
         private GUIStyle _nameStyle, _badgeStyle, _noteStyle, _tipStyle, _rowValue, _rowValueGold;
         private static Texture2D _sea;
+
+        // Painted art (A-141, received 15/10/2026, A-181). Without a file the window keeps its drawn fallback.
+        private const string SeaArt = "UI/ui_map_sea_bg";
+        private const string BoatArt = "UI/ui_map_boat";
+        private const string IslandArtPrefix = "UI/ui_map_island_";
 
         private const float LabelsHeight = 50f; // gap 6 + name 22 + gap 2 + state 20 (A-149; was 46)
         private const float RouteDotGap = 14f;
@@ -141,7 +147,15 @@ namespace FishingIdle.Game.UI
 
         private static void DrawSea(UiSkin skin, Rect area)
         {
-            // ASSET_PENDENTE: ui_map_sea_bg.png (1920×1080, mar pintado do turquesa à noite, sem textos) replaces the generated gradient.
+            // The painted sea (turquoise to night, its own sparkles) replaces the generated gradient and stars.
+            var painted = ArtAssets.Texture(SeaArt);
+            if (painted != null)
+            {
+                GUI.DrawTexture(area, painted, ScaleMode.ScaleAndCrop, false, 0, Color.white, 0, 14);
+                GUI.DrawTexture(area, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.8f), 1.5f, 14);
+                return;
+            }
+
             if (_sea == null)
             {
                 _sea = HorizontalGradient(new[]
@@ -246,18 +260,30 @@ namespace FishingIdle.Game.UI
             {
                 var t = Mathf.Lerp(current, destination, (float)travel.Progress);
                 var at = PathPoint(points, t, bend);
-                DrawBoat(skin, new Rect(at.x - boat / 2f, at.y - boat / 2f + bob, boat, boat));
+                // The painted boat points its bow along the route (it faces right in the file).
+                var ahead = PathPoint(points, Mathf.Min(t + 0.02f, count - 1f), bend);
+                var angle = (ahead - at).sqrMagnitude > 0.01f ? Mathf.Atan2(ahead.y - at.y, ahead.x - at.x) * Mathf.Rad2Deg : 0f;
+                if (destination < current)
+                {
+                    // Sailing back along the route: the bow faces the way the boat goes.
+                    ahead = PathPoint(points, Mathf.Max(t - 0.02f, 0f), bend);
+                    angle = (ahead - at).sqrMagnitude > 0.01f ? Mathf.Atan2(ahead.y - at.y, ahead.x - at.x) * Mathf.Rad2Deg : 180f;
+                }
+
+                DrawBoat(skin, new Rect(at.x - boat / 2f, at.y - boat / 2f + bob, boat, boat), angle);
             }
             else if (current >= 0)
             {
                 var c = points[current];
-                var x = c.x + diameter / 2f + 6f;
-                if (x + boat > sea.xMax - 6f)
+                // The painted hull is drawn a little larger than the slot (see DrawBoat): keep the extra clear of the island.
+                var spill = ArtAssets.Texture(BoatArt) != null ? boat * 0.13f : 0f;
+                var x = c.x + diameter / 2f + 6f + spill;
+                if (x + boat + spill > sea.xMax - 6f)
                 {
-                    x = c.x - diameter / 2f - 6f - boat;
+                    x = c.x - diameter / 2f - 6f - boat - spill;
                 }
 
-                DrawBoat(skin, new Rect(x, c.y - boat * 0.2f + bob, boat, boat));
+                DrawBoat(skin, new Rect(x, c.y - boat * 0.2f + bob, boat, boat), 0f);
             }
         }
 
@@ -301,9 +327,31 @@ namespace FishingIdle.Game.UI
             return Bezier(points[i], points[i + 1], Mathf.Clamp01(t - i), bend);
         }
 
-        private static void DrawBoat(UiSkin skin, Rect rect)
+        private static void DrawBoat(UiSkin skin, Rect rect, float angle)
         {
-            // ASSET_PENDENTE: ui_map_boat.png (barquinho visto de cima, 128×128) replaces the tinted icon.
+            // The painted boat seen from above (bow to the right), turned to its heading; the tinted icon without it.
+            var art = ArtAssets.Texture(BoatArt);
+            if (art != null)
+            {
+                if (Event.current.type != EventType.Repaint)
+                {
+                    return;
+                }
+
+                var size = rect.width * 1.25f; // the hull is about 95 % wide and 55 % tall in the 128 px file
+                var drawn = new Rect(rect.center.x - size / 2f, rect.center.y - size / 2f, size, size);
+                var matrix = GUI.matrix;
+                if (Mathf.Abs(angle) > 0.5f)
+                {
+                    GUIUtility.RotateAroundPivot(angle, drawn.center);
+                }
+
+                GUI.DrawTexture(new Rect(drawn.x + 2f, drawn.y + 3f, size, size), art, ScaleMode.ScaleToFit, true, 0, new Color(0f, 0f, 0f, 0.3f), 0, 0);
+                GUI.DrawTexture(drawn, art, ScaleMode.ScaleToFit, true);
+                GUI.matrix = matrix;
+                return;
+            }
+
             skin.DrawIcon(new Rect(rect.x + 2f, rect.y + 3f, rect.width, rect.height), Icons.Boat, new Color(0f, 0f, 0f, 0.35f));
             skin.DrawIcon(rect, Icons.Boat, Color.white);
         }
@@ -383,10 +431,19 @@ namespace FishingIdle.Game.UI
         /// <summary>The map's painted thumbnail cut into a circle (dimmed when locked, with a padlock).</summary>
         private void DrawPicture(UiSkin skin, MapView map, Rect circle, bool locked)
         {
-            // ASSET_PENDENTE: ui_map_island_01.png … ui_map_island_10.png (ilhas-medalhão pintadas) replace the cropped thumbnails.
+            // The painted round island of the map (A-181) replaces the cropped thumbnail; the frame, number and padlock
+            // stay drawn by the game on top of it.
             var radius = circle.width / 2f;
-            var thumb = ArtAssets.Texture(ThumbPath(map.MapId));
-            if (thumb != null)
+            var islandPath = IslandPath(map.MapId);
+            var island = islandPath.Length > 0 ? ArtAssets.Texture(islandPath) : null;
+            var thumb = island == null ? ArtAssets.Texture(ThumbPath(map.MapId)) : null;
+            if (island != null)
+            {
+                // Water under the island's transparent shore, so the round frame always closes on a full disc.
+                GUI.DrawTexture(circle, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.10f, 0.42f, 0.62f, 1f), 0, radius);
+                GUI.DrawTexture(circle, island, ScaleMode.ScaleToFit, true, 0, locked ? LockedTint : Color.white, 0, 0);
+            }
+            else if (thumb != null)
             {
                 GUI.DrawTexture(circle, thumb, ScaleMode.ScaleAndCrop, true, 0, locked ? LockedTint : Color.white, 0, radius);
             }
@@ -401,6 +458,19 @@ namespace FishingIdle.Game.UI
                 var s = circle.width * 0.3f;
                 skin.DrawIcon(new Rect(circle.center.x - s / 2f, circle.center.y - s / 2f, s, s), Icons.Lock, Color.white);
             }
+        }
+
+        /// <summary>"map_03" → "UI/ui_map_island_03" (cached, so no string is built per frame).</summary>
+        private string IslandPath(string mapId)
+        {
+            if (!_islandPaths.TryGetValue(mapId, out var path))
+            {
+                var cut = mapId.LastIndexOf('_');
+                path = cut >= 0 && int.TryParse(mapId.Substring(cut + 1), out var number) ? IslandArtPrefix + number.ToString("00") : string.Empty;
+                _islandPaths[mapId] = path;
+            }
+
+            return path;
         }
 
         private string ThumbPath(string mapId)

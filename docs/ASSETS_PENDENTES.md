@@ -72,8 +72,28 @@ ao visual anterior:
 | `Arte/UI/cla_fundo.png` (1600×900) | Cena no topo da coluna do Clã |
 | `Arte/UI/perfil_carteira.png` (chegou com 1106×501) | Cartão do jogador no cabeçalho do Perfil |
 
-Ainda pendentes desta lista: pódio da Arena em arquivos separados: `Arte/Arena/podio_1.png` (400×420), `podio_2.png` (400×320), `podio_3.png` (400×250).
-Avatares: `Arte/Avatares/avatar_01.png` a `avatar_06.png` (512×512, fundo transparente).
+**Recebidas em 15/10/2026 e no jogo** (prioridade C, telas antigas que usavam desenho provisório; M24-T60, A-181).
+São 31 arquivos. Sem um arquivo, a tela volta ao desenho provisório:
+
+| Arquivo | Onde entrou |
+|---|---|
+| `Arte/UI/ui_map_sea_bg.png` (1920×1080) | Mar do Mapa, no lugar do degradê e das estrelas |
+| `Arte/UI/ui_map_island_01.png` a `ui_map_island_10.png` (512×512) | Uma ilha por mapa (`map_01` → `_01`), no medalhão e no painel do mapa escolhido; moldura, número e cadeado continuam do jogo |
+| `Arte/UI/ui_map_boat.png` (128×128) | Barquinho do Mapa; vira para o lado da rota durante a viagem |
+| `Arte/UI/ui_enc_card_frame.png` (256×384) | Moldura das cartas da Enciclopédia, pintada na cor da raridade |
+| `Arte/UI/ui_enc_card_back.png` (chegou com 230×354) | Verso das cartas de espécie não descoberta |
+| `Arte/UI/ui_enc_binder_tab.png` (chegou com 160×30) | Abas do fichário da Enciclopédia, pintadas pelo jogo |
+| `Arte/UI/ui_enc_album_page.png` (chegou com 456×449) | Página do álbum (azul-marinho; o texto da página fica claro) |
+| `Arte/UI/ui_enc_pedestal.png` (chegou com 328×61) | Pedestal da ficha da Enciclopédia e do modo cartas do Aquário |
+| `Arte/UI/ui_enc_aura.png` (512×512) | Brilho atrás do peixe na ficha, na cor da raridade |
+| `Arte/UI/ui_aquarium_bg.png` (1920×1080) | Água do Aquário |
+| `Arte/UI/ui_aquarium_sand.png` (1920×200) | Areia do Aquário, presa embaixo, sem esticar |
+| `Arte/UI/ui_aquarium_bubble.png` (64×64) | Bolhas do Aquário |
+| `Arte/UI/ui_aquarium_glass.png` (chegou com 496×289) | Painéis de vidro do Aquário (ficha, venda, gaveta, avisos) |
+| `Arte/Arena/podio_1.png`, `podio_2.png`, `podio_3.png` (recortados) | Pódio do ranking da Arena, na proporção da arte |
+| `Arte/Avatares/avatar_01.png` a `avatar_06.png` (512×512) | Avatares do jogador (Perfil, Ranking, Arena, barra de cima, escolha de avatar) |
+
+Nada mais pendente desta lista de prioridade C.
 
 ## Como trocar uma arte
 
@@ -267,6 +287,8 @@ Pedido no doc "Fishing Idle — Pedido de arte: Ranking da Arena e raridades"
 (https://claude.ai/code/artifact/52c78f1e-1d5f-4c42-820e-cd4e0c14a9b1). Enquanto não chegam, o jogo usa blocos
 limpos com uma faixa na cor da medalha e o ícone de estrela.
 
+**Pódio recebido em 15/10/2026 e no jogo** (`Arena/podio_1.png` a `podio_3.png`, A-181).
+
 - `Arena_01_podio.png` → `Arena/podio_1.png`, `podio_2.png`, `podio_3.png` (fundo verde).
 - `Arena_02_medalhas.png` → `Icones/ico_medalha_ouro.png`, `ico_medalha_prata.png`, `ico_medalha_bronze.png`
   (fundo magenta).
@@ -276,7 +298,8 @@ limpos com uma faixa na cor da medalha e o ícone de estrela.
 
 Pedido no doc "Fishing Idle — Pedido de arte: avatares do jogador"
 (https://claude.ai/code/artifact/8936d3b1-4724-4853-8f39-78003d519633). `Avatares_01_retratos.png` (fundo verde,
-3×2) → `Avatares/avatar_01.png` a `avatar_06.png`. Enquanto não chegam, o jogo mostra um selo colorido.
+3×2) → `Avatares/avatar_01.png` a `avatar_06.png`. **Recebidos em 15/10/2026 e no jogo** (A-181); se um arquivo
+faltar, o jogo mostra um selo colorido.
 
 ## Barra superior e cartão do jogador (pedido ao ChatGPT em 07/10/2026)
 
@@ -286,8 +309,9 @@ em `Resources/Arte/UI/`). Nada pendente nesta seção.
 
 ## Tela de Mapa: arquipélago (A-141, escolha do proprietário em 08/10/2026)
 
-A tela já funciona com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/MapWindow.cs`): fundo em
-degradê, miniaturas dos mapas recortadas em círculo e o ícone do barco. Arquivos esperados, em
+**Recebido em 15/10/2026 e no jogo** (A-181): o mar, as 10 ilhas e o barco. A moldura opcional não foi pedida; a
+moldura continua desenhada pelo jogo. Se um arquivo faltar, volta o desenho provisório (degradê, miniaturas
+recortadas em círculo, ícone do barco). Arquivos esperados, em
 `Resources/Arte/UI/` (PNG):
 - `ui_map_sea_bg.png` — 1920×1080, só mar, sem textos, rota, ilhas nem molduras.
 - `ui_map_island_01.png` a `ui_map_island_10.png` — 512×512, fundo transparente, uma ilha redonda por mapa, todas
@@ -322,8 +346,8 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 ## Enciclopédia como álbum de cartas (A-143, decisão do proprietário em 08/10/2026)
 
-A tela já funciona com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/ProfileWindow.cs`). Arquivos
-esperados, em `Resources/Arte/UI/` (PNG, fundo transparente):
+**Recebido em 15/10/2026 e no jogo** (A-181): os 6 arquivos abaixo. Se um faltar, volta o desenho provisório.
+Arquivos pedidos, em `Resources/Arte/UI/` (PNG, fundo transparente):
 - `ui_enc_card_frame.png` — 256×384, moldura fina de carta em branco (o jogo pinta na cor da raridade), cantos
   arredondados, miolo transparente; esticável pelas bordas (9-slice, bordas de 24 px).
 - `ui_enc_card_back.png` — 256×384, verso da carta para espécie não descoberta: azul-noite com um padrão discreto de
@@ -365,8 +389,8 @@ Pedidos prontos para colar no ChatGPT (um por imagem):
 
 ## Aquário vivo (A-144, decisão do proprietário em 08/10/2026)
 
-A tela já funciona com desenhos provisórios (marcados `ASSET_PENDENTE` em `Game/UI/AquariumWindow.cs`): água em
-degradê com raios, areia com pedrinhas, bolhas em anel e painéis de vidro. As plantas e os peixes usam a arte que já
+**Recebido em 15/10/2026 e no jogo** (A-181): os 4 arquivos abaixo. Se um faltar, volta o desenho provisório (água
+em degradê com raios, areia com pedrinhas, bolhas em anel e painéis de vidro). As plantas e os peixes usam a arte que já
 existe (`Arte/Vivos/Plantas` e `Arte/Peixes`); os peixes não precisam de quadros de nadar. Arquivos esperados, em
 `Resources/Arte/UI/` (PNG):
 - `ui_aquarium_bg.png` — 1920×1080, só água do tanque com raios de luz vindos de cima, **sem areia**, sem peixes,

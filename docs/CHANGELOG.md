@@ -3,6 +3,24 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.19] — 15/10/2026
+
+As 31 artes de prioridade C, mandadas pelo proprietário, nas telas que ainda usavam desenho provisório (M24-T60,
+A-181). Nenhuma regra, número ou save mudou. Compilado no CI, não aberto no Unity.
+
+### Mudado
+
+- **Mapa:** o mar pintado no lugar do degradê; uma ilha pintada por mapa nos medalhões e no painel (a moldura, o
+  número, o halo e o cadeado continuam do jogo); o barquinho pintado, que vira para o lado da rota durante a viagem.
+- **Enciclopédia:** página do álbum azul-marinho (com o texto claro), abas do fichário, moldura das cartas na cor da
+  raridade e verso das cartas não descobertas.
+- **Ficha do peixe** (Enciclopédia e cartas do Aquário): brilho na cor da raridade e pedestal de pedra e coral, sem
+  achatar.
+- **Aquário:** água com raios de luz, areia presa embaixo (sem esticar), bolhas e painéis de vidro.
+- **Arena:** pódio pintado (ouro, prata e bronze) na proporção da arte, com o lugar numa pílula sobre a faixa de metal.
+- **Avatares:** os 6 retratos do jogador, sobre um disco azul-mar em todas as molduras.
+- Sem um arquivo, cada tela volta ao desenho provisório.
+
 ## [0.2.0-m24.18] — 13/10/2026
 
 Montar barco e vara pelo botão, um depois do outro, e mapas só pelo nível, pedido do proprietário (M24-T58, A-180).

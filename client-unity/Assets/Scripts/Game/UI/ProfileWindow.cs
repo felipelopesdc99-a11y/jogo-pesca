@@ -1498,6 +1498,15 @@ namespace FishingIdle.Game.UI
 
         private const float EncCardMinW = 142f, EncCardMinH = 196f, EncCardGap = 12f;
 
+        // Album art (received 15/10/2026, A-181). The 9-slice borders follow each file as cut: the tab is round on the
+        // left only (r ≈ 10 px), the page has r ≈ 24 px, and the card frame's double line sits 9–16 px inside its edge.
+        private const string EncTabArt = "UI/ui_enc_binder_tab", EncPageArt = "UI/ui_enc_album_page";
+        private const string EncFrameArt = "UI/ui_enc_card_frame", EncBackArt = "UI/ui_enc_card_back";
+        private const float EncTabArtLeft = 14f, EncTabArtRight = 4f, EncTabArtCap = 12f, EncPageArtBorder = 32f, EncFrameArtBorder = 24f;
+
+        /// <summary>How far the frame art is drawn outside the card, so its outer line lands just inside the card's edge.</summary>
+        private const float EncFrameArtBleed = 7f;
+
         /// <summary>How many cards fit on the page (by the room: about 8 in the big window, 6 in the short one) and their size.</summary>
         private static (Rect Area, int Cols, int Rows, float W, float H) EncGridLayout(Rect page)
         {
@@ -1543,10 +1552,22 @@ namespace FishingIdle.Game.UI
                     _encOpen = false;
                 }
 
-                // ASSET_PENDENTE: ui_enc_binder_tab.png (binder tab, 9-slice, tinted at runtime) replaces this drawn tab.
                 var fill = UiSkin.OnSheet(active ? theme.PanelElevated : Color.Lerp(theme.Night, theme.Panel, hovered ? 0.85f : 0.55f));
-                GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 8f);
-                GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, active ? UiSkin.Border : new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.5f), 1f, 8f);
+                var tabArt = ArtAssets.Texture(EncTabArt);
+                if (tabArt != null)
+                {
+                    // The white binder tab tinted with the same fill (round on the left, square where it meets the page).
+                    var previousColor = GUI.color;
+                    GUI.color = fill;
+                    UiSkin.NineSlice(r, tabArt, EncTabArtLeft, EncTabArtRight, EncTabArtCap, EncTabArtCap, 1f);
+                    GUI.color = previousColor;
+                }
+                else
+                {
+                    GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 8f);
+                    GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, active ? UiSkin.Border : new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.5f), 1f, 8f);
+                }
+
                 if (active)
                 {
                     GUI.DrawTexture(new Rect(r.x + 4f, r.y + 7f, 3f, r.height - 14f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 0, 1.5f);
@@ -1569,9 +1590,33 @@ namespace FishingIdle.Game.UI
         private int DrawEncPage(UiSkin skin, Rect page, (Rect Area, int Cols, int Rows, float W, float H) grid, List<EncyclopediaEntryView> entries,
             List<EncyclopediaEntryView> all, int selected, string title, int pages)
         {
-            // ASSET_PENDENTE: ui_enc_album_page.png (album page, 9-slice) replaces the plain panel.
-            GUI.Box(page, GUIContent.none, skin.Card);
+            // The navy album page (A-181) is a scene on the sheet like the tank (A-170): its contents switch to night colours.
+            var pageArt = ArtAssets.Texture(EncPageArt);
+            UiSkin.Scope? night = null;
+            if (pageArt != null)
+            {
+                GUI.DrawTexture(new Rect(page.x + 2f, page.y + 4f, page.width, page.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.18f), 0, 20f);
+                UiSkin.NineSlice(page, pageArt, EncPageArtBorder, EncPageArtBorder, EncPageArtBorder, EncPageArtBorder, 1f);
+                night = UiSkin.NightScope();
+            }
+            else
+            {
+                GUI.Box(page, GUIContent.none, skin.Card);
+            }
 
+            try
+            {
+                return DrawEncPageContents(skin, page, grid, entries, all, selected, title, pages);
+            }
+            finally
+            {
+                night?.Dispose();
+            }
+        }
+
+        private int DrawEncPageContents(UiSkin skin, Rect page, (Rect Area, int Cols, int Rows, float W, float H) grid, List<EncyclopediaEntryView> entries,
+            List<EncyclopediaEntryView> all, int selected, string title, int pages)
+        {
             var found = entries.Count(e => e.Discovered);
             var x = page.x + 18f;
             var w = page.width - 36f;
@@ -1643,26 +1688,50 @@ namespace FishingIdle.Game.UI
             var rarity = UiSkin.RarityColor(e.RarityId);
             var low = e.RarityId == "common" || e.RarityId == "rare";
 
-            // ASSET_PENDENTE: ui_enc_card_frame.png (thin card frame, 9-slice, tinted per rarity) and ui_enc_card_back.png
-            // (card back) replace the drawn frame and back.
             GUI.DrawTexture(new Rect(c.x + 1f, c.y + 4f, c.width, c.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, hovered ? 0.34f : 0.22f), 0, 12f);
             var fill = UiSkin.OnSheet(e.Discovered
                 ? (selected ? theme.PanelElevated : Color.Lerp(theme.Panel, theme.PanelElevated, hovered ? 0.6f : 0.25f))
                 : Color.Lerp(theme.Night, theme.Panel, hovered ? 0.55f : 0.3f));
-            GUI.DrawTexture(c, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 12f);
+
+            // The painted back (navy, waves and a hook) only on a night page, where the card's text is light (A-181).
+            var back = !e.Discovered && !UiSkin.Paper ? ArtAssets.Texture(EncBackArt) : null;
+            if (back != null)
+            {
+                GUI.DrawTexture(c, back, ScaleMode.ScaleAndCrop, true, 0, hovered ? Color.white : new Color(0.88f, 0.88f, 0.88f, 1f), 0, 12f);
+            }
+            else
+            {
+                GUI.DrawTexture(c, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 12f);
+            }
+
             var frameA = e.Discovered ? (low ? 0.55f : 0.9f) : 0.3f;
             if (hovered)
             {
                 frameA = Mathf.Min(1f, frameA + 0.2f);
             }
 
-            GUI.DrawTexture(c, skin.White, ScaleMode.StretchToFill, true, 0, new Color(rarity.r, rarity.g, rarity.b, frameA), 1.5f, 12f);
+            var frameArt = ArtAssets.Texture(EncFrameArt);
+            if (frameArt != null)
+            {
+                // The thin double-line frame, white in the file, tinted by the rarity the service reports.
+                var previousColor = GUI.color;
+                GUI.color = new Color(rarity.r, rarity.g, rarity.b, Mathf.Min(1f, frameA + 0.1f));
+                UiSkin.NineSlice(new Rect(c.x - EncFrameArtBleed, c.y - EncFrameArtBleed, c.width + EncFrameArtBleed * 2f, c.height + EncFrameArtBleed * 2f),
+                    frameArt, EncFrameArtBorder, EncFrameArtBorder, EncFrameArtBorder, EncFrameArtBorder, 1f);
+                GUI.color = previousColor;
+            }
+            else
+            {
+                GUI.DrawTexture(c, skin.White, ScaleMode.StretchToFill, true, 0, new Color(rarity.r, rarity.g, rarity.b, frameA), 1.5f, 12f);
+            }
+
+            // The inner line (the frame art already has its own).
             var inner = new Rect(c.x + 5f, c.y + 5f, c.width - 10f, c.height - 10f);
-            if (e.Discovered)
+            if (frameArt == null && e.Discovered)
             {
                 GUI.DrawTexture(inner, skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.06f), 1f, 9f);
             }
-            else
+            else if (frameArt == null)
             {
                 skin.DashedFrame(inner, new Color(rarity.r, rarity.g, rarity.b, 0.22f), 6f, 5f, 1f);
             }
@@ -1695,7 +1764,7 @@ namespace FishingIdle.Game.UI
             const float bottomH = 88f;
             var artTop = c.y + pad + 26f;
             var art = new Rect(x, artTop, w, Mathf.Max(30f, c.yMax - pad - bottomH - artTop));
-            GUI.DrawTexture(art, skin.White, ScaleMode.StretchToFill, true, 0, e.Discovered ? new Color(0.06f, 0.17f, 0.26f, 0.9f) : new Color(0.03f, 0.07f, 0.12f, 0.9f), 0, 8f);
+            GUI.DrawTexture(art, skin.White, ScaleMode.StretchToFill, true, 0, e.Discovered ? new Color(0.06f, 0.17f, 0.26f, 0.9f) : new Color(0.03f, 0.07f, 0.12f, back != null ? 0.6f : 0.9f), 0, 8f);
             GUI.DrawTexture(new Rect(art.x + 6f, art.y + 6f, art.width - 12f, art.height - 12f), Art.FishTexture(e.SpeciesId), ScaleMode.ScaleToFit, true, 0,
                 e.Discovered ? Color.white : new Color(0.02f, 0.05f, 0.09f, 0.9f), 0, 0);
             if (!e.Discovered)

@@ -36,13 +36,14 @@ namespace FishingIdle.Game.UI
         private const float TileHeight = 104f;
         private const float TileGap = 8f;
 
-        // Final art, when it exists (Resources/Arte/UI). ASSET_PENDENTE: until then the tank, the sand,
-        // the bubbles and the glass are drawn here (docs/ASSETS_PENDENTES.md, A-144).
+        // Painted art (Resources/Arte/UI, received 15/10/2026, A-181). Without a file the tank, the sand,
+        // the bubbles or the glass keep the drawn fallback below (A-144).
         private const string TankBackgroundArt = "UI/ui_aquarium_bg";
         private const string TankSandArt = "UI/ui_aquarium_sand";
         private const string BubbleArt = "UI/ui_aquarium_bubble";
         private const string GlassArt = "UI/ui_aquarium_glass";
-        private const float GlassArtBorder = 32f;
+        private const float GlassArtBorder = 36f; // ui_aquarium_glass.png is 496×289 with ~34 px rounded corners
+        private const float SandRise = 56f;       // how far above the floor line the sand strip starts
 
         private static readonly AquariumSort[] Sorts = { AquariumSort.Size, AquariumSort.Level, AquariumSort.Species, AquariumSort.Newest, AquariumSort.Quality };
 
@@ -416,7 +417,7 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                // ASSET_PENDENTE: ui_aquarium_bg.png (water and light rays, 1920×1080) replaces this gradient and the rays.
+                // Fallback without ui_aquarium_bg.png: a gradient and soft rays.
                 GUI.DrawTexture(tank, WaterTexture, ScaleMode.StretchToFill, true, 0, Color.white, 0, TankRadius);
                 var pulse = 0.55f + 0.15f * Mathf.Sin(t * 0.35f);
                 GUI.DrawTexture(new Rect(tank.x, tank.y, tank.width, (floorY - tank.y) * 0.9f), RaysTexture, ScaleMode.StretchToFill, true, 0,
@@ -427,11 +428,13 @@ namespace FishingIdle.Game.UI
             var sandArt = ArtAssets.Texture(TankSandArt);
             if (sandArt != null)
             {
-                GUI.DrawTexture(new Rect(tank.x, floorY - 48f, tank.width, tank.yMax - floorY + 48f), sandArt, ScaleMode.StretchToFill, true, 0, Color.white, Vector4.zero, bottom);
+                // Anchored at the bottom of the tank and kept in proportion (ScaleAndCrop trims the sides or a few
+                // rows of the transparent top, never stretches the stones); its top follows the floor as the drawer opens.
+                GUI.DrawTexture(new Rect(tank.x, floorY - SandRise, tank.width, tank.yMax - floorY + SandRise), sandArt, ScaleMode.ScaleAndCrop, true, 0, Color.white, Vector4.zero, bottom);
                 return;
             }
 
-            // ASSET_PENDENTE: ui_aquarium_sand.png (sand strip with stones) replaces the drawn sand, dunes and pebbles.
+            // Fallback without ui_aquarium_sand.png: drawn sand, dunes and pebbles.
             var top = SandTop;
             for (var i = 0; i < 5; i++)
             {
@@ -497,7 +500,7 @@ namespace FishingIdle.Game.UI
                         continue;
                     }
 
-                    // ASSET_PENDENTE: ui_aquarium_bubble.png replaces this drawn ring.
+                    // Fallback without ui_aquarium_bubble.png: a drawn ring.
                     GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.85f, 0.97f, 1f, 0.45f * fade), 1.2f, size / 2f);
                     GUI.DrawTexture(new Rect(r.x + size * 0.25f, r.y + size * 0.2f, size * 0.25f, size * 0.25f), skin.White, ScaleMode.StretchToFill, true, 0,
                         new Color(1f, 1f, 1f, 0.55f * fade), 0, size * 0.125f);
@@ -805,11 +808,13 @@ namespace FishingIdle.Game.UI
             var art = ArtAssets.Texture(GlassArt);
             if (art != null)
             {
-                UiSkin.NineSlice(r, art, GlassArtBorder, GlassArtBorder, GlassArtBorder, GlassArtBorder, 1f);
+                // Low panels (the closed drawer bar is 38 px) scale the corners down instead of squashing them.
+                var scale = Mathf.Min(1f, Mathf.Min(r.width, r.height) / (GlassArtBorder * 2f));
+                UiSkin.NineSlice(r, art, GlassArtBorder, GlassArtBorder, GlassArtBorder, GlassArtBorder, scale);
                 return;
             }
 
-            // ASSET_PENDENTE: ui_aquarium_glass.png (9-slice glass panel) replaces this drawn glass.
+            // Fallback without ui_aquarium_glass.png: drawn glass.
             var night = UiSkin.Night;
             GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(night.r, night.g, night.b, 0.86f), 0, 14f);
             GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.75f, 0.92f, 1f, 0.22f), 1f, 14f);
@@ -855,7 +860,7 @@ namespace FishingIdle.Game.UI
 
         private static float LogCm(FishView f) => Mathf.Log((float)Math.Max(f.SizeCm, 0.1));
 
-        // Provisional tank textures, made once (ASSET_PENDENTE: replaced by the files above when they exist).
+        // Fallback tank textures, made once (used only when the files above are missing).
         private static Color SandTop => new Color(0.66f, 0.58f, 0.43f);
 
         private static Texture2D WaterTexture => _waterTexture != null ? _waterTexture
