@@ -1380,3 +1380,49 @@ mapa volte a pedir vara por engano.
 
 **Rever se.** O proprietário decidir vender fragmentos ou barcos (OD-074, junto com o OD-060), ou quiser a montagem de
 volta automática como opção.
+
+## TD-059 · Pipeline de pixel art: pasta ArtePixel, importação Point, PPU 20, câmera pixel própria e fontes OFL (19/10/2026)
+
+**Origem.** A-182: o proprietário escolheu o Estilo 1 "ARC" (pixel art) para o jogo inteiro. Esta TD fixa como a arte
+nova entra no Unity; o trabalho em si é o M25.
+
+**Decisão.**
+- **Pasta paralela `Assets/Resources/ArtePixel/`**, com as mesmas subpastas e nomes de `Arte/`. `ArtAssets.Texture`
+  procura em `ArtePixel/` primeiro e cai em `Arte/` quando o arquivo não existe (o cache de "não existe" continua por
+  caminho). Assim a troca é feita lote por lote, sem um dia em que metade do jogo some, e o código das telas não muda de
+  nome de arquivo. A limpeza final (M25) apaga `Arte/` e o fallback.
+- **Importação (`ArtImportSettings`, nova regra para `ArtePixel/`):** `FilterMode.Point`, `TextureImporterCompression.Uncompressed`,
+  `mipmapEnabled = false`, Clamp, `npotScale = None`, sem `maxTextureSize` reduzido, `alphaIsTransparency`. Sobe
+  `GetVersion()` para o Unity reimportar. A arte pixel é pequena (a maior folha recortada tem 384 × 256), então ficar sem
+  compressão custa pouco e evita os blocos de compressão em cima dos pixels.
+- **PPU 20 na cena:** a câmera continua com 10,8 unidades de altura (`orthographicSize` 5,4), e 216 ÷ 10,8 = 20. Os
+  sprites da cena são criados com `pixelsPerUnit = 20` (em vez de "largura desejada em unidades"), então um pixel de
+  arte é sempre um pixel da grade. As posições em unidades de `/config` e `Resources/Visual/*.json` continuam valendo;
+  só as alturas e larguras de sprite passam a sair do tamanho do arquivo.
+- **Câmera pixel própria, sem o pacote 2D Pixel Perfect:** a cena é renderizada numa `RenderTexture` de 216 px de
+  altura (largura = 216 × proporção da janela, arredondada para par), `FilterMode.Point`, e desenhada na tela pela maior
+  escala inteira; quando a altura da tela não é múltipla de 216, amplia pelo inteiro de cima e reduz com bilinear
+  ("nítido-suave"), sem faixas pretas. A posição da câmera e de tudo que anda é arredondada para o pixel da grade. O
+  projeto usa o pipeline padrão e quase nenhum pacote; o pacote traria uma dependência que o `verify.sh` não compila
+  contra as referências do Unity, e o que ele faz aqui cabe em um componente pequeno.
+- **Interface:** o IMGUI continua. Um helper de desenho pixel (`PixelDraw`) troca o `ScaleToFit` pela maior escala
+  inteira que cabe (e pela versão `_p` quando nem 1× cabe), arredonda posições para o pixel do quadro e nunca gira
+  sprites. Molduras, pílulas, barras e abas da pele ARC são texturas 9-slice geradas uma vez pelo código (Point), não
+  arquivos.
+- **Fontes OFL embutidas:** `PressStart2P-Regular.ttf` e `VT323-Regular.ttf` em `Resources/Fontes/`, com
+  `OFL-PressStart2P.txt` e `OFL-VT323.txt`, como a Fredoka e a Nunito hoje. Importação com `Hinted Raster` para ficarem
+  nítidas; os tamanhos mínimos estão na Bíblia (seção 7.1).
+- **Recorte das folhas:** `tools/Arte/pixel_folhas.py` (numpy, scipy e Pillow, como os outros scripts de arte) lê o
+  manifesto `tools/Arte/pixel_pedidos.json`, gerado junto com `docs/ASSETS_PIXEL.md`. O fator de ampliação é detectado
+  pela coerência de fase das bordas de cor para cada período de 2 a 40 px (aceita fator fracionário e eixos
+  diferentes, porque o ChatGPT nunca entrega a grade exata); a amostragem pega a cor mais comum do centro de cada
+  bloco; uma paleta única por folha mantém a série consistente; o contorno só entra onde falta.
+  `tools/Arte/pixel_folhas_teste.py` testa com folhas sintéticas (fator 7,82 com ruído e 6 × 12 esticado).
+
+**Por quê.** Uma pasta paralela com fallback deixa o jogo inteiro funcionando durante a troca e não mexe em nome de
+arquivo nenhum. PPU fixo e câmera de grade fixa são o que garante "um pixel de arte = um pixel da grade" em qualquer
+resolução. Desenhar a pele da interface pelo código deixa a moldura nítida em qualquer escala e tira dezenas de
+arquivos.
+
+**Rever se.** O proprietário quiser mais detalhe na cena (subir a grade para 270 px de altura, 4× no 1080p) ou se a
+VT323 não ficar legível em janela pequena (trocar o corpo de texto por outra fonte pixel OFL mais alta).

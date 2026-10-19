@@ -1,5 +1,8 @@
 # Artes pendentes (`ASSET_PENDENTE`)
 
+> **Desde 19/10/2026 (A-182)** o jogo troca para pixel art (Estilo ARC). A lista viva das artes novas, com os
+> pedidos ao ChatGPT e o status de cada um, é `docs/ASSETS_PIXEL.md`; esta lista fica como histórico da arte da V0.1.
+
 Lista de toda arte do jogo que hoje é **provisória**: foi pintada por script para o jogo já ficar
 bonito e coerente, mas deve ser trocada pela arte final produzida pelo proprietário (processo da
 Bíblia de Arte, seção 39). Tarefa `M14-T14` no roadmap.

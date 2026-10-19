@@ -3,6 +3,28 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.20] — 19/10/2026
+
+Plano da troca para o novo estilo visual escolhido pelo proprietário: pixel art "Estilo ARC" (A-182, M25). **Só
+documentação e ferramenta:** nada mudou no jogo (nenhuma tela, arte, regra, número ou save).
+
+### Adicionado
+
+- **`docs/ART_BIBLE_PIXEL.md`**, a nova fonte de verdade visual: grade da cena (216 px de altura, 20 pixels por
+  unidade, 5× no 1080p), escala inteira na interface, tamanho nativo de cada tipo de arte, contorno, luz, cores,
+  animações do pescador por fase da pesca, paleta da interface ARC e dos 10 mapas, fontes Press Start 2P e VT323 com
+  os tamanhos mínimos, importação e câmera. A `docs/ART_BIBLE_V0_1.md` fica guardada, travada, como histórico.
+- **`docs/ASSETS_PIXEL.md`**, a lista viva das artes do novo estilo: as 659 imagens de hoje, uma por uma (316 refeitas
+  por pedido, 240 convertidas da arte atual, 60 desenhadas pelo código, 43 saem) e os 77 pedidos ao ChatGPT (339
+  imagens) em folhas, em 7 lotes, com os nomes de arquivo e o status.
+- **`tools/Arte/pixel_folhas.py`**, que recorta as folhas do ChatGPT: tira o fundo magenta, detecta a ampliação
+  (inteira ou não), volta cada desenho à grade, reduz a paleta, limpa pixels soltos, põe o contorno onde falta e
+  grava com os nomes do pedido (manifesto `tools/Arte/pixel_pedidos.json`). Testado com folhas sintéticas
+  (`tools/Arte/pixel_folhas_teste.py`).
+- Roadmap: **M25 "Visual em pixel art (Estilo ARC)"**, com a ordem do trabalho (pele e fontes, câmera, cena piloto,
+  pescador, peixes, itens, ícones, mapas, telas, retratos, limpeza). TD-059 registra o pipeline (pasta `ArtePixel`,
+  importação Point, câmera pixel própria, fontes OFL).
+
 ## [0.2.0-m24.19] — 15/10/2026
 
 As 31 artes de prioridade C, mandadas pelo proprietário, nas telas que ainda usavam desenho provisório (M24-T60,

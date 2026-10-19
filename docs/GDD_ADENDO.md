@@ -3610,3 +3610,39 @@ desenho provisório. A arte é carregada uma vez e guardada; nada novo é criado
 - **Avatares** (`Avatares/avatar_01` a `_06`): bustos de fundo transparente, inteiros, sobre um disco azul-mar calmo
   em todas as molduras (redondas ou arredondadas): barra de cima, Perfil, Ranking, Arena e a escolha de avatar. No
   círculo, só a ponta dos chapéus encosta na borda.
+
+### A-182 · Novo estilo visual: pixel art "Estilo ARC" para o jogo inteiro
+
+**Seção do GDD:** visual do jogo inteiro · `docs/ART_BIBLE_PIXEL.md` (nova fonte visual) · M25 · **Situação:**
+Decidido pelo proprietário (19/10/2026); só documentação e plano nesta etapa, nada mudou no jogo ainda
+
+Depois de ver três propostas lado a lado (ARC, Dark Clean e White Clean), o proprietário escolheu em 19/10/2026 o
+**Estilo 1 "ARC"** para o jogo inteiro: pixel art no traço das artes do ARC MMO, com cena pastel (céu creme, névoa,
+água verde-água no Lago Sereno, uma paleta por mapa), pescador chibi e peixes com contorno escuro de 1 px puxado para a
+cor, e interface azul-noite com moldura dourada fina, botões-pílula e as fontes Press Start 2P e VT323. O jogo é só
+para PC (16:9, interface no quadro virtual de 1080 de altura).
+
+- **Fonte de verdade visual:** `docs/ART_BIBLE_PIXEL.md` passa a ser a Bíblia de Arte. A `docs/ART_BIBLE_V0_1.md`
+  continua no repositório, travada e sem edições, como histórico da V0.1; os princípios dela que valem para qualquer
+  estilo continuam (o jogo antes da interface, brilho é recompensa, raridade é acento, tamanho e raridade nunca se
+  confundem, mais limpo na dúvida).
+- **O que não muda:** regras, números, sorteios, recompensas, save, textos, menus e as cores das raridades e dos
+  tamanhos (`tema_visual.json`). O dourado de recompensa continua só para recompensa; a moldura dourada da pele ARC é
+  um dourado envelhecido de estrutura, sem brilho.
+- **Cena:** grade de 216 px de altura (384 em 16:9), 20 pixels por unidade, a mesma câmera de 10,8 unidades; 5× no
+  1080p. Céu e água passam a ser faixas de cor desenhadas pelo código na paleta do mapa; as 30 nuvens antigas viram 6
+  nuvens comuns tingidas por mapa.
+- **Pescador:** chibi sentado, quadro de 64 px (figura de ~48 px), com animações por fase da pesca (esperando 4
+  quadros, arremesso 4, recolher 4, fisgada 2, mostrando 1, escapou 1). A vara e a linha são desenhadas pelo código
+  nas cores da vara; as mãos separadas saem.
+- **Peixes:** até 120 × 60 px, virados para a direita, com uma versão pequena (metade) gerada sozinha; a raridade
+  aparece só como um brilho de 1 px na cor da raridade (Épico, Lendário, Mítico).
+- **Interface:** pele ARC desenhada pelo código (painéis, moldura, pílulas, abas, barras); ícones coloridos em pixel
+  (24 e 32 px), exceto 12 símbolos simples desenhados pelo código; tudo em escala inteira (2× no quadro de 1080).
+  As peças do "Diário de bordo" (A-170) saem.
+- **Produção:** 77 pedidos ao ChatGPT (339 imagens), agrupados em folhas e em 7 lotes, listados em
+  `docs/ASSETS_PIXEL.md`; o Lote 1 (kit de teste) monta a cena piloto do Lago Sereno antes do resto. Das 659 imagens
+  de hoje, 316 são refeitas pelos pedidos, 240 são convertidas da arte atual (paisagem viva, miniaturas, frente dos
+  barcos), 60 passam a ser desenhadas pelo código e 43 saem.
+- **Pendente de Play:** a legibilidade da VT323 em janela pequena (~600 px de altura) e o tamanho maior do pescador na
+  cena só ficam confirmados quando o proprietário apertar Play.

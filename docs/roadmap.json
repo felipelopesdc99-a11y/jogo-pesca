@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-15T23:00:00Z",
+  "updated_at": "2026-10-19T21:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -5135,6 +5135,232 @@
         }
       ],
       "notes": "A numeração das tarefas do M24 pula de M24-T39 para M24-T42: M24-T40 e M24-T41 nunca foram criadas. Não renumerar (as notas, o adendo e o changelog citam os números atuais)."
+    },
+    {
+      "id": "M25",
+      "title": "Visual em pixel art (Estilo ARC)",
+      "goal": "Decisão do proprietário (19/10/2026, A-182): o jogo inteiro troca para o Estilo 1 \"ARC\", pixel art no traço das artes do ARC MMO, com a interface azul-noite de moldura dourada fina, pílulas e as fontes Press Start 2P e VT323. Só a apresentação muda: regras, números e save continuam iguais. A fonte visual passa a ser docs/ART_BIBLE_PIXEL.md; as artes são pedidas em folhas pelo proprietário (docs/ASSETS_PIXEL.md) e entram aos poucos em Resources/ArtePixel, sem quebrar o que ainda não chegou.",
+      "completion_criteria": [
+        "Toda imagem do jogo em pixel art, desenhada pelo código ou convertida, em escala inteira e com a pele ARC em todas as telas.",
+        "Nenhuma regra, número, texto ou save mudou; textos em PT-BR em GameTexts.cs.",
+        "Nada sobreposto em ~1200×600 e ~1320×840, e as fontes nos tamanhos mínimos da Bíblia.",
+        "A arte antiga apagada (M25-T17) e docs/ASSETS_PIXEL.md com todos os pedidos NO_JOGO.",
+        "O proprietário apertou Play e aprovou (M25-T18, no fim do jogo)."
+      ],
+      "notes": "Ordem: pele e fontes, câmera e importação, cena piloto do Lago Sereno (Lote 1), depois os lotes 2 a 7. As tarefas com ASSET_PENDENTE esperam as folhas do lote indicado; o resto pode ser feito antes, com a arte antiga como fallback.",
+      "tasks": [
+        {
+          "id": "M25-T01",
+          "title": "Bíblia de Arte em pixel, inventário e pedidos",
+          "subsystem": "docs",
+          "description": "Especificação do Estilo ARC em docs/ART_BIBLE_PIXEL.md (nova fonte visual), inventário das 659 imagens de hoje separado em pedido (a), conversão (b), código (c) e sai (d), e a lista viva docs/ASSETS_PIXEL.md com os 77 pedidos em 7 lotes. Página \"Pedidos de Pixel Art\" para o proprietário colar no ChatGPT.",
+          "status": "DONE",
+          "dependencies": [],
+          "updated_at": "2026-10-19T21:00:00Z",
+          "completion_notes": "Entregue em 19/10/2026 (A-182): docs/ART_BIBLE_PIXEL.md (grades, escala, paletas da interface e dos 10 mapas, contorno, luz, animações, importação, câmera, fontes e tamanhos mínimos, checklists); docs/ASSETS_PIXEL.md (inventário arquivo por arquivo: 316 refeitos por pedido, 240 convertidos, 60 pelo código, 43 saem; 77 pedidos e 339 imagens em folhas, por lote, com os nomes de arquivo e o status); página de pedidos com o guia para o ChatGPT, checklist, correções prontas e \"Feito\" salvo no navegador. Só documentação: nada mudou no jogo."
+        },
+        {
+          "id": "M25-T02",
+          "title": "Recorte automático das folhas de pixel art",
+          "subsystem": "repo",
+          "description": "tools/Arte/pixel_folhas.py: recorta a folha pela grade do pedido, tira o magenta, detecta o fator de ampliação, reamostra na grade, paleta única por folha, limpa pixels soltos, contorno de 1 px onde falta, âncora para animação e versão pequena _p dos peixes; manifesto tools/Arte/pixel_pedidos.json.",
+          "status": "DONE",
+          "dependencies": [
+            "M25-T01"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z",
+          "completion_notes": "Entregue com teste sintético (tools/Arte/pixel_folhas_teste.py): folha 3×2 ampliada 7,82× com ruído e folha 3×1 esticada 6×12 voltam ao tamanho nativo, com contorno, até 32 cores, transparência binária e a versão _p (TD-059)."
+        },
+        {
+          "id": "M25-T03",
+          "title": "Fontes pixel e pele ARC da interface (por código)",
+          "subsystem": "client",
+          "description": "Press Start 2P e VT323 (OFL) em Resources/Fontes com as licenças; tamanhos mínimos da Bíblia (seção 7.1). Painéis azul-noite com moldura dourada de 3 linhas, pílulas, abas, chips, barras, cards e botões gerados pelo código como texturas 9-slice Point; cores novas como chaves em tema_visual.json. Sai a pele \"Diário de bordo\" (A-170). Conferir que nada se sobrepõe em ~1200×600 e ~1320×840.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T01"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T04",
+          "title": "Pasta ArtePixel, importação Point e desenho em escala inteira",
+          "subsystem": "client",
+          "description": "ArtAssets procura em Resources/ArtePixel primeiro (mesmos nomes) e cai na arte antiga; ArtImportSettings com Point, sem compressão e sem mipmaps para ArtePixel; helper PixelDraw que troca o ScaleToFit pela maior escala inteira que cabe, usa a versão _p quando 1× não cabe e nunca gira sprites (TD-059).",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T01"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T05",
+          "title": "Câmera pixel da cena",
+          "subsystem": "client",
+          "description": "A cena desenhada numa RenderTexture de 216 px de altura (largura pela janela), PPU 20, ampliada pelo inteiro ou nítido-suave; câmera e tudo que anda arredondados para o pixel da grade; o HUD continua por cima (TD-059). Sem o pacote 2D Pixel Perfect.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T04"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T06",
+          "title": "Céu, água e nuvens por código nas paletas dos mapas",
+          "subsystem": "client",
+          "description": "Céu em faixas e água em faixas com brilhos e espuma animados em passos de pixel, nas paletas da Bíblia (seção 6.2), estrelas nos mapas 9 e 10; as 6 nuvens comuns tingidas por mapa no lugar das 30 antigas. Paletas como dados no config visual, não no código.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T05"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T07",
+          "title": "Cena piloto do Lago Sereno",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE (Lote 1 de docs/ASSETS_PIXEL.md: L1-04 a L1-07). Fundo em 3 faixas, laterais e cantos, barco inicial com a frente cortada pelo código, Caixa de Pesca, boia e nuvens, na câmera pixel. É a cena de conferência do estilo antes dos outros lotes.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T05",
+            "M25-T06"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T08",
+          "title": "Pescador animado por fase da pesca",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE (L1-01, L1-02, L2-01). Quadros de 64 px com âncora na base: esperando, arremesso, recolher, fisgada, mostrando e escapou, nas velocidades da Bíblia (seção 5); vara e linha desenhadas pelo código nas cores da vara; o peixe nas mãos na fase Mostrando. Saem a pintura atual e as mãos separadas.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T07"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T09",
+          "title": "Peixes em pixel (100) e versão pequena",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE (L1-03 e Lote 4). Os 100 masters em ArtePixel/Peixes, a versão _p para listas e para o peixe pulando na cena; cards, Caixa, Aquário (balanço sem rotação), Mercado, Arena, Clã, Enciclopédia e silhueta escura em escala inteira.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T04"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T10",
+          "title": "Itens em pixel: varas, barcos, iscas, roupas, fragmentos e expedições",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE (Lote 5 e L1-05). Itens na Loja, Inventário, Perfil, Mercado, Passe e avisos em escala inteira; frente e fundo de cada barco cortados pelo código para o pescador ficar dentro; imagens das expedições.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T04"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T11",
+          "title": "Ícones em pixel",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE (L3-01 a L3-04). 52 ícones coloridos (24 e 32 px) sem tinta do código; os 12 símbolos simples (+, X, ✓, setas, play, pausa, parar, ordenar, compacto, i, !) desenhados pelo código em pixel, tingíveis; ícones desativados dessaturados pelo código.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T03",
+            "M25-T04"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T12",
+          "title": "Os 10 mapas em pixel e a paisagem viva convertida",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE (L1-06 e Lote 6). Fundo, laterais e cantos dos mapas 2 a 10; miniaturas geradas das camadas; plantas e animais da paisagem viva convertidos pelo pixel_folhas.py na paleta de cada mapa (pedido extra só para o que ficar ruim).",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T07"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T13",
+          "title": "Telas: Aquário, Enciclopédia e ficha do peixe",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE (L7-01, L7-02, L3-07). Água e areia do Aquário, vidro e bolhas pelo código, álbum e cartas da Enciclopédia na pele ARC, aura em pixel pelo código, pedestal.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T03",
+            "M25-T09"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T14",
+          "title": "Telas: Mapa, Expedição, Arena e Boss Mundial",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE (L3-06, L3-08, L3-09, L5-05, L7-03, L7-04, L7-11, L7-12, L7-14, L7-15). Mar e ilhas do Mapa, porto, carta e objetos da Expedição, fundo e pódio da Arena (VS pelo código), fundo, poses, impacto e bolhas do Boss (os dois últimos pelo código).",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T03",
+            "M25-T04"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T15",
+          "title": "Telas: Loja, Mercado, Caixa, Passe, Eventos, Clã, Missões, Ranking, Perfil e Bem-vindo",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE (L3-05, L3-07, L7-05 a L7-10, L7-13). Faixas e fundos em escala inteira cortando as bordas, parede e balcão da Loja pelo código, palco, coroa, troféu e escudos do Ranking, carteira do Perfil pelo código, brasão do Clã, selo premium do Passe.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T03",
+            "M25-T04"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T16",
+          "title": "Retratos e avatares em pixel",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE (L2-02). Retrato do pescador e os 6 avatares em 64 px, a 1× na barra de cima e 2× no Perfil, Ranking, Arena e escolha de avatar.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T04"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T17",
+          "title": "Limpeza das artes antigas",
+          "subsystem": "client",
+          "description": "Quando tudo estiver em ArtePixel: apagar Resources/Arte e o fallback do ArtAssets, as regras antigas do ArtImportSettings, as fontes Fredoka e Nunito, as peças que saem (docs/ASSETS_PIXEL.md, categoria d) e os geradores de arte provisória que ficarem sem uso; atualizar BASE_TECNICA e ASSETS_PENDENTES.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T08",
+            "M25-T09",
+            "M25-T10",
+            "M25-T11",
+            "M25-T12",
+            "M25-T13",
+            "M25-T14",
+            "M25-T15",
+            "M25-T16"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T18",
+          "title": "Testar no Unity (Play)",
+          "subsystem": "client",
+          "description": "O proprietário aperta Play e confere o estilo ARC no jogo inteiro: nitidez dos pixels em 1080p e em janela pequena, legibilidade da VT323, tamanho do pescador na cena, nada sobreposto em ~1200×600 e ~1320×840. Fica para o final do jogo, junto com os outros testes do proprietário (05/10/2026).",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T17"
+          ],
+          "updated_at": "2026-10-19T21:00:00Z"
+        }
+      ]
     }
   ]
 }
