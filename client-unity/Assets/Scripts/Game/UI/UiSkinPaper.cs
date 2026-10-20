@@ -5,57 +5,58 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// The "no papel" variants of the skin: inside a window ("Diário de bordo", addendum A-170) the content sits on
-    /// light paper, so text turns to dark ink and panels, cards, chips and secondary buttons turn to paper tones.
+    /// What is left of the "no papel" mode of the "Diário de bordo" (addendum A-170). Since the ARC skin (A-184) a window
+    /// is a night panel like the rest of the interface, so paper mode never turns on: <see cref="SetPaper"/> keeps
+    /// <see cref="Paper"/> false and every colour and style answers with its night (ARC) value.
     /// </summary>
     /// <remarks>
-    /// <see cref="WindowFrame"/> turns paper mode on when it draws a window's sheet; the HUD turns it off after the
-    /// windows (<see cref="WindowFrame.DrawInfoBalloon"/>), and every confirmation dialog stays on the night panel.
-    /// The switch is global: the colour properties (<see cref="Text"/>, <see cref="Muted"/>, <see cref="Gold"/>…)
-    /// answer with the ink palette, and every style registered with <see cref="Track"/> has its text colours and
-    /// backgrounds swapped in place, so window styles copied from the skin follow too. Art drawn over a dark scene
-    /// inside a window (the aquarium tank, the shop wall, the battle) opens a <see cref="NightScope"/>.
-    /// Every ink colour keeps at least 4.5:1 against the paper (contrasts in docs/GDD_ADENDO.md, A-170).
+    /// The API stays so the windows written for the diary keep compiling and drawing: the "paper" colours below now hold
+    /// their ARC twins (the sheet is the panel night, the note card is the card, the ink is the light text), and
+    /// <see cref="InkOf"/> lightens a colour until it reads at 4.5:1 on a card. <see cref="NightScope"/> and
+    /// <see cref="Track"/> are kept and change nothing visible.
     /// </remarks>
     public sealed partial class UiSkin
     {
-        // ------------------------------------------------------------------ the paper palette (A-170)
+        // ------------------------------------------------------------------ the old paper palette, now its ARC twins (A-184)
 
-        /// <summary>The sheet: #F2E4C4 at the top, #EFDFBB at the bottom.</summary>
-        public static readonly Color PaperFill = Hex(0xF2E4C4), PaperFillBottom = Hex(0xEFDFBB);
+        /// <summary>Where a window's content sits: the panel night (#0D0F20). Was the paper sheet of A-170.</summary>
+        public static Color PaperFill => Theme.Panel;
 
-        /// <summary>A note card on the sheet (fichas, cards): #FFFAF0.</summary>
-        public static readonly Color PaperCard = Hex(0xFFFAF0);
+        /// <summary>Same as <see cref="PaperFill"/> (the sheet had two tones; the panel has one).</summary>
+        public static Color PaperFillBottom => Theme.Panel;
 
-        /// <summary>A sunken spot on the sheet (counter, bar track): #E8D7B2.</summary>
-        public static readonly Color PaperInset = Hex(0xE8D7B2);
+        /// <summary>A card on the panel (#141832). Was the note card.</summary>
+        public static Color PaperCard => Theme.Card;
 
-        /// <summary>
-        /// What <see cref="Night"/> answers on the sheet: the dark fills windows put behind text (tiles, discs, glass)
-        /// become this light paper shade, so their ink text stays readable (#E3CFA6; ink on it 8,9:1).
-        /// </summary>
-        public static readonly Color PaperShade = Hex(0xE3CFA6);
+        /// <summary>A sunken spot (counter, bar track): the field (#090B18).</summary>
+        public static Color PaperInset => Theme.Field;
 
-        /// <summary>Lines and borders drawn on the sheet: #C9AB78 (decoration only, never text).</summary>
-        public static readonly Color PaperLine = Hex(0xC9AB78);
+        /// <summary>A raised fill behind text on the panel: the raised panel (#161A35).</summary>
+        public static Color PaperShade => Theme.PanelElevated;
 
-        /// <summary>Dark ink (10,9:1 on the sheet).</summary>
-        public static readonly Color Ink = Hex(0x3A2A18);
+        /// <summary>Lines and borders drawn on the panel: the dark gold (#7D6127, decoration only, never text).</summary>
+        public static Color PaperLine => Theme.FrameDark;
 
-        /// <summary>Soft ink for secondary text (6,4:1 on the sheet).</summary>
-        public static readonly Color InkSoft = Hex(0x6A4A2A);
+        /// <summary>Text on the panel (#F4ECD6, 16:1). Was the dark ink.</summary>
+        public static Color Ink => Theme.Text;
 
-        /// <summary>Darkened turquoise for action text on paper (5,8:1).</summary>
-        public static readonly Color InkAccent = Hex(0x12605D);
+        /// <summary>Secondary text on the panel (#A7A28F, 7,4:1).</summary>
+        public static Color InkSoft => Theme.TextMuted;
 
-        /// <summary>Darkened gold, still only for rewards (5,7:1).</summary>
-        public static readonly Color InkReward = Hex(0x7A4E0A);
+        /// <summary>Action text on the panel: the turquoise (8,8:1).</summary>
+        public static Color InkAccent => Theme.Action;
 
-        /// <summary>Darkened red (5,8:1) and green (6,0:1).</summary>
-        public static readonly Color InkDanger = Hex(0x9C3022), InkSuccess = Hex(0x17603A);
+        /// <summary>Reward text on the panel: the reward gold (13,6:1), still only for rewards.</summary>
+        public static Color InkReward => Theme.Reward;
 
-        /// <summary>The contrast every coloured ink reaches against the sheet (a margin over 4.5:1 for the darker spots).</summary>
-        private const float InkContrast = 5f;
+        /// <summary>Red text on the panel (6,3:1).</summary>
+        public static Color InkDanger => Theme.Danger;
+
+        /// <summary>Green text on the panel (9,0:1).</summary>
+        public static Color InkSuccess => Theme.Success;
+
+        /// <summary>The contrast every coloured text reaches against the cards (a margin over 4.5:1).</summary>
+        private const float InkContrast = 4.6f;
 
         /// <summary>The night of the theme whatever the mode: a dark disc that frames art or a white icon on the sheet.</summary>
         public static Color SceneNight => Theme.Night;
@@ -81,13 +82,14 @@ namespace FishingIdle.Game.UI
         /// </summary>
         public static void ColoredLabel(Rect rect, string text, GUIStyle style, Color color, bool ink = true)
         {
+            style = _instance != null ? _instance.TitleSafe(style, text) : style;
             if (!ColoredStyles.TryGetValue(style, out var colored))
             {
                 colored = new GUIStyle(style);
                 ColoredStyles[style] = colored;
             }
 
-            var c = ink && Paper ? InkOf(color) : color;
+            var c = ink ? InkOf(color) : color;
             colored.normal.textColor = c;
             colored.hover.textColor = c;
             GUI.Label(rect, text, colored);
@@ -96,7 +98,7 @@ namespace FishingIdle.Game.UI
         /// <summary>The night turquoise hover whatever the mode.</summary>
         public static Color NightAccentHover => Theme.ActionHover;
 
-        /// <summary>True while a window sheet is being drawn: colours and styles answer with their paper variants.</summary>
+        /// <summary>Always false since the ARC skin (A-184): windows are night panels. Kept for the code written for A-170.</summary>
         public static bool Paper { get; private set; }
 
         private static readonly Dictionary<Color, Color> InkCache = new Dictionary<Color, Color>();
@@ -119,8 +121,9 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// <paramref name="color"/> darkened (same hue) until it reads at 5:1 on the sheet: rarity, size and accent
-        /// colours used as text on paper. Colours that already pass come back unchanged.
+        /// <paramref name="color"/> lightened (towards white, same hue) until it reads at 4.5:1 on a card, the lightest of
+        /// the ARC fills text sits on: rarity, size and accent colours used as text (Épico and Lendário need it). Colours
+        /// that already pass come back unchanged.
         /// </summary>
         public static Color InkOf(Color color)
         {
@@ -128,9 +131,9 @@ namespace FishingIdle.Game.UI
             if (!InkCache.TryGetValue(key, out var ink))
             {
                 ink = key;
-                for (var i = 0; i < 40 && Contrast(ink, PaperFill) < InkContrast; i++)
+                for (var i = 0; i < 40 && Contrast(ink, Theme.Card) < InkContrast; i++)
                 {
-                    ink = new Color(ink.r * 0.94f, ink.g * 0.94f, ink.b * 0.94f, 1f);
+                    ink = Color.Lerp(ink, Color.white, 0.06f);
                 }
 
                 InkCache[key] = ink;
@@ -138,6 +141,9 @@ namespace FishingIdle.Game.UI
 
             return new Color(ink.r, ink.g, ink.b, color.a);
         }
+
+        /// <summary>The same as <see cref="InkOf"/>: a colour made readable as text on the ARC panels and cards.</summary>
+        public static Color Readable(Color color) => InkOf(color);
 
         /// <summary>WCAG contrast ratio between two colours (alpha ignored).</summary>
         public static float Contrast(Color a, Color b)
@@ -157,22 +163,20 @@ namespace FishingIdle.Game.UI
             return v <= 0.03928f ? v / 12.92f : Mathf.Pow((v + 0.055f) / 1.055f, 2.4f);
         }
 
-        private static Color Hex(int rgb)
-        {
-            return new Color(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f, (rgb & 0xFF) / 255f, 1f);
-        }
-
         // ------------------------------------------------------------------ the switch
 
-        /// <summary>Turns paper mode on or off (cheap when nothing changes).</summary>
+        /// <summary>
+        /// Was the switch of paper mode (A-170). Since the ARC skin (A-184) windows are night panels: the call is kept for
+        /// the code that still makes it, and paper mode stays off whatever <paramref name="on"/> says.
+        /// </summary>
         public static void SetPaper(bool on)
         {
-            if (Paper == on)
+            if (!Paper || on)
             {
                 return;
             }
 
-            Paper = on;
+            Paper = false;
             if (_instance != null)
             {
                 _instance.ApplyMode();
@@ -356,35 +360,9 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ paper backgrounds
 
-        /// <summary>Builds the paper twin of each night background and registers every skin style. Called once by the constructor.</summary>
+        /// <summary>Registers every skin style with <see cref="Track"/>. Called once by the constructor (no paper twins since A-184).</summary>
         private void BuildPaper()
         {
-            var cardBorder = Hex(0xD8C393);
-            var sheetPanel = Hex(0xF7EDD6);
-            PaperBack(Panel, Art.PanelTexture(sheetPanel, sheetPanel, PaperLine, 16, 1.5f, 96, 0f));
-            PaperBack(PanelSolid, Art.PanelTexture(sheetPanel, sheetPanel, PaperLine, 16, 1.5f, 96, 0f));
-            PaperBack(Card, Art.PanelTexture(PaperCard, PaperCard, cardBorder, 12, 1.5f, 64, 0f));
-            PaperBack(CardHovered, Art.PanelTexture(Color.white, PaperCard, Hex(0xB9976A), 12, 1.5f, 64, 0f));
-            PaperBack(CardSelected, Art.PanelTexture(Hex(0xE6F3EC), Hex(0xDCEEE6), Theme.Action, 12, 2.5f, 64, 0f));
-            PaperBack(CardImportant, Art.PanelTexture(Hex(0xFFF4D6), Hex(0xFBEBC4), Theme.Reward, 12, 2f, 64, 0f));
-            PaperBack(IconTile, Art.PanelTexture(PaperCard, PaperCard, cardBorder, 12, 1.5f, 48, 0f));
-
-            var button = Art.PanelTexture(Hex(0xEEDFBD), Hex(0xE3CFA3), Hex(0xB9976A), 10, 1.5f, 48, 0.05f);
-            var buttonHover = Art.PanelTexture(Hex(0xF6EAD0), Hex(0xEADAB4), Hex(0x9E7C50), 10, 1.5f, 48, 0.06f);
-            var buttonDown = Art.PanelTexture(Hex(0xE0CB9C), Hex(0xE0CB9C), Hex(0xB9976A), 10, 1.5f, 48, 0f);
-            PaperStates(Button, button, buttonHover, buttonDown);
-
-            var chip = Art.PanelTexture(Hex(0xF8F0DC), Hex(0xF3E8CE), PaperLine, 10, 1.2f, 40, 0f);
-            var chipHover = Art.PanelTexture(Color.white, Hex(0xF8F0DC), Hex(0x9E7C50), 10, 1.2f, 40, 0f);
-            var chipDown = Art.PanelTexture(PaperInset, PaperInset, PaperLine, 10, 1.2f, 40, 0f);
-            PaperStates(Chip, chip, chipHover, chipDown);
-            PaperStates(Nav, chip, chipHover, chipDown);
-
-            var search = Art.PanelTexture(PaperCard, PaperCard, Alpha(InkAccent, 0.8f), 10, 2f, 40, 0f);
-            var searchFocus = Art.PanelTexture(PaperCard, PaperCard, InkAccent, 10, 2.5f, 40, 0f);
-            PaperStates(SearchField, search, search, searchFocus);
-            PaperBack(SearchField.focused.background, searchFocus);
-
             foreach (var style in new[]
             {
                 Panel, PanelSolid, Card, CardHovered, CardSelected, CardImportant, IconTile, Button, ButtonPrimary, ButtonDanger,
@@ -395,29 +373,6 @@ namespace FishingIdle.Game.UI
             {
                 Track(style);
             }
-        }
-
-        private void PaperBack(GUIStyle style, Texture2D paper)
-        {
-            PaperBack(style.normal.background, paper);
-        }
-
-        private void PaperBack(Texture2D night, Texture2D paper)
-        {
-            if (night == null || _paperBack.ContainsKey(night))
-            {
-                return;
-            }
-
-            _paperBack[night] = paper;
-            _nightBack[paper] = night;
-        }
-
-        private void PaperStates(GUIStyle style, Texture2D normal, Texture2D hover, Texture2D active)
-        {
-            PaperBack(style.normal.background, normal);
-            PaperBack(style.hover.background, hover);
-            PaperBack(style.active.background, active);
         }
     }
 }

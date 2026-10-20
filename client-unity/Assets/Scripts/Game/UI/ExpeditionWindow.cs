@@ -177,9 +177,9 @@ namespace FishingIdle.Game.UI
             }
 
             _nameStyle = new GUIStyle(skin.SmallBold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
-            _sealStyle = new GUIStyle(skin.Number) { font = skin.TitleBoldFont, fontSize = 17, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
+            _sealStyle = new GUIStyle(skin.Number) { font = skin.TitleBoldFont, fontSize = UiSkin.NumberSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _sealStyle.normal.textColor = Ink;
-            _dialStyle = new GUIStyle(skin.Number) { font = skin.TitleBoldFont, fontSize = 19, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
+            _dialStyle = new GUIStyle(skin.Number) { font = skin.TitleBoldFont, fontSize = UiSkin.NumberSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _dialStyle.normal.textColor = UiSkin.Text;
             skin.Track(_nameStyle);
             skin.Track(_dialStyle);
@@ -821,7 +821,7 @@ namespace FishingIdle.Game.UI
             var x = rect.x + 30;
             var w = rect.width - 60;
             GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Expedition.ReportLabel, skin.SmallGold);
-            GUI.Label(new Rect(x, y + 18, w, 34), GameTexts.Expedition.ResultTitle, skin.Title);
+            skin.TitleLabel(new Rect(x, y + 18, w, 34), GameTexts.Expedition.ResultTitle, skin.Title);
             GUI.Label(new Rect(x, y + 54, w, 20), GameTexts.Expedition.ReturnedAt(report.Name, Format.DateTimeFromUnixMs(report.CompletedAtMs)), skin.SmallMuted);
             y += 86;
 

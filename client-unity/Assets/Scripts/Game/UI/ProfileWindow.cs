@@ -360,7 +360,7 @@ namespace FishingIdle.Game.UI
         private void DrawIdentity(UiSkin skin, FishingIdle.GameService.Fishing.PlayerView player, Rect portrait, float tx, float tw2, float top)
         {
             var nameText = FishCard.Fit(_profile.PlayerName, skin.Title, tw2 - 96);
-            GUI.Label(new Rect(tx, top, tw2 - 90, 36), nameText, skin.Title);
+            skin.TitleLabel(new Rect(tx, top, tw2 - 90, 36), nameText, skin.Title);
 
             // Name and avatar (M18-T03): a small "Editar" next to the name, or a click on the portrait.
             var nw = Mathf.Min(tw2 - 96, skin.Title.CalcSize(new GUIContent(nameText)).x);
@@ -383,7 +383,7 @@ namespace FishingIdle.Game.UI
             UiSkin.ColoredLabel(new Rect(badge.x + 8, badge.y + 1, lw, UiSkin.SmallLine), level, skin.SmallBold, UiSkin.SceneNight, false);
             if (player != null && player.FisherXpToNext > 0)
             {
-                skin.Bar(new Rect(badge.xMax + 10, badge.y + 7, Mathf.Clamp(tw2 - lw - 10, 60f, 300f), 8), player.FisherXp / (float)player.FisherXpToNext);
+                skin.XpBar(new Rect(badge.xMax + 10, badge.y + 7, Mathf.Clamp(tw2 - lw - 10, 60f, 300f), 8), player.FisherXp / (float)player.FisherXpToNext);
             }
 
             // XP numbers, map and VIP on the third line.
@@ -1969,7 +1969,7 @@ namespace FishingIdle.Game.UI
             var found = e.Discovered;
             var unknown = GameTexts.Profile.EncUnknownValue;
 
-            GUI.Label(new Rect(x, y, w, 34f), FishCard.Fit(found ? e.Name ?? string.Empty : GameTexts.Profile.Undiscovered, skin.TitleCenter, w), skin.TitleCenter);
+            skin.TitleLabel(new Rect(x, y, w, 34f), FishCard.Fit(found ? e.Name ?? string.Empty : GameTexts.Profile.Undiscovered, skin.TitleCenter, w), skin.TitleCenter);
             y += 36f;
 
             var seal = (e.RarityName ?? string.Empty).ToUpperInvariant();

@@ -636,7 +636,7 @@ namespace FishingIdle.Game.UI
             }
 
             _nameStyle = new GUIStyle(skin.SmallBold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
-            _badgeStyle = new GUIStyle(skin.SmallBold) { fontSize = 14, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
+            _badgeStyle = new GUIStyle(skin.SmallBold) { fontSize = UiSkin.ChipSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _noteStyle = new GUIStyle(skin.SmallMuted) { alignment = TextAnchor.UpperCenter, wordWrap = true };
             _tipStyle = new GUIStyle(skin.Small) { wordWrap = true };
             _rowValue = new GUIStyle(skin.SmallRight) { wordWrap = false, clipping = TextClipping.Clip };

@@ -122,7 +122,7 @@ namespace FishingIdle.Game.UI
 
             var previousContent = GUI.contentColor;
             GUI.contentColor = Color.Lerp(item.Color, Color.white, 0.12f);
-            GUI.Label(new Rect(textX, rect.y + 16f, rect.xMax - textX - 20f, 58f), item.Title, skin.Display);
+            skin.TitleLabel(new Rect(textX, rect.y + 16f, rect.xMax - textX - 20f, 58f), item.Title, skin.Display);
             GUI.contentColor = previousContent;
             if (!string.IsNullOrEmpty(item.Subtitle))
             {

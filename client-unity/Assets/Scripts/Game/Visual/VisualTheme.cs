@@ -18,23 +18,41 @@ namespace FishingIdle.Game.Visual
 
         private static VisualTheme _current;
 
-        public Color Night = Hex("#0A1422");
-        public Color Panel = Hex("#11223A");
-        public Color PanelElevated = Hex("#183050");
-        public Color Border = Hex("#274A70");
-        // Legibility pass (addendum A-149): Text a touch warmer, TextMuted lighter (the Art Bible lists #EEF4FB and #9DB2C9).
-        public Color Text = Hex("#EEF3F8");
-        public Color TextMuted = Hex("#B4C6DB");
+        // The ARC interface palette (docs/ART_BIBLE_PIXEL.md, section 6.1; addendum A-184).
+        public Color Night = Hex("#090B18");
+        public Color Panel = Hex("#0D0F20");
+        public Color PanelElevated = Hex("#161A35");
+        public Color Border = Hex("#7D6127");
+        public Color Text = Hex("#F4ECD6");
+        public Color TextMuted = Hex("#A7A28F");
         public Color Action = Hex("#25C4C1");
         public Color ActionHover = Hex("#3AD6D2");
-        public Color Reward = Hex("#F6B93B");
-        public Color RewardLight = Hex("#FFE08A");
+        public Color Reward = Hex("#FFD667");
+        public Color RewardLight = Hex("#FFE3A0");
         public Color Danger = Hex("#EF6B5B");
         public Color Success = Hex("#2CCB7F");
         public Color Exceptional = Hex("#F6B93B");
 
-        public float PanelOpacity = 0.94f;
-        public float OverlayOpacity = 0.5f;
+        // ARC pieces drawn by the code (structure, never reward): the thin gold frame and its dark twin, the line between
+        // them, the title colour of Press Start 2P, fields, cards, idle chips, bars and the alert counters.
+        public Color Frame = Hex("#D6AD57");
+        public Color FrameDark = Hex("#7D6127");
+        public Color FrameInner = Hex("#0A0C1A");
+        public Color Title = Hex("#FFE3A0");
+        public Color Field = Hex("#090B18");
+        public Color Card = Hex("#141832");
+        public Color CardLine = Hex("#0B0D1E");
+        public Color ChipOff = Hex("#2A2E50");
+        public Color ChipOn = Hex("#1D2244");
+        public Color BarTrack = Hex("#22264A");
+        public Color Xp = Hex("#7FD6C2");
+        public Color XpStripe = Hex("#62C0AD");
+        public Color Attribute = Hex("#7FC4EA");
+        public Color Alert = Hex("#E0473A");
+        public Color Veil = Hex("#0A0C1C");
+
+        public float PanelOpacity = 0.93f;
+        public float OverlayOpacity = 0.45f;
         public float GlowIntensity = 0.7f;
         public float ToastSeconds = 4f;
         public float ToastImportantSeconds = 6f;
@@ -151,6 +169,26 @@ namespace FishingIdle.Game.Visual
                 Success = Parse(p.success, Success);
             }
 
+            var a = f.arc;
+            if (a != null)
+            {
+                Frame = Parse(a.frame, Frame);
+                FrameDark = Parse(a.frame_dark, FrameDark);
+                FrameInner = Parse(a.frame_inner, FrameInner);
+                Title = Parse(a.title, Title);
+                Field = Parse(a.field, Field);
+                Card = Parse(a.card, Card);
+                CardLine = Parse(a.card_line, CardLine);
+                ChipOff = Parse(a.chip_off, ChipOff);
+                ChipOn = Parse(a.chip_on, ChipOn);
+                BarTrack = Parse(a.bar_track, BarTrack);
+                Xp = Parse(a.xp, Xp);
+                XpStripe = Parse(a.xp_stripe, XpStripe);
+                Attribute = Parse(a.attribute, Attribute);
+                Alert = Parse(a.alert, Alert);
+                Veil = Parse(a.veil, Veil);
+            }
+
             Exceptional = Parse(f.exceptional_color, Exceptional);
             if (f.rarities != null && f.rarities.Length > 0)
             {
@@ -199,6 +237,7 @@ namespace FishingIdle.Game.Visual
         private sealed class ThemeFile
         {
             public Palette palette;
+            public Arc arc;
             public RarityColor[] rarities;
             public RarityColor[] size_categories;
             public string exceptional_color;
@@ -220,6 +259,12 @@ namespace FishingIdle.Game.Visual
         private sealed class Palette
         {
             public string night, panel, panel_elevated, border, text, text_muted, action, action_hover, reward, reward_light, danger, success;
+        }
+
+        [Serializable]
+        private sealed class Arc
+        {
+            public string frame, frame_dark, frame_inner, title, field, card, card_line, chip_off, chip_on, bar_track, xp, xp_stripe, attribute, alert, veil;
         }
 
         [Serializable]

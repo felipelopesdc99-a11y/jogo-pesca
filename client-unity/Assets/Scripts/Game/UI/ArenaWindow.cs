@@ -542,7 +542,7 @@ namespace FishingIdle.Game.UI
             var letters = tag.ToCharArray();
             var spacing = Mathf.Min(17f, (rect.height - 6f) / Mathf.Max(1, letters.Length));
             _rowLetter ??= new GUIStyle(skin.TinyMutedCenter) { clipping = TextClipping.Overflow };
-            _rowLetter.fontSize = Mathf.RoundToInt(Mathf.Clamp(spacing * 0.95f, 10f, UiSkin.SmallSize));
+            _rowLetter.fontSize = Mathf.RoundToInt(Mathf.Clamp(spacing * 1.3f, 16f, UiSkin.SmallSize));
             var style = _rowLetter;
             var ly = rect.center.y - letters.Length * spacing / 2f;
             foreach (var ch in letters)
@@ -872,7 +872,7 @@ namespace FishingIdle.Game.UI
             var o = _viewing;
             var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, 560f, 820f);
             skin.IconBadge(new Rect(rect.x + 28, rect.y + 24, 58, 58), Icons.Profile, UiSkin.Accent);
-            GUI.Label(new Rect(rect.x + 100, rect.y + 24, rect.width - 260, 32), FishCard.Fit(o.Name, skin.Title, rect.width - 260), skin.Title);
+            skin.TitleLabel(new Rect(rect.x + 100, rect.y + 24, rect.width - 260, 32), FishCard.Fit(o.Name, skin.Title, rect.width - 260), skin.Title);
             GUI.Label(new Rect(rect.x + 101, rect.y + 60, rect.width - 260, 22), GameTexts.Arena.Rank + ": " + GameTexts.Arena.RankOf(o.Rank), skin.SmallGold);
             if (skin.IconButton(new Rect(rect.xMax - 156, rect.y + 24, 128, 42), Icons.Close, GameTexts.Box.Close, skin.Button))
             {
@@ -1120,7 +1120,7 @@ namespace FishingIdle.Game.UI
             var avatar = new Rect(cx - size / 2f, top, size, size);
             skin.DrawGlow(avatar, ring, 0.4f);
             AvatarFrame(skin, avatar, avatarId, ring);
-            GUI.Label(new Rect(cx - width / 2f, avatar.yMax + 14f, width, 36f), FishCard.Fit(name, skin.TitleCenter, width), skin.TitleCenter);
+            skin.TitleLabel(new Rect(cx - width / 2f, avatar.yMax + 14f, width, 36f), FishCard.Fit(name, skin.TitleCenter, width), skin.TitleCenter);
             var rankText = GameTexts.Arena.RankOf(rank);
             if (plate)
             {
@@ -1234,7 +1234,7 @@ namespace FishingIdle.Game.UI
             var textX = panel.x + 84;
             var textW = panel.width - 84 - 268;
             GUI.contentColor = won ? UiSkin.GoldLight : Color.white;
-            GUI.Label(new Rect(textX, panel.y + 16, textW, 34), won ? GameTexts.Arena.Victory : GameTexts.Arena.Defeat, skin.Title);
+            skin.TitleLabel(new Rect(textX, panel.y + 16, textW, 34), won ? GameTexts.Arena.Victory : GameTexts.Arena.Defeat, skin.Title);
             GUI.contentColor = Color.white;
             GUI.Label(new Rect(textX, panel.y + 56, textW, 22), GameTexts.Arena.RankChange(_battle.RankBefore, _battle.RankAfter), skin.Body);
             GUI.Label(new Rect(textX, panel.y + 80, textW, 22), GameTexts.Arena.HonorChange(_battle.HonorChange), skin.Body);

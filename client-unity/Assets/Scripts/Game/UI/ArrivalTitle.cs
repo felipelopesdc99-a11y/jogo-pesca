@@ -54,9 +54,9 @@ namespace FishingIdle.Game.UI
             // The three styles are built once (they were rebuilt on every GUI event).
             if (_chapterStyle == null || _nameStyle.font != skin.Display.font)
             {
-                _chapterStyle = new GUIStyle(skin.SmallGold) { alignment = TextAnchor.MiddleCenter, fontSize = 15 };
-                _nameStyle = new GUIStyle(skin.Display) { alignment = TextAnchor.MiddleCenter, fontSize = 52 };
-                _lineStyle = new GUIStyle(skin.DisplaySub) { alignment = TextAnchor.MiddleCenter, fontSize = 18 };
+                _chapterStyle = new GUIStyle(skin.SmallGold) { alignment = TextAnchor.MiddleCenter, fontSize = UiSkin.SmallSize };
+                _nameStyle = new GUIStyle(skin.Display) { alignment = TextAnchor.MiddleCenter, fontSize = 40 };
+                _lineStyle = new GUIStyle(skin.DisplaySub) { alignment = TextAnchor.MiddleCenter, fontSize = UiSkin.BodySize };
             }
 
             var chapterStyle = _chapterStyle;

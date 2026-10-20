@@ -203,6 +203,14 @@ namespace FishingIdle.Editor
             font.fontTextureCase = FontTextureCase.Dynamic;
             font.includeFontData = true;
             font.fontNames = new[] { "Segoe UI", "Arial" };
+
+            // TD-059 / TD-061: the two pixel fonts of the ARC skin are rasterised without smoothing, so their square
+            // pixels stay sharp; the old fonts keep the default smooth rendering.
+            var file = System.IO.Path.GetFileNameWithoutExtension(assetPath);
+            if (file == "PressStart2P-Regular" || file == "VT323-Regular")
+            {
+                font.fontRenderingMode = FontRenderingMode.HintedRaster;
+            }
         }
     }
 }

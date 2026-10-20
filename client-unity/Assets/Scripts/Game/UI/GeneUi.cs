@@ -61,7 +61,7 @@ namespace FishingIdle.Game.UI
             var barWidth = Mathf.Max(12f, w - labelWidth - geneWidth - valueWidth - 18f);
 
             GUI.Label(new Rect(x, ty, labelWidth, 20f), FishCard.Fit(label, skin.SmallMuted, labelWidth), skin.SmallMuted);
-            skin.Bar(new Rect(barX, ty + 7f, barWidth, 6f), max > 0 ? Mathf.Clamp01(gene / (float)max) : 0f, perfect ? UiSkin.Gold : UiSkin.Accent);
+            skin.Bar(new Rect(barX, ty + 7f, barWidth, 6f), max > 0 ? Mathf.Clamp01(gene / (float)max) : 0f, perfect ? UiSkin.Gold : UiSkin.AttributeColor);
             var geneText = GameTexts.Genes.Value(gene, max);
             GUI.Label(new Rect(barX + barWidth + 4f, ty, geneWidth, 20f), geneText, perfect ? skin.SmallGoldRight : skin.SmallMutedRight);
             if (!string.IsNullOrEmpty(value))

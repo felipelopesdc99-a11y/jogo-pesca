@@ -1389,7 +1389,7 @@ namespace FishingIdle.Game.UI
             var withSizeBar = (buttons - y - fixedHeight - 16f) / 8f >= 20f;
             var rowH = Mathf.Clamp((buttons - y - fixedHeight - (withSizeBar ? 16f : 0f)) / 8f, 20f, 28f);
 
-            GUI.Label(new Rect(x, y, w, 34f), UI.FishCard.Fit(fish.SpeciesName, skin.Title, w), skin.Title);
+            skin.TitleLabel(new Rect(x, y, w, 34f), UI.FishCard.Fit(fish.SpeciesName, skin.Title, w), skin.Title);
             y += 36f;
 
             // Rarity seal, then the size seal (gold Excepcional / diamond Perfeição, or the size pill).
@@ -1725,7 +1725,7 @@ namespace FishingIdle.Game.UI
 
         private void DrawFoodPicker(UiSkin skin, Rect area)
         {
-            GUI.Label(new Rect(area.x, area.y, area.width, 32), GameTexts.Aquarium.FeedTitle + ": " + _selected.SpeciesName, skin.Title);
+            skin.TitleLabel(new Rect(area.x, area.y, area.width, 32), GameTexts.Aquarium.FeedTitle + ": " + _selected.SpeciesName, skin.Title);
             GUI.Label(new Rect(area.x + 2, area.y + 36, area.width, 22), GameTexts.Aquarium.FeedPickHint, skin.SmallMuted);
 
             RefreshFoodLists();
