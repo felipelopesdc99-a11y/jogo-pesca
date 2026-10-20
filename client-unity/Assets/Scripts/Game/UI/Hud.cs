@@ -1177,7 +1177,7 @@ namespace FishingIdle.Game.UI
             var y = coinLine.center.y - 11f - since * 6f;
             var previous = GUI.color;
             GUI.color = previous * new Color(1f, 1f, 1f, Mathf.Clamp01(1.4f - since));
-            skin.Pill(new Rect(x - 6f, y - 1f, w + 12f, 26f), new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.88f), Color.clear);
+            skin.PixelPill(new Rect(x - 6f, y - 1f, w + 12f, 26f), new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.88f), Color.clear);
             GUI.Label(new Rect(x, y + 2f, w, 22), text, skin.SmallGoldLine);
             GUI.color = previous;
         }

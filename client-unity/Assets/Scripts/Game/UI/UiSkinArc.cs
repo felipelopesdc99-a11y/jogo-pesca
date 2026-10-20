@@ -305,7 +305,7 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>A pill (round ends in pixel steps): a fill with a one-pixel line of <paramref name="line"/> (clear = none).</summary>
-        public void Pill(Rect rect, Color fill, Color line)
+        public void PixelPill(Rect rect, Color fill, Color line)
         {
             Shape(rect, PillRadius(rect.height), true, fill, line.a > 0f ? 1 : 0, line, Color.clear, Color.clear);
         }

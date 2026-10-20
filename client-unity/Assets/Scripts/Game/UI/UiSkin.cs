@@ -319,7 +319,7 @@ namespace FishingIdle.Game.UI
         /// </summary>
         public void Tag(Rect rect, string text, Color color)
         {
-            Pill(rect, NightOf(color), Color.clear);
+            PixelPill(rect, NightOf(color), Color.clear);
             var previous = GUI.contentColor;
             GUI.contentColor = Color.white;
             GUI.Label(rect, text, BadgeText);
@@ -328,7 +328,7 @@ namespace FishingIdle.Game.UI
 
         private GUIStyle _badgeText;
 
-        /// <summary>The text of <see cref="Badge"/> with no background (the pill is drawn by <see cref="Pill"/>).</summary>
+        /// <summary>The text of <see cref="Badge"/> with no background (the pill is drawn by <see cref="PixelPill"/>).</summary>
         private GUIStyle BadgeText
         {
             get
@@ -348,7 +348,7 @@ namespace FishingIdle.Game.UI
         {
             // A pixel pill (Art Bible 7): the colour as a dark tint with a one-pixel line in it.
             var tint = Color.Lerp(Theme.Field, color, 0.22f);
-            Pill(rect, new Color(tint.r, tint.g, tint.b, 0.95f), new Color(color.r, color.g, color.b, 0.95f));
+            PixelPill(rect, new Color(tint.r, tint.g, tint.b, 0.95f), new Color(color.r, color.g, color.b, 0.95f));
 
             var textRect = rect;
             if (icon != null)
@@ -390,11 +390,11 @@ namespace FishingIdle.Game.UI
             var hovered = GUI.enabled && rect.Contains(Event.current.mousePosition);
             if (active)
             {
-                Pill(rect, new Color(Theme.ChipOn.r, Theme.ChipOn.g, Theme.ChipOn.b, 1f), new Color(color.r, color.g, color.b, 0.95f));
+                PixelPill(rect, new Color(Theme.ChipOn.r, Theme.ChipOn.g, Theme.ChipOn.b, 1f), new Color(color.r, color.g, color.b, 0.95f));
             }
             else if (hovered)
             {
-                Pill(rect, Color.clear, new Color(color.r, color.g, color.b, 0.55f));
+                PixelPill(rect, Color.clear, new Color(color.r, color.g, color.b, 0.55f));
             }
 
             // A square pixel dot (3 × 3 art pixels) in the category colour.

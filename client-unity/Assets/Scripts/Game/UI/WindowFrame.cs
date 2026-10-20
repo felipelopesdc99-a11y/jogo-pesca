@@ -508,7 +508,7 @@ namespace FishingIdle.Game.UI
             }
 
             var theme = VisualTheme.Current;
-            skin.Pill(rect, hover ? theme.PanelElevated : theme.Field, hover ? theme.Title : UiSkin.FrameGold);
+            skin.PixelPill(rect, hover ? theme.PanelElevated : theme.Field, hover ? theme.Title : UiSkin.FrameGold);
             if (Event.current.type == EventType.Repaint)
             {
                 // A 7 × 7 art-pixel cross, two pixels thick, in the title colour.
@@ -542,7 +542,7 @@ namespace FishingIdle.Game.UI
                 face.a *= 0.5f;
             }
 
-            skin.Pill(rect, face, UiSkin.FrameInner);
+            skin.PixelPill(rect, face, UiSkin.FrameInner);
             GUI.Label(new Rect(rect.x, rect.y - 1f, rect.width, rect.height), GameTexts.WindowHeader.InfoButton, _infoGlyph);
             return GUI.Button(rect, GUIContent.none, GUIStyle.none);
         }

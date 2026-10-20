@@ -135,7 +135,7 @@ namespace FishingIdle.Game.UI
                 var style = RoundLabel(skin);
                 var w = style.CalcSize(new GUIContent(label)).x + 16f;
                 var pill = new Rect(circle.center.x - w / 2f, circle.yMax + 4f, w, UiSkin.SmallLine);
-                skin.Pill(pill, new Color(Theme.Panel.r, Theme.Panel.g, Theme.Panel.b, 0.88f), Color.clear);
+                skin.PixelPill(pill, new Color(Theme.Panel.r, Theme.Panel.g, Theme.Panel.b, 0.88f), Color.clear);
                 GUI.Label(pill, label, style);
             }
 
@@ -147,7 +147,7 @@ namespace FishingIdle.Game.UI
         {
             var w = TinyGold(skin).CalcSize(new GUIContent(text)).x + 16f;
             var pill = new Rect(circle.center.x - w / 2f, circle.y - 14f, w, 24f);
-            skin.Pill(pill, new Color(Theme.Field.r, Theme.Field.g, Theme.Field.b, 0.95f), UiSkin.Gold);
+            skin.PixelPill(pill, new Color(Theme.Field.r, Theme.Field.g, Theme.Field.b, 0.95f), UiSkin.Gold);
             GUI.Label(pill, text, TinyGold(skin));
         }
 
@@ -158,7 +158,7 @@ namespace FishingIdle.Game.UI
             var w = style.CalcSize(new GUIContent(text)).x + 12f;
             // Ends 2 px above the label under the button.
             var pill = new Rect(circle.center.x - w / 2f, circle.yMax - 20f, w, 22f);
-            skin.Pill(pill, new Color(Theme.Field.r, Theme.Field.g, Theme.Field.b, 0.95f), UiSkin.FrameDark);
+            skin.PixelPill(pill, new Color(Theme.Field.r, Theme.Field.g, Theme.Field.b, 0.95f), UiSkin.FrameDark);
             GUI.Label(pill, text, style);
         }
 
@@ -179,7 +179,7 @@ namespace FishingIdle.Game.UI
 
             var text = count > 9 ? "9+" : count.ToString();
             var pill = UiSkin.Snap(new Rect(target.xMax - 18f, target.y - 6f, text.Length > 1 ? 32f : 24f, 24f));
-            skin.Pill(pill, fill, UiSkin.Gold);
+            skin.PixelPill(pill, fill, UiSkin.Gold);
             GUI.Label(pill, text, BadgeCount(skin));
         }
     }
