@@ -1,0 +1,11 @@
+# Peças de ArtePixel convertidas da arte antiga como provisório (cena_pixel.py). Saem quando o pedido chegar.
+Mapas/BancoDasBaleias/map_banco_das_baleias_fg_left
+Mapas/BancoDasBaleias/map_banco_das_baleias_fg_right
+Mapas/BancoDasBaleias/map_banco_das_baleias_near_left
+Mapas/BancoDasBaleias/map_banco_das_baleias_near_right
+Mapas/LagoSereno/map_lago_sereno_near_left
+Mapas/LagoSereno/map_lago_sereno_near_right
+Mapas/TaludeNoturno/map_talude_noturno_fg_left
+Mapas/TaludeNoturno/map_talude_noturno_fg_right
+Mapas/TaludeNoturno/map_talude_noturno_near_left
+Mapas/TaludeNoturno/map_talude_noturno_near_right

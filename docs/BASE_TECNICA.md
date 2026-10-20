@@ -441,8 +441,42 @@ Cada passo está em `SaveMigrations.Upgrade`.
     acha cada desenho da folha por forma (componentes conectados sobre o magenta), tira a escala da caixa-alvo
     do pedido (`tools/Arte/pixel_pedidos.json`: `modo`, `alvo`, `escala`, `alvo_altura`, `ancora_x`, `largura`),
     amostra por moda numa paleta própria e grava em `Resources/ArtePixel/` com os nomes de `Arte/`.
-    `ArtImportSettings.ApplyPixel` importa essa pasta com Point, sem compressão e sem mipmaps. O jogo ainda
-    não lê `ArtePixel` (M25-T04). Teste: `python3 tools/Arte/pixel_folhas_teste.py`.
+    `ArtImportSettings.ApplyPixel` importa essa pasta com Point, sem compressão e sem mipmaps. Teste:
+    `python3 tools/Arte/pixel_folhas_teste.py`.
+  - **Carregamento com fallback (M25-T04, TD-059, TD-062):** `ArtAssets.Texture(caminho)` procura em
+    `Resources/ArtePixel/` primeiro e, se o arquivo não existe, em `Resources/Arte/` (mesmo nome). Cada textura
+    vinda de `ArtePixel` fica marcada (`ArtAssets.IsPixel(tex)` / `IsPixel(caminho)`), recebe filtro Point e
+    lembra o caminho, para achar a versão pequena (`ArtAssets.Small(tex)` = o mesmo arquivo com `_p`).
+    `ArtAssets.PixelSprite(caminho, pivô)` / `PixelSpriteAt(caminho, x, y)` fazem o sprite de cena com 20 pixels
+    por unidade e o pivô num canto de pixel; `ArtAssets.LegacyTexture` lê só a arte antiga (o cenário pintado
+    antigo, usado quando um mapa não tem faixas em pixel). Na interface, `Visual/PixelDraw.Fit(rect, tex[, cor])`
+    substitui o `GUI.DrawTexture(..., ScaleToFit, ...)`: para pixel art usa a maior escala inteira em pixels de
+    tela (escala do `GUI.matrix` × rect), a versão `_p` quando nem 1× cabe e cai no ScaleToFit quando nem ela cabe;
+    a arte antiga continua igual. `PixelDraw.Icon` não tinge os ícones coloridos (só a transparência), menos os 12
+    símbolos (`Icons.IsSymbol`), que são brancos e tingíveis (`tools/Arte/cena_pixel.py simbolos`).
+  - **Câmera pixel (M25-T05, TD-059):** `Scene/PixelCamera` cria uma segunda câmera que desenha o mundo numa
+    `RenderTexture` de 216 px de altura (largura pela janela, par; Point) e, no `OnRenderImage` da câmera principal
+    (que passa a não desenhar nada), põe a grade na tela pela maior escala inteira, ou pela escala inteira de cima
+    reduzida com bilinear quando a altura da janela não é múltipla de 216. A câmera principal continua com a
+    posição, o tamanho e a tag, então `WorldToScreenPoint` (mensagem da boia no HUD) continua certo. Logo antes
+    de a câmera pixel desenhar (`PixelSnapPass.OnPreCull`), todo sprite sem rotação da cena vai para o pixel
+    inteiro da grade e volta depois (`OnPostRender`): o código de movimento não muda. `PixelGrid` tem as
+    constantes (216, 20 px/unidade), `Snap` e `Active` (ligado só quando o mapa tem faixas em pixel).
+  - **Cena em pixel (M25-T06 a T08, T12):** `FishingScene.BuildPixel` monta o mapa pelo
+    `Resources/Visual/cena_pixel.json` (`Scene/PixelSceneConfig`), gravado por `tools/Arte/cena_pixel.py dados`:
+    céu e água numa textura só por mapa (`Scene/PixelScenery.PixelSky`, faixas da paleta, linha de pontilhado
+    no céu, estrelas e lua nos mapas de noite), as 6 nuvens comuns tingidas (`Drift`), as faixas `bg_far/mid/near`
+    no horizonte com cópias espelhadas dos lados, as laterais nas bordas, os cantos embaixo, reflexos espelhados
+    na cor da água (`PixelMirror`), brilhos de 1 px que trocam de lugar a cada 0,25–0,5 s (`PixelGlints`) e a
+    paisagem viva convertida (`ArtePixel/Vivos`). O barco em pixel usa a figura inteira atrás e a frente cortada
+    (`ArtePixel/Barcos/Cena/boat_XX_frente`, linha da borda à mão no script) na frente do pescador, pivô na linha
+    d'água; a Caixa de Pesca vai só no barco inicial. `FishermanRig` em modo pixel troca o quadro pela fase que
+    ele já tem (parado/esperando, arremesso pelo andamento do arremesso, fisgada, recolher, mostrando, escapou),
+    põe a vara (código, 1 px, cores da vara) no ponto das mãos de cada quadro e mostra o peixe `_p` a 1×, sem
+    girar. `WindSway` e `Floating` deixam de girar na grade pixel. `python3 tools/Arte/cena_pixel.py previa
+    <pasta> [map_01 ...]` monta a cena como o jogo (mesmos números) e o GIF do pescador; `provisorios`, `vivos` e
+    `miniaturas` geram as peças convertidas da arte antiga (lista em `tools/Arte/pixel_provisorios.txt`), a
+    paisagem viva em pixel e as miniaturas dos mapas.
   - **Margens e reflexos:** as margens (`near_left` / `near_right`) ficam presas às bordas da tela, com
     altura fixa por mapa (`SceneTheme.NearLeftHeight` etc., `ArtAssets.SpriteByHeight`); cada camada de
     terra ganha um reflexo na água, espelhado, achatado, escurecido e cortado em 12 faixas que balançam

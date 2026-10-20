@@ -3665,3 +3665,64 @@ de regra, número ou save muda; a arte ainda não está ligada no jogo):
 - **Boia:** 12 × 16 (um pouco maior que os ~8 × 14 da Bíblia, para a listra branca e vermelha aparecer).
 
 As folhas que vieram trocadas ou ruins estão em `docs/ASSETS_PIXEL.md` (seção "Recebimento de 20/10/2026").
+
+### A-185 · Cena de pesca em pixel art: composição, céu e água (20/10/2026)
+
+**Seção do GDD:** cena de pesca · `docs/ART_BIBLE_PIXEL.md` 3.1, 5 e 6.2 · M25-T05 a T07, T12 · **Situação:** no jogo
+(compila; visual só fica verificado quando o proprietário apertar Play)
+
+Detalhes de apresentação decididos ao ligar a pixel art (nenhuma regra, número, sorteio ou save muda):
+
+- **Grade:** a cena é desenhada em 216 px de altura e ampliada sem suavizar (5× em 1080p; em janela de altura que não é
+  múltipla de 216, amplia pelo inteiro de cima e reduz suave). O horizonte fica na linha 104 (104 px de céu, 112 de
+  água), como antes (y = 0,2).
+- **Céu e água pelo código** nas paletas da Bíblia: 4 faixas de céu com uma linha de pontilhado em cada troca; 6 faixas
+  de água, mais finas perto do horizonte, **sem pontilhado** (mais limpo; os brilhos já quebram as faixas). Estrelas de
+  1 px nos mapas 9 e 10 e uma lua pequena só no 10 (o Talude Noturno já traz a lua pintada na faixa do fundo).
+- **Nuvens:** as 6 comuns, tingidas por mapa (creme no Pantanal, pêssego no Estuário, azul-noite nos mapas de noite),
+  2 a 4 por mapa, deslizando devagar de pixel em pixel.
+- **Faixas do fundo** apoiadas no horizonte (a distante um pouco acima), com cópias espelhadas nas pontas para
+  janelas largas. **Laterais** presas às bordas da tela, com a base de 10 a 16 px dentro da água. **Cantos** presos
+  embaixo.
+- **Reflexos:** cada faixa e lateral espelhada embaixo de si, na cor da água, sem achatar nem balançar. Nos mapas de mar
+  aberto (Corrente Azul, Talude Noturno, Abismo Atlântico) as faixas já são o próprio mar e **não** ganham reflexo.
+- **Brilhos na água:** traços de 1 px de altura, de 1 a 6 px de largura (maiores perto de quem olha), que trocam de
+  lugar a cada 0,25–0,5 s; com correnteza, andam 1 px por vez.
+- **Sem brilhos suaves na cena pixel:** saem o brilho do sol, raios, névoa, poeira dourada, libélulas e a aura em volta
+  da captura (a recompensa continua com as faíscas). Ficam as sombras de peixe, os peixes pulando ao longe e a paisagem
+  viva.
+- **Plantas e vitórias-régias** não giram: numa rajada a planta encosta 1 px para a direita; a vitória-régia só deriva.
+- **Píer:** a cena continua com o pescador no barco (não há píer na cena de pesca; nenhuma arte de píer foi pedida
+  para ela).
+
+### A-186 · Pescador, barco, boia e Caixa em pixel art (20/10/2026)
+
+**Seção do GDD:** cena de pesca (seção 8) · `docs/ART_BIBLE_PIXEL.md` 3.3 e 5 · M25-T07, T08, T10 · **Situação:** no
+jogo (compila; verificado só no Play)
+
+- **Animação por fase** (a fase que o jogo já mostrava, sem regra nova): parado e esperando = 4 quadros a 4 por segundo;
+  arremesso = 2 quadros puxando a vara para trás e 2 lançando, acompanhando o tempo do arremesso; fisgada = 2 quadros a
+  10 por segundo e fica no último; recolher = 4 quadros a 8 por segundo; mostrando o peixe = 1 quadro; escapou = a
+  fisgada durante a briga e 1 quadro quando a linha solta.
+- **Vara e linha pelo código**, 1 px de grade, a vara com 60 px, nas cores da vara equipada (tiradas da figura da vara);
+  ela gira em volta do ponto das mãos de cada quadro, então acompanha os braços.
+- **Peixe na mão:** a versão pequena `_p` a 1×, junto das mãos, sem girar nem crescer; o balanço vira 1 px para cima e
+  para baixo, e ele voa para a Caixa sem encolher. O tamanho do exemplar continua nas telas (não na cena).
+- **Barco:** a figura em pixel inteira atrás do pescador e a borda da frente cortada pelo código na frente dele; ele senta
+  com os pés no assento de cada barco. Balança 1 px, sem inclinar. Sem a sombra suave embaixo.
+- **Caixa de Pesca:** na popa do barco inicial (atrás do pescador, parte escondida pela borda); some nos barcos da Loja,
+  como antes.
+- **Boia:** a boia 12 × 16 com a linha d'água na linha 11. **Isca:** um ponto de 2 × 1 px na cor da isca, embaixo da boia.
+
+### A-187 · Peixes, itens e ícones em pixel nas telas (20/10/2026)
+
+**Seção do GDD:** telas · `docs/ART_BIBLE_PIXEL.md` 3.2 · M25-T09 a T11 · **Situação:** no jogo (compila; verificado só no Play)
+
+- Toda figura em pixel nas telas aparece na **maior escala inteira** que cabe no espaço dela, em pixels da tela; quando
+  nem 1× cabe, o peixe usa a versão pequena `_p`; quando nem ela cabe, reduz como antes (fica legível, mas não nítida).
+  Por isso um peixe pode aparecer um pouco menor que o quadro em que antes era esticado.
+- Nada em pixel gira: o peixe do Aquário balança subindo e descendo 2 px; o barquinho do Mapa vira de lado (espelhado)
+  em vez de girar; as varas da Loja já vêm na diagonal; a boia deitada da Loja gira só um quarto de volta.
+- **Ícones coloridos não são tingidos** (só a transparência segue a cor pedida, para o desativado continuar apagado);
+  os 12 símbolos simples (+, ✕, ✓, setas, iniciar, pausa, parar, ordenar, compacto, i, !) são desenhos brancos de
+  12 × 12 px tingidos pelo código, como antes.

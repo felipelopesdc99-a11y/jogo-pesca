@@ -212,7 +212,7 @@ namespace FishingIdle.Game.UI
             var drawn = new Rect(body.x + shake, body.y, body.width, body.height);
             if (tex != null)
             {
-                GUI.DrawTexture(drawn, tex, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(drawn, tex);
             }
             else if (!animated)
             {

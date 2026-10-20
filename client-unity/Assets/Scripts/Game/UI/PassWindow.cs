@@ -273,7 +273,7 @@ namespace FishingIdle.Game.UI
             var size = Mathf.Min(SealSize, rect.width - 24f, rect.height - 56f);
             var top = rect.center.y - (size + 6f + 28f) / 2f;
             var sealRect = new Rect(rect.x + 4f + (rect.width - 4f - size) / 2f, top, size, size);
-            GUI.DrawTexture(sealRect, seal, ScaleMode.ScaleToFit, true, 0, premium ? Color.white : new Color(1f, 1f, 1f, 0.5f), 0, 0);
+            PixelDraw.Fit(sealRect, seal, premium ? Color.white : new Color(1f, 1f, 1f, 0.5f));
             if (!premium)
             {
                 var lockSize = Mathf.Round(size * 0.36f);
@@ -357,7 +357,7 @@ namespace FishingIdle.Game.UI
                 var art = ArtAssets.Texture(FragmentFolder + reward.BoatId);
                 if (art != null)
                 {
-                    GUI.DrawTexture(new Rect(x, y, 20f, 20f), art, ScaleMode.ScaleToFit, true);
+                    PixelDraw.Fit(new Rect(x, y, 20f, 20f), art);
                 }
                 else
                 {
@@ -375,7 +375,7 @@ namespace FishingIdle.Game.UI
                 var art = ArtAssets.Texture(FragmentFolder + reward.RodId);
                 if (art != null)
                 {
-                    GUI.DrawTexture(new Rect(x, y, 20f, 20f), art, ScaleMode.ScaleToFit, true);
+                    PixelDraw.Fit(new Rect(x, y, 20f, 20f), art);
                 }
                 else
                 {
@@ -393,7 +393,7 @@ namespace FishingIdle.Game.UI
                 var art = ArtAssets.Texture(ClothingFragmentArt);
                 if (art != null)
                 {
-                    GUI.DrawTexture(new Rect(x, y, 20f, 20f), art, ScaleMode.ScaleToFit, true);
+                    PixelDraw.Fit(new Rect(x, y, 20f, 20f), art);
                 }
                 else
                 {

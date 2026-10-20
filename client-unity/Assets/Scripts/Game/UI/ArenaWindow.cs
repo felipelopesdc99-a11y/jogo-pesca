@@ -659,7 +659,7 @@ namespace FishingIdle.Game.UI
                 var e = Mathf.Min(column.width - 4f, 112f);
                 var badge = new Rect(cx - e / 2f, column.center.y - e / 2f, e, e);
                 skin.DrawGlow(badge, UiSkin.Gold, 0.3f);
-                GUI.DrawTexture(badge, emblem, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(badge, emblem);
                 WindowFrame.OutlinedLabel(badge, GameTexts.Arena.VsMark, skin.VsMark);
                 return;
             }
@@ -680,14 +680,14 @@ namespace FishingIdle.Game.UI
         {
             if (!flipped)
             {
-                GUI.DrawTexture(art, Art.FishTexture(speciesId), ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(art, Art.FishTexture(speciesId));
                 return;
             }
 
             var matrix = GUI.matrix;
             var pivot = new Vector3(art.center.x, art.center.y, 0f);
             GUI.matrix = matrix * Matrix4x4.TRS(pivot, Quaternion.identity, new Vector3(-1f, 1f, 1f)) * Matrix4x4.TRS(-pivot, Quaternion.identity, Vector3.one);
-            GUI.DrawTexture(art, Art.FishTexture(speciesId), ScaleMode.ScaleToFit, true);
+            PixelDraw.Fit(art, Art.FishTexture(speciesId));
             GUI.matrix = matrix;
         }
 
@@ -841,12 +841,12 @@ namespace FishingIdle.Game.UI
                 if (entry.LeadSpeciesId != null)
                 {
                     var fishHeight = Mathf.Max(24f, nameY - top - 34);
-                    GUI.DrawTexture(new Rect(x + 16, top + 30, w - 32, fishHeight), Art.FishTexture(entry.LeadSpeciesId), ScaleMode.ScaleToFit, true);
+                    PixelDraw.Fit(new Rect(x + 16, top + 30, w - 32, fishHeight), Art.FishTexture(entry.LeadSpeciesId));
                 }
 
                 if (medal != null)
                 {
-                    GUI.DrawTexture(new Rect(x + w / 2f - 14, top, 28, 28), medal, ScaleMode.ScaleToFit, true);
+                    PixelDraw.Fit(new Rect(x + w / 2f - 14, top, 28, 28), medal);
                 }
                 else
                 {
@@ -1090,7 +1090,7 @@ namespace FishingIdle.Game.UI
                 {
                     // The duel emblem behind the "VS" (A-179); the word keeps a dark outline to read on it.
                     var badge = Mathf.Min(240f, avatarSize * 1.2f);
-                    GUI.DrawTexture(new Rect(vs.center.x - badge / 2f, vs.center.y - badge / 2f, badge, badge), emblem, ScaleMode.ScaleToFit, true);
+                    PixelDraw.Fit(new Rect(vs.center.x - badge / 2f, vs.center.y - badge / 2f, badge, badge), emblem);
                     WindowFrame.OutlinedLabel(vs, GameTexts.Arena.VsMark, skin.VsDisplay);
                 }
                 else

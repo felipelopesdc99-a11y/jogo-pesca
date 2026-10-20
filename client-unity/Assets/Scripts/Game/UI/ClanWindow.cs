@@ -310,7 +310,7 @@ namespace FishingIdle.Game.UI
 
             var size = rect.height - 12f;
             var crestRect = new Rect(rect.x + 14f, rect.y + 6f, size, size);
-            GUI.DrawTexture(crestRect, crest, ScaleMode.ScaleToFit, true);
+            PixelDraw.Fit(crestRect, crest);
             if (!string.IsNullOrEmpty(name))
             {
                 if (_ribbon == null || _ribbon.font != skin.SmallBold.font)
@@ -359,7 +359,7 @@ namespace FishingIdle.Game.UI
             var art = Art.FishTexture(fish.SpeciesId);
             if (art != null)
             {
-                GUI.DrawTexture(new Rect(x, y - 4f, 72f, 52f), art, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(new Rect(x, y - 4f, 72f, 52f), art);
             }
 
             var tx = x + 84f;
@@ -522,7 +522,7 @@ namespace FishingIdle.Game.UI
                     var art = Art.FishTexture(f.SpeciesId);
                     if (art != null)
                     {
-                        GUI.DrawTexture(new Rect(row.x + 10f, row.y + 6f, 64f, row.height - 12f), art, ScaleMode.ScaleToFit, true);
+                        PixelDraw.Fit(new Rect(row.x + 10f, row.y + 6f, 64f, row.height - 12f), art);
                     }
 
                     var tw = row.width - 84f - 150f;

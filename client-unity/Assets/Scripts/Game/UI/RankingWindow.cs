@@ -118,7 +118,7 @@ namespace FishingIdle.Game.UI
             var side = WindowFrame.TakeSide(44f);
             if (side.width >= 44f)
             {
-                GUI.DrawTexture(new Rect(side.x, side.center.y - 22f, 44f, 44f), tex, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(new Rect(side.x, side.center.y - 22f, 44f, 44f), tex);
             }
         }
 
@@ -166,7 +166,7 @@ namespace FishingIdle.Game.UI
             {
                 var ph = pw * pier.height / pier.width;
                 var pr = new Rect(stage.center.x - pw / 2f, stage.yMax - ph - 4f, pw, ph);
-                GUI.DrawTexture(pr, pier, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(pr, pier);
                 floor = pr.y + ph * DeckLine;
             }
             else
@@ -242,7 +242,7 @@ namespace FishingIdle.Game.UI
                 var crownRect = new Rect(cx - 26f, avatar.y - 36f, 52f, 52f);
                 if (crown != null)
                 {
-                    GUI.DrawTexture(crownRect, crown, ScaleMode.ScaleToFit, true);
+                    PixelDraw.Fit(crownRect, crown);
                 }
                 else
                 {
@@ -385,7 +385,7 @@ namespace FishingIdle.Game.UI
             var tex = ArtAssets.Texture(art);
             if (tex != null)
             {
-                GUI.DrawTexture(rect, tex, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(rect, tex);
             }
             else
             {
@@ -413,7 +413,7 @@ namespace FishingIdle.Game.UI
             var tex = ArtAssets.Texture(EmblemArt(category));
             if (tex != null)
             {
-                GUI.DrawTexture(rect, tex, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(rect, tex);
                 return;
             }
 

@@ -401,6 +401,16 @@ namespace FishingIdle.Game.Scene
         private string _shownBoat, _shownRod, _shownBait;
         private bool _gearShown;
 
+        // The pixel scene (M25): the camera that draws it on the 216-pixel grid, the map's look, its sky texture and
+        // the pixel hull pieces (the box rides only on the starter boat).
+        private PixelCamera _pixelCamera;
+        private PixelMapLook _pixelLook;
+        private Texture2D _skyTexture;
+        private SpriteRenderer _pixelHullBack, _pixelHullFront, _pixelBox;
+
+        /// <summary>True while the scene is drawn in pixel art (the map has pixel layers in ArtePixel).</summary>
+        public bool IsPixel => _pixelLook != null;
+
         /// <summary>0–1 darkness the HUD draws over the scene while the trip ends and the new map appears.</summary>
         public float TravelFade
         {
@@ -434,6 +444,17 @@ namespace FishingIdle.Game.Scene
             if (_root != null)
             {
                 _root.MapChanged -= OnMapChanged;
+            }
+
+            FreeSky();
+        }
+
+        private void FreeSky()
+        {
+            if (_skyTexture != null)
+            {
+                Destroy(_skyTexture);
+                _skyTexture = null;
             }
         }
 
@@ -469,9 +490,21 @@ namespace FishingIdle.Game.Scene
         {
             _world = new GameObject("Cenário").transform;
             _world.SetParent(transform, false);
+            FreeSky();
 
-            // Painted layers (Resources/Arte/Mapas) when present; the scenery drawn from code otherwise.
-            if (ArtAssets.Texture(theme.ArtPath("bg_sky")) != null)
+            // Pixel layers (Resources/ArtePixel/Mapas) first (M25); then the old painted layers; the scenery drawn
+            // from code otherwise.
+            _pixelLook = ArtAssets.IsPixel(theme.ArtPath("bg_far")) ? PixelSceneConfig.Map(theme.ArtFolder) : null;
+            if (_pixelCamera != null)
+            {
+                _pixelCamera.SetOn(_pixelLook != null);
+            }
+
+            if (_pixelLook != null)
+            {
+                BuildPixel(theme, _pixelLook);
+            }
+            else if (ArtAssets.LegacyTexture(theme.ArtPath("bg_sky")) != null)
             {
                 BuildPainted(theme);
             }
@@ -508,6 +541,14 @@ namespace FishingIdle.Game.Scene
             _shownBoat = gear.BoatId;
             _shownRod = gear.RodId;
             _shownBait = gear.BaitId;
+
+            if (_pixelHullBack != null)
+            {
+                ShowPixelBoat(gear.BoatId);
+                Fisherman.UseRod(gear.RodId);
+                Fisherman.UseBait(gear.BaitId);
+                return;
+            }
 
             // A Shop boat: its picture behind the fisherman and its near side in front of him. The
             // starter boat (or a boat without pictures) keeps the scene's own hull.
@@ -554,6 +595,38 @@ namespace FishingIdle.Game.Scene
             ShowGear();
         }
 
+        /// <summary>
+        /// The pixel boat in use (M25-T07/T10): its picture behind the fisherman, its near side (cut by
+        /// tools/Arte/cena_pixel.py) in front of him, on the water line; he sits with his feet on the boat's seat.
+        /// </summary>
+        private void ShowPixelBoat(string boatId)
+        {
+            var look = PixelSceneConfig.Boat(boatId);
+            var back = look != null ? ArtAssets.PixelSpriteAt(look.art, look.pivot_x, PixelHeight(look.art) - look.pivot_y) : null;
+            var front = look != null ? ArtAssets.PixelSpriteAt(look.front, look.pivot_x, PixelHeight(look.front) - look.pivot_y) : null;
+            _pixelHullBack.sprite = back;
+            _pixelHullFront.sprite = front;
+            _pixelHullBack.enabled = back != null;
+            _pixelHullFront.enabled = front != null;
+            var file = PixelSceneConfig.File;
+            if (_pixelBox != null)
+            {
+                _pixelBox.enabled = look != null && file != null && look.id == file.starter_boat;
+                if (_pixelBox.enabled)
+                {
+                    _pixelBox.transform.localPosition = new Vector3((file.box_x - look.pivot_x) * PixelGrid.Unit, (look.pivot_y - file.box_y) * PixelGrid.Unit, 0f);
+                }
+            }
+
+            Fisherman.SitAt(look != null ? new Vector3((look.seat_x - look.pivot_x) * PixelGrid.Unit, (look.pivot_y - look.seat_y) * PixelGrid.Unit, 0f) : (Vector3?)null);
+        }
+
+        private static int PixelHeight(string path)
+        {
+            var tex = ArtAssets.Texture(path);
+            return tex != null ? tex.height : 0;
+        }
+
         private void BuildCamera(SceneTheme theme)
         {
             Camera = Camera.main;
@@ -572,6 +645,159 @@ namespace FishingIdle.Game.Scene
             Camera.clearFlags = CameraClearFlags.SolidColor;
             Camera.backgroundColor = theme.SkyTop;
             Camera.gameObject.AddComponent<CameraSway>();
+            _pixelCamera = PixelCamera.Attach(Camera, transform);
+        }
+
+        /// <summary>
+        /// The scene in pixel art (M25-T06, T07, T12; ART_BIBLE_PIXEL 3.1, 5 and 6.2) on the 216-pixel grid, 20 pixels per
+        /// unit: sky and water drawn by the code in the map's palette, the 6 common clouds tinted, the three bands of
+        /// the background resting on the horizon (mirrored copies on the sides for wide windows), the side banks pinned
+        /// to the edges, the corners at the bottom, each land layer mirrored on the water, glints that jump in whole
+        /// pixels, and the living landscape. The numbers come from Resources/Visual/cena_pixel.json, the same ones the
+        /// preview of tools/Arte/cena_pixel.py uses.
+        /// </summary>
+        private void BuildPixel(SceneTheme theme, PixelMapLook look)
+        {
+            var file = PixelSceneConfig.File;
+            var gridHeight = file != null ? file.grid_height : PixelGrid.Height;
+            var horizonRow = file != null ? file.horizon_row : 104;
+            var horizon = PixelGrid.Snap(Horizon);
+            var halfWidth = PixelGrid.Snap(Camera != null ? Camera.orthographicSize * Camera.aspect : 9.6f);
+            if (Camera != null)
+            {
+                Camera.backgroundColor = PixelSceneConfig.Hex(look.sky[0], theme.SkyTop);
+            }
+
+            // Sky and water (one texture for the whole map).
+            var sky = Layer("Céu", 0f);
+            _skyTexture = PixelSky.Build(look, gridHeight, horizonRow);
+            Sprite(sky, "Céu e água", PixelSky.Sprite(_skyTexture), Vector3.zero, Vector3.one, OrderSky);
+
+            var clouds = Layer("Nuvens", 0.85f);
+            var cloudTint = PixelSceneConfig.Hex(look.cloud, Color.white);
+            cloudTint.a = look.cloud_alpha;
+            for (var i = 0; i < look.clouds; i++)
+            {
+                var art = "Mapas/Comum/nuvem_" + ((i * 2 + (string.CompareOrdinal(look.id, "map_05") > 0 ? 1 : 0)) % 6 + 1).ToString("00");
+                var cloudSprite = ArtAssets.PixelSprite(art, new Vector2(0.5f, 0.5f));
+                if (cloudSprite == null)
+                {
+                    continue;
+                }
+
+                var x = -halfWidth + (2f * halfWidth) * (i + 0.5f) / look.clouds + Random.Range(-1.5f, 1.5f);
+                var y = 5.4f - Random.Range(10, 52) * PixelGrid.Unit;
+                var cloud = Sprite(clouds, "Nuvem", cloudSprite, new Vector3(x, y, 0f), Vector3.one, OrderClouds, cloudTint);
+                var drift = cloud.gameObject.AddComponent<Drift>();
+                drift.Speed = Random.Range(0.03f, 0.08f);
+                drift.WrapHalfWidth = halfWidth + 3f;
+            }
+
+            var living = LivingConfig.For(theme.ArtFolder);
+            Color? reflect = null;
+            if (look.reflect_bands)
+            {
+                var r = PixelSceneConfig.Hex(look.reflect, theme.WaterMid);
+                r.a = look.reflect_alpha;
+                reflect = r;
+            }
+
+            // The three background bands, resting on the horizon.
+            PixelBand(Layer("Montanhas distantes", 0.75f), theme.ArtPath("bg_far"), horizon + look.far_dy * PixelGrid.Unit, OrderFarHills, reflect);
+            PixelBand(Layer("Morros próximos", 0.55f), theme.ArtPath("bg_mid"), horizon + look.mid_dy * PixelGrid.Unit, OrderMidHills, reflect);
+            var shore = Layer("Mata da margem", 0.35f);
+            PixelBand(shore, theme.ArtPath("bg_near"), horizon + look.near_dy * PixelGrid.Unit, OrderTrees, reflect);
+
+            // The side banks, pinned to the edges of the view.
+            var sideY = horizon + look.side_dy * PixelGrid.Unit;
+            var left = ArtAssets.PixelSprite(theme.ArtPath("near_left"), new Vector2(0f, 0f));
+            var right = ArtAssets.PixelSprite(theme.ArtPath("near_right"), new Vector2(1f, 0f));
+            if (left != null)
+            {
+                PixelMirror(Sprite(shore, "Margem esquerda", left, new Vector3(-halfWidth, sideY, 0f), Vector3.one, OrderTrees + 1), reflect);
+            }
+
+            if (right != null)
+            {
+                PixelMirror(Sprite(shore, "Margem direita", right, new Vector3(halfWidth, sideY, 0f), Vector3.one, OrderTrees + 1), reflect);
+            }
+
+            var water = Layer("Água", 0f);
+            var glints = new GameObject("Brilhos na água").AddComponent<PixelGlints>();
+            glints.transform.SetParent(water, false);
+            glints.Tint = PixelSceneConfig.Hex(look.glint, Color.white);
+            glints.Horizon = horizon;
+            glints.HalfWidth = halfWidth + 1f;
+            glints.Current = theme.Current;
+            glints.Count = Mathf.RoundToInt(40f * halfWidth / 9.6f);
+            glints.SortingOrder = OrderWaterDetail;
+
+            var jumps = new GameObject("Peixes saltando ao longe");
+            jumps.transform.SetParent(water, false);
+            var jumper = jumps.AddComponent<DistantFishJumps>();
+            jumper.SortingOrder = OrderDistantFish;
+            jumper.Area = new Rect(-9f, -1.5f, 18f, 1.4f);
+
+            // Only the quiet signs of life that already read as pixels: the fish shadows (no soft glows, mists or rays).
+            var life = new GameObject("Vida").transform;
+            life.SetParent(_world, false);
+            var shadows = life.gameObject.AddComponent<FishShadows>();
+            shadows.SortingOrder = OrderWaterDetail;
+            shadows.Tint = new Color(0.02f, 0.08f, 0.12f);
+
+            // The corners of the foreground, at the bottom of the view.
+            var fg = Layer("Primeiro plano", -0.25f);
+            var bottom = -PixelGrid.Snap(gridHeight * 0.5f * PixelGrid.Unit);
+            var fgLeft = ArtAssets.PixelSprite(theme.ArtPath("fg_left"), new Vector2(0f, 0f));
+            var fgRight = ArtAssets.PixelSprite(theme.ArtPath("fg_right"), new Vector2(1f, 0f));
+            if (fgLeft != null)
+            {
+                Sprite(fg, "Canto esquerdo", fgLeft, new Vector3(-halfWidth, bottom, 0f), Vector3.one, OrderForeground);
+            }
+
+            if (fgRight != null)
+            {
+                Sprite(fg, "Canto direito", fgRight, new Vector3(halfWidth, bottom, 0f), Vector3.one, OrderForeground);
+            }
+
+            if (living != null)
+            {
+                BuildLiving(theme, living, halfWidth, clouds, shore, water, fg);
+            }
+        }
+
+        /// <summary>A background band (384 px wide) resting at <paramref name="baseY"/>, with mirrored copies on both sides for wide windows.</summary>
+        private void PixelBand(Transform parent, string path, float baseY, int order, Color? reflect)
+        {
+            var sprite = ArtAssets.PixelSprite(path, new Vector2(0.5f, 0f));
+            if (sprite == null)
+            {
+                return;
+            }
+
+            var width = sprite.rect.width * PixelGrid.Unit;
+            for (var k = -1; k <= 1; k++)
+            {
+                var band = Sprite(parent, path.Substring(path.LastIndexOf('/') + 1), sprite, new Vector3(k * width, PixelGrid.Snap(baseY), 0f), Vector3.one, order);
+                band.flipX = k != 0;
+                PixelMirror(band, reflect);
+            }
+        }
+
+        /// <summary>
+        /// The reflection of a land layer on the water (ART_BIBLE_PIXEL 4.9: mirrored, never squashed or turned): the
+        /// same picture upside down under its base, in the water's colour.
+        /// </summary>
+        private static void PixelMirror(SpriteRenderer land, Color? reflect)
+        {
+            if (land == null || reflect == null)
+            {
+                return;
+            }
+
+            var mirror = Sprite(land.transform.parent, land.name + " (reflexo)", land.sprite, land.transform.localPosition, Vector3.one, OrderReflection, reflect.Value);
+            mirror.flipX = land.flipX;
+            mirror.flipY = true;
         }
 
         /// <summary>
@@ -846,6 +1072,13 @@ namespace FishingIdle.Game.Scene
                 return;
             }
 
+            if (PixelGrid.Active)
+            {
+                // On the pixel grid a reflection is mirrored, never squashed (the living trees of the shore).
+                PixelMirror(land, new Color(0.5f, 0.58f, 0.72f, alpha));
+                return;
+            }
+
             const int slices = 12;
             var source = land.sprite;
             var tex = source.texture;
@@ -1022,10 +1255,24 @@ namespace FishingIdle.Game.Scene
             var boat = new GameObject("Barco").transform;
             boat.SetParent(layer, false);
             boat.localPosition = new Vector3(-1.2f, -2.1f, 0f);
-            boat.gameObject.AddComponent<Bobbing>();
+            var bobbing = boat.gameObject.AddComponent<Bobbing>();
             var ripples = layer.gameObject.AddComponent<BoatRipples>();
             ripples.Boat = boat;
             ripples.SortingOrder = OrderWaterDetail;
+            _starterHull.Clear();
+            _pixelHullBack = _pixelHullFront = _pixelBox = null;
+
+            if (_pixelLook != null && PixelSceneConfig.Boat(null) != null)
+            {
+                // Pixel boat (M25-T07): one grid pixel up and down, never tilted (pixel art does not turn).
+                bobbing.Amplitude = PixelGrid.Unit;
+                bobbing.TiltDegrees = 0f;
+                _pixelHullBack = Sprite(boat, "Casco", null, Vector3.zero, Vector3.one, OrderBoat);
+                _pixelHullFront = Sprite(boat, "Casco (frente)", null, Vector3.zero, Vector3.one, OrderBoatFront);
+                _pixelBox = Sprite(boat, "Caixa de pesca", ArtAssets.PixelSprite("Cena/caixa_de_pesca", new Vector2(0.5f, 0f)), Vector3.zero, Vector3.one, OrderFisherman - 1);
+                _gearHullBack = _gearHullFront = null;
+                return boat;
+            }
 
             // The hull in two layers (Cena/barco_fundo + barco_frente, cut by processar_pedidos.py): the far
             // gunwale and the inside behind the fisherman, the near side in front of him, so he sits
@@ -1033,7 +1280,6 @@ namespace FishingIdle.Game.Scene
             var hullBack = ArtAssets.Sprite("Cena/barco_fundo", 3.6f, new Vector2(0.5f, 0.3f));
             var hullFront = ArtAssets.Sprite("Cena/barco_frente", 3.6f, new Vector2(0.5f, 0.3f));
             var tackle = ArtAssets.Sprite("Cena/caixa_de_pesca", 0.5f, new Vector2(0.5f, 0f));
-            _starterHull.Clear();
             if (hullBack != null && hullFront != null)
             {
                 _starterHull.Add(Sprite(boat, "Casco (fundo)", hullBack, Vector3.zero, Vector3.one, OrderBoat));

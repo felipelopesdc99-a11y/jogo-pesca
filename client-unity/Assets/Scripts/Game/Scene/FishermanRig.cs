@@ -30,12 +30,21 @@ namespace FishingIdle.Game.Scene
         }
 
         private const int LineSegments = 18;
-        private const float RodLength = 2.7f;
         private const float ShowSeconds = 2.2f;
         private const float StoreSeconds = 0.6f;
 
         private static readonly Vector3 WaterTarget = new Vector3(3.3f, -2.5f, 0f);
         private static readonly Vector3 BoxTarget = new Vector3(8.6f, -4.7f, 0f);
+
+        private float RodLength = 2.7f;
+        private float _lineWidth = 0.022f;
+
+        // Pixel mode (M25-T08): the frames of each animation, where the hands hold the rod in each of them, and the
+        // frame shown now. Picked from the phase the service's timer already gives (no new rule).
+        private bool _pixel;
+        private SpriteRenderer _frame;
+        private PixelAnimation _idle, _cast, _reel, _bite, _show, _escape;
+        private float _castK;
 
         private GameRoot _root;
         private Transform _world;
@@ -118,13 +127,18 @@ namespace FishingIdle.Game.Scene
             // shapes with an arm holding the rod. His size, seat (pivot) and the point between his
             // fists come from Visual/equipamento_cena.json (tools/Arte/equipamento_na_cena.py); the
             // old picture's numbers are the fallback.
-            var fisher = EquipmentLook.Fisherman();
+            _pixel = PixelGrid.Active && BuildPixelFisherman();
+            var fisher = _pixel ? null : EquipmentLook.Fisherman();
             var paintedHeight = fisher != null ? fisher.height : 1.7f;
             var pivot = fisher != null ? new Vector2(fisher.pivot_u, fisher.pivot_v) : new Vector2(0.27f, 0.12f);
             var grip = fisher != null ? new Vector2(fisher.hands_u, fisher.hands_v) : new Vector2(0.97f, 0.23f);
-            var painted = Visual.ArtAssets.SpriteByHeight(fisher != null ? fisher.art : "Cena/pescador", paintedHeight, pivot);
+            var painted = _pixel ? null : Visual.ArtAssets.SpriteByHeight(fisher != null ? fisher.art : "Cena/pescador", paintedHeight, pivot);
             Vector3 hands;
-            if (painted != null)
+            if (_pixel)
+            {
+                hands = _idle.Hands[0];
+            }
+            else if (painted != null)
             {
                 // Inside a two-layer hull he sits on the bench, between its back and front; with a
                 // single hull picture he stays behind it.
@@ -145,13 +159,13 @@ namespace FishingIdle.Game.Scene
             }
             else
             {
+                hands = new Vector3(0.44f, 0.54f, 0f);
                 FishingScene.Sprite(_body, "Pernas", Art.RoundedBox, new Vector3(0.22f, 0.12f, 0f), new Vector3(0.62f, 0.2f, 1f), o, pants);
                 FishingScene.Sprite(_body, "Tronco", Art.RoundedBox, new Vector3(0f, 0.46f, 0f), new Vector3(0.44f, 0.66f, 1f), o, shirt);
                 FishingScene.Sprite(_body, "Cabeça", Art.Circle, new Vector3(0.04f, 0.93f, 0f), Vector3.one * 0.36f, o, skin);
                 FishingScene.Sprite(_body, "Chapéu", Art.Hat, new Vector3(0.04f, 0.99f, 0f), Vector3.one * 0.72f, o + 1);
                 var arm = FishingScene.Sprite(_body, "Braço", Art.PixelLeft, new Vector3(0.08f, 0.66f, 0f), new Vector3(0.4f, 0.11f, 1f), o + 1, shirt * 0.9f);
                 arm.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
-                hands = new Vector3(0.44f, 0.54f, 0f);
             }
 
             _rodPivot = new GameObject("Vara").transform;
@@ -164,7 +178,7 @@ namespace FishingIdle.Game.Scene
             };
             _paintedRod = FishingScene.Sprite(_rodPivot, "Vara pintada", null, Vector3.zero, Vector3.one, FishingScene.OrderRod);
             _paintedRod.enabled = false;
-            if (painted == null)
+            if (painted == null && !_pixel)
             {
                 FishingScene.Sprite(_body, "Mão", Art.Circle, hands, Vector3.one * 0.12f, FishingScene.OrderRod + 1, skin);
             }
@@ -183,8 +197,18 @@ namespace FishingIdle.Game.Scene
 
             _bobber = new GameObject("Boia").transform;
             _bobber.SetParent(world, false);
-            FishingScene.Sprite(_bobber, "Boia", Art.Circle, Vector3.zero, Vector3.one * 0.17f, FishingScene.OrderBobber, new Color(0.88f, 0.22f, 0.18f));
-            FishingScene.Sprite(_bobber, "Topo", Art.Circle, new Vector3(0f, 0.05f, 0f), Vector3.one * 0.08f, FishingScene.OrderBobber + 1, new Color(0.98f, 0.97f, 0.92f));
+            var file = PixelSceneConfig.File;
+            var boia = _pixel ? Visual.ArtAssets.Texture("Cena/boia") : null;
+            var boiaSprite = boia != null ? Visual.ArtAssets.PixelSpriteAt("Cena/boia", boia.width / 2, boia.height - (file != null ? file.bobber_waterline : 11)) : null;
+            if (boiaSprite != null)
+            {
+                FishingScene.Sprite(_bobber, "Boia", boiaSprite, Vector3.zero, Vector3.one, FishingScene.OrderBobber);
+            }
+            else
+            {
+                FishingScene.Sprite(_bobber, "Boia", Art.Circle, Vector3.zero, Vector3.one * 0.17f, FishingScene.OrderBobber, new Color(0.88f, 0.22f, 0.18f));
+                FishingScene.Sprite(_bobber, "Topo", Art.Circle, new Vector3(0f, 0.05f, 0f), Vector3.one * 0.08f, FishingScene.OrderBobber + 1, new Color(0.98f, 0.97f, 0.92f));
+            }
 
             // The bait in use hangs on the hook a little below the bobber (placeholder shape, A-096).
             _baitLeader = FishingScene.Sprite(_bobber, "Linha da isca", Art.PixelLeft, new Vector3(0f, -0.07f, 0f), new Vector3(0.24f, 0.015f, 1f), FishingScene.OrderBobber - 1, new Color(0.92f, 0.92f, 0.88f, 0.75f));
@@ -204,6 +228,118 @@ namespace FishingIdle.Game.Scene
             Enter(Phase.Idle);
         }
 
+        // ------------------------------------------------------------------ pixel fisherman (M25-T08)
+
+        /// <summary>The frames of one animation and where the hands are in each (scene units from the feet).</summary>
+        private sealed class PixelAnimation
+        {
+            public Sprite[] Frames;
+            public Vector3[] Hands;
+
+            public int Count => Frames.Length;
+        }
+
+        /// <summary>
+        /// Loads the pixel fisherman (ArtePixel/Cena/pescador_*, A-183): 64 × 64 frames with the feet on the same pixel,
+        /// so changing animation never moves him. False when any frame or the scene file is missing (the old painted
+        /// fisherman is used instead).
+        /// </summary>
+        private bool BuildPixelFisherman()
+        {
+            var look = PixelSceneConfig.File?.fisherman;
+            if (look == null || look.frames == null)
+            {
+                return false;
+            }
+
+            _idle = LoadAnimation(look, "parado", 4);
+            _cast = LoadAnimation(look, "arremesso", 4);
+            _reel = LoadAnimation(look, "recolhe", 4);
+            _bite = LoadAnimation(look, "fisgada", 2);
+            _show = LoadAnimation(look, "mostra", 1);
+            _escape = LoadAnimation(look, "escapou", 1);
+            if (_idle == null || _cast == null || _reel == null || _bite == null || _show == null || _escape == null)
+            {
+                return false;
+            }
+
+            _body = _body ?? new GameObject("Pescador").transform;
+            _frame = FishingScene.Sprite(_body, "Pescador", _idle.Frames[0], Vector3.zero, Vector3.one, FishingScene.OrderFisherman);
+            RodLength = look.rod_px * PixelGrid.Unit;
+            _lineWidth = PixelGrid.Unit;
+            return true;
+        }
+
+        private static PixelAnimation LoadAnimation(PixelFisherLook look, string name, int count)
+        {
+            var anim = new PixelAnimation { Frames = new Sprite[count], Hands = new Vector3[count] };
+            for (var i = 0; i < count; i++)
+            {
+                var frameName = name + "_" + (i + 1);
+                PixelFrameLook frame = null;
+                foreach (var f in look.frames)
+                {
+                    if (f != null && f.name == frameName)
+                    {
+                        frame = f;
+                        break;
+                    }
+                }
+
+                var sprite = frame != null ? Visual.ArtAssets.PixelSpriteAt("Cena/pescador_" + frameName, look.feet_x, look.frame - look.feet_y) : null;
+                if (sprite == null)
+                {
+                    return null;
+                }
+
+                anim.Frames[i] = sprite;
+                anim.Hands[i] = new Vector3((frame.hand_x - look.feet_x) * PixelGrid.Unit, (look.feet_y - frame.hand_y) * PixelGrid.Unit, 0f);
+            }
+
+            return anim;
+        }
+
+        /// <summary>
+        /// The frame for the phase (ART_BIBLE_PIXEL 5): waiting 4 frames at 4 per second in a loop; the cast's 4 frames
+        /// follow the cast (2 winding back, 2 whipping forward); the bite's 2 frames at 10 per second once; reeling 4 at
+        /// 8 per second in a loop; one frame showing the fish and one when it gets away. The rod turns where the hands are.
+        /// </summary>
+        private void UpdatePixelFrame(float t)
+        {
+            PixelAnimation anim;
+            int index;
+            switch (_phase)
+            {
+                case Phase.Casting:
+                    anim = _cast;
+                    index = _castK < 0.2f ? 0 : _castK < 0.4f ? 1 : _castK < 0.55f ? 2 : 3;
+                    break;
+                case Phase.Bite:
+                    anim = _bite;
+                    index = Mathf.Min(1, (int)(t * 10f));
+                    break;
+                case Phase.Reeling:
+                    anim = _reel;
+                    index = (int)(t * 8f) % 4;
+                    break;
+                case Phase.Showing:
+                    anim = t < 0.6f ? _bite : _show;
+                    index = anim.Count - 1;
+                    break;
+                case Phase.Escaping:
+                    anim = _snapped ? _escape : _bite;
+                    index = anim.Count - 1;
+                    break;
+                default:
+                    anim = _idle;
+                    index = (int)(Time.time * 4f) % 4;
+                    break;
+            }
+
+            _frame.sprite = anim.Frames[index];
+            _rodPivot.localPosition = anim.Hands[index];
+        }
+
         // ------------------------------------------------------------------ equipment (A-096)
 
         /// <summary>Where he sits in the boat; null = the seat of the starter boat.</summary>
@@ -215,6 +351,20 @@ namespace FishingIdle.Game.Scene
         /// <summary>Shows the painted picture of the rod in use along the animated rod (the simple drawn rod without it).</summary>
         public void UseRod(string rodId)
         {
+            if (_pixel)
+            {
+                // The rod is drawn by the code, one grid pixel thick, in the colours of the rod in use (ART_BIBLE_PIXEL 3.3).
+                var colours = PixelSceneConfig.Rod(rodId);
+                _codeRod[0].color = PixelSceneConfig.Hex(colours?.grip, new Color(0.2f, 0.2f, 0.17f));
+                _codeRod[1].color = PixelSceneConfig.Hex(colours?.shaft, new Color(0.42f, 0.29f, 0.17f));
+                _codeRod[0].transform.localPosition = new Vector3(-6f * PixelGrid.Unit, 0f, 0f);
+                _codeRod[0].transform.localScale = new Vector3(6f * PixelGrid.Unit, PixelGrid.Unit, 1f);
+                _codeRod[1].transform.localScale = new Vector3(RodLength, PixelGrid.Unit, 1f);
+                _paintedRod.enabled = false;
+                _codeRod[0].enabled = _codeRod[1].enabled = true;
+                return;
+            }
+
             var look = EquipmentLook.Rod(rodId);
             var tex = look != null ? Visual.ArtAssets.Texture(look.art) : null;
             var painted = false;
@@ -246,6 +396,18 @@ namespace FishingIdle.Game.Scene
         public void UseBait(string baitId)
         {
             var look = baitId != null ? EquipmentLook.Bait(baitId) : null;
+            if (_pixel)
+            {
+                // On the pixel grid the bait is a 2 × 1 pixel dot in its colour (the 32 px item picture is for the interface).
+                _bait.sprite = Art.Pixel;
+                _bait.transform.localScale = new Vector3(2f * PixelGrid.Unit, PixelGrid.Unit, 1f);
+                _bait.transform.localPosition = new Vector3(0f, -6f * PixelGrid.Unit, 0f);
+                _baitLeader.transform.localScale = new Vector3(5f * PixelGrid.Unit, PixelGrid.Unit * 0.5f, 1f);
+                _baitColor = EquipmentLook.BaitColor(look) ?? Color.clear;
+                _bait.enabled = _baitLeader.enabled = _baitColor.a > 0f;
+                return;
+            }
+
             var art = look != null && !string.IsNullOrEmpty(look.art) ? Visual.ArtAssets.Sprite(look.art, look.width, new Vector2(0.5f, 0.85f)) : null;
             if (art != null)
             {
@@ -313,7 +475,8 @@ namespace FishingIdle.Game.Scene
                 .ThenByDescending(c => c.SalePriceCoins)
                 .First();
 
-            _fish.sprite = Art.Fish(_shown.SpeciesId);
+            _fish.sprite = (_pixel ? Visual.ArtAssets.PixelSprite("Peixes/fish_" + _shown.SpeciesId + "_master_p", new Vector2(0.5f, 0.5f)) : null)
+                ?? Art.Fish(_shown.SpeciesId);
             _fishFrom = _phase == Phase.Idle ? WaterTarget : _bobber.localPosition;
             Enter(Phase.Showing);
         }
@@ -381,6 +544,11 @@ namespace FishingIdle.Game.Scene
                     break;
             }
 
+            if (_pixel)
+            {
+                UpdatePixelFrame(Time.time - _phaseStartedAt);
+            }
+
             DrawLine();
             UpdateBait();
         }
@@ -402,7 +570,8 @@ namespace FishingIdle.Game.Scene
                     break;
                 case Phase.Showing:
                     _fish.enabled = true;
-                    _fishGlow.enabled = _shown.IsImportant;
+                    // No soft glow on the pixel grid (ART_BIBLE_PIXEL 4.10): the sparks below are the reward.
+                    _fishGlow.enabled = _shown.IsImportant && !_pixel;
                     _fishGlow.color = GlowColor(_shown);
                     RippleEffect.Spawn(_world, _fishFrom, FishingScene.OrderWaterDetail, 1.4f, 0.8f);
                     Droplet.Splash(_world, _fishFrom, FishingScene.OrderCatch + 1, _shown.IsImportant ? 16 : 9, _shown.IsImportant ? 1.2f : 0.9f);
@@ -441,6 +610,7 @@ namespace FishingIdle.Game.Scene
         private void UpdateCasting(float t, float duration)
         {
             var k = Mathf.Clamp01(t / duration);
+            _castK = k;
             if (k < 0.4f)
             {
                 // Rod back over the shoulder, bobber still hanging.
@@ -507,8 +677,9 @@ namespace FishingIdle.Game.Scene
 
         private void UpdateShowing(float t, bool fishing)
         {
-            var size = FishDisplaySize(_shown);
-            var hold = TipPosition() + new Vector3(-0.8f, 0.2f, 0f);
+            // Pixel art: the small fish at 1× in his hands (the "mostra" frame), never turned or stretched.
+            var size = _pixel ? 1f : FishDisplaySize(_shown);
+            var hold = _pixel ? HandsPosition() + new Vector3(0.5f, 0.55f, 0f) : TipPosition() + new Vector3(-0.8f, 0.2f, 0f);
 
             if (t < 0.6f)
             {
@@ -516,7 +687,12 @@ namespace FishingIdle.Game.Scene
                 var k = Ease(t / 0.6f);
                 _fish.transform.localPosition = Vector3.Lerp(_fishFrom, hold, k) + new Vector3(0f, Mathf.Sin(k * Mathf.PI) * 0.8f, 0f);
                 _fish.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(60f, 0f, k));
-                _fish.transform.localScale = Vector3.one * size * Mathf.Lerp(0.5f, 1f, k);
+                _fish.transform.localScale = _pixel ? Vector3.one : Vector3.one * size * Mathf.Lerp(0.5f, 1f, k);
+                if (_pixel)
+                {
+                    _fish.transform.localRotation = Quaternion.identity;
+                }
+
                 _rodAngle = Mathf.Lerp(_rodAngle, 70f, Time.deltaTime * 6f);
             }
             else if (t < ShowSeconds)
@@ -530,15 +706,21 @@ namespace FishingIdle.Game.Scene
                 }
 
                 _fish.transform.localPosition = hold + new Vector3(0f, Mathf.Sin(Time.time * 3f) * 0.05f, 0f);
-                _fish.transform.localRotation = Quaternion.Euler(0f, 0f, wiggle);
+                _fish.transform.localRotation = _pixel ? Quaternion.identity : Quaternion.Euler(0f, 0f, wiggle);
                 _fish.transform.localScale = Vector3.one * size;
+                if (_pixel)
+                {
+                    // The wriggle on the pixel grid: one pixel up and down (ART_BIBLE_PIXEL 4.9).
+                    _fish.transform.localPosition += new Vector3(0f, wiggle > 2f ? PixelGrid.Unit : 0f, 0f);
+                }
             }
             else
             {
                 // Into the Fishing Box (bottom-right corner, where its button is).
                 var k = Mathf.Clamp01((t - ShowSeconds) / StoreSeconds);
                 _fish.transform.localPosition = Vector3.Lerp(hold, BoxTarget, Ease(k));
-                _fish.transform.localScale = Vector3.one * size * Mathf.Lerp(1f, 0.15f, k);
+                // Pixel art shrinks in whole steps only: it stays at 1× and simply flies into the box.
+                _fish.transform.localScale = _pixel ? Vector3.one : Vector3.one * size * Mathf.Lerp(1f, 0.15f, k);
                 if (k >= 1f)
                 {
                     _fish.enabled = false;
@@ -639,6 +821,11 @@ namespace FishingIdle.Game.Scene
             return _world.InverseTransformPoint(_rodTip.position);
         }
 
+        private Vector3 HandsPosition()
+        {
+            return _world.InverseTransformPoint(_rodPivot.position);
+        }
+
         /// <summary>Draws the line from the rod tip to the bobber, sagging when slack.</summary>
         private void DrawLine()
         {
@@ -656,7 +843,7 @@ namespace FishingIdle.Game.Scene
                 var segment = _line[i];
                 segment.localPosition = previous;
                 segment.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
-                segment.localScale = new Vector3(delta.magnitude + 0.005f, 0.022f, 1f);
+                segment.localScale = new Vector3(delta.magnitude + 0.005f, _lineWidth, 1f);
                 previous = point;
             }
         }

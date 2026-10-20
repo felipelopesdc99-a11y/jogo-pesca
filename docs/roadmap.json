@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-20T03:00:00Z",
+  "updated_at": "2026-10-20T18:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -5187,101 +5187,110 @@
           "title": "Pasta ArtePixel, importação Point e desenho em escala inteira",
           "subsystem": "client",
           "description": "ArtAssets procura em Resources/ArtePixel primeiro (mesmos nomes) e cai na arte antiga; ArtImportSettings com Point, sem compressão e sem mipmaps para ArtePixel; helper PixelDraw que troca o ScaleToFit pela maior escala inteira que cabe, usa a versão _p quando 1× não cabe e nunca gira sprites (TD-059). Andamento (20/10/2026): a regra de importação de ArtePixel (Point, sem compressão, sem mipmaps) já está no ArtImportSettings; faltam o ArtAssets procurar em ArtePixel e o PixelDraw.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T01"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T18:00:00Z",
+          "completion_notes": "ArtAssets procura em Resources/ArtePixel primeiro e cai em Resources/Arte (mesmo nome); marca as texturas pixel (IsPixel), põe Point, acha a versão _p (Small) e faz sprites de cena com 20 px por unidade e pivô num canto de pixel (PixelSprite, PixelSpriteAt); LegacyTexture lê só a arte antiga. Visual/PixelDraw.Fit troca o ScaleToFit pela maior escala inteira em pixels de tela, usa _p quando 1× não cabe e mantém a arte antiga igual; 56 desenhos de 15 telas passaram a usar PixelDraw (UiSkin, WindowFrame, Hud e TopMenuArt ficam com a M25-T03). Nada em pixel gira (Aquário, Mapa, Loja). TD-062, A-187. Compila; visual só verificado no Play."
         },
         {
           "id": "M25-T05",
           "title": "Câmera pixel da cena",
           "subsystem": "client",
           "description": "A cena desenhada numa RenderTexture de 216 px de altura (largura pela janela), PPU 20, ampliada pelo inteiro ou nítido-suave; câmera e tudo que anda arredondados para o pixel da grade; o HUD continua por cima (TD-059). Sem o pacote 2D Pixel Perfect.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T04"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T18:00:00Z",
+          "completion_notes": "Scene/PixelCamera: segunda câmera desenha o mundo numa RenderTexture de 216 px (largura pela janela, Point); a principal não desenha nada e põe a grade na tela pelo inteiro exato ou pelo inteiro de cima reduzido com bilinear, sem faixas pretas. Posição da câmera no pixel da grade; todo sprite sem rotação é encaixado no pixel inteiro só na hora de desenhar (OnPreCull/OnPostRender, listas reaproveitadas). WorldToScreenPoint do HUD continua certo. Sem o pacote 2D Pixel Perfect. TD-062. Compila; verificado só no Play."
         },
         {
           "id": "M25-T06",
           "title": "Céu, água e nuvens por código nas paletas dos mapas",
           "subsystem": "client",
           "description": "Céu em faixas e água em faixas com brilhos e espuma animados em passos de pixel, nas paletas da Bíblia (seção 6.2), estrelas nos mapas 9 e 10; as 6 nuvens comuns tingidas por mapa no lugar das 30 antigas. Paletas como dados no config visual, não no código.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T05"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T18:00:00Z",
+          "completion_notes": "Céu (4 faixas com pontilhado na troca) e água (6 faixas) numa textura por mapa, nas paletas da Bíblia 6.2, em Resources/Visual/cena_pixel.json (dados, não código); estrelas de 1 px nos mapas 9 e 10 e lua no 10; as 6 nuvens comuns de ArtePixel/Mapas/Comum tingidas por mapa; brilhos de 1 px que trocam de lugar a cada 0,25–0,5 s e andam com a correnteza (PixelGlints). A-185. Compila; verificado só no Play."
         },
         {
           "id": "M25-T07",
           "title": "Cena piloto do Lago Sereno",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (Lote 1 de docs/ASSETS_PIXEL.md: L1-04 a L1-07). Fundo em 3 faixas, laterais e cantos, barco inicial com a frente cortada pelo código, Caixa de Pesca, boia e nuvens, na câmera pixel. É a cena de conferência do estilo antes dos outros lotes. Arte recebida em 20/10/2026 (L1-04 a L1-07): Caixa, boia, barco inicial, fundo em 3 faixas, cantos da frente e nuvens em ArtePixel. As laterais do Lago Sereno (near_left/near_right) precisam ser pedidas de novo (vieram emendadas).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T05",
             "M25-T06"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T18:00:00Z",
+          "completion_notes": "Cena piloto do Lago Sereno: fundo em 3 faixas, laterais (provisório convertido da arte antiga até o L1-06b chegar), cantos, reflexos espelhados, barco inicial em pixel com a frente cortada pelo código (ArtePixel/Barcos/Cena), Caixa de Pesca na popa, boia 12 × 16 na água e nuvens, na câmera pixel. Não há píer na cena de pesca (o pescador fica no barco). Prévias montadas por tools/Arte/cena_pixel.py previa com os mesmos números do jogo. A-185, A-186. Compila; verificado só no Play."
         },
         {
           "id": "M25-T08",
           "title": "Pescador animado por fase da pesca",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (L1-01, L1-02, L2-01). Quadros de 64 px com âncora na base: esperando, arremesso, recolher, fisgada, mostrando e escapou, nas velocidades da Bíblia (seção 5); vara e linha desenhadas pelo código nas cores da vara; o peixe nas mãos na fase Mostrando. Saem a pintura atual e as mãos separadas. Arte recebida em 20/10/2026 (L1-01, L1-02, L2-01): os 17 quadros em ArtePixel/Cena, figura de 48 px, pés na coluna 40 em todos (A-183). As linhas vieram trocadas entre as folhas e foram gravadas com os nomes certos.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T07"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T18:00:00Z",
+          "completion_notes": "FishermanRig em modo pixel: os 17 quadros de ArtePixel/Cena trocam pela fase que o jogo já informa (parado/esperando 4 q a 4/s, arremesso pelo andamento do arremesso, fisgada 2 q a 10/s, recolher 4 q a 8/s, mostrando, escapou), pés fixos na coluna 40 (A-183). Vara e linha pelo código, 1 px, nas cores da vara equipada, girando no ponto das mãos de cada quadro (medido e gravado em cena_pixel.json); peixe _p a 1× nas mãos, sem girar; sem a aura suave. Sem regra nova. GIF da troca de animações na prévia. A-186. Compila; verificado só no Play."
         },
         {
           "id": "M25-T09",
           "title": "Peixes em pixel (100) e versão pequena",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (L1-03 e Lote 4). Os 100 masters em ArtePixel/Peixes, a versão _p para listas e para o peixe pulando na cena; cards, Caixa, Aquário (balanço sem rotação), Mercado, Arena, Clã, Enciclopédia e silhueta escura em escala inteira. Arte recebida em 20/10/2026: 94 dos 100 peixes (masters e _p) em ArtePixel/Peixes, cada um conferido com a espécie. Faltam os 6 do Pantanal Dourado (1 de 2), L4-03a, para pedir de novo.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T04"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T18:00:00Z",
+          "completion_notes": "Os peixes em pixel entram sozinhos pela troca do ArtAssets: cartas, Caixa, Aquário (balanço de 2 px, sem rotação), Mercado, Arena, Clã, Perfil e Enciclopédia (silhueta escura tingida como antes) em escala inteira pelo PixelDraw, _p quando 1× não cabe; na cena, o _p a 1×. Os 6 do Pantanal (L4-03a) seguem com a arte antiga até o pedido chegar. Os 3 desenhos de peixe do Hud.cs continuam com ScaleToFit (arquivo da M25-T03; nítidos pelo Point, mas não em escala inteira). Compila; verificado só no Play."
         },
         {
           "id": "M25-T10",
           "title": "Itens em pixel: varas, barcos, iscas, roupas, fragmentos e expedições",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (Lote 5 e L1-05). Itens na Loja, Inventário, Perfil, Mercado, Passe e avisos em escala inteira; frente e fundo de cada barco cortados pelo código para o pescador ficar dentro; imagens das expedições. Arte recebida em 20/10/2026 (Lote 5 e L1-05): varas, barcos, iscas, roupas, fragmentos e as 4 expedições em ArtePixel, completos.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T04"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T18:00:00Z",
+          "completion_notes": "Varas, barcos, iscas, roupas, fragmentos e expedições em pixel pela troca do ArtAssets, em escala inteira pelo PixelDraw na Loja, Perfil, Mercado, Passe, Clã, Ranking e avisos; varas sem rotação na parede da Loja. Na cena, a frente de cada barco cortada pelo código (tools/Arte/cena_pixel.py dados) e o pescador sentado no assento de cada barco; isca como ponto de 2 × 1 px na cor dela. Compila; verificado só no Play."
         },
         {
           "id": "M25-T11",
           "title": "Ícones em pixel",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (L3-01 a L3-04). 52 ícones coloridos (24 e 32 px) sem tinta do código; os 12 símbolos simples (+, X, ✓, setas, play, pausa, parar, ordenar, compacto, i, !) desenhados pelo código em pixel, tingíveis; ícones desativados dessaturados pelo código. Arte recebida em 20/10/2026 (L3-01 a L3-04): os 52 ícones em ArtePixel/Icones, completos.",
-          "status": "TODO",
+          "status": "IN_PROGRESS",
           "dependencies": [
             "M25-T03",
             "M25-T04"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T18:00:00Z",
+          "completion_notes": "Os 52 ícones coloridos entram pela troca do ArtAssets; os 12 símbolos simples foram desenhados em pixel, brancos e tingíveis (ArtePixel/Icones, tools/Arte/cena_pixel.py simbolos); PixelDraw.Icon desenha em escala inteira e não tinge os coloridos (Icons.IsSymbol). Falta: UiSkin.DrawIconExact (e CoinIcon/CurrencyIcon) chamar PixelDraw.Icon/PixelDraw.Fit, uma linha no UiSkin.cs, arquivo da M25-T03 — até lá os ícones coloridos ainda são multiplicados pela cor pedida."
         },
         {
           "id": "M25-T12",
           "title": "Os 10 mapas em pixel e a paisagem viva convertida",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (L1-06 e Lote 6). Fundo, laterais e cantos dos mapas 2 a 10; miniaturas geradas das camadas; plantas e animais da paisagem viva convertidos pelo pixel_folhas.py na paleta de cada mapa (pedido extra só para o que ficar ruim). Arte recebida em 20/10/2026 (Lote 6): fundos dos mapas 2 a 10 completos; laterais e cantos completos menos Banco das Baleias e Talude Noturno (L6-08b, L6-09b), para pedir de novo (bordas borradas em listras).",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T07"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T18:00:00Z",
+          "completion_notes": "Os 10 mapas montados em pixel pelo cena_pixel.json (faixas, laterais, cantos, reflexos — sem reflexo nos mapas de mar aberto 7, 9 e 10). Provisório convertido da arte antiga (marcado em ASSETS_PIXEL e tools/Arte/pixel_provisorios.txt): laterais do Lago Sereno e laterais e cantos do Banco das Baleias e do Talude Noturno. Paisagem viva convertida (222 quadros de Arte/Vivos para ArtePixel/Vivos, no tamanho em que o jogo mostra cada um, 20 px por unidade, até 32 cores, contorno nos animais e plantas da frente); plantas não giram mais (1 px na rajada). Miniaturas dos 10 mapas geradas das camadas em pixel. A-185. Compila; verificado só no Play."
         },
         {
           "id": "M25-T13",

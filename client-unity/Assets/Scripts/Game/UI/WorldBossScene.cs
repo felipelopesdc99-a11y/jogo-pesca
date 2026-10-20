@@ -160,7 +160,7 @@ namespace FishingIdle.Game.UI
             var size = width * 0.42f * Mathf.Lerp(0.6f, 1.1f, ease);
             var alpha = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.3f, 1f, u));
             var center = new Vector2(anchor.x - width * 0.14f, anchor.y + width * 0.02f);
-            GUI.DrawTexture(new Rect(center.x - size / 2f, center.y - size / 2f, size, size), impact, ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, alpha), 0, 0);
+            PixelDraw.Fit(new Rect(center.x - size / 2f, center.y - size / 2f, size, size), impact, new Color(1f, 1f, 1f, alpha));
         }
 
         /// <summary>A few bubble groups rising slowly around the boss, faint; one passes in front of it.</summary>
@@ -191,7 +191,7 @@ namespace FishingIdle.Game.UI
                     continue;
                 }
 
-                GUI.DrawTexture(new Rect(x - size / 2f, y - size, size, size), bubbles, ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, alpha), 0, 0);
+                PixelDraw.Fit(new Rect(x - size / 2f, y - size, size, size), bubbles, new Color(1f, 1f, 1f, alpha));
             }
         }
 

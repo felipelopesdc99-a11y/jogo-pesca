@@ -341,13 +341,22 @@ namespace FishingIdle.Game.UI
                 var size = rect.width * 1.25f; // the hull is about 95 % wide and 55 % tall in the 128 px file
                 var drawn = new Rect(rect.center.x - size / 2f, rect.center.y - size / 2f, size, size);
                 var matrix = GUI.matrix;
-                if (Mathf.Abs(angle) > 0.5f)
+                if (ArtAssets.IsPixel(art))
+                {
+                    // Pixel art never turns (ART_BIBLE_PIXEL 4.9): heading left is a mirror image instead.
+                    if (Mathf.Cos(angle * Mathf.Deg2Rad) < -0.2f)
+                    {
+                        var c = new Vector3(drawn.center.x, drawn.center.y, 0f);
+                        GUI.matrix = matrix * Matrix4x4.TRS(c, Quaternion.identity, new Vector3(-1f, 1f, 1f)) * Matrix4x4.TRS(-c, Quaternion.identity, Vector3.one);
+                    }
+                }
+                else if (Mathf.Abs(angle) > 0.5f)
                 {
                     GUIUtility.RotateAroundPivot(angle, drawn.center);
                 }
 
-                GUI.DrawTexture(new Rect(drawn.x + 2f, drawn.y + 3f, size, size), art, ScaleMode.ScaleToFit, true, 0, new Color(0f, 0f, 0f, 0.3f), 0, 0);
-                GUI.DrawTexture(drawn, art, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(new Rect(drawn.x + 2f, drawn.y + 3f, size, size), art, new Color(0f, 0f, 0f, 0.3f));
+                PixelDraw.Fit(drawn, art);
                 GUI.matrix = matrix;
                 return;
             }
@@ -441,7 +450,7 @@ namespace FishingIdle.Game.UI
             {
                 // Water under the island's transparent shore, so the round frame always closes on a full disc.
                 GUI.DrawTexture(circle, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.10f, 0.42f, 0.62f, 1f), 0, radius);
-                GUI.DrawTexture(circle, island, ScaleMode.ScaleToFit, true, 0, locked ? LockedTint : Color.white, 0, 0);
+                PixelDraw.Fit(circle, island, locked ? LockedTint : Color.white);
             }
             else if (thumb != null)
             {

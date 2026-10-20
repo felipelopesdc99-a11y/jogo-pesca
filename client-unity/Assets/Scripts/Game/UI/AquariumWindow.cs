@@ -496,7 +496,7 @@ namespace FishingIdle.Game.UI
                     var r = new Rect(bx - size / 2f, start - p * rise - size / 2f, size, size);
                     if (bubble != null)
                     {
-                        GUI.DrawTexture(r, bubble, ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, 0.8f * fade), 0, 0);
+                        PixelDraw.Fit(r, bubble, new Color(1f, 1f, 1f, 0.8f * fade));
                         continue;
                     }
 
@@ -740,7 +740,7 @@ namespace FishingIdle.Game.UI
                 GUI.DrawTexture(outer, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.SizeColor(f.SizeCategoryId), 1.5f, outer.width / 2f);
             }
 
-            GUI.DrawTexture(new Rect(disc.x + 5f, disc.y + 13f, d - 10f, d - 26f), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
+            PixelDraw.Fit(new Rect(disc.x + 5f, disc.y + 13f, d - 10f, d - 26f), Art.FishTexture(f.SpeciesId));
 
             var text = TileText(skin, f);
             GUI.Label(new Rect(tile.x + 4f, tile.y + 63f, tile.width - 8f, UiSkin.SmallLine), text.Name, skin.ChipText);
@@ -827,10 +827,17 @@ namespace FishingIdle.Game.UI
         /// </summary>
         private static void DrawTransformed(Rect rect, Texture tex, Vector2 pivot, float angle, bool flip, Color color)
         {
+            if (ArtAssets.IsPixel(tex))
+            {
+                // Pixel art never turns (ART_BIBLE_PIXEL 4.9): the sway becomes a 2 px rise or dip.
+                rect.y += angle > 1.5f ? -2f : angle < -1.5f ? 2f : 0f;
+                angle = 0f;
+            }
+
             var matrix = GUI.matrix;
             var p = new Vector3(pivot.x, pivot.y, 0f);
             GUI.matrix = matrix * Matrix4x4.TRS(p, Quaternion.Euler(0f, 0f, angle), new Vector3(flip ? -1f : 1f, 1f, 1f)) * Matrix4x4.TRS(-p, Quaternion.identity, Vector3.one);
-            GUI.DrawTexture(rect, tex, ScaleMode.ScaleToFit, true, 0, color, 0, 0);
+            PixelDraw.Fit(rect, tex, color);
             GUI.matrix = matrix;
         }
 
@@ -966,7 +973,7 @@ namespace FishingIdle.Game.UI
                     exceptional ? UiSkin.SizeColor(fish.SizeCategoryId) : accent, 0.4f);
             }
 
-            GUI.DrawTexture(art, Art.FishTexture(fish.SpeciesId), ScaleMode.ScaleToFit, true);
+            PixelDraw.Fit(art, Art.FishTexture(fish.SpeciesId));
             y += artHeight + 16;
 
             GUI.Label(new Rect(x, y, w, 30), UI.FishCard.Fit(fish.SpeciesName, skin.Heading, w), skin.Heading);
@@ -1250,7 +1257,7 @@ namespace FishingIdle.Game.UI
                 GUI.DrawTexture(art, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.SizeColor(f.SizeCategoryId), 1.5f, 8f);
             }
 
-            GUI.DrawTexture(new Rect(art.x + 4f, art.y + 4f, art.width - 8f, art.height - 8f), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
+            PixelDraw.Fit(new Rect(art.x + 4f, art.y + 4f, art.width - 8f, art.height - 8f), Art.FishTexture(f.SpeciesId));
 
             // Right column: the Cardume position on top, the check below while selecting several.
             var badge = f.CardumePosition > 0 ? GameTexts.Cardume.Badge(f.CardumePosition) : null;
@@ -1349,7 +1356,7 @@ namespace FishingIdle.Game.UI
             var t = Mathf.Clamp01((Time.unscaledTime - _heroChangedAt) / 0.25f);
             var bob = Mathf.Sin(Time.unscaledTime * 1.6f) * 3f;
             var art = new Rect(centre.x - artW / 2f, centre.y - artH / 2f + bob + (1f - t) * 10f, artW, artH);
-            GUI.DrawTexture(art, Art.FishTexture(fish.SpeciesId), ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, t), 0, 0);
+            PixelDraw.Fit(art, Art.FishTexture(fish.SpeciesId), new Color(1f, 1f, 1f, t));
 
             // ‹ › walk the current list.
             if (index >= 0 && _shown.Count > 1)
@@ -1611,7 +1618,7 @@ namespace FishingIdle.Game.UI
                 var f = chosen[i];
                 var row = new Rect(0, i * rowHeight, w - 18, rowHeight - 4);
                 GUI.Box(row, GUIContent.none, skin.Card);
-                GUI.DrawTexture(new Rect(row.x + 6, row.y + 4, 48, row.height - 8), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(new Rect(row.x + 6, row.y + 4, 48, row.height - 8), Art.FishTexture(f.SpeciesId));
                 var color = UiSkin.RarityColor(f.RarityId);
                 GUI.DrawTexture(new Rect(row.x + 60, row.y + 14, 8, 8), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, 4);
                 var priceText = Format.Number(f.SalePriceCoins);
@@ -1801,7 +1808,7 @@ namespace FishingIdle.Game.UI
             var y = area.y + 18;
             var fish = _selected;
 
-            GUI.DrawTexture(new Rect(x, y, w, 100), Art.FishTexture(fish.SpeciesId), ScaleMode.ScaleToFit, true);
+            PixelDraw.Fit(new Rect(x, y, w, 100), Art.FishTexture(fish.SpeciesId));
             y += 110;
             GUI.Label(new Rect(x, y, w, 28), fish.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + fish.Level, skin.Heading);
             y += 34;

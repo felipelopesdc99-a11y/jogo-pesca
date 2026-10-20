@@ -3,6 +3,41 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.22] — 20/10/2026
+
+A pixel art ligada no jogo (M25-T04 a T12): a cena de pesca dos 10 mapas, o pescador animado, os peixes, os itens e os
+ícones. **Nenhuma regra, número, sorteio, recompensa ou save mudou.** Compila; o visual só fica verificado quando o
+proprietário apertar Play.
+
+### Adicionado
+
+- **Carregamento com fallback:** o jogo procura cada imagem em `Resources/ArtePixel/` e usa a arte antiga do mesmo nome
+  enquanto a nova não existir. Nas telas, a pixel art aparece na maior escala inteira que cabe (versão pequena `_p`
+  quando nem 1× cabe), sem borrar e sem girar (A-187).
+- **Câmera pixel** própria: a cena é desenhada numa grade de 216 px de altura e ampliada sem suavizar (5× em 1080p;
+  "nítido-suave" quando a janela não é múltipla de 216); tudo que se mexe para em pixel inteiro (TD-062).
+- **Cena em pixel nos 10 mapas:** céu e água pelo código nas paletas da Bíblia, estrelas e lua de noite, nuvens comuns
+  tingidas, faixas do fundo, laterais, cantos, reflexos e brilhos que mudam de lugar em passos de pixel (A-185).
+- **Pescador animado por fase** (parado, arremesso, fisgada, recolher, mostrando, escapou) com a vara e a linha
+  desenhadas pelo código nas cores da vara; barco em pixel com a frente cortada para ele sentar dentro; Caixa de Pesca
+  e boia em pixel (A-186).
+- `tools/Arte/cena_pixel.py`: grava `Resources/Visual/cena_pixel.json` (os números da cena), corta a frente dos
+  barcos, desenha os 12 símbolos simples, converte a paisagem viva (222 quadros) e as peças de mapa que faltam, gera as
+  miniaturas dos mapas e monta prévias da cena como o jogo desenha, com um GIF do pescador.
+
+### Alterado
+
+- Plantas e vitórias-régias não giram mais na cena pixel (encostam 1 px na rajada); o barco balança 1 px sem inclinar.
+- Na cena pixel saem os brilhos suaves (sol, raios, névoa, poeira, libélulas e a aura da captura); a recompensa
+  continua com as faíscas.
+
+### Provisório
+
+- Laterais do Lago Sereno e laterais e cantos do Banco das Baleias e do Talude Noturno: convertidos da arte antiga até
+  os pedidos L1-06b, L6-08b e L6-09b chegarem. Os 6 peixes do Pantanal (L4-03a) seguem com a arte antiga.
+- Ícones coloridos ainda são tingidos pela cor pedida em algumas telas até o `UiSkin` usar o `PixelDraw.Icon`
+  (M25-T11, junto com a pele da M25-T03).
+
 ## [0.2.0-m24.21] — 20/10/2026
 
 A pixel art que o proprietário mandou (77 folhas, lotes 1 a 7) recortada e gravada em `Resources/ArtePixel/`

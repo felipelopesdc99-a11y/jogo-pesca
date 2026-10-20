@@ -543,7 +543,7 @@ namespace FishingIdle.Game.UI
             var sun = r.height * 0.42f;
             var sunRect = new Rect(r.x + r.width * 0.74f, horizon - sun * 0.62f, sun, sun);
             skin.DrawGlow(sunRect, UiSkin.NightReward, 0.35f);
-            GUI.DrawTexture(sunRect, Art.Circle.texture, ScaleMode.ScaleToFit, true, 0, new Color(1f, 0.83f, 0.45f), 0, 0);
+            PixelDraw.Fit(sunRect, Art.Circle.texture, new Color(1f, 0.83f, 0.45f));
             GUI.DrawTexture(new Rect(r.x, horizon, r.width, r.yMax - horizon), skin.White, ScaleMode.StretchToFill, true, 0, water, Vector4.zero, new Vector4(0f, 0f, 4f, 4f));
 
             // The sun's glints on the water, drifting slowly.
@@ -651,7 +651,7 @@ namespace FishingIdle.Game.UI
             var art = ArtAssets.Texture(gear.Art);
             if (art != null)
             {
-                GUI.DrawTexture(new Rect(icon.x + 3f, icon.y + 3f, icon.width - 6f, icon.height - 6f), art, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(new Rect(icon.x + 3f, icon.y + 3f, icon.width - 6f, icon.height - 6f), art);
             }
             else
             {

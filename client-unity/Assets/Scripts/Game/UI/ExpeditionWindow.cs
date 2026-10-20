@@ -307,7 +307,7 @@ namespace FishingIdle.Game.UI
             if (rose != null)
             {
                 var rs = Mathf.Clamp(sea.height * 0.17f, 64f, 100f);
-                GUI.DrawTexture(new Rect(sea.x + 16f, sea.y + 16f, rs, rs), rose, ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, 0.85f), 0, 0);
+                PixelDraw.Fit(new Rect(sea.x + 16f, sea.y + 16f, rs, rs), rose, new Color(1f, 1f, 1f, 0.85f));
             }
 
             // Routes: the chosen one turquoise; away, the travelled stretch turquoise and the rest light.
@@ -342,7 +342,7 @@ namespace FishingIdle.Game.UI
             var pierRect = new Rect(pier.x - pierSize / 2f, pier.y - pierSize / 2f, pierSize, pierSize);
             if (pierArt != null)
             {
-                GUI.DrawTexture(pierRect, pierArt, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(pierRect, pierArt);
             }
             else
             {
@@ -366,7 +366,7 @@ namespace FishingIdle.Game.UI
                 var markerArt = ArtAssets.Texture(MarkerArt);
                 if (markerArt != null)
                 {
-                    GUI.DrawTexture(marker, markerArt, ScaleMode.ScaleToFit, true);
+                    PixelDraw.Fit(marker, markerArt);
                 }
                 else
                 {
@@ -432,7 +432,7 @@ namespace FishingIdle.Game.UI
 
             if (frame != null)
             {
-                GUI.DrawTexture(circle, frame, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(circle, frame);
             }
             else
             {
@@ -551,7 +551,7 @@ namespace FishingIdle.Game.UI
             var face = new Rect(seal.x + seal.width * (1f - SealFaceW) / 2f, seal.y + seal.height * SealFaceY - 14f, seal.width * SealFaceW, 28f);
             if (sealArt != null)
             {
-                GUI.DrawTexture(seal, sealArt, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(seal, sealArt);
             }
             else
             {

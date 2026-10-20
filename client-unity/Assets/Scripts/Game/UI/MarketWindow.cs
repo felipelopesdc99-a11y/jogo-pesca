@@ -1011,7 +1011,7 @@ namespace FishingIdle.Game.UI
             var art = GoodsArt(goods);
             if (art != null)
             {
-                GUI.DrawTexture(rect, art, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(rect, art);
             }
         }
 

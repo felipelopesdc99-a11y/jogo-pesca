@@ -134,7 +134,7 @@ namespace FishingIdle.Game.UI
 
             var tex = m.Art != null ? m.Art : Scene.Art.FishTexture(m.SpeciesId);
             var tint = m.Silhouette ? new Color(0.02f, 0.05f, 0.09f, 0.85f) : Color.white;
-            GUI.DrawTexture(new Rect(art.x, art.y + bob, art.width, art.height), tex, ScaleMode.ScaleToFit, true, 0, tint, 0, 0);
+            PixelDraw.Fit(new Rect(art.x, art.y + bob, art.width, art.height), tex, tint);
 
             if (badgeOnArt)
             {

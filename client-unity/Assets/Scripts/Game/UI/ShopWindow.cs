@@ -537,7 +537,7 @@ namespace FishingIdle.Game.UI
             var art = ArtAssets.Texture(HookArt);
             if (art != null)
             {
-                GUI.DrawTexture(new Rect(cx - 9f, top - 4f, 18f, 18f), art, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(new Rect(cx - 9f, top - 4f, 18f, 18f), art);
                 return;
             }
 
@@ -631,7 +631,7 @@ namespace FishingIdle.Game.UI
                     var fragmentArt = ArtAssets.Texture(FragmentArt(item));
                     if (fragmentArt != null)
                     {
-                        GUI.DrawTexture(new Rect(x, line.y + 1f, 18f, 18f), fragmentArt, ScaleMode.ScaleToFit, true);
+                        PixelDraw.Fit(new Rect(x, line.y + 1f, 18f, 18f), fragmentArt);
                     }
                     else
                     {
@@ -792,16 +792,17 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            if (Mathf.Abs(angle) < 0.01f)
+            // Pixel art never turns (ART_BIBLE_PIXEL 4.9): the rods are already drawn on the diagonal.
+            if (Mathf.Abs(angle) < 0.01f || ArtAssets.IsPixel(tex))
             {
-                GUI.DrawTexture(rect, tex, ScaleMode.ScaleToFit, true, 0, color, 0, 0);
+                PixelDraw.Fit(rect, tex, color);
                 return;
             }
 
             var matrix = GUI.matrix;
             var p = new Vector3(rect.center.x, rect.center.y, 0f);
             GUI.matrix = matrix * Matrix4x4.TRS(p, Quaternion.Euler(0f, 0f, angle), Vector3.one) * Matrix4x4.TRS(-p, Quaternion.identity, Vector3.one);
-            GUI.DrawTexture(rect, tex, ScaleMode.ScaleToFit, true, 0, color, 0, 0);
+            PixelDraw.Fit(rect, tex, color);
             GUI.matrix = matrix;
         }
 
@@ -1424,7 +1425,7 @@ namespace FishingIdle.Game.UI
             var tex = art != null ? ArtAssets.Texture(art) : null;
             if (tex != null)
             {
-                GUI.DrawTexture(picture, tex, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(picture, tex);
             }
             else
             {
@@ -1488,13 +1489,15 @@ namespace FishingIdle.Game.UI
 
             var r = new Rect(centre.x - 11f, centre.y - 18f, 22f, 34f);
             var matrix = GUI.matrix;
+            var art = ArtAssets.Texture(BobberArt);
             if (!upright)
             {
+                // Lying on its side; pixel art turns only by a quarter turn (ART_BIBLE_PIXEL 4.9).
                 var p = new Vector3(centre.x, centre.y + 6f, 0f);
-                GUI.matrix = matrix * Matrix4x4.TRS(p, Quaternion.Euler(0f, 0f, 70f), Vector3.one) * Matrix4x4.TRS(-p, Quaternion.identity, Vector3.one);
+                var lying = ArtAssets.IsPixel(art) ? 90f : 70f;
+                GUI.matrix = matrix * Matrix4x4.TRS(p, Quaternion.Euler(0f, 0f, lying), Vector3.one) * Matrix4x4.TRS(-p, Quaternion.identity, Vector3.one);
             }
 
-            var art = ArtAssets.Texture(BobberArt);
             if (art != null)
             {
                 // Above the ring tinted with the rarity colour, below it as drawn (texture v grows upwards).

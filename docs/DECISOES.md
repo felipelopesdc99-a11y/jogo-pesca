@@ -1460,3 +1460,33 @@ altura, que é o que importa na tela.
 
 **Rever se.** O ChatGPT passar a entregar grade exata (aí voltar a amostrar na grade dele preserva mais detalhe) ou se
 algum desenho fino (linha da vara nos itens) sumir demais: baixar o limiar de cobertura só para aquele pedido.
+
+## TD-062 · Cena pixel: câmera em duas etapas, encaixe na grade na hora de desenhar e composição em dados (20/10/2026)
+
+**Origem.** M25-T04 a T12: ligar a pixel art de `Resources/ArtePixel/` no jogo, com a câmera própria da TD-059.
+
+**Decisão.**
+- **Duas câmeras.** A câmera principal (tag, posição, tamanho) continua sendo a do jogo, mas não desenha nada
+  (`cullingMask = 0`) enquanto o mapa está em pixel; uma segunda câmera, com a mesma posição arredondada para o pixel
+  da grade, desenha o mundo numa `RenderTexture` de 216 px (Point), e o `OnRenderImage` da principal põe essa grade na
+  tela (inteiro exato, ou o inteiro de cima reduzido com bilinear). Assim `Camera.main.WorldToScreenPoint` (usado pelo
+  HUD) continua certo sem mexer no HUD.
+- **Encaixe na grade só para desenhar.** Em vez de mudar cada componente de movimento (deriva, balanço, voos), a
+  câmera pixel põe todo sprite sem rotação no pixel inteiro em `OnPreCull` e devolve a posição em `OnPostRender`,
+  com listas reaproveitadas (nada alocado por quadro). Sprites com rotação (vara, linha) ficam como estão: a própria
+  grade de 216 px já os desenha em pixels.
+- **Composição em dados.** Paletas de céu e água, deslocamentos das faixas, nuvens, reflexos, a linha da borda e o
+  assento de cada barco, a posição da Caixa e o ponto das mãos em cada quadro do pescador ficam em
+  `Resources/Visual/cena_pixel.json`, gravado por `tools/Arte/cena_pixel.py`. O mesmo script monta as prévias com os
+  mesmos números, então a prévia fora do Unity e o jogo não divergem.
+- **Fallback.** Um mapa sem `bg_far` em `ArtePixel` (ou sem entrada no json) volta ao cenário pintado antigo com a câmera
+  normal; um arquivo pixel que falta cai no antigo de mesmo nome. Peças de mapa que ainda não vieram são convertidas da
+  arte antiga como provisório (`cena_pixel.py provisorios`, lista em `tools/Arte/pixel_provisorios.txt`) e são
+  sobrescritas quando o pedido chegar.
+
+**Por quê.** Duas câmeras e o encaixe na hora de desenhar entregam "um pixel de arte = um pixel da grade" sem reescrever
+a cena nem o HUD, e sem o pacote 2D Pixel Perfect. Dados num json só deixam ajustar a cena pelo script e conferir na
+prévia antes do Play.
+
+**Rever se.** O custo do encaixe aparecer no perfilador (centenas de sprites): aí marcar só o que se move; ou se o
+proprietário quiser a cena em escala inteira com faixas pretas em vez do "nítido-suave".

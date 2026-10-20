@@ -451,7 +451,7 @@ namespace FishingIdle.Game.UI
                     GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(c.r, c.g, c.b, slot.Fish != null ? 0.8f : 0.5f), 1.5f, 10);
                     if (slot.Fish != null)
                     {
-                        GUI.DrawTexture(new Rect(r.x + 4, r.y + 4, r.width - 8, 32), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
+                        PixelDraw.Fit(new Rect(r.x + 4, r.y + 4, r.width - 8, 32), Art.FishTexture(slot.Fish.SpeciesId));
                         GUI.Label(new Rect(r.x, r.y + 33, r.width - 4, UiSkin.SmallLine), GameTexts.Player.LevelShort + " " + slot.Fish.Level, skin.SmallMutedRight);
                         if (r.Contains(Event.current.mousePosition))
                         {
@@ -990,7 +990,7 @@ namespace FishingIdle.Game.UI
             var pad = Mathf.Max(6f, r.width * 0.1f);
             if (art != null)
             {
-                GUI.DrawTexture(new Rect(r.x + pad, r.y + pad, r.width - pad * 2f, r.height - pad * 2f), art, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(new Rect(r.x + pad, r.y + pad, r.width - pad * 2f, r.height - pad * 2f), art);
             }
             else
             {
@@ -1331,7 +1331,7 @@ namespace FishingIdle.Game.UI
                     var shortArt = rect.height - 40 - 54;
                     if (shortArt > 8f)
                     {
-                        GUI.DrawTexture(new Rect(rect.x + 10, rect.y + 40, rect.width - 20, shortArt), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
+                        PixelDraw.Fit(new Rect(rect.x + 10, rect.y + 40, rect.width - 20, shortArt), Art.FishTexture(slot.Fish.SpeciesId));
                     }
 
                     var sy = rect.yMax - 52;
@@ -1346,7 +1346,7 @@ namespace FishingIdle.Game.UI
                 }
 
                 var artH = rect.height - 40 - 78;
-                GUI.DrawTexture(new Rect(rect.x + 10, rect.y + 40, rect.width - 20, artH), Art.FishTexture(slot.Fish.SpeciesId), ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(new Rect(rect.x + 10, rect.y + 40, rect.width - 20, artH), Art.FishTexture(slot.Fish.SpeciesId));
                 var ty = rect.yMax - 74;
                 GUI.Label(new Rect(rect.x + 12, ty, rect.width - 24, 22), FishCard.Fit(slot.Fish.SpeciesName, skin.BodyBold, rect.width - 24), skin.BodyBold);
                 GUI.Label(new Rect(rect.x + 12, ty + 21, rect.width - 24, UiSkin.SmallLine), GameTexts.Player.LevelShort + " " + slot.Fish.Level, skin.SmallMuted);
@@ -1401,7 +1401,7 @@ namespace FishingIdle.Game.UI
                     _root.SetCardumeSlot(_selectedPosition, f.FishId);
                 }
 
-                GUI.DrawTexture(new Rect(row.x + 8, row.y + 6, 80, 46), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(new Rect(row.x + 8, row.y + 6, 80, 46), Art.FishTexture(f.SpeciesId));
                 GUI.Label(new Rect(row.x + 96, row.y + 8, row.width - 150, 20), FishCard.Fit(f.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + f.Level, skin.BodyBold, row.width - 150), skin.BodyBold);
                 skin.SizeLine(new Rect(row.x + 96, row.y + 30, row.width - 150, 20), Format.SizeCm(f.SizeCm) + " · " + f.SizeCategoryName, f.SizeCategoryName, f.SizeCategoryId, skin.Small);
                 if (f.CardumePosition > 0)
@@ -1765,8 +1765,7 @@ namespace FishingIdle.Game.UI
             var artTop = c.y + pad + 26f;
             var art = new Rect(x, artTop, w, Mathf.Max(30f, c.yMax - pad - bottomH - artTop));
             GUI.DrawTexture(art, skin.White, ScaleMode.StretchToFill, true, 0, e.Discovered ? new Color(0.06f, 0.17f, 0.26f, 0.9f) : new Color(0.03f, 0.07f, 0.12f, 0.9f), 0, 8f);
-            GUI.DrawTexture(new Rect(art.x + 6f, art.y + 6f, art.width - 12f, art.height - 12f), Art.FishTexture(e.SpeciesId), ScaleMode.ScaleToFit, true, 0,
-                e.Discovered ? Color.white : new Color(0.02f, 0.05f, 0.09f, 0.9f), 0, 0);
+            PixelDraw.Fit(new Rect(art.x + 6f, art.y + 6f, art.width - 12f, art.height - 12f), Art.FishTexture(e.SpeciesId), e.Discovered ? Color.white : new Color(0.02f, 0.05f, 0.09f, 0.9f));
             if (!e.Discovered)
             {
                 var prevContent = GUI.contentColor;
@@ -1931,7 +1930,7 @@ namespace FishingIdle.Game.UI
             var bob = Mathf.Sin(Time.unscaledTime * 1.6f) * 3f;
             var art = new Rect(centre.x - artW / 2f, centre.y - artH / 2f + bob + (1f - t) * 10f, artW, artH);
             var tint = e.Discovered ? new Color(1f, 1f, 1f, t) : new Color(0.02f, 0.05f, 0.09f, 0.85f * t);
-            GUI.DrawTexture(art, Art.FishTexture(e.SpeciesId), ScaleMode.ScaleToFit, true, 0, tint, 0, 0);
+            PixelDraw.Fit(art, Art.FishTexture(e.SpeciesId), tint);
             if (!e.Discovered)
             {
                 var prevContent = GUI.contentColor;
