@@ -301,7 +301,6 @@ namespace FishingIdle.Game.UI
             }
 
             return clicked;
-        }            return clicked;
         }
 
         /// <summary>
@@ -587,5 +586,4 @@ namespace FishingIdle.Game.UI
             _bookmarkNote.normal.textColor = UiSkin.Muted;
         }
     }
-}    }
 }
