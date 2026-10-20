@@ -20,7 +20,7 @@ Status: `PEDIR` (ainda não pedido) · `RECEBIDO` (folha chegou e foi recortada 
 | Lote 7 · Telas especiais e Boss | 15 | 18 |
 | **Total** | **77** | **339** |
 
-Os arquivos novos vão para `client-unity/Assets/Resources/ArtePixel/`, com as mesmas subpastas e os mesmos nomes de hoje (TD-059); o jogo procura lá primeiro e usa a arte antiga enquanto um arquivo não existir. A limpeza (M25-T17, 20/10/2026) apagou `Arte/`; só ficaram os 6 peixes do pedido L4-03a (seção "Limpeza da arte antiga" abaixo).
+Os arquivos novos vão para `client-unity/Assets/Resources/ArtePixel/`, com as mesmas subpastas e os mesmos nomes de hoje (TD-059); o jogo procura lá primeiro e usa a arte antiga enquanto um arquivo não existir. A limpeza (M25-T17, 20/10/2026) apagou `Arte/`; só ficaram os 6 peixes do pedido L4-03a, e desde a 2ª entrega de 20/10/2026 só o mandi-amarelo (seções "Limpeza da arte antiga" e "2ª entrega de 20/10/2026" abaixo).
 
 ## Recebimento de 20/10/2026
 
@@ -33,12 +33,32 @@ pasta (M25-T04); só fica verificado no Play.
 
 | Pedido | Imagens | Motivo |
 |---|---:|---|
-| L4-03a · Peixes do Pantanal Dourado (1 de 2) | 6 | O arquivo trazia os 6 peixes do Estuário (1 de 2); mandi-amarelo, pacu-peva, jurupensém, piavuçu, jundiá e muçum não vieram em nenhuma folha. |
+| L4-03a · Peixes do Pantanal Dourado (1 de 2) | 6 (agora 1) | O arquivo trazia os 6 peixes do Estuário (1 de 2); mandi-amarelo, pacu-peva, jurupensém, piavuçu, jundiá e muçum não vieram em nenhuma folha. Na 2ª entrega (um peixe por imagem) vieram 5; falta só o mandi-amarelo. |
 | L1-06b · Lago Sereno: laterais | 2 (`near_left`, `near_right`) | As duas laterais vieram emendadas numa paisagem só, com morros e o lago no meio; separar cortaria a cena ao meio. Os cantos da frente estão bons. |
 | L6-08b · Banco das Baleias: laterais e cantos | 4 | Bordas borradas em listras horizontais e água cortada em blocos retangulares, com halo rosa. |
 | L6-09b · Talude Noturno: laterais e cantos | 4 | Mesmo defeito: cada peça virou um bloco retangular de mar com bordas em listras. |
 
 Os pedidos corrigidos, prontos para colar, estão na página de conferência entregue ao proprietário.
+
+## 2ª entrega de 20/10/2026 — um desenho por imagem
+
+Em 20/10/2026 os pedidos que faltavam foram **reescritos como um desenho por imagem** (1536 × 1024, fundo magenta
+`#FF00FF`, grade de 8 × 8 px por pixel de arte), **sem imagem de referência anexada**, porque as folhas com vários
+desenhos vinham trocadas ou emendadas. O recorte usa o mesmo pedido do manifesto, trocando só a grade e a célula na
+linha de comando (o manifesto não muda):
+
+```
+python3 tools/Arte/pixel_folhas.py IMAGEM.png --pedido L4-03a --grade 1x1 --celula 192x128 \
+        --nomes Peixes/fish_mucum_master
+```
+
+(1536 ÷ 8 = 192 e 1024 ÷ 8 = 128; alvo 112 × 100, 32 cores, contorno auto e versão pequena `_p` vêm do pedido.)
+
+- **L4-03a:** chegaram 5 dos 6 peixes: muçum (116 × 22), jundiá (116 × 40), piavuçu (116 × 52), jurupensém
+  (116 × 32) e pacu-peva (117 × 77), cada um com a sua `_p`. Conferidos ampliados contra piraputanga, jurupoca,
+  armado e barbado (mesma largura, mesmo contorno escuro, mesma leitura). **NO_JOGO.** As 5 imagens antigas saíram de
+  `Resources/Arte/Peixes`.
+- **Mandi-amarelo:** não veio; **PEDIR DE NOVO** (um desenho por imagem). Até lá o jogo mostra a arte antiga dele.
 
 **Trocas resolvidas pelo nome (não precisa pedir de novo):** a folha "Lago Sereno (2 de 2)" trazia jaú, pirarucu e
 aruanã (Rio Selvagem 2 de 2) e a "Rio Selvagem (2 de 2)" trazia matrinxã, carpa e tambaqui; a "Estuário (1 de 2)"
@@ -84,7 +104,7 @@ Visual só fica verificado quando o proprietário apertar Play.
 | `Mapas/BancoDasBaleias/map_banco_das_baleias_near_left`, `near_right`, `fg_left`, `fg_right` | L6-08b |
 | `Mapas/TaludeNoturno/map_talude_noturno_near_left`, `near_right`, `fg_left`, `fg_right` | L6-09b |
 
-Os 6 peixes do Pantanal Dourado (1 de 2, L4-03a) continuam com a arte antiga até o pedido chegar.
+Do Pantanal Dourado (1 de 2, L4-03a) só o mandi-amarelo continua com a arte antiga até chegar; os outros 5 estão em pixel desde a 2ª entrega de 20/10/2026.
 
 ## Limpeza da arte antiga (M25-T17, 20/10/2026)
 
@@ -102,6 +122,10 @@ Os 6 peixes do Pantanal Dourado (1 de 2, L4-03a) continuam com a arte antiga at�
   `fish_jurupensem_master`, `fish_piavucu_master`, `fish_jundia_master` e `fish_mucum_master`: o jogo ainda mostra esses 6 peixes do Pantanal e não há versão em pixel deles (pedido L4-03a,
   **PEDIR DE NOVO**). Quando a folha chegar e for recortada, apague `Resources/Arte` e o fallback `LegacyRoot` do
   `ArtAssets` (TD-065).
+- **Atualização (2ª entrega de 20/10/2026):** pacu-peva, jurupensém, piavuçu, jundiá e muçum chegaram em pixel e as
+  imagens antigas deles foram apagadas. `Resources/Arte/Peixes` ficou só com `fish_mandi_amarelo_master` (1 PNG,
+  0,35 MB). O fallback `LegacyRoot` fica como está (TD-065) e **sai junto com essa imagem quando o mandi-amarelo
+  chegar**.
 
 ## Pedidos por lote
 
@@ -155,7 +179,7 @@ Os outros 97 peixes, de 6 em 6 e de 4 em 4, sempre do mesmo mapa juntos (os comu
 | L4-01b · Peixes do Lago Sereno (2 de 2) | `L4-01b_peixes_lago_sereno_b.png` | 3×1 | 128×128 | `Peixes/fish_matrinxa_master`<br>`Peixes/fish_carpa_master`<br>`Peixes/fish_tambaqui_master` | NO_JOGO (veio no arquivo L4-02b) |
 | L4-02a · Peixes do Rio Selvagem (1 de 2) | `L4-02a_peixes_rio_selvagem_a.png` | 3×2 | 128×128 | `Peixes/fish_piranha_master`<br>`Peixes/fish_piracanjuba_master`<br>`Peixes/fish_peixe_cachorra_master`<br>`Peixes/fish_dourado_master`<br>`Peixes/fish_cachara_master`<br>`Peixes/fish_pintado_master` | NO_JOGO (veio no arquivo L4-04a) |
 | L4-02b · Peixes do Rio Selvagem (2 de 2) | `L4-02b_peixes_rio_selvagem_b.png` | 3×1 | 128×128 | `Peixes/fish_jau_master`<br>`Peixes/fish_pirarucu_master`<br>`Peixes/fish_aruana_master` | NO_JOGO (veio no arquivo L4-01b) |
-| L4-03a · Peixes do Pantanal Dourado (1 de 2) | `L4-03a_peixes_pantanal_dourado_a.png` | 3×2 | 128×128 | `Peixes/fish_mandi_amarelo_master`<br>`Peixes/fish_pacu_peva_master`<br>`Peixes/fish_jurupensem_master`<br>`Peixes/fish_piavucu_master`<br>`Peixes/fish_jundia_master`<br>`Peixes/fish_mucum_master` | **PEDIR DE NOVO**: o arquivo trazia os peixes do Estuário (1 de 2); estes 6 não vieram · até lá o jogo mostra a arte antiga desses 6 |
+| L4-03a · Peixes do Pantanal Dourado (1 de 2) | `L4-03a_peixes_pantanal_dourado_a.png` | 3×2 | 128×128 | `Peixes/fish_mandi_amarelo_master`<br>`Peixes/fish_pacu_peva_master`<br>`Peixes/fish_jurupensem_master`<br>`Peixes/fish_piavucu_master`<br>`Peixes/fish_jundia_master`<br>`Peixes/fish_mucum_master` | pacu-peva, jurupensém, piavuçu, jundiá e muçum: **NO_JOGO** (2ª entrega, um peixe por imagem, 20/10/2026) · mandi-amarelo: **PEDIR DE NOVO** (não veio; até lá o jogo mostra a arte antiga dele) |
 | L4-03b · Peixes do Pantanal Dourado (2 de 2) | `L4-03b_peixes_pantanal_dourado_b.png` | 2×2 | 128×128 | `Peixes/fish_piraputanga_master`<br>`Peixes/fish_jurupoca_master`<br>`Peixes/fish_armado_master`<br>`Peixes/fish_barbado_master` | NO_JOGO |
 | L4-04a · Peixes do Estuário das Marés (1 de 2) | `L4-04a_peixes_estuario_das_mares_a.png` | 3×2 | 128×128 | `Peixes/fish_parati_master`<br>`Peixes/fish_carapeba_master`<br>`Peixes/fish_tainha_master`<br>`Peixes/fish_corvina_master`<br>`Peixes/fish_bagre_marinho_master`<br>`Peixes/fish_robalo_peva_master` | NO_JOGO (veio no arquivo L4-03a) |
 | L4-04b · Peixes do Estuário das Marés (2 de 2) | `L4-04b_peixes_estuario_das_mares_b.png` | 2×2 | 128×128 | `Peixes/fish_xareu_master`<br>`Peixes/fish_pescada_amarela_master`<br>`Peixes/fish_camurupim_master`<br>`Peixes/fish_mero_master` | NO_JOGO (arquivo extra; o arquivo L4-02a trazia outra versão desta mesma folha) |

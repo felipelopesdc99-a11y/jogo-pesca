@@ -3,6 +3,27 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m25.2] — 20/10/2026
+
+5 peixes do Pantanal Dourado em pixel (pedido L4-03a, 2ª entrega). Nenhuma regra, número ou save mudou. Vem depois da
+limpeza da arte antiga (0.2.0-m25.1). Visual só fica verificado quando o proprietário apertar Play.
+
+### Adicionado
+
+- **Muçum, jundiá, piavuçu, jurupensém e pacu-peva em pixel** (`Resources/ArtePixel/Peixes`, com a versão pequena
+  `_p`), recortados com `tools/Arte/pixel_folhas.py` a partir de imagens de um peixe só (1536 × 1024, grade de 8 px),
+  com os parâmetros do pedido L4-03a (`--grade 1x1 --celula 192x128`).
+
+### Removido
+
+- As 5 imagens antigas desses peixes em `Resources/Arte/Peixes`. Fica só a do mandi-amarelo, que não veio e vai ser
+  pedido de novo; o fallback da arte antiga (TD-065) sai quando ele chegar.
+
+### Alterado
+
+- `docs/ASSETS_PIXEL.md`: os pedidos que faltam foram reescritos como um desenho por imagem, sem imagem de referência
+  anexada (20/10/2026).
+
 ## [0.2.0-m25.1] — 20/10/2026
 
 Limpeza da arte antiga e checkup do projeto (M25-T17, TD-065). Nada muda na tela: o que saiu ou não era mais lido ou

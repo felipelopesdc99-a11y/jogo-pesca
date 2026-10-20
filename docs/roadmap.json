@@ -5254,7 +5254,7 @@
             "M25-T04"
           ],
           "updated_at": "2026-10-20T18:00:00Z",
-          "completion_notes": "Os peixes em pixel entram sozinhos pela troca do ArtAssets: cartas, Caixa, Aquário (balanço de 2 px, sem rotação), Mercado, Arena, Clã, Perfil e Enciclopédia (silhueta escura tingida como antes) em escala inteira pelo PixelDraw, _p quando 1× não cabe; na cena, o _p a 1×. Os 6 do Pantanal (L4-03a) seguem com a arte antiga até o pedido chegar. Os 3 desenhos de peixe do Hud.cs continuam com ScaleToFit (arquivo da M25-T03; nítidos pelo Point, mas não em escala inteira). Compila; verificado só no Play."
+          "completion_notes": "Os peixes em pixel entram sozinhos pela troca do ArtAssets: cartas, Caixa, Aquário (balanço de 2 px, sem rotação), Mercado, Arena, Clã, Perfil e Enciclopédia (silhueta escura tingida como antes) em escala inteira pelo PixelDraw, _p quando 1× não cabe; na cena, o _p a 1×. Os 6 do Pantanal (L4-03a) seguem com a arte antiga até o pedido chegar. Em 20/10/2026 (2ª entrega, um peixe por imagem) chegaram muçum, jundiá, piavuçu, jurupensém e pacu-peva em pixel (com _p); só o mandi-amarelo segue na arte antiga, a pedir de novo. Os 3 desenhos de peixe do Hud.cs continuam com ScaleToFit (arquivo da M25-T03; nítidos pelo Point, mas não em escala inteira). Compila; verificado só no Play."
         },
         {
           "id": "M25-T10",
