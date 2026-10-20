@@ -161,7 +161,8 @@ namespace FishingIdle.Game.UI
             BuildItems(gear);
             var selected = SelectedIndex();
 
-            var wallWidth = Mathf.Clamp(body.width * 0.33f, 340f, 430f);
+            // The list is the widest column since A-190 (names whole: "Vara Pantaneira", "Vara do Ribeirão").
+            var wallWidth = Mathf.Clamp(body.width * 0.4f, 360f, 456f);
             var wall = new Rect(body.x, body.y, wallWidth, body.height);
             var right = new Rect(wall.xMax + Gap, body.y, body.xMax - wall.xMax - Gap, body.height);
             var dock = new Rect(right.x, right.yMax - DockHeight, right.width, DockHeight);
@@ -384,20 +385,13 @@ namespace FishingIdle.Game.UI
             var midY = row.center.y;
             Fill(skin, UiSkin.Snap(new Rect(row.x + UiSkin.ArcPixel * 2f, row.y + 12f, UiSkin.ArcPixel * 2f, row.height - 24f)), UiSkin.TierColor(item.Tier), 0f);
 
-            // The picture: a square box for clothing and baits, a wide one for rods and boats.
-            Rect itemRect;
-            if (item.Square)
-            {
-                var s = Mathf.Min(row.height - 16f, 56f);
-                itemRect = new Rect(row.x + 16f, midY - s / 2f, s, s);
-            }
-            else
-            {
-                var w = Mathf.Min(row.height * 1.6f, 112f);
-                itemRect = new Rect(row.x + 16f, midY - w / 4f, w, w / 2f);
-            }
-
-            var pictureRight = row.x + 16f + Mathf.Max(itemRect.width, 56f);
+            // The picture at 1× (the pixel files are 50 px or less, the boats 100 × 34): a 56 px square, 104 wide for a boat,
+            // so the name keeps its room.
+            var wide = item.Art != null && item.Art.StartsWith("Barcos/", System.StringComparison.Ordinal);
+            var pw = wide ? 104f : 56f;
+            var ph = Mathf.Min(row.height - 8f, 56f);
+            var itemRect = new Rect(row.x + 16f, midY - ph / 2f, pw, ph);
+            var pictureRight = itemRect.xMax;
             DrawItemArt(skin, itemRect, item, 0f, Color.white);
 
             var tagCol = new Rect(row.xMax - tagColumn - 12f, row.y, tagColumn, row.height);
@@ -1133,8 +1127,8 @@ namespace FishingIdle.Game.UI
             var ch = rect.yMax - y;
             Compartment(skin, new Rect(x, y, cw, ch), GameTexts.Gear.Rod, "Varas/" + gear.RodId, Icons.Rod, gear.RodName, gear.RodBonus, true);
             Compartment(skin, new Rect(x + cw + 8f, y, cw, ch), GameTexts.Gear.Boat, "Barcos/" + gear.BoatId, Icons.Boat, gear.BoatName, gear.BoatBonus, true);
-            var bait = gear.BaitName != null ? gear.BaitName + " · " + Format.Number(gear.BaitChargesLeft) : GameTexts.Gear.NoBait;
-            Compartment(skin, new Rect(x + (cw + 8f) * 2f, y, cw, ch), GameTexts.Gear.Bait, gear.BaitId != null ? "Iscas/" + gear.BaitId : null, Icons.Bait, bait, gear.BaitBonus, gear.BaitName != null);
+            var baitLabel = gear.BaitName != null ? GameTexts.Gear.Bait + " · " + Format.Number(gear.BaitChargesLeft) : GameTexts.Gear.Bait;
+            Compartment(skin, new Rect(x + (cw + 8f) * 2f, y, cw, ch), baitLabel, gear.BaitId != null ? "Iscas/" + gear.BaitId : null, Icons.Bait, gear.BaitName ?? GameTexts.Gear.NoBait, gear.BaitBonus, gear.BaitName != null);
         }
 
         private void Compartment(UiSkin skin, Rect r, string label, string art, string icon, string name, double bonus, bool has)
@@ -1175,7 +1169,8 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            const float pillHeight = 32f, gap = 8f;
+            // Three rows of pills and the legend fit the 168 px dock.
+            const float pillHeight = 28f, gap = 6f;
             var x = rect.x;
             var y = rect.y + UiSkin.SmallLine + 8f;
             var anyAway = false;
@@ -1210,7 +1205,7 @@ namespace FishingIdle.Game.UI
 
             if (anyAway)
             {
-                y += pillHeight + 8f;
+                y += pillHeight + 4f;
                 GUI.Label(new Rect(rect.x, y, rect.width, UiSkin.SmallLine), FishCard.Fit(GameTexts.Gear.NotHereLegend, _mutedTop, rect.width), _mutedTop);
             }
         }

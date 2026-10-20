@@ -1405,7 +1405,7 @@ namespace FishingIdle.Game.UI
 
             const float gap = 14f;
             // Wider since A-190 (was 190–232): "Arquipélago do Sol" and its "6/10" fit whole in VT323.
-            var tabsW = Mathf.Clamp(area.width * 0.22f, 248f, 264f);
+            var tabsW = 264f;
             DrawEncTabs(skin, new Rect(area.x, area.y, tabsW, area.height), all, maps);
 
             // The sheet sits beside the page when there is room for it; otherwise it covers the page, with Voltar.

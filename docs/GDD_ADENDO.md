@@ -3887,4 +3887,35 @@ nenhuma regra, número, recompensa ou save mudou.
 - **Escala da interface:** o quadro de 1080 de altura passa a usar uma escala "limpa" (0,5 · 1 · 1,5 · 2) quando ela
   deixa o quadro entre 1080 e 1280 de altura (janelas de 600, de 1080 a 1280 e de 2160 px). Nessas a letra pixel não
   borra; nas outras alturas a escala continua a fração exata, como antes (TD-066).
+- **Regras de layout** (valem para as telas novas e as revisadas): grade de 8 (8 entre peças pequenas, 16 entre
+  elementos, 32 entre seções); no máximo 2 níveis de caixa (janela → cartão de uma linha; título, contador e "i" são
+  texto e ícone sem caixa); recurso e estado em ícone + número, ação em verbo; o nome de um botão sem rótulo aparece ao
+  passar o mouse; texto medido com o maior texto real em PT-BR, e o que não cabe encurta pelo `GameTexts` ou termina em
+  "…" (nunca corte seco nem texto sobre texto); nada gira; brilho só em recompensa.
+- **HUD:** as Moedas aparecem só no cartão do jogador (contando até o novo total, com o "+N" logo abaixo dele); a placa
+  "MOEDAS" que as repetia saiu. O painel de pesca virou uma linha ("Esperando o peixe morder… · 0:07"), a isca com as
+  tentativas à direita, a barra e um botão de ícone para parar (480 × 96; era 620 × 152); o ciclo e as chances aparecem
+  ao passar o mouse sobre o painel. Atalhos de 64 px a cada 80 (eram 72 a cada 116), sem rótulo embaixo. No máximo 2
+  avisos ao mesmo tempo sobre a cena. O botão da Caixa ficou só com o ícone e "128/300" ("Cheia" em dourado), na mesma
+  linha de baixo do painel de pesca.
+- **Moldura das janelas:** título e ícone direto no painel, contador em texto suave ao lado, "✕" sem círculo (o círculo
+  aparece ao passar o mouse); abas laterais de 128 (eram 96), com "…" se uma palavra não couber.
+- **Loja:** lista à esquerda (linhas de 64 a 80: desenho, nome, classe e etiqueta), o item escolhido grande no meio e a
+  ficha à direita num cartão de uma linha; "Seu equipamento" em 3 cartões e as chances de puxar como pílulas sólidas da
+  raridade com o percentual dentro ("Épico 10%"; as que não mordem aqui em cinza). Saíram a parede de tábuas, a viga, os
+  ganchos, a etiqueta pendurada, o pedestal com aura, o voo do item até o balcão (e o giro), a caixa de pesca e as boias.
+  "Fragmentos 12/25" com a barra e, embaixo, "Caem em todos os mapas · 0,8% por peixe".
+- **Aquário:** os peixes nunca giram (o balanço é 1 pixel para cima ou para baixo; a virada é espelho).
+- **Ranking:** o nível não se repete na linha da lista de Nível; o troféu ao lado do título e a moldura em volta do pódio
+  saíram; os avatares são o retrato em pixel num quadrado com linha de 1 pixel (os círculos lisos pareciam vazios).
+- **Missões:** linha de 88 (era 104) com o objetivo, a barra e o progresso (coluna fixa, as barras se alinham) e a
+  recompensa em linha (ícone + número); saíram o "Nº 13" de cada linha e a caixa do topo que repetia o nome da aba.
+- **Enciclopédia:** a coluna de mapas tem 264 (nomes inteiros, "Arquipélago do Sol 3/10"); o cartão mostra o selo, o
+  nome, o mapa só em "Todas" e "37×" (o recorde e o mapa ficam na ficha); "Não pescada" no lugar de "Ainda não pescada".
+  Cada aba do Perfil tem o seu ícone.
+- **Eventos:** sem o quadro de cortiça; o cartão do Boss tem um título só (o nome do Boss, com o selo "AGORA") e
+  "Boss Mundial" em texto suave embaixo; nada pisca em repouso.
+- **Ficou para o proprietário decidir:** tirar a cor de Pequeno, Adulto e Grande (só Excepcional e Perfeição coloridos)
+  e as fontes novas (M25-T22). As outras telas que a pesquisa aponta (Caixa de Pesca, Mercado, Arena, Passe, Clã e
+  Bem-vindo de volta) ficam para a M25-T24.
 

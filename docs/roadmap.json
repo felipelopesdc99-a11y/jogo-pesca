@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-20T23:30:00Z",
+  "updated_at": "2026-10-20T21:30:00Z",
   "current_milestone": "M25",
   "statuses": [
     "TODO",
@@ -5384,7 +5384,7 @@
           "dependencies": [
             "M25-T17"
           ],
-          "updated_at": "2026-10-20T23:00:00Z",
+          "updated_at": "2026-10-20T21:00:00Z",
           "completion_notes": "A-190, TD-066. tema_visual.json com 14 cores de interface (painel #283050 sólido, cartão #1E2541, elevado #36406A, texto #F4ECD6, suave #C9C0A4, ação #5ED6D2, perigo #FF7A6B, ganho #5BDB9A, véu a 35%) e as raridades um tom mais claras (Raro #7AAEFF, Épico #C084FC, Lendário #FF6B6E, Mítico #F472B6); o bloco arc saiu e o VisualTheme deriva o resto (Derive). Título creme, igual ao texto: o amarelo fica só para recompensa. Cartão sem a linha interna. Fontes e tamanhos num bloco só do UiSkin (TitleFontFile, TextFontFile, tamanhos, TextLiftEm, AccentTwinScale; os números soltos de ArrivalTitle, NumberBig, VS e Arena viraram constantes). UiSkin.CanvasScale: escala do GUI.matrix em passos de 0,5 quando o quadro fica entre 1080 e 1280 de altura (600, 1080–1280 e 2160 px sem borrão); nas outras alturas a fração exata de antes. Itens escuros (varas 3 a 5, fragmentos delas, calça, luvas e botas) ganham um encaixe claro no PixelDraw.Fit; fundos escuros do Mapa, Expedição, Clã e Boss, um véu da cor do painel no PixelDraw.Cover. Eventos usa o calendário; o sino fica para os Avisos. Compila pelo CI; visual só verificado no Play."
         },
         {
@@ -5396,7 +5396,7 @@
           "dependencies": [
             "M25-T17"
           ],
-          "updated_at": "2026-10-20T23:00:00Z",
+          "updated_at": "2026-10-20T21:00:00Z",
           "completion_notes": "A-190. pixel_pedidos.json: alvo_altura 35 nos pedidos L1-01, L1-02 e L2-01, alvo 96x40 em L1-05 e L5-02 e a caixa do barco 36x26 (L1-04). Recortados com pixel_folhas.py das folhas originais (a 2ª linha das animações A e B trocadas pelo --nomes, como no 1º recorte): 17 quadros 64 × 64 com a figura de 35 px e os pés na coluna 40, boat_00 a boat_04 com 100 px de largura e boat_05 com 84, caixa 40 × 28. cena_pixel.py: mãos de cada quadro, borda e assento dos barcos, caixa (28, 21) e vara de 48 px recalculados; cena_pixel.json e as frentes dos barcos gerados de novo (dados). Prévia da cena conferida (revisao_visual/depois/cena). Visual só verificado no Play."
         },
         {
@@ -5404,11 +5404,12 @@
           "title": "Revisão visual: telas mais limpas e nada sobreposto",
           "subsystem": "client",
           "description": "Pedido do proprietário (20/10/2026): menus menos bagunçados, mais minimalistas, sem texto cortado ou sobreposto. Regras de layout da pesquisa: grade de 8 (16 entre elementos, 32 entre seções), no máximo 2 níveis de caixa, ícone + número para recursos, texto medido (nunca texto sobre texto). Telas: HUD, Loja, Aquário, Ranking, Missões, Perfil (Enciclopédia), Eventos e a moldura comum.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M25-T19"
           ],
-          "updated_at": "2026-10-20T23:30:00Z"
+          "updated_at": "2026-10-20T21:30:00Z",
+          "completion_notes": "A-190. HUD: Moedas só no cartão do jogador (contando, com o +N embaixo; a placa repetida saiu), painel de pesca 480 × 96 de uma linha com a isca, a barra e o botão de parar (ciclo e chances ao passar o mouse), atalhos de 64 a cada 80 sem rótulo (nome ao passar o mouse), no máximo 2 avisos, botão da Caixa com ícone 2× e 128/300. Moldura: título e contador sem caixa, ✕ sem círculo, abas de 128 com reticências. Loja como lista + item + ficha, sem parede, viga, ganchos, pedestal, voo nem giro; equipamento em 3 cartões; chances em pílulas sólidas; fragmentos em duas linhas curtas. Aquário sem giro. Ranking sem nível repetido, sem troféu e sem moldura no pódio, avatares em pixel. Missões em linhas de 88 com recompensa em linha e progresso em coluna fixa, sem Nº e sem a caixa do topo. Enciclopédia com a coluna de mapas de 264, cartão com nome, mapa só em Todas e 37×. Eventos sem cortiça e com um título só. Textos novos no GameTexts (StatusLine, IdleShort, Box.Ratio, Box.FullTiny, FragmentsChanceShort, EncTimes) e 6 sem uso removidos. Prévias antes/depois em revisao_visual/depois (HUD, Loja, Aquário, Ranking, Missões, Perfil, 1080p e 600p). Compila pelo CI; visual só verificado no Play."
         },
         {
           "id": "M25-T22",
@@ -5419,7 +5420,7 @@
           "dependencies": [
             "M25-T19"
           ],
-          "updated_at": "2026-10-20T23:00:00Z"
+          "updated_at": "2026-10-20T21:00:00Z"
         },
         {
           "id": "M25-T23",
@@ -5430,7 +5431,18 @@
           "dependencies": [
             "M25-T19"
           ],
-          "updated_at": "2026-10-20T23:00:00Z"
+          "updated_at": "2026-10-20T21:00:00Z"
+        },
+        {
+          "id": "M25-T24",
+          "title": "Revisão visual das outras telas (Caixa, Mercado, Arena, Passe, Clã, Bem-vindo)",
+          "subsystem": "client",
+          "description": "O resto do diagnóstico da pesquisa de 20/10/2026 com as regras de layout da A-190: Caixa de Pesca (chips de raridade, 3 menus num botão Filtros, cartão com menos informações, Selecionar/Limpar num botão só), Mercado (juntar Meus anúncios e Itens para retirar, banner só no cabeçalho), Arena (etiquetas FRENTE/TRÁS de 20 no mínimo, menos adornos por jogador), Passe (faixa só no cabeçalho, célula ícone + número), Clã (aviso do online numa linha, porto só no cabeçalho) e Bem-vindo de volta (3 números, lista de linhas, 1 botão principal). Só apresentação.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T21"
+          ],
+          "updated_at": "2026-10-20T21:30:00Z"
         }
       ]
     }

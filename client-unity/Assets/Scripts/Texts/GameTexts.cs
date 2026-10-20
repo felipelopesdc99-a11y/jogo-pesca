@@ -1452,7 +1452,7 @@ namespace FishingIdle.Texts
 
             /// <summary>The catches on an album card (A-190): "37×" (the record and the map are on the sheet).</summary>
             public static string EncTimes(string count) => count + "×";
-            public const string EncNotYet = "Ainda não pescada";
+            public const string EncNotYet = "Não pescada";
             public const string EncBack = "Voltar";
             public const string EncPrevGlyph = "‹";
             public const string EncNextGlyph = "›";

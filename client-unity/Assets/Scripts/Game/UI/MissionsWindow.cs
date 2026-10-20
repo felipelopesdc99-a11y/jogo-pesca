@@ -22,7 +22,7 @@ namespace FishingIdle.Game.UI
     {
         // On the grid of 8 since A-190: one row of 88 (goal, bar and progress, the rewards in line), 8 between rows.
         private const float SummaryHeight = 48f, Gap = 16f, CardHeight = 88f, CardGap = 8f, ScrollBar = 18f;
-        private const float RewardWidth = 232f, ActionWidth = 168f, RefreshSeconds = 1f;
+        private const float RewardWidth = 232f, ActionWidth = 168f, ProgressWidth = 184f, RefreshSeconds = 1f;
 
         private enum Tab
         {
@@ -232,7 +232,8 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, rect.y + 8f, w, 28f), FishCard.Fit(m.Text, skin.BodyBold, w), skin.BodyBold);
 
             var barY = rect.y + 40f;
-            var progressWidth = Mathf.Min(w * 0.5f, skin.SmallRight.CalcSize(new GUIContent(row.Progress)).x + 4f);
+            // One width for every row (the longest real text, "52,3 mil / 100 mil", is 173 px), so the bars line up.
+            var progressWidth = Mathf.Min(w * 0.5f, ProgressWidth);
             skin.Bar(new Rect(x, barY + 6f, Mathf.Max(24f, w - progressWidth - 16f), 12f), (float)m.Fraction, m.Ready || m.Claimed);
             GUI.Label(new Rect(x + w - progressWidth, barY, progressWidth, UiSkin.SmallLine), FishCard.Fit(row.Progress, skin.SmallRight, progressWidth), skin.SmallRight);
             if (row.Note != null)

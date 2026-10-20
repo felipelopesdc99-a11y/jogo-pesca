@@ -3,6 +3,27 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m25.6] — 20/10/2026
+
+Revisão visual pedida pelo proprietário (A-190), 2ª parte: menus mais limpos e nada sobreposto. Nenhuma regra, número ou
+save mudou. Visual só fica verificado quando o proprietário apertar Play.
+
+### Alterado
+
+- **HUD:** as Moedas aparecem uma vez só (no cartão do jogador); painel de pesca de uma linha com a barra e o botão de
+  parar (ciclo e chances ao passar o mouse); atalhos menores e sem rótulo (o nome aparece ao passar o mouse); no máximo
+  2 avisos na tela; botão da Caixa com o ícone e "128/300".
+- **Loja:** lista, item escolhido e ficha, sem a parede de tábuas, os ganchos, o pedestal e o voo; nada gira; as chances
+  em pílulas da cor da raridade ("Épico 10%").
+- **Missões:** linhas mais baixas, recompensa em linha e barras alinhadas; sem o "Nº" e sem repetir o nome da aba.
+- **Ranking:** sem o nível repetido, sem o troféu no título e sem a moldura do pódio; retratos em pixel.
+- **Enciclopédia:** nomes dos mapas inteiros; o cartão mostra só o nome, o mapa (em "Todas") e quantas vezes pescou.
+- **Aquário:** os peixes não giram mais. **Eventos:** sem o quadro de cortiça, um título só.
+
+### Pendente
+
+- Revisão das outras telas (M25-T24) e as decisões do proprietário: fontes (M25-T22) e a cor de Pequeno/Adulto/Grande.
+
 ## [0.2.0-m25.5] — 20/10/2026
 
 Revisão visual pedida pelo proprietário depois de jogar a versão pixel (A-190), 1ª parte. Nenhuma regra, número ou save

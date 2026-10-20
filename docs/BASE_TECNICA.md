@@ -526,6 +526,10 @@ Cada passo está em `SaveMigrations.Upgrade`.
   fonte padrão (Fredoka e Nunito saíram na M25-T17). **Trocar as fontes:** só no bloco "fonts and sizes" do `UiSkin`
   (`TitleFontFile`, `TextFontFile`, os tamanhos e as medidas `TextLiftEm` e `AccentTwinScale`); nenhuma tela tem
   tamanho de letra próprio.
+- **Layout das telas (A-190):** grade de 8, no máximo 2 níveis de caixa (janela → cartão de uma linha), texto medido
+  com `GUIStyle.CalcSize` e encurtado por `FishCard.Fit` ("…"), nada gira (`PixelDraw.Fit`/`ArcArt.Fit` com espelho). Um
+  botão sem rótulo mostra o nome ao passar o mouse (`Hud.HoverName`). Itens e fundos escuros recebem encaixe ou véu
+  claro no `PixelDraw` (listas `DarkItems` e `DarkBackdrops`), sem mexer nos arquivos.
 - **Textos:** sempre de `GameTexts`. Nunca escreva uma frase em PT-BR direto num `.cs` fora de `Texts/`.
 - **Avisos e central de notificações** (`ToastFeed`): `Push(texto, tipo, ícone, notify)` mostra o
   aviso; com `notify: true` ele também entra na lista do sino (até 50, só enquanto o jogo está

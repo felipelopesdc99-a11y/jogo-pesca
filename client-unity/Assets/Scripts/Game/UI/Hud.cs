@@ -1354,8 +1354,8 @@ namespace FishingIdle.Game.UI
 
             var text = Format.Number(gear.BaitChargesLeft);
             var w = skin.SmallGoldRight.CalcSize(new GUIContent(text)).x + 4f;
-            var x = rect.xMax - w - 8f - 20f;
-            skin.DrawIcon(new Rect(x, rect.y + 2f, 20f, 20f), Icons.Bait, UiSkin.Gold);
+            var x = rect.xMax - w - 8f - 24f;
+            skin.DrawIcon(new Rect(x, rect.y, 24f, 24f), Icons.Bait, UiSkin.Gold);
             GUI.Label(new Rect(rect.xMax - w, rect.y, w, rect.height), text, skin.SmallGoldRight);
             var hit = new Rect(x - 4f, rect.y - 4f, rect.xMax - x + 8f, rect.height + 8f);
             if (GUI.Button(hit, new GUIContent(string.Empty, GameTexts.Gear.OpenDetails), GUIStyle.none))
@@ -1469,8 +1469,9 @@ namespace FishingIdle.Game.UI
                 _box.Open();
             }
 
-            skin.DrawIcon(new Rect(rect.x + 16f, rect.center.y - 20f, 40f, 40f), Icons.Box, UiSkin.Gold);
-            var textRect = new Rect(rect.x + 16f + 40f + 12f, rect.y, rect.width - 16f - 40f - 12f - 12f, rect.height);
+            // The 24 px icon at 2× (48), so it never lands between two scales.
+            skin.DrawIcon(new Rect(rect.x + 12f, rect.center.y - 24f, 48f, 48f), Icons.Box, UiSkin.Gold);
+            var textRect = new Rect(rect.x + 12f + 48f + 12f, rect.y, rect.width - 12f - 48f - 12f - 12f, rect.height);
             if (player.FishingBoxFull)
             {
                 GUI.Label(new Rect(textRect.x, rect.center.y - 14f, textRect.width, 28f), FishCard.Fit(GameTexts.Box.FullTiny, skin.BodyBold, textRect.width), skin.SmallGold);
