@@ -2,7 +2,7 @@
 
 Fonte da lista de pedidos do novo estilo visual escolhido pelo proprietário em 19/10/2026 (GDD_ADENDO A-182, regras em `docs/ART_BIBLE_PIXEL.md`). Gerada junto com o manifesto `tools/Arte/pixel_pedidos.json`, que o `tools/Arte/pixel_folhas.py` usa para recortar cada folha. Atualize o **Status** de cada pedido quando a folha chegar e quando entrar no jogo.
 
-Status: `PEDIR` (ainda não pedido) · `RECEBIDO` (folha chegou) · `NO_JOGO` (recortado e ligado no jogo).
+Status: `PEDIR` (ainda não pedido) · `RECEBIDO` (folha chegou e foi recortada em `Resources/ArtePixel/`) · `PEDIR DE NOVO` (veio errada ou ruim demais; o motivo está na linha) · `NO_JOGO` (ligado no jogo).
 
 ## Resumo
 
@@ -22,6 +22,33 @@ Status: `PEDIR` (ainda não pedido) · `RECEBIDO` (folha chegou) · `NO_JOGO` (r
 
 Os arquivos novos vão para `client-unity/Assets/Resources/ArtePixel/`, com as mesmas subpastas e os mesmos nomes de hoje (TD-059); o jogo procura lá primeiro e usa a arte antiga enquanto um arquivo não existir. A limpeza final (M25) apaga o que sobrar em `Arte/`.
 
+## Recebimento de 20/10/2026
+
+O proprietário mandou as 77 folhas (lotes 1 a 7). Recortadas com `tools/Arte/pixel_folhas.py` (TD-060) e conferidas
+uma a uma (cada peixe contra a descrição da espécie): **323 das 339 imagens** estão em
+`client-unity/Assets/Resources/ArtePixel/` (mais as 94 versões pequenas `_p` dos peixes). O jogo ainda não lê essa
+pasta (M25-T04); só fica verificado no Play.
+
+**Pedir de novo (16 imagens, 4 pedidos):**
+
+| Pedido | Imagens | Motivo |
+|---|---:|---|
+| L4-03a · Peixes do Pantanal Dourado (1 de 2) | 6 | O arquivo trazia os 6 peixes do Estuário (1 de 2); mandi-amarelo, pacu-peva, jurupensém, piavuçu, jundiá e muçum não vieram em nenhuma folha. |
+| L1-06b · Lago Sereno: laterais | 2 (`near_left`, `near_right`) | As duas laterais vieram emendadas numa paisagem só, com morros e o lago no meio; separar cortaria a cena ao meio. Os cantos da frente estão bons. |
+| L6-08b · Banco das Baleias: laterais e cantos | 4 | Bordas borradas em listras horizontais e água cortada em blocos retangulares, com halo rosa. |
+| L6-09b · Talude Noturno: laterais e cantos | 4 | Mesmo defeito: cada peça virou um bloco retangular de mar com bordas em listras. |
+
+Os pedidos corrigidos, prontos para colar, estão na página de conferência entregue ao proprietário.
+
+**Trocas resolvidas pelo nome (não precisa pedir de novo):** a folha "Lago Sereno (2 de 2)" trazia jaú, pirarucu e
+aruanã (Rio Selvagem 2 de 2) e a "Rio Selvagem (2 de 2)" trazia matrinxã, carpa e tambaqui; a "Estuário (1 de 2)"
+trazia os 6 do Rio Selvagem (1 de 2) e a "Pantanal (1 de 2)" os 6 do Estuário (1 de 2); a "Rio Selvagem (1 de 2)" era
+outra versão do Estuário (2 de 2) (usada a do arquivo extra). No pescador, a 2ª linha da animação A tinha fisgada (2),
+mostrar e escapou, e a 2ª linha da animação B tinha o arremesso (4): cada quadro foi gravado com o nome certo.
+
+**Observações para a ligação no jogo:** as faixas do fundo do Estuário e da Costa de Coral vêm com céu ou água
+pintados atrás (são retângulos inteiros, não recortes); a boia saiu com 12 × 16.
+
 ## Pedidos por lote
 
 ### Lote 1 · Kit de teste (piloto do Lago Sereno)
@@ -30,14 +57,14 @@ Pescador e a primeira animação, 3 peixes, Caixa e boia, o barco inicial, o cen
 
 | Pedido | Folha | Grade | Célula | Arquivos (em ordem) | Status |
 |---|---|---|---|---|---|
-| L1-01 · Pescador parado | `L1-01_pescador.png` | 1×1 | 64×64 | `Cena/pescador` | PEDIR |
-| L1-02 · Pescador: esperando e arremessando (8 quadros) | `L1-02_pescador_animacao_a.png` | 4×2 | 64×64 | `Cena/pescador_parado_1`<br>`Cena/pescador_parado_2`<br>`Cena/pescador_parado_3`<br>`Cena/pescador_parado_4`<br>`Cena/pescador_arremesso_1`<br>`Cena/pescador_arremesso_2`<br>`Cena/pescador_arremesso_3`<br>`Cena/pescador_arremesso_4` | PEDIR |
-| L1-03 · 3 peixes de teste | `L1-03_peixes_teste.png` | 3×1 | 128×128 | `Peixes/fish_lambari_master`<br>`Peixes/fish_tucunare_master`<br>`Peixes/fish_marlim_azul_master` | PEDIR |
-| L1-04 · Caixa de Pesca e boia | `L1-04_caixa_e_boia.png` | 2×1 | 64×64 | `Cena/caixa_de_pesca`<br>`Cena/boia` | PEDIR |
-| L1-05 · Barco inicial (Água Mansa) | `L1-05_barco_inicial.png` | 1×1 | 128×64 | `Barcos/boat_00` | PEDIR |
-| L1-06a · Lago Sereno: fundo em 3 faixas | `L1-06a_map_lago_sereno_fundo.png` | 1×3 | 384×80 | `Mapas/LagoSereno/map_lago_sereno_bg_far`<br>`Mapas/LagoSereno/map_lago_sereno_bg_mid`<br>`Mapas/LagoSereno/map_lago_sereno_bg_near` | PEDIR |
-| L1-06b · Lago Sereno: laterais e cantos | `L1-06b_map_lago_sereno_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/LagoSereno/map_lago_sereno_near_left`<br>`Mapas/LagoSereno/map_lago_sereno_near_right`<br>`Mapas/LagoSereno/map_lago_sereno_fg_left`<br>`Mapas/LagoSereno/map_lago_sereno_fg_right` | PEDIR |
-| L1-07 · Nuvens (servem para todos os mapas) | `L1-07_nuvens.png` | 3×2 | 96×48 | `Mapas/Comum/nuvem_01`<br>`Mapas/Comum/nuvem_02`<br>`Mapas/Comum/nuvem_03`<br>`Mapas/Comum/nuvem_04`<br>`Mapas/Comum/nuvem_05`<br>`Mapas/Comum/nuvem_06` | PEDIR |
+| L1-01 · Pescador parado | `L1-01_pescador.png` | 1×1 | 64×64 | `Cena/pescador` | RECEBIDO |
+| L1-02 · Pescador: esperando e arremessando (8 quadros) | `L1-02_pescador_animacao_a.png` | 4×2 | 64×64 | `Cena/pescador_parado_1`<br>`Cena/pescador_parado_2`<br>`Cena/pescador_parado_3`<br>`Cena/pescador_parado_4`<br>`Cena/pescador_arremesso_1`<br>`Cena/pescador_arremesso_2`<br>`Cena/pescador_arremesso_3`<br>`Cena/pescador_arremesso_4` | RECEBIDO (a 2ª linha veio com fisgada, mostrar e escapou: gravados com esses nomes) |
+| L1-03 · 3 peixes de teste | `L1-03_peixes_teste.png` | 3×1 | 128×128 | `Peixes/fish_lambari_master`<br>`Peixes/fish_tucunare_master`<br>`Peixes/fish_marlim_azul_master` | RECEBIDO |
+| L1-04 · Caixa de Pesca e boia | `L1-04_caixa_e_boia.png` | 2×1 | 64×64 | `Cena/caixa_de_pesca`<br>`Cena/boia` | RECEBIDO |
+| L1-05 · Barco inicial (Água Mansa) | `L1-05_barco_inicial.png` | 1×1 | 128×64 | `Barcos/boat_00` | RECEBIDO |
+| L1-06a · Lago Sereno: fundo em 3 faixas | `L1-06a_map_lago_sereno_fundo.png` | 1×3 | 384×80 | `Mapas/LagoSereno/map_lago_sereno_bg_far`<br>`Mapas/LagoSereno/map_lago_sereno_bg_mid`<br>`Mapas/LagoSereno/map_lago_sereno_bg_near` | RECEBIDO |
+| L1-06b · Lago Sereno: laterais e cantos | `L1-06b_map_lago_sereno_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/LagoSereno/map_lago_sereno_near_left`<br>`Mapas/LagoSereno/map_lago_sereno_near_right`<br>`Mapas/LagoSereno/map_lago_sereno_fg_left`<br>`Mapas/LagoSereno/map_lago_sereno_fg_right` | RECEBIDO só os cantos (`fg_left`, `fg_right`) · **PEDIR DE NOVO** `near_left` e `near_right`: as laterais vieram emendadas numa paisagem só |
+| L1-07 · Nuvens (servem para todos os mapas) | `L1-07_nuvens.png` | 3×2 | 96×48 | `Mapas/Comum/nuvem_01`<br>`Mapas/Comum/nuvem_02`<br>`Mapas/Comum/nuvem_03`<br>`Mapas/Comum/nuvem_04`<br>`Mapas/Comum/nuvem_05`<br>`Mapas/Comum/nuvem_06` | RECEBIDO |
 
 ### Lote 2 · Pescador completo e retratos
 
@@ -45,8 +72,8 @@ O resto das animações do pescador e os 7 retratos (o do pescador e os 6 avatar
 
 | Pedido | Folha | Grade | Célula | Arquivos (em ordem) | Status |
 |---|---|---|---|---|---|
-| L2-01 · Pescador: fisgada, recolher, mostrar e escapou (8 quadros) | `L2-01_pescador_animacao_b.png` | 4×2 | 64×64 | `Cena/pescador_recolhe_1`<br>`Cena/pescador_recolhe_2`<br>`Cena/pescador_recolhe_3`<br>`Cena/pescador_recolhe_4`<br>`Cena/pescador_fisgada_1`<br>`Cena/pescador_fisgada_2`<br>`Cena/pescador_mostra_1`<br>`Cena/pescador_escapou_1` | PEDIR |
-| L2-02 · Retrato do pescador e 6 avatares | `L2-02_retratos.png` | 4×2 | 64×64 | `Cena/retrato`<br>`Avatares/avatar_01`<br>`Avatares/avatar_02`<br>`Avatares/avatar_03`<br>`Avatares/avatar_04`<br>`Avatares/avatar_05`<br>`Avatares/avatar_06` | PEDIR |
+| L2-01 · Pescador: fisgada, recolher, mostrar e escapou (8 quadros) | `L2-01_pescador_animacao_b.png` | 4×2 | 64×64 | `Cena/pescador_recolhe_1`<br>`Cena/pescador_recolhe_2`<br>`Cena/pescador_recolhe_3`<br>`Cena/pescador_recolhe_4`<br>`Cena/pescador_fisgada_1`<br>`Cena/pescador_fisgada_2`<br>`Cena/pescador_mostra_1`<br>`Cena/pescador_escapou_1` | RECEBIDO (a 2ª linha veio com o arremesso: gravado como arremesso) |
+| L2-02 · Retrato do pescador e 6 avatares | `L2-02_retratos.png` | 4×2 | 64×64 | `Cena/retrato`<br>`Avatares/avatar_01`<br>`Avatares/avatar_02`<br>`Avatares/avatar_03`<br>`Avatares/avatar_04`<br>`Avatares/avatar_05`<br>`Avatares/avatar_06` | RECEBIDO |
 
 ### Lote 3 · Interface: ícones e objetos
 
@@ -54,15 +81,15 @@ Os ícones coloridos em pixel e os objetos das telas. Molduras, painéis, pílul
 
 | Pedido | Folha | Grade | Célula | Arquivos (em ordem) | Status |
 |---|---|---|---|---|---|
-| L3-01 · Ícones grandes (abas e atalhos) | `L3-01_icones_grandes.png` | 4×4 | 32×32 | `Icones/ico_aba_pesca`<br>`Icones/ico_aba_aventura`<br>`Icones/ico_aba_comercio`<br>`Icones/ico_aba_perfil`<br>`Icones/ico_atalho_mapa`<br>`Icones/ico_atalho_aquario`<br>`Icones/ico_atalho_passe`<br>`Icones/ico_atalho_missoes`<br>`Icones/ico_atalho_boss`<br>`Icones/ico_atalho_ranking`<br>`Icones/ico_atalho_eventos`<br>`Icones/ico_boss`<br>`Icones/ico_cla`<br>`Icones/ico_eventos`<br>`Icones/ico_leilao`<br>`Icones/ico_passe` | PEDIR |
-| L3-02 · Ícones pequenos (1 de 3) | `L3-02_icones_pequenos_1.png` | 4×3 | 24×24 | `Icones/ico_alimentar`<br>`Icones/ico_ampulheta`<br>`Icones/ico_aquario`<br>`Icones/ico_arena`<br>`Icones/ico_atacar`<br>`Icones/ico_avisos`<br>`Icones/ico_barco`<br>`Icones/ico_buscar`<br>`Icones/ico_cadeado`<br>`Icones/ico_caixa`<br>`Icones/ico_comprar`<br>`Icones/ico_concha` | PEDIR |
-| L3-03 · Ícones pequenos (2 de 3) | `L3-03_icones_pequenos_2.png` | 4×3 | 24×24 | `Icones/ico_dolar`<br>`Icones/ico_energia`<br>`Icones/ico_especies`<br>`Icones/ico_estrela`<br>`Icones/ico_expedicao`<br>`Icones/ico_honra`<br>`Icones/ico_inicio`<br>`Icones/ico_isca`<br>`Icones/ico_local`<br>`Icones/ico_loja`<br>`Icones/ico_mapa`<br>`Icones/ico_mercado` | PEDIR |
-| L3-04 · Ícones pequenos (3 de 3) | `L3-04_icones_pequenos_3.png` | 4×3 | 24×24 | `Icones/ico_moeda`<br>`Icones/ico_nivel`<br>`Icones/ico_ondas`<br>`Icones/ico_opcoes`<br>`Icones/ico_peixe`<br>`Icones/ico_perfil`<br>`Icones/ico_pesca`<br>`Icones/ico_ranking`<br>`Icones/ico_relogio`<br>`Icones/ico_trocar`<br>`Icones/ico_vara`<br>`Icones/ico_vender` | PEDIR |
-| L3-05 · Ranking: coroa, troféu e escudos | `L3-05_ranking_objetos.png` | 3×2 | 48×48 | `UI/ui_rk_coroa`<br>`UI/ui_rk_trofeu`<br>`UI/ui_rk_escudo_ouro`<br>`UI/ui_rk_escudo_prata`<br>`UI/ui_rk_escudo_bronze`<br>`UI/ui_rk_escudo_azul` | PEDIR |
-| L3-06 · Expedição: objetos | `L3-06_expedicao_objetos.png` | 3×2 | 48×48 | `UI/ui_exp_medalhao`<br>`UI/ui_exp_selo`<br>`UI/ui_exp_rosa`<br>`UI/ui_exp_bussola`<br>`UI/ui_exp_marcador`<br>`UI/ui_exp_pier` | PEDIR |
-| L3-07 · Loja, Mapa, Clã e Passe: objetos | `L3-07_loja_mapa_cla.png` | 4×2 | 48×48 | `UI/ui_loja_caixa`<br>`UI/ui_loja_gancho`<br>`UI/ui_loja_boia`<br>`UI/ui_map_boat`<br>`UI/cla_brasao`<br>`UI/passe_premium_selo`<br>`UI/ui_enc_pedestal` | PEDIR |
-| L3-08 · Ilhas da tela do Mapa (uma por mapa) | `L3-08_ilhas_mapa.png` | 5×2 | 64×64 | `UI/ui_map_island_01`<br>`UI/ui_map_island_02`<br>`UI/ui_map_island_03`<br>`UI/ui_map_island_04`<br>`UI/ui_map_island_05`<br>`UI/ui_map_island_06`<br>`UI/ui_map_island_07`<br>`UI/ui_map_island_08`<br>`UI/ui_map_island_09`<br>`UI/ui_map_island_10` | PEDIR |
-| L3-09 · Pódios da Arena | `L3-09_podios_arena.png` | 3×1 | 64×64 | `Arena/podio_1`<br>`Arena/podio_2`<br>`Arena/podio_3` | PEDIR |
+| L3-01 · Ícones grandes (abas e atalhos) | `L3-01_icones_grandes.png` | 4×4 | 32×32 | `Icones/ico_aba_pesca`<br>`Icones/ico_aba_aventura`<br>`Icones/ico_aba_comercio`<br>`Icones/ico_aba_perfil`<br>`Icones/ico_atalho_mapa`<br>`Icones/ico_atalho_aquario`<br>`Icones/ico_atalho_passe`<br>`Icones/ico_atalho_missoes`<br>`Icones/ico_atalho_boss`<br>`Icones/ico_atalho_ranking`<br>`Icones/ico_atalho_eventos`<br>`Icones/ico_boss`<br>`Icones/ico_cla`<br>`Icones/ico_eventos`<br>`Icones/ico_leilao`<br>`Icones/ico_passe` | RECEBIDO |
+| L3-02 · Ícones pequenos (1 de 3) | `L3-02_icones_pequenos_1.png` | 4×3 | 24×24 | `Icones/ico_alimentar`<br>`Icones/ico_ampulheta`<br>`Icones/ico_aquario`<br>`Icones/ico_arena`<br>`Icones/ico_atacar`<br>`Icones/ico_avisos`<br>`Icones/ico_barco`<br>`Icones/ico_buscar`<br>`Icones/ico_cadeado`<br>`Icones/ico_caixa`<br>`Icones/ico_comprar`<br>`Icones/ico_concha` | RECEBIDO |
+| L3-03 · Ícones pequenos (2 de 3) | `L3-03_icones_pequenos_2.png` | 4×3 | 24×24 | `Icones/ico_dolar`<br>`Icones/ico_energia`<br>`Icones/ico_especies`<br>`Icones/ico_estrela`<br>`Icones/ico_expedicao`<br>`Icones/ico_honra`<br>`Icones/ico_inicio`<br>`Icones/ico_isca`<br>`Icones/ico_local`<br>`Icones/ico_loja`<br>`Icones/ico_mapa`<br>`Icones/ico_mercado` | RECEBIDO |
+| L3-04 · Ícones pequenos (3 de 3) | `L3-04_icones_pequenos_3.png` | 4×3 | 24×24 | `Icones/ico_moeda`<br>`Icones/ico_nivel`<br>`Icones/ico_ondas`<br>`Icones/ico_opcoes`<br>`Icones/ico_peixe`<br>`Icones/ico_perfil`<br>`Icones/ico_pesca`<br>`Icones/ico_ranking`<br>`Icones/ico_relogio`<br>`Icones/ico_trocar`<br>`Icones/ico_vara`<br>`Icones/ico_vender` | RECEBIDO |
+| L3-05 · Ranking: coroa, troféu e escudos | `L3-05_ranking_objetos.png` | 3×2 | 48×48 | `UI/ui_rk_coroa`<br>`UI/ui_rk_trofeu`<br>`UI/ui_rk_escudo_ouro`<br>`UI/ui_rk_escudo_prata`<br>`UI/ui_rk_escudo_bronze`<br>`UI/ui_rk_escudo_azul` | RECEBIDO |
+| L3-06 · Expedição: objetos | `L3-06_expedicao_objetos.png` | 3×2 | 48×48 | `UI/ui_exp_medalhao`<br>`UI/ui_exp_selo`<br>`UI/ui_exp_rosa`<br>`UI/ui_exp_bussola`<br>`UI/ui_exp_marcador`<br>`UI/ui_exp_pier` | RECEBIDO |
+| L3-07 · Loja, Mapa, Clã e Passe: objetos | `L3-07_loja_mapa_cla.png` | 4×2 | 48×48 | `UI/ui_loja_caixa`<br>`UI/ui_loja_gancho`<br>`UI/ui_loja_boia`<br>`UI/ui_map_boat`<br>`UI/cla_brasao`<br>`UI/passe_premium_selo`<br>`UI/ui_enc_pedestal` | RECEBIDO |
+| L3-08 · Ilhas da tela do Mapa (uma por mapa) | `L3-08_ilhas_mapa.png` | 5×2 | 64×64 | `UI/ui_map_island_01`<br>`UI/ui_map_island_02`<br>`UI/ui_map_island_03`<br>`UI/ui_map_island_04`<br>`UI/ui_map_island_05`<br>`UI/ui_map_island_06`<br>`UI/ui_map_island_07`<br>`UI/ui_map_island_08`<br>`UI/ui_map_island_09`<br>`UI/ui_map_island_10` | RECEBIDO |
+| L3-09 · Pódios da Arena | `L3-09_podios_arena.png` | 3×1 | 64×64 | `Arena/podio_1`<br>`Arena/podio_2`<br>`Arena/podio_3` | RECEBIDO |
 
 ### Lote 4 · Peixes por mapa
 
@@ -70,26 +97,26 @@ Os outros 97 peixes, de 6 em 6 e de 4 em 4, sempre do mesmo mapa juntos (os comu
 
 | Pedido | Folha | Grade | Célula | Arquivos (em ordem) | Status |
 |---|---|---|---|---|---|
-| L4-01a · Peixes do Lago Sereno (1 de 2) | `L4-01a_peixes_lago_sereno_a.png` | 3×2 | 128×128 | `Peixes/fish_cascudo_master`<br>`Peixes/fish_piau_master`<br>`Peixes/fish_tilapia_master`<br>`Peixes/fish_curimbata_master`<br>`Peixes/fish_traira_master`<br>`Peixes/fish_pacu_master` | PEDIR |
-| L4-01b · Peixes do Lago Sereno (2 de 2) | `L4-01b_peixes_lago_sereno_b.png` | 3×1 | 128×128 | `Peixes/fish_matrinxa_master`<br>`Peixes/fish_carpa_master`<br>`Peixes/fish_tambaqui_master` | PEDIR |
-| L4-02a · Peixes do Rio Selvagem (1 de 2) | `L4-02a_peixes_rio_selvagem_a.png` | 3×2 | 128×128 | `Peixes/fish_piranha_master`<br>`Peixes/fish_piracanjuba_master`<br>`Peixes/fish_peixe_cachorra_master`<br>`Peixes/fish_dourado_master`<br>`Peixes/fish_cachara_master`<br>`Peixes/fish_pintado_master` | PEDIR |
-| L4-02b · Peixes do Rio Selvagem (2 de 2) | `L4-02b_peixes_rio_selvagem_b.png` | 3×1 | 128×128 | `Peixes/fish_jau_master`<br>`Peixes/fish_pirarucu_master`<br>`Peixes/fish_aruana_master` | PEDIR |
-| L4-03a · Peixes do Pantanal Dourado (1 de 2) | `L4-03a_peixes_pantanal_dourado_a.png` | 3×2 | 128×128 | `Peixes/fish_mandi_amarelo_master`<br>`Peixes/fish_pacu_peva_master`<br>`Peixes/fish_jurupensem_master`<br>`Peixes/fish_piavucu_master`<br>`Peixes/fish_jundia_master`<br>`Peixes/fish_mucum_master` | PEDIR |
-| L4-03b · Peixes do Pantanal Dourado (2 de 2) | `L4-03b_peixes_pantanal_dourado_b.png` | 2×2 | 128×128 | `Peixes/fish_piraputanga_master`<br>`Peixes/fish_jurupoca_master`<br>`Peixes/fish_armado_master`<br>`Peixes/fish_barbado_master` | PEDIR |
-| L4-04a · Peixes do Estuário das Marés (1 de 2) | `L4-04a_peixes_estuario_das_mares_a.png` | 3×2 | 128×128 | `Peixes/fish_parati_master`<br>`Peixes/fish_carapeba_master`<br>`Peixes/fish_tainha_master`<br>`Peixes/fish_corvina_master`<br>`Peixes/fish_bagre_marinho_master`<br>`Peixes/fish_robalo_peva_master` | PEDIR |
-| L4-04b · Peixes do Estuário das Marés (2 de 2) | `L4-04b_peixes_estuario_das_mares_b.png` | 2×2 | 128×128 | `Peixes/fish_xareu_master`<br>`Peixes/fish_pescada_amarela_master`<br>`Peixes/fish_camurupim_master`<br>`Peixes/fish_mero_master` | PEDIR |
-| L4-05a · Peixes do Costa de Coral (1 de 2) | `L4-05a_peixes_costa_de_coral_a.png` | 3×2 | 128×128 | `Peixes/fish_sargentinho_master`<br>`Peixes/fish_salema_master`<br>`Peixes/fish_sargo_master`<br>`Peixes/fish_peixe_porco_master`<br>`Peixes/fish_pampo_master`<br>`Peixes/fish_ariaco_master` | PEDIR |
-| L4-05b · Peixes do Costa de Coral (2 de 2) | `L4-05b_peixes_costa_de_coral_b.png` | 2×2 | 128×128 | `Peixes/fish_cioba_master`<br>`Peixes/fish_badejo_master`<br>`Peixes/fish_dentao_master`<br>`Peixes/fish_caranha_master` | PEDIR |
-| L4-06a · Peixes do Arquipélago do Sol (1 de 2) | `L4-06a_peixes_arquipelago_do_sol_a.png` | 3×2 | 128×128 | `Peixes/fish_olhete_master`<br>`Peixes/fish_peixe_galo_master`<br>`Peixes/fish_bonito_cachorro_master`<br>`Peixes/fish_serra_master`<br>`Peixes/fish_beijupira_master`<br>`Peixes/fish_cavala_verdadeira_master` | PEDIR |
-| L4-06b · Peixes do Arquipélago do Sol (2 de 2) | `L4-06b_peixes_arquipelago_do_sol_b.png` | 2×2 | 128×128 | `Peixes/fish_olho_de_boi_master`<br>`Peixes/fish_dourado_do_mar_master`<br>`Peixes/fish_atum_amarelo_master`<br>`Peixes/fish_veleiro_master` | PEDIR |
-| L4-07a · Peixes do Corrente Azul (1 de 2) | `L4-07a_peixes_corrente_azul_a.png` | 3×2 | 128×128 | `Peixes/fish_cavalinha_master`<br>`Peixes/fish_bonito_pintado_master`<br>`Peixes/fish_bicuda_master`<br>`Peixes/fish_agulha_branca_master`<br>`Peixes/fish_albacora_branca_master`<br>`Peixes/fish_atum_patudo_master` | PEDIR |
-| L4-07b · Peixes do Corrente Azul (2 de 2) | `L4-07b_peixes_corrente_azul_b.png` | 3×1 | 128×128 | `Peixes/fish_peixe_lua_master`<br>`Peixes/fish_marlim_branco_master`<br>`Peixes/fish_espadarte_master` | PEDIR |
-| L4-08a · Peixes do Banco das Baleias (1 de 2) | `L4-08a_peixes_banco_das_baleias_a.png` | 3×2 | 128×128 | `Peixes/fish_pargo_rosa_master`<br>`Peixes/fish_batata_master`<br>`Peixes/fish_namorado_master`<br>`Peixes/fish_congro_rosa_master`<br>`Peixes/fish_cacao_anjo_master`<br>`Peixes/fish_cherne_master` | PEDIR |
-| L4-08b · Peixes do Banco das Baleias (2 de 2) | `L4-08b_peixes_banco_das_baleias_b.png` | 2×2 | 128×128 | `Peixes/fish_arraia_chita_master`<br>`Peixes/fish_tubarao_lixa_master`<br>`Peixes/fish_tubarao_martelo_master`<br>`Peixes/fish_raia_manta_master` | PEDIR |
-| L4-09a · Peixes do Talude Noturno (1 de 2) | `L4-09a_peixes_talude_noturno_a.png` | 3×2 | 128×128 | `Peixes/fish_abrotea_fundo_master`<br>`Peixes/fish_escolar_master`<br>`Peixes/fish_peixe_espada_master`<br>`Peixes/fish_quimera_master`<br>`Peixes/fish_peixe_lanceta_master`<br>`Peixes/fish_congro_negro_master` | PEDIR |
-| L4-09b · Peixes do Talude Noturno (2 de 2) | `L4-09b_peixes_talude_noturno_b.png` | 2×2 | 128×128 | `Peixes/fish_tubarao_lanterna_master`<br>`Peixes/fish_peixe_opah_master`<br>`Peixes/fish_tubarao_duende_master`<br>`Peixes/fish_tubarao_seis_guelras_master` | PEDIR |
-| L4-10a · Peixes do Abismo Atlântico (1 de 2) | `L4-10a_peixes_abismo_atlantico_a.png` | 3×2 | 128×128 | `Peixes/fish_peixe_machado_master`<br>`Peixes/fish_peixe_vibora_master`<br>`Peixes/fish_peixe_dragao_master`<br>`Peixes/fish_peixe_ogro_master`<br>`Peixes/fish_enguia_pelicano_master`<br>`Peixes/fish_peixe_pescador_abissal_master` | PEDIR |
-| L4-10b · Peixes do Abismo Atlântico (2 de 2) | `L4-10b_peixes_abismo_atlantico_b.png` | 2×2 | 128×128 | `Peixes/fish_quimera_azul_master`<br>`Peixes/fish_tubarao_cobra_master`<br>`Peixes/fish_peixe_fita_gigante_master`<br>`Peixes/fish_tubarao_boca_grande_master` | PEDIR |
+| L4-01a · Peixes do Lago Sereno (1 de 2) | `L4-01a_peixes_lago_sereno_a.png` | 3×2 | 128×128 | `Peixes/fish_cascudo_master`<br>`Peixes/fish_piau_master`<br>`Peixes/fish_tilapia_master`<br>`Peixes/fish_curimbata_master`<br>`Peixes/fish_traira_master`<br>`Peixes/fish_pacu_master` | RECEBIDO |
+| L4-01b · Peixes do Lago Sereno (2 de 2) | `L4-01b_peixes_lago_sereno_b.png` | 3×1 | 128×128 | `Peixes/fish_matrinxa_master`<br>`Peixes/fish_carpa_master`<br>`Peixes/fish_tambaqui_master` | RECEBIDO (veio no arquivo L4-02b) |
+| L4-02a · Peixes do Rio Selvagem (1 de 2) | `L4-02a_peixes_rio_selvagem_a.png` | 3×2 | 128×128 | `Peixes/fish_piranha_master`<br>`Peixes/fish_piracanjuba_master`<br>`Peixes/fish_peixe_cachorra_master`<br>`Peixes/fish_dourado_master`<br>`Peixes/fish_cachara_master`<br>`Peixes/fish_pintado_master` | RECEBIDO (veio no arquivo L4-04a) |
+| L4-02b · Peixes do Rio Selvagem (2 de 2) | `L4-02b_peixes_rio_selvagem_b.png` | 3×1 | 128×128 | `Peixes/fish_jau_master`<br>`Peixes/fish_pirarucu_master`<br>`Peixes/fish_aruana_master` | RECEBIDO (veio no arquivo L4-01b) |
+| L4-03a · Peixes do Pantanal Dourado (1 de 2) | `L4-03a_peixes_pantanal_dourado_a.png` | 3×2 | 128×128 | `Peixes/fish_mandi_amarelo_master`<br>`Peixes/fish_pacu_peva_master`<br>`Peixes/fish_jurupensem_master`<br>`Peixes/fish_piavucu_master`<br>`Peixes/fish_jundia_master`<br>`Peixes/fish_mucum_master` | **PEDIR DE NOVO**: o arquivo trazia os peixes do Estuário (1 de 2); estes 6 não vieram |
+| L4-03b · Peixes do Pantanal Dourado (2 de 2) | `L4-03b_peixes_pantanal_dourado_b.png` | 2×2 | 128×128 | `Peixes/fish_piraputanga_master`<br>`Peixes/fish_jurupoca_master`<br>`Peixes/fish_armado_master`<br>`Peixes/fish_barbado_master` | RECEBIDO |
+| L4-04a · Peixes do Estuário das Marés (1 de 2) | `L4-04a_peixes_estuario_das_mares_a.png` | 3×2 | 128×128 | `Peixes/fish_parati_master`<br>`Peixes/fish_carapeba_master`<br>`Peixes/fish_tainha_master`<br>`Peixes/fish_corvina_master`<br>`Peixes/fish_bagre_marinho_master`<br>`Peixes/fish_robalo_peva_master` | RECEBIDO (veio no arquivo L4-03a) |
+| L4-04b · Peixes do Estuário das Marés (2 de 2) | `L4-04b_peixes_estuario_das_mares_b.png` | 2×2 | 128×128 | `Peixes/fish_xareu_master`<br>`Peixes/fish_pescada_amarela_master`<br>`Peixes/fish_camurupim_master`<br>`Peixes/fish_mero_master` | RECEBIDO (arquivo extra; o arquivo L4-02a trazia outra versão desta mesma folha) |
+| L4-05a · Peixes do Costa de Coral (1 de 2) | `L4-05a_peixes_costa_de_coral_a.png` | 3×2 | 128×128 | `Peixes/fish_sargentinho_master`<br>`Peixes/fish_salema_master`<br>`Peixes/fish_sargo_master`<br>`Peixes/fish_peixe_porco_master`<br>`Peixes/fish_pampo_master`<br>`Peixes/fish_ariaco_master` | RECEBIDO |
+| L4-05b · Peixes do Costa de Coral (2 de 2) | `L4-05b_peixes_costa_de_coral_b.png` | 2×2 | 128×128 | `Peixes/fish_cioba_master`<br>`Peixes/fish_badejo_master`<br>`Peixes/fish_dentao_master`<br>`Peixes/fish_caranha_master` | RECEBIDO |
+| L4-06a · Peixes do Arquipélago do Sol (1 de 2) | `L4-06a_peixes_arquipelago_do_sol_a.png` | 3×2 | 128×128 | `Peixes/fish_olhete_master`<br>`Peixes/fish_peixe_galo_master`<br>`Peixes/fish_bonito_cachorro_master`<br>`Peixes/fish_serra_master`<br>`Peixes/fish_beijupira_master`<br>`Peixes/fish_cavala_verdadeira_master` | RECEBIDO |
+| L4-06b · Peixes do Arquipélago do Sol (2 de 2) | `L4-06b_peixes_arquipelago_do_sol_b.png` | 2×2 | 128×128 | `Peixes/fish_olho_de_boi_master`<br>`Peixes/fish_dourado_do_mar_master`<br>`Peixes/fish_atum_amarelo_master`<br>`Peixes/fish_veleiro_master` | RECEBIDO |
+| L4-07a · Peixes do Corrente Azul (1 de 2) | `L4-07a_peixes_corrente_azul_a.png` | 3×2 | 128×128 | `Peixes/fish_cavalinha_master`<br>`Peixes/fish_bonito_pintado_master`<br>`Peixes/fish_bicuda_master`<br>`Peixes/fish_agulha_branca_master`<br>`Peixes/fish_albacora_branca_master`<br>`Peixes/fish_atum_patudo_master` | RECEBIDO |
+| L4-07b · Peixes do Corrente Azul (2 de 2) | `L4-07b_peixes_corrente_azul_b.png` | 3×1 | 128×128 | `Peixes/fish_peixe_lua_master`<br>`Peixes/fish_marlim_branco_master`<br>`Peixes/fish_espadarte_master` | RECEBIDO |
+| L4-08a · Peixes do Banco das Baleias (1 de 2) | `L4-08a_peixes_banco_das_baleias_a.png` | 3×2 | 128×128 | `Peixes/fish_pargo_rosa_master`<br>`Peixes/fish_batata_master`<br>`Peixes/fish_namorado_master`<br>`Peixes/fish_congro_rosa_master`<br>`Peixes/fish_cacao_anjo_master`<br>`Peixes/fish_cherne_master` | RECEBIDO |
+| L4-08b · Peixes do Banco das Baleias (2 de 2) | `L4-08b_peixes_banco_das_baleias_b.png` | 2×2 | 128×128 | `Peixes/fish_arraia_chita_master`<br>`Peixes/fish_tubarao_lixa_master`<br>`Peixes/fish_tubarao_martelo_master`<br>`Peixes/fish_raia_manta_master` | RECEBIDO |
+| L4-09a · Peixes do Talude Noturno (1 de 2) | `L4-09a_peixes_talude_noturno_a.png` | 3×2 | 128×128 | `Peixes/fish_abrotea_fundo_master`<br>`Peixes/fish_escolar_master`<br>`Peixes/fish_peixe_espada_master`<br>`Peixes/fish_quimera_master`<br>`Peixes/fish_peixe_lanceta_master`<br>`Peixes/fish_congro_negro_master` | RECEBIDO |
+| L4-09b · Peixes do Talude Noturno (2 de 2) | `L4-09b_peixes_talude_noturno_b.png` | 2×2 | 128×128 | `Peixes/fish_tubarao_lanterna_master`<br>`Peixes/fish_peixe_opah_master`<br>`Peixes/fish_tubarao_duende_master`<br>`Peixes/fish_tubarao_seis_guelras_master` | RECEBIDO |
+| L4-10a · Peixes do Abismo Atlântico (1 de 2) | `L4-10a_peixes_abismo_atlantico_a.png` | 3×2 | 128×128 | `Peixes/fish_peixe_machado_master`<br>`Peixes/fish_peixe_vibora_master`<br>`Peixes/fish_peixe_dragao_master`<br>`Peixes/fish_peixe_ogro_master`<br>`Peixes/fish_enguia_pelicano_master`<br>`Peixes/fish_peixe_pescador_abissal_master` | RECEBIDO |
+| L4-10b · Peixes do Abismo Atlântico (2 de 2) | `L4-10b_peixes_abismo_atlantico_b.png` | 2×2 | 128×128 | `Peixes/fish_quimera_azul_master`<br>`Peixes/fish_tubarao_cobra_master`<br>`Peixes/fish_peixe_fita_gigante_master`<br>`Peixes/fish_tubarao_boca_grande_master` | RECEBIDO |
 
 ### Lote 5 · Itens
 
@@ -97,11 +124,11 @@ Varas, barcos, iscas, roupas, fragmentos e as imagens das expedições.
 
 | Pedido | Folha | Grade | Célula | Arquivos (em ordem) | Status |
 |---|---|---|---|---|---|
-| L5-01 · Varas (6) | `L5-01_varas.png` | 3×2 | 48×48 | `Varas/rod_00_starter`<br>`Varas/rod_01`<br>`Varas/rod_02`<br>`Varas/rod_03`<br>`Varas/rod_04`<br>`Varas/rod_05` | PEDIR |
-| L5-02 · Barcos (5) | `L5-02_barcos.png` | 3×2 | 128×64 | `Barcos/boat_01`<br>`Barcos/boat_02`<br>`Barcos/boat_03`<br>`Barcos/boat_04`<br>`Barcos/boat_05` | PEDIR |
-| L5-03 · Iscas (3) e roupas (5) | `L5-03_iscas_roupas.png` | 4×2 | 32×32 | `Iscas/bait_01`<br>`Iscas/bait_02`<br>`Iscas/bait_03`<br>`Roupas/hat`<br>`Roupas/shirt`<br>`Roupas/pants`<br>`Roupas/gloves`<br>`Roupas/boots` | PEDIR |
-| L5-04 · Fragmentos (11) | `L5-04_fragmentos.png` | 4×3 | 32×32 | `Fragmentos/frag_boat_01`<br>`Fragmentos/frag_boat_02`<br>`Fragmentos/frag_boat_03`<br>`Fragmentos/frag_boat_04`<br>`Fragmentos/frag_boat_05`<br>`Fragmentos/frag_rod_01`<br>`Fragmentos/frag_rod_02`<br>`Fragmentos/frag_rod_03`<br>`Fragmentos/frag_rod_04`<br>`Fragmentos/frag_rod_05`<br>`Fragmentos/frag_roupa` | PEDIR |
-| L5-05 · Imagens das 4 expedições | `L5-05_expedicoes.png` | 2×2 | 96×64 | `Expedicoes/exp_30m`<br>`Expedicoes/exp_1h`<br>`Expedicoes/exp_3h`<br>`Expedicoes/exp_6h` | PEDIR |
+| L5-01 · Varas (6) | `L5-01_varas.png` | 3×2 | 48×48 | `Varas/rod_00_starter`<br>`Varas/rod_01`<br>`Varas/rod_02`<br>`Varas/rod_03`<br>`Varas/rod_04`<br>`Varas/rod_05` | RECEBIDO |
+| L5-02 · Barcos (5) | `L5-02_barcos.png` | 3×2 | 128×64 | `Barcos/boat_01`<br>`Barcos/boat_02`<br>`Barcos/boat_03`<br>`Barcos/boat_04`<br>`Barcos/boat_05` | RECEBIDO |
+| L5-03 · Iscas (3) e roupas (5) | `L5-03_iscas_roupas.png` | 4×2 | 32×32 | `Iscas/bait_01`<br>`Iscas/bait_02`<br>`Iscas/bait_03`<br>`Roupas/hat`<br>`Roupas/shirt`<br>`Roupas/pants`<br>`Roupas/gloves`<br>`Roupas/boots` | RECEBIDO |
+| L5-04 · Fragmentos (11) | `L5-04_fragmentos.png` | 4×3 | 32×32 | `Fragmentos/frag_boat_01`<br>`Fragmentos/frag_boat_02`<br>`Fragmentos/frag_boat_03`<br>`Fragmentos/frag_boat_04`<br>`Fragmentos/frag_boat_05`<br>`Fragmentos/frag_rod_01`<br>`Fragmentos/frag_rod_02`<br>`Fragmentos/frag_rod_03`<br>`Fragmentos/frag_rod_04`<br>`Fragmentos/frag_rod_05`<br>`Fragmentos/frag_roupa` | RECEBIDO |
+| L5-05 · Imagens das 4 expedições | `L5-05_expedicoes.png` | 2×2 | 96×64 | `Expedicoes/exp_30m`<br>`Expedicoes/exp_1h`<br>`Expedicoes/exp_3h`<br>`Expedicoes/exp_6h` | RECEBIDO |
 
 ### Lote 6 · Cenários dos mapas 2 a 10
 
@@ -109,24 +136,24 @@ Duas folhas por mapa: o fundo em 3 faixas e as laterais com os cantos. Céu e á
 
 | Pedido | Folha | Grade | Célula | Arquivos (em ordem) | Status |
 |---|---|---|---|---|---|
-| L6-02a · Rio Selvagem: fundo em 3 faixas | `L6-02a_map_rio_selvagem_fundo.png` | 1×3 | 384×80 | `Mapas/RioSelvagem/map_rio_selvagem_bg_far`<br>`Mapas/RioSelvagem/map_rio_selvagem_bg_mid`<br>`Mapas/RioSelvagem/map_rio_selvagem_bg_near` | PEDIR |
-| L6-02b · Rio Selvagem: laterais e cantos | `L6-02b_map_rio_selvagem_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/RioSelvagem/map_rio_selvagem_near_left`<br>`Mapas/RioSelvagem/map_rio_selvagem_near_right`<br>`Mapas/RioSelvagem/map_rio_selvagem_fg_left`<br>`Mapas/RioSelvagem/map_rio_selvagem_fg_right` | PEDIR |
-| L6-03a · Pantanal Dourado: fundo em 3 faixas | `L6-03a_map_pantanal_dourado_fundo.png` | 1×3 | 384×80 | `Mapas/PantanalDourado/map_pantanal_dourado_bg_far`<br>`Mapas/PantanalDourado/map_pantanal_dourado_bg_mid`<br>`Mapas/PantanalDourado/map_pantanal_dourado_bg_near` | PEDIR |
-| L6-03b · Pantanal Dourado: laterais e cantos | `L6-03b_map_pantanal_dourado_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/PantanalDourado/map_pantanal_dourado_near_left`<br>`Mapas/PantanalDourado/map_pantanal_dourado_near_right`<br>`Mapas/PantanalDourado/map_pantanal_dourado_fg_left`<br>`Mapas/PantanalDourado/map_pantanal_dourado_fg_right` | PEDIR |
-| L6-04a · Estuário das Marés: fundo em 3 faixas | `L6-04a_map_estuario_das_mares_fundo.png` | 1×3 | 384×80 | `Mapas/EstuarioDasMares/map_estuario_das_mares_bg_far`<br>`Mapas/EstuarioDasMares/map_estuario_das_mares_bg_mid`<br>`Mapas/EstuarioDasMares/map_estuario_das_mares_bg_near` | PEDIR |
-| L6-04b · Estuário das Marés: laterais e cantos | `L6-04b_map_estuario_das_mares_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/EstuarioDasMares/map_estuario_das_mares_near_left`<br>`Mapas/EstuarioDasMares/map_estuario_das_mares_near_right`<br>`Mapas/EstuarioDasMares/map_estuario_das_mares_fg_left`<br>`Mapas/EstuarioDasMares/map_estuario_das_mares_fg_right` | PEDIR |
-| L6-05a · Costa de Coral: fundo em 3 faixas | `L6-05a_map_costa_de_coral_fundo.png` | 1×3 | 384×80 | `Mapas/CostaDeCoral/map_costa_de_coral_bg_far`<br>`Mapas/CostaDeCoral/map_costa_de_coral_bg_mid`<br>`Mapas/CostaDeCoral/map_costa_de_coral_bg_near` | PEDIR |
-| L6-05b · Costa de Coral: laterais e cantos | `L6-05b_map_costa_de_coral_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/CostaDeCoral/map_costa_de_coral_near_left`<br>`Mapas/CostaDeCoral/map_costa_de_coral_near_right`<br>`Mapas/CostaDeCoral/map_costa_de_coral_fg_left`<br>`Mapas/CostaDeCoral/map_costa_de_coral_fg_right` | PEDIR |
-| L6-06a · Arquipélago do Sol: fundo em 3 faixas | `L6-06a_map_arquipelago_do_sol_fundo.png` | 1×3 | 384×80 | `Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_bg_far`<br>`Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_bg_mid`<br>`Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_bg_near` | PEDIR |
-| L6-06b · Arquipélago do Sol: laterais e cantos | `L6-06b_map_arquipelago_do_sol_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_near_left`<br>`Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_near_right`<br>`Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_fg_left`<br>`Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_fg_right` | PEDIR |
-| L6-07a · Corrente Azul: fundo em 3 faixas | `L6-07a_map_corrente_azul_fundo.png` | 1×3 | 384×80 | `Mapas/CorrenteAzul/map_corrente_azul_bg_far`<br>`Mapas/CorrenteAzul/map_corrente_azul_bg_mid`<br>`Mapas/CorrenteAzul/map_corrente_azul_bg_near` | PEDIR |
-| L6-07b · Corrente Azul: laterais e cantos | `L6-07b_map_corrente_azul_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/CorrenteAzul/map_corrente_azul_near_left`<br>`Mapas/CorrenteAzul/map_corrente_azul_near_right`<br>`Mapas/CorrenteAzul/map_corrente_azul_fg_left`<br>`Mapas/CorrenteAzul/map_corrente_azul_fg_right` | PEDIR |
-| L6-08a · Banco das Baleias: fundo em 3 faixas | `L6-08a_map_banco_das_baleias_fundo.png` | 1×3 | 384×80 | `Mapas/BancoDasBaleias/map_banco_das_baleias_bg_far`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_bg_mid`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_bg_near` | PEDIR |
-| L6-08b · Banco das Baleias: laterais e cantos | `L6-08b_map_banco_das_baleias_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/BancoDasBaleias/map_banco_das_baleias_near_left`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_near_right`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_fg_left`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_fg_right` | PEDIR |
-| L6-09a · Talude Noturno: fundo em 3 faixas | `L6-09a_map_talude_noturno_fundo.png` | 1×3 | 384×80 | `Mapas/TaludeNoturno/map_talude_noturno_bg_far`<br>`Mapas/TaludeNoturno/map_talude_noturno_bg_mid`<br>`Mapas/TaludeNoturno/map_talude_noturno_bg_near` | PEDIR |
-| L6-09b · Talude Noturno: laterais e cantos | `L6-09b_map_talude_noturno_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/TaludeNoturno/map_talude_noturno_near_left`<br>`Mapas/TaludeNoturno/map_talude_noturno_near_right`<br>`Mapas/TaludeNoturno/map_talude_noturno_fg_left`<br>`Mapas/TaludeNoturno/map_talude_noturno_fg_right` | PEDIR |
-| L6-10a · Abismo Atlântico: fundo em 3 faixas | `L6-10a_map_abismo_atlantico_fundo.png` | 1×3 | 384×80 | `Mapas/AbismoAtlantico/map_abismo_atlantico_bg_far`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_bg_mid`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_bg_near` | PEDIR |
-| L6-10b · Abismo Atlântico: laterais e cantos | `L6-10b_map_abismo_atlantico_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/AbismoAtlantico/map_abismo_atlantico_near_left`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_near_right`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_fg_left`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_fg_right` | PEDIR |
+| L6-02a · Rio Selvagem: fundo em 3 faixas | `L6-02a_map_rio_selvagem_fundo.png` | 1×3 | 384×80 | `Mapas/RioSelvagem/map_rio_selvagem_bg_far`<br>`Mapas/RioSelvagem/map_rio_selvagem_bg_mid`<br>`Mapas/RioSelvagem/map_rio_selvagem_bg_near` | RECEBIDO |
+| L6-02b · Rio Selvagem: laterais e cantos | `L6-02b_map_rio_selvagem_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/RioSelvagem/map_rio_selvagem_near_left`<br>`Mapas/RioSelvagem/map_rio_selvagem_near_right`<br>`Mapas/RioSelvagem/map_rio_selvagem_fg_left`<br>`Mapas/RioSelvagem/map_rio_selvagem_fg_right` | RECEBIDO |
+| L6-03a · Pantanal Dourado: fundo em 3 faixas | `L6-03a_map_pantanal_dourado_fundo.png` | 1×3 | 384×80 | `Mapas/PantanalDourado/map_pantanal_dourado_bg_far`<br>`Mapas/PantanalDourado/map_pantanal_dourado_bg_mid`<br>`Mapas/PantanalDourado/map_pantanal_dourado_bg_near` | RECEBIDO |
+| L6-03b · Pantanal Dourado: laterais e cantos | `L6-03b_map_pantanal_dourado_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/PantanalDourado/map_pantanal_dourado_near_left`<br>`Mapas/PantanalDourado/map_pantanal_dourado_near_right`<br>`Mapas/PantanalDourado/map_pantanal_dourado_fg_left`<br>`Mapas/PantanalDourado/map_pantanal_dourado_fg_right` | RECEBIDO |
+| L6-04a · Estuário das Marés: fundo em 3 faixas | `L6-04a_map_estuario_das_mares_fundo.png` | 1×3 | 384×80 | `Mapas/EstuarioDasMares/map_estuario_das_mares_bg_far`<br>`Mapas/EstuarioDasMares/map_estuario_das_mares_bg_mid`<br>`Mapas/EstuarioDasMares/map_estuario_das_mares_bg_near` | RECEBIDO |
+| L6-04b · Estuário das Marés: laterais e cantos | `L6-04b_map_estuario_das_mares_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/EstuarioDasMares/map_estuario_das_mares_near_left`<br>`Mapas/EstuarioDasMares/map_estuario_das_mares_near_right`<br>`Mapas/EstuarioDasMares/map_estuario_das_mares_fg_left`<br>`Mapas/EstuarioDasMares/map_estuario_das_mares_fg_right` | RECEBIDO |
+| L6-05a · Costa de Coral: fundo em 3 faixas | `L6-05a_map_costa_de_coral_fundo.png` | 1×3 | 384×80 | `Mapas/CostaDeCoral/map_costa_de_coral_bg_far`<br>`Mapas/CostaDeCoral/map_costa_de_coral_bg_mid`<br>`Mapas/CostaDeCoral/map_costa_de_coral_bg_near` | RECEBIDO |
+| L6-05b · Costa de Coral: laterais e cantos | `L6-05b_map_costa_de_coral_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/CostaDeCoral/map_costa_de_coral_near_left`<br>`Mapas/CostaDeCoral/map_costa_de_coral_near_right`<br>`Mapas/CostaDeCoral/map_costa_de_coral_fg_left`<br>`Mapas/CostaDeCoral/map_costa_de_coral_fg_right` | RECEBIDO |
+| L6-06a · Arquipélago do Sol: fundo em 3 faixas | `L6-06a_map_arquipelago_do_sol_fundo.png` | 1×3 | 384×80 | `Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_bg_far`<br>`Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_bg_mid`<br>`Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_bg_near` | RECEBIDO |
+| L6-06b · Arquipélago do Sol: laterais e cantos | `L6-06b_map_arquipelago_do_sol_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_near_left`<br>`Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_near_right`<br>`Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_fg_left`<br>`Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_fg_right` | RECEBIDO |
+| L6-07a · Corrente Azul: fundo em 3 faixas | `L6-07a_map_corrente_azul_fundo.png` | 1×3 | 384×80 | `Mapas/CorrenteAzul/map_corrente_azul_bg_far`<br>`Mapas/CorrenteAzul/map_corrente_azul_bg_mid`<br>`Mapas/CorrenteAzul/map_corrente_azul_bg_near` | RECEBIDO |
+| L6-07b · Corrente Azul: laterais e cantos | `L6-07b_map_corrente_azul_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/CorrenteAzul/map_corrente_azul_near_left`<br>`Mapas/CorrenteAzul/map_corrente_azul_near_right`<br>`Mapas/CorrenteAzul/map_corrente_azul_fg_left`<br>`Mapas/CorrenteAzul/map_corrente_azul_fg_right` | RECEBIDO |
+| L6-08a · Banco das Baleias: fundo em 3 faixas | `L6-08a_map_banco_das_baleias_fundo.png` | 1×3 | 384×80 | `Mapas/BancoDasBaleias/map_banco_das_baleias_bg_far`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_bg_mid`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_bg_near` | RECEBIDO |
+| L6-08b · Banco das Baleias: laterais e cantos | `L6-08b_map_banco_das_baleias_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/BancoDasBaleias/map_banco_das_baleias_near_left`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_near_right`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_fg_left`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_fg_right` | **PEDIR DE NOVO**: bordas borradas em listras horizontais e água em bloco retangular |
+| L6-09a · Talude Noturno: fundo em 3 faixas | `L6-09a_map_talude_noturno_fundo.png` | 1×3 | 384×80 | `Mapas/TaludeNoturno/map_talude_noturno_bg_far`<br>`Mapas/TaludeNoturno/map_talude_noturno_bg_mid`<br>`Mapas/TaludeNoturno/map_talude_noturno_bg_near` | RECEBIDO |
+| L6-09b · Talude Noturno: laterais e cantos | `L6-09b_map_talude_noturno_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/TaludeNoturno/map_talude_noturno_near_left`<br>`Mapas/TaludeNoturno/map_talude_noturno_near_right`<br>`Mapas/TaludeNoturno/map_talude_noturno_fg_left`<br>`Mapas/TaludeNoturno/map_talude_noturno_fg_right` | **PEDIR DE NOVO**: bordas borradas em listras horizontais e água em bloco retangular |
+| L6-10a · Abismo Atlântico: fundo em 3 faixas | `L6-10a_map_abismo_atlantico_fundo.png` | 1×3 | 384×80 | `Mapas/AbismoAtlantico/map_abismo_atlantico_bg_far`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_bg_mid`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_bg_near` | RECEBIDO |
+| L6-10b · Abismo Atlântico: laterais e cantos | `L6-10b_map_abismo_atlantico_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/AbismoAtlantico/map_abismo_atlantico_near_left`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_near_right`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_fg_left`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_fg_right` | RECEBIDO |
 
 ### Lote 7 · Telas especiais e Boss
 
@@ -134,21 +161,21 @@ Fundos e faixas das telas (Aquário, Mapa, Arena, Bem-vindo, Caixa, Mercado, Pas
 
 | Pedido | Folha | Grade | Célula | Arquivos (em ordem) | Status |
 |---|---|---|---|---|---|
-| L7-01 · Aquário: água | `L7-01_aquario_agua.png` | 1×1 | 384×256 | `UI/ui_aquarium_bg` | PEDIR |
-| L7-02 · Aquário: areia | `L7-02_aquario_areia.png` | 1×1 | 384×64 | `UI/ui_aquarium_sand` | PEDIR |
-| L7-03 · Mapa: mar visto de cima | `L7-03_mapa_mar.png` | 1×1 | 384×256 | `UI/ui_map_sea_bg` | PEDIR |
-| L7-04 · Arena: fundo | `L7-04_arena_fundo.png` | 1×1 | 384×256 | `UI/arena_fundo` | PEDIR |
-| L7-05 · Bem-vindo de volta | `L7-05_bemvindo.png` | 1×1 | 384×256 | `UI/bemvindo_cena` | PEDIR |
-| L7-06 · Caixa de Pesca: faixa | `L7-06_caixa_faixa.png` | 1×1 | 384×256 | `UI/caixa_cena` | PEDIR |
-| L7-07 · Mercado: faixa | `L7-07_mercado_faixa.png` | 1×1 | 384×256 | `UI/merc_feira_porto` | PEDIR |
-| L7-08 · Passe: faixa | `L7-08_passe_faixa.png` | 1×1 | 384×256 | `UI/passe_faixa` | PEDIR |
-| L7-09 · Clã: fundo | `L7-09_cla_fundo.png` | 1×1 | 384×256 | `UI/cla_fundo` | PEDIR |
-| L7-10 · Eventos: quadro de avisos | `L7-10_eventos_quadro.png` | 1×1 | 384×256 | `UI/eventos_quadro` | PEDIR |
-| L7-11 · Expedição: porto | `L7-11_expedicao_porto.png` | 1×1 | 384×256 | `UI/ui_exp_porto` | PEDIR |
-| L7-12 · Expedição: carta náutica | `L7-12_expedicao_carta.png` | 1×1 | 384×256 | `UI/ui_exp_carta` | PEDIR |
-| L7-13 · Ranking: palco | `L7-13_ranking_palco.png` | 1×1 | 384×80 | `UI/ui_rk_palco` | PEDIR |
-| L7-14 · Boss: fundo do abismo | `L7-14_boss_fundo.png` | 1×1 | 384×256 | `Boss/boss_fundo_abismo` | PEDIR |
-| L7-15 · Boss Mundial: poses | `L7-15_boss_poses.png` | 2×2 | 160×112 | `Boss/boss_pose_parado`<br>`Boss/boss_pose_respira`<br>`Boss/boss_pose_ataque`<br>`Boss/boss_mundial` | PEDIR |
+| L7-01 · Aquário: água | `L7-01_aquario_agua.png` | 1×1 | 384×256 | `UI/ui_aquarium_bg` | RECEBIDO |
+| L7-02 · Aquário: areia | `L7-02_aquario_areia.png` | 1×1 | 384×64 | `UI/ui_aquarium_sand` | RECEBIDO |
+| L7-03 · Mapa: mar visto de cima | `L7-03_mapa_mar.png` | 1×1 | 384×256 | `UI/ui_map_sea_bg` | RECEBIDO |
+| L7-04 · Arena: fundo | `L7-04_arena_fundo.png` | 1×1 | 384×256 | `UI/arena_fundo` | RECEBIDO |
+| L7-05 · Bem-vindo de volta | `L7-05_bemvindo.png` | 1×1 | 384×256 | `UI/bemvindo_cena` | RECEBIDO |
+| L7-06 · Caixa de Pesca: faixa | `L7-06_caixa_faixa.png` | 1×1 | 384×256 | `UI/caixa_cena` | RECEBIDO |
+| L7-07 · Mercado: faixa | `L7-07_mercado_faixa.png` | 1×1 | 384×256 | `UI/merc_feira_porto` | RECEBIDO |
+| L7-08 · Passe: faixa | `L7-08_passe_faixa.png` | 1×1 | 384×256 | `UI/passe_faixa` | RECEBIDO |
+| L7-09 · Clã: fundo | `L7-09_cla_fundo.png` | 1×1 | 384×256 | `UI/cla_fundo` | RECEBIDO |
+| L7-10 · Eventos: quadro de avisos | `L7-10_eventos_quadro.png` | 1×1 | 384×256 | `UI/eventos_quadro` | RECEBIDO |
+| L7-11 · Expedição: porto | `L7-11_expedicao_porto.png` | 1×1 | 384×256 | `UI/ui_exp_porto` | RECEBIDO |
+| L7-12 · Expedição: carta náutica | `L7-12_expedicao_carta.png` | 1×1 | 384×256 | `UI/ui_exp_carta` | RECEBIDO |
+| L7-13 · Ranking: palco | `L7-13_ranking_palco.png` | 1×1 | 384×80 | `UI/ui_rk_palco` | RECEBIDO |
+| L7-14 · Boss: fundo do abismo | `L7-14_boss_fundo.png` | 1×1 | 384×256 | `Boss/boss_fundo_abismo` | RECEBIDO |
+| L7-15 · Boss Mundial: poses | `L7-15_boss_poses.png` | 2×2 | 160×112 | `Boss/boss_pose_parado`<br>`Boss/boss_pose_respira`<br>`Boss/boss_pose_ataque`<br>`Boss/boss_mundial` | RECEBIDO |
 
 ## Inventário da arte atual
 

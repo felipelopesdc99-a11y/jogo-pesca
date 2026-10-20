@@ -4,8 +4,9 @@ Uso:  python3 tools/Arte/pixel_folhas_teste.py
 
 Builds a 3×2 sheet of small "fish" drawn on a 64×64 grid, scaled up 8× without smoothing, then
 resized to a non-integer size with bilinear filtering and sprinkled with noise (what ChatGPT really
-delivers), on flat magenta. The cutter must find a factor near 8, give back drawings about the
-native size, with ≤ 32 colours, transparent background and a dark 1 px outline.
+delivers), on flat magenta; and a sheet whose drawings are off the equal grid. The cutter must find
+each drawing, keep the reading order, give back drawings about the native size, with ≤ 32 colours,
+transparent background and a dark 1 px outline.
 """
 import os
 import shutil
@@ -55,54 +56,61 @@ def build_sheet(path):
     Image.fromarray(np.clip(a, 0, 255).astype(np.uint8)).save(path)
 
 
+def check(written, problems, label, half=False):
+    for p in written:
+        im = np.asarray(Image.open(p).convert('RGBA'))
+        h, w = im.shape[:2]
+        op = im[..., 3] > 0
+        cols = len(np.unique(im[op][:, :3], axis=0))
+        if not (FISH_W - 2 <= w <= FISH_W + 8 and FISH_H - 4 <= h <= FISH_H + 8):
+            problems.append(f'{label}, {os.path.basename(p)}: {w}×{h}, esperado perto de {FISH_W}×{FISH_H} (+contorno e margem)')
+        if cols > 32:
+            problems.append(f'{label}, {os.path.basename(p)}: {cols} cores')
+        if set(np.unique(im[..., 3])) - {0, 255}:
+            problems.append(f'{label}, {os.path.basename(p)}: transparência não é binária')
+        if not PF.has_outline(im[..., :3], op):
+            problems.append(f'{label}, {os.path.basename(p)}: sem contorno')
+        if half and not os.path.exists(p[:-4] + '_p.png'):
+            problems.append(f'{label}, {os.path.basename(p)}: faltou a versão _p')
+
+
 def main():
     tmp = tempfile.mkdtemp(prefix='pixel_folhas_')
+    quiet = lambda s: None  # noqa: E731
     try:
+        problems = []
+        alvo = f'{FISH_W}x{FISH_H}'
+        # 1) a 3×2 sheet, 8× with bilinear resize and noise
         src = os.path.join(tmp, 'folha.png')
         build_sheet(src)
         names = [f'peixe_{i + 1}' for i in range(6)]
-        out = os.path.join(tmp, 'saida')
-        written, k = PF.process(src, 3, 2, (NATIVE, NATIVE), names, out, colors=32, half=True)
-        problems = []
-        k = (k[0] + k[1]) / 2
-        if not 7 <= k <= 9:
-            problems.append(f'fator detectado {k}, esperado perto de 8')
+        written = PF.process(src, 3, 2, (NATIVE, NATIVE), names, os.path.join(tmp, 'saida'), colors=32,
+                             half=True, alvo=alvo, log=quiet)
         if len(written) != 6:
             problems.append(f'{len(written)} arquivos, esperados 6')
-        for p in written:
-            im = np.asarray(Image.open(p).convert('RGBA'))
-            h, w = im.shape[:2]
-            op = im[..., 3] > 0
-            cols = len(np.unique(im[op][:, :3], axis=0))
-            if not (FISH_W - 2 <= w <= FISH_W + 8 and FISH_H - 2 <= h <= FISH_H + 8):
-                problems.append(f'{os.path.basename(p)}: {w}×{h}, esperado perto de {FISH_W}×{FISH_H} (+contorno e margem)')
-            if cols > 32:
-                problems.append(f'{os.path.basename(p)}: {cols} cores')
-            if set(np.unique(im[..., 3])) - {0, 255}:
-                problems.append(f'{os.path.basename(p)}: transparência não é binária')
-            if not PF.has_outline(im[..., :3], op):
-                problems.append(f'{os.path.basename(p)}: sem contorno')
-            if not os.path.exists(p[:-4] + '_p.png'):
-                problems.append(f'{os.path.basename(p)}: faltou a versão _p')
-        # Second sheet: whole-number factor 6, no size given, stretched to twice the height
-        # (non-square pixels), as the manifest-free command line would see it.
+        check(written, problems, 'folha 3×2', half=True)
+        # 2) uneven sheet: the drawings off the equal grid (a fixed grid would cut them), in reading order
         sheet = Image.new('RGBA', (3 * NATIVE, NATIVE), (255, 0, 255, 255))
         for i, c in enumerate(COLOURS[:3]):
-            sheet.paste(fish(*c, outlined=False), (i * NATIVE, 0))
-        src2 = os.path.join(tmp, 'esticada.png')
-        sheet.resize((sheet.width * 6, sheet.height * 12), Image.NEAREST).save(src2)
-        written2, _ = PF.process(src2, 3, 1, None, ['a', 'b', 'c'], os.path.join(tmp, 'saida2'))
-        for p in written2:
-            w, h = Image.open(p).size
-            if not (FISH_W - 2 <= w <= FISH_W + 8 and FISH_H - 2 <= h <= FISH_H + 8):
-                problems.append(f'folha esticada, {os.path.basename(p)}: {w}×{h}, esperado perto de {FISH_W}×{FISH_H}')
+            sheet.paste(fish(*c, outlined=False), (i * NATIVE + (i - 1) * 18, 0))
+        src2 = os.path.join(tmp, 'desigual.png')
+        sheet.resize((sheet.width * 7, sheet.height * 7), Image.NEAREST).convert('RGB').save(src2)
+        written2 = PF.process(src2, 3, 1, (NATIVE, NATIVE), ['a', 'b', 'c'], os.path.join(tmp, 'saida2'),
+                              alvo=alvo, log=quiet)
+        if len(written2) != 3:
+            problems.append(f'folha desigual: {len(written2)} arquivos, esperados 3')
+        check(written2, problems, 'folha desigual')
+        for p, c in zip(written2, COLOURS[:3]):
+            im = np.asarray(Image.open(p).convert('RGBA'))
+            px = im[im[..., 3] > 0][:, :3].astype(int)
+            if np.abs(px - np.array(c[0])).sum(axis=1).min() > 60:
+                problems.append(f'folha desigual: {os.path.basename(p)} fora de ordem')
         if problems:
             print('FALHOU:')
             for p in problems:
                 print('  -', p)
             sys.exit(1)
-        fk = f'{k:.2f}'.replace('.', ',')
-        print(f'OK: fator {fk}, 6 peixes recortados, com contorno, até 32 cores e versão _p.')
+        print('OK: desenhos achados por forma, na ordem, no tamanho nativo, com contorno, até 32 cores e versão _p.')
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

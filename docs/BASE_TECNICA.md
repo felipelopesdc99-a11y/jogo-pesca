@@ -437,6 +437,12 @@ Cada passo está em `SaveMigrations.Upgrade`.
     montanha até as 26 unidades (espelhando faixas sem marcos, para a cachoeira aparecer uma vez só) e
     grava os arquivos do jogo. `tools/Arte/finais.txt` lista esses arquivos, e `finais.proteger_finais()`
     impede os geradores provisórios de sobrescrevê-los.
+  - **Pixel art (Estilo ARC, M25)** (TD-059, TD-060): `tools/Arte/pixel_folhas.py FOLHA.png --pedido <código>`
+    acha cada desenho da folha por forma (componentes conectados sobre o magenta), tira a escala da caixa-alvo
+    do pedido (`tools/Arte/pixel_pedidos.json`: `modo`, `alvo`, `escala`, `alvo_altura`, `ancora_x`, `largura`),
+    amostra por moda numa paleta própria e grava em `Resources/ArtePixel/` com os nomes de `Arte/`.
+    `ArtImportSettings.ApplyPixel` importa essa pasta com Point, sem compressão e sem mipmaps. O jogo ainda
+    não lê `ArtePixel` (M25-T04). Teste: `python3 tools/Arte/pixel_folhas_teste.py`.
   - **Margens e reflexos:** as margens (`near_left` / `near_right`) ficam presas às bordas da tela, com
     altura fixa por mapa (`SceneTheme.NearLeftHeight` etc., `ArtAssets.SpriteByHeight`); cada camada de
     terra ganha um reflexo na água, espelhado, achatado, escurecido e cortado em 12 faixas que balançam

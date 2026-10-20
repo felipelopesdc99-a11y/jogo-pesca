@@ -3646,3 +3646,22 @@ para PC (16:9, interface no quadro virtual de 1080 de altura).
   barcos), 60 passam a ser desenhadas pelo código e 43 saem.
 - **Pendente de Play:** a legibilidade da VT323 em janela pequena (~600 px de altura) e o tamanho maior do pescador na
   cena só ficam confirmados quando o proprietário apertar Play.
+
+### A-183 · Pixel art recebida: tamanhos e âncoras fixados no recorte (20/10/2026)
+
+O proprietário mandou as 77 folhas dos lotes 1 a 7. Ao recortar, ficaram fixados estes detalhes de apresentação (nada
+de regra, número ou save muda; a arte ainda não está ligada no jogo):
+
+- **Pescador:** figura de 48 px de altura em todos os quadros de 64 × 64, com os pés na última linha menos uma e o
+  centro dos pés sempre na **coluna 40**, em todas as animações. Assim trocar de animação (esperando, arremesso,
+  recolher, fisgada, mostrando, escapou) nunca faz o personagem pular de lugar.
+- **Peixes:** cada um ocupa até 112 px de comprimento ou 100 px de altura (o que vier primeiro), sempre virado para a
+  direita; os altos (peixe-lua, raias, opah, pampo) usam a altura.
+- **Retratos e avatares:** busto no quadro de 64 × 64, encostado embaixo, todos na mesma escala.
+- **Ícones e objetos:** cada desenho preenche a própria célula (32, 24, 48 ou 64 px) com 1 px de folga; os pódios da
+  Arena guardam a diferença de altura entre 1º, 2º e 3º.
+- **Cenários:** as faixas do fundo ocupam os 384 px de largura da cena; as laterais ficam com ~128 × 96 e os cantos da
+  frente com ~96 × 80; nuvens e cenários sem contorno.
+- **Boia:** 12 × 16 (um pouco maior que os ~8 × 14 da Bíblia, para a listra branca e vermelha aparecer).
+
+As folhas que vieram trocadas ou ruins estão em `docs/ASSETS_PIXEL.md` (seção "Recebimento de 20/10/2026").

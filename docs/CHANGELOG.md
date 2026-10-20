@@ -3,6 +3,27 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.21] — 20/10/2026
+
+A pixel art que o proprietário mandou (77 folhas, lotes 1 a 7) recortada e gravada em `Resources/ArtePixel/`
+(M25). **O jogo ainda não usa essa pasta** (a ligação é o M25-T04 em diante): nenhuma tela, regra, número ou save mudou.
+
+### Adicionado
+
+- **323 das 339 imagens** em `client-unity/Assets/Resources/ArtePixel/` (mais as 94 versões `_p` dos peixes): 94
+  peixes, os 17 quadros do pescador, retrato e avatares, 52 ícones, objetos, ilhas, pódios, itens, expedições,
+  cenários dos 10 mapas, fundos das telas e as 4 poses do Boss. Faltam 16, para pedir de novo (Pantanal 1 de 2,
+  laterais do Lago Sereno, laterais e cantos do Banco das Baleias e do Talude Noturno), com o motivo em
+  `docs/ASSETS_PIXEL.md`.
+- Importação de `ArtePixel/` com Point, sem compressão e sem mipmaps (`ArtImportSettings`, TD-059).
+
+### Alterado
+
+- **`tools/Arte/pixel_folhas.py` refeito** (TD-060): acha cada desenho pela forma em vez de cortar por grade igual
+  (nada mais sai cortado), tira a escala do tamanho do desenho, paleta por desenho, limpa o halo rosa e os pixels
+  soltos; animações com o mesmo quadro e os pés no mesmo lugar. Manifesto com os campos novos e teste atualizado.
+- A-183: tamanhos e âncoras fixados no recorte (pescador de 48 px com os pés na coluna 40, peixes até 112 px).
+
 ## [0.2.0-m24.20] — 19/10/2026
 
 Plano da troca para o novo estilo visual escolhido pelo proprietário: pixel art "Estilo ARC" (A-182, M25). **Só

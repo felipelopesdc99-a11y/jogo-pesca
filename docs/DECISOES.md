@@ -1426,3 +1426,37 @@ arquivos.
 
 **Rever se.** O proprietário quiser mais detalhe na cena (subir a grade para 270 px de altura, 4× no 1080p) ou se a
 VT323 não ficar legível em janela pequena (trocar o corpo de texto por outra fonte pixel OFL mais alta).
+
+## TD-060 · Recorte da pixel art por forma, não por grade (20/10/2026)
+
+**Origem.** As 77 folhas reais do ChatGPT mostraram que a TD-059 errava em dois pontos: a detecção do fator de
+ampliação dava confiança 0 quase sempre (o ChatGPT não desenha numa grade de pixel de verdade; o "pixel" dele tem
+~3,5 px e não casa com o tamanho pedido) e o corte por grade igual cortava desenhos que não ficavam centrados na célula
+(o camurupim e o mero, o chapéu do pescador; o pescador avulso saiu esticado).
+
+**Decisão.** `tools/Arte/pixel_folhas.py` passa a:
+- achar cada desenho como **componente conectado** sobre o magenta (8 vizinhos); pedaços pequenos (bigodes, respingos,
+  brilhos, a isca do peixe-dragão) entram no desenho mais próximo; sobrando desenho, o menor se junta ao vizinho;
+  faltando, um bloco de desenhos encostados (retratos, Boss, a paisagem emendada) é dividido onde é mais fino, usando a
+  grade do pedido só como pista; a ordem é a de leitura (linhas pelo centro, depois da esquerda para a direita);
+- tirar a **escala do tamanho do desenho** contra a caixa-alvo do pedido (campos novos do manifesto: `modo`, `alvo`,
+  `escala`, `alvo_altura`, `ancora_x`, `largura`), em vez de tentar adivinhar a grade;
+- reduzir cada desenho a uma **paleta própria** (até 32 cores; 48 nos cenários; uma só para todos os quadros de uma
+  animação) e amostrar por **moda** dos índices da paleta em cada bloco (o centro vale o dobro), com preferência pelos
+  tons escuros quando eles cobrem ≥ 34% do bloco — isso mantém contorno e linhas internas de 1 px;
+- tirar o halo rosado (pixels misturados com o magenta) antes de votar a cor e de novo na borda do resultado, remover
+  pixels soltos, preencher furos de 1 px e só pôr contorno onde falta;
+- **modos:** `objetos`, `quadros` (escala e paleta únicas na folha, pés na mesma linha e na mesma coluna, nada cortado),
+  `faixas` (cenário de fundo inteiro em 384 px de largura), `cena` (tela opaca reduzida para 384 × 256) e `paineis`
+  (as 4 imagens das expedições, separadas pelas linhas magenta);
+- `--pular` deixa de fora desenhos que vieram ruins.
+
+`ArtImportSettings` ganhou a regra de `Resources/ArtePixel/` prevista na TD-059 (Point, sem compressão, sem mipmaps,
+Clamp, sem limite de tamanho; `GetVersion` 5).
+
+**Por quê.** O desenho em si é a única coisa estável numa folha do ChatGPT; a grade e o tamanho do pixel não são. Com a
+caixa-alvo vinda da Bíblia, todos os peixes saem com o mesmo comprimento e todos os quadros do pescador com a mesma
+altura, que é o que importa na tela.
+
+**Rever se.** O ChatGPT passar a entregar grade exata (aí voltar a amostrar na grade dele preserva mais detalhe) ou se
+algum desenho fino (linha da vara nos itens) sumir demais: baixar o limiar de cobertura só para aquele pedido.

@@ -20,8 +20,30 @@ namespace FishingIdle.Editor
         private const string ArtFolder = "Assets/Resources/Arte/";
         private const string FontFolder = "Assets/Resources/Fontes/";
 
+        private const string PixelFolder = "Assets/Resources/ArtePixel/";
+
         // Raise this when the rules below change, so Unity re-imports the art with them.
-        public override uint GetVersion() => 4;
+        public override uint GetVersion() => 5;
+
+        /// <summary>
+        /// TD-059: the pixel art (Estilo ARC) keeps every pixel sharp and exact: Point filter, no compression,
+        /// no mipmaps, no size cap (the largest file is 384 × 256), clamped, never rescaled to a power of two.
+        /// </summary>
+        internal static void ApplyPixel(TextureImporter importer)
+        {
+            importer.textureType = TextureImporterType.Default;
+            importer.npotScale = TextureImporterNPOTScale.None;
+            importer.alphaIsTransparency = true;
+            importer.alphaSource = TextureImporterAlphaSource.FromInput;
+            importer.sRGBTexture = true;
+            importer.mipmapEnabled = false;
+            importer.wrapMode = TextureWrapMode.Clamp;
+            importer.filterMode = FilterMode.Point;
+            importer.maxTextureSize = 8192;
+            importer.isReadable = false;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.crunchedCompression = false;
+        }
 
         /// <summary>
         /// Largest side, in pixels, each picture is imported at: about what a 1440p screen shows of it
@@ -59,6 +81,12 @@ namespace FishingIdle.Editor
 
         private void OnPreprocessTexture()
         {
+            if (assetPath.StartsWith(PixelFolder, System.StringComparison.Ordinal))
+            {
+                ApplyPixel((TextureImporter)assetImporter);
+                return;
+            }
+
             if (!assetPath.StartsWith(ArtFolder, System.StringComparison.Ordinal))
             {
                 return;

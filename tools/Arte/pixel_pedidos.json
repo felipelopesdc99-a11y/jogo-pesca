@@ -1,5 +1,5 @@
 {
- "_leia_me": "Gerado junto com docs/ASSETS_PIXEL.md. Cada pedido diz como tools/Arte/pixel_folhas.py recorta a folha: grade (colunas x linhas), tamanho da célula em pixels da grade, nomes em ordem de leitura (relativos a Resources/ArtePixel, \"-\" = célula vazia), contorno, âncora, cores e se grava a versão pequena _p. Uso: python3 tools/Arte/pixel_folhas.py FOLHA.png --pedido L4-01a",
+ "_leia_me": "Gerado junto com docs/ASSETS_PIXEL.md. Cada pedido diz como tools/Arte/pixel_folhas.py recorta a folha: grade (colunas x linhas), tamanho da célula em pixels da grade, nomes em ordem de leitura (relativos a Resources/ArtePixel, \"-\" = célula vazia), contorno, âncora, cores e se grava a versão pequena _p. Uso: python3 tools/Arte/pixel_folhas.py FOLHA.png --pedido L4-01a Campos do recorte (TD-060): \"modo\" (objetos, quadros, faixas, cena, paineis), \"alvo\" (caixa em que cada desenho cabe, ou {nome: caixa}), \"escala\" (objeto, folha ou linha), \"alvo_altura\" (altura da figura nos quadros), \"ancora_x\" (coluna fixa dos pés nos quadros) e \"largura\" (largura das faixas).",
  "pedidos": [
   {
    "id": "L1-01",
@@ -18,7 +18,10 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "quadros",
+   "alvo_altura": 48,
+   "ancora_x": 40
   },
   {
    "id": "L1-02",
@@ -44,7 +47,10 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "quadros",
+   "alvo_altura": 48,
+   "ancora_x": 40
   },
   {
    "id": "L1-03",
@@ -65,7 +71,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L1-04",
@@ -85,7 +94,12 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": {
+    "Cena/caixa_de_pesca": "44x32",
+    "Cena/boia": "8x14"
+   }
   },
   {
    "id": "L1-05",
@@ -104,7 +118,9 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "120x52"
   },
   {
    "id": "L1-06a",
@@ -125,7 +141,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L1-06b",
@@ -141,13 +159,21 @@
     "Mapas/LagoSereno/map_lago_sereno_fg_right"
    ],
    "pasta": "",
-   "contorno": "auto",
+   "contorno": "nao",
    "ancora": "centro",
    "tamanho_fixo": false,
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "linha",
+   "alvo": {
+    "Mapas/LagoSereno/map_lago_sereno_near_left": "128x96",
+    "Mapas/LagoSereno/map_lago_sereno_near_right": "128x96",
+    "Mapas/LagoSereno/map_lago_sereno_fg_left": "96x80",
+    "Mapas/LagoSereno/map_lago_sereno_fg_right": "96x80"
+   }
   },
   {
    "id": "L1-07",
@@ -171,7 +197,10 @@
    "metade": false,
    "opaco": false,
    "cores": 12,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "folha",
+   "alvo": "96x48"
   },
   {
    "id": "L2-01",
@@ -197,7 +226,10 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "quadros",
+   "alvo_altura": 48,
+   "ancora_x": 40
   },
   {
    "id": "L2-02",
@@ -218,12 +250,15 @@
    ],
    "pasta": "",
    "contorno": "auto",
-   "ancora": "centro",
-   "tamanho_fixo": false,
+   "ancora": "base",
+   "tamanho_fixo": true,
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "folha",
+   "alvo": "62x62"
   },
   {
    "id": "L3-01",
@@ -257,7 +292,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "30x30"
   },
   {
    "id": "L3-02",
@@ -287,7 +324,9 @@
    "metade": false,
    "opaco": false,
    "cores": 40,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "22x22"
   },
   {
    "id": "L3-03",
@@ -317,7 +356,9 @@
    "metade": false,
    "opaco": false,
    "cores": 40,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "22x22"
   },
   {
    "id": "L3-04",
@@ -347,7 +388,9 @@
    "metade": false,
    "opaco": false,
    "cores": 40,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "22x22"
   },
   {
    "id": "L3-05",
@@ -371,7 +414,9 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "46x46"
   },
   {
    "id": "L3-06",
@@ -395,7 +440,9 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "46x46"
   },
   {
    "id": "L3-07",
@@ -421,7 +468,9 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "46x46"
   },
   {
    "id": "L3-08",
@@ -449,7 +498,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "62x62"
   },
   {
    "id": "L3-09",
@@ -470,7 +521,10 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "folha",
+   "alvo": "56x52"
   },
   {
    "id": "L4-01a",
@@ -494,7 +548,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-01b",
@@ -515,7 +572,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-02a",
@@ -539,7 +599,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-02b",
@@ -560,7 +623,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-03a",
@@ -584,7 +650,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-03b",
@@ -606,7 +675,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-04a",
@@ -630,7 +702,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-04b",
@@ -652,7 +727,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-05a",
@@ -676,7 +754,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-05b",
@@ -698,7 +779,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-06a",
@@ -722,7 +806,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-06b",
@@ -744,7 +831,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-07a",
@@ -768,7 +858,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-07b",
@@ -789,7 +882,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-08a",
@@ -813,7 +909,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-08b",
@@ -835,7 +934,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-09a",
@@ -859,7 +961,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-09b",
@@ -881,7 +986,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-10a",
@@ -905,7 +1013,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L4-10b",
@@ -927,7 +1038,10 @@
    "metade": true,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "112x100",
+   "escala": "objeto"
   },
   {
    "id": "L5-01",
@@ -951,7 +1065,9 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "46x46"
   },
   {
    "id": "L5-02",
@@ -975,7 +1091,9 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "120x52"
   },
   {
    "id": "L5-03",
@@ -1001,7 +1119,9 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "30x30"
   },
   {
    "id": "L5-04",
@@ -1031,7 +1151,9 @@
    "metade": false,
    "opaco": false,
    "cores": 32,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "alvo": "30x30"
   },
   {
    "id": "L5-05",
@@ -1053,7 +1175,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "paineis"
   },
   {
    "id": "L6-02a",
@@ -1074,7 +1197,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L6-02b",
@@ -1090,13 +1215,21 @@
     "Mapas/RioSelvagem/map_rio_selvagem_fg_right"
    ],
    "pasta": "",
-   "contorno": "auto",
+   "contorno": "nao",
    "ancora": "centro",
    "tamanho_fixo": false,
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "linha",
+   "alvo": {
+    "Mapas/RioSelvagem/map_rio_selvagem_near_left": "128x96",
+    "Mapas/RioSelvagem/map_rio_selvagem_near_right": "128x96",
+    "Mapas/RioSelvagem/map_rio_selvagem_fg_left": "96x80",
+    "Mapas/RioSelvagem/map_rio_selvagem_fg_right": "96x80"
+   }
   },
   {
    "id": "L6-03a",
@@ -1117,7 +1250,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L6-03b",
@@ -1133,13 +1268,21 @@
     "Mapas/PantanalDourado/map_pantanal_dourado_fg_right"
    ],
    "pasta": "",
-   "contorno": "auto",
+   "contorno": "nao",
    "ancora": "centro",
    "tamanho_fixo": false,
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "linha",
+   "alvo": {
+    "Mapas/PantanalDourado/map_pantanal_dourado_near_left": "128x96",
+    "Mapas/PantanalDourado/map_pantanal_dourado_near_right": "128x96",
+    "Mapas/PantanalDourado/map_pantanal_dourado_fg_left": "96x80",
+    "Mapas/PantanalDourado/map_pantanal_dourado_fg_right": "96x80"
+   }
   },
   {
    "id": "L6-04a",
@@ -1160,7 +1303,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L6-04b",
@@ -1176,13 +1321,21 @@
     "Mapas/EstuarioDasMares/map_estuario_das_mares_fg_right"
    ],
    "pasta": "",
-   "contorno": "auto",
+   "contorno": "nao",
    "ancora": "centro",
    "tamanho_fixo": false,
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "linha",
+   "alvo": {
+    "Mapas/EstuarioDasMares/map_estuario_das_mares_near_left": "128x96",
+    "Mapas/EstuarioDasMares/map_estuario_das_mares_near_right": "128x96",
+    "Mapas/EstuarioDasMares/map_estuario_das_mares_fg_left": "96x80",
+    "Mapas/EstuarioDasMares/map_estuario_das_mares_fg_right": "96x80"
+   }
   },
   {
    "id": "L6-05a",
@@ -1203,7 +1356,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L6-05b",
@@ -1219,13 +1374,21 @@
     "Mapas/CostaDeCoral/map_costa_de_coral_fg_right"
    ],
    "pasta": "",
-   "contorno": "auto",
+   "contorno": "nao",
    "ancora": "centro",
    "tamanho_fixo": false,
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "linha",
+   "alvo": {
+    "Mapas/CostaDeCoral/map_costa_de_coral_near_left": "128x96",
+    "Mapas/CostaDeCoral/map_costa_de_coral_near_right": "128x96",
+    "Mapas/CostaDeCoral/map_costa_de_coral_fg_left": "96x80",
+    "Mapas/CostaDeCoral/map_costa_de_coral_fg_right": "96x80"
+   }
   },
   {
    "id": "L6-06a",
@@ -1246,7 +1409,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L6-06b",
@@ -1262,13 +1427,21 @@
     "Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_fg_right"
    ],
    "pasta": "",
-   "contorno": "auto",
+   "contorno": "nao",
    "ancora": "centro",
    "tamanho_fixo": false,
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "linha",
+   "alvo": {
+    "Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_near_left": "128x96",
+    "Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_near_right": "128x96",
+    "Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_fg_left": "96x80",
+    "Mapas/ArquipelagoDoSol/map_arquipelago_do_sol_fg_right": "96x80"
+   }
   },
   {
    "id": "L6-07a",
@@ -1289,7 +1462,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L6-07b",
@@ -1305,13 +1480,21 @@
     "Mapas/CorrenteAzul/map_corrente_azul_fg_right"
    ],
    "pasta": "",
-   "contorno": "auto",
+   "contorno": "nao",
    "ancora": "centro",
    "tamanho_fixo": false,
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "linha",
+   "alvo": {
+    "Mapas/CorrenteAzul/map_corrente_azul_near_left": "128x96",
+    "Mapas/CorrenteAzul/map_corrente_azul_near_right": "128x96",
+    "Mapas/CorrenteAzul/map_corrente_azul_fg_left": "96x80",
+    "Mapas/CorrenteAzul/map_corrente_azul_fg_right": "96x80"
+   }
   },
   {
    "id": "L6-08a",
@@ -1332,7 +1515,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L6-08b",
@@ -1348,13 +1533,21 @@
     "Mapas/BancoDasBaleias/map_banco_das_baleias_fg_right"
    ],
    "pasta": "",
-   "contorno": "auto",
+   "contorno": "nao",
    "ancora": "centro",
    "tamanho_fixo": false,
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "linha",
+   "alvo": {
+    "Mapas/BancoDasBaleias/map_banco_das_baleias_near_left": "128x96",
+    "Mapas/BancoDasBaleias/map_banco_das_baleias_near_right": "128x96",
+    "Mapas/BancoDasBaleias/map_banco_das_baleias_fg_left": "96x80",
+    "Mapas/BancoDasBaleias/map_banco_das_baleias_fg_right": "96x80"
+   }
   },
   {
    "id": "L6-09a",
@@ -1375,7 +1568,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L6-09b",
@@ -1391,13 +1586,21 @@
     "Mapas/TaludeNoturno/map_talude_noturno_fg_right"
    ],
    "pasta": "",
-   "contorno": "auto",
+   "contorno": "nao",
    "ancora": "centro",
    "tamanho_fixo": false,
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "linha",
+   "alvo": {
+    "Mapas/TaludeNoturno/map_talude_noturno_near_left": "128x96",
+    "Mapas/TaludeNoturno/map_talude_noturno_near_right": "128x96",
+    "Mapas/TaludeNoturno/map_talude_noturno_fg_left": "96x80",
+    "Mapas/TaludeNoturno/map_talude_noturno_fg_right": "96x80"
+   }
   },
   {
    "id": "L6-10a",
@@ -1418,7 +1621,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L6-10b",
@@ -1434,13 +1639,21 @@
     "Mapas/AbismoAtlantico/map_abismo_atlantico_fg_right"
    ],
    "pasta": "",
-   "contorno": "auto",
+   "contorno": "nao",
    "ancora": "centro",
    "tamanho_fixo": false,
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "linha",
+   "alvo": {
+    "Mapas/AbismoAtlantico/map_abismo_atlantico_near_left": "128x96",
+    "Mapas/AbismoAtlantico/map_abismo_atlantico_near_right": "128x96",
+    "Mapas/AbismoAtlantico/map_abismo_atlantico_fg_left": "96x80",
+    "Mapas/AbismoAtlantico/map_abismo_atlantico_fg_right": "96x80"
+   }
   },
   {
    "id": "L7-01",
@@ -1459,7 +1672,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-02",
@@ -1478,7 +1692,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "faixas",
+   "largura": 384
   },
   {
    "id": "L7-03",
@@ -1497,7 +1713,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-04",
@@ -1516,7 +1733,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-05",
@@ -1535,7 +1753,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-06",
@@ -1554,7 +1773,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-07",
@@ -1573,7 +1793,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-08",
@@ -1592,7 +1813,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-09",
@@ -1611,7 +1833,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-10",
@@ -1630,7 +1853,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-11",
@@ -1649,7 +1873,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-12",
@@ -1668,7 +1893,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-13",
@@ -1687,7 +1913,9 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "objetos",
+   "alvo": "376x78"
   },
   {
    "id": "L7-14",
@@ -1706,7 +1934,8 @@
    "metade": false,
    "opaco": true,
    "cores": 48,
-   "margem": 0
+   "margem": 0,
+   "modo": "cena"
   },
   {
    "id": "L7-15",
@@ -1728,7 +1957,10 @@
    "metade": false,
    "opaco": false,
    "cores": 48,
-   "margem": 2
+   "margem": 2,
+   "modo": "objetos",
+   "escala": "folha",
+   "alvo": "158x110"
   }
  ]
 }

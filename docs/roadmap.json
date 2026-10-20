@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-19T21:00:00Z",
+  "updated_at": "2026-10-20T03:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -5168,8 +5168,8 @@
           "dependencies": [
             "M25-T01"
           ],
-          "updated_at": "2026-10-19T21:00:00Z",
-          "completion_notes": "Entregue com teste sintético (tools/Arte/pixel_folhas_teste.py): folha 3×2 ampliada 7,82× com ruído e folha 3×1 esticada 6×12 voltam ao tamanho nativo, com contorno, até 32 cores, transparência binária e a versão _p (TD-059)."
+          "updated_at": "2026-10-20T03:00:00Z",
+          "completion_notes": "Entregue com teste sintético (tools/Arte/pixel_folhas_teste.py): folha 3×2 ampliada 7,82× com ruído e folha 3×1 esticada 6×12 voltam ao tamanho nativo, com contorno, até 32 cores, transparência binária e a versão _p (TD-059). Refeito em 20/10/2026 com as 77 folhas reais (TD-060): desenhos achados por forma (componentes conectados) em vez de grade fixa, escala pela caixa-alvo do pedido, paleta própria por desenho, moda com preferência pelo contorno escuro, halo rosa removido; modos objetos, quadros, faixas, cena e paineis; 323 das 339 imagens gravadas em Resources/ArtePixel."
         },
         {
           "id": "M25-T03",
@@ -5186,12 +5186,12 @@
           "id": "M25-T04",
           "title": "Pasta ArtePixel, importação Point e desenho em escala inteira",
           "subsystem": "client",
-          "description": "ArtAssets procura em Resources/ArtePixel primeiro (mesmos nomes) e cai na arte antiga; ArtImportSettings com Point, sem compressão e sem mipmaps para ArtePixel; helper PixelDraw que troca o ScaleToFit pela maior escala inteira que cabe, usa a versão _p quando 1× não cabe e nunca gira sprites (TD-059).",
+          "description": "ArtAssets procura em Resources/ArtePixel primeiro (mesmos nomes) e cai na arte antiga; ArtImportSettings com Point, sem compressão e sem mipmaps para ArtePixel; helper PixelDraw que troca o ScaleToFit pela maior escala inteira que cabe, usa a versão _p quando 1× não cabe e nunca gira sprites (TD-059). Andamento (20/10/2026): a regra de importação de ArtePixel (Point, sem compressão, sem mipmaps) já está no ArtImportSettings; faltam o ArtAssets procurar em ArtePixel e o PixelDraw.",
           "status": "TODO",
           "dependencies": [
             "M25-T01"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T05",
@@ -5219,116 +5219,116 @@
           "id": "M25-T07",
           "title": "Cena piloto do Lago Sereno",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE (Lote 1 de docs/ASSETS_PIXEL.md: L1-04 a L1-07). Fundo em 3 faixas, laterais e cantos, barco inicial com a frente cortada pelo código, Caixa de Pesca, boia e nuvens, na câmera pixel. É a cena de conferência do estilo antes dos outros lotes.",
+          "description": "ASSET_PENDENTE (Lote 1 de docs/ASSETS_PIXEL.md: L1-04 a L1-07). Fundo em 3 faixas, laterais e cantos, barco inicial com a frente cortada pelo código, Caixa de Pesca, boia e nuvens, na câmera pixel. É a cena de conferência do estilo antes dos outros lotes. Arte recebida em 20/10/2026 (L1-04 a L1-07): Caixa, boia, barco inicial, fundo em 3 faixas, cantos da frente e nuvens em ArtePixel. As laterais do Lago Sereno (near_left/near_right) precisam ser pedidas de novo (vieram emendadas).",
           "status": "TODO",
           "dependencies": [
             "M25-T05",
             "M25-T06"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T08",
           "title": "Pescador animado por fase da pesca",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE (L1-01, L1-02, L2-01). Quadros de 64 px com âncora na base: esperando, arremesso, recolher, fisgada, mostrando e escapou, nas velocidades da Bíblia (seção 5); vara e linha desenhadas pelo código nas cores da vara; o peixe nas mãos na fase Mostrando. Saem a pintura atual e as mãos separadas.",
+          "description": "ASSET_PENDENTE (L1-01, L1-02, L2-01). Quadros de 64 px com âncora na base: esperando, arremesso, recolher, fisgada, mostrando e escapou, nas velocidades da Bíblia (seção 5); vara e linha desenhadas pelo código nas cores da vara; o peixe nas mãos na fase Mostrando. Saem a pintura atual e as mãos separadas. Arte recebida em 20/10/2026 (L1-01, L1-02, L2-01): os 17 quadros em ArtePixel/Cena, figura de 48 px, pés na coluna 40 em todos (A-183). As linhas vieram trocadas entre as folhas e foram gravadas com os nomes certos.",
           "status": "TODO",
           "dependencies": [
             "M25-T07"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T09",
           "title": "Peixes em pixel (100) e versão pequena",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE (L1-03 e Lote 4). Os 100 masters em ArtePixel/Peixes, a versão _p para listas e para o peixe pulando na cena; cards, Caixa, Aquário (balanço sem rotação), Mercado, Arena, Clã, Enciclopédia e silhueta escura em escala inteira.",
+          "description": "ASSET_PENDENTE (L1-03 e Lote 4). Os 100 masters em ArtePixel/Peixes, a versão _p para listas e para o peixe pulando na cena; cards, Caixa, Aquário (balanço sem rotação), Mercado, Arena, Clã, Enciclopédia e silhueta escura em escala inteira. Arte recebida em 20/10/2026: 94 dos 100 peixes (masters e _p) em ArtePixel/Peixes, cada um conferido com a espécie. Faltam os 6 do Pantanal Dourado (1 de 2), L4-03a, para pedir de novo.",
           "status": "TODO",
           "dependencies": [
             "M25-T04"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T10",
           "title": "Itens em pixel: varas, barcos, iscas, roupas, fragmentos e expedições",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE (Lote 5 e L1-05). Itens na Loja, Inventário, Perfil, Mercado, Passe e avisos em escala inteira; frente e fundo de cada barco cortados pelo código para o pescador ficar dentro; imagens das expedições.",
+          "description": "ASSET_PENDENTE (Lote 5 e L1-05). Itens na Loja, Inventário, Perfil, Mercado, Passe e avisos em escala inteira; frente e fundo de cada barco cortados pelo código para o pescador ficar dentro; imagens das expedições. Arte recebida em 20/10/2026 (Lote 5 e L1-05): varas, barcos, iscas, roupas, fragmentos e as 4 expedições em ArtePixel, completos.",
           "status": "TODO",
           "dependencies": [
             "M25-T04"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T11",
           "title": "Ícones em pixel",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE (L3-01 a L3-04). 52 ícones coloridos (24 e 32 px) sem tinta do código; os 12 símbolos simples (+, X, ✓, setas, play, pausa, parar, ordenar, compacto, i, !) desenhados pelo código em pixel, tingíveis; ícones desativados dessaturados pelo código.",
+          "description": "ASSET_PENDENTE (L3-01 a L3-04). 52 ícones coloridos (24 e 32 px) sem tinta do código; os 12 símbolos simples (+, X, ✓, setas, play, pausa, parar, ordenar, compacto, i, !) desenhados pelo código em pixel, tingíveis; ícones desativados dessaturados pelo código. Arte recebida em 20/10/2026 (L3-01 a L3-04): os 52 ícones em ArtePixel/Icones, completos.",
           "status": "TODO",
           "dependencies": [
             "M25-T03",
             "M25-T04"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T12",
           "title": "Os 10 mapas em pixel e a paisagem viva convertida",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE (L1-06 e Lote 6). Fundo, laterais e cantos dos mapas 2 a 10; miniaturas geradas das camadas; plantas e animais da paisagem viva convertidos pelo pixel_folhas.py na paleta de cada mapa (pedido extra só para o que ficar ruim).",
+          "description": "ASSET_PENDENTE (L1-06 e Lote 6). Fundo, laterais e cantos dos mapas 2 a 10; miniaturas geradas das camadas; plantas e animais da paisagem viva convertidos pelo pixel_folhas.py na paleta de cada mapa (pedido extra só para o que ficar ruim). Arte recebida em 20/10/2026 (Lote 6): fundos dos mapas 2 a 10 completos; laterais e cantos completos menos Banco das Baleias e Talude Noturno (L6-08b, L6-09b), para pedir de novo (bordas borradas em listras).",
           "status": "TODO",
           "dependencies": [
             "M25-T07"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T13",
           "title": "Telas: Aquário, Enciclopédia e ficha do peixe",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE (L7-01, L7-02, L3-07). Água e areia do Aquário, vidro e bolhas pelo código, álbum e cartas da Enciclopédia na pele ARC, aura em pixel pelo código, pedestal.",
+          "description": "ASSET_PENDENTE (L7-01, L7-02, L3-07). Água e areia do Aquário, vidro e bolhas pelo código, álbum e cartas da Enciclopédia na pele ARC, aura em pixel pelo código, pedestal. Arte recebida em 20/10/2026 (L7-01, L7-02, L3-07): água e areia do Aquário e o pedestal em ArtePixel.",
           "status": "TODO",
           "dependencies": [
             "M25-T03",
             "M25-T09"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T14",
           "title": "Telas: Mapa, Expedição, Arena e Boss Mundial",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE (L3-06, L3-08, L3-09, L5-05, L7-03, L7-04, L7-11, L7-12, L7-14, L7-15). Mar e ilhas do Mapa, porto, carta e objetos da Expedição, fundo e pódio da Arena (VS pelo código), fundo, poses, impacto e bolhas do Boss (os dois últimos pelo código).",
+          "description": "ASSET_PENDENTE (L3-06, L3-08, L3-09, L5-05, L7-03, L7-04, L7-11, L7-12, L7-14, L7-15). Mar e ilhas do Mapa, porto, carta e objetos da Expedição, fundo e pódio da Arena (VS pelo código), fundo, poses, impacto e bolhas do Boss (os dois últimos pelo código). Arte recebida em 20/10/2026: objetos da Expedição, ilhas, pódios, expedições, mar do Mapa, fundo da Arena, porto, carta, fundo e 4 poses do Boss em ArtePixel, completos.",
           "status": "TODO",
           "dependencies": [
             "M25-T03",
             "M25-T04"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T15",
           "title": "Telas: Loja, Mercado, Caixa, Passe, Eventos, Clã, Missões, Ranking, Perfil e Bem-vindo",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE (L3-05, L3-07, L7-05 a L7-10, L7-13). Faixas e fundos em escala inteira cortando as bordas, parede e balcão da Loja pelo código, palco, coroa, troféu e escudos do Ranking, carteira do Perfil pelo código, brasão do Clã, selo premium do Passe.",
+          "description": "ASSET_PENDENTE (L3-05, L3-07, L7-05 a L7-10, L7-13). Faixas e fundos em escala inteira cortando as bordas, parede e balcão da Loja pelo código, palco, coroa, troféu e escudos do Ranking, carteira do Perfil pelo código, brasão do Clã, selo premium do Passe. Arte recebida em 20/10/2026 (L3-05, L3-07, L7-05 a L7-10, L7-13): faixas e fundos das telas, palco, coroa, troféu, escudos, brasão e selo premium em ArtePixel, completos.",
           "status": "TODO",
           "dependencies": [
             "M25-T03",
             "M25-T04"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T16",
           "title": "Retratos e avatares em pixel",
           "subsystem": "client",
-          "description": "ASSET_PENDENTE (L2-02). Retrato do pescador e os 6 avatares em 64 px, a 1× na barra de cima e 2× no Perfil, Ranking, Arena e escolha de avatar.",
+          "description": "ASSET_PENDENTE (L2-02). Retrato do pescador e os 6 avatares em 64 px, a 1× na barra de cima e 2× no Perfil, Ranking, Arena e escolha de avatar. Arte recebida em 20/10/2026 (L2-02): retrato e os 6 avatares em ArtePixel, completos.",
           "status": "TODO",
           "dependencies": [
             "M25-T04"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T03:00:00Z"
         },
         {
           "id": "M25-T17",
