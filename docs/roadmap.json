@@ -5322,12 +5322,13 @@
           "title": "Telas: Loja, Mercado, Caixa, Passe, Eventos, Clã, Missões, Ranking, Perfil e Bem-vindo",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (L3-05, L3-07, L7-05 a L7-10, L7-13). Faixas e fundos em escala inteira cortando as bordas, parede e balcão da Loja pelo código, palco, coroa, troféu e escudos do Ranking, carteira do Perfil pelo código, brasão do Clã, selo premium do Passe. Arte recebida em 20/10/2026 (L3-05, L3-07, L7-05 a L7-10, L7-13): faixas e fundos das telas, palco, coroa, troféu, escudos, brasão e selo premium em ArtePixel, completos.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T03",
             "M25-T04"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T20:00:00Z",
+          "completion_notes": "Dez telas na pele ARC e em pixel (A-188, TD-063). Fundos e faixas pelo PixelDraw.Cover (menor escala inteira que cobre, cortando as bordas, com foco): Mercado, Caixa, Passe, Clã, Eventos (cartão na cortiça do quadro pixel) e Bem-vindo; WindowFrame.PhotoArt e CropMap passam por ele. Retângulos arredondados trocados por pílula, chanfro ou quadrado em pixel (UiSkinArcFill: ArcFill, ArcLine, ArcFillLine). Loja: parede, viga, ganchos, plaquinhas, etiquetas, balcão, carta (moldura ARC) e caixa de equipamento pelo código; boia pixel sem tinta; caixinha ui_loja_caixa no título; \"não morde aqui\" numa linha só (GameTexts.Gear.NotHereLegend). Ranking: palco pixel em escala inteira até 160 px, escudos, troféu e coroa a 1×, ícones pixel no lugar dos emblemas pintados. Perfil: carteira do jogador pelo código (sai perfil_carteira), carteira de moedas com ícones a 1×. Clã: brasão pixel com o nome na faixa; rótulo curto do botão de vaga (GameTexts.Clan.BuySlotShort). Missões: moedas a 1×. Avatares e Enciclopédia intocados (M25-T16 e T13). ui_loja_gancho guardado (maior que o gancho da prateleira). Prévias PNG (Loja, Ranking, Eventos). Compila no CI; o visual só fica verificado quando o proprietário apertar Play."
         },
         {
           "id": "M25-T16",

@@ -66,25 +66,19 @@ namespace FishingIdle.Game.UI
         private const float BeamHeight = 14f, BodyTop = BeamHeight + 12f;
         private const float Gap = 16f, DockHeight = 184f, LidHeight = 14f;
         private const float RowGap = 6f, MinRow = 92f, MaxRow = 124f, PlateWidth = 146f, ShelfBoard = 6f;
-        private const float CardPad = 32f, CardPadTop = 34f;
 
         // Presentation timing (A-150): the flight, then the aura and the card.
         private const float FlightSeconds = 0.6f, TrailFade = 0.25f, CardDelay = 0.15f, CardSeconds = 0.35f, CardSlide = 24f;
         private const float AuraDelay = 0.35f, AuraSeconds = 0.3f, HookAngle = 28f;
 
-        // Art (Resources/Arte/UI). Every piece falls back to the drawing in this file when its file is missing.
-        // ASSET_PENDENTE: ui_loja_parede_noite (tile), ui_loja_gancho, ui_loja_balcao_pier (9-slice), ui_loja_caixa
-        // (9-slice) and ui_loja_boia (two halves) — requests in docs/ASSETS_PENDENTES.md. The card frame already exists.
-        private const string WallArt = "UI/ui_loja_parede_noite", HookArt = "UI/ui_loja_gancho", CounterArt = "UI/ui_loja_balcao_pier",
-            BoxArt = "UI/ui_loja_caixa", BobberArt = "UI/ui_loja_boia", CardArt = "UI/ui_exp_moldura_carta";
+        // Pixel art (ArtePixel/UI, M25-T15, A-188): the tackle box seal and the bobber. The plank wall, the beam, the
+        // hooks, the counter, the card and the tackle box are drawn by the code in the ARC skin (the painted files of
+        // before — parede, balcão, moldura de corda — are no longer read). ui_loja_gancho (50 px) is bigger than the
+        // shelf hooks (18 px): kept for later, the hooks are drawn by the code.
+        private const string BoxArt = "UI/ui_loja_caixa", BobberArt = "UI/ui_loja_boia";
 
-        /// <summary>9-slice borders in texture pixels: the card frame (412×600; rope knots in the corners), the counter
-        /// (601×96, sides only) and the tackle box (512×262; the lid is the top 100 px, drawn at LidHeight).</summary>
-        private const float CardArtBorder = 84f, CardArtScale = 0.5f, CounterArtSide = 48f, BoxArtBorder = 40f, BoxArtLid = 100f, BoxArtScale = 0.14f;
-
-        /// <summary>Where the dark ring of the bobber art is, from the top (printed by tools/Arte/processar_loja.py): the
-        /// part above it is tinted with the rarity colour.</summary>
-        private const float BobberRing = 0.635f;
+        /// <summary>The card's padding inside the ARC frame.</summary>
+        private const float CardInsetX = 20f, CardInsetY = 18f;
 
         // Colours of the Mescla B page the owner approved (Art Bible palette: night blues and turquoise).
         private static readonly Color PlankA = Rgb(0x132A45), PlankB = Rgb(0x15304E), PlankSeam = Rgb(0x0B1D33);
@@ -115,7 +109,7 @@ namespace FishingIdle.Game.UI
         private bool _hasSource;
         private float _flyAngle;
 
-        private GUIStyle _plaque, _percent, _boldCenter, _mutedTop, _bonusBig;
+        private GUIStyle _plaque, _percent, _boldCenter, _nameCenter, _mutedTop, _bonusBig;
 
         public ShopWindow(GameRoot root)
         {
@@ -337,27 +331,16 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ wall, beam and tab plaques
 
-        /// <summary>The navy plank wall behind the whole content.</summary>
+        /// <summary>
+        /// The navy plank wall behind the whole content, drawn by the code (A-188): planks of 44 art pixels in two night
+        /// blues, a one-pixel dark seam between them and a pixel nail near the top and the bottom of each seam.
+        /// </summary>
         private static void DrawWallBackground(UiSkin skin, Rect area)
         {
-            var art = ArtAssets.Texture(WallArt);
-            if (art != null)
-            {
-                // The tile repeats sideways at the content height (the art is loaded clamped, so one tile at a time).
-                var tile = art.width * area.height / art.height;
-                for (var x = area.x; x < area.xMax; x += tile)
-                {
-                    var w = Mathf.Min(tile, area.xMax - x);
-                    GUI.DrawTextureWithTexCoords(new Rect(x, area.y, w, area.height), art, new Rect(0f, 0f, w / tile, 1f), true);
-                }
-
-                GUI.DrawTexture(area, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.6f), 1f, 0f);
-                return;
-            }
-
-            // Vertical planks, alternating two night blues, with a dark seam between them.
-            Fill(skin, area, PlankA, 10f);
-            const float plank = 88f;
+            area = UiSkin.Snap(area);
+            Fill(skin, area, PlankA, 0f);
+            const float plank = 44f * UiSkin.ArcPixel;
+            const float p = UiSkin.ArcPixel;
             var i = 0;
             for (var x = area.x; x < area.xMax - 1f; x += plank, i++)
             {
@@ -369,19 +352,21 @@ namespace FishingIdle.Game.UI
 
                 if (x > area.x)
                 {
-                    Fill(skin, new Rect(x - 1f, area.y, 2f, area.height), PlankSeam, 0f);
+                    Fill(skin, new Rect(x - p, area.y, p, area.height), PlankSeam, 0f);
+                    Fill(skin, new Rect(x + p, area.y + BodyTop + p * 3f, p, p), PlateEdge, 0f);
+                    Fill(skin, new Rect(x + p, area.yMax - p * 5f, p, p), PlateEdge, 0f);
                 }
             }
-
-            GUI.DrawTexture(area, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.6f), 1f, 10f);
         }
 
         private static void DrawBeam(UiSkin skin, Rect r)
         {
-            Fill(skin, new Rect(r.x, r.y + 4f, r.width, r.height), new Color(0f, 0f, 0f, 0.35f), 4f);
-            Fill(skin, r, BeamBottom, 4f);
-            Fill(skin, new Rect(r.x, r.y, r.width, r.height * 0.5f), BeamTop, 4f);
-            Fill(skin, new Rect(r.x + 6f, r.y + 2f, r.width - 12f, 1f), new Color(1f, 1f, 1f, 0.15f), 0f);
+            // Two bands and a one-pixel light edge on top; a hard shadow under it (no rounding in pixel art).
+            r = UiSkin.Snap(r);
+            Fill(skin, new Rect(r.x, r.yMax, r.width, UiSkin.ArcPixel * 2f), new Color(0f, 0f, 0f, 0.35f), 0f);
+            Fill(skin, r, BeamBottom, 0f);
+            Fill(skin, new Rect(r.x, r.y, r.width, Mathf.Round(r.height * 0.5f)), BeamTop, 0f);
+            Fill(skin, new Rect(r.x, r.y, r.width, UiSkin.ArcPixel), new Color(1f, 1f, 1f, 0.15f), 0f);
         }
 
         private static readonly Tab[] TabOrder = { Tab.Rods, Tab.Boats, Tab.Clothing, Tab.Baits, Tab.Vip };
@@ -465,7 +450,7 @@ namespace FishingIdle.Game.UI
             if (chosen)
             {
                 Fill(skin, row, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.10f), 6f);
-                GUI.DrawTexture(row, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 1.5f, 6f);
+                skin.ArcLine(row, UiSkin.Accent, 6f);
             }
             else if (hover)
             {
@@ -473,17 +458,18 @@ namespace FishingIdle.Game.UI
             }
 
             // The shelf board under the row.
-            Fill(skin, new Rect(row.x, row.yMax - ShelfBoard, row.width, ShelfBoard), Shelf, 2f);
-            Fill(skin, new Rect(row.x + 2f, row.yMax, row.width - 4f, 3f), new Color(0f, 0f, 0f, 0.35f), 0f);
+            Fill(skin, new Rect(row.x, row.yMax - ShelfBoard, row.width, ShelfBoard), Shelf, 0f);
+            Fill(skin, new Rect(row.x, row.yMax - ShelfBoard, row.width, UiSkin.ArcPixel), PlateEdge, 0f);
+            Fill(skin, new Rect(row.x + UiSkin.ArcPixel, row.yMax, row.width - UiSkin.ArcPixel * 2f, UiSkin.ArcPixel), new Color(0f, 0f, 0f, 0.35f), 0f);
 
             var midY = row.y + (row.height - ShelfBoard) / 2f;
 
             // Name plate with a stripe in the tier colour.
             var plate = new Rect(row.x + 8f, midY - 25f, PlateWidth, 50f);
-            Fill(skin, plate, PlateBottom, 6f);
-            GUI.DrawTexture(new Rect(plate.x, plate.y, plate.width, plate.height * 0.5f), skin.White, ScaleMode.StretchToFill, true, 0, PlateTop, Vector4.zero, new Vector4(6f, 6f, 0f, 0f));
-            GUI.DrawTexture(plate, skin.White, ScaleMode.StretchToFill, true, 0, PlateEdge, 1.5f, 6f);
-            Fill(skin, new Rect(plate.x + 4f, plate.y + 8f, 3f, plate.height - 16f), UiSkin.TierColor(item.Tier), 1.5f);
+            // Two bands inside a one-pixel chamfered line (the top band stays clear of the chamfer).
+            skin.ArcFillLine(plate, PlateBottom, PlateEdge, 6f);
+            Fill(skin, new Rect(plate.x + UiSkin.ArcPixel * 2f, plate.y + UiSkin.ArcPixel, plate.width - UiSkin.ArcPixel * 4f, Mathf.Round(plate.height * 0.5f) - UiSkin.ArcPixel), PlateTop, 0f);
+            Fill(skin, new Rect(plate.x + UiSkin.ArcPixel * 2f, plate.y + 8f, UiSkin.ArcPixel * 2f, plate.height - 16f), UiSkin.TierColor(item.Tier), 0f);
             GUI.Label(new Rect(plate.x + 12f, plate.y + 4f, plate.width - 18f, UiSkin.SmallLine), FishCard.Fit(item.Name, skin.SmallBold, plate.width - 18f), skin.SmallBold);
             GUI.Label(new Rect(plate.x + 12f, plate.y + 25f, plate.width - 18f, UiSkin.SmallLine), FishCard.Fit(item.Sub, skin.SmallMuted, plate.width - 18f), skin.SmallMuted);
 
@@ -517,8 +503,7 @@ namespace FishingIdle.Game.UI
                 var text = GameTexts.Shop.OnCounter;
                 var tw = skin.SmallMutedCenter.CalcSize(new GUIContent(text)).x + 20f;
                 var pill = new Rect(mx + mw / 2f - tw / 2f, midY - 12f, tw, 24f);
-                Fill(skin, pill, new Color(PlankSeam.r, PlankSeam.g, PlankSeam.b, 0.8f), 10f);
-                skin.DashedFrame(pill, UiSkin.Accent, 5f, 4f, 1.5f);
+                skin.PixelPill(pill, new Color(PlankSeam.r, PlankSeam.g, PlankSeam.b, 0.8f), UiSkin.Accent);
                 var previous = GUI.contentColor;
                 GUI.contentColor = TealLight;
                 GUI.Label(pill, text, skin.SmallMutedCenter);
@@ -532,17 +517,16 @@ namespace FishingIdle.Game.UI
             return itemRect;
         }
 
+        /// <summary>A brass pixel hook (a stem and a J of one-art-pixel blocks), drawn by the code (A-188).</summary>
         private static void Hook(UiSkin skin, float cx, float top)
         {
-            var art = ArtAssets.Texture(HookArt);
-            if (art != null)
-            {
-                PixelDraw.Fit(new Rect(cx - 9f, top - 4f, 18f, 18f), art);
-                return;
-            }
-
-            Fill(skin, new Rect(cx - 1f, top - 6f, 2f, 8f), Brass, 0f);
-            GUI.DrawTexture(new Rect(cx - 5f, top + 1f, 10f, 9f), skin.White, ScaleMode.StretchToFill, true, 0, Brass, new Vector4(2f, 0f, 2f, 2f), new Vector4(0f, 0f, 5f, 5f));
+            const float p = UiSkin.ArcPixel;
+            var x = Mathf.Round(cx - p * 2f);
+            var y = Mathf.Round(top - p * 3f);
+            Fill(skin, new Rect(x, y, p * 2f, p * 2f), PlateEdge, 0f);
+            Fill(skin, new Rect(x, y + p * 2f, p, p * 4f), Brass, 0f);
+            Fill(skin, new Rect(x, y + p * 6f, p * 4f, p), Brass, 0f);
+            Fill(skin, new Rect(x + p * 3f, y + p * 4f, p, p * 2f), Brass, 0f);
         }
 
         private static float TagWidth(UiSkin skin, WallItem item)
@@ -590,7 +574,7 @@ namespace FishingIdle.Game.UI
             var w = Mathf.Min(col.width, content + 28f);
             var h = item.Tag == TagKind.Price && item.Shells > 0 ? 48f : 28f;
             var tag = new Rect(col.xMax - w, col.center.y - h / 2f, w, h);
-            Fill(skin, new Rect(tag.center.x - 1f, stringTop + 4f, 2f, tag.y - stringTop - 4f), new Color(TagString.r, TagString.g, TagString.b, 0.8f), 0f);
+            Fill(skin, new Rect(Mathf.Round(tag.center.x - UiSkin.ArcPixel / 2f), stringTop + 4f, UiSkin.ArcPixel, tag.y - stringTop - 4f), new Color(TagString.r, TagString.g, TagString.b, 0.8f), 0f);
 
             Color fill, edge, ink;
             switch (item.Tag)
@@ -600,10 +584,9 @@ namespace FishingIdle.Game.UI
                 default: fill = TagDark; edge = UiSkin.Accent; ink = UiSkin.Gold; break;
             }
 
-            Fill(skin, new Rect(tag.x + 1f, tag.y + 3f, tag.width, tag.height), new Color(0f, 0f, 0f, 0.35f), 5f);
-            Fill(skin, tag, fill, 5f);
-            GUI.DrawTexture(tag, skin.White, ScaleMode.StretchToFill, true, 0, edge, 1.5f, 5f);
-            Fill(skin, new Rect(tag.x + 6f, tag.center.y - 3f, 6f, 6f), TagHole, 3f);
+            skin.HardShadow(tag);
+            skin.ArcFillLine(tag, fill, edge, 5f);
+            Fill(skin, new Rect(tag.x + 6f, Mathf.Round(tag.center.y - UiSkin.ArcPixel * 1.5f), UiSkin.ArcPixel * 3f, UiSkin.ArcPixel * 3f), TagHole, 0f);
 
             var x = tag.x + 18f;
             var line = new Rect(x, tag.y + 4f, tag.xMax - x - 6f, UiSkin.SmallLine);
@@ -714,18 +697,14 @@ namespace FishingIdle.Game.UI
 
         private static void DrawCounterPlank(UiSkin skin, Rect plank)
         {
-            Fill(skin, new Rect(plank.x + 2f, plank.y + 8f, plank.width, plank.height), new Color(0f, 0f, 0f, 0.4f), 6f);
-            var art = ArtAssets.Texture(CounterArt);
-            if (art != null)
-            {
-                UiSkin.NineSlice(plank, art, CounterArtSide, CounterArtSide, 0f, 0f, plank.height / art.height);
-                return;
-            }
-
-            Fill(skin, plank, CounterBottom, 6f);
-            Fill(skin, new Rect(plank.x, plank.y, plank.width, plank.height * 0.62f), CounterMid, 6f);
-            Fill(skin, new Rect(plank.x, plank.y, plank.width, plank.height * 0.3f), CounterTop, 6f);
-            Fill(skin, new Rect(plank.x + 2f, plank.y, plank.width - 4f, 3f), UiSkin.Accent, 1.5f);
+            // Drawn by the code (A-188): three night bands, a turquoise edge on top and a hard shadow.
+            plank = UiSkin.Snap(plank);
+            skin.HardShadow(plank);
+            skin.ArcFill(plank, CounterBottom, 6f);
+            var p = UiSkin.ArcPixel;
+            Fill(skin, new Rect(plank.x + p, plank.y + p, plank.width - p * 2f, Mathf.Round(plank.height * 0.62f) - p), CounterMid, 0f);
+            Fill(skin, new Rect(plank.x + p, plank.y + p, plank.width - p * 2f, Mathf.Round(plank.height * 0.3f) - p), CounterTop, 0f);
+            Fill(skin, new Rect(plank.x + p * 2f, plank.y, plank.width - p * 4f, p), UiSkin.Accent, 0f);
         }
 
         /// <summary>The item leaving its hook in a short arc to the pedestal, with a dotted trail that fades after landing.</summary>
@@ -759,7 +738,7 @@ namespace FishingIdle.Game.UI
                 }
 
                 var p = Bezier(from, control, to, s);
-                Fill(skin, new Rect(p.x - 2.5f, p.y - 2.5f, 5f, 5f), new Color(TealLight.r, TealLight.g, TealLight.b, trail), 2.5f);
+                Fill(skin, new Rect(Mathf.Round(p.x - UiSkin.ArcPixel), Mathf.Round(p.y - UiSkin.ArcPixel), UiSkin.ArcPixel * 2f, UiSkin.ArcPixel * 2f), new Color(TealLight.r, TealLight.g, TealLight.b, trail), 0f);
             }
 
             if (t >= FlightSeconds)
@@ -866,21 +845,12 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>The rope card frame (the Expedition's mission card, as a 9-slice); returns the area inside it.</summary>
+        /// <summary>The card: the ARC frame (gold, a dark line, dark gold) around the panel night; returns the area inside it.</summary>
         private static Rect CardFrame(UiSkin skin, Rect card)
         {
-            var frame = ArtAssets.Texture(CardArt);
-            if (frame == null)
-            {
-                GUI.Box(card, GUIContent.none, skin.Card);
-                return new Rect(card.x + 18f, card.y + 16f, card.width - 36f, card.height - 32f);
-            }
-
-            Fill(skin, new Rect(card.x + 4f, card.y + 10f, card.width, card.height), new Color(0f, 0f, 0f, 0.35f), 18f);
-            GUI.DrawTexture(new Rect(card.x + 10f, card.y + 10f, card.width - 20f, card.height - 20f), skin.White, ScaleMode.StretchToFill, true, 0,
-                new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.95f), 0, 16f);
-            UiSkin.NineSlice(card, frame, CardArtBorder, CardArtBorder, CardArtBorder, CardArtBorder, CardArtScale);
-            return new Rect(card.x + CardPad, card.y + CardPadTop, card.width - CardPad * 2f, card.height - CardPadTop * 2f);
+            skin.HardShadow(card);
+            skin.FramedBox(card, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.95f), UiSkin.FrameGold);
+            return new Rect(card.x + CardInsetX, card.y + CardInsetY, card.width - CardInsetX * 2f, card.height - CardInsetY * 2f);
         }
 
         private void DrawRodCard(UiSkin skin, Rect inner, RodOfferView rod, bool inUse)
@@ -936,8 +906,7 @@ namespace FishingIdle.Game.UI
 
             if (bars.height >= 120f)
             {
-                Fill(skin, bars, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.6f), 8f);
-                GUI.DrawTexture(bars, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.7f), 1f, 8f);
+                skin.Inset(bars);
                 var bx = bars.x + 10f;
                 var bw = bars.width - 20f;
                 var by = bars.y + 6f;
@@ -1361,25 +1330,18 @@ namespace FishingIdle.Game.UI
         private void DrawBox(UiSkin skin, Rect rect, GearView gear)
         {
             var body = new Rect(rect.x, rect.y + LidHeight - 2f, rect.width, rect.height - LidHeight + 2f);
-            Fill(skin, new Rect(rect.x + 3f, rect.y + 8f, rect.width, rect.height), new Color(0f, 0f, 0f, 0.35f), 10f);
-            var art = ArtAssets.Texture(BoxArt);
-            if (art != null)
-            {
-                UiSkin.NineSlice(rect, art, BoxArtBorder, BoxArtBorder, BoxArtLid, BoxArtBorder, BoxArtScale);
-            }
-            else
-            {
-                var lid = new Rect(rect.x + rect.width * 0.04f, rect.y, rect.width * 0.92f, LidHeight);
-                GUI.DrawTexture(lid, skin.White, ScaleMode.StretchToFill, true, 0, LidBottom, Vector4.zero, new Vector4(8f, 8f, 0f, 0f));
-                GUI.DrawTexture(new Rect(lid.x, lid.y, lid.width, lid.height * 0.5f), skin.White, ScaleMode.StretchToFill, true, 0, LidTop, Vector4.zero, new Vector4(8f, 8f, 0f, 0f));
-                GUI.DrawTexture(lid, skin.White, ScaleMode.StretchToFill, true, 0, BoxEdge, new Vector4(1.5f, 1.5f, 1.5f, 0f), new Vector4(8f, 8f, 0f, 0f));
-                Fill(skin, body, BoxBottom, 10f);
-                GUI.DrawTexture(new Rect(body.x, body.y, body.width, body.height * 0.5f), skin.White, ScaleMode.StretchToFill, true, 0, BoxTop, Vector4.zero, new Vector4(10f, 10f, 0f, 0f));
-                GUI.DrawTexture(body, skin.White, ScaleMode.StretchToFill, true, 0, BoxEdge, 2f, 10f);
-            }
+            skin.HardShadow(body);
 
-            // The lid's handle is always drawn here (the art has none, so it does not stretch).
-            Fill(skin, new Rect(rect.center.x - 22f, rect.y + 4f, 44f, 6f), TagHole, 3f);
+            // Drawn by the code in pixel (A-188): the lid and the body as chamfered teal shapes with a dark line, two
+            // bands each, and the lid's handle.
+            var p = UiSkin.ArcPixel;
+            var lid = UiSkin.Snap(new Rect(rect.x + rect.width * 0.04f, rect.y, rect.width * 0.92f, LidHeight));
+            skin.ArcFillLine(lid, LidBottom, BoxEdge, 8f);
+            Fill(skin, new Rect(lid.x + p * 2f, lid.y + p, lid.width - p * 4f, Mathf.Round(lid.height * 0.5f) - p), LidTop, 0f);
+            body = UiSkin.Snap(body);
+            skin.ArcFillLine(body, BoxBottom, BoxEdge, 10f);
+            Fill(skin, new Rect(body.x + p * 2f, body.y + p, body.width - p * 4f, Mathf.Round(body.height * 0.5f) - p), BoxTop, 0f);
+            Fill(skin, new Rect(Mathf.Round(rect.center.x - 22f), rect.y + 4f, 44f, 6f), TagHole, 0f);
 
             var x = body.x + 12f;
             var w = body.width - 24f;
@@ -1388,6 +1350,15 @@ namespace FishingIdle.Game.UI
             GUI.contentColor = BoxInk;
             GUI.Label(new Rect(x, y, w, 24f), GameTexts.Gear.Yours, skin.CenterBold);
             GUI.contentColor = previous;
+
+            // The pixel tackle box (ui_loja_caixa, 50 × 30) at 1× left of the title, when it fits beside it.
+            var seal = ArtAssets.Texture(BoxArt);
+            var titleWidth = skin.CenterBold.CalcSize(new GUIContent(GameTexts.Gear.Yours)).x;
+            if (seal != null && (w - titleWidth) / 2f >= seal.width + 12f)
+            {
+                PixelDraw.Fit(new Rect(x + w / 2f - titleWidth / 2f - 10f - seal.width, y + 12f - seal.height / 2f, seal.width, seal.height), seal);
+            }
+
             y += 26f;
 
             var cw = (w - 12f) / 3f;
@@ -1417,8 +1388,8 @@ namespace FishingIdle.Game.UI
 
         private void Compartment(UiSkin skin, Rect r, string label, string art, string icon, string name, double bonus, bool has)
         {
-            Fill(skin, r, Well, 8f);
-            Fill(skin, new Rect(r.x + 2f, r.y + 1f, r.width - 4f, 4f), new Color(0f, 0f, 0f, 0.35f), 2f);
+            skin.ArcFill(r, Well, 8f);
+            Fill(skin, new Rect(r.x + UiSkin.ArcPixel * 2f, r.y + UiSkin.ArcPixel, r.width - UiSkin.ArcPixel * 4f, UiSkin.ArcPixel * 2f), new Color(0f, 0f, 0f, 0.35f), 0f);
             GUI.Label(new Rect(r.x + 4f, r.y + 2f, r.width - 8f, UiSkin.SmallLine), FishCard.Fit(label, skin.SmallMuted, r.width - 8f), skin.SmallMutedCenter);
 
             var picture = new Rect(r.x + 8f, r.y + 23f, r.width - 16f, 32f);
@@ -1443,12 +1414,15 @@ namespace FishingIdle.Game.UI
         /// do not bite here lie grey on the water, with "não morde aqui". The explanation is behind the "i".</summary>
         private void DrawPond(UiSkin skin, Rect rect, GearView gear)
         {
-            Fill(skin, rect, WaterB, 12f);
-            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 40f), skin.White, ScaleMode.StretchToFill, true, 0, WaterTop, Vector4.zero, new Vector4(12f, 12f, 0f, 0f));
-            Fill(skin, new Rect(rect.x, rect.y + 40f, rect.width, (rect.height - 40f) * 0.5f), WaterA, 0f);
-            Fill(skin, new Rect(rect.x + 1f, rect.y + 39f, rect.width - 2f, 2f), WaterLine, 0f);
-            Fill(skin, new Rect(rect.x + 1f, rect.y + 41f, rect.width - 2f, 5f), new Color(WaterLine.r, WaterLine.g, WaterLine.b, 0.35f), 0f);
-            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, Shelf, 1.5f, 12f);
+            // Water in pixel bands (sky strip, waterline, two depths) inside a chamfered line (A-188).
+            rect = UiSkin.Snap(rect);
+            var p = UiSkin.ArcPixel;
+            skin.ArcFill(rect, WaterB, 12f);
+            Fill(skin, new Rect(rect.x + p * 2f, rect.y + p, rect.width - p * 4f, 40f - p), WaterTop, 0f);
+            Fill(skin, new Rect(rect.x + p, rect.y + 40f, rect.width - p * 2f, Mathf.Round((rect.height - 40f) * 0.5f)), WaterA, 0f);
+            Fill(skin, new Rect(rect.x + p, rect.y + 40f, rect.width - p * 2f, p), WaterLine, 0f);
+            Fill(skin, new Rect(rect.x + p, rect.y + 40f + p * 2f, rect.width - p * 2f, p), new Color(WaterLine.r, WaterLine.g, WaterLine.b, 0.5f), 0f);
+            skin.ArcLine(rect, Shelf, 12f);
             GUI.Label(new Rect(rect.x + 10f, rect.y + 8f, rect.width - 20f, 24f), FishCard.Fit(GameTexts.Gear.ChanceTitle, skin.CenterBold, rect.width - 20f), skin.CenterBold);
 
             var count = gear.Chances.Count;
@@ -1458,6 +1432,7 @@ namespace FishingIdle.Game.UI
             }
 
             var cw = (rect.width - 16f) / count;
+            var anyAway = false;
             for (var i = 0; i < count; i++)
             {
                 var chance = gear.Chances[i];
@@ -1466,63 +1441,72 @@ namespace FishingIdle.Game.UI
 
                 var previous = GUI.contentColor;
                 GUI.contentColor = color;
-                GUI.Label(new Rect(col.x, rect.y + 46f, col.width, 26f), Format.Percent(chance.Chance, 0), _percent);
+                // Above the bobber (the pixel boia stands 50 px tall at 1×).
+                GUI.Label(new Rect(col.x, rect.y + 34f, col.width, 26f), Format.Percent(chance.Chance, 0), _percent);
                 GUI.contentColor = previous;
 
                 Bobber(skin, new Vector2(col.center.x, rect.y + 96f), color, chance.BitesHere);
 
                 GUI.contentColor = color;
-                GUI.Label(new Rect(col.x + 2f, rect.y + 120f, col.width - 4f, UiSkin.SmallLine), FishCard.Fit(chance.RarityName, _boldCenter, col.width - 4f), _boldCenter);
+                GUI.Label(new Rect(col.x + 2f, rect.y + 120f, col.width - 4f, UiSkin.SmallLine), FishCard.Fit(chance.RarityName, _nameCenter, col.width - 4f), _nameCenter);
                 GUI.contentColor = previous;
-                if (!chance.BitesHere)
-                {
-                    GUI.Label(new Rect(col.x + 2f, rect.y + 140f, col.width - 4f, UiSkin.SmallLine * 2f), GameTexts.Gear.NotHere, _mutedTop);
-                }
+                anyAway |= !chance.BitesHere;
+            }
+
+            // The pixel fonts are wider than the columns: "não morde aqui" is one line under all of them (A-188).
+            if (anyAway)
+            {
+                GUI.Label(new Rect(rect.x + 10f, rect.y + 148f, rect.width - 20f, UiSkin.SmallLine), FishCard.Fit(GameTexts.Gear.NotHereLegend, _mutedTop, rect.width - 20f), _mutedTop);
             }
         }
 
-        /// <summary>A bobber centred on <paramref name="centre"/>: upright in the rarity colour, or lying grey on the water.</summary>
+        /// <summary>
+        /// A bobber centred on <paramref name="centre"/>: the pixel boia (ui_loja_boia) upright at a whole scale, or lying
+        /// grey on the water (a quarter turn, ART_BIBLE_PIXEL 4.9). Pixel art is never tinted (the rarity colour is in the
+        /// percentage above and the name below it); without the file, a bobber drawn by the code with the cap in the
+        /// rarity colour.
+        /// </summary>
         private static void Bobber(UiSkin skin, Vector2 centre, Color color, bool upright)
         {
-            // A soft ripple at the waterline.
-            Fill(skin, new Rect(centre.x - 18f, centre.y + 10f, 36f, 8f), new Color(0.75f, 0.92f, 1f, upright ? 0.14f : 0.08f), 4f);
+            const float p = UiSkin.ArcPixel;
 
-            var r = new Rect(centre.x - 11f, centre.y - 18f, 22f, 34f);
-            var matrix = GUI.matrix;
+            // A flat pixel ripple at the waterline.
+            Fill(skin, new Rect(Mathf.Round(centre.x - 18f), Mathf.Round(centre.y + 16f), 36f, p), new Color(0.75f, 0.92f, 1f, upright ? 0.35f : 0.18f), 0f);
+
             var art = ArtAssets.Texture(BobberArt);
-            if (!upright)
-            {
-                // Lying on its side; pixel art turns only by a quarter turn (ART_BIBLE_PIXEL 4.9).
-                var p = new Vector3(centre.x, centre.y + 6f, 0f);
-                var lying = ArtAssets.IsPixel(art) ? 90f : 70f;
-                GUI.matrix = matrix * Matrix4x4.TRS(p, Quaternion.Euler(0f, 0f, lying), Vector3.one) * Matrix4x4.TRS(-p, Quaternion.identity, Vector3.one);
-            }
-
             if (art != null)
             {
-                // Above the ring tinted with the rarity colour, below it as drawn (texture v grows upwards).
-                var previous = GUI.color;
-                var top = new Rect(r.x, r.y, r.width, r.height * BobberRing);
-                var bottom = new Rect(r.x, top.yMax, r.width, r.height - top.height);
-                GUI.color = upright ? color : Lying;
-                GUI.DrawTextureWithTexCoords(top, art, new Rect(0f, 1f - BobberRing, 1f, BobberRing), true);
-                GUI.color = upright ? Color.white : Lying;
-                GUI.DrawTextureWithTexCoords(bottom, art, new Rect(0f, 0f, 1f, 1f - BobberRing), true);
-                GUI.color = previous;
-            }
-            else
-            {
-                var tint = upright ? Color.white : Lying;
-                var cap = upright ? color : Lying;
-                Fill(skin, new Rect(r.center.x - 1f, r.y, 2f, 10f), Antenna * tint, 0f);
-                var body = new Rect(r.x, r.y + 8f, r.width, r.height - 8f);
-                GUI.DrawTexture(new Rect(body.x, body.y, body.width, body.height / 2f), skin.White, ScaleMode.StretchToFill, true, 0, cap, Vector4.zero, new Vector4(11f, 11f, 0f, 0f));
-                GUI.DrawTexture(new Rect(body.x, body.center.y, body.width, body.height / 2f), skin.White, ScaleMode.StretchToFill, true, 0, BobberWhite * tint, Vector4.zero, new Vector4(0f, 0f, 11f, 11f));
-                Fill(skin, new Rect(body.x, body.center.y - 1f, body.width, 2f), BobberBand, 0f);
-                Fill(skin, new Rect(body.x + 5f, body.y + 3f, 4f, 6f), new Color(1f, 1f, 1f, upright ? 0.35f : 0.15f), 2f);
+                // At 1× it is 27 × 50 canvas pixels, standing on the ripple.
+                if (upright)
+                {
+                    PixelDraw.Fit(new Rect(centre.x - 15f, centre.y + 17f - 52f, 30f, 52f), art);
+                    return;
+                }
+
+                var matrix = GUI.matrix;
+                var pivot = new Vector3(centre.x, centre.y + 4f, 0f);
+                GUI.matrix = matrix * Matrix4x4.TRS(pivot, Quaternion.Euler(0f, 0f, 90f), Vector3.one) * Matrix4x4.TRS(-pivot, Quaternion.identity, Vector3.one);
+                PixelDraw.Fit(new Rect(pivot.x - 15f, pivot.y - 26f, 30f, 52f), art, Lying);
+                GUI.matrix = matrix;
+                return;
             }
 
-            GUI.matrix = matrix;
+            // Drawn by the code: antenna, cap in the rarity colour, white bottom and a dark band (square pixels).
+            var tint = upright ? Color.white : Lying;
+            var cap = upright ? color : Lying;
+            if (!upright)
+            {
+                var lying = UiSkin.Snap(new Rect(centre.x - 13f, centre.y, 26f, 14f));
+                Fill(skin, lying, BobberWhite * tint, 0f);
+                Fill(skin, new Rect(lying.x, lying.y, Mathf.Round(lying.width / 2f), lying.height), cap, 0f);
+                return;
+            }
+
+            var body = UiSkin.Snap(new Rect(centre.x - 11f, centre.y - 10f, 22f, 26f));
+            Fill(skin, new Rect(Mathf.Round(centre.x - p / 2f), body.y - 10f, p, 10f), Antenna * tint, 0f);
+            skin.ArcFill(new Rect(body.x, body.y, body.width, Mathf.Round(body.height / 2f)), cap, 6f);
+            skin.ArcFill(new Rect(body.x, body.y + Mathf.Round(body.height / 2f), body.width, body.height - Mathf.Round(body.height / 2f)), BobberWhite * tint, 6f);
+            Fill(skin, new Rect(body.x, body.y + Mathf.Round(body.height / 2f) - p / 2f, body.width, p), BobberBand, 0f);
         }
 
         // ------------------------------------------------------------------ VIP (A-110)
@@ -1536,7 +1520,7 @@ namespace FishingIdle.Game.UI
             }
 
             // The same card as before, on a dark well so it reads over the plank wall.
-            Fill(skin, new Rect(content.x, content.y, content.width, Mathf.Min(content.height, 252f)), new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.7f), 12f);
+            skin.ArcFill(new Rect(content.x, content.y, content.width, Mathf.Min(content.height, 252f)), new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.7f), 12f);
             content = new Rect(content.x + 12f, content.y + 10f, content.width - 24f, content.height - 20f);
 
             var note = vip.OfflineCycleSeconds > 0
@@ -1606,9 +1590,10 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(rect.x + 28, rect.y + 2, rect.width - 28, 42), text ?? GameTexts.ServiceErrorMessage(blocker.ToString()), skin.SmallGold);
         }
 
+        /// <summary>A fill in the ARC skin: a pixel shape in place of the old rounded rect (UiSkin.ArcFill, A-188).</summary>
         private static void Fill(UiSkin skin, Rect rect, Color color, float radius)
         {
-            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, color, 0, radius);
+            skin.ArcFill(rect, color, radius);
         }
 
         private static Color Rgb(int rgb)
@@ -1629,6 +1614,8 @@ namespace FishingIdle.Game.UI
             _percent.normal.textColor = Color.white;
             _boldCenter = new GUIStyle(skin.SmallBold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
             _boldCenter.normal.textColor = Color.white;
+            // The rarity names under the bobbers at the chip size: "Lendário" fits a fifth of the pond.
+            _nameCenter = new GUIStyle(_boldCenter) { fontSize = UiSkin.ChipSize };
             _mutedTop = new GUIStyle(skin.SmallMuted) { alignment = TextAnchor.UpperCenter, wordWrap = true };
             _bonusBig = new GUIStyle(skin.Heading) { wordWrap = false, clipping = TextClipping.Clip };
             _bonusBig.normal.textColor = TealLight;

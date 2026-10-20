@@ -141,7 +141,8 @@ namespace FishingIdle.Game.UI
             var content = area;
             var hasSide = _tab != Tab.Withdraw && _tab != Tab.Currency;
             var banner = new Rect(area.x, area.y, hasSide ? area.width - SidePanelWidth - 16 : area.width, BannerHeight);
-            if (WindowFrame.PhotoArt(skin, banner, BannerArt) != null)
+            // The pixel harbour market at a whole scale, cut at the edges, centred on the fish crates (M25-T15).
+            if (WindowFrame.PhotoArt(skin, banner, BannerArt, 0.5f, 0.62f) != null)
             {
                 content = new Rect(area.x, area.y + BannerHeight + BannerGap, area.width, area.height - BannerHeight - BannerGap);
             }
@@ -386,7 +387,7 @@ namespace FishingIdle.Game.UI
             {
                 // A chosen rarity or size shows in its colour, like the Fishing Box filters.
                 var c = colorOf(options[index - 1].Id);
-                GUI.DrawTexture(new Rect(x + 40, y, w - 80, 30), skin.White, ScaleMode.StretchToFill, true, 0, new Color(c.r, c.g, c.b, 0.18f), 0, 8);
+                skin.ArcFill(new Rect(x + 40, y, w - 80, 30), new Color(c.r, c.g, c.b, 0.18f), 8f);
                 UiSkin.ColoredLabel(new Rect(x + 40, y + 6, w - 80, 22), FishCard.Fit(options[index - 1].Name, skin.Center, w - 80), skin.Center,
                     UiSkin.Paper ? c : Color.Lerp(c, Color.white, 0.4f));
             }

@@ -3,6 +3,25 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.24] — 20/10/2026
+
+Telas de comércio, social e perfil em pixel e na pele ARC (M25-T15, A-188, TD-063). Só apresentação: nenhuma regra,
+número, recompensa ou save mudou. Vem depois da pele ARC (0.2.0-m24.23).
+
+### Alterado
+
+- **Fundos e faixas em escala inteira, cortando as bordas:** Mercado, Caixa de Pesca, Passe, Clã, Eventos e Bem-vindo
+  de volta mostram a arte pixel sem esticar, centrada na parte que importa; o cartão do Boss fica na cortiça do quadro
+  de avisos em pixel.
+- **Cantos em pixel nas dez telas:** os retângulos arredondados viraram pílulas, chanfros e quadrados em pixel, com
+  contorno de um pixel de arte e sombra dura.
+- **Loja:** parede, viga, ganchos, plaquinhas, etiquetas, balcão, carta e caixa de equipamento desenhados em pixel pelo
+  código; boias pixel; "Boia deitada: não morde aqui" numa linha só embaixo das boias.
+- **Ranking:** palco pixel em escala inteira, escudos, troféu e coroa a 1×, ícones pixel no lugar dos emblemas.
+- **Perfil:** a carteira do jogador virou painel ARC desenhado pelo código; carteira de moedas com ícones pixel.
+- **Clã:** brasão pixel com o nome na faixa; "Vaga · N Dólares" quando o texto longo não cabe no botão.
+- **Missões:** ícones de Moedas, Conchas e Dólares a 1×.
+
 ## [0.2.0-m24.23] — 20/10/2026
 
 A interface inteira na **pele ARC** e nas **fontes pixel** (M25-T03, A-184). Só apresentação: nenhuma regra, número,

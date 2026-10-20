@@ -216,7 +216,7 @@ namespace FishingIdle.Game.UI
             GUI.Box(rect, GUIContent.none, m.Ready ? skin.CardImportant : skin.Card);
             if (m.Ready)
             {
-                GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Gold, 2f, 10f);
+                skin.ArcLine(rect, UiSkin.Gold, 10f);
             }
 
             var previous = GUI.color;
@@ -266,24 +266,25 @@ namespace FishingIdle.Game.UI
             var lines = (row.Coins != null ? 1 : 0) + (row.Shells != null ? 1 : 0) + (row.Dollars != null ? 1 : 0);
             var step = 26f;
             var y = rect.center.y - lines * step / 2f + 3f;
+            // The coloured pixel icons at 1× (24 px, M25-T15).
             if (row.Coins != null)
             {
-                skin.CoinIcon(new Rect(rect.x, y, 20f, 20f));
-                GUI.Label(new Rect(rect.x + 26f, y, rect.width - 26f, UiSkin.SmallLine), row.Coins, skin.SmallGoldLine);
+                skin.CoinIcon(new Rect(rect.x, y - 2f, 24f, 24f));
+                GUI.Label(new Rect(rect.x + 30f, y, rect.width - 30f, UiSkin.SmallLine), row.Coins, skin.SmallGoldLine);
                 y += step;
             }
 
             if (row.Shells != null)
             {
-                skin.CurrencyIcon(new Rect(rect.x, y, 20f, 20f), Icons.Shell);
-                GUI.Label(new Rect(rect.x + 26f, y, rect.width - 26f, UiSkin.SmallLine), row.Shells, skin.Small);
+                skin.CurrencyIcon(new Rect(rect.x, y - 2f, 24f, 24f), Icons.Shell);
+                GUI.Label(new Rect(rect.x + 30f, y, rect.width - 30f, UiSkin.SmallLine), row.Shells, skin.Small);
                 y += step;
             }
 
             if (row.Dollars != null)
             {
-                skin.CurrencyIcon(new Rect(rect.x, y, 20f, 20f), Icons.Dollar);
-                GUI.Label(new Rect(rect.x + 26f, y, rect.width - 26f, UiSkin.SmallLine), row.Dollars, skin.SmallBold);
+                skin.CurrencyIcon(new Rect(rect.x, y - 2f, 24f, 24f), Icons.Dollar);
+                GUI.Label(new Rect(rect.x + 30f, y, rect.width - 30f, UiSkin.SmallLine), row.Dollars, skin.SmallBold);
             }
         }
     }

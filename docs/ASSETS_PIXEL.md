@@ -791,7 +791,7 @@ Resumo: (a) 42 · (c) 19 · (d) 12
 | `UI/ui_loja_balcao_pier` | (c) moldura/painel/pílula ARC desenhada pelo código |
 | `UI/ui_loja_boia` | (a) pedido L3-07 |
 | `UI/ui_loja_caixa` | (a) pedido L3-07 |
-| `UI/ui_loja_gancho` | (a) pedido L3-07 |
+| `UI/ui_loja_gancho` | (a) pedido L3-07 · recebido, mas maior (50 px) que o gancho da prateleira (18 px): a Loja desenha o gancho pelo código e guarda o arquivo (A-188) |
 | `UI/ui_loja_parede_noite` | (c) moldura/painel/pílula ARC desenhada pelo código |
 | `UI/ui_map_boat` | (a) pedido L3-07 |
 | `UI/ui_map_island_01` | (a) pedido L3-08 |

@@ -3789,3 +3789,36 @@ jogo (compila; verificado só no Play)
 - **Ícones coloridos não são tingidos** (só a transparência segue a cor pedida, para o desativado continuar apagado);
   os 12 símbolos simples (+, ✕, ✓, setas, iniciar, pausa, parar, ordenar, compacto, i, !) são desenhos brancos de
   12 × 12 px tingidos pelo código, como antes.
+
+### A-188 · Telas de comércio, social e perfil na pele ARC e em pixel (20/10/2026)
+
+**Seção do GDD:** telas · `docs/ART_BIBLE_PIXEL.md` 3.3 e 7 · M25-T15 · **Situação:** no jogo (compila; verificado só no Play)
+
+Loja, Mercado, Caixa de Pesca, Passe, Eventos, Clã, Missões, Ranking, Perfil e Bem-vindo de volta. Só apresentação:
+nenhuma regra, número, recompensa ou save mudou.
+
+- **Fundos e faixas cortando as bordas:** as cenas das telas (feira do porto no Mercado, convés na Caixa, pôr do sol no
+  Passe, porto à noite no Clã, quadro de avisos nos Eventos, barco no Bem-vindo) aparecem na menor escala inteira que
+  cobre o espaço, cortadas nas bordas, nunca esticadas. Cada faixa fica centrada na parte que importa: as caixas de
+  peixe (Mercado), a caixa térmica cheia (Caixa), o sol e as boias (Passe), a água sob a lua (Clã), o barco
+  (Bem-vindo). Nos Eventos o cartão do Boss fica preso na cortiça do quadro em pixel.
+- **Cantos em pixel:** o que era retângulo arredondado nas telas virou forma em pixel: pílula quando o canto era meia
+  altura, chanfro de 1 ou 2 pixels de arte nos outros, quadrado abaixo de 12 px (pontos e linhas). Contornos têm um
+  pixel de arte (2 px), qualquer que fosse a espessura antes; sombras são deslocamentos duros.
+- **Loja pelo código:** parede de tábuas (44 pixels de arte cada, com pregos), viga, ganchos de latão pequenos,
+  plaquinhas, etiquetas, balcão, carta do item (agora a moldura ARC, no lugar da corda pintada) e caixa de equipamento
+  desenhados em pixel. A caixa ganha a caixinha pixel (`ui_loja_caixa`) ao lado de "Seu equipamento". As boias de
+  chance são a boia pixel sem tinta; a raridade aparece no percentual e no nome (o nome no tamanho de chip para caber
+  "Lendário"); quando alguma raridade não morde no mapa, uma linha só, "Boia deitada: não morde aqui", fica embaixo de
+  todas (as colunas ficaram estreitas para as fontes pixel). `ui_loja_gancho` (50 px) é maior que o gancho da
+  prateleira (18 px): o código desenha o gancho, o arquivo fica guardado.
+- **Ranking:** o palco pixel na maior escala inteira que caiba em 160 px de altura (2× na janela grande, 1× na
+  pequena), com os pedestais no meio do deque; escudos de posição a 1× (50 × 46) no pódio, na lista e na barra "Sua
+  posição"; troféu e coroa a 1×; os emblemas de categoria viraram os ícones pixel (moeda, concha, peixe, nível); linhas
+  da lista alternando o azul do cartão e o do campo. O desenho dos avatares não mudou (fica com a M25-T16).
+- **Perfil:** a carteira do jogador é o painel elevado com a moldura dourada, desenhado pelo código (sai o couro pintado),
+  com o retrato à esquerda como antes; a carteira de moedas no alto usa campos ARC e os ícones pixel a 1×; selo de
+  nível em pílula. A Enciclopédia fica com a M25-T13.
+- **Clã:** o brasão pixel na maior escala inteira, com o nome do clã na faixa clara dele quando cabe; o botão de comprar
+  vaga usa "Vaga · N Dólares" quando "Comprar vaga · N Dólares" não cabe.
+- **Missões e Ranking:** Moedas, Conchas e Dólares a 1× (24 px).

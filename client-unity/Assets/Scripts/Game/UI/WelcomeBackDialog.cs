@@ -499,7 +499,8 @@ namespace FishingIdle.Game.UI
             var art = ArtAssets.Texture(SceneArt);
             if (art != null)
             {
-                GUI.DrawTexture(r, art, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 4f);
+                // The pixel scene at a whole scale, cut at the edges, the boat in the middle (M25-T15).
+                PixelDraw.Cover(r, art, Color.white, 0.5f, 0.5f);
             }
             else
             {
@@ -512,7 +513,10 @@ namespace FishingIdle.Game.UI
             for (var i = 0; i < bands; i++)
             {
                 var alpha = 0.55f * (1f - i / (float)bands);
-                Fill(skin, new Rect(r.x + i * bandWidth, r.y, bandWidth + 1f, r.height), new Color(0.02f, 0.06f, 0.12f, alpha), i == 0 ? 4f : 0f);
+                // Bands on whole pixels that meet edge to edge (no overlap, so no darker seams).
+                var x0 = Mathf.Round(r.x + i * bandWidth);
+                var x1 = Mathf.Round(r.x + (i + 1) * bandWidth);
+                Fill(skin, new Rect(x0, r.y, x1 - x0, r.height), new Color(0.02f, 0.06f, 0.12f, alpha), 0f);
             }
 
             using (UiSkin.NightScope())
@@ -535,16 +539,15 @@ namespace FishingIdle.Game.UI
             var stepHeight = (horizon - r.y) / steps;
             for (var i = 0; i < steps; i++)
             {
-                var radius = i == 0 ? new Vector4(4f, 4f, 0f, 0f) : Vector4.zero;
-                GUI.DrawTexture(new Rect(r.x, r.y + i * stepHeight, r.width, stepHeight + 1f), skin.White, ScaleMode.StretchToFill, true, 0,
-                    Color.Lerp(sky, dusk, i / (float)(steps - 1)), Vector4.zero, radius);
+                // Square bands of colour (pixel art: no rounding, no gradient).
+                Fill(skin, UiSkin.Snap(new Rect(r.x, r.y + i * stepHeight, r.width, stepHeight + 1f)), Color.Lerp(sky, dusk, i / (float)(steps - 1)), 0f);
             }
 
             var sun = r.height * 0.42f;
             var sunRect = new Rect(r.x + r.width * 0.74f, horizon - sun * 0.62f, sun, sun);
             skin.DrawGlow(sunRect, UiSkin.NightReward, 0.35f);
             PixelDraw.Fit(sunRect, Art.Circle.texture, new Color(1f, 0.83f, 0.45f));
-            GUI.DrawTexture(new Rect(r.x, horizon, r.width, r.yMax - horizon), skin.White, ScaleMode.StretchToFill, true, 0, water, Vector4.zero, new Vector4(0f, 0f, 4f, 4f));
+            Fill(skin, UiSkin.Snap(new Rect(r.x, horizon, r.width, r.yMax - horizon)), water, 0f);
 
             // The sun's glints on the water, drifting slowly.
             var t = Time.unscaledTime;
@@ -553,7 +556,7 @@ namespace FishingIdle.Game.UI
                 var gy = horizon + 6f + i * (r.yMax - horizon - 10f) / 4f;
                 var gw = sun * (1.1f - i * 0.18f);
                 var gx = sunRect.center.x - gw / 2f + Mathf.Sin(t * 0.8f + i) * 4f;
-                Fill(skin, new Rect(gx, gy, gw, 2f), new Color(1f, 0.85f, 0.55f, 0.55f - i * 0.1f), 1f);
+                Fill(skin, UiSkin.Snap(new Rect(gx, gy, gw, UiSkin.ArcPixel)), new Color(1f, 0.85f, 0.55f, 0.55f - i * 0.1f), 0f);
             }
         }
 
@@ -745,9 +748,10 @@ namespace FishingIdle.Game.UI
             skin.Shape(r, 1, false, UiSkin.PaperCard, 2, border, inner, Color.clear);
         }
 
+        /// <summary>A fill in the ARC skin: a pixel shape in place of the old rounded rect (UiSkin.ArcFill, A-188).</summary>
         private static void Fill(UiSkin skin, Rect rect, Color color, float radius)
         {
-            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, color, 0, radius);
+            skin.ArcFill(rect, color, radius);
         }
 
         private static float Width(GUIStyle style, string text)

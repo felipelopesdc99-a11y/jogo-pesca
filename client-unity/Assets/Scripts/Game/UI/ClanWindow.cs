@@ -33,8 +33,11 @@ namespace FishingIdle.Game.UI
         private const string SceneArt = "UI/cla_fundo", CrestArt = "UI/cla_brasao";
         private const float SceneHeight = 176f, SceneGap = 18f;
 
-        /// <summary>The blank ribbon of the crest, in the picture's pixels (512×512).</summary>
-        private static readonly Rect Ribbon = new Rect(116f, 390f, 280f, 44f);
+        /// <summary>
+        /// The blank ribbon of the crest, in the picture's pixels: the pixel crest (ArtePixel, 51×48, M25-T15), or the old
+        /// painted one (512×512) when the pixel file is missing.
+        /// </summary>
+        private static readonly Rect Ribbon = new Rect(10f, 34f, 30f, 6f), RibbonPainted = new Rect(116f, 390f, 280f, 44f);
 
         private static GUIStyle _ribbon;
 
@@ -246,7 +249,15 @@ namespace FishingIdle.Game.UI
                 if (clan.NextSlotPriceDollars > 0 && clan.IsOwner)
                 {
                     GUI.enabled = enabled && canBuy;
-                    if (skin.IconButton(buy, Icons.Add, GameTexts.Clan.BuySlot(Format.Number(clan.NextSlotPriceDollars)), canBuy ? skin.ButtonPrimary : skin.Button))
+                    // The pixel fonts are wider: the short label when the long one does not fit the button.
+                    var buyStyle = canBuy ? skin.ButtonPrimary : skin.Button;
+                    var buyLabel = GameTexts.Clan.BuySlot(Format.Number(clan.NextSlotPriceDollars));
+                    if (buyStyle.CalcSize(new GUIContent(buyLabel)).x > buy.width - 30f)
+                    {
+                        buyLabel = GameTexts.Clan.BuySlotShort(Format.Number(clan.NextSlotPriceDollars));
+                    }
+
+                    if (skin.IconButton(buy, Icons.Add, buyLabel, buyStyle))
                     {
                         _root.BuyClanSlot();
                     }
@@ -297,7 +308,8 @@ namespace FishingIdle.Game.UI
         /// </summary>
         private static float Scene(UiSkin skin, Rect rect, string name)
         {
-            if (WindowFrame.PhotoArt(skin, rect, SceneArt) == null)
+            // The pixel harbour at a whole scale, cut at the edges, centred on the moonlit water (M25-T15).
+            if (WindowFrame.PhotoArt(skin, rect, SceneArt, 0.5f, 0.55f) == null)
             {
                 return 0f;
             }
@@ -310,6 +322,10 @@ namespace FishingIdle.Game.UI
 
             var size = rect.height - 12f;
             var crestRect = new Rect(rect.x + 14f, rect.y + 6f, size, size);
+
+            // The crest at its largest whole scale (PixelDraw); the ribbon is placed on the rect it really takes.
+            Texture drawnTex = crest;
+            var drawn = PixelDraw.FitRect(crestRect, ref drawnTex);
             PixelDraw.Fit(crestRect, crest);
             if (!string.IsNullOrEmpty(name))
             {
@@ -317,12 +333,13 @@ namespace FishingIdle.Game.UI
                 {
                     // Fixed dark ink (not tracked: the ribbon is light in both modes).
                     _ribbon = new GUIStyle(skin.SmallBold) { fontSize = UiSkin.ChipSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
-                    _ribbon.normal.textColor = UiSkin.Ink;
+                    _ribbon.normal.textColor = UiSkin.DarkInk;
                 }
 
                 // The ribbon is light: dark ink on it, only when the whole name fits (the full name is beside the crest).
-                var k = size / crest.width;
-                var ribbon = new Rect(crestRect.x + Ribbon.x * k, crestRect.y + Ribbon.y * k, Ribbon.width * k, Ribbon.height * k);
+                var k = drawn.width / drawnTex.width;
+                var band = ArtAssets.IsPixel(crest) ? Ribbon : RibbonPainted;
+                var ribbon = new Rect(drawn.x + band.x * k, drawn.y + band.y * k, band.width * k, band.height * k);
                 if (_ribbon.CalcSize(new GUIContent(name)).x <= ribbon.width)
                 {
                     GUI.Label(new Rect(ribbon.x, ribbon.y - 3f, ribbon.width, ribbon.height + 6f), name, _ribbon);
@@ -450,7 +467,7 @@ namespace FishingIdle.Game.UI
             {
                 // Off in the local game (TD-055): only the player's clan exists here.
                 var note = new Rect(x, y, w, 52f);
-                GUI.DrawTexture(note, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Gold.r, UiSkin.Gold.g, UiSkin.Gold.b, 0.12f), 0, 10);
+                skin.ArcFill(note, new Color(UiSkin.Gold.r, UiSkin.Gold.g, UiSkin.Gold.b, 0.12f), 10);
                 GUI.Label(new Rect(note.x + 12f, note.y + 6f, note.width - 24f, note.height - 12f), GameTexts.Clan.RewardsOffline, skin.SmallGold);
                 return;
             }

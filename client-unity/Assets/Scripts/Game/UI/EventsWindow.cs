@@ -15,8 +15,8 @@ namespace FishingIdle.Game.UI
     /// <remarks>
     /// Shows what the service returned in the last sync (GameRoot.WorldBoss); decides nothing. A new event adds its kind to
     /// <see cref="EventKind"/> and one card drawer. Icon provisional (ASSET_PENDENTE: ico_eventos; request in
-    /// docs/ASSETS_PENDENTES.md). Since A-179 the cards sit on the cork of the notice board (eventos_quadro); without the
-    /// file, on the plain sheet.
+    /// docs/ASSETS_PENDENTES.md). Since A-179 the cards sit on the cork of the notice board (eventos_quadro, in pixel
+    /// since M25-T15: a whole scale, cut at the edges); without the file, on the plain sheet.
     /// </remarks>
     public sealed class EventsWindow
     {
@@ -27,8 +27,11 @@ namespace FishingIdle.Game.UI
         private const string BoardArt = "UI/eventos_quadro";
         private const float BoardCardHeight = 232f;
 
-        /// <summary>The cork of the board, in the picture's pixels (1600×900; the frame and the edge notes stay around it).</summary>
-        private static readonly Rect Cork = new Rect(250f, 130f, 1120f, 585f);
+        /// <summary>
+        /// The cork of the board, in the picture's pixels: the pixel board (ArtePixel, 384×256, M25-T15) inside its wooden
+        /// frame; the old painted one (1600×900) when the pixel file is missing.
+        /// </summary>
+        private static readonly Rect Cork = new Rect(84f, 46f, 224f, 142f), CorkPainted = new Rect(250f, 130f, 1120f, 585f);
 
         private enum EventKind
         {
@@ -77,7 +80,7 @@ namespace FishingIdle.Game.UI
 
             var board = WindowFrame.PhotoArt(skin, area, BoardArt);
             var onBoard = board != null;
-            var list = onBoard ? WindowFrame.CropMap(area, board, Cork) : area;
+            var list = onBoard ? WindowFrame.CropMap(area, board, ArtAssets.IsPixel(board) ? Cork : CorkPainted) : area;
             var cardHeight = onBoard ? BoardCardHeight : CardHeight;
             var contentHeight = Kinds.Length * (cardHeight + CardGap) - CardGap + CardPad * 2f;
             var scrolls = contentHeight > list.height;
@@ -90,8 +93,8 @@ namespace FishingIdle.Game.UI
                 var card = new Rect(CardPad, top + CardPad + i * (cardHeight + CardGap), inner - CardPad * 2f, cardHeight);
                 if (onBoard)
                 {
-                    // A soft shadow under the card, as if pinned to the cork.
-                    GUI.DrawTexture(new Rect(card.x + 3f, card.y + 5f, card.width, card.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.3f), 0, 12f);
+                    // A hard pixel shadow under the card, as if pinned to the cork.
+                    skin.HardShadow(card);
                 }
 
                 switch (Kinds[i])
@@ -120,10 +123,10 @@ namespace FishingIdle.Game.UI
 
             // The boss icon on a deep disc (ico_boss, or the attack icon while it is missing).
             var disc = new Rect(rect.x + 20f, rect.center.y - ArtSize / 2f, ArtSize, ArtSize);
-            GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.95f), 0, ArtSize / 2f);
-            GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, open ? UiSkin.Gold : UiSkin.Border, 2f, ArtSize / 2f);
+            // The ARC disc (gold, dark gap, dark gold); its outer line turns reward gold while the event happens.
+            skin.FramedDisc(disc, new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.95f), open ? UiSkin.Gold : UiSkin.FrameGold);
             var icon = WorldBossWindow.NavIcon;
-            skin.DrawIconExact(new Rect(disc.center.x - 30f, disc.center.y - 30f, 60f, 60f), icon, icon == Icons.Attack ? UiSkin.NightDanger : Color.white);
+            skin.DrawIconExact(new Rect(disc.center.x - 32f, disc.center.y - 32f, 64f, 64f), icon, icon == Icons.Attack ? UiSkin.NightDanger : Color.white);
 
             // On the board the card is narrower and taller: "Abrir" goes to the bottom right, under the text.
             var button = tall

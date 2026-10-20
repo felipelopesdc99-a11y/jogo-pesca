@@ -1188,6 +1188,8 @@ namespace FishingIdle.Texts
             public static string MemberLevel(int level) => "Pescador Nv." + level;
             public static string SlotsLine(int baseMembers, int extra, int max) => baseMembers + " vagas + " + extra + " compradas (máximo " + max + ")";
             public static string BuySlot(string price) => "Comprar vaga · " + price + " Dólares";
+            /// <summary>The same button when the long one does not fit (the "+" icon already says "comprar").</summary>
+            public static string BuySlotShort(string price) => "Vaga · " + price + " Dólares";
             public const string SlotsMaxed = "O clã já tem o máximo de vagas.";
             public const string OnlyOwnerBuys = "Só o dono compra vagas.";
             public const string Leave = "Sair do clã";
@@ -1255,6 +1257,8 @@ namespace FishingIdle.Texts
             public const string ChanceTitle = "Chance de puxar o peixe";
             public static string ChanceNote(string min, string max) => "Depois que o peixe morde, esta é a chance de puxá-lo. Se ele escapa, nada entra na Caixa. Nunca passa de " + max + " nem fica abaixo de " + min + ".";
             public const string NotHere = "não morde aqui";
+            /// <summary>One line under the bobbers when a rarity does not bite on this map (the columns are too narrow for it).</summary>
+            public const string NotHereLegend = "Boia deitada: não morde aqui";
             public const string InUse = "Em uso";
             public const string Use = "Usar";
             public const string PutAway = "Guardar";

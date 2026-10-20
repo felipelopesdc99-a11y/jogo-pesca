@@ -156,7 +156,8 @@ namespace FishingIdle.Game.UI
 
             // The scene strip; lower when the menus need their own row, so the grid keeps about two rows of cards.
             var bannerHeight = sameRow ? BannerHeight : BannerLowHeight;
-            if (WindowFrame.PhotoArt(skin, new Rect(left, tabsY, right - left, bannerHeight), BannerArt) != null)
+            // The pixel deck at a whole scale, cut at the edges, centred low on the ice chest full of fish (M25-T15).
+            if (WindowFrame.PhotoArt(skin, new Rect(left, tabsY, right - left, bannerHeight), BannerArt, 0.5f, 0.7f) != null)
             {
                 tabsY += bannerHeight + BannerGap;
             }
@@ -494,18 +495,19 @@ namespace FishingIdle.Game.UI
                 var hovered = GUI.enabled && tab.Contains(Event.current.mousePosition);
                 if (active || hovered)
                 {
-                    GUI.DrawTexture(tab, skin.White, ScaleMode.StretchToFill, true, 0, new Color(color.r, color.g, color.b, active ? 0.16f : 0.07f), 0, 10);
+                    skin.ArcFill(tab, new Color(color.r, color.g, color.b, active ? 0.16f : 0.07f), 10f);
                 }
 
                 if (active)
                 {
-                    GUI.DrawTexture(new Rect(tab.x + 10, tab.yMax - 3, tab.width - 20, 3), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, 1.5f);
+                    skin.ArcFill(new Rect(tab.x + 10, tab.yMax - UiSkin.ArcPixel * 2f, tab.width - 20, UiSkin.ArcPixel), color, 0f);
                 }
 
                 // A coloured gem dot, the name, and the count in a small pill.
                 var dim = count == 0 && !all;
-                var dot = 10f;
-                GUI.DrawTexture(new Rect(tab.x + 12, tab.center.y - dot / 2f, dot, dot), skin.White, ScaleMode.StretchToFill, true, 0, dim ? UiSkin.Muted : color, 0, dot / 2f);
+                // A square pixel gem (4 × 4 art pixels), like the filter chips.
+                var dot = UiSkin.ArcPixel * 4f;
+                skin.ArcFill(new Rect(tab.x + 12, Mathf.Round(tab.center.y - dot / 2f), dot, dot), dim ? UiSkin.Muted : color, 0f);
                 // On the sheet the colour is set as ink (tinting multiplied the dark ink and the colour vanished).
                 var labelColor = active ? (UiSkin.Paper ? color : Color.Lerp(color, Color.white, 0.6f)) : dim ? UiSkin.Muted : UiSkin.Text;
                 var lw = skin.BodyBold.CalcSize(new GUIContent(label)).x;
@@ -719,7 +721,7 @@ namespace FishingIdle.Game.UI
                 var hovered = r.Contains(e.mousePosition);
                 if (item.Active || hovered)
                 {
-                    GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(item.Color.r, item.Color.g, item.Color.b, item.Active ? 0.18f : 0.08f), 0, 8);
+                    skin.ArcFill(r, new Color(item.Color.r, item.Color.g, item.Color.b, item.Active ? 0.18f : 0.08f), 8f);
                 }
 
                 var tx = r.x + 26;
@@ -730,8 +732,8 @@ namespace FishingIdle.Game.UI
                 }
                 else
                 {
-                    var dot = 8f;
-                    GUI.DrawTexture(new Rect(r.x + 10, r.center.y - dot / 2f, dot, dot), skin.White, ScaleMode.StretchToFill, true, 0, item.Color, 0, dot / 2f);
+                    var dot = UiSkin.ArcPixel * 3f;
+                    skin.ArcFill(new Rect(r.x + 10, Mathf.Round(r.center.y - dot / 2f), dot, dot), item.Color, 0f);
                 }
 
                 if (item.Hint != null)

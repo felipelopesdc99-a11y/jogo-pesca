@@ -453,7 +453,9 @@ Cada passo está em `SaveMigrations.Upgrade`.
     substitui o `GUI.DrawTexture(..., ScaleToFit, ...)`: para pixel art usa a maior escala inteira em pixels de
     tela (escala do `GUI.matrix` × rect), a versão `_p` quando nem 1× cabe e cai no ScaleToFit quando nem ela cabe;
     a arte antiga continua igual. `PixelDraw.Icon` não tinge os ícones coloridos (só a transparência), menos os 12
-    símbolos (`Icons.IsSymbol`), que são brancos e tingíveis (`tools/Arte/cena_pixel.py simbolos`).
+    símbolos (`Icons.IsSymbol`), que são brancos e tingíveis (`tools/Arte/cena_pixel.py simbolos`). Fundos e faixas
+    das telas usam `PixelDraw.Cover(rect, tex, cor, focoX, focoY)` (menor escala inteira que cobre, cortando as bordas;
+    `CoverRect` só faz a conta) — `WindowFrame.PhotoArt` e `CropMap` já passam por ele (TD-063).
   - **Câmera pixel (M25-T05, TD-059):** `Scene/PixelCamera` cria uma segunda câmera que desenha o mundo numa
     `RenderTexture` de 216 px de altura (largura pela janela, par; Point) e, no `OnRenderImage` da câmera principal
     (que passa a não desenhar nada), põe a grade na tela pela maior escala inteira, ou pela escala inteira de cima
@@ -545,7 +547,9 @@ Cada passo está em `SaveMigrations.Upgrade`.
   Todos os estilos ficam em `UiSkin`, o que isola uma futura troca para UI Toolkit. Pele ARC (A-184, TD-061):
   `UiSkinArc.cs` gera as formas em pixel (molduras de 3 linhas, pílulas, discos, barras em blocos) como máscaras
   9-slice brancas com filtro Point, criadas uma vez e tingidas na hora (`Shape`, `PixelPill`, `FramedBox`,
-  `FramedDisc`, `LineBox`, `TipBox`); as cores vêm do bloco `arc` de `tema_visual.json`. Fontes: Press Start 2P nos
+  `FramedDisc`, `LineBox`, `TipBox`); as cores vêm do bloco `arc` de `tema_visual.json`. Para os desenhos próprios
+  de cada janela, `UiSkinArcFill.cs` dá `ArcFill`/`ArcLine`/`ArcFillLine(rect, cor, raio)`, que trocam o retângulo
+  arredondado por pílula, chanfro ou quadrado em pixel (TD-063); não usar `GUI.DrawTexture` com raio em tela nova. Fontes: Press Start 2P nos
   títulos e números, VT323 no resto (`Resources/Fontes`, importadas com Hinted Raster); `skin.TitleSafe`/`TitleLabel`
   trocam a Press Start 2P pela VT323 quando o texto tem maiúscula acentuada. Fredoka e Nunito ficam como reserva se um
   arquivo faltar. O "modo papel" do Diário de bordo (`UiSkinPaper.cs`) não liga mais; as cores "Paper*"/"Ink*"

@@ -37,6 +37,9 @@ namespace FishingIdle.Game.UI
         private const string BannerArt = "UI/passe_faixa", PremiumSealArt = "UI/passe_premium_selo";
         private const float SummaryArtHeight = 150f, SealSize = 72f;
 
+        /// <summary>The height of passe_faixa (0–1 from the top) kept in the middle of the strip: the sun and the buoys.</summary>
+        private const float BannerFocusY = 0.52f;
+
         private readonly GameRoot _root;
         private PassView _view;
         private float _nextRefresh;
@@ -110,7 +113,8 @@ namespace FishingIdle.Game.UI
         /// </summary>
         private void DrawSummary(UiSkin skin, Rect rect, PassView view, bool onArt)
         {
-            if (onArt && WindowFrame.PhotoArt(skin, rect, BannerArt) != null)
+            // The pixel strip at a whole scale, cut at the edges, centred on the sun and the line of buoys (M25-T15).
+            if (onArt && WindowFrame.PhotoArt(skin, rect, BannerArt, 0.5f, BannerFocusY) != null)
             {
                 // Strong where the text is (level, next milestone, the Dólares line), lighter on the right, where only
                 // the "Resgatar tudo" button sits.
@@ -246,7 +250,7 @@ namespace FishingIdle.Game.UI
         private static void RowLabel(UiSkin skin, Rect rect, string text, string icon, Color color)
         {
             GUI.Box(rect, GUIContent.none, skin.Card);
-            GUI.DrawTexture(new Rect(rect.x + 6f, rect.y + 10f, 4f, rect.height - 20f), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, 2f);
+            skin.ArcFill(new Rect(rect.x + 6f, rect.y + 10f, UiSkin.ArcPixel * 2f, rect.height - 20f), color, 0f);
             var y = rect.center.y - 14f;
             if (icon != null)
             {
@@ -269,7 +273,7 @@ namespace FishingIdle.Game.UI
             }
 
             GUI.Box(rect, GUIContent.none, skin.Card);
-            GUI.DrawTexture(new Rect(rect.x + 6f, rect.y + 10f, 4f, rect.height - 20f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Gold, 0, 2f);
+            skin.ArcFill(new Rect(rect.x + 6f, rect.y + 10f, UiSkin.ArcPixel * 2f, rect.height - 20f), UiSkin.Gold, 0f);
             var size = Mathf.Min(SealSize, rect.width - 24f, rect.height - 56f);
             var top = rect.center.y - (size + 6f + 28f) / 2f;
             var sealRect = new Rect(rect.x + 4f + (rect.width - 4f - size) / 2f, top, size, size);
@@ -278,7 +282,7 @@ namespace FishingIdle.Game.UI
             {
                 var lockSize = Mathf.Round(size * 0.36f);
                 var lockRect = new Rect(sealRect.xMax - lockSize + 2f, sealRect.yMax - lockSize + 2f, lockSize, lockSize);
-                GUI.DrawTexture(lockRect, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.OnSheet(new Color(0.06f, 0.11f, 0.2f, 0.92f)), 0, lockSize / 2f);
+                skin.PixelPill(lockRect, UiSkin.OnSheet(new Color(0.06f, 0.11f, 0.2f, 0.92f)), UiSkin.FrameDark);
                 skin.DrawIconExact(new Rect(lockRect.x + lockSize * 0.2f, lockRect.y + lockSize * 0.2f, lockSize * 0.6f, lockSize * 0.6f), Icons.Lock, Color.white);
             }
 
@@ -305,7 +309,7 @@ namespace FishingIdle.Game.UI
             GUI.Box(rect, GUIContent.none, skin.Card);
             if (reward.Claimable)
             {
-                GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, track == PassTrack.Premium ? UiSkin.Gold : UiSkin.Accent, 2f, 10f);
+                skin.ArcLine(rect, track == PassTrack.Premium ? UiSkin.Gold : UiSkin.Accent, 10f);
             }
 
             var dim = reward.Claimed || reward.Locked || !m.Reached;

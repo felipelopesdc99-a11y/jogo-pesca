@@ -101,6 +101,72 @@ namespace FishingIdle.Game.Visual
             return new Rect(rect.x + (rect.width - fw) * 0.5f, rect.y + (rect.height - fh) * 0.5f, fw, fh);
         }
 
+        /// <summary>
+        /// A background or a banner covering <paramref name="rect"/> (Art Bible 3.3, "fundos e faixas das telas"): pixel
+        /// art at the smallest whole scale that fills the rect, centred on <paramref name="focusX"/>/<paramref name="focusY"/>
+        /// (0–1 of the picture) and cut at the rect's edges; the old art keeps the ScaleAndCrop of before. Returns the rect
+        /// the whole picture takes (larger than <paramref name="rect"/>), to place things on a part of it.
+        /// </summary>
+        public static Rect Cover(Rect rect, Texture tex, Color color, float focusX = 0.5f, float focusY = 0.5f)
+        {
+            if (tex == null || rect.width <= 0f || rect.height <= 0f)
+            {
+                return rect;
+            }
+
+            var drawn = CoverRect(rect, tex, focusX, focusY);
+            var shown = Rect.MinMaxRect(Mathf.Max(drawn.xMin, rect.xMin), Mathf.Max(drawn.yMin, rect.yMin), Mathf.Min(drawn.xMax, rect.xMax), Mathf.Min(drawn.yMax, rect.yMax));
+            if (shown.width <= 0f || shown.height <= 0f)
+            {
+                return drawn;
+            }
+
+            // Texture v grows upwards: the top of the shown part is the larger v.
+            var uv = new Rect(
+                (shown.xMin - drawn.xMin) / drawn.width,
+                1f - (shown.yMax - drawn.yMin) / drawn.height,
+                shown.width / drawn.width,
+                shown.height / drawn.height);
+            var previous = GUI.color;
+            GUI.color = previous * color;
+            GUI.DrawTextureWithTexCoords(shown, tex, uv, true);
+            GUI.color = previous;
+            return drawn;
+        }
+
+        /// <summary>
+        /// The rect a whole picture takes when <see cref="Cover"/> draws it into <paramref name="rect"/>: for pixel art the
+        /// smallest whole scale in screen pixels that covers the rect, its corner on a screen pixel; otherwise the
+        /// ScaleAndCrop scale.
+        /// </summary>
+        public static Rect CoverRect(Rect rect, Texture tex, float focusX = 0.5f, float focusY = 0.5f)
+        {
+            if (tex == null || rect.width <= 0f || rect.height <= 0f)
+            {
+                return rect;
+            }
+
+            var unit = ScreenScale();
+            float w, h;
+            if (ArtAssets.IsPixel(tex))
+            {
+                var k = Mathf.Max(1, Mathf.CeilToInt(Mathf.Max(rect.width * unit / tex.width, rect.height * unit / tex.height) - 0.001f));
+                w = tex.width * k / unit;
+                h = tex.height * k / unit;
+            }
+            else
+            {
+                var s = Mathf.Max(rect.width / tex.width, rect.height / tex.height);
+                w = tex.width * s;
+                h = tex.height * s;
+            }
+
+            // The focus point of the picture goes to the centre of the rect, without uncovering an edge.
+            var x = Mathf.Clamp(rect.center.x - w * Mathf.Clamp01(focusX), rect.xMax - w, rect.x);
+            var y = Mathf.Clamp(rect.center.y - h * Mathf.Clamp01(focusY), rect.yMax - h, rect.y);
+            return new Rect(Snap(x, unit), Snap(y, unit), w, h);
+        }
+
         /// <summary>The largest whole scale of <paramref name="tex"/> that fits <paramref name="rect"/> on screen (0 if none).</summary>
         public static int WholeScale(Rect rect, Texture tex, float unit)
         {

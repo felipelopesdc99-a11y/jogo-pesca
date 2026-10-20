@@ -316,11 +316,12 @@ namespace FishingIdle.Game.UI
 
         /// <summary>
         /// A window's own picture (Resources/Arte/<paramref name="artPath"/>) set on the sheet like a photo (A-170, A-179):
-        /// the white border with its shadow, then the art covering <paramref name="rect"/> (ScaleAndCrop: cropped to fit,
-        /// never stretched). Returns the texture, or null when the file is missing (nothing is drawn; the caller keeps
+        /// the ARC frame, then the art covering <paramref name="rect"/> (PixelDraw.Cover: pixel art at a whole scale, cut at
+        /// the edges; never stretched). <paramref name="focusX"/>/<paramref name="focusY"/> pick the part of the picture
+        /// that stays in the middle. Returns the texture, or null when the file is missing (nothing is drawn; the caller keeps
         /// its old look).
         /// </summary>
-        public static Texture2D PhotoArt(UiSkin skin, Rect rect, string artPath)
+        public static Texture2D PhotoArt(UiSkin skin, Rect rect, string artPath, float focusX = 0.5f, float focusY = 0.5f)
         {
             var art = ArtAssets.Texture(artPath);
             if (art == null || rect.width <= 0f || rect.height <= 0f)
@@ -329,7 +330,8 @@ namespace FishingIdle.Game.UI
             }
 
             Photo(skin, rect);
-            GUI.DrawTexture(rect, art, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 0f);
+            // Pixel art at a whole scale, cut at the edges (M25-T15); the old art keeps its ScaleAndCrop.
+            PixelDraw.Cover(rect, art, Color.white, focusX, focusY);
             return art;
         }
 
@@ -354,11 +356,13 @@ namespace FishingIdle.Game.UI
         /// <paramref name="region"/> is in the picture's pixels (top-left origin). Used to put cards on a part of the art
         /// (the cork of the Eventos board).
         /// </summary>
-        public static Rect CropMap(Rect drawn, Texture art, Rect region)
+        public static Rect CropMap(Rect drawn, Texture art, Rect region, float focusX = 0.5f, float focusY = 0.5f)
         {
-            var scale = Mathf.Max(drawn.width / art.width, drawn.height / art.height);
-            var ox = drawn.x + (drawn.width - art.width * scale) / 2f;
-            var oy = drawn.y + (drawn.height - art.height * scale) / 2f;
+            // The same placement PhotoArt used (PixelDraw.Cover): a whole scale for pixel art.
+            var whole = PixelDraw.CoverRect(drawn, art, focusX, focusY);
+            var scale = whole.width / art.width;
+            var ox = whole.x;
+            var oy = whole.y;
             var r = Rect.MinMaxRect(ox + region.xMin * scale, oy + region.yMin * scale, ox + region.xMax * scale, oy + region.yMax * scale);
             return Rect.MinMaxRect(Mathf.Max(r.xMin, drawn.xMin), Mathf.Max(r.yMin, drawn.yMin), Mathf.Min(r.xMax, drawn.xMax), Mathf.Min(r.yMax, drawn.yMax));
         }

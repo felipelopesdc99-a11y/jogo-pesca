@@ -1522,3 +1522,25 @@ prévia antes do Play.
 
 **Rever se.** O custo do encaixe aparecer no perfilador (centenas de sprites): aí marcar só o que se move; ou se o
 proprietário quiser a cena em escala inteira com faixas pretas em vez do "nítido-suave".
+
+## TD-063 · Fundos das telas por escala inteira de cobertura e cantos em pixel por um ajudante comum (20/10/2026)
+
+**Origem.** M25-T15: as telas de comércio, social e perfil desenhavam fundos com `ScaleAndCrop` (escala quebrada) e
+dezenas de retângulos arredondados (`GUI.DrawTexture` com raio), que a pixel art não aceita.
+
+**Decisão.**
+- `PixelDraw.Cover(rect, tex, cor, focoX, focoY)` desenha um fundo ou faixa pixel na **menor escala inteira que cobre**
+  o retângulo (em pixels de tela), com o ponto de foco no meio sem descobrir borda, e corta o resto com
+  `DrawTextureWithTexCoords` (sem `BeginGroup`). Devolve o retângulo da figura inteira; `PixelDraw.CoverRect` faz só a
+  conta, para pôr coisas sobre uma parte da arte (`WindowFrame.CropMap`, a cortiça dos Eventos). A arte antiga continua
+  com o `ScaleAndCrop`. `WindowFrame.PhotoArt` passa por ele e ganhou o foco opcional.
+- `UiSkinArcFill.cs` (parcial do `UiSkin`) traz `ArcFill`, `ArcLine` e `ArcFillLine` com a mesma assinatura dos
+  `Fill(rect, cor, raio)` das janelas: raio de meia altura vira pílula, outro raio vira chanfro de 1 ou 2 pixels de
+  arte, menos de 12 px vira quadrado. As janelas trocam o ajudante delas por esse, sem redesenhar cada peça, e usam as
+  máscaras já feitas da TD-061 (nada novo por quadro).
+
+**Por quê.** A Bíblia pede escala inteira cortando as bordas (3.3) e nenhum canto suavizado (7); um ajudante comum
+deixa as dez telas iguais entre si e evita copiar a conta em cada uma.
+
+**Rever se.** Uma faixa muito baixa mostrar pouco da arte na janela grande (a menor escala inteira que cobre pode ser
+maior que a `ScaleAndCrop`): aí pedir a faixa já recortada (384 × 120) em vez do fundo inteiro.
