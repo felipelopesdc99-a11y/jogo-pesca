@@ -1409,7 +1409,8 @@ namespace FishingIdle.Game.UI
             }
 
             const float gap = 14f;
-            var tabsW = Mathf.Clamp(area.width * 0.16f, 168f, 200f);
+            // Wider since M25-T13: VT323 needs the room for "Estuário das Marés" and its "6/10".
+            var tabsW = Mathf.Clamp(area.width * 0.19f, 190f, 232f);
             DrawEncTabs(skin, new Rect(area.x, area.y, tabsW, area.height), all, maps);
 
             // The sheet sits beside the page when there is room for it; otherwise it covers the page, with Voltar.
@@ -1474,14 +1475,8 @@ namespace FishingIdle.Game.UI
 
         private const float EncCardMinW = 142f, EncCardMinH = 196f, EncCardGap = 12f;
 
-        // Album art (received 15/10/2026, A-181). The 9-slice borders follow each file as cut: the tab is round on the
-        // left only (r ≈ 10 px), the page has r ≈ 24 px, and the card frame's double line sits 9–16 px inside its edge.
-        private const string EncTabArt = "UI/ui_enc_binder_tab", EncPageArt = "UI/ui_enc_album_page";
-        private const string EncFrameArt = "UI/ui_enc_card_frame", EncBackArt = "UI/ui_enc_card_back";
-        private const float EncTabArtLeft = 14f, EncTabArtRight = 4f, EncTabArtCap = 12f, EncPageArtBorder = 32f, EncFrameArtBorder = 24f;
-
-        /// <summary>How far the frame art is drawn outside the card, so its outer line lands just inside the card's edge.</summary>
-        private const float EncFrameArtBleed = 7f;
+        // The album is drawn by the code in the ARC skin since M25-T13 (A-188): the painted binder tab, page, card frame and
+        // card back of A-181 are no longer read (they leave in M25-T17).
 
         /// <summary>How many cards fit on the page (by the room: about 8 in the big window, 6 in the short one) and their size.</summary>
         private static (Rect Area, int Cols, int Rows, float W, float H) EncGridLayout(Rect page)
@@ -1528,36 +1523,25 @@ namespace FishingIdle.Game.UI
                     _encOpen = false;
                 }
 
-                var fill = UiSkin.OnSheet(active ? theme.PanelElevated : Color.Lerp(theme.Night, theme.Panel, hovered ? 0.85f : 0.55f));
-                var tabArt = ArtAssets.Texture(EncTabArt);
-                if (tabArt != null)
-                {
-                    // The white binder tab tinted with the same fill (round on the left, square where it meets the page).
-                    var previousColor = GUI.color;
-                    GUI.color = fill;
-                    UiSkin.NineSlice(r, tabArt, EncTabArtLeft, EncTabArtRight, EncTabArtCap, EncTabArtCap, 1f);
-                    GUI.color = previousColor;
-                }
-                else
-                {
-                    GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 8f);
-                    GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, active ? UiSkin.Border : new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.5f), 1f, 8f);
-                }
-
+                // ARC tabs (Art Bible 7): the active one raised with the gold frame line, the others on the field with the
+                // idle-chip line; square where they meet the page.
+                var fill = active ? theme.PanelElevated : Color.Lerp(theme.Field, theme.Panel, hovered ? 0.85f : 0.4f);
+                var line = active ? UiSkin.FrameGold : hovered ? Color.Lerp(UiSkin.ChipOffColor, UiSkin.FrameGold, 0.55f) : UiSkin.ChipOffColor;
+                skin.Shape(r, 2, false, fill, 1, line, Color.clear, Color.clear);
                 if (active)
                 {
-                    GUI.DrawTexture(new Rect(r.x + 4f, r.y + 7f, 3f, r.height - 14f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 0, 1.5f);
+                    ArcArt.Fill(skin, new Rect(r.x + UiSkin.ArcPixel * 3, r.y + 8f, UiSkin.ArcPixel * 2, r.height - 16f), UiSkin.Accent, 0f);
                 }
 
                 var progress = GameTexts.Profile.EncTabProgress(found, total);
                 var complete = total > 0 && found == total;
                 var progressStyle = complete ? skin.SmallGoldLine : skin.SmallMutedRightLine;
                 var pw = progressStyle.CalcSize(new GUIContent(progress)).x + 4f;
-                var ty = r.y + (r.height - 20f) / 2f;
+                var ty = r.y + (r.height - UiSkin.SmallLine) / 2f;
                 var nameStyle = active ? skin.SmallBold : skin.SmallMuted;
                 var nw = r.width - 14f - pw - 16f;
-                GUI.Label(new Rect(r.x + 14f, ty, nw, 20f), FishCard.Fit(name ?? string.Empty, nameStyle, nw), nameStyle);
-                GUI.Label(new Rect(r.xMax - 10f - pw, ty, pw, 20f), progress, progressStyle);
+                GUI.Label(new Rect(r.x + 14f, ty, nw, UiSkin.SmallLine), FishCard.Fit(name ?? string.Empty, nameStyle, nw), nameStyle);
+                GUI.Label(new Rect(r.xMax - 10f - pw, ty, pw, UiSkin.SmallLine), progress, progressStyle);
                 y += h + tabGap;
             }
         }
@@ -1566,20 +1550,11 @@ namespace FishingIdle.Game.UI
         private int DrawEncPage(UiSkin skin, Rect page, (Rect Area, int Cols, int Rows, float W, float H) grid, List<EncyclopediaEntryView> entries,
             List<EncyclopediaEntryView> all, int selected, string title, int pages)
         {
-            // The navy album page (A-181) is a scene on the sheet like the tank (A-170): its contents switch to night colours.
-            var pageArt = ArtAssets.Texture(EncPageArt);
-            UiSkin.Scope? night = null;
-            if (pageArt != null)
-            {
-                GUI.DrawTexture(new Rect(page.x + 2f, page.y + 4f, page.width, page.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.18f), 0, 20f);
-                UiSkin.NineSlice(page, pageArt, EncPageArtBorder, EncPageArtBorder, EncPageArtBorder, EncPageArtBorder, 1f);
-                night = UiSkin.NightScope();
-            }
-            else
-            {
-                GUI.Box(page, GUIContent.none, skin.Card);
-            }
-
+            // The album page in the ARC skin (M25-T13): the card night with the dark-gold frame line and the inner dark line,
+            // a hard pixel shadow; its contents in night colours like every scene of the window.
+            skin.HardShadow(page);
+            skin.Shape(page, 2, false, VisualTheme.Current.Card, 2, UiSkin.FrameDark, UiSkin.FrameInner, Color.clear);
+            UiSkin.Scope? night = UiSkin.NightScope();
             try
             {
                 return DrawEncPageContents(skin, page, grid, entries, all, selected, title, pages);
@@ -1599,8 +1574,8 @@ namespace FishingIdle.Game.UI
             var progress = GameTexts.Profile.Discovery(found, entries.Count);
             var pw = Mathf.Min(w * 0.45f, skin.SmallMutedRightLine.CalcSize(new GUIContent(progress)).x + 4f);
             GUI.Label(new Rect(x, page.y + 14f, w - pw - 10f, 28f), FishCard.Fit(title, skin.Heading, w - pw - 10f), skin.Heading);
-            GUI.Label(new Rect(x + w - pw, page.y + 20f, pw, 20f), FishCard.Fit(progress, skin.SmallMutedRightLine, pw), skin.SmallMutedRightLine);
-            skin.Bar(new Rect(x, page.y + 46f, w, 6f), found / (float)entries.Count, UiSkin.Accent);
+            GUI.Label(new Rect(x + w - pw, page.y + 18f, pw, UiSkin.SmallLine), FishCard.Fit(progress, skin.SmallMutedRightLine, pw), skin.SmallMutedRightLine);
+            skin.Bar(new Rect(x, page.y + 46f, w, 8f), found / (float)entries.Count, UiSkin.Accent);
 
             // The mouse wheel over the cards turns the page.
             var ev = Event.current;
@@ -1623,7 +1598,7 @@ namespace FishingIdle.Game.UI
                 if (i >= entries.Count)
                 {
                     // An empty pocket on the last page.
-                    skin.DashedFrame(r, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.35f), 8f, 6f, 1f);
+                    skin.DashedFrame(UiSkin.Snap(r), new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.35f), 6f, 4f, UiSkin.ArcPixel);
                     continue;
                 }
 
@@ -1637,7 +1612,7 @@ namespace FishingIdle.Game.UI
             var fy = page.yMax - 50f;
             const float labelW = 150f;
             var cx = page.center.x;
-            GUI.Label(new Rect(cx - labelW / 2f, fy + 10f, labelW, 20f), GameTexts.Profile.EncPage(_encPage + 1, pages), skin.SmallMutedCenter);
+            GUI.Label(new Rect(cx - labelW / 2f, fy + 8f, labelW, UiSkin.SmallLine), GameTexts.Profile.EncPage(_encPage + 1, pages), skin.SmallMutedCenter);
             if (HeroSheet.Arrow(skin, new Rect(cx - labelW / 2f - 44f, fy, 40f, 40f), true, _encPage > 0))
             {
                 _encPage--;
@@ -1664,57 +1639,29 @@ namespace FishingIdle.Game.UI
             var rarity = UiSkin.RarityColor(e.RarityId);
             var low = e.RarityId == "common" || e.RarityId == "rare";
 
-            GUI.DrawTexture(new Rect(c.x + 1f, c.y + 4f, c.width, c.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, hovered ? 0.34f : 0.22f), 0, 12f);
-            var fill = UiSkin.OnSheet(e.Discovered
-                ? (selected ? theme.PanelElevated : Color.Lerp(theme.Panel, theme.PanelElevated, hovered ? 0.6f : 0.25f))
-                : Color.Lerp(theme.Night, theme.Panel, hovered ? 0.55f : 0.3f));
-
-            // The painted back (navy, waves and a hook) only on a night page, where the card's text is light (A-181).
-            var back = !e.Discovered && !UiSkin.Paper ? ArtAssets.Texture(EncBackArt) : null;
-            if (back != null)
-            {
-                GUI.DrawTexture(c, back, ScaleMode.ScaleAndCrop, true, 0, hovered ? Color.white : new Color(0.88f, 0.88f, 0.88f, 1f), 0, 12f);
-            }
-            else
-            {
-                GUI.DrawTexture(c, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 12f);
-            }
-
-            var frameA = e.Discovered ? (low ? 0.55f : 0.9f) : 0.3f;
+            // The ARC card (Art Bible 7, M25-T13): hard pixel shadow, the card fill with its inner dark line, a one-pixel
+            // border in the rarity colour the service reports; the selected card gets the reward-gold line outside. A card
+            // not found yet is the card back drawn by the code: the night with a dotted pocket line in the rarity colour.
+            skin.HardShadow(c);
+            var fill = e.Discovered
+                ? (selected ? theme.PanelElevated : Color.Lerp(theme.Card, theme.PanelElevated, hovered ? 0.6f : 0.15f))
+                : Color.Lerp(theme.Field, theme.Card, hovered ? 0.6f : 0.25f);
+            var frameA = e.Discovered ? (low ? 0.55f : 0.9f) : 0.35f;
             if (hovered)
             {
                 frameA = Mathf.Min(1f, frameA + 0.2f);
             }
 
-            var frameArt = ArtAssets.Texture(EncFrameArt);
-            if (frameArt != null)
+            skin.Shape(c, 1, false, fill, 2, new Color(rarity.r, rarity.g, rarity.b, frameA), UiSkin.DarkInk, Color.clear);
+            if (!e.Discovered)
             {
-                // The thin double-line frame, white in the file, tinted by the rarity the service reports.
-                var previousColor = GUI.color;
-                GUI.color = new Color(rarity.r, rarity.g, rarity.b, Mathf.Min(1f, frameA + 0.1f));
-                UiSkin.NineSlice(new Rect(c.x - EncFrameArtBleed, c.y - EncFrameArtBleed, c.width + EncFrameArtBleed * 2f, c.height + EncFrameArtBleed * 2f),
-                    frameArt, EncFrameArtBorder, EncFrameArtBorder, EncFrameArtBorder, EncFrameArtBorder, 1f);
-                GUI.color = previousColor;
-            }
-            else
-            {
-                GUI.DrawTexture(c, skin.White, ScaleMode.StretchToFill, true, 0, new Color(rarity.r, rarity.g, rarity.b, frameA), 1.5f, 12f);
-            }
-
-            // The inner line (the frame art already has its own).
-            var inner = new Rect(c.x + 5f, c.y + 5f, c.width - 10f, c.height - 10f);
-            if (frameArt == null && e.Discovered)
-            {
-                GUI.DrawTexture(inner, skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.06f), 1f, 9f);
-            }
-            else if (frameArt == null)
-            {
-                skin.DashedFrame(inner, new Color(rarity.r, rarity.g, rarity.b, 0.22f), 6f, 5f, 1f);
+                var pocket = UiSkin.Snap(new Rect(c.x + 8f, c.y + 8f, c.width - 16f, c.height - 16f));
+                skin.DashedFrame(pocket, new Color(rarity.r, rarity.g, rarity.b, 0.25f), 4f, 4f, UiSkin.ArcPixel);
             }
 
             if (selected)
             {
-                GUI.DrawTexture(new Rect(c.x - 3f, c.y - 3f, c.width + 6f, c.height + 6f), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 14f);
+                ArcArt.Line(skin, new Rect(c.x - UiSkin.ArcPixel * 2, c.y - UiSkin.ArcPixel * 2, c.width + UiSkin.ArcPixel * 4, c.height + UiSkin.ArcPixel * 4), UiSkin.Gold, 4f);
             }
 
             // Top: rarity seal on the left, the album number on the right when it fits.
@@ -1740,7 +1687,7 @@ namespace FishingIdle.Game.UI
             const float bottomH = 88f;
             var artTop = c.y + pad + 26f;
             var art = new Rect(x, artTop, w, Mathf.Max(30f, c.yMax - pad - bottomH - artTop));
-            GUI.DrawTexture(art, skin.White, ScaleMode.StretchToFill, true, 0, e.Discovered ? new Color(0.06f, 0.17f, 0.26f, 0.9f) : new Color(0.03f, 0.07f, 0.12f, 0.9f), 0, 8f);
+            ArcArt.Fill(skin, art, e.Discovered ? new Color(0.06f, 0.17f, 0.26f, 0.9f) : new Color(0.03f, 0.07f, 0.12f, 0.9f), 8f);
             PixelDraw.Fit(new Rect(art.x + 6f, art.y + 6f, art.width - 12f, art.height - 12f), Art.FishTexture(e.SpeciesId), e.Discovered ? Color.white : new Color(0.02f, 0.05f, 0.09f, 0.9f));
             if (!e.Discovered)
             {
@@ -1797,7 +1744,7 @@ namespace FishingIdle.Game.UI
             if (band.width > 1f)
             {
                 var gold = UiSkin.GoldLight;
-                GUI.DrawTexture(band, skin.White, ScaleMode.StretchToFill, true, 0, new Color(gold.r, gold.g, gold.b, 0.10f * Mathf.Sin(k * Mathf.PI)), 0, 6f);
+                ArcArt.Fill(skin, band, new Color(gold.r, gold.g, gold.b, 0.10f * Mathf.Sin(k * Mathf.PI)), 6f);
             }
         }
 

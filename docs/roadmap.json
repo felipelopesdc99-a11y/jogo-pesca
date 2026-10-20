@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-20T18:00:00Z",
+  "updated_at": "2026-10-20T20:00:00Z",
   "current_milestone": "M24",
   "statuses": [
     "TODO",
@@ -5298,24 +5298,26 @@
           "title": "Telas: Aquário, Enciclopédia e ficha do peixe",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (L7-01, L7-02, L3-07). Água e areia do Aquário, vidro e bolhas pelo código, álbum e cartas da Enciclopédia na pele ARC, aura em pixel pelo código, pedestal. Arte recebida em 20/10/2026 (L7-01, L7-02, L3-07): água e areia do Aquário e o pedestal em ArtePixel.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T03",
             "M25-T09"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T20:00:00Z",
+          "completion_notes": "Aquário, Enciclopédia e ficha do peixe em pixel e na pele ARC (A-189, TD-064): água e areia (L7-01, L7-02) na menor escala inteira que cobre o tanque, cortadas nas bordas; vidro e bolhas pelo código (ArcArt.Glass/Bubble); peixes sem girar (balanço de 1 pixel, virada por espelho); selinho \"C1\" nas miniaturas da gaveta (o \"Nv. X · C1\" não cabia com a VT323). HeroSheet (Aquário em cartas e Enciclopédia): água em 2 faixas, aura em pixel pelo código (disco pontilhado Bayer, tingido pela raridade), pedestal pixel a 2×, setas em disco pixel. Enciclopédia: abas ARC mais largas, página e cartas ARC com borda da raridade, verso da carta pelo código; as peças pintadas ui_enc_* e ui_aquarium_glass/bubble não são mais lidas (saem na M25-T17). Prévias PNG geradas. Compila; visual só verificado no Play."
         },
         {
           "id": "M25-T14",
           "title": "Telas: Mapa, Expedição, Arena e Boss Mundial",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (L3-06, L3-08, L3-09, L5-05, L7-03, L7-04, L7-11, L7-12, L7-14, L7-15). Mar e ilhas do Mapa, porto, carta e objetos da Expedição, fundo e pódio da Arena (VS pelo código), fundo, poses, impacto e bolhas do Boss (os dois últimos pelo código). Arte recebida em 20/10/2026: objetos da Expedição, ilhas, pódios, expedições, mar do Mapa, fundo da Arena, porto, carta, fundo e 4 poses do Boss em ArtePixel, completos.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T03",
             "M25-T04"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T20:00:00Z",
+          "completion_notes": "Mapa, Expedição, Arena e Boss Mundial em pixel (A-189, TD-064): mar do Mapa, carta náutica, porto, fundo da Arena e abismo do Boss em escala inteira cortando as bordas; ilhas pixel sem moldura desenhada (anel de 1 pixel dourado no mapa atual e turquesa no escolhido; ArcShape sem o teto de 18 pixels para o anel ficar redondo); barco e peixes espelhados em vez de girar; medalhão da Expedição com a paisagem em escala inteira sob o aro; chance numa pílula sobre o selo; bússola pixel com disco sob o anel; cartão da missão no painel ARC; \"VS\" pelo código (sai arena_vs), divisão da abertura em degraus, VS crescendo em passos inteiros, anel dourado no lugar dos raios girando; pódios numa escala inteira; Boss na maior escala inteira, poses alternadas, golpe em anel vermelho, impacto e bolhas pelo código. Compila; visual só verificado no Play."
         },
         {
           "id": "M25-T15",
@@ -5335,11 +5337,12 @@
           "title": "Retratos e avatares em pixel",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (L2-02). Retrato do pescador e os 6 avatares em 64 px, a 1× na barra de cima e 2× no Perfil, Ranking, Arena e escolha de avatar. Arte recebida em 20/10/2026 (L2-02): retrato e os 6 avatares em ArtePixel, completos.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T04"
           ],
-          "updated_at": "2026-10-20T03:00:00Z"
+          "updated_at": "2026-10-20T20:00:00Z",
+          "completion_notes": "Retrato do pescador e os 6 avatares em pixel (A-189, TD-064): AvatarArt desenha os bustos de 64 px em escala inteira apoiados na base da moldura (1× na barra de cima, 2× no Perfil e na Arena), a versão de 32 px quando 1× não cabe (Ranking) e, em moldura redonda, a versão já recortada em círculo de pixels sobre o disco azul-mar. Variantes _p, _r e _r_p geradas por tools/Arte/retratos_pixel.py. Compila; visual só verificado no Play."
         },
         {
           "id": "M25-T17",

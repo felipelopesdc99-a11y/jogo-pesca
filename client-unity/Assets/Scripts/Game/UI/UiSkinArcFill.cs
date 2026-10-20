@@ -87,7 +87,9 @@ namespace FishingIdle.Game.UI
             if (radius >= shortSide / 2f - 1f)
             {
                 round = true;
-                r = PillRadius(shortSide);
+                // Not capped at the pills' 18 art pixels: a big disc (a map island's ring, a medallion) stays a circle
+                // instead of a rounded square (M25-T14).
+                r = Mathf.Clamp(Mathf.FloorToInt(shortSide / (2f * ArcPixel)) - 1, 1, 48);
                 return;
             }
 

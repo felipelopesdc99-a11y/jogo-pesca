@@ -3,6 +3,27 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.25] — 20/10/2026
+
+Aquário, Enciclopédia, Mapa, Expedição, Arena, Boss Mundial e retratos em pixel e na pele ARC (M25-T13, T14 e T16,
+A-189, TD-064). Só apresentação: nenhuma regra, número, recompensa ou save mudou. Vem depois das telas de comércio,
+social e perfil (0.2.0-m24.24).
+
+### Alterado
+
+- **Aquário:** água e areia pixel em escala inteira cortando as bordas; vidro e bolhas desenhados pelo código; peixes
+  nadando sem girar (espelho e 1 pixel de balanço); "C1" num selinho nas miniaturas da gaveta.
+- **Ficha do peixe e Enciclopédia:** água em faixas, aura da raridade em pixel, pedestal pixel, setas em disco pixel;
+  abas, página e cartas do álbum na pele ARC, com o verso da carta desenhado pelo código.
+- **Mapa:** mar e ilhas pixel em escala inteira, anéis de 1 pixel no mapa atual e no escolhido, barco sem girar.
+- **Expedição:** carta náutica, porto, medalhão, selo e bússola em pixel; cartão da missão no painel ARC.
+- **Arena:** fundo em escala inteira, "VS" escrito pelo código, divisão da abertura em degraus, pódios em escala inteira,
+  anel dourado na vitória no lugar dos raios girando.
+- **Boss Mundial:** abismo e Boss em escala inteira, poses alternadas, golpe em anel vermelho, impacto e bolhas pelo
+  código.
+- **Retratos e avatares:** em escala inteira, versão de 32 px nas listas e versão em círculo de pixels nas molduras
+  redondas (`tools/Arte/retratos_pixel.py`).
+
 ## [0.2.0-m24.24] — 20/10/2026
 
 Telas de comércio, social e perfil em pixel e na pele ARC (M25-T15, A-188, TD-063). Só apresentação: nenhuma regra,

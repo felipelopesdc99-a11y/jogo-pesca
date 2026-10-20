@@ -55,6 +55,12 @@ O jogo lê `Resources/ArtePixel/` primeiro e cai na arte antiga do mesmo nome qu
 Os pedidos marcados `NO_JOGO` estão ligados: cena de pesca (Lote 1, Lote 6), pescador (L2-01), peixes (Lote 4),
 itens (Lote 5) e ícones (L3-01 a L3-04). Retratos, objetos e fundos das telas (L2-02, L3-05 a L3-09, Lote 7) já
 aparecem pela troca automática, mas as telas deles são ajustadas nas tarefas M25-T13 a T16 e seguem `RECEBIDO` até lá.
+Desde 20/10/2026 (M25-T13, T14 e T16, A-189) Aquário, Enciclopédia, Mapa, Expedição, Arena, Boss Mundial e os retratos
+estão `NO_JOGO`. Os retratos ganharam variantes geradas por `tools/Arte/retratos_pixel.py` (`_p` 32 × 32, `_r` recortado
+em círculo de pixels e `_r_p`), categoria (b). Passaram a ser desenhados pelo código e não são mais lidos (saem na
+M25-T17): `UI/ui_aquarium_glass`, `UI/ui_aquarium_bubble`, `UI/ui_enc_aura`, `UI/ui_enc_binder_tab`,
+`UI/ui_enc_album_page`, `UI/ui_enc_card_frame`, `UI/ui_enc_card_back`, `UI/ui_exp_moldura_carta`, `UI/arena_vs`,
+`Boss/boss_impacto` e `Boss/boss_bolhas`.
 Visual só fica verificado quando o proprietário apertar Play.
 
 **Gerado pelo código (`tools/Arte/cena_pixel.py`):**
@@ -104,7 +110,7 @@ O resto das animações do pescador e os 7 retratos (o do pescador e os 6 avatar
 | Pedido | Folha | Grade | Célula | Arquivos (em ordem) | Status |
 |---|---|---|---|---|---|
 | L2-01 · Pescador: fisgada, recolher, mostrar e escapou (8 quadros) | `L2-01_pescador_animacao_b.png` | 4×2 | 64×64 | `Cena/pescador_recolhe_1`<br>`Cena/pescador_recolhe_2`<br>`Cena/pescador_recolhe_3`<br>`Cena/pescador_recolhe_4`<br>`Cena/pescador_fisgada_1`<br>`Cena/pescador_fisgada_2`<br>`Cena/pescador_mostra_1`<br>`Cena/pescador_escapou_1` | NO_JOGO (a 2ª linha veio com o arremesso: gravado como arremesso) |
-| L2-02 · Retrato do pescador e 6 avatares | `L2-02_retratos.png` | 4×2 | 64×64 | `Cena/retrato`<br>`Avatares/avatar_01`<br>`Avatares/avatar_02`<br>`Avatares/avatar_03`<br>`Avatares/avatar_04`<br>`Avatares/avatar_05`<br>`Avatares/avatar_06` | RECEBIDO |
+| L2-02 · Retrato do pescador e 6 avatares | `L2-02_retratos.png` | 4×2 | 64×64 | `Cena/retrato`<br>`Avatares/avatar_01`<br>`Avatares/avatar_02`<br>`Avatares/avatar_03`<br>`Avatares/avatar_04`<br>`Avatares/avatar_05`<br>`Avatares/avatar_06` | NO_JOGO |
 
 ### Lote 3 · Interface: ícones e objetos
 
@@ -117,10 +123,10 @@ Os ícones coloridos em pixel e os objetos das telas. Molduras, painéis, pílul
 | L3-03 · Ícones pequenos (2 de 3) | `L3-03_icones_pequenos_2.png` | 4×3 | 24×24 | `Icones/ico_dolar`<br>`Icones/ico_energia`<br>`Icones/ico_especies`<br>`Icones/ico_estrela`<br>`Icones/ico_expedicao`<br>`Icones/ico_honra`<br>`Icones/ico_inicio`<br>`Icones/ico_isca`<br>`Icones/ico_local`<br>`Icones/ico_loja`<br>`Icones/ico_mapa`<br>`Icones/ico_mercado` | NO_JOGO |
 | L3-04 · Ícones pequenos (3 de 3) | `L3-04_icones_pequenos_3.png` | 4×3 | 24×24 | `Icones/ico_moeda`<br>`Icones/ico_nivel`<br>`Icones/ico_ondas`<br>`Icones/ico_opcoes`<br>`Icones/ico_peixe`<br>`Icones/ico_perfil`<br>`Icones/ico_pesca`<br>`Icones/ico_ranking`<br>`Icones/ico_relogio`<br>`Icones/ico_trocar`<br>`Icones/ico_vara`<br>`Icones/ico_vender` | NO_JOGO |
 | L3-05 · Ranking: coroa, troféu e escudos | `L3-05_ranking_objetos.png` | 3×2 | 48×48 | `UI/ui_rk_coroa`<br>`UI/ui_rk_trofeu`<br>`UI/ui_rk_escudo_ouro`<br>`UI/ui_rk_escudo_prata`<br>`UI/ui_rk_escudo_bronze`<br>`UI/ui_rk_escudo_azul` | RECEBIDO |
-| L3-06 · Expedição: objetos | `L3-06_expedicao_objetos.png` | 3×2 | 48×48 | `UI/ui_exp_medalhao`<br>`UI/ui_exp_selo`<br>`UI/ui_exp_rosa`<br>`UI/ui_exp_bussola`<br>`UI/ui_exp_marcador`<br>`UI/ui_exp_pier` | RECEBIDO |
-| L3-07 · Loja, Mapa, Clã e Passe: objetos | `L3-07_loja_mapa_cla.png` | 4×2 | 48×48 | `UI/ui_loja_caixa`<br>`UI/ui_loja_gancho`<br>`UI/ui_loja_boia`<br>`UI/ui_map_boat`<br>`UI/cla_brasao`<br>`UI/passe_premium_selo`<br>`UI/ui_enc_pedestal` | RECEBIDO |
-| L3-08 · Ilhas da tela do Mapa (uma por mapa) | `L3-08_ilhas_mapa.png` | 5×2 | 64×64 | `UI/ui_map_island_01`<br>`UI/ui_map_island_02`<br>`UI/ui_map_island_03`<br>`UI/ui_map_island_04`<br>`UI/ui_map_island_05`<br>`UI/ui_map_island_06`<br>`UI/ui_map_island_07`<br>`UI/ui_map_island_08`<br>`UI/ui_map_island_09`<br>`UI/ui_map_island_10` | RECEBIDO |
-| L3-09 · Pódios da Arena | `L3-09_podios_arena.png` | 3×1 | 64×64 | `Arena/podio_1`<br>`Arena/podio_2`<br>`Arena/podio_3` | RECEBIDO |
+| L3-06 · Expedição: objetos | `L3-06_expedicao_objetos.png` | 3×2 | 48×48 | `UI/ui_exp_medalhao`<br>`UI/ui_exp_selo`<br>`UI/ui_exp_rosa`<br>`UI/ui_exp_bussola`<br>`UI/ui_exp_marcador`<br>`UI/ui_exp_pier` | NO_JOGO |
+| L3-07 · Loja, Mapa, Clã e Passe: objetos | `L3-07_loja_mapa_cla.png` | 4×2 | 48×48 | `UI/ui_loja_caixa`<br>`UI/ui_loja_gancho`<br>`UI/ui_loja_boia`<br>`UI/ui_map_boat`<br>`UI/cla_brasao`<br>`UI/passe_premium_selo`<br>`UI/ui_enc_pedestal` | NO_JOGO |
+| L3-08 · Ilhas da tela do Mapa (uma por mapa) | `L3-08_ilhas_mapa.png` | 5×2 | 64×64 | `UI/ui_map_island_01`<br>`UI/ui_map_island_02`<br>`UI/ui_map_island_03`<br>`UI/ui_map_island_04`<br>`UI/ui_map_island_05`<br>`UI/ui_map_island_06`<br>`UI/ui_map_island_07`<br>`UI/ui_map_island_08`<br>`UI/ui_map_island_09`<br>`UI/ui_map_island_10` | NO_JOGO |
+| L3-09 · Pódios da Arena | `L3-09_podios_arena.png` | 3×1 | 64×64 | `Arena/podio_1`<br>`Arena/podio_2`<br>`Arena/podio_3` | NO_JOGO |
 
 ### Lote 4 · Peixes por mapa
 
@@ -192,21 +198,21 @@ Fundos e faixas das telas (Aquário, Mapa, Arena, Bem-vindo, Caixa, Mercado, Pas
 
 | Pedido | Folha | Grade | Célula | Arquivos (em ordem) | Status |
 |---|---|---|---|---|---|
-| L7-01 · Aquário: água | `L7-01_aquario_agua.png` | 1×1 | 384×256 | `UI/ui_aquarium_bg` | RECEBIDO |
-| L7-02 · Aquário: areia | `L7-02_aquario_areia.png` | 1×1 | 384×64 | `UI/ui_aquarium_sand` | RECEBIDO |
-| L7-03 · Mapa: mar visto de cima | `L7-03_mapa_mar.png` | 1×1 | 384×256 | `UI/ui_map_sea_bg` | RECEBIDO |
-| L7-04 · Arena: fundo | `L7-04_arena_fundo.png` | 1×1 | 384×256 | `UI/arena_fundo` | RECEBIDO |
+| L7-01 · Aquário: água | `L7-01_aquario_agua.png` | 1×1 | 384×256 | `UI/ui_aquarium_bg` | NO_JOGO |
+| L7-02 · Aquário: areia | `L7-02_aquario_areia.png` | 1×1 | 384×64 | `UI/ui_aquarium_sand` | NO_JOGO |
+| L7-03 · Mapa: mar visto de cima | `L7-03_mapa_mar.png` | 1×1 | 384×256 | `UI/ui_map_sea_bg` | NO_JOGO |
+| L7-04 · Arena: fundo | `L7-04_arena_fundo.png` | 1×1 | 384×256 | `UI/arena_fundo` | NO_JOGO |
 | L7-05 · Bem-vindo de volta | `L7-05_bemvindo.png` | 1×1 | 384×256 | `UI/bemvindo_cena` | RECEBIDO |
 | L7-06 · Caixa de Pesca: faixa | `L7-06_caixa_faixa.png` | 1×1 | 384×256 | `UI/caixa_cena` | RECEBIDO |
 | L7-07 · Mercado: faixa | `L7-07_mercado_faixa.png` | 1×1 | 384×256 | `UI/merc_feira_porto` | RECEBIDO |
 | L7-08 · Passe: faixa | `L7-08_passe_faixa.png` | 1×1 | 384×256 | `UI/passe_faixa` | RECEBIDO |
 | L7-09 · Clã: fundo | `L7-09_cla_fundo.png` | 1×1 | 384×256 | `UI/cla_fundo` | RECEBIDO |
 | L7-10 · Eventos: quadro de avisos | `L7-10_eventos_quadro.png` | 1×1 | 384×256 | `UI/eventos_quadro` | RECEBIDO |
-| L7-11 · Expedição: porto | `L7-11_expedicao_porto.png` | 1×1 | 384×256 | `UI/ui_exp_porto` | RECEBIDO |
-| L7-12 · Expedição: carta náutica | `L7-12_expedicao_carta.png` | 1×1 | 384×256 | `UI/ui_exp_carta` | RECEBIDO |
+| L7-11 · Expedição: porto | `L7-11_expedicao_porto.png` | 1×1 | 384×256 | `UI/ui_exp_porto` | NO_JOGO |
+| L7-12 · Expedição: carta náutica | `L7-12_expedicao_carta.png` | 1×1 | 384×256 | `UI/ui_exp_carta` | NO_JOGO |
 | L7-13 · Ranking: palco | `L7-13_ranking_palco.png` | 1×1 | 384×80 | `UI/ui_rk_palco` | RECEBIDO |
-| L7-14 · Boss: fundo do abismo | `L7-14_boss_fundo.png` | 1×1 | 384×256 | `Boss/boss_fundo_abismo` | RECEBIDO |
-| L7-15 · Boss Mundial: poses | `L7-15_boss_poses.png` | 2×2 | 160×112 | `Boss/boss_pose_parado`<br>`Boss/boss_pose_respira`<br>`Boss/boss_pose_ataque`<br>`Boss/boss_mundial` | RECEBIDO |
+| L7-14 · Boss: fundo do abismo | `L7-14_boss_fundo.png` | 1×1 | 384×256 | `Boss/boss_fundo_abismo` | NO_JOGO |
+| L7-15 · Boss Mundial: poses | `L7-15_boss_poses.png` | 2×2 | 160×112 | `Boss/boss_pose_parado`<br>`Boss/boss_pose_respira`<br>`Boss/boss_pose_ataque`<br>`Boss/boss_mundial` | NO_JOGO |
 
 ## Inventário da arte atual
 

@@ -727,8 +727,8 @@ namespace FishingIdle.Game.UI
         /// <summary><see cref="Title"/> centred on one line.</summary>
         public GUIStyle TitleCenter => _titleCenter ?? (_titleCenter = Track(new GUIStyle(Title) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip }));
 
-        /// <summary>The gold "VS" between the two formations.</summary>
-        public GUIStyle VsMark => _vsMark ?? (_vsMark = GoldDisplay(46));
+        /// <summary>The gold "VS" between the two formations (Press Start 2P at 32: fits the 76 px disc, M25-T14).</summary>
+        public GUIStyle VsMark => _vsMark ?? (_vsMark = GoldDisplay(DisplaySize));
 
         /// <summary>The big gold "VS" of the battle intro.</summary>
         public GUIStyle VsDisplay => _vsDisplay ?? (_vsDisplay = GoldDisplay(96));

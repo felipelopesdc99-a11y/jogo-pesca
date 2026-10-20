@@ -135,7 +135,7 @@ namespace FishingIdle.Game.UI
             using var night = UiSkin.NightScope();
             GUI.Box(rect, GUIContent.none, skin.PanelSolid);
             skin.Inset(rect);
-            WorldBossScene.DrawBackground(rect, view.Open);
+            WorldBossScene.DrawBackground(skin, rect, view.Open);
             var half = rect.width / 2f;
             var left = new Rect(rect.x + 16f, rect.y + 12f, half - 70f, rect.height - 24f);
             var right = new Rect(rect.x + half + 54f, rect.y + 12f, half - 70f, rect.height - 24f);
@@ -149,8 +149,7 @@ namespace FishingIdle.Game.UI
                 var d = 76f;
                 var disc = new Rect(cx - d / 2f, rect.center.y - d / 2f, d, d);
                 skin.DrawGlow(disc, UiSkin.Gold, 0.35f);
-                GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.96f), 0, d / 2f);
-                GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Gold, 2f, d / 2f);
+                skin.FramedDisc(disc, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.96f), UiSkin.FrameGold);
                 GUI.Label(disc, GameTexts.Arena.VsMark, skin.VsMark);
             }
 
@@ -158,7 +157,7 @@ namespace FishingIdle.Game.UI
             if (!view.Open)
             {
                 var band = new Rect(rect.x + 20f, rect.yMax - 64f, rect.width - 40f, 52f);
-                GUI.DrawTexture(band, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.88f), 0, 10f);
+                ArcArt.Fill(skin, band, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.88f), 10f);
                 skin.TitleLabel(new Rect(band.x, band.y + 4f, band.width, 26f), GameTexts.WorldBoss.StartsIn(Format.Countdown(view.SecondsToStart)), skin.TitleCenter);
                 GUI.Label(new Rect(band.x, band.y + 30f, band.width, UiSkin.SmallLine), GameTexts.WorldBoss.Daily(StartTime(view), view.DurationMinutes) + " · " + GameTexts.WorldBoss.ClosedHint, skin.SmallMutedCenter);
             }
@@ -187,7 +186,7 @@ namespace FishingIdle.Game.UI
                 var cell = new Rect(x + 6f, y + 2f, colW - 12f, rowH - 4f);
                 if (fish == null)
                 {
-                    GUI.DrawTexture(new Rect(cell.x + 10f, cell.y + 6f, cell.width - 20f, cell.height - 12f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.04f), 0, 8f);
+                    ArcArt.Fill(skin, new Rect(cell.x + 10f, cell.y + 6f, cell.width - 20f, cell.height - 12f), new Color(1f, 1f, 1f, 0.04f), 8f);
                     continue;
                 }
 
@@ -220,8 +219,8 @@ namespace FishingIdle.Game.UI
                 var d = Mathf.Min(drawn.width, drawn.height) - 8f;
                 var disc = new Rect(drawn.center.x - d / 2f, drawn.center.y - d / 2f, d, d);
                 skin.DrawGlow(disc, UiSkin.Danger, view.Open ? 0.45f : 0.2f);
-                GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.95f), 0, d / 2f);
-                GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Danger, 2f, d / 2f);
+                ArcArt.Fill(skin, disc, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.95f), d / 2f);
+                ArcArt.Line(skin, disc, UiSkin.Danger, d / 2f);
                 skin.DrawIcon(new Rect(disc.center.x - d * 0.25f, disc.center.y - d * 0.25f, d * 0.5f, d * 0.5f), Icons.Attack, UiSkin.Danger);
             }
 
@@ -402,7 +401,7 @@ namespace FishingIdle.Game.UI
             foreach (var row in view.Ranking)
             {
                 var line = new Rect(x, y, w, 30f);
-                GUI.DrawTexture(line, skin.White, ScaleMode.StretchToFill, true, 0, row.IsPlayer ? new Color(UiSkin.Gold.r, UiSkin.Gold.g, UiSkin.Gold.b, 0.14f) : new Color(1f, 1f, 1f, 0.04f), 0, 6f);
+                ArcArt.Fill(skin, line, row.IsPlayer ? new Color(UiSkin.Gold.r, UiSkin.Gold.g, UiSkin.Gold.b, 0.14f) : new Color(1f, 1f, 1f, 0.04f), 6f);
                 GUI.Label(new Rect(line.x + 8f, line.y + 5f, 34f, 20f), GameTexts.WorldBoss.DollarsRank(row.Rank), skin.SmallBold);
                 var name = row.Name + (row.IsPlayer ? " " + GameTexts.WorldBoss.You : string.Empty);
                 GUI.Label(new Rect(line.x + 44f, line.y + 5f, w - 44f - 110f, 20f), FishCard.Fit(name, skin.Small, w - 44f - 110f), skin.Small);

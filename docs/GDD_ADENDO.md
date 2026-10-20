@@ -3822,3 +3822,41 @@ nenhuma regra, número, recompensa ou save mudou.
 - **Clã:** o brasão pixel na maior escala inteira, com o nome do clã na faixa clara dele quando cabe; o botão de comprar
   vaga usa "Vaga · N Dólares" quando "Comprar vaga · N Dólares" não cabe.
 - **Missões e Ranking:** Moedas, Conchas e Dólares a 1× (24 px).
+
+### A-189 · Aquário, Enciclopédia, Mapa, Expedição, Arena, Boss Mundial e retratos em pixel (20/10/2026)
+
+**Seção do GDD:** telas · `docs/ART_BIBLE_PIXEL.md` 3.2, 3.3, 4.9, 4.10 e 7 · M25-T13, T14 e T16 · **Situação:** no jogo
+(compila; verificado só no Play)
+
+Só apresentação: nenhuma regra, número, recompensa ou save mudou; as telas continuam organizadas como antes.
+
+- **Aquário:** a água e a areia pixel na menor escala inteira que cobre o tanque, cortadas nas bordas (a luz da superfície
+  fica à vista; a areia começa na linha do fundo e acompanha a gaveta); o vidro do tanque, da ficha e da gaveta e as
+  bolhas são desenhados pelo código (bolha = anel de pixels com um ponto de luz, 4 ou 6 pixels de arte, sobe balançando
+  em pixels inteiros). Os peixes nadam sem girar: o balanço vira 1 pixel para cima ou para baixo e a virada vira espelho.
+  Nas miniaturas da gaveta a posição no Cardume ("C1") passou para um selinho no canto, porque "Nv. 12 · C1" não cabe
+  com a VT323.
+- **Ficha do peixe (Aquário em cartas e Enciclopédia):** fundo de água em duas faixas com uma linha pontilhada entre elas,
+  aura da raridade em pixel (disco pontilhado em padrão ordenado, mais denso no meio, na cor da raridade que o serviço
+  informa, sempre em escala inteira), pedestal pixel a 2× sob o peixe, setas ‹ › em disco pixel com a seta pixel.
+- **Enciclopédia:** abas do álbum na pele ARC (a aberta elevada com a linha dourada, as outras no campo), um pouco mais
+  largas para caber "Estuário das Marés 6/10"; a página é o cartão com linha dourada escura; as cartas são cartões ARC com
+  borda na cor da raridade, a escolhida com o contorno ouro por fora; a carta ainda não achada é o verso desenhado pelo
+  código (campo escuro com um bolso pontilhado na cor da raridade). Saem a aba, a página, a moldura e o verso pintados.
+- **Mapa:** o mar visto de cima em escala inteira; as ilhas pixel já trazem a borda de pedra, então perdem a moldura
+  desenhada: o mapa atual ganha o anel dourado de 1 pixel que pulsa devagar e o escolhido o anel turquesa; o número em
+  disco pixel; nome e estado em pílulas; rota em pontos quadrados; o barco não gira (indo para a esquerda, espelha).
+- **Expedição:** a carta náutica e o porto do relatório em escala inteira; o medalhão pixel com a paisagem em escala
+  inteira num quadrado sob o furo (os cantos ficam escondidos pelo aro: pixel art não é recortada por círculo suave); a
+  chance de peixe numa pílula sobre a borda de baixo do selo (o peixe desenhado no selo fica à vista); a bússola pixel
+  com um disco escuro sob o anel de progresso e o tempo; o cartão da missão é o painel ARC (sai a moldura pintada).
+- **Arena:** o fundo de ruínas em escala inteira; o "VS" é só texto do código em Press Start 2P com sombra dura (sai o
+  emblema pintado), em disco ARC entre as formações; a divisão azul e vermelha da abertura em degraus de pixel; o "VS"
+  da abertura cresce em passos inteiros (3×, 2×, 1×); na vitória, no lugar dos raios girando, o anel dourado pisca;
+  pódios pixel numa escala inteira comum.
+- **Boss Mundial:** o abismo em escala inteira; o Boss na maior escala inteira que cabe (3× na janela grande), sem girar:
+  as poses se alternam (parado, respira, ataque) em vez de se misturar, balanço e investida em pixels inteiros, o golpe
+  é um anel vermelho de 1 pixel, e o respingo do impacto e as bolhas são desenhados pelo código.
+- **Retratos e avatares:** o retrato do pescador e os 6 avatares (64 px) em escala inteira (1× na barra de cima, 2× no
+  Perfil e na Arena, a versão de 32 px nas linhas do Ranking), sempre apoiados na base da moldura; em moldura redonda
+  usa a versão já recortada em círculo de pixels, sobre o disco azul-mar.

@@ -456,6 +456,9 @@ Cada passo está em `SaveMigrations.Upgrade`.
     símbolos (`Icons.IsSymbol`), que são brancos e tingíveis (`tools/Arte/cena_pixel.py simbolos`). Fundos e faixas
     das telas usam `PixelDraw.Cover(rect, tex, cor, focoX, focoY)` (menor escala inteira que cobre, cortando as bordas;
     `CoverRect` só faz a conta) — `WindowFrame.PhotoArt` e `CropMap` já passam por ele (TD-063).
+    `UI/ArcArt.cs` (TD-064) tem o resto das peças pixel das telas: `Fit` com espelho (nada em pixel gira), `Glass`,
+    `Diagonal`, a bolha e a aura feitas pelo código. Retratos e avatares: `AvatarArt` usa a variante `_r` (círculo de
+    pixels) em moldura redonda e a `_p` (32 px) quando 1× não cabe, geradas por `tools/Arte/retratos_pixel.py`.
   - **Câmera pixel (M25-T05, TD-059):** `Scene/PixelCamera` cria uma segunda câmera que desenha o mundo numa
     `RenderTexture` de 216 px de altura (largura pela janela, par; Point) e, no `OnRenderImage` da câmera principal
     (que passa a não desenhar nada), põe a grade na tela pela maior escala inteira, ou pela escala inteira de cima

@@ -6,7 +6,7 @@ namespace FishingIdle.Game.UI
 {
     /// <summary>
     /// The animated boss of the "Boss Mundial" window (M24-T56, addendum A-178): the abyss behind the stage, the idle pose
-    /// cross-fading into the breathing pose, a slow sway in the water, a few bubbles rising, and on each Cardume attack the
+    /// alternating with the breathing pose, a slow sway in the water, a few bubbles rising, and on each Cardume attack the
     /// attack pose with a short lunge, a red flash and a water burst on its body.
     /// </summary>
     /// <remarks>
@@ -19,14 +19,14 @@ namespace FishingIdle.Game.UI
     internal sealed class WorldBossScene
     {
         private const string IdleArt = "Boss/boss_pose_parado", BreathArt = "Boss/boss_pose_respira", AttackArt = "Boss/boss_pose_ataque";
-        private const string AbyssArt = "Boss/boss_fundo_abismo", ImpactArt = "Boss/boss_impacto", BubblesArt = "Boss/boss_bolhas";
+        private const string AbyssArt = "Boss/boss_fundo_abismo";
 
         // Timings, in seconds (presentation only).
-        private const float BreathCycle = 2.4f, SwayCycle = 3.6f, TiltCycle = 5.2f;
+        private const float BreathCycle = 2.4f, SwayCycle = 3.6f;
         private const float AttackSeconds = 0.6f, ImpactSeconds = 0.5f, FlashSeconds = 0.22f, ShakeSeconds = 0.15f;
 
         // Sizes, in pixels or degrees.
-        private const float SwayPixels = 4f, TiltDegrees = 1.6f, LungePixels = 16f, ShakePixels = 2.5f;
+        private const float SwayPixels = 4f, LungePixels = 16f, ShakePixels = 2.5f;
         private const int BubbleCount = 4;
 
         private static readonly Color ClosedTint = new Color(0.5f, 0.56f, 0.66f, 1f);
@@ -51,8 +51,11 @@ namespace FishingIdle.Game.UI
         /// <summary>Forgets a running attack (the window was reopened).</summary>
         public void Reset() => _attackAt = -100f;
 
-        /// <summary>The abyss behind the whole stage, cropped to fit, a little darker when the event is closed.</summary>
-        public static bool DrawBackground(Rect rect, bool open)
+        /// <summary>
+        /// The abyss behind the whole stage at a whole scale, cropped at the edges (the floor kept in sight), a little
+        /// darker when the event is closed.
+        /// </summary>
+        public static bool DrawBackground(UiSkin skin, Rect rect, bool open)
         {
             var abyss = ArtAssets.Texture(AbyssArt);
             if (abyss == null)
@@ -60,9 +63,9 @@ namespace FishingIdle.Game.UI
                 return false;
             }
 
-            GUI.DrawTexture(rect, abyss, ScaleMode.ScaleAndCrop, false, 0, Color.white, 0, 10f);
+            ArcArt.Cover(rect, abyss, Color.white, 0.5f, 0.7f);
             var veil = UiSkin.Night;
-            GUI.DrawTexture(rect, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0, new Color(veil.r, veil.g, veil.b, open ? 0.18f : 0.45f), 0, 10f);
+            ArcArt.Fill(skin, rect, new Color(veil.r, veil.g, veil.b, open ? 0.18f : 0.45f), 0f);
             return true;
         }
 
@@ -70,6 +73,11 @@ namespace FishingIdle.Game.UI
         /// Draws the boss inside <paramref name="body"/>. During the event it reacts to attacks; outside it, it only breathes,
         /// darker. Returns false when the pose files are missing, so the window keeps its previous drawing.
         /// </summary>
+        /// <remarks>
+        /// In pixel art (Art Bible 3.2, 4.9, 4.10, 5) the boss is drawn at the largest whole scale that fits (3× in the big
+        /// window), never turned: the poses alternate instead of cross-fading, the sway and the lunge move it in whole art
+        /// pixels, the hit is a one-pixel red outline flash, and the water burst and the bubbles are drawn by the code.
+        /// </remarks>
         public bool DrawBoss(UiSkin skin, Rect body, bool open)
         {
             Load();
@@ -81,97 +89,118 @@ namespace FishingIdle.Game.UI
             var now = Time.unscaledTime;
             var since = now - _attackAt;
             var attacking = open && since >= 0f && since < AttackSeconds;
+            var pixel = ArtAssets.IsPixel(_poses[0].Texture);
 
-            // One width for every pose (the tallest pose still fits the height), centred on the same point.
-            var width = Mathf.Min(body.width, body.height * _minAspect) * 0.96f;
+            // The size of one art pixel on the canvas: a whole number of screen pixels (pixel art) or a free scale.
+            var unit = PixelDraw.ScreenScale();
+            var tex0 = _poses[0].Texture;
+            float px;
+            if (pixel)
+            {
+                var k = Mathf.Max(1, PixelDraw.WholeScale(new Rect(0f, 0f, body.width * 0.96f, body.height * 0.96f), tex0, unit));
+                px = k / unit;
+            }
+            else
+            {
+                var width0 = Mathf.Min(body.width, body.height * _minAspect) * 0.96f;
+                px = width0 / Mathf.Max(1f, _poses[0].Bounds.width * tex0.width);
+            }
+
+            var width = _poses[0].Bounds.width * tex0.width * px;
             var sway = Mathf.Sin(now * 2f * Mathf.PI / SwayCycle) * SwayPixels;
-            var tilt = Mathf.Sin(now * 2f * Mathf.PI / TiltCycle + 0.7f) * TiltDegrees;
             var lunge = attacking ? -Mathf.Sin(since / AttackSeconds * Mathf.PI) * LungePixels : 0f;
             var shake = open && since >= 0f && since < ShakeSeconds ? Mathf.Sin(since * 90f) * ShakePixels : 0f;
             var anchor = new Vector2(body.center.x + lunge + shake, body.center.y + sway);
+            if (pixel)
+            {
+                // Moves in whole art pixels.
+                anchor = new Vector2(Mathf.Round(anchor.x / px) * px, Mathf.Round(anchor.y / px) * px);
+            }
 
             DrawBubbles(body, width, now, open, false);
 
-            // Breathing: holds the idle pose, cross-fades into the breathing one and back, every BreathCycle seconds.
+            // Breathing: the idle pose, then the breathing one for the middle of every BreathCycle seconds.
             var p = Mathf.Repeat(now, BreathCycle) / BreathCycle;
-            var triangle = p < 0.5f ? p * 2f : 2f - p * 2f;
-            var breath = _poses[1].Texture != null ? Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.35f, 0.65f, triangle)) : 0f;
-
-            // Attack: fades in fast, holds, fades out at the end.
-            var attack = 0f;
-            if (attacking && _poses[2].Texture != null)
-            {
-                attack = Mathf.Min(Mathf.Clamp01(since / 0.06f), Mathf.Clamp01((AttackSeconds - since) / 0.14f));
-            }
+            var breathing = _poses[1].Texture != null && p > 0.4f && p < 0.75f;
+            var pose = attacking && _poses[2].Texture != null ? _poses[2] : breathing ? _poses[1] : _poses[0];
 
             var flash = open && since >= 0f && since < FlashSeconds ? 1f - since / FlashSeconds : 0f;
             var tint = open ? Color.Lerp(Color.white, FlashTint, flash) : ClosedTint;
+            var drawn = DrawPose(pose, anchor, px, tint, pixel);
             if (flash > 0f)
             {
-                var glow = new Rect(anchor.x - width * 0.35f, anchor.y - width * 0.22f, width * 0.7f, width * 0.44f);
-                skin.DrawGlow(glow, UiSkin.Danger, 0.55f * flash);
+                // The hit: a one-pixel red ring around the body, short (Art Bible 4.10).
+                skin.PixelGlow(new Rect(drawn.x + drawn.width * 0.2f, drawn.y + drawn.height * 0.25f, drawn.width * 0.6f, drawn.height * 0.5f), UiSkin.Danger, flash);
             }
-
-            var matrix = GUI.matrix;
-            GUIUtility.RotateAroundPivot(tilt, anchor);
-            var idle = 1f - attack;
-            var idleAlpha = Mathf.Min(1f, 2f * (1f - breath)) * idle;
-            var breathAlpha = Mathf.Min(1f, 2f * breath) * idle;
-            DrawPose(_poses[0], anchor, width, tint, idleAlpha);
-            DrawPose(_poses[1], anchor, width, tint, breathAlpha);
-            DrawPose(_poses[2], anchor, width, tint, attack);
-            GUI.matrix = matrix;
 
             if (open && since >= 0f && since < ImpactSeconds)
             {
-                DrawImpact(anchor, width, since / ImpactSeconds);
+                DrawImpact(skin, anchor, width, since / ImpactSeconds);
             }
 
             DrawBubbles(body, width, now, open, true);
             return true;
         }
 
-        private static void DrawPose(Pose pose, Vector2 anchor, float width, Color tint, float alpha)
+        /// <summary>One pose with its opaque area centred on <paramref name="anchor"/>, <paramref name="px"/> canvas units per art pixel.</summary>
+        private static Rect DrawPose(Pose pose, Vector2 anchor, float px, Color tint, bool pixel)
         {
-            if (pose.Texture == null || alpha <= 0.001f)
-            {
-                return;
-            }
-
             var tw = (float)pose.Texture.width;
             var th = (float)pose.Texture.height;
-            var scale = width / Mathf.Max(1f, pose.Bounds.width * tw);
-            var full = new Vector2(tw * scale, th * scale);
+            var full = new Vector2(tw * px, th * px);
             var x = anchor.x - pose.Bounds.center.x * full.x;
             var y = anchor.y - pose.Bounds.center.y * full.y;
-            GUI.DrawTexture(new Rect(x, y, full.x, full.y), pose.Texture, ScaleMode.StretchToFill, true, 0, new Color(tint.r, tint.g, tint.b, tint.a * alpha), 0, 0);
+            if (pixel)
+            {
+                // The corner on a whole art pixel of the screen, so the three poses line up.
+                var unit = PixelDraw.ScreenScale();
+                x = Mathf.Round(x * unit) / unit;
+                y = Mathf.Round(y * unit) / unit;
+            }
+
+            var rect = new Rect(x, y, full.x, full.y);
+            GUI.DrawTexture(rect, pose.Texture, ScaleMode.StretchToFill, true, 0, tint, 0, 0);
+            return rect;
         }
 
-        /// <summary>The water burst on the boss's body (a little behind the head): grows 0,6→1,1 and fades out.</summary>
-        private static void DrawImpact(Vector2 anchor, float width, float u)
+        /// <summary>
+        /// The water burst on the boss's body (a little behind the head), drawn by the code: eight pixel drops thrown
+        /// outwards from a light centre, in whole art pixels, fading out.
+        /// </summary>
+        private static void DrawImpact(UiSkin skin, Vector2 anchor, float width, float u)
         {
-            var impact = ArtAssets.Texture(ImpactArt);
-            if (impact == null)
+            if (Event.current.type != EventType.Repaint)
             {
                 return;
             }
 
+            const int p = UiSkin.ArcPixel;
             var ease = 1f - (1f - u) * (1f - u);
-            var size = width * 0.42f * Mathf.Lerp(0.6f, 1.1f, ease);
+            var reach = width * 0.16f * Mathf.Lerp(0.3f, 1f, ease);
             var alpha = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.3f, 1f, u));
             var center = new Vector2(anchor.x - width * 0.14f, anchor.y + width * 0.02f);
-            PixelDraw.Fit(new Rect(center.x - size / 2f, center.y - size / 2f, size, size), impact, new Color(1f, 1f, 1f, alpha));
-        }
-
-        /// <summary>A few bubble groups rising slowly around the boss, faint; one passes in front of it.</summary>
-        private void DrawBubbles(Rect body, float width, float now, bool open, bool front)
-        {
-            var bubbles = ArtAssets.Texture(BubblesArt);
-            if (bubbles == null)
+            var foam = new Color(0.92f, 0.98f, 1f, alpha);
+            var water = new Color(0.50f, 0.85f, 0.95f, alpha);
+            for (var i = 0; i < 8; i++)
             {
-                return;
+                var angle = i * Mathf.PI / 4f + 0.2f;
+                var d = reach * (i % 2 == 0 ? 1f : 0.7f);
+                var drop = p * (i % 2 == 0 ? 3 : 2);
+                var x = Mathf.Round((center.x + Mathf.Cos(angle) * d) / p) * p;
+                var y = Mathf.Round((center.y + Mathf.Sin(angle) * d) / p) * p;
+                GUI.DrawTexture(new Rect(x - drop / 2f, y - drop / 2f, drop, drop), skin.White, ScaleMode.StretchToFill, true, 0, i % 2 == 0 ? foam : water, 0, 0);
             }
 
+            if (u < 0.35f)
+            {
+                var core = p * 4;
+                GUI.DrawTexture(UiSkin.Snap(new Rect(center.x - core / 2f, center.y - core / 2f, core, core)), skin.White, ScaleMode.StretchToFill, true, 0, foam, 0, 0);
+            }
+        }
+
+        /// <summary>A few bubble groups rising slowly around the boss, faint; one passes in front of it (drawn by the code).</summary>
+        private void DrawBubbles(Rect body, float width, float now, bool open, bool front)
+        {
             var travel = body.height + 40f;
             for (var i = 0; i < BubbleCount; i++)
             {
@@ -185,13 +214,17 @@ namespace FishingIdle.Game.UI
                 var y = body.yMax - rise;
                 var x = body.center.x + _bubbleX[i] * width * 0.5f + Mathf.Sin(now * 0.9f + i * 1.7f) * 6f;
                 var k = rise / travel;
-                var alpha = (open ? 0.32f : 0.2f) * Mathf.Clamp01(k / 0.15f) * Mathf.Clamp01((1f - k) / 0.25f);
+                var alpha = (open ? 0.55f : 0.35f) * Mathf.Clamp01(k / 0.15f) * Mathf.Clamp01((1f - k) / 0.25f);
                 if (alpha <= 0.001f || y - size < body.y - 20f)
                 {
                     continue;
                 }
 
-                PixelDraw.Fit(new Rect(x - size / 2f, y - size, size, size), bubbles, new Color(1f, 1f, 1f, alpha));
+                // A group of three: one big, two small around it.
+                var color = new Color(0.85f, 0.97f, 1f, alpha);
+                ArcArt.Bubble(new Vector2(x, y - size * 0.5f), true, color);
+                ArcArt.Bubble(new Vector2(x - size * 0.3f, y - size * 0.1f), false, color);
+                ArcArt.Bubble(new Vector2(x + size * 0.25f, y - size * 0.9f), false, color);
             }
         }
 

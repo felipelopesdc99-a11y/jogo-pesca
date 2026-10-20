@@ -1544,3 +1544,25 @@ deixa as dez telas iguais entre si e evita copiar a conta em cada uma.
 
 **Rever se.** Uma faixa muito baixa mostrar pouco da arte na janela grande (a menor escala inteira que cobre pode ser
 maior que a `ScaleAndCrop`): aí pedir a faixa já recortada (384 × 120) em vez do fundo inteiro.
+
+## TD-064 · Peças pixel das telas de aventura num ajudante e retratos com variantes geradas (20/10/2026)
+
+**Origem.** M25-T13, T14 e T16: Aquário, Enciclopédia, Mapa, Expedição, Arena, Boss Mundial e avatares giravam sprites,
+recortavam fotos com círculo suave, desenhavam brilho difuso e liam peças pintadas que a Bíblia pixel tira.
+
+**Decisão.**
+- `UI/ArcArt.cs` junta o que essas telas precisam além da TD-063 (que ele reaproveita: `Fill`, `Line` e `Cover` chamam
+  `UiSkin.ArcFill/ArcLine` e `PixelDraw.Cover`): `Fit` com espelho pelas coordenadas de textura (sem matriz negativa),
+  `Glass`, `Diagonal` (divisão em degraus), e duas texturas feitas uma vez pelo código, a bolha (4 e 6 pixels) e a aura
+  (disco de 40 pixels pontilhado por matriz de Bayer 4 × 4), desenhadas em escala inteira e tingidas.
+- `UiSkinArcFill.ArcShape` não limita mais o raio da pílula a 18 pixels de arte (vai até 48): um anel grande continua
+  círculo.
+- O que gira vira espelho ou deslocamento de 1 pixel; o que se misturava (poses do Boss) se alterna.
+- Retratos: `tools/Arte/retratos_pixel.py` grava `_p` (metade, pela moda de cada bloco 2 × 2 do `pixel_folhas.halve`),
+  `_r` (recortado num círculo de pixels) e `_r_p`. O `AvatarArt` escolhe `_r` para moldura redonda e o `PixelDraw` acha o
+  `_p` sozinho quando 1× não cabe. Assim nada é recortado em tempo de jogo (as texturas são importadas sem leitura).
+
+**Por quê.** Recortar ou girar pixel art em tempo de jogo deixa pixels tortos ou borrados; as variantes prontas e o
+espelho por coordenadas mantêm cada pixel inteiro, sem alocar nada por quadro.
+
+**Rever se.** Um avatar novo chegar: rodar `python3 tools/Arte/retratos_pixel.py` de novo.
