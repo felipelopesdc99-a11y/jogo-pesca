@@ -9,6 +9,11 @@ Uso (mensagens em PT-BR, porque o proprietário roda no terminal):
   python3 tools/Arte/pixel_folhas.py FOLHA.png --pedido L4-02a --pular Peixes/fish_jau_master
       "--pular" deixa de fora desenhos que vieram ruins (para pedir de novo)
 
+  python3 tools/Arte/pixel_folhas.py IMAGEM.png --pedido L6-08b --grade 1x1 --celula 192x128 \\
+          --nomes Mapas/.../map_x_near_left --escala 10.66 --encostar esq,base
+      um desenho por imagem: "--escala" fixa a escala (a mesma nas peças do mesmo mapa) e "--encostar" tira a
+      margem dos lados retos, que encostam na borda da tela
+
   python3 tools/Arte/pixel_folhas.py FOLHA.png --grade 3x2 --celula 128x128 \\
           --nomes a,b,c,d,e,f --saida /tmp/saida [--modo objetos] [--alvo 112x100] [--cores 32]
 
@@ -368,6 +373,22 @@ def trim(rgb, op, margin):
     return R, O
 
 
+def flush(rgb, op, margin, sides):
+    """No transparent margin on the straight sides ('esq', 'dir', 'base', 'topo'): they touch the screen edge."""
+    if not margin or not sides:
+        return rgb, op
+    y0, y1, x0, x1 = 0, op.shape[0], 0, op.shape[1]
+    if 'esq' in sides:
+        x0 = margin
+    if 'dir' in sides:
+        x1 -= margin
+    if 'topo' in sides:
+        y0 = margin
+    if 'base' in sides:
+        y1 -= margin
+    return rgb[y0:y1, x0:x1], op[y0:y1, x0:x1]
+
+
 def place(rgb, op, size, anchor):
     """Fixed canvas: 'centro' centres the drawing; 'base' sits it on the last row but one."""
     W, H = size
@@ -442,7 +463,7 @@ def _box(s):
 
 def process(path, cols, rows, cell, names, out_dir, colors=32, outline='auto', anchor='centro',
             fixed=False, margin=2, half=False, mode='objetos', alvo=None, escala='objeto',
-            alvo_altura=48, largura=384, ancora_x=None, skip=(), log=print):
+            alvo_altura=48, largura=384, ancora_x=None, skip=(), log=print, escala_fixa=None, encostar=()):
     rgb, fg, vote = load(path)
     Hs, Ws = fg.shape
     wanted = [n for n in names]
@@ -578,6 +599,9 @@ def process(path, cols, rows, cell, names, out_dir, colors=32, outline='auto', a
         a = alvo.get(name) if isinstance(alvo, dict) else alvo
         boxes.append(_box(a) if a else (cell[0] - 2, cell[1] - 2))
     ks = [max(o.w / bw, o.h / bh) for o, (bw, bh) in zip(objs, boxes)]
+    if escala_fixa:
+        # one drawing per image, but the same scale as its partner pieces (same map): sheet px per art px
+        ks = [float(escala_fixa)] * len(ks)
     if escala == 'folha':
         ks = [max(ks)] * len(ks)
     elif escala == 'linha':
@@ -593,6 +617,8 @@ def process(path, cols, rows, cell, names, out_dir, colors=32, outline='auto', a
                 log(f'  aviso: {name} não coube em {cell[0]}×{cell[1]} ({lost} px de fora)')
         else:
             r, op = trim(r, op, margin)
+            r, op = flush(r, op, margin, encostar)
+        log(f'  escala {_fmt(k)}')
         save(name, r, op)
     return written
 
@@ -613,7 +639,8 @@ def run_request(cfg, folha, out_root=OUT_ROOT, skip=(), log=print):
                    alvo=cfg.get('alvo'), escala=cfg.get('escala', 'objeto'),
                    alvo_altura=cfg.get('alvo_altura', 48), largura=cfg.get('largura', 384),
                    ancora_x=cfg.get('ancora_x'),
-                   skip=set(skip), log=log)
+                   skip=set(skip), log=log, escala_fixa=cfg.get('escala_fixa'),
+                   encostar=tuple(cfg.get('encostar', ())))
 
 
 def main(argv=None):
@@ -629,6 +656,10 @@ def main(argv=None):
     ap.add_argument('--cores', type=int)
     ap.add_argument('--contorno', choices=['auto', 'sim', 'nao'])
     ap.add_argument('--pular', default='', help='nomes que ficam de fora, separados por vírgula')
+    ap.add_argument('--escala', type=float,
+                    help='pixels da imagem por pixel de arte, fixo (peças do mesmo mapa vindas uma por imagem)')
+    ap.add_argument('--encostar', default='',
+                    help='lados retos sem margem transparente: esq, dir, base, topo (separados por vírgula)')
     a = ap.parse_args(argv)
 
     cfg = {}
@@ -644,6 +675,10 @@ def main(argv=None):
             cfg[key] = val
     if a.nomes:
         cfg['nomes'] = a.nomes.split(',')
+    if a.escala:
+        cfg['escala_fixa'] = a.escala
+    if a.encostar:
+        cfg['encostar'] = [s for s in a.encostar.split(',') if s]
     if not cfg.get('nomes'):
         sys.exit('Faltam os nomes dos arquivos (--nomes ou --pedido).')
     out_root = a.saida or OUT_ROOT

@@ -2,19 +2,18 @@
 
 Uso:  python3 tools/Arte/cena_pixel.py dados          grava Resources/Visual/cena_pixel.json e a frente dos barcos
       python3 tools/Arte/cena_pixel.py simbolos       desenha os 12 símbolos simples (brancos, tingíveis) em ArtePixel/Icones
-      python3 tools/Arte/cena_pixel.py provisorios    converte da arte antiga as laterais e cantos que faltam (provisório)
       python3 tools/Arte/cena_pixel.py vivos          converte a paisagem viva (fontes_antigas/Vivos) para ArtePixel/Vivos
       python3 tools/Arte/cena_pixel.py miniaturas     gera as miniaturas dos 10 mapas das camadas em pixel
       python3 tools/Arte/cena_pixel.py previa <pasta> [mapa ...]   monta a cena como o jogo desenha (PNG) e o GIF do pescador
-      python3 tools/Arte/cena_pixel.py tudo           dados + simbolos + provisorios + vivos + miniaturas
+      python3 tools/Arte/cena_pixel.py tudo           dados + simbolos + vivos + miniaturas
 
 A montagem das prévias e das miniaturas segue a mesma composição do código (FishingScene.BuildPixel, PixelSky,
 FishermanRig): grade de 216 px de altura, 20 px por unidade, horizonte na linha 104, camadas presas ao horizonte e
 às bordas da tela, tudo em pixel inteiro. Os números ficam no cena_pixel.json que o jogo lê, então a prévia e o jogo
 usam os mesmos dados. Visual só fica verificado quando o proprietário apertar Play.
 
-Os comandos provisorios e vivos leem a arte antiga guardada em tools/Arte/fontes_antigas (fora de Resources, para
-não ir no build do jogo; M25-T17).
+O comando vivos lê a arte antiga guardada em tools/Arte/fontes_antigas/Vivos (fora de Resources, para não ir no
+build do jogo; M25-T17). As laterais e cantos que eram provisórios convertidos chegaram em pixel (TD-065).
 """
 import json
 import math
@@ -31,7 +30,7 @@ import pixel_folhas as PF  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 ASSETS = os.path.join(ROOT, 'client-unity', 'Assets')
-# The old painted art the provisional conversions start from, kept out of Resources so it never ships (M25-T17).
+# The old painted art the living-landscape conversion starts from, kept out of Resources so it never ships (M25-T17).
 ARTE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fontes_antigas')
 PIXEL = os.path.join(ASSETS, 'Resources', 'ArtePixel')
 VISUAL = os.path.join(ASSETS, 'Resources', 'Visual')
@@ -168,10 +167,6 @@ def load(path):
 
 def pixel_path(rel):
     return os.path.join(PIXEL, rel + '.png')
-
-
-def arte_path(rel):
-    return os.path.join(ARTE, rel + '.png')
 
 
 def exists_pixel(rel):
@@ -312,7 +307,7 @@ def symbols():
     print('Símbolos gravados:', len(SYMBOLS))
 
 
-# ---------------------------------------------------------------- conversion of old art (provisional and the living landscape)
+# ---------------------------------------------------------------- conversion of old art (the living landscape)
 
 
 def convert(img, size, colors=32, outline=False, alpha_cut=0.5):
@@ -335,59 +330,6 @@ def convert(img, size, colors=32, outline=False, alpha_cut=0.5):
     if outline and op.any():
         rgb, op = PF.add_outline(rgb, op)
     return PF.to_image(rgb, op)
-
-
-def provisional_pieces():
-    """Map pieces still missing in pixel art: converted from the old art, marked as provisional in ASSETS_PIXEL."""
-    wanted = {
-        'LagoSereno': ['near_left', 'near_right'],
-        'BancoDasBaleias': ['near_left', 'near_right', 'fg_left', 'fg_right'],
-        'TaludeNoturno': ['near_left', 'near_right', 'fg_left', 'fg_right'],
-    }
-    prefix = {m['folder']: m['prefix'] for m in MAPS}
-    done = []
-    for folder, parts in wanted.items():
-        for part in parts:
-            rel = 'Mapas/%s/%s_%s' % (folder, prefix[folder], part)
-            if exists_pixel(rel) and not is_provisional(rel):
-                continue  # the real piece arrived: never overwrite it
-            src = arte_path(rel)
-            if not os.path.exists(src):
-                continue
-            img = load(src)
-            # same size as the pixel pieces of the other maps: sides ~96 px high, corners ~60 px high
-            target_h = 80 if part.startswith('near') else 60
-            w = max(1, int(round(img.width * target_h / img.height)))
-            w = min(w, 132 if part.startswith('near') else 100)
-            h = int(round(img.height * w / img.width))
-            out = convert(img, (w, h), colors=48, outline=False)
-            save_png(out, pixel_path(rel))
-            done.append(rel)
-    _mark_provisional(done)
-    print('Provisórios convertidos:', len(done))
-    return done
-
-
-PROVISIONAL_LIST = os.path.join(os.path.dirname(__file__), 'pixel_provisorios.txt')
-
-
-def is_provisional(rel):
-    if not os.path.exists(PROVISIONAL_LIST):
-        return False
-    with open(PROVISIONAL_LIST, encoding='utf-8') as f:
-        return rel in set(l.strip() for l in f)
-
-
-def _mark_provisional(rels):
-    known = set()
-    if os.path.exists(PROVISIONAL_LIST):
-        with open(PROVISIONAL_LIST, encoding='utf-8') as f:
-            known = set(l.strip() for l in f if l.strip() and not l.startswith('#'))
-    known |= set(rels)
-    with open(PROVISIONAL_LIST, 'w', encoding='utf-8') as f:
-        f.write('# Peças de ArtePixel convertidas da arte antiga como provisório (cena_pixel.py). Saem quando o pedido chegar.\n')
-        for r in sorted(known):
-            f.write(r + '\n')
 
 
 def animal_sizes():
@@ -787,8 +729,6 @@ def main(argv):
         data()
     if cmd in ('simbolos', 'tudo'):
         symbols()
-    if cmd in ('provisorios', 'tudo'):
-        provisional_pieces()
     if cmd in ('vivos', 'tudo'):
         vivos()
     if cmd in ('miniaturas', 'tudo'):

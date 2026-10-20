@@ -4,9 +4,8 @@ using UnityEngine;
 namespace FishingIdle.Game.Visual
 {
     /// <summary>
-    /// Loads the replaceable art files by name: the pixel art in Assets/Resources/ArtePixel first and, while a
-    /// file is not there yet, the old art in Assets/Resources/Arte (TD-059, M25-T04). Since M25-T17 the old folder
-    /// holds only the 6 Pantanal fish still waiting for their pixel drawing (pedido L4-03a).
+    /// Loads the replaceable art files by name from Assets/Resources/ArtePixel (TD-059, M25-T04). The old painted
+    /// folder (Resources/Arte) and its fallback were removed once the last fish arrived in pixel art (TD-065).
     /// </summary>
     /// <remarks>
     /// Every image the game shows is a file that can be swapped keeping its name; nothing is wired into scene
@@ -19,9 +18,6 @@ namespace FishingIdle.Game.Visual
         /// <summary>Folder of the pixel art (Estilo ARC, ART_BIBLE_PIXEL).</summary>
         public const string PixelRoot = "ArtePixel/";
 
-        /// <summary>Folder of the old art, used while a pixel file is missing (since M25-T17 only 6 fish, pedido L4-03a).</summary>
-        public const string LegacyRoot = "Arte/";
-
         /// <summary>Pixels of scene art per world unit (216-pixel scene grid on a 10.8-unit camera, TD-059).</summary>
         public const float PixelsPerUnit = 20f;
 
@@ -31,7 +27,7 @@ namespace FishingIdle.Game.Visual
         private static readonly Dictionary<Texture, string> PathOf = new Dictionary<Texture, string>();
         private static readonly Dictionary<Texture, Texture2D> SmallOf = new Dictionary<Texture, Texture2D>();
 
-        /// <summary>A texture (path without extension, e.g. "Peixes/fish_lambari_master"): the pixel file, or the old one, or null.</summary>
+        /// <summary>A texture (path without extension, e.g. "Peixes/fish_lambari_master"): the pixel file, or null.</summary>
         public static Texture2D Texture(string path)
         {
             // A missing file is remembered as null, so it is looked up only once.
@@ -46,14 +42,6 @@ namespace FishingIdle.Game.Visual
                 // Pixel art: never smoothed (the importer already sets Point; this also covers files added at runtime).
                 tex.filterMode = FilterMode.Point;
                 PixelTextures.Add(tex);
-            }
-            else
-            {
-                tex = Resources.Load<Texture2D>(LegacyRoot + path);
-            }
-
-            if (tex != null)
-            {
                 tex.wrapMode = TextureWrapMode.Clamp;
                 PathOf[tex] = path;
             }

@@ -1594,3 +1594,15 @@ refazer um provisório.
 
 **Rever se.** O pedido L4-03a chegar: recortar os 6 peixes, apagar `Resources/Arte`, o `LegacyRoot`, o ramo antigo de
 `ArtAssets.Texture` e o `ApplyOldFish`. Quando L1-06b, L6-08b e L6-09b chegarem, apagar `tools/Arte/fontes_antigas/Mapas`.
+
+**Atualização (20/10/2026, 3ª entrega).** Os 6 peixes do L4-03a (5 na 2ª entrega e o mandi-amarelo na 3ª) e as laterais
+e cantos dos pedidos L1-06b, L6-08b e L6-09b chegaram em pixel. Feito o que o "Rever se" pedia: `Resources/Arte`
+apagada, `ArtAssets.LegacyRoot` e o ramo antigo de `ArtAssets.Texture` fora (só `ArtePixel`; sem arquivo, null e a
+arte gerada pelo código), `ArtImportSettings.ApplyOldFish` fora (`GetVersion` 6 → 7, para o Unity reimportar com as
+regras novas), `tools/Arte/fontes_antigas/Mapas` apagada. Também saíram o comando `provisorios` do `cena_pixel.py` e a
+lista `tools/Arte/pixel_provisorios.txt`, que só serviam a essas peças; `fontes_antigas/Vivos` fica, porque o comando
+`vivos` ainda parte dele. Como cada peça de cenário veio numa imagem sozinha, o `pixel_folhas.py` ganhou `--escala`
+(escala fixa, a mesma nas duas peças do par `near_*` ou `fg_*` de um mapa, igual à escala por linha que a folha 2×2
+dava) e `--encostar` (lados retos sem a margem transparente de 2 px, para não abrir fresta na borda da tela). Os
+cantos aprovados do Lago Sereno perderam só essa margem nos lados da borda; os outros 7 mapas ainda têm a margem de 2 px
+(fica para o Play dizer se aparece).

@@ -6,7 +6,8 @@ Status: `PEDIR` (ainda não pedido) · `RECEBIDO` (folha chegou e foi recortada 
 
 ## Resumo
 
-- **77 pedidos** ao ChatGPT, **339 imagens** no total (as folhas juntam vários desenhos por pedido).
+- **77 pedidos** ao ChatGPT, **339 imagens** no total (as folhas juntam vários desenhos por pedido). **339 de 339 recebidas
+  em pixel** desde a 3ª entrega de 20/10/2026; `Resources/Arte` não existe mais.
 - Antes da limpeza (M25-T17) o jogo tinha **659 PNGs** em `Resources/Arte`. Deles, **316** são refeitos pelos pedidos (a), **240** são convertidos automaticamente da arte atual (b), **60** passam a ser desenhados pelo código (c) e **43** saem (d). Os pedidos também criam **23** arquivos novos (quadros do pescador, boia, nuvens comuns).
 
 | Lote | Pedidos | Imagens |
@@ -20,7 +21,7 @@ Status: `PEDIR` (ainda não pedido) · `RECEBIDO` (folha chegou e foi recortada 
 | Lote 7 · Telas especiais e Boss | 15 | 18 |
 | **Total** | **77** | **339** |
 
-Os arquivos novos vão para `client-unity/Assets/Resources/ArtePixel/`, com as mesmas subpastas e os mesmos nomes de hoje (TD-059); o jogo procura lá primeiro e usa a arte antiga enquanto um arquivo não existir. A limpeza (M25-T17, 20/10/2026) apagou `Arte/`; só ficaram os 6 peixes do pedido L4-03a, e desde a 2ª entrega de 20/10/2026 só o mandi-amarelo (seções "Limpeza da arte antiga" e "2ª entrega de 20/10/2026" abaixo).
+Os arquivos novos vão para `client-unity/Assets/Resources/ArtePixel/`, com as mesmas subpastas e os mesmos nomes de hoje (TD-059); o jogo procura lá primeiro e usa a arte antiga enquanto um arquivo não existir. A limpeza (M25-T17, 20/10/2026) esvaziou `Arte/`, e a 3ª entrega de 20/10/2026 apagou a pasta e o fallback para ela (seções "Limpeza da arte antiga" e "3ª entrega de 20/10/2026" abaixo): o jogo só lê `ArtePixel/`.
 
 ## Recebimento de 20/10/2026
 
@@ -40,6 +41,9 @@ pasta (M25-T04); só fica verificado no Play.
 
 Os pedidos corrigidos, prontos para colar, estão na página de conferência entregue ao proprietário.
 
+**Resolvido:** os 4 pedidos chegaram de novo, um desenho por imagem (5 peixes na 2ª entrega, as outras 11 imagens na
+3ª entrega de 20/10/2026, abaixo).
+
 ## 2ª entrega de 20/10/2026 — um desenho por imagem
 
 Em 20/10/2026 os pedidos que faltavam foram **reescritos como um desenho por imagem** (1536 × 1024, fundo magenta
@@ -58,7 +62,38 @@ python3 tools/Arte/pixel_folhas.py IMAGEM.png --pedido L4-03a --grade 1x1 --celu
   (116 × 32) e pacu-peva (117 × 77), cada um com a sua `_p`. Conferidos ampliados contra piraputanga, jurupoca,
   armado e barbado (mesma largura, mesmo contorno escuro, mesma leitura). **NO_JOGO.** As 5 imagens antigas saíram de
   `Resources/Arte/Peixes`.
-- **Mandi-amarelo:** não veio; **PEDIR DE NOVO** (um desenho por imagem). Até lá o jogo mostra a arte antiga dele.
+- **Mandi-amarelo:** não veio; pedido de novo e recebido na 3ª entrega (abaixo).
+
+## 3ª entrega de 20/10/2026 — as 11 imagens que faltavam
+
+O proprietário mandou as 11 imagens que faltavam, um desenho por imagem (1536 × 1024, magenta, grade de 8 px). Todas
+**NO_JOGO**; com elas as **339 imagens** dos 77 pedidos estão em pixel.
+
+- **L4-03a · mandi-amarelo:** recortado como os outros 5 do Pantanal (`--pedido L4-03a --grade 1x1 --celula 192x128`):
+  116 × 56 e `_p` 58 × 28. Conferido ampliado ao lado do jundiá e do pacu-peva (mesma largura, mesmo contorno).
+- **L1-06b, L6-08b, L6-09b · laterais e cantos:** cada peça veio sozinha, então a escala que a folha 2×2 dividia por
+  linha agora é dada na linha de comando: as duas peças do mesmo par (`near_*` ou `fg_*`) do mesmo mapa usam a mesma
+  escala (a maior das duas para caber no alvo do manifesto, 128 × 96 ou 96 × 80), e os lados retos saem sem margem
+  transparente, encostando na borda da tela:
+
+```
+python3 tools/Arte/pixel_folhas.py IMAGEM.png --pedido L6-08b --grade 1x1 --celula 192x128 \
+        --nomes Mapas/BancoDasBaleias/map_banco_das_baleias_near_left --escala 10.656 --encostar esq,base
+```
+
+| Mapa | Peça | Escala (px da imagem por px de arte) | Tamanho final |
+|---|---|---:|---:|
+| Lago Sereno | `near_left` · `near_right` | 9,77 | 130 × 77 · 129 × 85 |
+| Banco das Baleias | `near_left` · `near_right` | 10,66 | 89 × 82 · 130 × 54 |
+| Banco das Baleias | `fg_left` · `fg_right` | 13,44 | 90 × 66 · 98 × 57 |
+| Talude Noturno | `near_left` · `near_right` | 10,99 | 90 × 85 · 130 × 44 |
+| Talude Noturno | `fg_left` · `fg_right` | 12,93 | 98 × 69 · 93 × 62 |
+
+  As peças `_left` encostam à esquerda e embaixo; as `_right`, à direita e embaixo (o jogo prende a lateral na borda da
+  tela e o canto no pé da tela, `FishingScene.BuildPixel`). Os cantos aprovados do Lago Sereno (`fg_left`, `fg_right`)
+  perderam só a margem transparente desses lados (93 × 60 e 94 × 58), sem mudar o desenho. As miniaturas dos 3 mapas
+  foram refeitas (`cena_pixel.py miniaturas`). Os provisórios convertidos e a arte antiga de onde saíam foram apagados
+  (TD-065).
 
 **Trocas resolvidas pelo nome (não precisa pedir de novo):** a folha "Lago Sereno (2 de 2)" trazia jaú, pirarucu e
 aruanã (Rio Selvagem 2 de 2) e a "Rio Selvagem (2 de 2)" trazia matrinxã, carpa e tambaqui; a "Estuário (1 de 2)"
@@ -71,7 +106,7 @@ pintados atrás (são retângulos inteiros, não recortes); a boia saiu com 12 �
 
 ## No jogo desde 20/10/2026 (M25-T04 a T12)
 
-O jogo lê `Resources/ArtePixel/` primeiro e cai na arte antiga do mesmo nome quando um arquivo falta (TD-059, TD-062).
+O jogo lê `Resources/ArtePixel/` (TD-059, TD-062); desde a 3ª entrega de 20/10/2026 não há mais arte antiga para onde cair (TD-065).
 Os pedidos marcados `NO_JOGO` estão ligados: cena de pesca (Lote 1, Lote 6), pescador (L2-01), peixes (Lote 4),
 itens (Lote 5) e ícones (L3-01 a L3-04). Retratos, objetos e fundos das telas (L2-02, L3-05 a L3-09, Lote 7) já
 aparecem pela troca automática, mas as telas deles são ajustadas nas tarefas M25-T13 a T16 e seguem `RECEBIDO` até lá.
@@ -96,15 +131,8 @@ Visual só fica verificado quando o proprietário apertar Play.
   Pedido extra só para o que ficar ruim no Play.
 - Céu, água, brilhos, estrelas e lua: desenhados pelo jogo (`PixelSky`, `PixelGlints`), nas paletas da Bíblia 6.2.
 
-**Provisório convertido (sai quando o pedido chegar; lista em `tools/Arte/pixel_provisorios.txt`):**
-
-| Arquivo | Pedido que substitui |
-|---|---|
-| `Mapas/LagoSereno/map_lago_sereno_near_left`, `near_right` | L1-06b |
-| `Mapas/BancoDasBaleias/map_banco_das_baleias_near_left`, `near_right`, `fg_left`, `fg_right` | L6-08b |
-| `Mapas/TaludeNoturno/map_talude_noturno_near_left`, `near_right`, `fg_left`, `fg_right` | L6-09b |
-
-Do Pantanal Dourado (1 de 2, L4-03a) só o mandi-amarelo continua com a arte antiga até chegar; os outros 5 estão em pixel desde a 2ª entrega de 20/10/2026.
+**Provisórios convertidos:** nenhum desde a 3ª entrega de 20/10/2026 (as laterais e cantos do Lago Sereno, Banco das
+Baleias e Talude Noturno e o mandi-amarelo chegaram em pixel).
 
 ## Limpeza da arte antiga (M25-T17, 20/10/2026)
 
@@ -126,6 +154,10 @@ Do Pantanal Dourado (1 de 2, L4-03a) só o mandi-amarelo continua com a arte ant
   imagens antigas deles foram apagadas. `Resources/Arte/Peixes` ficou só com `fish_mandi_amarelo_master` (1 PNG,
   0,35 MB). O fallback `LegacyRoot` fica como está (TD-065) e **sai junto com essa imagem quando o mandi-amarelo
   chegar**.
+- **Atualização (3ª entrega de 20/10/2026):** o mandi-amarelo chegou em pixel. `Resources/Arte` foi apagada, com o
+  fallback `ArtAssets.LegacyRoot` e a regra de importação `ArtImportSettings.ApplyOldFish`. Saíram também o comando
+  `provisorios` do `cena_pixel.py`, a lista `tools/Arte/pixel_provisorios.txt` e `tools/Arte/fontes_antigas/Mapas` (10
+  PNGs); em `fontes_antigas/` ficou só `Vivos/`, que o comando `vivos` ainda lê (TD-065).
 
 ## Pedidos por lote
 
@@ -141,7 +173,7 @@ Pescador e a primeira animação, 3 peixes, Caixa e boia, o barco inicial, o cen
 | L1-04 · Caixa de Pesca e boia | `L1-04_caixa_e_boia.png` | 2×1 | 64×64 | `Cena/caixa_de_pesca`<br>`Cena/boia` | NO_JOGO |
 | L1-05 · Barco inicial (Água Mansa) | `L1-05_barco_inicial.png` | 1×1 | 128×64 | `Barcos/boat_00` | NO_JOGO |
 | L1-06a · Lago Sereno: fundo em 3 faixas | `L1-06a_map_lago_sereno_fundo.png` | 1×3 | 384×80 | `Mapas/LagoSereno/map_lago_sereno_bg_far`<br>`Mapas/LagoSereno/map_lago_sereno_bg_mid`<br>`Mapas/LagoSereno/map_lago_sereno_bg_near` | NO_JOGO |
-| L1-06b · Lago Sereno: laterais e cantos | `L1-06b_map_lago_sereno_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/LagoSereno/map_lago_sereno_near_left`<br>`Mapas/LagoSereno/map_lago_sereno_near_right`<br>`Mapas/LagoSereno/map_lago_sereno_fg_left`<br>`Mapas/LagoSereno/map_lago_sereno_fg_right` | NO_JOGO só os cantos (`fg_left`, `fg_right`) · **PEDIR DE NOVO** `near_left` e `near_right`: as laterais vieram emendadas numa paisagem só · no jogo um **provisório convertido** da arte antiga até o pedido chegar |
+| L1-06b · Lago Sereno: laterais e cantos | `L1-06b_map_lago_sereno_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/LagoSereno/map_lago_sereno_near_left`<br>`Mapas/LagoSereno/map_lago_sereno_near_right`<br>`Mapas/LagoSereno/map_lago_sereno_fg_left`<br>`Mapas/LagoSereno/map_lago_sereno_fg_right` | NO_JOGO (cantos desde a 1ª entrega; `near_left` e `near_right` na 3ª entrega de 20/10/2026, um desenho por imagem) |
 | L1-07 · Nuvens (servem para todos os mapas) | `L1-07_nuvens.png` | 3×2 | 96×48 | `Mapas/Comum/nuvem_01`<br>`Mapas/Comum/nuvem_02`<br>`Mapas/Comum/nuvem_03`<br>`Mapas/Comum/nuvem_04`<br>`Mapas/Comum/nuvem_05`<br>`Mapas/Comum/nuvem_06` | NO_JOGO |
 
 ### Lote 2 · Pescador completo e retratos
@@ -179,7 +211,7 @@ Os outros 97 peixes, de 6 em 6 e de 4 em 4, sempre do mesmo mapa juntos (os comu
 | L4-01b · Peixes do Lago Sereno (2 de 2) | `L4-01b_peixes_lago_sereno_b.png` | 3×1 | 128×128 | `Peixes/fish_matrinxa_master`<br>`Peixes/fish_carpa_master`<br>`Peixes/fish_tambaqui_master` | NO_JOGO (veio no arquivo L4-02b) |
 | L4-02a · Peixes do Rio Selvagem (1 de 2) | `L4-02a_peixes_rio_selvagem_a.png` | 3×2 | 128×128 | `Peixes/fish_piranha_master`<br>`Peixes/fish_piracanjuba_master`<br>`Peixes/fish_peixe_cachorra_master`<br>`Peixes/fish_dourado_master`<br>`Peixes/fish_cachara_master`<br>`Peixes/fish_pintado_master` | NO_JOGO (veio no arquivo L4-04a) |
 | L4-02b · Peixes do Rio Selvagem (2 de 2) | `L4-02b_peixes_rio_selvagem_b.png` | 3×1 | 128×128 | `Peixes/fish_jau_master`<br>`Peixes/fish_pirarucu_master`<br>`Peixes/fish_aruana_master` | NO_JOGO (veio no arquivo L4-01b) |
-| L4-03a · Peixes do Pantanal Dourado (1 de 2) | `L4-03a_peixes_pantanal_dourado_a.png` | 3×2 | 128×128 | `Peixes/fish_mandi_amarelo_master`<br>`Peixes/fish_pacu_peva_master`<br>`Peixes/fish_jurupensem_master`<br>`Peixes/fish_piavucu_master`<br>`Peixes/fish_jundia_master`<br>`Peixes/fish_mucum_master` | pacu-peva, jurupensém, piavuçu, jundiá e muçum: **NO_JOGO** (2ª entrega, um peixe por imagem, 20/10/2026) · mandi-amarelo: **PEDIR DE NOVO** (não veio; até lá o jogo mostra a arte antiga dele) |
+| L4-03a · Peixes do Pantanal Dourado (1 de 2) | `L4-03a_peixes_pantanal_dourado_a.png` | 3×2 | 128×128 | `Peixes/fish_mandi_amarelo_master`<br>`Peixes/fish_pacu_peva_master`<br>`Peixes/fish_jurupensem_master`<br>`Peixes/fish_piavucu_master`<br>`Peixes/fish_jundia_master`<br>`Peixes/fish_mucum_master` | NO_JOGO (pacu-peva, jurupensém, piavuçu, jundiá e muçum na 2ª entrega; mandi-amarelo na 3ª entrega de 20/10/2026, um peixe por imagem) |
 | L4-03b · Peixes do Pantanal Dourado (2 de 2) | `L4-03b_peixes_pantanal_dourado_b.png` | 2×2 | 128×128 | `Peixes/fish_piraputanga_master`<br>`Peixes/fish_jurupoca_master`<br>`Peixes/fish_armado_master`<br>`Peixes/fish_barbado_master` | NO_JOGO |
 | L4-04a · Peixes do Estuário das Marés (1 de 2) | `L4-04a_peixes_estuario_das_mares_a.png` | 3×2 | 128×128 | `Peixes/fish_parati_master`<br>`Peixes/fish_carapeba_master`<br>`Peixes/fish_tainha_master`<br>`Peixes/fish_corvina_master`<br>`Peixes/fish_bagre_marinho_master`<br>`Peixes/fish_robalo_peva_master` | NO_JOGO (veio no arquivo L4-03a) |
 | L4-04b · Peixes do Estuário das Marés (2 de 2) | `L4-04b_peixes_estuario_das_mares_b.png` | 2×2 | 128×128 | `Peixes/fish_xareu_master`<br>`Peixes/fish_pescada_amarela_master`<br>`Peixes/fish_camurupim_master`<br>`Peixes/fish_mero_master` | NO_JOGO (arquivo extra; o arquivo L4-02a trazia outra versão desta mesma folha) |
@@ -227,9 +259,9 @@ Duas folhas por mapa: o fundo em 3 faixas e as laterais com os cantos. Céu e á
 | L6-07a · Corrente Azul: fundo em 3 faixas | `L6-07a_map_corrente_azul_fundo.png` | 1×3 | 384×80 | `Mapas/CorrenteAzul/map_corrente_azul_bg_far`<br>`Mapas/CorrenteAzul/map_corrente_azul_bg_mid`<br>`Mapas/CorrenteAzul/map_corrente_azul_bg_near` | NO_JOGO |
 | L6-07b · Corrente Azul: laterais e cantos | `L6-07b_map_corrente_azul_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/CorrenteAzul/map_corrente_azul_near_left`<br>`Mapas/CorrenteAzul/map_corrente_azul_near_right`<br>`Mapas/CorrenteAzul/map_corrente_azul_fg_left`<br>`Mapas/CorrenteAzul/map_corrente_azul_fg_right` | NO_JOGO |
 | L6-08a · Banco das Baleias: fundo em 3 faixas | `L6-08a_map_banco_das_baleias_fundo.png` | 1×3 | 384×80 | `Mapas/BancoDasBaleias/map_banco_das_baleias_bg_far`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_bg_mid`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_bg_near` | NO_JOGO |
-| L6-08b · Banco das Baleias: laterais e cantos | `L6-08b_map_banco_das_baleias_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/BancoDasBaleias/map_banco_das_baleias_near_left`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_near_right`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_fg_left`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_fg_right` | **PEDIR DE NOVO**: bordas borradas em listras horizontais e água em bloco retangular · no jogo um **provisório convertido** da arte antiga até o pedido chegar |
+| L6-08b · Banco das Baleias: laterais e cantos | `L6-08b_map_banco_das_baleias_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/BancoDasBaleias/map_banco_das_baleias_near_left`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_near_right`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_fg_left`<br>`Mapas/BancoDasBaleias/map_banco_das_baleias_fg_right` | NO_JOGO (3ª entrega de 20/10/2026, um desenho por imagem) |
 | L6-09a · Talude Noturno: fundo em 3 faixas | `L6-09a_map_talude_noturno_fundo.png` | 1×3 | 384×80 | `Mapas/TaludeNoturno/map_talude_noturno_bg_far`<br>`Mapas/TaludeNoturno/map_talude_noturno_bg_mid`<br>`Mapas/TaludeNoturno/map_talude_noturno_bg_near` | NO_JOGO |
-| L6-09b · Talude Noturno: laterais e cantos | `L6-09b_map_talude_noturno_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/TaludeNoturno/map_talude_noturno_near_left`<br>`Mapas/TaludeNoturno/map_talude_noturno_near_right`<br>`Mapas/TaludeNoturno/map_talude_noturno_fg_left`<br>`Mapas/TaludeNoturno/map_talude_noturno_fg_right` | **PEDIR DE NOVO**: bordas borradas em listras horizontais e água em bloco retangular · no jogo um **provisório convertido** da arte antiga até o pedido chegar |
+| L6-09b · Talude Noturno: laterais e cantos | `L6-09b_map_talude_noturno_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/TaludeNoturno/map_talude_noturno_near_left`<br>`Mapas/TaludeNoturno/map_talude_noturno_near_right`<br>`Mapas/TaludeNoturno/map_talude_noturno_fg_left`<br>`Mapas/TaludeNoturno/map_talude_noturno_fg_right` | NO_JOGO (3ª entrega de 20/10/2026, um desenho por imagem) |
 | L6-10a · Abismo Atlântico: fundo em 3 faixas | `L6-10a_map_abismo_atlantico_fundo.png` | 1×3 | 384×80 | `Mapas/AbismoAtlantico/map_abismo_atlantico_bg_far`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_bg_mid`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_bg_near` | NO_JOGO |
 | L6-10b · Abismo Atlântico: laterais e cantos | `L6-10b_map_abismo_atlantico_primeiro_plano.png` | 2×2 | 192×128 | `Mapas/AbismoAtlantico/map_abismo_atlantico_near_left`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_near_right`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_fg_left`<br>`Mapas/AbismoAtlantico/map_abismo_atlantico_fg_right` | NO_JOGO |
 

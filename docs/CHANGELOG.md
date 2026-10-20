@@ -3,6 +3,33 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m25.3] — 20/10/2026
+
+As 11 imagens que faltavam (3ª entrega, um desenho por imagem): 339 de 339 em pixel. Nenhuma regra, número ou save
+mudou. Visual só fica verificado quando o proprietário apertar Play.
+
+### Adicionado
+
+- **Mandi-amarelo em pixel** (pedido L4-03a): 116 × 56 e `_p` 58 × 28. Os 100 peixes estão em pixel.
+- **Laterais e cantos em pixel** do Lago Sereno (`near_left`, `near_right`, L1-06b), Banco das Baleias e Talude
+  Noturno (`near_*` e `fg_*`, L6-08b e L6-09b), no lugar dos provisórios convertidos. As duas peças de cada par usam a
+  mesma escala e os lados retos encostam na borda da imagem (sem fresta na beira da tela). Miniaturas dos 3 mapas
+  refeitas.
+- `tools/Arte/pixel_folhas.py`: opções `--escala` (escala fixa, para peças do mesmo mapa vindas uma por imagem) e
+  `--encostar` (lados sem margem transparente).
+
+### Alterado
+
+- Cantos do Lago Sereno (`fg_left`, `fg_right`): só a margem transparente do lado da borda e de baixo saiu; o desenho
+  é o mesmo.
+
+### Removido
+
+- `Resources/Arte` (a última imagem antiga), o fallback `ArtAssets.LegacyRoot` e a regra de importação
+  `ArtImportSettings.ApplyOldFish` (TD-065).
+- O comando `provisorios` do `tools/Arte/cena_pixel.py`, `tools/Arte/pixel_provisorios.txt` e
+  `tools/Arte/fontes_antigas/Mapas` (10 PNGs). `fontes_antigas/Vivos` fica (comando `vivos`).
+
 ## [0.2.0-m25.2] — 20/10/2026
 
 5 peixes do Pantanal Dourado em pixel (pedido L4-03a, 2ª entrega). Nenhuma regra, número ou save mudou. Vem depois da

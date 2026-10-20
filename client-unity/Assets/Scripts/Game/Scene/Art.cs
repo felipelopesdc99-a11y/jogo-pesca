@@ -350,8 +350,7 @@ namespace FishingIdle.Game.Scene
         });
 
         /// <summary>
-        /// The master art file of a species (ArtePixel/Peixes/fish_&lt;id&gt;_master.png; 6 Pantanal fish still in
-        /// the old Resources/Arte, pedido L4-03a), or null when it does not exist yet.
+        /// The master art file of a species (ArtePixel/Peixes/fish_&lt;id&gt;_master.png), or null when it does not exist.
         /// </summary>
         public static Texture2D FishMaster(string speciesId)
         {

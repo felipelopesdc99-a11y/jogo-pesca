@@ -415,12 +415,15 @@ Cada passo está em `SaveMigrations.Upgrade`.
     acha cada desenho da folha por forma (componentes conectados sobre o magenta), tira a escala da caixa-alvo
     do pedido (`tools/Arte/pixel_pedidos.json`: `modo`, `alvo`, `escala`, `alvo_altura`, `ancora_x`, `largura`),
     amostra por moda numa paleta própria e grava em `Resources/ArtePixel/` com os nomes da arte antiga.
-    `ArtImportSettings.ApplyPixel` importa essa pasta com Point, sem compressão e sem mipmaps. Teste:
+    Um desenho por imagem: `--grade 1x1 --celula 192x128`, com `--escala` (px da imagem por px de arte, a mesma nas
+    peças do mesmo mapa) e `--encostar esq,dir,base,topo` (lados retos sem margem transparente; as laterais e os
+    cantos `_left` encostam à esquerda e embaixo, os `_right` à direita e embaixo, porque `FishingScene.BuildPixel`
+    os prende na borda da tela). `ArtImportSettings.ApplyPixel` importa essa pasta com Point, sem compressão e sem
+    mipmaps. Teste:
     `python3 tools/Arte/pixel_folhas_teste.py`.
-  - **Carregamento com fallback (M25-T04, TD-059, TD-062, TD-065):** `ArtAssets.Texture(caminho)` procura em
-    `Resources/ArtePixel/` primeiro e, se o arquivo não existe, em `Resources/Arte/` (mesmo nome). Desde a M25-T17 a
-    pasta antiga só tem os 6 peixes do Pantanal do pedido L4-03a; quando eles chegarem em pixel, a pasta e o
-    `LegacyRoot` saem. Cada textura
+  - **Carregamento (M25-T04, TD-059, TD-062, TD-065):** `ArtAssets.Texture(caminho)` procura só em
+    `Resources/ArtePixel/`; sem o arquivo devolve null e quem chamou usa a arte gerada pelo código. A pasta antiga
+    `Resources/Arte/` e o fallback `LegacyRoot` saíram em 20/10/2026, quando o último peixe chegou em pixel. Cada textura
     vinda de `ArtePixel` fica marcada (`ArtAssets.IsPixel(tex)` / `IsPixel(caminho)`), recebe filtro Point e
     lembra o caminho, para achar a versão pequena (`ArtAssets.Small(tex)` = o mesmo arquivo com `_p`).
     `ArtAssets.PixelSprite(caminho, pivô)` / `PixelSpriteAt(caminho, x, y)` fazem o sprite de cena com 20 pixels
@@ -454,10 +457,10 @@ Cada passo está em `SaveMigrations.Upgrade`.
     ele já tem (parado/esperando, arremesso pelo andamento do arremesso, fisgada, recolher, mostrando, escapou),
     põe a vara (código, 1 px, cores da vara) no ponto das mãos de cada quadro e mostra o peixe `_p` a 1×, sem
     girar. `WindSway` e `Floating` deixam de girar na grade pixel. `python3 tools/Arte/cena_pixel.py previa
-    <pasta> [map_01 ...]` monta a cena como o jogo (mesmos números) e o GIF do pescador; `provisorios`, `vivos` e
-    `miniaturas` geram as peças convertidas da arte antiga (lista em `tools/Arte/pixel_provisorios.txt`), a
-    paisagem viva em pixel e as miniaturas dos mapas. A arte antiga de onde `provisorios` e `vivos` partem fica em
-    `tools/Arte/fontes_antigas/`, fora de `Resources`, para não ir no build (M25-T17).
+    <pasta> [map_01 ...]` monta a cena como o jogo (mesmos números) e o GIF do pescador; `vivos` e `miniaturas`
+    geram a paisagem viva em pixel e as miniaturas dos mapas. A arte antiga de onde `vivos` parte fica em
+    `tools/Arte/fontes_antigas/Vivos`, fora de `Resources`, para não ir no build (M25-T17). Não há mais peças
+    provisórias convertidas: todas as laterais e cantos são desenhos em pixel (TD-065).
   - **Cenário de reserva** (sem faixas em pixel no mapa): `BuildSky`, `BuildLand`, `BuildWater` e `BuildForeground`
     desenham céu, morros, água e juncos pelo código (`Art.cs`), com o casco `Art.Boat` e o pescador de formas simples
     do `FishermanRig`. Hoje os 10 mapas têm faixas em pixel; o cenário pintado antigo (`BuildPainted`) saiu na
