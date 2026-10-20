@@ -1142,7 +1142,7 @@ namespace FishingIdle.Game.UI
         {
             var text = Format.Short(value);
             var textWidth = skin.SmallBold.CalcSize(new GUIContent(text)).x + 2f;
-            // Coloured art (ui_currency_coin / shell / dollar), never tinted; the white icon when it is missing.
+            // The coloured pixel icons (ico_moeda / concha / dolar), never tinted; the white icon when one is missing.
             skin.CurrencyIcon(new Rect(x - 1f, centreY - 10f, 20, 20), icon);
             GUI.Label(new Rect(x + 24f, centreY - 9f, textWidth + 2f, 20), text, skin.SmallBold);
             var end = x + 24f + textWidth;
@@ -1223,7 +1223,7 @@ namespace FishingIdle.Game.UI
             var textWidth = skin.Number.CalcSize(new GUIContent(text)).x;
             var pulse = k < 1f ? 1f + 0.12f * Mathf.Sin(k * Mathf.PI) : 1f;
             var size = iconSize * pulse;
-            // The painted coin (ui_currency_coin, or ico_moeda when it is missing).
+            // The pixel coin (ico_moeda; a coin drawn by the code when it is missing).
             skin.CoinIcon(new Rect(x + (iconSize - size) / 2f, centreY - size / 2f, size, size));
             GUI.Label(new Rect(x + iconSize + 8f, centreY - 13f, textWidth + 4f, 30f), text, skin.Number);
             var line = new Rect(x - 4f, centreY - 16f, iconSize + 8f + textWidth + 8f, 32f);

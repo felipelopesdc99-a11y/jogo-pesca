@@ -3,7 +3,7 @@
 Uso:  python3 tools/Arte/cena_pixel.py dados          grava Resources/Visual/cena_pixel.json e a frente dos barcos
       python3 tools/Arte/cena_pixel.py simbolos       desenha os 12 símbolos simples (brancos, tingíveis) em ArtePixel/Icones
       python3 tools/Arte/cena_pixel.py provisorios    converte da arte antiga as laterais e cantos que faltam (provisório)
-      python3 tools/Arte/cena_pixel.py vivos          converte a paisagem viva (Arte/Vivos) para ArtePixel/Vivos
+      python3 tools/Arte/cena_pixel.py vivos          converte a paisagem viva (fontes_antigas/Vivos) para ArtePixel/Vivos
       python3 tools/Arte/cena_pixel.py miniaturas     gera as miniaturas dos 10 mapas das camadas em pixel
       python3 tools/Arte/cena_pixel.py previa <pasta> [mapa ...]   monta a cena como o jogo desenha (PNG) e o GIF do pescador
       python3 tools/Arte/cena_pixel.py tudo           dados + simbolos + provisorios + vivos + miniaturas
@@ -12,6 +12,9 @@ A montagem das prévias e das miniaturas segue a mesma composição do código (
 FishermanRig): grade de 216 px de altura, 20 px por unidade, horizonte na linha 104, camadas presas ao horizonte e
 às bordas da tela, tudo em pixel inteiro. Os números ficam no cena_pixel.json que o jogo lê, então a prévia e o jogo
 usam os mesmos dados. Visual só fica verificado quando o proprietário apertar Play.
+
+Os comandos provisorios e vivos leem a arte antiga guardada em tools/Arte/fontes_antigas (fora de Resources, para
+não ir no build do jogo; M25-T17).
 """
 import json
 import math
@@ -28,7 +31,8 @@ import pixel_folhas as PF  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 ASSETS = os.path.join(ROOT, 'client-unity', 'Assets')
-ARTE = os.path.join(ASSETS, 'Resources', 'Arte')
+# The old painted art the provisional conversions start from, kept out of Resources so it never ships (M25-T17).
+ARTE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fontes_antigas')
 PIXEL = os.path.join(ASSETS, 'Resources', 'ArtePixel')
 VISUAL = os.path.join(ASSETS, 'Resources', 'Visual')
 ANIMALS_CS = os.path.join(ASSETS, 'Scripts', 'Game', 'Scene', 'LivingAnimals.cs')

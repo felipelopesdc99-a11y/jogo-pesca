@@ -18,23 +18,8 @@ namespace FishingIdle.Game.Scene
         public bool Rocks;
         public bool Waterfall;
 
-        /// <summary>Folder and file prefix of the painted layers (Resources/Arte/Mapas), e.g. "LagoSereno" and "map_lago_sereno".</summary>
+        /// <summary>Folder and file prefix of the map's layers (Resources/ArtePixel/Mapas), e.g. "LagoSereno" and "map_lago_sereno".</summary>
         public string ArtFolder, ArtPrefix;
-
-        /// <summary>Where the sun is painted in the sky, so its reflection lines up on the water.</summary>
-        public Vector2 SunPosition = new Vector2(4.6f, 3.1f);
-
-        /// <summary>True when the sun is low enough to draw a column of light on the water.</summary>
-        public bool SunColumn = true;
-
-        /// <summary>Colour of the soft glow drawn around the sun (or the moon, on the night maps).</summary>
-        public Color SunGlow = new Color(1f, 0.93f, 0.75f, 0.35f);
-
-        /// <summary>Night maps (Talude Noturno, Abismo Atlântico): the wave glints take the cold moonlight colour.</summary>
-        public bool Night;
-
-        /// <summary>Heights in world units of the shore groups and the foreground corners (painted art, Resources/Arte/Mapas).</summary>
-        public float NearLeftHeight = 3f, NearRightHeight = 2.6f, CornerHeight = 4.4f;
 
         public string ArtPath(string layer) => "Mapas/" + ArtFolder + "/" + ArtPrefix + "_" + layer;
 
@@ -80,10 +65,6 @@ namespace FishingIdle.Game.Scene
                 TreeHeight = 0.9f,
                 ArtFolder = "CostaDeCoral",
                 ArtPrefix = "map_costa_de_coral",
-                SunPosition = new Vector2(-5.0f, 3.8f),
-                SunColumn = false,
-                NearLeftHeight = 3f,
-                NearRightHeight = 2.6f,
             };
         }
 
@@ -112,9 +93,6 @@ namespace FishingIdle.Game.Scene
                 Current = 0.15f,
                 ArtFolder = "ArquipelagoDoSol",
                 ArtPrefix = "map_arquipelago_do_sol",
-                SunPosition = new Vector2(5.2f, 3.6f),
-                NearLeftHeight = 3.6f,
-                NearRightHeight = 3.4f,
             };
         }
 
@@ -143,9 +121,6 @@ namespace FishingIdle.Game.Scene
                 Current = 0.2f,
                 ArtFolder = "CorrenteAzul",
                 ArtPrefix = "map_corrente_azul",
-                SunPosition = new Vector2(4.8f, 1.4f),
-                NearLeftHeight = 2.6f,
-                NearRightHeight = 2.4f,
             };
         }
 
@@ -174,9 +149,6 @@ namespace FishingIdle.Game.Scene
                 Current = 0.1f,
                 ArtFolder = "BancoDasBaleias",
                 ArtPrefix = "map_banco_das_baleias",
-                SunPosition = new Vector2(-4.4f, 0.9f),
-                NearLeftHeight = 2.4f,
-                NearRightHeight = 2.4f,
             };
         }
 
@@ -198,8 +170,6 @@ namespace FishingIdle.Game.Scene
                 WaterMid = new Color(0.04f, 0.08f, 0.20f),
                 WaterDeep = new Color(0.01f, 0.03f, 0.10f),
                 Glint = new Color(0.78f, 0.86f, 1f),
-                SunGlow = new Color(0.75f, 0.85f, 1f, 0.22f),
-                Night = true,
                 HillSeed = 41,
                 TreeSeed = 87,
                 HillHeight = 0.3f,
@@ -207,9 +177,6 @@ namespace FishingIdle.Game.Scene
                 Current = 0.08f,
                 ArtFolder = "TaludeNoturno",
                 ArtPrefix = "map_talude_noturno",
-                SunPosition = new Vector2(-4.6f, 2.6f),
-                NearLeftHeight = 2.4f,
-                NearRightHeight = 2.4f,
             };
         }
 
@@ -231,8 +198,6 @@ namespace FishingIdle.Game.Scene
                 WaterMid = new Color(0.06f, 0.11f, 0.26f),
                 WaterDeep = new Color(0.02f, 0.05f, 0.14f),
                 Glint = new Color(0.70f, 0.82f, 1f),
-                SunGlow = new Color(0.70f, 0.80f, 1f, 0.24f),
-                Night = true,
                 HillSeed = 43,
                 TreeSeed = 89,
                 HillHeight = 0.2f,
@@ -240,10 +205,6 @@ namespace FishingIdle.Game.Scene
                 Current = 0.05f,
                 ArtFolder = "AbismoAtlantico",
                 ArtPrefix = "map_abismo_atlantico",
-                SunPosition = new Vector2(5.0f, 4.0f),
-                SunColumn = true,
-                NearLeftHeight = 2.2f,
-                NearRightHeight = 2.2f,
             };
         }
 
@@ -271,9 +232,6 @@ namespace FishingIdle.Game.Scene
                 TreeHeight = 0.9f,
                 ArtFolder = "PantanalDourado",
                 ArtPrefix = "map_pantanal_dourado",
-                SunPosition = new Vector2(-5.0f, 1.5f),
-                NearLeftHeight = 2.6f,
-                NearRightHeight = 2.6f,
             };
         }
 
@@ -302,9 +260,6 @@ namespace FishingIdle.Game.Scene
                 Current = 0.25f,
                 ArtFolder = "EstuarioDasMares",
                 ArtPrefix = "map_estuario_das_mares",
-                SunPosition = new Vector2(2.4f, 1.8f),
-                NearLeftHeight = 3f,
-                NearRightHeight = 2.8f,
             };
         }
 
@@ -335,10 +290,6 @@ namespace FishingIdle.Game.Scene
                 Waterfall = true,
                 ArtFolder = "RioSelvagem",
                 ArtPrefix = "map_rio_selvagem",
-                SunPosition = new Vector2(-4.5f, 3.9f),
-                SunColumn = false,
-                NearLeftHeight = 3f,
-                NearRightHeight = 2.8f,
             };
         }
 
@@ -362,9 +313,6 @@ namespace FishingIdle.Game.Scene
                 Glint = new Color(1f, 0.90f, 0.66f),
                 ArtFolder = "LagoSereno",
                 ArtPrefix = "map_lago_sereno",
-                SunPosition = new Vector2(5.3f, 1.95f),
-                NearLeftHeight = 3f,
-                NearRightHeight = 2.5f,
             };
         }
     }
@@ -394,10 +342,7 @@ namespace FishingIdle.Game.Scene
         private SceneTheme _theme;
         private float _arrivedAt = -100f;
 
-        // The equipped boat (A-096): the starter hull pieces, the Shop boat pieces and what is shown now.
-        private readonly System.Collections.Generic.List<SpriteRenderer> _starterHull = new System.Collections.Generic.List<SpriteRenderer>();
-        private SpriteRenderer _gearHullBack;
-        private SpriteRenderer _gearHullFront;
+        // The equipped boat, rod and bait shown now (A-096).
         private string _shownBoat, _shownRod, _shownBait;
         private bool _gearShown;
 
@@ -492,8 +437,8 @@ namespace FishingIdle.Game.Scene
             _world.SetParent(transform, false);
             FreeSky();
 
-            // Pixel layers (Resources/ArtePixel/Mapas) first (M25); then the old painted layers; the scenery drawn
-            // from code otherwise.
+            // Pixel layers (Resources/ArtePixel/Mapas) first (M25); the scenery drawn from code otherwise (the safety
+            // net when a map has no pixel layers; the old painted path was removed in M25-T17).
             _pixelLook = ArtAssets.IsPixel(theme.ArtPath("bg_far")) ? PixelSceneConfig.Map(theme.ArtFolder) : null;
             if (_pixelCamera != null)
             {
@@ -503,10 +448,6 @@ namespace FishingIdle.Game.Scene
             if (_pixelLook != null)
             {
                 BuildPixel(theme, _pixelLook);
-            }
-            else if (ArtAssets.LegacyTexture(theme.ArtPath("bg_sky")) != null)
-            {
-                BuildPainted(theme);
             }
             else
             {
@@ -550,21 +491,8 @@ namespace FishingIdle.Game.Scene
                 return;
             }
 
-            // A Shop boat: its picture behind the fisherman and its near side in front of him. The
-            // starter boat (or a boat without pictures) keeps the scene's own hull.
-            var look = EquipmentLook.Boat(gear.BoatId);
-            var back = look != null ? ArtAssets.Sprite(look.art, look.width, new Vector2(0.5f, look.pivot_y)) : null;
-            var front = look != null ? ArtAssets.Sprite(look.front, look.width, new Vector2(0.5f, look.pivot_y)) : null;
-            var shopBoat = back != null && front != null;
-            foreach (var piece in _starterHull)
-            {
-                piece.enabled = !shopBoat;
-            }
-
-            _gearHullBack.sprite = back;
-            _gearHullFront.sprite = front;
-            _gearHullBack.enabled = _gearHullFront.enabled = shopBoat;
-            Fisherman.SitAt(shopBoat ? new Vector3(look.seat_x, look.seat_y, 0f) : (Vector3?)null);
+            // The scenery drawn from code (no pixel layers): the simple drawn hull for every boat.
+            Fisherman.SitAt(null);
             Fisherman.UseRod(gear.RodId);
             Fisherman.UseBait(gear.BaitId);
         }
@@ -801,146 +729,6 @@ namespace FishingIdle.Game.Scene
         }
 
         /// <summary>
-        /// The painted scenery (Art Bible, sections 9–10): layers back to front with parallax, plus the
-        /// motion that keeps the scene alive — drifting clouds, a breathing sun, glints on the water,
-        /// birds, distant fish and reeds swaying in the corners.
-        /// </summary>
-        private void BuildPainted(SceneTheme theme)
-        {
-            const float width = 26f;
-            var bottom = new Vector2(0.5f, 0f);
-
-            var sky = Layer("Céu", 0.95f);
-            Painted(sky, theme.ArtPath("bg_sky"), width, bottom, new Vector3(0f, Horizon - 0.2f, 0f), OrderSky);
-            var sunGlow = Sprite(sky, "Brilho do sol", Art.Glow, new Vector3(theme.SunPosition.x, theme.SunPosition.y, 0f), Vector3.one * 3.2f, OrderSun,
-                theme.SunGlow);
-            var breathe = sunGlow.gameObject.AddComponent<Breathe>();
-            breathe.MinAlpha = 0.18f;
-            breathe.MaxAlpha = 0.38f;
-
-            var clouds = Layer("Nuvens", 0.85f);
-            for (var i = 0; i < 5; i++)
-            {
-                var cloudSprite = ArtAssets.Sprite(theme.ArtPath("cloud_" + (i % 3 + 1).ToString("00")), 5.2f, new Vector2(0.5f, 0.5f));
-                if (cloudSprite == null)
-                {
-                    continue;
-                }
-
-                var scale = Random.Range(0.55f, 1.05f);
-                var cloud = Sprite(clouds, "Nuvem", cloudSprite, new Vector3(-12f + i * 5.2f + Random.Range(-1f, 1f), Random.Range(2.6f, 4.7f), 0f),
-                    Vector3.one * scale, OrderClouds, new Color(1f, 1f, 1f, Random.Range(0.8f, 0.95f)));
-                cloud.gameObject.AddComponent<Drift>().Speed = Random.Range(0.04f, 0.1f);
-            }
-
-            var halfWidth = Camera != null ? Camera.orthographicSize * Camera.aspect : 9.6f;
-            var living = LivingConfig.For(theme.ArtFolder);
-            if (living == null)
-            {
-                // Without the living landscape, the simple drawn flock keeps the sky alive.
-                var birds = new GameObject("Pássaros");
-                birds.transform.SetParent(clouds, false);
-                birds.AddComponent<BirdFlock>().SortingOrder = OrderBirds;
-            }
-
-            // Land layers, each with its reflection on the water (drawn from the art itself, so it
-            // always matches whatever painting is in the file).
-            Reflect(Painted(Layer("Montanhas distantes", 0.75f), theme.ArtPath("bg_far"), width, bottom, new Vector3(0f, Horizon - 0.1f, 0f), OrderFarHills), 0.6f, 0.35f);
-            Reflect(Painted(Layer("Morros próximos", 0.55f), theme.ArtPath("bg_mid"), width, bottom, new Vector3(0f, Horizon - 0.1f, 0f), OrderMidHills), 0.6f, 0.4f);
-            var shore = Layer("Mata da margem", 0.35f);
-            var left = ArtAssets.SpriteByHeight(theme.ArtPath("near_left"), theme.NearLeftHeight, new Vector2(0f, 0f));
-            var right = ArtAssets.SpriteByHeight(theme.ArtPath("near_right"), theme.NearRightHeight, new Vector2(1f, 0f));
-            if (left != null && right != null)
-            {
-                // The two shore groups are pinned to the edges of the view, leaving the lake open in the middle.
-                Reflect(Sprite(shore, "Margem esquerda", left, new Vector3(-halfWidth - 0.3f, Horizon - 0.08f, 0f), Vector3.one, OrderTrees), 0.7f, 0.5f);
-                Reflect(Sprite(shore, "Margem direita", right, new Vector3(halfWidth + 0.3f, Horizon - 0.08f, 0f), Vector3.one, OrderTrees), 0.7f, 0.5f);
-            }
-            else
-            {
-                Painted(shore, theme.ArtPath("bg_near"), width, bottom, new Vector3(0f, Horizon - 0.15f, 0f), OrderTrees);
-            }
-
-            var water = Layer("Água", 0f);
-            Painted(water, theme.ArtPath("water"), width, new Vector2(0.5f, 1f), new Vector3(0f, Horizon, 0f), OrderWater);
-            Sprite(water, "Linha do horizonte", Art.Pixel, new Vector3(0f, Horizon, 0f), new Vector3(44f, 0.03f, 1f), OrderWaterDetail, new Color(1f, 0.95f, 0.85f, 0.35f));
-
-            // The surface itself moves: rows of wave glints in perspective.
-            var waves = new GameObject("Ondas").AddComponent<WaterWaves>();
-            waves.transform.SetParent(water, false);
-            waves.Horizon = Horizon;
-            waves.Current = theme.Current;
-            waves.Tint = theme.Night ? theme.Glint : theme.SunColumn ? new Color(1f, 0.93f, 0.82f) : new Color(0.88f, 0.97f, 1f);
-            waves.SortingOrder = OrderWaterDetail;
-
-            if (theme.SunColumn)
-            {
-                // Glints that shimmer over the painted reflection of the sun.
-                for (var i = 0; i < 12; i++)
-                {
-                    var y = Horizon - 0.2f - i * 0.36f;
-                    var glint = Sprite(water, "Reflexo do sol", Art.Streak,
-                        new Vector3(theme.SunPosition.x + Random.Range(-0.35f, 0.35f) * (1f + i * 0.15f), y, 0f),
-                        new Vector3(Random.Range(0.6f, 1.4f) * (1f + i * 0.14f), 1.1f, 1f), OrderWaterDetail, theme.Glint);
-                    var twinkle = glint.gameObject.AddComponent<Twinkle>();
-                    twinkle.MaxAlpha = Mathf.Lerp(0.85f, 0.3f, i / 12f);
-                    twinkle.Period = Random.Range(1.6f, 3.2f);
-                }
-            }
-
-            for (var i = 0; i < 26; i++)
-            {
-                var y = Random.Range(-5.2f, Horizon - 0.3f);
-                var depth = Mathf.InverseLerp(Horizon, -5.4f, y);
-                var streak = Sprite(water, "Brilho na água", Art.Streak, new Vector3(Random.Range(-11f, 11f), y, 0f),
-                    new Vector3(Mathf.Lerp(0.5f, 2.4f, depth), Mathf.Lerp(0.6f, 1.4f, depth), 1f), OrderWaterDetail, Color.white);
-                var twinkle = streak.gameObject.AddComponent<Twinkle>();
-                twinkle.MaxAlpha = Random.Range(0.08f, 0.22f);
-                twinkle.Period = Random.Range(2.5f, 5f);
-                if (theme.Current > 0f)
-                {
-                    var drift = streak.gameObject.AddComponent<Drift>();
-                    drift.Speed = theme.Current * Mathf.Lerp(0.5f, 1.4f, depth);
-                    drift.WrapHalfWidth = 12f;
-                }
-            }
-
-            if (theme.Night)
-            {
-                // Plankton: tiny cold lights that come and go on the dark water of the night maps (A-106).
-                for (var i = 0; i < 40; i++)
-                {
-                    var y = Random.Range(-5.2f, Horizon - 0.6f);
-                    var depth = Mathf.InverseLerp(Horizon, -5.4f, y);
-                    var speck = Sprite(water, "Plâncton", Art.Glow, new Vector3(Random.Range(-11f, 11f), y, 0f),
-                        Vector3.one * Mathf.Lerp(0.05f, 0.14f, depth), OrderWaterDetail, new Color(0.5f, 0.95f, 1f, 0f));
-                    var glow = speck.gameObject.AddComponent<Twinkle>();
-                    glow.MaxAlpha = Random.Range(0.25f, 0.6f);
-                    glow.Period = Random.Range(3f, 7f);
-                    glow.DriftSpeed = 0.01f;
-                }
-            }
-
-            var jumps = new GameObject("Peixes saltando ao longe");
-            jumps.transform.SetParent(water, false);
-            var jumper = jumps.AddComponent<DistantFishJumps>();
-            jumper.SortingOrder = OrderDistantFish;
-            jumper.Area = new Rect(-9f, -1.5f, 18f, 1.4f);
-
-            BuildLife(theme, water);
-
-            // Foreground corners, anchored to the edges of the view whatever the screen shape.
-            var fg = Layer("Primeiro plano", -0.25f);
-            Corner(fg, theme.ArtPath("fg_left"), new Vector2(0f, 0f), new Vector3(-halfWidth - 0.4f, -5.7f, 0f), theme.CornerHeight);
-            Corner(fg, theme.ArtPath("fg_right"), new Vector2(1f, 0f), new Vector3(halfWidth + 0.4f, -5.7f, 0f), theme.CornerHeight);
-
-            if (living != null)
-            {
-                BuildLiving(theme, living, halfWidth, clouds, shore, water, fg);
-            }
-        }
-
-        /// <summary>
         /// The living landscape (addendum A-078, Resources/Visual/paisagem_viva.json): loose plants
         /// that bend in the gusts, lily pads, and the scene director that brings the animals.
         /// </summary>
@@ -984,7 +772,7 @@ namespace FishingIdle.Game.Scene
                             var treeSway = tree.gameObject.AddComponent<WindSway>();
                             treeSway.Bend = p.bend;
                             treeSway.Stiffness = 0.7f;
-                            Reflect(tree, 0.7f, 0.5f);
+                            PixelMirror(tree, new Color(0.5f, 0.58f, 0.72f, 0.5f));
                             break;
                     }
                 }
@@ -994,114 +782,6 @@ namespace FishingIdle.Game.Scene
             var director = new GameObject("Diretor de cenário").AddComponent<SceneDirector>();
             director.transform.SetParent(_world, false);
             director.Setup(_root, living, rhythm, new LivingAnimals(living, halfWidth, theme.Current, sky, shore, water, corner, pads));
-        }
-
-        /// <summary>The small, quiet signs of life (Life.cs), tuned per map; all of them fade with "ambient_life".</summary>
-        private void BuildLife(SceneTheme theme, Transform water)
-        {
-            var lake = theme.SunColumn;
-            var life = new GameObject("Vida").transform;
-            life.SetParent(_world, false);
-
-            var shadows = life.gameObject.AddComponent<FishShadows>();
-            shadows.SortingOrder = OrderWaterDetail;
-            shadows.Tint = lake ? new Color(0.03f, 0.08f, 0.16f) : new Color(0.02f, 0.1f, 0.1f);
-
-            var rays = new GameObject("Raios de sol").AddComponent<SunRays>();
-            rays.transform.SetParent(life, false);
-            rays.Sun = theme.SunPosition;
-            rays.Color = lake ? new Color(1f, 0.84f, 0.58f) : new Color(0.95f, 1f, 0.9f);
-            rays.SortingOrder = OrderWaterDetail;
-
-            var mist = new GameObject("Névoa do horizonte").AddComponent<HorizonMist>();
-            mist.transform.SetParent(life, false);
-            mist.Y = Horizon + 0.12f;
-            mist.Color = lake ? new Color(1f, 0.86f, 0.74f) : new Color(0.95f, 0.98f, 1f);
-            mist.MaxAlpha = lake ? 0.14f : 0.26f;
-            mist.SortingOrder = OrderWaterDetail;
-
-            var motes = new GameObject("Poeira no ar").AddComponent<GoldenMotes>();
-            motes.transform.SetParent(life, false);
-            motes.Color = lake ? new Color(1f, 0.88f, 0.6f) : new Color(0.92f, 1f, 0.9f);
-            motes.Count = lake ? 14 : 9;
-            motes.SortingOrder = OrderRod + 1;
-
-            var flies = new GameObject("Libélulas").AddComponent<Dragonflies>();
-            flies.transform.SetParent(life, false);
-            flies.SortingOrder = OrderForeground + 2;
-            flies.HalfWidth = Camera != null ? Camera.orthographicSize * Camera.aspect : 9.6f;
-
-            if (lake)
-            {
-                var glints = new GameObject("Brilhos do sol").AddComponent<SunGlints>();
-                glints.transform.SetParent(water, false);
-                glints.X = theme.SunPosition.x;
-                glints.SortingOrder = OrderWaterDetail;
-            }
-        }
-
-        private void Corner(Transform parent, string path, Vector2 pivot, Vector3 position, float height)
-        {
-            var sprite = ArtAssets.SpriteByHeight(path, height, pivot);
-            if (sprite == null)
-            {
-                return;
-            }
-
-            var corner = Sprite(parent, "Juncos", sprite, position, Vector3.one, OrderForeground);
-            var sway = corner.gameObject.AddComponent<Sway>();
-            sway.Degrees = 0.7f;
-            sway.Period = 6f;
-        }
-
-        private static SpriteRenderer Painted(Transform parent, string path, float width, Vector2 pivot, Vector3 position, int order)
-        {
-            var sprite = ArtAssets.Sprite(path, width, pivot);
-            return sprite != null ? Sprite(parent, path.Substring(path.LastIndexOf('/') + 1), sprite, position, Vector3.one, order) : null;
-        }
-
-        /// <summary>
-        /// A darker, squashed mirror image of a land layer below the horizon, cut into horizontal
-        /// slices that sway out of step, like a reflection on moving water. Slices further from the
-        /// horizon sway more and fade a little.
-        /// </summary>
-        private static void Reflect(SpriteRenderer land, float squash, float alpha)
-        {
-            if (land == null)
-            {
-                return;
-            }
-
-            if (PixelGrid.Active)
-            {
-                // On the pixel grid a reflection is mirrored, never squashed (the living trees of the shore).
-                PixelMirror(land, new Color(0.5f, 0.58f, 0.72f, alpha));
-                return;
-            }
-
-            const int slices = 12;
-            var source = land.sprite;
-            var tex = source.texture;
-            var rect = source.rect;
-            var ppu = source.pixelsPerUnit;
-            var pivotX = source.pivot.x / rect.width;
-            var p = land.transform.localPosition;
-            var root = new GameObject(land.name + " (reflexo)").transform;
-            root.SetParent(land.transform.parent, false);
-            for (var i = 0; i < slices; i++)
-            {
-                var y0 = rect.y + rect.height * i / slices;
-                var h = rect.height / slices;
-                var slice = UnityEngine.Sprite.Create(tex, new Rect(rect.x, y0, rect.width, h), new Vector2(pivotX, 0f), ppu, 0, SpriteMeshType.FullRect);
-                slice.hideFlags = HideFlags.DontSave;
-                var depth = (y0 - rect.y) / ppu * squash;
-                var k = i / (float)slices;
-                var r = Sprite(root, "Faixa", slice, new Vector3(p.x, Horizon - depth, 0f), new Vector3(1f, -squash, 1f),
-                    OrderReflection, new Color(0.5f, 0.58f, 0.72f, alpha * (1f - 0.45f * k)));
-                var sway = r.gameObject.AddComponent<ReflectionSlice>();
-                sway.Amplitude = Mathf.Lerp(0.012f, 0.07f, k);
-                sway.Phase = i * 0.8f;
-            }
         }
 
         private void BuildSky(SceneTheme theme)
@@ -1259,7 +939,6 @@ namespace FishingIdle.Game.Scene
             var ripples = layer.gameObject.AddComponent<BoatRipples>();
             ripples.Boat = boat;
             ripples.SortingOrder = OrderWaterDetail;
-            _starterHull.Clear();
             _pixelHullBack = _pixelHullFront = _pixelBox = null;
 
             if (_pixelLook != null && PixelSceneConfig.Boat(null) != null)
@@ -1270,38 +949,11 @@ namespace FishingIdle.Game.Scene
                 _pixelHullBack = Sprite(boat, "Casco", null, Vector3.zero, Vector3.one, OrderBoat);
                 _pixelHullFront = Sprite(boat, "Casco (frente)", null, Vector3.zero, Vector3.one, OrderBoatFront);
                 _pixelBox = Sprite(boat, "Caixa de pesca", ArtAssets.PixelSprite("Cena/caixa_de_pesca", new Vector2(0.5f, 0f)), Vector3.zero, Vector3.one, OrderFisherman - 1);
-                _gearHullBack = _gearHullFront = null;
                 return boat;
             }
 
-            // The hull in two layers (Cena/barco_fundo + barco_frente, cut by processar_pedidos.py): the far
-            // gunwale and the inside behind the fisherman, the near side in front of him, so he sits
-            // inside the boat. Without them, the single picture (or the one drawn from code).
-            var hullBack = ArtAssets.Sprite("Cena/barco_fundo", 3.6f, new Vector2(0.5f, 0.3f));
-            var hullFront = ArtAssets.Sprite("Cena/barco_frente", 3.6f, new Vector2(0.5f, 0.3f));
-            var tackle = ArtAssets.Sprite("Cena/caixa_de_pesca", 0.5f, new Vector2(0.5f, 0f));
-            if (hullBack != null && hullFront != null)
-            {
-                _starterHull.Add(Sprite(boat, "Casco (fundo)", hullBack, Vector3.zero, Vector3.one, OrderBoat));
-                _starterHull.Add(Sprite(boat, "Casco (frente)", hullFront, Vector3.zero, Vector3.one, OrderBoatFront));
-                if (tackle != null)
-                {
-                    _starterHull.Add(Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.95f, 0.22f, 0f), Vector3.one, OrderFisherman));
-                }
-            }
-            else
-            {
-                _starterHull.Add(Sprite(boat, "Casco", ArtAssets.Sprite("Cena/barco", 3.6f, new Vector2(0.5f, 0.3f)) ?? Art.Boat, Vector3.zero, Vector3.one, OrderBoat));
-                if (tackle != null)
-                {
-                    _starterHull.Add(Sprite(boat, "Caixa de pesca", tackle, new Vector3(0.55f, 0.32f, 0f), Vector3.one, OrderBoat - 1));
-                }
-            }
-
-            // The equipped Shop boat, shown instead of the hull above (ShowGear).
-            _gearHullBack = Sprite(boat, "Barco equipado", null, Vector3.zero, Vector3.one, OrderBoat);
-            _gearHullFront = Sprite(boat, "Barco equipado (frente)", null, Vector3.zero, Vector3.one, OrderBoatFront);
-            _gearHullBack.enabled = _gearHullFront.enabled = false;
+            // Without the pixel boat (the scenery drawn from code): the simple hull drawn by Art.
+            Sprite(boat, "Casco", Art.Boat, Vector3.zero, Vector3.one, OrderBoat);
 
             // Soft shadow on the water under the hull.
             Sprite(layer, "Sombra do barco", Art.Circle, new Vector3(-1.2f, -2.35f, 0f), new Vector3(4.4f, 0.45f, 1f),

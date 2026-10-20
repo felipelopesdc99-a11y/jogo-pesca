@@ -35,6 +35,9 @@ namespace FishingIdle.Game.UI
         /// <summary>The colour of titles in Press Start 2P.</summary>
         public static Color TitleColor => Theme.Title;
 
+        /// <summary>Where a window's content sits: the panel night (#0D0F20).</summary>
+        public static Color PanelColor => Theme.Panel;
+
         /// <summary>Fields, secondary pills, bar tracks behind numbers.</summary>
         public static Color FieldColor => Theme.Field;
 
@@ -52,6 +55,74 @@ namespace FishingIdle.Game.UI
 
         /// <summary>Dark text on a bright face (the alert counter, a rarity seal): #0B0D1E.</summary>
         public static Color DarkInk => Theme.CardLine;
+
+        // ------------------------------------------------------------------ readable coloured text
+
+        /// <summary>The contrast every coloured text reaches against the cards (a margin over 4.5:1).</summary>
+        private const float ReadableContrast = 4.6f;
+
+        private static readonly Dictionary<GUIStyle, GUIStyle> ColoredStyles = new Dictionary<GUIStyle, GUIStyle>();
+        private static readonly Dictionary<Color, Color> ReadableCache = new Dictionary<Color, Color>();
+
+        /// <summary>
+        /// A label in <paramref name="color"/>, set as the text colour (tinting with GUI.contentColor would multiply the
+        /// style's own colour). With <paramref name="readable"/> the colour is first made readable on the cards
+        /// (<see cref="Readable"/>); with false it is used as given (text on a dark seal).
+        /// </summary>
+        public static void ColoredLabel(Rect rect, string text, GUIStyle style, Color color, bool readable = true)
+        {
+            style = _instance != null ? _instance.TitleSafe(style, text) : style;
+            if (!ColoredStyles.TryGetValue(style, out var colored))
+            {
+                colored = new GUIStyle(style);
+                ColoredStyles[style] = colored;
+            }
+
+            var c = readable ? Readable(color) : color;
+            colored.normal.textColor = c;
+            colored.hover.textColor = c;
+            GUI.Label(rect, text, colored);
+        }
+
+        /// <summary>
+        /// <paramref name="color"/> lightened (towards white, same hue) until it reads at 4.5:1 on a card, the lightest of
+        /// the ARC fills text sits on: rarity, size and accent colours used as text (Épico and Lendário need it). Colours
+        /// that already pass come back unchanged.
+        /// </summary>
+        public static Color Readable(Color color)
+        {
+            var key = new Color(color.r, color.g, color.b, 1f);
+            if (!ReadableCache.TryGetValue(key, out var readable))
+            {
+                readable = key;
+                for (var i = 0; i < 40 && Contrast(readable, Theme.Card) < ReadableContrast; i++)
+                {
+                    readable = Color.Lerp(readable, Color.white, 0.06f);
+                }
+
+                ReadableCache[key] = readable;
+            }
+
+            return new Color(readable.r, readable.g, readable.b, color.a);
+        }
+
+        /// <summary>WCAG contrast ratio between two colours (alpha ignored).</summary>
+        public static float Contrast(Color a, Color b)
+        {
+            var la = Luminance(a);
+            var lb = Luminance(b);
+            return (Mathf.Max(la, lb) + 0.05f) / (Mathf.Min(la, lb) + 0.05f);
+        }
+
+        private static float Luminance(Color c)
+        {
+            return 0.2126f * Channel(c.r) + 0.7152f * Channel(c.g) + 0.0722f * Channel(c.b);
+        }
+
+        private static float Channel(float v)
+        {
+            return v <= 0.03928f ? v / 12.92f : Mathf.Pow((v + 0.055f) / 1.055f, 2.4f);
+        }
 
         // ------------------------------------------------------------------ fonts
 

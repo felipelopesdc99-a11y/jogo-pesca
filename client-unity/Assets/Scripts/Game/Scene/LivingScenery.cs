@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 namespace FishingIdle.Game.Scene
 {
     // The living landscape (addendum A-078): loose plants that bend in gusts of wind and animals that
-    // show up now and then, painted by the owner (Resources/Arte/Vivos). Pure presentation: no rule,
+    // show up now and then, in pixel art (Resources/ArtePixel/Vivos). Pure presentation: no rule,
     // reward or mechanic. Placement, weights and rhythm live in Resources/Visual/paisagem_viva.json.
 
     /// <summary>The shape of Resources/Visual/paisagem_viva.json (read with JsonUtility).</summary>

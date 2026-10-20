@@ -71,7 +71,6 @@ namespace FishingIdle.Game.Scene
         private SpriteRenderer _shadow;
         private Vector3 _seat;
         private SpriteRenderer[] _codeRod;
-        private SpriteRenderer _paintedRod;
         private SpriteRenderer _bait;
         private SpriteRenderer _baitLeader;
         private Color _baitColor;
@@ -122,40 +121,14 @@ namespace FishingIdle.Game.Scene
             var skin = new Color(0.87f, 0.66f, 0.50f);
             var o = FishingScene.OrderFisherman;
 
-            // The painted fisherman (Resources/Arte/Cena/pescador.png) sits behind the rim of the hull
-            // with his fists closed around the rod; without the file, the figure is built from simple
-            // shapes with an arm holding the rod. His size, seat (pivot) and the point between his
-            // fists come from Visual/equipamento_cena.json (tools/Arte/equipamento_na_cena.py); the
-            // old picture's numbers are the fallback.
+            // The pixel fisherman (ArtePixel/Cena/pescador_*, M25-T08); without his frames (the scenery drawn from
+            // code), a figure built from simple shapes with an arm holding the rod. The old painted fisherman was
+            // removed in M25-T17.
             _pixel = PixelGrid.Active && BuildPixelFisherman();
-            var fisher = _pixel ? null : EquipmentLook.Fisherman();
-            var paintedHeight = fisher != null ? fisher.height : 1.7f;
-            var pivot = fisher != null ? new Vector2(fisher.pivot_u, fisher.pivot_v) : new Vector2(0.27f, 0.12f);
-            var grip = fisher != null ? new Vector2(fisher.hands_u, fisher.hands_v) : new Vector2(0.97f, 0.23f);
-            var painted = _pixel ? null : Visual.ArtAssets.SpriteByHeight(fisher != null ? fisher.art : "Cena/pescador", paintedHeight, pivot);
             Vector3 hands;
             if (_pixel)
             {
                 hands = _idle.Hands[0];
-            }
-            else if (painted != null)
-            {
-                // Inside a two-layer hull he sits on the bench, between its back and front; with a
-                // single hull picture he stays behind it.
-                var insideHull = Visual.ArtAssets.Texture("Cena/barco_frente") != null;
-                _body.localPosition = insideHull ? new Vector3(-0.35f, 0.2f, 0f) : _body.localPosition;
-                FishingScene.Sprite(_body, "Pescador", painted, Vector3.zero, Vector3.one, insideHull ? FishingScene.OrderFisherman : FishingScene.OrderBoat - 1);
-                var width = paintedHeight * painted.rect.width / painted.rect.height;
-                hands = new Vector3((grip.x - pivot.x) * width, (grip.y - pivot.y) * paintedHeight, 0f);
-
-                // His fists alone, drawn over the rod so it sits inside them.
-                var fists = insideHull && fisher != null && !string.IsNullOrEmpty(fisher.hands_art)
-                    ? Visual.ArtAssets.SpriteByHeight(fisher.hands_art, paintedHeight, pivot)
-                    : null;
-                if (fists != null)
-                {
-                    FishingScene.Sprite(_body, "Mãos", fists, Vector3.zero, Vector3.one, FishingScene.OrderRod + 1);
-                }
             }
             else
             {
@@ -176,9 +149,7 @@ namespace FishingIdle.Game.Scene
                 FishingScene.Sprite(_rodPivot, "Cabo", Art.PixelLeft, new Vector3(-0.15f, 0f, 0f), new Vector3(0.55f, 0.08f, 1f), FishingScene.OrderRod, new Color(0.72f, 0.56f, 0.36f)),
                 FishingScene.Sprite(_rodPivot, "Haste", Art.PixelLeft, Vector3.zero, new Vector3(RodLength, 0.04f, 1f), FishingScene.OrderRod, new Color(0.26f, 0.18f, 0.12f)),
             };
-            _paintedRod = FishingScene.Sprite(_rodPivot, "Vara pintada", null, Vector3.zero, Vector3.one, FishingScene.OrderRod);
-            _paintedRod.enabled = false;
-            if (painted == null && !_pixel)
+            if (!_pixel)
             {
                 FishingScene.Sprite(_body, "Mão", Art.Circle, hands, Vector3.one * 0.12f, FishingScene.OrderRod + 1, skin);
             }
@@ -241,8 +212,8 @@ namespace FishingIdle.Game.Scene
 
         /// <summary>
         /// Loads the pixel fisherman (ArtePixel/Cena/pescador_*, A-183): 64 × 64 frames with the feet on the same pixel,
-        /// so changing animation never moves him. False when any frame or the scene file is missing (the old painted
-        /// fisherman is used instead).
+        /// so changing animation never moves him. False when any frame or the scene file is missing (the figure drawn from
+        /// shapes is used instead).
         /// </summary>
         private bool BuildPixelFisherman()
         {
@@ -348,51 +319,26 @@ namespace FishingIdle.Game.Scene
             _body.localPosition = seat ?? _seat;
         }
 
-        /// <summary>Shows the painted picture of the rod in use along the animated rod (the simple drawn rod without it).</summary>
+        /// <summary>
+        /// The rod in use: drawn by the code, one grid pixel thick, in the colours of the rod (ART_BIBLE_PIXEL 3.3); in the
+        /// scenery drawn from code, the simple drawn rod.
+        /// </summary>
         public void UseRod(string rodId)
         {
-            if (_pixel)
+            if (!_pixel)
             {
-                // The rod is drawn by the code, one grid pixel thick, in the colours of the rod in use (ART_BIBLE_PIXEL 3.3).
-                var colours = PixelSceneConfig.Rod(rodId);
-                _codeRod[0].color = PixelSceneConfig.Hex(colours?.grip, new Color(0.2f, 0.2f, 0.17f));
-                _codeRod[1].color = PixelSceneConfig.Hex(colours?.shaft, new Color(0.42f, 0.29f, 0.17f));
-                _codeRod[0].transform.localPosition = new Vector3(-6f * PixelGrid.Unit, 0f, 0f);
-                _codeRod[0].transform.localScale = new Vector3(6f * PixelGrid.Unit, PixelGrid.Unit, 1f);
-                _codeRod[1].transform.localScale = new Vector3(RodLength, PixelGrid.Unit, 1f);
-                _paintedRod.enabled = false;
-                _codeRod[0].enabled = _codeRod[1].enabled = true;
                 return;
             }
 
-            var look = EquipmentLook.Rod(rodId);
-            var tex = look != null ? Visual.ArtAssets.Texture(look.art) : null;
-            var painted = false;
-            if (tex != null)
-            {
-                // Lay the picture so its butt-to-tip line runs along the rod, the hands at "grip" and the tip at RodLength.
-                var du = (look.tip_u - look.butt_u) * tex.width;
-                var dv = (look.tip_v - look.butt_v) * tex.height;
-                var lengthPx = Mathf.Sqrt(du * du + dv * dv);
-                var grip = Mathf.Clamp(look.grip, 0f, 0.6f);
-                if (lengthPx > 1f)
-                {
-                    var total = RodLength / (1f - grip);
-                    _paintedRod.sprite = Visual.ArtAssets.Sprite(look.art, total * tex.width / lengthPx, new Vector2(look.butt_u, look.butt_v));
-                    _paintedRod.transform.localPosition = new Vector3(-grip * total, 0f, 0f);
-                    _paintedRod.transform.localRotation = Quaternion.Euler(0f, 0f, -Mathf.Atan2(dv, du) * Mathf.Rad2Deg);
-                    painted = _paintedRod.sprite != null;
-                }
-            }
-
-            _paintedRod.enabled = painted;
-            foreach (var part in _codeRod)
-            {
-                part.enabled = !painted;
-            }
+            var colours = PixelSceneConfig.Rod(rodId);
+            _codeRod[0].color = PixelSceneConfig.Hex(colours?.grip, new Color(0.2f, 0.2f, 0.17f));
+            _codeRod[1].color = PixelSceneConfig.Hex(colours?.shaft, new Color(0.42f, 0.29f, 0.17f));
+            _codeRod[0].transform.localPosition = new Vector3(-6f * PixelGrid.Unit, 0f, 0f);
+            _codeRod[0].transform.localScale = new Vector3(6f * PixelGrid.Unit, PixelGrid.Unit, 1f);
+            _codeRod[1].transform.localScale = new Vector3(RodLength, PixelGrid.Unit, 1f);
         }
 
-        /// <summary>Hangs the bait in use on the hook (its picture, or a coloured placeholder); nothing when no bait is in use.</summary>
+        /// <summary>Hangs the bait in use on the hook (a dot in its colour); nothing when no bait is in use.</summary>
         public void UseBait(string baitId)
         {
             var look = baitId != null ? EquipmentLook.Bait(baitId) : null;
@@ -408,22 +354,11 @@ namespace FishingIdle.Game.Scene
                 return;
             }
 
-            var art = look != null && !string.IsNullOrEmpty(look.art) ? Visual.ArtAssets.Sprite(look.art, look.width, new Vector2(0.5f, 0.85f)) : null;
-            if (art != null)
-            {
-                _bait.sprite = art;
-                _bait.transform.localScale = Vector3.one;
-                _bait.transform.localPosition = new Vector3(0f, -0.3f, 0f);
-                _baitColor = Color.white;
-            }
-            else
-            {
-                _bait.sprite = Art.RoundedBox;
-                _bait.transform.localScale = new Vector3(0.16f, 0.07f, 1f);
-                _bait.transform.localPosition = new Vector3(0f, -0.33f, 0f);
-                _baitColor = EquipmentLook.BaitColor(look) ?? Color.clear;
-            }
-
+            // The scenery drawn from code: a small rounded shape in the bait's colour.
+            _bait.sprite = Art.RoundedBox;
+            _bait.transform.localScale = new Vector3(0.16f, 0.07f, 1f);
+            _bait.transform.localPosition = new Vector3(0f, -0.33f, 0f);
+            _baitColor = EquipmentLook.BaitColor(look) ?? Color.clear;
             _bait.enabled = _baitLeader.enabled = _baitColor.a > 0f;
         }
 

@@ -2,8 +2,8 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-20T20:00:00Z",
-  "current_milestone": "M24",
+  "updated_at": "2026-10-20T22:00:00Z",
+  "current_milestone": "M25",
   "statuses": [
     "TODO",
     "IN_PROGRESS",
@@ -5349,7 +5349,7 @@
           "title": "Limpeza das artes antigas",
           "subsystem": "client",
           "description": "Quando tudo estiver em ArtePixel: apagar Resources/Arte e o fallback do ArtAssets, as regras antigas do ArtImportSettings, as fontes Fredoka e Nunito, as peças que saem (docs/ASSETS_PIXEL.md, categoria d) e os geradores de arte provisória que ficarem sem uso; atualizar BASE_TECNICA e ASSETS_PENDENTES.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T08",
             "M25-T09",
@@ -5361,7 +5361,8 @@
             "M25-T15",
             "M25-T16"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T22:00:00Z",
+          "completion_notes": "Limpeza da arte antiga (TD-065). Resources/Arte: de 659 PNGs (166,4 MB) para 6 (2,2 MB). Apagados 421 PNGs (141,3 MB) com equivalente em ArtePixel ou sem leitura (céus, nuvens e água pintados, Agua/ondas, Cena/barco*, pescador_maos, Varas/Cena, ui_currency_*, ui_diario_*, peças da barra antiga, ui_rk_emblema_* e as 11 peças que as telas passaram a desenhar). Movidos para tools/Arte/fontes_antigas (fora do build) 232 PNGs (22,9 MB): as 10 fontes dos provisórios L1-06b, L6-08b, L6-09b e os 222 de Vivos; cena_pixel.py passou a ler de lá. Ficaram os 6 peixes do Pantanal (pedido L4-03a, sem versão pixel), com o fallback LegacyRoot do ArtAssets e uma regra de importação só para eles. Saíram também as fontes Fredoka e Nunito (7 arquivos, 0,47 MB), UiSkinPaper.cs com os ramos UiSkin.Paper e os apelidos de cor (trocados pelas cores ARC iguais), BuildPainted e auxiliares, os componentes mortos do Life.cs, o pescador, a vara e a isca pintados do FishermanRig, os barcos e varas de equipamento_cena.json, as regras antigas do ArtImportSettings (versão 6), texturas Clean Premium sem uso do Art.cs, 12 textos sem uso do GameTexts e 20 geradores antigos de tools/Arte (0,24 MB). client-unity/Assets: de 1.539 arquivos (189,8 MB) para 878 (25,0 MB). Correções do checkup: texto de horas do leilão no GameTexts; Cardume dos adversários pelo cardume.max_fish; variação de tamanho dos adversários em arena_bots.json (size_percentile_spread, mesmo valor); viagem sem o padrão de 30 s no código (travel.duration_seconds validado). Compila pelo CI; visual só verificado no Play."
         },
         {
           "id": "M25-T18",

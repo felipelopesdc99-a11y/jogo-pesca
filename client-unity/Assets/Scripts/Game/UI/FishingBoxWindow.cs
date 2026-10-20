@@ -508,8 +508,7 @@ namespace FishingIdle.Game.UI
                 // A square pixel gem (4 × 4 art pixels), like the filter chips.
                 var dot = UiSkin.ArcPixel * 4f;
                 skin.ArcFill(new Rect(tab.x + 12, Mathf.Round(tab.center.y - dot / 2f), dot, dot), dim ? UiSkin.Muted : color, 0f);
-                // On the sheet the colour is set as ink (tinting multiplied the dark ink and the colour vanished).
-                var labelColor = active ? (UiSkin.Paper ? color : Color.Lerp(color, Color.white, 0.6f)) : dim ? UiSkin.Muted : UiSkin.Text;
+                var labelColor = active ? Color.Lerp(color, Color.white, 0.6f) : dim ? UiSkin.Muted : UiSkin.Text;
                 var lw = skin.BodyBold.CalcSize(new GUIContent(label)).x;
                 UiSkin.ColoredLabel(new Rect(tab.x + 28, tab.y + 11, lw + 4, 22), label, skin.BodyBold, labelColor);
                 GUI.Label(new Rect(tab.x + 34 + lw, tab.y + 13, w - lw - 34, 20), number, skin.SmallMuted);

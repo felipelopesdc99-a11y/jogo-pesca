@@ -19,30 +19,29 @@ namespace FishingIdle.Game.UI
     {
         private static VisualTheme Theme => VisualTheme.Current;
 
-        // On a window sheet (Paper, A-170) each colour answers with its ink twin; see UiSkinPaper.cs.
-        public static Color Text => Paper ? Ink : Theme.Text;
-        public static Color Muted => Paper ? InkSoft : Theme.TextMuted;
-        public static Color Accent => Paper ? InkAccent : Theme.Action;
-        public static Color AccentHover => Paper ? InkAccent : Theme.ActionHover;
-        public static Color Gold => Paper ? InkReward : Theme.Reward;
-        public static Color GoldLight => Paper ? InkReward : Theme.RewardLight;
-        public static Color Danger => Paper ? InkDanger : Theme.Danger;
-        public static Color Success => Paper ? InkSuccess : Theme.Success;
-        public static Color Border => Paper ? PaperLine : Theme.Border;
-        public static Color Night => Paper ? PaperShade : Theme.Night;
+        // The ARC palette (A-184). The paper mode of the old diary (A-170) and its ink colours left in M25-T17.
+        public static Color Text => Theme.Text;
+        public static Color Muted => Theme.TextMuted;
+        public static Color Accent => Theme.Action;
+        public static Color AccentHover => Theme.ActionHover;
+        public static Color Gold => Theme.Reward;
+        public static Color GoldLight => Theme.RewardLight;
+        public static Color Danger => Theme.Danger;
+        public static Color Success => Theme.Success;
+        public static Color Border => Theme.Border;
+        public static Color Night => Theme.Night;
 
         /// <summary>Accent of the Raro tier (kept for older call sites; prefer <see cref="RarityColor"/>).</summary>
         public static Color Rare => RarityColor("rare");
 
         /// <summary>The accent colour of a rarity id.</summary>
-        public static Color RarityColor(string rarityId) => Paper ? InkOf(Theme.Rarity(rarityId)) : Theme.Rarity(rarityId);
+        public static Color RarityColor(string rarityId) => Theme.Rarity(rarityId);
 
         /// <summary>The accent colour of a size category id (Excepcional = gold).</summary>
-        public static Color SizeColor(string sizeCategoryId) => Paper ? InkOf(Theme.Size(sizeCategoryId)) : Theme.Size(sizeCategoryId);
+        public static Color SizeColor(string sizeCategoryId) => Theme.Size(sizeCategoryId);
 
         public GUIStyle Panel, PanelSolid, Card, CardHovered, CardSelected, CardImportant, Shadow, Glow, Outline, Pill, IconTile;
         public GUIStyle Button, ButtonPrimary, ButtonDanger, ButtonReward, Chip, ChipActive, Nav, NavActive, SearchField;
-        // PillText is never tracked by paper mode: it is always tinted with GUI.contentColor or sits on a dark badge.
         public GUIStyle Title, Heading, Body, BodyBold, ChipText, Small, SmallBold, SmallMuted, SmallRight, SmallMutedRight, SmallGold, SmallGoldRight, Number, NumberRight, Center, CenterBold, SmallMutedCenter, Badge, Display, DisplaySub, PillText;
 
         public Texture2D White, Overlay, Coin, Rays;
@@ -64,20 +63,21 @@ namespace FishingIdle.Game.UI
         {
             var t = Theme;
 
-            // ARC fonts (Art Bible 7.1, TD-061): Press Start 2P for titles and big numbers, VT323 for everything else. The
-            // old fonts stay as the fallback while a file is missing.
+            // ARC fonts (Art Bible 7.1, TD-061): Press Start 2P for titles and big numbers, VT323 for everything else. While
+            // a file is missing, Unity's default font is used (null font in a style). The old Fredoka and Nunito left in
+            // M25-T17.
             PixelTitleFont = Resources.Load<Font>("Fontes/PressStart2P-Regular");
             PixelTextFont = Resources.Load<Font>("Fontes/VT323-Regular");
-            TitleFont = PixelTitleFont ?? Resources.Load<Font>("Fontes/Fredoka-SemiBold");
-            TitleBoldFont = PixelTitleFont ?? Resources.Load<Font>("Fontes/Fredoka-Bold") ?? TitleFont;
-            BodyFont = PixelTextFont ?? Resources.Load<Font>("Fontes/Nunito-SemiBold") ?? Resources.Load<Font>("Fontes/Nunito-Regular");
+            TitleFont = PixelTitleFont;
+            TitleBoldFont = PixelTitleFont;
+            BodyFont = PixelTextFont;
             // VT323 has one weight: "bold" text keeps the same letters (emphasis comes from colour).
-            BodyBoldFont = PixelTextFont ?? Resources.Load<Font>("Fontes/Nunito-Bold") ?? BodyFont;
+            BodyBoldFont = PixelTextFont;
 
             White = Art.SolidTexture(Color.white);
             Overlay = Art.SolidTexture(new Color(t.Veil.r, t.Veil.g, t.Veil.b, t.OverlayOpacity));
-            // The pixel coin icon first (ASSETS_PIXEL: the painted ui_currency_* leave); the old art while it is missing.
-            Coin = ArtAssets.Icon(Icons.Coin) ?? ArtAssets.Texture(CoinArt) ?? Art.Circle.texture;
+            // The pixel coin icon (ico_moeda); a coin drawn by the code while it is missing.
+            Coin = ArtAssets.Icon(Icons.Coin) ?? Art.Circle.texture;
             Rays = Art.RaysTexture(14);
 
             // Panels: the three-line frame (gold, dark line, dark gold) with a 2-pixel chamfer (Art Bible 7).
@@ -200,8 +200,6 @@ namespace FishingIdle.Game.UI
             Badge.normal.background = ArcFace(3, true, Color.white, Color.white);
             Badge.border = new RectOffset(ArcFaceBorder(3, 0), ArcFaceBorder(3, 0), ArcFaceBorder(3, 0), ArcFaceBorder(3, 0));
             Badge.padding = new RectOffset(6, 6, Badge.padding.top, 1);
-
-            BuildPaper();
         }
 
         // Text sizes on the 1080-tall virtual canvas (Art Bible 7.1, A-184). The canvas is scaled to the screen, so on a
@@ -315,12 +313,11 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// A small solid tag like "NOVA ESPÉCIE": dark text on a pixel pill of the colour (its night version, never a
-        /// darkened ink, so the dark text keeps its contrast).
+        /// A small solid tag like "NOVA ESPÉCIE": dark text on a pixel pill of the colour.
         /// </summary>
         public void Tag(Rect rect, string text, Color color)
         {
-            PixelPill(rect, NightOf(color), Color.clear);
+            PixelPill(rect, color, Color.clear);
             var previous = GUI.contentColor;
             GUI.contentColor = Color.white;
             GUI.Label(rect, text, BadgeText);
@@ -355,12 +352,12 @@ namespace FishingIdle.Game.UI
             if (icon != null)
             {
                 var s = rect.height - 8f;
-                DrawIcon(new Rect(rect.x + 7, rect.y + 4, s, s), icon, Paper ? InkOf(color) : Color.Lerp(color, Color.white, 0.2f));
+                DrawIcon(new Rect(rect.x + 7, rect.y + 4, s, s), icon, Color.Lerp(color, Color.white, 0.2f));
                 textRect = new Rect(rect.x + s + 6, rect.y, rect.width - s - 8, rect.height);
             }
 
             var prevContent = GUI.contentColor;
-            GUI.contentColor = Paper ? InkOf(color) : Color.Lerp(color, Color.white, 0.45f);
+            GUI.contentColor = Color.Lerp(color, Color.white, 0.45f);
             GUI.Label(textRect, text, PillText);
             GUI.contentColor = prevContent;
         }
@@ -410,12 +407,6 @@ namespace FishingIdle.Game.UI
             return clicked;
         }
 
-        /// <summary>Width a <see cref="ColorChip"/> needs for its text.</summary>
-        public float ColorChipWidth(string text)
-        {
-            return ChipText.CalcSize(new GUIContent(text)).x + 40f;
-        }
-
         /// <summary>
         /// A "48,6 cm · Grande · Nv. 3" line where the size category is written in its own colour
         /// (addendum A-079), wherever it sits in the line; the rest keeps <paramref name="style"/>.
@@ -449,7 +440,7 @@ namespace FishingIdle.Game.UI
                 var width = s.CalcSize(new GUIContent(piece)).x - s.padding.horizontal;
                 if (isSize)
                 {
-                    GUI.contentColor = Paper ? SizeColor(sizeId) : Color.Lerp(SizeColor(sizeId), Color.white, 0.15f);
+                    GUI.contentColor = Color.Lerp(SizeColor(sizeId), Color.white, 0.15f);
                 }
 
                 GUI.Label(new Rect(x - s.padding.left, rect.y, Mathf.Max(0f, rect.xMax - x + s.padding.left), rect.height), piece, s);
@@ -519,22 +510,13 @@ namespace FishingIdle.Game.UI
             GUI.Box(rect, GUIContent.none, Panel);
         }
 
-        /// <summary>
-        /// Draws an icon tinted with a colour. Missing icon files draw nothing. On the diary sheet (A-170) a white glyph
-        /// would vanish on the paper, so a near-white tint becomes ink (the coloured icons — Moeda, Concha, Dólar — keep
-        /// their colours). Icons on a coloured or dark face use <see cref="DrawIconExact"/>.
-        /// </summary>
+        /// <summary>Draws an icon tinted with a colour. Missing icon files draw nothing (same as <see cref="DrawIconExact"/>).</summary>
         public void DrawIcon(Rect rect, string icon, Color color)
         {
-            if (Paper && color.r > 0.85f && color.g > 0.85f && color.b > 0.85f && icon != Icons.Coin && icon != Icons.Shell && icon != Icons.Dollar)
-            {
-                color = new Color(Ink.r, Ink.g, Ink.b, color.a);
-            }
-
             DrawIconExact(rect, icon, color);
         }
 
-        /// <summary>Draws an icon tinted with exactly <paramref name="color"/>, in both modes (white on a coloured face).</summary>
+        /// <summary>Draws an icon tinted with exactly <paramref name="color"/> (white on a coloured face).</summary>
         public void DrawIconExact(Rect rect, string icon, Color color)
         {
             var tex = icon != null ? ArtAssets.Icon(icon) : null;
@@ -707,25 +689,25 @@ namespace FishingIdle.Game.UI
         private GUIStyle _smallMutedRightLine, _smallGoldLine;
 
         /// <summary><see cref="SmallMutedRight"/> on one line, never wrapping.</summary>
-        public GUIStyle SmallMutedRightLine => _smallMutedRightLine ?? (_smallMutedRightLine = Track(new GUIStyle(SmallMutedRight) { wordWrap = false, clipping = TextClipping.Clip }));
+        public GUIStyle SmallMutedRightLine => _smallMutedRightLine ?? (_smallMutedRightLine = new GUIStyle(SmallMutedRight) { wordWrap = false, clipping = TextClipping.Clip });
 
         /// <summary><see cref="SmallGold"/> on one line, never wrapping.</summary>
-        public GUIStyle SmallGoldLine => _smallGoldLine ?? (_smallGoldLine = Track(new GUIStyle(SmallGold) { wordWrap = false, clipping = TextClipping.Clip }));
+        public GUIStyle SmallGoldLine => _smallGoldLine ?? (_smallGoldLine = new GUIStyle(SmallGold) { wordWrap = false, clipping = TextClipping.Clip });
 
         // Arena duel and VS intro styles. Made on first use.
         private GUIStyle _smallGoldCenter, _tinyMutedCenter, _numberBig, _titleCenter, _vsMark, _vsDisplay, _medalText;
 
         /// <summary><see cref="SmallGold"/> centred on one line.</summary>
-        public GUIStyle SmallGoldCenter => _smallGoldCenter ?? (_smallGoldCenter = Track(new GUIStyle(SmallGold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip }));
+        public GUIStyle SmallGoldCenter => _smallGoldCenter ?? (_smallGoldCenter = new GUIStyle(SmallGold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
 
         /// <summary>A small bold muted line, centred (short captions such as "Volta em" on the compass). 14 px since A-149 (was 10).</summary>
-        public GUIStyle TinyMutedCenter => _tinyMutedCenter ?? (_tinyMutedCenter = Track(new GUIStyle(SmallMutedCenter) { fontSize = ChipSize, font = BodyBoldFont, wordWrap = false }));
+        public GUIStyle TinyMutedCenter => _tinyMutedCenter ?? (_tinyMutedCenter = new GUIStyle(SmallMutedCenter) { fontSize = ChipSize, font = BodyBoldFont, wordWrap = false });
 
         /// <summary>A large gold number on one line (the Arena's Honor).</summary>
-        public GUIStyle NumberBig => _numberBig ?? (_numberBig = Track(new GUIStyle(Number) { fontSize = 30, wordWrap = false }));
+        public GUIStyle NumberBig => _numberBig ?? (_numberBig = new GUIStyle(Number) { fontSize = 30, wordWrap = false });
 
         /// <summary><see cref="Title"/> centred on one line.</summary>
-        public GUIStyle TitleCenter => _titleCenter ?? (_titleCenter = Track(new GUIStyle(Title) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip }));
+        public GUIStyle TitleCenter => _titleCenter ?? (_titleCenter = new GUIStyle(Title) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
 
         /// <summary>The gold "VS" between the two formations (Press Start 2P at 32: fits the 76 px disc, M25-T14).</summary>
         public GUIStyle VsMark => _vsMark ?? (_vsMark = GoldDisplay(DisplaySize));
@@ -742,7 +724,6 @@ namespace FishingIdle.Game.UI
                 {
                     _medalText = new GUIStyle(CenterBold) { wordWrap = false, clipping = TextClipping.Overflow };
                     _medalText.normal.textColor = new Color(0.23f, 0.15f, 0.02f);
-                    Track(_medalText);
                 }
 
                 return _medalText;
@@ -753,7 +734,7 @@ namespace FishingIdle.Game.UI
         {
             var style = new GUIStyle(Display) { fontSize = size, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             style.normal.textColor = Gold;
-            return Track(style);
+            return style;
         }
 
         private Texture2D _diagonal;
@@ -805,17 +786,8 @@ namespace FishingIdle.Game.UI
         public const float NavGameIconWidth = 60f;
 
         private const float NavGameGap = 8f;
-        private const float NavGamePadding = 16f;
 
         private GUIStyle _navGame, _navGameActive;
-
-        // The owner's interface art (Resources/Arte/UI). Since the ARC skin (A-184) only the currency icons are still
-        // drawn from files; the frame, button, avatar ring and wallet pieces of the old skin are no longer used (their files
-        // leave in M25-T17).
-        public const string NavButtonArt = "UI/ui_nav_button_base", NavButtonActiveArt = "UI/ui_nav_button_active",
-            TopBarArt = "UI/ui_topbar_frame", LogoArt = "UI/ui_logo_fishing_idle", AvatarFrameArt = "UI/ui_avatar_frame",
-            CoinArt = "UI/ui_currency_coin", ShellArt = "UI/ui_currency_shell", DollarArt = "UI/ui_currency_dollar",
-            WalletArt = "UI/ui_wallet_inset";
 
         private static readonly float[] SliceX = new float[4], SliceY = new float[4], SliceU = new float[4], SliceV = new float[4];
 
@@ -864,7 +836,7 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>The coloured icon of a currency (Conchas, Dólares, Moedas), or the tinted icon when its art is missing.</summary>
+        /// <summary>The coloured pixel icon of a currency (Conchas, Dólares, Moedas), or the tinted icon when it is not pixel art.</summary>
         public void CurrencyIcon(Rect rect, string icon)
         {
             if (icon == Icons.Coin)
@@ -877,13 +849,6 @@ namespace FishingIdle.Game.UI
             if (pixel != null && ArtAssets.IsPixel(pixel))
             {
                 PixelDraw.Icon(rect, pixel, icon, Color.white);
-                return;
-            }
-
-            var art = icon == Icons.Shell ? ArtAssets.Texture(ShellArt) : icon == Icons.Dollar ? ArtAssets.Texture(DollarArt) : null;
-            if (art != null)
-            {
-                PixelDraw.Fit(rect, art);
                 return;
             }
 
@@ -903,18 +868,6 @@ namespace FishingIdle.Game.UI
             ArcFace(ButtonRadius, true, Alpha(Theme.PanelElevated, 1f), Alpha(Theme.PanelElevated, 1f), Theme.Title),
             ArcFace(ButtonRadius, true, Alpha(Theme.PanelElevated, 1f), Alpha(Theme.PanelElevated, 1f), Theme.Frame),
             Theme.Title, SmallSize));
-
-        /// <summary>Width a main-menu button needs for its label (icon, gap, label and side padding).</summary>
-        /// <param name="tight">Half the side padding, for a crowded bar (A-167).</param>
-        public float NavGameWidth(string label, bool tight = false)
-        {
-            if (string.IsNullOrEmpty(label))
-            {
-                return NavGameIconWidth;
-            }
-
-            return LabelOf(NavGame).CalcSize(new GUIContent(label)).x + NavGameIconSize + NavGameGap + (tight ? NavGamePadding : NavGamePadding * 2f);
-        }
 
         /// <summary>
         /// A button of the top strip in the ARC skin (A-184): a dark pill with the thin gold line, the raised panel colour

@@ -22,7 +22,6 @@ namespace FishingIdle.Game.UI
             {
                 _placeholder = new GUIStyle(skin.Body) { alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Clip };
                 _placeholder.normal.textColor = UiSkin.Muted;
-                skin.Track(_placeholder);
             }
 
             text = text ?? string.Empty;

@@ -14,7 +14,7 @@ namespace FishingIdle.Game.UI
     /// </summary>
     /// <remarks>
     /// Shows what the pass service returns; nothing here decides a reward or whether it can be claimed. Only the columns
-    /// in view are drawn (the track has 100). Art (Resources/Arte): ico_passe, the fragment icons in Fragmentos/, and since
+    /// in view are drawn (the track has 100). Art (Resources/ArtePixel): ico_passe, the fragment icons in Fragmentos/, and since
     /// A-179 the strip passe_faixa behind the summary and the seal passe_premium_selo of the Premium row; each falls back to
     /// the drawn look when its file is missing.
     /// </remarks>
@@ -23,7 +23,7 @@ namespace FishingIdle.Game.UI
         private const float SummaryHeight = 104f, Gap = 12f, LabelColumn = 118f, Column = 168f, ColumnGap = 10f, HeaderHeight = 44f;
         private const float RefreshSeconds = 0.5f, WheelStep = 48f;
 
-        /// <summary>The fragment icon of each boat (Resources/Arte/Fragmentos/frag_&lt;boat id&gt;). Missing = the boat icon.</summary>
+        /// <summary>The fragment icon of each boat (Resources/ArtePixel/Fragmentos/frag_&lt;boat id&gt;). Missing = the boat icon.</summary>
         private const string FragmentFolder = "Fragmentos/frag_";
 
         /// <summary>The Fragmento de Roupa icon (M24-T33). Missing = the star icon.</summary>
@@ -121,7 +121,6 @@ namespace FishingIdle.Game.UI
                 var split = rect.width * 0.72f;
                 WindowFrame.Veil(skin, new Rect(rect.x, rect.y, split, rect.height), 0.84f, 0.72f);
                 WindowFrame.Veil(skin, new Rect(rect.x + split, rect.y, rect.width - split, rect.height), 0.72f, 0.3f);
-                using (UiSkin.NightScope())
                 {
                     DrawSummaryBody(skin, new Rect(rect.x, rect.y + (rect.height - SummaryHeight) / 2f, rect.width, SummaryHeight), view);
                 }
@@ -282,7 +281,7 @@ namespace FishingIdle.Game.UI
             {
                 var lockSize = Mathf.Round(size * 0.36f);
                 var lockRect = new Rect(sealRect.xMax - lockSize + 2f, sealRect.yMax - lockSize + 2f, lockSize, lockSize);
-                skin.PixelPill(lockRect, UiSkin.OnSheet(new Color(0.06f, 0.11f, 0.2f, 0.92f)), UiSkin.FrameDark);
+                skin.PixelPill(lockRect, new Color(0.06f, 0.11f, 0.2f, 0.92f), UiSkin.FrameDark);
                 skin.DrawIconExact(new Rect(lockRect.x + lockSize * 0.2f, lockRect.y + lockSize * 0.2f, lockSize * 0.6f, lockSize * 0.6f), Icons.Lock, Color.white);
             }
 

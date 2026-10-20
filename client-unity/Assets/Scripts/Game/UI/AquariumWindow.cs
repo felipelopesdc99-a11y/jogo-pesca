@@ -44,7 +44,7 @@ namespace FishingIdle.Game.UI
 
         private static readonly AquariumSort[] Sorts = { AquariumSort.Size, AquariumSort.Level, AquariumSort.Species, AquariumSort.Newest, AquariumSort.Quality };
 
-        // Plants that already exist (Arte/Vivos/Plantas): x across the tank, height as a share of the water.
+        // Plants that already exist (ArtePixel/Vivos/Plantas): x across the tank, height as a share of the water.
         private static readonly (string Path, float X, float Height)[] Plants =
         {
             ("Vivos/Plantas/junco_01", 0.02f, 0.50f),
@@ -340,10 +340,9 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // The tank is the window's own scene: a picture on the diary sheet, in night colours (A-170).
+            // The tank is the window's own scene, framed like a photo.
             var glass = new Rect(right.x, tank.y + 10f, right.width - 10f, tank.height - 20f);
             WindowFrame.Photo(skin, tank);
-            using var night = UiSkin.NightScope();
             DrawTank(skin, tank, glass.x);
 
             if (_multi)
@@ -739,7 +738,7 @@ namespace FishingIdle.Game.UI
             if (level.Badge != null)
             {
                 var bw = skin.Badge.CalcSize(new GUIContent(level.Badge)).x + 8f;
-                skin.Tag(new Rect(tile.x + 4f, tile.y + 4f, bw, 20f), level.Badge, UiSkin.NightAccent);
+                skin.Tag(new Rect(tile.x + 4f, tile.y + 4f, bw, 20f), level.Badge, UiSkin.Accent);
             }
 
             if (marked)
@@ -1234,9 +1233,7 @@ namespace FishingIdle.Game.UI
             var rarity = UiSkin.RarityColor(f.RarityId);
             var low = f.RarityId == "common" || f.RarityId == "rare";
 
-            var fill = UiSkin.Paper
-                ? (selected || hover ? Color.white : UiSkin.PaperCard)
-                : selected ? theme.PanelElevated : Color.Lerp(theme.Panel, theme.PanelElevated, hover ? 0.6f : 0.2f);
+            var fill = selected ? theme.PanelElevated : Color.Lerp(theme.Panel, theme.PanelElevated, hover ? 0.6f : 0.2f);
             ArcArt.Fill(skin, r, fill, 10f);
             ArcArt.Line(skin, r, new Color(rarity.r, rarity.g, rarity.b, (low ? 0.45f : 0.85f) + (hover ? 0.15f : 0f)), 10f);
             ArcArt.Fill(skin, new Rect(r.x + 5f, r.y + 10f, 3f, r.height - 20f), rarity, 1.5f);
@@ -1261,7 +1258,7 @@ namespace FishingIdle.Game.UI
             var rightWidth = Mathf.Max(badgeWidth, marked ? 20f : 0f);
             if (badge != null)
             {
-                skin.Tag(new Rect(r.xMax - 10f - badgeWidth, r.y + 9f, badgeWidth, 20f), badge, UiSkin.NightAccent);
+                skin.Tag(new Rect(r.xMax - 10f - badgeWidth, r.y + 9f, badgeWidth, 20f), badge, UiSkin.Accent);
             }
 
             if (marked)
@@ -1323,7 +1320,6 @@ namespace FishingIdle.Game.UI
         {
             // The fish on its pedestal is a dark picture on the sheet (A-170).
             WindowFrame.Photo(skin, rect);
-            using var night = UiSkin.NightScope();
             var rarity = UiSkin.RarityColor(fish.RarityId);
             HeroSheet.Backdrop(skin, rect);
             var index = IndexOfSelected();

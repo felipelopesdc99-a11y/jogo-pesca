@@ -313,6 +313,15 @@ namespace FishingIdle.GameService.Config
             }
 
             // ---- maps.json
+            if (maps.Travel == null)
+            {
+                errors.Add(V.Missing(GameConfigLoader.MapsFile, "travel.duration_seconds"));
+            }
+            else if (maps.Travel.DurationSeconds < 1)
+            {
+                errors.Add(V.AtLeast(GameConfigLoader.MapsFile, "travel.duration_seconds", 1));
+            }
+
             if (maps.Maps == null || maps.Maps.Count == 0)
             {
                 errors.Add(V.Missing(GameConfigLoader.MapsFile, "maps"));
@@ -587,7 +596,8 @@ namespace FishingIdle.GameService.Config
                 var st = bots.StrengthByRank;
                 if (st.TopFishLevel < 1 || st.BottomFishLevel < 1 || st.TopCardumeSize < 1 || st.BottomCardumeSize < 1
                     || st.TopCardumeSize > 6 || st.BottomCardumeSize > 6 || st.TopSizePercentile < 0 || st.TopSizePercentile > 1
-                    || st.BottomSizePercentile < 0 || st.BottomSizePercentile > 1)
+                    || st.BottomSizePercentile < 0 || st.BottomSizePercentile > 1
+                    || st.SizePercentileSpread < 0 || st.SizePercentileSpread > 1)
                 {
                     errors.Add(V.BadIntRange(GameConfigLoader.ArenaBotsFile, "strength_by_rank"));
                 }

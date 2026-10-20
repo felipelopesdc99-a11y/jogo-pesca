@@ -7,7 +7,7 @@ Status: `PEDIR` (ainda não pedido) · `RECEBIDO` (folha chegou e foi recortada 
 ## Resumo
 
 - **77 pedidos** ao ChatGPT, **339 imagens** no total (as folhas juntam vários desenhos por pedido).
-- Hoje o jogo tem **659 PNGs** em `Resources/Arte`. Deles, **316** são refeitos pelos pedidos (a), **240** são convertidos automaticamente da arte atual (b), **60** passam a ser desenhados pelo código (c) e **43** saem (d). Os pedidos também criam **23** arquivos novos (quadros do pescador, boia, nuvens comuns).
+- Antes da limpeza (M25-T17) o jogo tinha **659 PNGs** em `Resources/Arte`. Deles, **316** são refeitos pelos pedidos (a), **240** são convertidos automaticamente da arte atual (b), **60** passam a ser desenhados pelo código (c) e **43** saem (d). Os pedidos também criam **23** arquivos novos (quadros do pescador, boia, nuvens comuns).
 
 | Lote | Pedidos | Imagens |
 |---|---:|---:|
@@ -20,7 +20,7 @@ Status: `PEDIR` (ainda não pedido) · `RECEBIDO` (folha chegou e foi recortada 
 | Lote 7 · Telas especiais e Boss | 15 | 18 |
 | **Total** | **77** | **339** |
 
-Os arquivos novos vão para `client-unity/Assets/Resources/ArtePixel/`, com as mesmas subpastas e os mesmos nomes de hoje (TD-059); o jogo procura lá primeiro e usa a arte antiga enquanto um arquivo não existir. A limpeza final (M25) apaga o que sobrar em `Arte/`.
+Os arquivos novos vão para `client-unity/Assets/Resources/ArtePixel/`, com as mesmas subpastas e os mesmos nomes de hoje (TD-059); o jogo procura lá primeiro e usa a arte antiga enquanto um arquivo não existir. A limpeza (M25-T17, 20/10/2026) apagou `Arte/`; só ficaram os 6 peixes do pedido L4-03a (seção "Limpeza da arte antiga" abaixo).
 
 ## Recebimento de 20/10/2026
 
@@ -85,6 +85,23 @@ Visual só fica verificado quando o proprietário apertar Play.
 | `Mapas/TaludeNoturno/map_talude_noturno_near_left`, `near_right`, `fg_left`, `fg_right` | L6-09b |
 
 Os 6 peixes do Pantanal Dourado (1 de 2, L4-03a) continuam com a arte antiga até o pedido chegar.
+
+## Limpeza da arte antiga (M25-T17, 20/10/2026)
+
+`Resources/Arte` foi esvaziada. Antes: 659 PNGs, 166,4 MB. Depois: **6 PNGs, 2,2 MB**.
+
+- **Apagados (421 PNGs, 141,3 MB):** tudo que já tem o mesmo nome em `ArtePixel` e o que o jogo não lia mais: céus,
+  nuvens e água pintados dos 10 mapas, `Agua/ondas`, `Cena/barco`, `barco_fundo`, `barco_frente`, `pescador_maos`,
+  `Varas/Cena/*`, `UI/ui_currency_*`, `UI/ui_diario_*`, as peças da barra antiga (`ui_nav_button_*`, `ui_topbar_frame`,
+  `ui_logo_fishing_idle`, `ui_avatar_frame`, `ui_wallet_inset`, `ui_atalho_moldura`), `UI/ui_rk_emblema_*` e as 11 peças
+  que as telas passaram a desenhar pelo código (M25-T13, T14 e T15). As peças (d) da lista acima saíram todas.
+- **Movidos para fora do jogo (232 PNGs, 22,9 MB) — `tools/Arte/fontes_antigas/`:** as 10 laterais e cantos dos quais
+  saem os provisórios dos pedidos L1-06b, L6-08b e L6-09b, e os 222 desenhos de `Vivos/` dos quais saiu a paisagem viva
+  em pixel. Só o `tools/Arte/cena_pixel.py` (`provisorios` e `vivos`) lê essa pasta; ela não vai no build.
+- **Ficaram em `Resources/Arte/Peixes` (6 PNGs, 2,2 MB):** `fish_mandi_amarelo_master`, `fish_pacu_peva_master`,
+  `fish_jurupensem_master`, `fish_piavucu_master`, `fish_jundia_master` e `fish_mucum_master`: o jogo ainda mostra esses 6 peixes do Pantanal e não há versão em pixel deles (pedido L4-03a,
+  **PEDIR DE NOVO**). Quando a folha chegar e for recortada, apague `Resources/Arte` e o fallback `LegacyRoot` do
+  `ArtAssets` (TD-065).
 
 ## Pedidos por lote
 
@@ -216,7 +233,7 @@ Fundos e faixas das telas (Aquário, Mapa, Arena, Bem-vindo, Caixa, Mercado, Pas
 
 ## Inventário da arte atual
 
-Como cada arquivo de `Resources/Arte` fica no novo estilo. (a) pedido ao ChatGPT · (b) convertido da arte atual · (c) desenhado pelo código · (d) sai.
+Como cada arquivo de `Resources/Arte` fica no novo estilo. (a) pedido ao ChatGPT · (b) convertido da arte atual · (c) desenhado pelo código · (d) sai. Histórico: desde a M25-T17 esses arquivos não estão mais no jogo (só os 6 peixes do L4-03a; ver "Limpeza da arte antiga").
 
 ### Agua (1)
 

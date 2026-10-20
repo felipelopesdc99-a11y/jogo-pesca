@@ -389,7 +389,7 @@ namespace FishingIdle.Game.UI
                 var c = colorOf(options[index - 1].Id);
                 skin.ArcFill(new Rect(x + 40, y, w - 80, 30), new Color(c.r, c.g, c.b, 0.18f), 8f);
                 UiSkin.ColoredLabel(new Rect(x + 40, y + 6, w - 80, 22), FishCard.Fit(options[index - 1].Name, skin.Center, w - 80), skin.Center,
-                    UiSkin.Paper ? c : Color.Lerp(c, Color.white, 0.4f));
+                    Color.Lerp(c, Color.white, 0.4f));
             }
             else
             {
@@ -421,7 +421,7 @@ namespace FishingIdle.Game.UI
 
         private string AuctionHours()
         {
-            return _auctions.DurationHours == 1 ? "1 hora" : Format.Decimal(_auctions.DurationHours, 0) + " horas";
+            return GameTexts.Market.AuctionDuration(_auctions.DurationHours);
         }
 
         /// <summary>The "search by fish name" box at the top right of a tab (A-084); <paramref name="right"/> is its right edge.</summary>
@@ -1016,7 +1016,7 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>The picture of a fish or a rod (Resources/Arte/Varas/&lt;rod id&gt;.png).</summary>
+        /// <summary>The picture of a fish or a rod (Resources/ArtePixel/Varas/&lt;rod id&gt;.png).</summary>
         private static Texture2D GoodsArt(GoodsView goods)
         {
             if (goods.IsFish)

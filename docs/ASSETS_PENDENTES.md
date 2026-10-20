@@ -2,6 +2,13 @@
 
 > **Desde 19/10/2026 (A-182)** o jogo troca para pixel art (Estilo ARC). A lista viva das artes novas, com os
 > pedidos ao ChatGPT e o status de cada um, é `docs/ASSETS_PIXEL.md`; esta lista fica como histórico da arte da V0.1.
+>
+> **Desde 20/10/2026 (M25-T17)** a arte antiga saiu do jogo: `Resources/Arte` só guarda os 6 peixes do Pantanal à
+> espera do pedido L4-03a, as fontes Fredoka e Nunito saíram, e os scripts citados abaixo (`processar_*.py`,
+> `gerar_*.py`, `equipamento_na_cena.py`, `finais.py`/`finais.txt`, `otimizar_png.py`, `melhorar_abismo.py`) foram
+> apagados de `tools/Arte`. A fonte da paisagem viva e dos provisórios dos mapas ficou em `tools/Arte/fontes_antigas/`.
+> Os caminhos e comandos abaixo valem só como histórico (o git guarda os arquivos). Nenhuma arte nova é pedida por
+> esta lista: os pedidos ficam em `docs/ASSETS_PIXEL.md`.
 
 Lista de toda arte do jogo que hoje é **provisória**: foi pintada por script para o jogo já ficar
 bonito e coerente, mas deve ser trocada pela arte final produzida pelo proprietário (processo da

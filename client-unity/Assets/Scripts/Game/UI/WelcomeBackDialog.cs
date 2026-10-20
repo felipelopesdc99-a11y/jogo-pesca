@@ -12,8 +12,8 @@ namespace FishingIdle.Game.UI
     /// <summary>
     /// The "Bem-vindo de volta" report of offline fishing (GDD section 10 / START HERE M5), redone as a report in M24-T51
     /// (A-175): a scene strip with the time away, big number cards (fish, sale value, XP with the levels, Conchas), the
-    /// catches by rarity, the highlights, the fragments with their progress and the useful warnings, on the diary sheet
-    /// (A-170). Every number comes from the service's <see cref="OfflineReport"/>; the screen only lays them out. What it
+    /// catches by rarity, the highlights, the fragments with their progress and the useful warnings, on the ARC
+    /// panel. Every number comes from the service's <see cref="OfflineReport"/>; the screen only lays them out. What it
     /// shows is built once per report; only the short count-up at the opening formats numbers frame by frame.
     /// </summary>
     public static class WelcomeBackDialog
@@ -125,7 +125,6 @@ namespace FishingIdle.Game.UI
                 openBox = true;
             }
 
-            UiSkin.SetPaper(false);
             if (closed || openBox)
             {
                 root.WelcomeBack = null;
@@ -182,11 +181,11 @@ namespace FishingIdle.Game.UI
             _rarityTotal = 0;
             foreach (var r in report.Rarities)
             {
-                // The rarity colour as a fill; the near-white Comum would vanish on the paper, so it takes its ink.
+                // The rarity colour as a fill; a colour too close to the panel is made readable first.
                 var color = VisualTheme.Current.Rarity(r.RarityId);
-                if (UiSkin.Contrast(color, UiSkin.PaperFill) < 1.6f)
+                if (UiSkin.Contrast(color, UiSkin.PanelColor) < 1.6f)
                 {
-                    color = UiSkin.InkOf(color);
+                    color = UiSkin.Readable(color);
                 }
 
                 var entry = new RarityEntry { Name = r.RarityName, Count = Format.Number(r.Count), Amount = r.Count, Color = color };
@@ -519,7 +518,6 @@ namespace FishingIdle.Game.UI
                 Fill(skin, new Rect(x0, r.y, x1 - x0, r.height), new Color(0.02f, 0.06f, 0.12f, alpha), 0f);
             }
 
-            using (UiSkin.NightScope())
             {
                 const float titleHeight = 40f;
                 var top = r.y + (r.height - titleHeight - 24f) / 2f;
@@ -545,7 +543,7 @@ namespace FishingIdle.Game.UI
 
             var sun = r.height * 0.42f;
             var sunRect = new Rect(r.x + r.width * 0.74f, horizon - sun * 0.62f, sun, sun);
-            skin.DrawGlow(sunRect, UiSkin.NightReward, 0.35f);
+            skin.DrawGlow(sunRect, UiSkin.Gold, 0.35f);
             PixelDraw.Fit(sunRect, Art.Circle.texture, new Color(1f, 0.83f, 0.45f));
             Fill(skin, UiSkin.Snap(new Rect(r.x, horizon, r.width, r.yMax - horizon)), water, 0f);
 
@@ -565,10 +563,10 @@ namespace FishingIdle.Game.UI
         {
             if (stat.Highlight)
             {
-                skin.DrawGlow(r, UiSkin.NightReward, 0.35f + 0.08f * Mathf.Sin(Time.unscaledTime * 2.2f));
+                skin.DrawGlow(r, UiSkin.Gold, 0.35f + 0.08f * Mathf.Sin(Time.unscaledTime * 2.2f));
             }
 
-            Card(skin, r, stat.Highlight ? UiSkin.NightReward : UiSkin.PaperLine, stat.Highlight ? 2f : 1f);
+            Card(skin, r, stat.Highlight ? UiSkin.Gold : UiSkin.FrameDark, stat.Highlight ? 2f : 1f);
             var x = r.x + 14f;
             var w = r.width - 28f;
             var icon = new Rect(x, r.y + 12f, 24f, 24f);
@@ -609,7 +607,7 @@ namespace FishingIdle.Game.UI
         private static float DrawRarities(UiSkin skin, float x, float y, float w, float ease)
         {
             var track = new Rect(x, y, w, RarityBar);
-            GUI.DrawTexture(track, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.PaperInset, 0, 0f);
+            GUI.DrawTexture(track, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.FieldColor, 0, 0f);
 
             // Every rarity keeps at least 8 px, so one Lendário among hundreds of Comuns is still seen.
             const float minimum = 8f, seam = 2f;
@@ -647,9 +645,9 @@ namespace FishingIdle.Game.UI
         /// <summary>A fragment card: the fragment's icon, what it is, how many came and the progress until it is assembled.</summary>
         private static void DrawGear(UiSkin skin, Rect r, Gear gear, float ease)
         {
-            Card(skin, r, gear.Tag != null ? UiSkin.NightReward : UiSkin.PaperLine, gear.Tag != null ? 2f : 1f);
+            Card(skin, r, gear.Tag != null ? UiSkin.Gold : UiSkin.FrameDark, gear.Tag != null ? 2f : 1f);
             var icon = new Rect(r.x + 10f, r.y + (r.height - 46f) / 2f, 46f, 46f);
-            skin.LineBox(icon, UiSkin.PaperInset, UiSkin.FrameDark, 1);
+            skin.LineBox(icon, UiSkin.FieldColor, UiSkin.FrameDark, 1);
             var art = ArtAssets.Texture(gear.Art);
             if (art != null)
             {
@@ -672,7 +670,7 @@ namespace FishingIdle.Game.UI
             if (gear.Tag != null)
             {
                 countWidth = Width(skin.Badge, gear.Tag) + 10f;
-                skin.Tag(new Rect(r.xMax - 12f - countWidth, r.y + 32f, countWidth, 20f), gear.Tag, UiSkin.NightReward);
+                skin.Tag(new Rect(r.xMax - 12f - countWidth, r.y + 32f, countWidth, 20f), gear.Tag, UiSkin.Gold);
             }
             else if (gear.Count != null)
             {
@@ -693,7 +691,7 @@ namespace FishingIdle.Game.UI
 
             if (gear.Fill >= 0f)
             {
-                skin.Bar(new Rect(x, r.y + 54f, w, 7f), gear.Fill * ease, gear.Tag != null || gear.KindGold ? UiSkin.NightReward : UiSkin.NightAccent);
+                skin.Bar(new Rect(x, r.y + 54f, w, 7f), gear.Fill * ease, gear.Tag != null || gear.KindGold ? UiSkin.Gold : UiSkin.Accent);
             }
         }
 
@@ -702,7 +700,7 @@ namespace FishingIdle.Game.UI
         {
             if (warning.Strong)
             {
-                skin.LineBox(r, UiSkin.PaperInset, Color.clear, 1);
+                skin.LineBox(r, UiSkin.FieldColor, Color.clear, 1);
             }
 
             skin.DrawIcon(new Rect(r.x + 8f, r.y + (r.height - 20f) / 2f, 20f, 20f), warning.Icon, warning.Strong ? UiSkin.Gold : UiSkin.Muted);
@@ -715,7 +713,7 @@ namespace FishingIdle.Game.UI
                 right -= bw + 12f;
                 if (warning.Fill >= 0f)
                 {
-                    skin.Bar(new Rect(right - 120f, r.y + (r.height - 8f) / 2f, 120f, 8f), warning.Fill, warning.Fill >= 1f ? UiSkin.NightDanger : UiSkin.NightReward);
+                    skin.Bar(new Rect(right - 120f, r.y + (r.height - 8f) / 2f, 120f, 8f), warning.Fill, warning.Fill >= 1f ? UiSkin.Danger : UiSkin.Gold);
                     right -= 132f;
                 }
             }
@@ -745,7 +743,7 @@ namespace FishingIdle.Game.UI
         private static void Card(UiSkin skin, Rect r, Color border, float borderWidth)
         {
             var inner = borderWidth >= 2f ? border : VisualTheme.Current.CardLine;
-            skin.Shape(r, 1, false, UiSkin.PaperCard, 2, border, inner, Color.clear);
+            skin.Shape(r, 1, false, UiSkin.CardColor, 2, border, inner, Color.clear);
         }
 
         /// <summary>A fill in the ARC skin: a pixel shape in place of the old rounded rect (UiSkin.ArcFill, A-188).</summary>

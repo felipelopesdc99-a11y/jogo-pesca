@@ -615,6 +615,9 @@ namespace FishingIdle.GameService.Config
         public int BottomCardumeSize { get; set; }
         public double TopSizePercentile { get; set; }
         public double BottomSizePercentile { get; set; }
+
+        /// <summary>Width of the random spread around the size percentile of each bot fish (0.1 = ±0.05).</summary>
+        public double SizePercentileSpread { get; set; }
         public double SecondMapRankFraction { get; set; }
         public string SecondMapId { get; set; }
         public string FirstMapId { get; set; }

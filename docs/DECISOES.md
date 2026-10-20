@@ -1566,3 +1566,31 @@ recortavam fotos com círculo suave, desenhavam brilho difuso e liam peças pint
 espelho por coordenadas mantêm cada pixel inteiro, sem alocar nada por quadro.
 
 **Rever se.** Um avatar novo chegar: rodar `python3 tools/Arte/retratos_pixel.py` de novo.
+
+## TD-065 · Limpeza da arte antiga: fontes fora de Resources e só o fallback dos 6 peixes (20/10/2026)
+
+**Origem.** M25-T17 e o checkup do repositório de 20/10/2026: `Resources/Arte` tinha 659 PNGs (166,4 MB) que o Unity
+importa e o build leva, quase todos com o mesmo nome em `ArtePixel` (que vence) ou só lidos por caminhos que não rodam
+mais (o cenário pintado, o pescador pintado, o modo papel).
+
+**Decisão.**
+- Apagar de `Resources/Arte` tudo que tem equivalente em `ArtePixel` ou que nenhum código alcança (421 PNGs).
+- Mover para `tools/Arte/fontes_antigas/` (fora de `Resources`, não vai no build) a arte de que alguma ferramenta ainda
+  parte: as 10 laterais e cantos dos provisórios (pedidos L1-06b, L6-08b, L6-09b) e os 222 desenhos de `Vivos/`. O
+  `cena_pixel.py` lê essa pasta nos comandos `provisorios` e `vivos`, e `cena_pixel.py tudo` continua funcionando.
+- Manter em `Resources/Arte` só os 6 peixes do Pantanal (pedido L4-03a), que o jogo ainda mostra e não têm versão em
+  pixel; com eles ficam o fallback `ArtAssets.LegacyRoot` em `Texture()` e uma regra de importação só para eles
+  (`ArtImportSettings.ApplyOldFish`: 512 px, mipmaps, compressão HQ). `ArtAssets.LegacyTexture` saiu.
+- Tirar o código que só servia à arte antiga: `FishingScene.BuildPainted` e auxiliares, os componentes do `Life.cs` que
+  só ele criava, o pescador, a vara e a isca pintados do `FishermanRig` (fica o pescador de formas simples do cenário de
+  reserva), os barcos e varas de `equipamento_cena.json` (fica a cor das iscas), `UiSkinPaper.cs` com os ramos
+  `UiSkin.Paper` e os apelidos de cor (trocados pelas cores ARC iguais), as fontes Fredoka e Nunito e os 20 geradores
+  antigos de `tools/Arte`. Fica o cenário desenhado pelo código (`BuildSky`/`BuildLand`/`BuildWater`/`BuildForeground`)
+  como rede de segurança: o jogo nunca quebra por falta de arte.
+
+**Por quê.** Menos 165 MB importados e levados no build, sem mudar nada na tela: cada coisa apagada ou não era lida ou
+perdia para o arquivo em pixel. Mover em vez de apagar as fontes das conversões evita depender do histórico do git para
+refazer um provisório.
+
+**Rever se.** O pedido L4-03a chegar: recortar os 6 peixes, apagar `Resources/Arte`, o `LegacyRoot`, o ramo antigo de
+`ArtAssets.Texture` e o `ApplyOldFish`. Quando L1-06b, L6-08b e L6-09b chegarem, apagar `tools/Arte/fontes_antigas/Mapas`.

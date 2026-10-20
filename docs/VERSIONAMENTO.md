@@ -55,7 +55,7 @@ M24. Esses números não são reescritos: o `docs/CHANGELOG.md` diz o que entrou
 **Regra a partir da próxima versão.** Na V0.2 os milestones não "fecham" um por um antes do seguinte começar, então o
 sufixo acompanha o **milestone atual do roadmap** (`docs/roadmap.json → current_milestone`), não o último fechado:
 
-1. `-m<n>` do cliente = o `current_milestone` do roadmap no momento do build (hoje `M24` → `0.2.0-m24.<build>`).
+1. `-m<n>` do cliente = o `current_milestone` do roadmap no momento do build (hoje `M25` → `0.2.0-m25.<build>`).
 2. Quando o `-m<n>` muda, o contador depois do ponto volta a 1 (a próxima versão é `0.2.0-m24.1`); fora isso, + 1 por
    versão.
 3. `version.json → current_milestone` é igual ao `current_milestone` do roadmap, na mesma mudança.

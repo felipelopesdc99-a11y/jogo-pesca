@@ -56,10 +56,10 @@ namespace FishingIdle.GameService.Arena
 
             var pool = map.FishPool.Where(e => config.TryGetSpecies(e.SpeciesId, out _)).ToList();
             var fish = new List<Fighter>();
-            for (var i = 0; i < Math.Max(1, Math.Min(6, size)); i++)
+            for (var i = 0; i < Math.Max(1, Math.Min(config.CardumeSize, size)); i++)
             {
                 config.TryGetSpecies(pool[rng.NextIntInclusive(0, pool.Count - 1)].SpeciesId, out var species);
-                var p = Math.Min(1, Math.Max(0, percentile + (rng.NextDouble() - 0.5) * 0.1));
+                var p = Math.Min(1, Math.Max(0, percentile + (rng.NextDouble() - 0.5) * st.SizePercentileSpread));
                 var mm = (int)Math.Round((species.SizeCm.Min + p * (species.SizeCm.Max - species.SizeCm.Min)) * 10);
                 config.TryGetRarity(species.Rarity, out var rarity);
                 fish.Add(new Fighter
@@ -83,7 +83,7 @@ namespace FishingIdle.GameService.Arena
                 bot.Cardume.Add(x);
             }
 
-            while (bot.Cardume.Count < 6)
+            while (bot.Cardume.Count < config.CardumeSize)
             {
                 bot.Cardume.Add(null);
             }

@@ -124,9 +124,9 @@ namespace FishingIdle.Game.UI
             // The boss icon on a deep disc (ico_boss, or the attack icon while it is missing).
             var disc = new Rect(rect.x + 20f, rect.center.y - ArtSize / 2f, ArtSize, ArtSize);
             // The ARC disc (gold, dark gap, dark gold); its outer line turns reward gold while the event happens.
-            skin.FramedDisc(disc, new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.95f), open ? UiSkin.Gold : UiSkin.FrameGold);
+            skin.FramedDisc(disc, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.95f), open ? UiSkin.Gold : UiSkin.FrameGold);
             var icon = WorldBossWindow.NavIcon;
-            skin.DrawIconExact(new Rect(disc.center.x - 32f, disc.center.y - 32f, 64f, 64f), icon, icon == Icons.Attack ? UiSkin.NightDanger : Color.white);
+            skin.DrawIconExact(new Rect(disc.center.x - 32f, disc.center.y - 32f, 64f, 64f), icon, icon == Icons.Attack ? UiSkin.Danger : Color.white);
 
             // On the board the card is narrower and taller: "Abrir" goes to the bottom right, under the text.
             var button = tall

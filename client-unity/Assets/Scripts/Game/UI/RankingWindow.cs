@@ -161,9 +161,8 @@ namespace FishingIdle.Game.UI
 
         private void DrawStage(UiSkin skin, Rect stage, RankingView view)
         {
-            // A photo of the pier pinned on the diary sheet (A-170): its own dark scene, in night colours.
+            // The pier framed like a photo: its own dark scene.
             WindowFrame.Photo(skin, stage);
-            using var night = UiSkin.NightScope();
             skin.ArcFill(stage, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.97f), 0f);
 
             // The pier; without its art, a plain floor line.
@@ -431,14 +430,7 @@ namespace FishingIdle.Game.UI
         /// <summary>The category emblem (owner's art) or, without it, the plain icon.</summary>
         private static void DrawEmblem(UiSkin skin, Rect rect, RankingCategory category)
         {
-            // Pixel art never mixes with the painted emblems: the coloured pixel icon of the category (M25-T15).
-            var tex = ArtAssets.Texture(EmblemArt(category));
-            if (tex != null && ArtAssets.IsPixel(tex))
-            {
-                PixelDraw.Fit(rect, tex);
-                return;
-            }
-
+            // The coloured pixel icon of the category (M25-T15; the painted emblems left in M25-T17).
             if (ArtAssets.Icon(TabIcon(category)) != null)
             {
                 skin.DrawIconExact(rect, TabIcon(category), Color.white);
@@ -489,17 +481,6 @@ namespace FishingIdle.Game.UI
         }
 
         private static Color MedalColor(int rank) => rank == 1 ? UiSkin.Gold : rank == 2 ? Silver : Bronze;
-
-        private static string EmblemArt(RankingCategory category)
-        {
-            switch (category)
-            {
-                case RankingCategory.Coins: return "UI/ui_rk_emblema_moedas";
-                case RankingCategory.Shells: return "UI/ui_rk_emblema_conchas";
-                case RankingCategory.FishCaught: return "UI/ui_rk_emblema_peixes";
-                default: return "UI/ui_rk_emblema_nivel";
-            }
-        }
 
         private static string TabName(RankingCategory category)
         {

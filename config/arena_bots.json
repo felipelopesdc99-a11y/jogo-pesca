@@ -47,13 +47,14 @@
     "Lú da Várzea"
   ],
   "strength_by_rank": {
-    "note": "Os valores vão do melhor adversário (posição 1) ao pior (última posição), em linha reta.",
+    "note": "Os valores vão do melhor adversário (posição 1) ao pior (última posição), em linha reta. size_percentile_spread é a largura da variação sorteada no tamanho de cada peixe dos adversários (0,1 = 5 pontos para cima ou para baixo).",
     "top_fish_level": 41,
     "bottom_fish_level": 1,
     "top_cardume_size": 6,
     "bottom_cardume_size": 2,
     "top_size_percentile": 0.92,
     "bottom_size_percentile": 0.35,
+    "size_percentile_spread": 0.1,
     "second_map_rank_fraction": 0.45,
     "second_map_id": "map_02",
     "first_map_id": "map_01"

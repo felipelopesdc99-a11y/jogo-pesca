@@ -3,6 +3,39 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m25.1] — 20/10/2026
+
+Limpeza da arte antiga e checkup do projeto (M25-T17, TD-065). Nada muda na tela: o que saiu ou não era mais lido ou
+perdia para o arquivo em pixel. Nenhuma regra, número ou save mudou. O sufixo passa a `m25` porque o milestone atual do
+roadmap agora é o M25 (antes estava em M24 por engano). Vem depois das telas de aventura em pixel (0.2.0-m24.25).
+
+### Removido
+
+- **Arte antiga (`Resources/Arte`):** de 659 imagens (166,4 MB) para 6 (2,2 MB). Saíram 421 imagens (141,3 MB) que já
+  têm versão em pixel ou que o jogo não lia mais (céus, nuvens e água pintados dos mapas, barco e mãos do pescador
+  pintados, varas da cena, moedas e peças da barra antiga, o "Diário de bordo", emblemas do Ranking e as peças que as
+  telas passaram a desenhar). A pasta `client-unity/Assets` caiu de 189,8 MB para 25,0 MB.
+- **Fontes Fredoka e Nunito** e suas licenças: a interface usa só Press Start 2P e VT323.
+- **Código do estilo antigo:** cenário pintado, pescador e vara pintados, o modo papel das janelas, efeitos que só o
+  cenário pintado usava e 12 textos sem uso.
+- **20 ferramentas antigas de arte** em `tools/Arte` (geradores e processadores do estilo anterior).
+
+### Alterado
+
+- **Arte de origem fora do jogo:** as 10 laterais e cantos que viram os provisórios dos mapas (pedidos L1-06b, L6-08b
+  e L6-09b) e os 222 desenhos da paisagem viva foram para `tools/Arte/fontes_antigas/` (22,9 MB), que não vai no build.
+- **Ficam na arte antiga só os 6 peixes do Pantanal** (mandi-amarelo, pacu-peva, jurupensém, piavuçu, jundiá e muçum)
+  até o pedido L4-03a chegar em pixel.
+
+### Corrigido
+
+- O tempo do leilão ("1 hora" / "6 horas") agora vem dos textos do jogo, como todo texto da tela.
+- O Cardume dos adversários da Arena segue o tamanho do Cardume do balanceamento (`arena.json`, `cardume.max_fish`),
+  em vez de 6 escrito no código.
+- A variação de tamanho dos peixes dos adversários foi para `arena_bots.json` (`size_percentile_spread`, mesmo valor).
+- A viagem entre mapas não tem mais um tempo de reserva escrito no código: `maps.json` precisa ter
+  `travel.duration_seconds`, e a checagem do balanceamento avisa se faltar.
+
 ## [0.2.0-m24.25] — 20/10/2026
 
 Aquário, Enciclopédia, Mapa, Expedição, Arena, Boss Mundial e retratos em pixel e na pele ARC (M25-T13, T14 e T16,

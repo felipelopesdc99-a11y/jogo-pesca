@@ -226,8 +226,7 @@ namespace FishingIdle.Game.UI
                 skin.Inset(summary);
             }
 
-            // The summary's text and actions in night colours on the photo; the paper mode comes back after it.
-            using (onArt ? UiSkin.NightScope() : new UiSkin.Scope(UiSkin.Paper))
+            // The summary's text and actions on the photo.
             {
                 var x = summary.x + Pad + crestWidth;
                 var w = summary.width - Pad * 2f - crestWidth;

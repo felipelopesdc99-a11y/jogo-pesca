@@ -95,7 +95,7 @@ namespace FishingIdle.GameService.Maps
             {
                 CurrentMapId = Save.CurrentMapId,
                 Travel = GetTravel(),
-                TravelSeconds = Config.Maps.Travel?.DurationSeconds ?? 30,
+                TravelSeconds = Config.Maps.Travel.DurationSeconds,
             };
 
             var rod = EquippedRod();
@@ -169,7 +169,7 @@ namespace FishingIdle.GameService.Maps
                 FromMapId = Save.CurrentMapId,
                 ToMapId = map.Id,
                 StartedAtMs = now,
-                ArrivesAtMs = now + (long)Math.Round((Config.Maps.Travel?.DurationSeconds ?? 30) * 1000.0),
+                ArrivesAtMs = now + (long)Math.Round(Config.Maps.Travel.DurationSeconds * 1000.0),
                 ResumeFishing = resume,
             };
             _session.Persist();

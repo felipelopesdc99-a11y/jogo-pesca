@@ -179,8 +179,6 @@ namespace FishingIdle.Game.UI
             _sealStyle.normal.textColor = Ink;
             _dialStyle = new GUIStyle(skin.Number) { font = skin.TitleBoldFont, fontSize = UiSkin.NumberSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _dialStyle.normal.textColor = UiSkin.Text;
-            skin.Track(_nameStyle);
-            skin.Track(_dialStyle);
         }
 
         // ------------------------------------------------------------------ nautical chart (A-147)
@@ -200,10 +198,8 @@ namespace FishingIdle.Game.UI
                 }
             }
 
-            // The nautical chart and its card are the window's own scene: a picture on the diary sheet, in night
-            // colours (A-170).
+            // The nautical chart and its card are the window's own scene, framed like a photo.
             WindowFrame.Photo(skin, area);
-            using var night = UiSkin.NightScope();
             GUI.Box(area, GUIContent.none, skin.PanelSolid);
 
             // The Cardume strength moved up into the header (A-148): the chart starts at the top of the content.
@@ -426,7 +422,7 @@ namespace FishingIdle.Game.UI
                 var medal = PixelDraw.FitRect(circle, ref frame);
                 var side = medal.width * MedallionPicture;
                 var square = new Rect(medal.center.x - side / 2f, medal.center.y - side / 2f, side, side);
-                ArcArt.Fill(skin, square, UiSkin.SceneNight, 0f);
+                ArcArt.Fill(skin, square, UiSkin.Night, 0f);
                 if (picture != null)
                 {
                     ArcArt.Cover(square, picture, dimmed ? DimTint : Color.white);
@@ -556,7 +552,7 @@ namespace FishingIdle.Game.UI
                 var chance = Format.Percent(e.FishFindChance, 1);
                 var pw = Mathf.Min(sealArea.width, _sealStyle.CalcSize(new GUIContent(chance)).x + 20f);
                 var pill = new Rect(seal.center.x - pw / 2f, seal.yMax - 30f, pw, 28f);
-                skin.PixelPill(pill, new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.9f), UiSkin.FrameDark);
+                skin.PixelPill(pill, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.9f), UiSkin.FrameDark);
                 GUI.Label(pill, chance, _sealStyle);
             }
             else
@@ -634,7 +630,7 @@ namespace FishingIdle.Game.UI
                 dialCenter = new Vector2(compass.x + compass.width * DialX, compass.y + compass.height * DialY);
                 dialRadius = Mathf.Min(compass.width * DialW, compass.height * DialH) / 2f;
                 var face = new Rect(dialCenter.x - dialRadius, dialCenter.y - dialRadius, dialRadius * 2f, dialRadius * 2f);
-                ArcArt.Disc(skin, face, new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.82f), Color.clear);
+                ArcArt.Disc(skin, face, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.82f), Color.clear);
             }
             else
             {
@@ -674,7 +670,7 @@ namespace FishingIdle.Game.UI
                 var t = k / (float)dots;
                 var angle = (t * 360f - 90f) * Mathf.Deg2Rad;
                 var p = new Vector2(center.x + Mathf.Cos(angle) * radius, center.y + Mathf.Sin(angle) * radius);
-                var color = t < progress ? UiSkin.Accent : UiSkin.Paper ? UiSkin.PaperLine : new Color(1f, 1f, 1f, 0.18f);
+                var color = t < progress ? UiSkin.Accent : new Color(1f, 1f, 1f, 0.18f);
                 var px = Mathf.Round(p.x / UiSkin.ArcPixel) * UiSkin.ArcPixel;
                 var py = Mathf.Round(p.y / UiSkin.ArcPixel) * UiSkin.ArcPixel;
                 ArcArt.Fill(skin, new Rect(px - size / 2f, py - size / 2f, size, size), color, 0f);
@@ -804,7 +800,6 @@ namespace FishingIdle.Game.UI
             {
                 // The harbour fills the window; the report sits on it on a dark, slightly see-through panel.
                 var scene = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 760f);
-                UiSkin.SetPaper(false);
                 // The harbour at dusk (L7-11) at a whole scale inside the frame, cropped at the edges; the report on the ARC
                 // panel, a little see-through.
                 var inset = WindowFrame.Sheet(scene);

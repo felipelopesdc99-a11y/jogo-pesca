@@ -14,7 +14,7 @@ namespace FishingIdle.Game.UI
     /// </summary>
     /// <remarks>
     /// The layout of A-170 is kept to the pixel (content area, header strip, tabs), so no window had to move its content;
-    /// only the pieces are drawn differently. Paper mode no longer turns on. What used to be the subtitle is split by
+    /// only the pieces are drawn differently (the paper mode left in M25-T17). What used to be the subtitle is split by
     /// what it is:
     /// <list type="bullet">
     /// <item><b>info</b> — a sentence that explains the menu, behind a round turquoise "i" on the label; clicking it
@@ -103,7 +103,6 @@ namespace FishingIdle.Game.UI
         /// </summary>
         public static Rect Panel(UiSkin skin, float screenWidth, float screenHeight, float maxWidth, float maxHeight, bool bookmarks = false)
         {
-            UiSkin.SetPaper(false);
             EnsureStyles(skin);
 
             // The veil (#0A0C1C at 45%, Art Bible 7).
@@ -122,7 +121,7 @@ namespace FishingIdle.Game.UI
             return panel;
         }
 
-        /// <summary>The inside of a frame (where the diary's paper sheet was).</summary>
+        /// <summary>The inside of a frame.</summary>
         public static Rect Sheet(Rect panel)
         {
             return new Rect(panel.x + Wood, panel.y + Wood, panel.width - Wood * 2f, panel.height - Wood * 2f);
@@ -315,7 +314,7 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// A window's own picture (Resources/Arte/<paramref name="artPath"/>) set on the sheet like a photo (A-170, A-179):
+        /// A window's own picture (Resources/ArtePixel/<paramref name="artPath"/>) set on the sheet like a photo (A-170, A-179):
         /// the ARC frame, then the art covering <paramref name="rect"/> (PixelDraw.Cover: pixel art at a whole scale, cut at
         /// the edges; never stretched). <paramref name="focusX"/>/<paramref name="focusY"/> pick the part of the picture
         /// that stays in the middle. Returns the texture, or null when the file is missing (nothing is drawn; the caller keeps
@@ -342,7 +341,7 @@ namespace FishingIdle.Game.UI
         public static void Veil(UiSkin skin, Rect rect, float left, float right)
         {
             const int bands = 12;
-            var night = UiSkin.SceneNight;
+            var night = UiSkin.Night;
             var bandWidth = rect.width / bands;
             for (var i = 0; i < bands; i++)
             {
@@ -374,7 +373,7 @@ namespace FishingIdle.Game.UI
         public static void OutlinedLabel(Rect rect, string text, GUIStyle style)
         {
             var previous = GUI.contentColor;
-            var night = UiSkin.SceneNight;
+            var night = UiSkin.Night;
             GUI.contentColor = new Color(night.r, night.g, night.b, previous.a * 0.95f);
             GUI.Label(new Rect(rect.x - 2f, rect.y, rect.width, rect.height), text, style);
             GUI.Label(new Rect(rect.x + 2f, rect.y, rect.width, rect.height), text, style);
@@ -423,13 +422,12 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// Ends the windows: turns paper mode off and draws the open "Como funciona" note over everything the windows
+        /// Ends the windows: draws the open "Como funciona" note over everything the windows
         /// drew this frame. The HUD calls it right after the windows; <paramref name="blocked"/> (a window dialog is
         /// open) closes the note.
         /// </summary>
         public static void DrawInfoBalloon(UiSkin skin, bool blocked)
         {
-            UiSkin.SetPaper(false);
             if (_tipKey == null)
             {
                 return;
@@ -447,7 +445,7 @@ namespace FishingIdle.Game.UI
             // The ARC tooltip: the panel night with a dark-gold line and a turquoise stripe (the "i" is turquoise).
             skin.HardShadow(r);
             skin.TipBox(r);
-            Fill(skin, UiSkin.Snap(new Rect(r.x + UiSkin.ArcPixel * 2, r.y + UiSkin.ArcPixel * 3, UiSkin.ArcPixel * 2, r.height - UiSkin.ArcPixel * 6)), UiSkin.NightAccent, 0f);
+            Fill(skin, UiSkin.Snap(new Rect(r.x + UiSkin.ArcPixel * 2, r.y + UiSkin.ArcPixel * 3, UiSkin.ArcPixel * 2, r.height - UiSkin.ArcPixel * 6)), UiSkin.Accent, 0f);
             GUI.Label(new Rect(r.x + TipPad, r.y + TipPad - 2f, r.width - TipPad * 2f, 22f), GameTexts.WindowHeader.InfoTitle, _tipTitle);
             GUI.Label(new Rect(r.x + TipPad, r.y + TipPad + 24f, r.width - TipPad * 2f, r.height - TipPad * 2f - 24f), _tipText, _tipBody);
         }
@@ -467,7 +465,6 @@ namespace FishingIdle.Game.UI
         /// <summary>A centred confirmation box over everything, on the ARC panel. Returns the box rect.</summary>
         public static Rect Dialog(UiSkin skin, float screenWidth, float screenHeight, float height, float width = 640f)
         {
-            UiSkin.SetPaper(false);
             var rect = new Rect(screenWidth / 2f - width / 2f, screenHeight / 2f - height / 2f, width, height);
             GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), skin.Overlay);
             skin.DrawShadow(rect);
@@ -540,7 +537,7 @@ namespace FishingIdle.Game.UI
         private static bool InfoButton(UiSkin skin, Rect rect, bool open)
         {
             var hover = GUI.enabled && rect.Contains(Event.current.mousePosition);
-            var face = open || hover ? UiSkin.NightAccentHover : UiSkin.NightAccent;
+            var face = open || hover ? UiSkin.AccentHover : UiSkin.Accent;
             if (!GUI.enabled)
             {
                 face.a *= 0.5f;
@@ -576,11 +573,11 @@ namespace FishingIdle.Game.UI
             _infoGlyph = new GUIStyle(skin.Title) { font = skin.TitleBoldFont, fontSize = UiSkin.NumberSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _infoGlyph.normal.textColor = InfoInk;
             _counter = new GUIStyle(skin.Heading) { fontSize = UiSkin.BodySize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
-            _counter.normal.textColor = UiSkin.Ink;
+            _counter.normal.textColor = UiSkin.Text;
             _tipTitle = new GUIStyle(skin.Title) { fontSize = UiSkin.NumberSize, wordWrap = false };
             _tipTitle.normal.textColor = UiSkin.TitleColor;
             _tipBody = new GUIStyle(skin.Body) { fontSize = UiSkin.SmallSize, wordWrap = true };
-            _tipBody.normal.textColor = UiSkin.Ink;
+            _tipBody.normal.textColor = UiSkin.Text;
             // The tab label at the small size, the note under it at the chip size (Art Bible 7.1 minimums).
             _bookmark = new GUIStyle(skin.SmallBold) { fontSize = UiSkin.SmallSize, alignment = TextAnchor.UpperCenter, wordWrap = true, clipping = TextClipping.Overflow };
             _bookmark.normal.textColor = UiSkin.Muted;

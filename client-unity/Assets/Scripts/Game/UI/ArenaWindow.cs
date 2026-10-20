@@ -345,7 +345,6 @@ namespace FishingIdle.Game.UI
             var right = new Rect(area.xMax - panelW, panelY, panelW, panelH);
 
             // The formations are dark water panels: night colours inside them (A-170).
-            using (UiSkin.NightScope())
             {
                 DrawFormation(skin, left, _mine, false, headerH, slotW, slotH, rowGap);
                 FormationHeader(skin, left, headerH, _profile?.AvatarId, PlayerName, _arena.Rank, null);
@@ -810,9 +809,9 @@ namespace FishingIdle.Game.UI
                     var tw = skin.CenterBold.CalcSize(PlaceContent).x + 20f;
                     var band = block.y + block.height * PodiumBand[rank - 1];
                     var pill = new Rect(block.center.x - tw / 2f, band - 13f, tw, 26f);
-                    skin.PixelPill(pill, new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.85f), UiSkin.FrameDark);
-                    // Night gold for the 1º: UiSkin.Gold answers in ink on the sheet.
-                    UiSkin.ColoredLabel(pill, place, skin.CenterBold, rank == 1 ? UiSkin.NightReward : color, false);
+                    skin.PixelPill(pill, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.85f), UiSkin.FrameDark);
+                    // The reward gold for the 1º.
+                    UiSkin.ColoredLabel(pill, place, skin.CenterBold, rank == 1 ? UiSkin.Gold : color, false);
                 }
                 else
                 {
@@ -1023,7 +1022,6 @@ namespace FishingIdle.Game.UI
 
             var t = Mathf.Clamp01((Time.unscaledTime - _introStart) / IntroSeconds);
             var panel = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 840f);
-            using var night = UiSkin.NightScope();
 
             // The diagonal split: blue on the left, red on the right, a slanted border in the middle.
             var blue = Color.Lerp(UiSkin.Night, UiSkin.Accent, 0.38f);
@@ -1079,7 +1077,7 @@ namespace FishingIdle.Game.UI
                 GUI.matrix = before * Matrix4x4.TRS(pivot, Quaternion.identity, new Vector3(scale, scale, 1f)) * Matrix4x4.TRS(-pivot, Quaternion.identity, Vector3.one);
                 GUI.color = new Color(color.r, color.g, color.b, color.a * vsEase);
                 // The "VS" by the code (M25-T14): Press Start 2P in gold with a hard pixel shadow (the painted emblem leaves).
-                GUI.contentColor = new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.9f);
+                GUI.contentColor = new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.9f);
                 GUI.Label(new Rect(vs.x + UiSkin.ArcPixel * 3, vs.y + UiSkin.ArcPixel * 3, vs.width, vs.height), GameTexts.Arena.VsMark, skin.VsDisplay);
                 GUI.contentColor = content;
                 GUI.Label(vs, GameTexts.Arena.VsMark, skin.VsDisplay);
@@ -1160,15 +1158,14 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // The battle is a scene on the diary sheet, in night colours (A-170).
+            // The battle: a scene framed like a photo.
             WindowFrame.Photo(skin, area);
-            using var night = UiSkin.NightScope();
             var arena = ArtAssets.Texture(ArenaArt);
             if (arena != null)
             {
                 // The underwater arena (A-179) under a light navy veil; the names and numbers carry their own dark plate.
                 ArcArt.Cover(area, arena, Color.white, 0.5f, 0.6f);
-                ArcArt.Fill(skin, area, new Color(UiSkin.SceneNight.r, UiSkin.SceneNight.g, UiSkin.SceneNight.b, 0.38f), 0f);
+                ArcArt.Fill(skin, area, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.38f), 0f);
             }
             else
             {
@@ -1228,7 +1225,7 @@ namespace FishingIdle.Game.UI
         /// <summary>A small navy plate under a label drawn on the arena art (contrast of 4.5:1 or more, A-179).</summary>
         private static void Plate(UiSkin skin, Rect rect, float alpha)
         {
-            var night = UiSkin.SceneNight;
+            var night = UiSkin.Night;
             ArcArt.Fill(skin, rect, new Color(night.r, night.g, night.b, alpha), rect.height / 2f);
         }
 

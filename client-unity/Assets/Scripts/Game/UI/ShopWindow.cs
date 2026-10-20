@@ -173,7 +173,6 @@ namespace FishingIdle.Game.UI
             // the sheet in night colours (A-170).
             DrawTabs(skin);
             WindowFrame.Photo(skin, area);
-            using var night = UiSkin.NightScope();
             DrawWallBackground(skin, area);
             DrawBeam(skin, new Rect(area.x, area.y, area.width, BeamHeight));
 
@@ -556,7 +555,7 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>Resources/Arte path of the fragment icon of a wall item: clothing pieces share frag_roupa.</summary>
+        /// <summary>Art path (ArtePixel) of the fragment icon of a wall item: clothing pieces share frag_roupa.</summary>
         private static string FragmentArt(WallItem item) =>
             item.Art != null && item.Art.StartsWith("Roupas/", System.StringComparison.Ordinal) ? "Fragmentos/frag_roupa" : "Fragmentos/frag_" + item.Id;
 

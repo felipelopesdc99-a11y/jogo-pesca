@@ -130,9 +130,8 @@ namespace FishingIdle.Game.UI
 
         private void DrawStage(UiSkin skin, Rect rect, WorldBossView view)
         {
-            // Cardume against the boss is a dark scene on the diary sheet, in night colours (A-170).
+            // Cardume against the boss: a dark scene framed like a photo.
             WindowFrame.Photo(skin, rect);
-            using var night = UiSkin.NightScope();
             GUI.Box(rect, GUIContent.none, skin.PanelSolid);
             skin.Inset(rect);
             WorldBossScene.DrawBackground(skin, rect, view.Open);

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// Shared pixel pieces of the ARC screens (M25-T13, T14, T16; addendum A-188): rounded shapes turned into the skin's
+    /// Shared pixel pieces of the ARC screens (M25-T13, T14, T16; addendum A-189): rounded shapes turned into the skin's
     /// stepped shapes, backdrops at a whole scale cropped at the edges, mirrored pixel drawings, and the small things the
     /// Art Bible asks the code to draw (bubbles, the pixel aura). Only drawing; textures are made once.
     /// </summary>
