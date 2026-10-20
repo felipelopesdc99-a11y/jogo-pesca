@@ -1539,7 +1539,7 @@ namespace FishingIdle.Game.UI
                 var textX = rect.x + 22;
                 if (toast.Icon != null)
                 {
-                    GUI.DrawTexture(new Rect(rect.x + 16, rect.y + 9, 80, 44), toast.Icon, ScaleMode.ScaleToFit, true);
+                    PixelDraw.Fit(new Rect(rect.x + 16, rect.y + 9, 80, 44), toast.Icon);
                     textX = rect.x + 104;
                 }
                 else
@@ -1800,7 +1800,7 @@ namespace FishingIdle.Game.UI
                     var textX = panel.x + 20;
                     if (entry.Icon != null)
                     {
-                        GUI.DrawTexture(new Rect(panel.x + 16, y + 6, 60, 34), entry.Icon, ScaleMode.ScaleToFit, true);
+                        PixelDraw.Fit(new Rect(panel.x + 16, y + 6, 60, 34), entry.Icon);
                         textX = panel.x + 86;
                     }
 

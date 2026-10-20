@@ -23,6 +23,8 @@ recompensa ou save mudou, e as telas continuam organizadas como antes. Vem depoi
   com moldura dourada e rótulo em pílula; a plaquinha de Moedas virou pílula (sem cordas).
 - Sem brilho difuso nem sombra borrada: o brilho virou anel de 1 pixel e a sombra, um deslocamento duro.
 - `tema_visual.json` com a paleta ARC e o bloco novo `arc` (moldura, campos, cartões, barras, alerta, véu).
+- **Ícones da interface pelo `PixelDraw`** (fecha a M25-T11): escala inteira e os coloridos sem tinta; Moedas, Conchas e
+  Dólares pelos ícones pixel.
 
 ## [0.2.0-m24.22] — 20/10/2026
 

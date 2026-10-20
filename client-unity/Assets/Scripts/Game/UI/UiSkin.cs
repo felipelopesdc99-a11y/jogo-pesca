@@ -76,7 +76,8 @@ namespace FishingIdle.Game.UI
 
             White = Art.SolidTexture(Color.white);
             Overlay = Art.SolidTexture(new Color(t.Veil.r, t.Veil.g, t.Veil.b, t.OverlayOpacity));
-            Coin = ArtAssets.Texture(CoinArt) ?? ArtAssets.Icon(Icons.Coin) ?? Art.Circle.texture;
+            // The pixel coin icon first (ASSETS_PIXEL: the painted ui_currency_* leave); the old art while it is missing.
+            Coin = ArtAssets.Icon(Icons.Coin) ?? ArtAssets.Texture(CoinArt) ?? Art.Circle.texture;
             Rays = Art.RaysTexture(14);
 
             // Panels: the three-line frame (gold, dark line, dark gold) with a 2-pixel chamfer (Art Bible 7).
@@ -542,7 +543,8 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            GUI.DrawTexture(rect, tex, ScaleMode.ScaleToFit, true, 0, color, 0, 0);
+            // Pixel icons at the largest whole scale, coloured ones never tinted (PixelDraw, M25-T11 hook).
+            PixelDraw.Icon(rect, tex, icon, color);
         }
 
         /// <summary>An icon inside a small rounded tile, like the window headers.</summary>
@@ -611,7 +613,7 @@ namespace FishingIdle.Game.UI
         {
             if (Coin != null && Coin != Art.Circle.texture)
             {
-                GUI.DrawTexture(rect, Coin, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(rect, Coin);
                 return;
             }
 
@@ -871,10 +873,17 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
+            var pixel = ArtAssets.Icon(icon);
+            if (pixel != null && ArtAssets.IsPixel(pixel))
+            {
+                PixelDraw.Icon(rect, pixel, icon, Color.white);
+                return;
+            }
+
             var art = icon == Icons.Shell ? ArtAssets.Texture(ShellArt) : icon == Icons.Dollar ? ArtAssets.Texture(DollarArt) : null;
             if (art != null)
             {
-                GUI.DrawTexture(rect, art, ScaleMode.ScaleToFit, true);
+                PixelDraw.Fit(rect, art);
                 return;
             }
 

@@ -5273,13 +5273,13 @@
           "title": "Ícones em pixel",
           "subsystem": "client",
           "description": "ASSET_PENDENTE (L3-01 a L3-04). 52 ícones coloridos (24 e 32 px) sem tinta do código; os 12 símbolos simples (+, X, ✓, setas, play, pausa, parar, ordenar, compacto, i, !) desenhados pelo código em pixel, tingíveis; ícones desativados dessaturados pelo código. Arte recebida em 20/10/2026 (L3-01 a L3-04): os 52 ícones em ArtePixel/Icones, completos.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "dependencies": [
             "M25-T03",
             "M25-T04"
           ],
-          "updated_at": "2026-10-20T18:00:00Z",
-          "completion_notes": "Os 52 ícones coloridos entram pela troca do ArtAssets; os 12 símbolos simples foram desenhados em pixel, brancos e tingíveis (ArtePixel/Icones, tools/Arte/cena_pixel.py simbolos); PixelDraw.Icon desenha em escala inteira e não tinge os coloridos (Icons.IsSymbol). Falta: UiSkin.DrawIconExact (e CoinIcon/CurrencyIcon) chamar PixelDraw.Icon/PixelDraw.Fit, uma linha no UiSkin.cs, arquivo da M25-T03 — até lá os ícones coloridos ainda são multiplicados pela cor pedida."
+          "updated_at": "2026-10-20T13:00:00Z",
+          "completion_notes": "Fechada junto com a M25-T03: UiSkin.DrawIconExact chama PixelDraw.Icon (escala inteira; ícones coloridos sem tinta, só o alfa da cor, então o desativado continua esmaecido); CoinIcon usa o ico_moeda pixel com PixelDraw.Fit e CurrencyIcon o ico_concha/ico_dolar pixel (a arte pintada ui_currency_* fica só como reserva); os ícones dos avisos e da central de notificações no Hud também passam pelo PixelDraw.Fit. Os 12 símbolos simples continuam tingíveis (Icons.IsSymbol). Compila no CI; visual só fica verificado quando o proprietário apertar Play."
         },
         {
           "id": "M25-T12",
