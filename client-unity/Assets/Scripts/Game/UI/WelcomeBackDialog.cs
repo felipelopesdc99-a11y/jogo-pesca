@@ -606,7 +606,7 @@ namespace FishingIdle.Game.UI
         private static float DrawRarities(UiSkin skin, float x, float y, float w, float ease)
         {
             var track = new Rect(x, y, w, RarityBar);
-            GUI.DrawTexture(track, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.PaperInset, 0, RarityBar / 2f);
+            GUI.DrawTexture(track, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.PaperInset, 0, 0f);
 
             // Every rarity keeps at least 8 px, so one Lendário among hundreds of Comuns is still seen.
             const float minimum = 8f, seam = 2f;
@@ -616,9 +616,8 @@ namespace FishingIdle.Game.UI
             {
                 var r = Rarities[i];
                 var sw = (minimum + free * r.Amount / Mathf.Max(1f, _rarityTotal)) * ease;
-                var left = i == 0 ? RarityBar / 2f : 0f;
-                var right = i == Rarities.Count - 1 ? RarityBar / 2f : 0f;
-                GUI.DrawTexture(new Rect(sx, y, sw, RarityBar), skin.White, ScaleMode.StretchToFill, true, 0, r.Color, Vector4.zero, new Vector4(left, right, right, left));
+                // Square pixel segments (A-184).
+                GUI.DrawTexture(UiSkin.Snap(new Rect(sx, y, sw, RarityBar)), skin.White, ScaleMode.StretchToFill, true, 0, r.Color, 0, 0f);
                 sx += sw + seam * ease;
             }
 
@@ -633,7 +632,7 @@ namespace FishingIdle.Game.UI
                     y += LegendRow;
                 }
 
-                GUI.DrawTexture(new Rect(lx, y + 6f, 10f, 10f), skin.White, ScaleMode.StretchToFill, true, 0, r.Color, 0, 5f);
+                GUI.DrawTexture(new Rect(lx, y + 6f, 10f, 10f), skin.White, ScaleMode.StretchToFill, true, 0, r.Color, 0, 0f);
                 GUI.Label(new Rect(lx + 16f, y, r.NameWidth + 2f, 22f), r.Name, skin.SmallMuted);
                 GUI.Label(new Rect(lx + 16f + r.NameWidth + 6f, y, r.CountWidth + 2f, 22f), r.Count, skin.SmallBold);
                 lx += lw + 18f;
@@ -647,7 +646,7 @@ namespace FishingIdle.Game.UI
         {
             Card(skin, r, gear.Tag != null ? UiSkin.NightReward : UiSkin.PaperLine, gear.Tag != null ? 2f : 1f);
             var icon = new Rect(r.x + 10f, r.y + (r.height - 46f) / 2f, 46f, 46f);
-            GUI.DrawTexture(icon, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.PaperInset, 0, 10f);
+            skin.LineBox(icon, UiSkin.PaperInset, UiSkin.FrameDark, 1);
             var art = ArtAssets.Texture(gear.Art);
             if (art != null)
             {
@@ -700,7 +699,7 @@ namespace FishingIdle.Game.UI
         {
             if (warning.Strong)
             {
-                GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.PaperInset, 0, 8f);
+                skin.LineBox(r, UiSkin.PaperInset, Color.clear, 1);
             }
 
             skin.DrawIcon(new Rect(r.x + 8f, r.y + (r.height - 20f) / 2f, 20f, 20f), warning.Icon, warning.Strong ? UiSkin.Gold : UiSkin.Muted);
@@ -736,12 +735,14 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ helpers
 
-        /// <summary>A white paper card (#FFFAF0) with a thin border.</summary>
+        /// <summary>
+        /// An ARC card (A-184): the card colour with a one-pixel line in <paramref name="border"/> and the card's inner dark
+        /// line; a <paramref name="borderWidth"/> of 2 or more (a highlight) adds a second line in the same colour.
+        /// </summary>
         private static void Card(UiSkin skin, Rect r, Color border, float borderWidth)
         {
-            Fill(skin, new Rect(r.x + 1f, r.y + 3f, r.width, r.height), new Color(UiSkin.PaperShade.r, UiSkin.PaperShade.g, UiSkin.PaperShade.b, 0.5f), 10f);
-            Fill(skin, r, UiSkin.PaperCard, 10f);
-            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, border, borderWidth, 10f);
+            var inner = borderWidth >= 2f ? border : VisualTheme.Current.CardLine;
+            skin.Shape(r, 1, false, UiSkin.PaperCard, 2, border, inner, Color.clear);
         }
 
         private static void Fill(UiSkin skin, Rect rect, Color color, float radius)

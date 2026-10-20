@@ -1461,6 +1461,38 @@ altura, que é o que importa na tela.
 **Rever se.** O ChatGPT passar a entregar grade exata (aí voltar a amostrar na grade dele preserva mais detalhe) ou se
 algum desenho fino (linha da vara nos itens) sumir demais: baixar o limiar de cobertura só para aquele pedido.
 
+## TD-061 · Pele ARC por máscaras 9-slice geradas no código e fontes pixel no IMGUI (20/10/2026)
+
+**Origem.** M25-T03 (A-184): a interface troca para a pele do Estilo ARC (Bíblia em pixel, seção 7) desenhada pelo
+código, com Press Start 2P e VT323.
+
+**Decisão.**
+- **Formas por máscaras tingidas.** `UiSkinArc.cs` gera, uma vez por raio, máscaras brancas 9-slice (cada linha da
+  moldura sozinha e o preenchimento de cada profundidade), com o canto em degrau calculado por pixel de interface
+  (chanfro em 45° ou círculo pixelado) e filtro Point. Uma forma de qualquer cor é desenhada empilhando 1 a 4 máscaras
+  tingidas por `GUI.color` com o `NineSlice` que já existia: nenhuma textura nova por cor nem por quadro, e o
+  preenchimento translúcido nunca mostra as linhas por baixo. Os `GUIStyle` (painel, cartão, botões, chips) usam
+  texturas coloridas feitas do mesmo jeito no construtor do `UiSkin`.
+- **Um pixel de interface = 2 px do quadro de 1080.** Abaixo de 1080 o quadro encolhe (0,56× numa janela de 600 px):
+  com o Point, cada linha de 2 px sempre acerta pelo menos um pixel da tela, então nada some.
+- **Fontes no IMGUI:** `Resources.Load<Font>` dos TTF em `Resources/Fontes` (como a Fredoka e a Nunito, que ficam como
+  reserva). O `ArtImportSettings` importa as duas com `FontRenderingMode.HintedRaster` (sem suavização), como pede o
+  TD-059; o tamanho vem do estilo, nos múltiplos da Bíblia (7.1).
+- **VT323 sobe 0,12 em no retângulo.** A VT323 guarda um quarto da linha acima das maiúsculas e põe os descendentes no
+  fim da linha; os estilos dela levam `padding.top` negativo de 0,12 em, para que os retângulos de uma linha feitos para
+  a Nunito (20–24 px) não cortem "g", "p" e "ç". `SmallLine` passou de 20 para 24.
+- **Acentos na Press Start 2P:** `TitleSafe` troca o estilo por um gêmeo em VT323 (1,75× o tamanho, mesma altura de
+  maiúscula), feito uma vez e guardado, quando o texto tem maiúscula acentuada; `ColoredLabel`, `ShadowLabel` e o
+  título das janelas passam por ele, e `skin.TitleLabel` nas outras chamadas com estilo de título.
+- **Modo papel desligado, API mantida.** `SetPaper` não liga mais o papel e as cores `Paper*`/`Ink*` viram as gêmeas
+  ARC, para as janelas escritas para o A-170 continuarem compilando e desenhando certo sem reescrever cada uma.
+
+**Por quê.** Máscaras tingidas dão a moldura nítida em qualquer tamanho e cor com poucas texturas pequenas, sem arquivo
+e sem alocação por quadro. Manter a API do papel evita mexer em dezenas de chamadas que só mudariam de nome.
+
+**Rever se.** A VT323 não ficar legível em janela pequena (trocar o corpo por outra fonte pixel OFL mais alta, como diz o
+TD-059) ou se o IMGUI for trocado pelo UI Toolkit.
+
 ## TD-062 · Cena pixel: câmera em duas etapas, encaixe na grade na hora de desenhar e composição em dados (20/10/2026)
 
 **Origem.** M25-T04 a T12: ligar a pixel art de `Resources/ArtePixel/` no jogo, com a câmera própria da TD-059.

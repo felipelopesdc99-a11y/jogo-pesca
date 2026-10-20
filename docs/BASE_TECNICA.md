@@ -70,7 +70,7 @@ client-unity/Assets/
 │   └── Core/ Diagnostics/  FishingIdle.Client   Dormente: cliente HTTP e diagnóstico do servidor online (M12)
 ├── Resources/
 │   ├── Arte/            Arte trocável: Peixes/, Mapas/<Mapa>/, Cena/, Varas/, Expedicoes/, Icones/, Vivos/ (ver docs/ASSETS_PENDENTES.md)
-│   ├── Fontes/          Fredoka e Nunito (OFL)
+│   ├── Fontes/          Press Start 2P e VT323 (OFL, pele ARC); Fredoka e Nunito (reserva)
 │   ├── Visual/          tema_visual.json (cores, brilho, tempos) e paisagem_viva.json (plantas, animais, ritmo)
 │   └── Sons/            Sons (.wav)
 ├── Scenes/Principal.unity   Criada automaticamente na primeira abertura
@@ -542,9 +542,14 @@ Cada passo está em `SaveMigrations.Upgrade`.
   para arremessar, esperar, mostrar a mordida e puxar; o peixe só aparece quando o serviço entrega a
   captura (`GameRoot.CatchesArrived`).
 - **Interface em IMGUI** (`Hud`, janelas, `UiSkin`): tela virtual de 1080 px de altura, escalada.
-  Todos os estilos ficam em `UiSkin`, o que isola uma futura troca para UI Toolkit. Fontes: Fredoka
-  nos títulos e números, Nunito SemiBold no texto e Nunito Bold no negrito (`Resources/Fontes`; a
-  SemiBold é gerada por `tools/Arte/gerar_nunito_semibold.py`).
+  Todos os estilos ficam em `UiSkin`, o que isola uma futura troca para UI Toolkit. Pele ARC (A-184, TD-061):
+  `UiSkinArc.cs` gera as formas em pixel (molduras de 3 linhas, pílulas, discos, barras em blocos) como máscaras
+  9-slice brancas com filtro Point, criadas uma vez e tingidas na hora (`Shape`, `PixelPill`, `FramedBox`,
+  `FramedDisc`, `LineBox`, `TipBox`); as cores vêm do bloco `arc` de `tema_visual.json`. Fontes: Press Start 2P nos
+  títulos e números, VT323 no resto (`Resources/Fontes`, importadas com Hinted Raster); `skin.TitleSafe`/`TitleLabel`
+  trocam a Press Start 2P pela VT323 quando o texto tem maiúscula acentuada. Fredoka e Nunito ficam como reserva se um
+  arquivo faltar. O "modo papel" do Diário de bordo (`UiSkinPaper.cs`) não liga mais; as cores "Paper*"/"Ink*"
+  respondem com as gêmeas ARC.
 - **Textos:** sempre de `GameTexts`. Nunca escreva uma frase em PT-BR direto num `.cs` fora de `Texts/`.
 - **Avisos e central de notificações** (`ToastFeed`): `Push(texto, tipo, ícone, notify)` mostra o
   aviso; com `notify: true` ele também entra na lista do sino (até 50, só enquanto o jogo está

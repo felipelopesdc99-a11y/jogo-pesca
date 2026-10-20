@@ -314,8 +314,8 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// A small solid tag like "NOVA ESPÉCIE" (dark text on a colour). The colour is always its night version, also
-        /// on the sheet: the dark paper inks under the dark text read at ~2,5:1.
+        /// A small solid tag like "NOVA ESPÉCIE": dark text on a pixel pill of the colour (its night version, never a
+        /// darkened ink, so the dark text keeps its contrast).
         /// </summary>
         public void Tag(Rect rect, string text, Color color)
         {

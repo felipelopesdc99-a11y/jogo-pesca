@@ -3014,6 +3014,11 @@ Muda o A-100, o A-139 e o A-167 (a fileira de 11 botões da barra de cima). Nenh
 
 *Atualizado em 12/10/2026 (A-172): a janela Tripulação saiu do jogo.*
 
+*Atualizado em 20/10/2026 (A-184): a pele "Diário de bordo" saiu com a troca para o Estilo ARC (A-182). A moldura de
+madeira, o papel, a etiqueta, o lacre e os marcadores deram lugar ao painel azul-noite com moldura dourada fina, à
+etiqueta ARC, ao "✕" em pixel e às abas ARC; o texto volta a ser claro sobre fundo escuro. A organização descrita abaixo
+(etiqueta com "i", contador, faixa livre, sub-abas na lateral direita, rodapé) continua igual.*
+
 O proprietário escolheu o padrão 3 "Diário de bordo" para todas as janelas internas. **Isto troca, nas janelas, o painel
 azul-marinho da Bíblia de Arte (seções 3 e 13) por papel claro numa moldura de madeira** — decisão dele, registrada
 aqui porque a Bíblia não se edita. A barra de cima, a cena, os avisos e os diálogos de confirmação continuam como a
@@ -3665,6 +3670,64 @@ de regra, número ou save muda; a arte ainda não está ligada no jogo):
 - **Boia:** 12 × 16 (um pouco maior que os ~8 × 14 da Bíblia, para a listra branca e vermelha aparecer).
 
 As folhas que vieram trocadas ou ruins estão em `docs/ASSETS_PIXEL.md` (seção "Recebimento de 20/10/2026").
+
+### A-184 · A pele ARC da interface e as fontes pixel (20/10/2026)
+
+**Seção do GDD:** 21 (interface) · `docs/ART_BIBLE_PIXEL.md`, seções 6.1 e 7 · M25-T03 · **Situação:** No jogo
+(verificado no CI, não aberto no Unity)
+
+A interface inteira passou para a pele do Estilo ARC (A-182), desenhada pelo código, sem arquivo de imagem. **Só
+apresentação:** nenhuma regra, número, sorteio, recompensa ou save mudou, e nenhuma tela mudou de organização.
+
+- **Fontes:** Press Start 2P nos títulos de janela, nome do mapa na chegada, números dourados e faixas de celebração;
+  VT323 em todo o resto. Tamanhos no quadro de 1080: títulos 24, números 16 e 24, faixas 32 e 40 (múltiplos de 8);
+  corpo 28, cabeçalhos de seção 32, pequeno 24, chips, selos e contadores 22 (o mínimo). A VT323 tem uma espessura só:
+  o "negrito" passa a ser só a cor.
+- **Acentos:** na Press Start 2P as maiúsculas acentuadas (Á É Í Ó Ú Â Ê Ô Ã Õ À) saem espremidas e parecem minúsculas
+  ("ÉPICO" vira "éPICO"). Todo título com uma delas é escrito em VT323 no mesmo tamanho visual (1,75×). As minúsculas
+  acentuadas e o "Ç" da Press Start 2P estão certos. Na VT323 todos os acentos do PT-BR estão certos.
+- **Painéis e janelas:** fundo `#0D0F20` a 93%, moldura de 3 linhas de 1 pixel de interface (2 px do quadro): dourado
+  `#D6AD57` por fora, linha escura `#0A0C1A`, dourado escuro `#7D6127` por dentro, cantos com chanfro de 2 pixels em
+  degrau; sombra dura de 2 pixels, sem desfoque. Véu atrás das janelas `#0A0C1C` a 45%.
+- **Cabeçalho da janela:** a etiqueta do título fica dentro da moldura (painel elevado `#161A35`, linha dourada), com o
+  ícone, o título em Press Start 2P cor `#FFE3A0` e o "i" turquesa; o contador num campo rebaixado; o fechar é uma
+  pílula com "✕" em pixel, dentro do canto de cima à direita. O espaço do conteúdo não mudou.
+- **Sub-abas na lateral:** a aberta é painel elevado com a moldura dourada e texto cor de título; as outras, campo com
+  linha azul-escura e texto suave (dourada ao passar o mouse).
+- **Botões-pílula:** secundário = campo com linha dourada e texto `#FFE3A0`; **principal (ação) = escuro com linha
+  turquesa** e texto turquesa claro (turquesa = ação); **recompensa = face dourada em 2 faixas** (`#FFD977`/`#D6A440`,
+  texto `#2A1A08`), só onde se recebe um prêmio; perigo = escuro com linha vermelha. A Bíblia (6.1) descreve o botão
+  principal dourado; como o dourado vivo é reservado a recompensa (Bíblia, seção 2 e checklist "dourado vivo só em
+  recompensa"), "Vender", "Iniciar pesca" e "Resgatar" ficam turquesa e a face dourada fica com o botão de recompensa.
+- **Chips e filtros:** campo com linha `#2A2E50` e texto suave; escolhido = `#1D2244` com linha dourada e texto cor de
+  título; o ponto de cor do filtro de raridade/tamanho vira um quadradinho de 3 pixels.
+- **Cartões:** fundo `#141832` com linha interna `#0B0D1E`; selecionado com contorno ouro de recompensa `#FFD667`
+  (Bíblia 7); a borda de raridade continua sendo desenhada pela janela, de 1 pixel.
+- **Barras:** quadradas, fundo `#22264A`, linha dourada escura quando têm 10 px ou mais, preenchimento em blocos de 6
+  pixels com uma luz de 1 pixel em cima; XP do pescador em listras `#7FD6C2`/`#62C0AD`; atributos e genes `#7FC4EA`
+  (o gene perfeito continua dourado).
+- **Menu de cima:** faixa `#0D0F20` fechada pelas 3 linhas da moldura; aba aberta = pílula elevada com linha dourada e
+  texto cor de título, as outras só ícone e texto suave; sino e opções em pílulas; carteira e retrato em campos com
+  linha dourada (o anel pintado saiu). A plaquinha de Moedas é uma pílula com a moldura (as cordas saíram).
+- **Atalhos redondos:** disco `#0D0F20` com a moldura de 3 linhas e o ícone colorido; o rótulo numa pílula escura
+  embaixo; o do Boss Mundial tem linha ouro de recompensa e um anel de 1 pixel que pisca (sem brilho difuso nem pulsar
+  de tamanho). Contadores de aviso: vermelho `#E0473A` com linha `#FFD667` e o número escuro.
+- **Brilho:** todo "brilho" (selo Lendário/Mítico, botão "Iniciar pesca" parado, aba ativa) virou um anel de 1 pixel em
+  volta, sem desfoque (Bíblia 4.10).
+- **Avisos, dicas e "Bem-vindo de volta":** avisos no painel ARC com a faixa de cor de 2 pixels; dicas (valor exato,
+  "Como funciona") em caixa escura com linha dourada escura; o relatório "Bem-vindo de volta" usa a moldura ARC, cartões
+  ARC e a barra de raridades em segmentos quadrados.
+- **Contraste sobre o painel escuro** (WCAG; o pior fundo é o cartão `#141832`): texto `#F4ECD6` 14,8:1; texto suave
+  `#A7A28F` 6,8:1; título `#FFE3A0` 13,9:1; dourado `#FFD667` 12,5:1; turquesa `#25C4C1` 8,1:1; vermelho `#EF6B5B`
+  5,7:1; verde 8,3:1; texto escuro no botão dourado 7,4:1 ou mais; número escuro no contador vermelho 4,6:1. As cores de
+  raridade usadas como texto são clareadas no mesmo tom até 4,6:1 (Épico e Lendário precisam: 4,4:1 sem clarear).
+- **Fica para depois (M25-T13 a T15):** os desenhos que cada janela ainda faz por conta própria com cantos arredondados
+  (fundos de ícone, discos, molduras internas) seguem como estão até a revisão de cada tela; os arquivos da pele antiga
+  (`ui_diario_*`, `ui_atalho_moldura`, `ui_avatar_frame`, `ui_topbar_frame`, `ui_nav_button_*`, `ui_wallet_inset`)
+  não são mais lidos e saem no M25-T17.
+- **Pendente de Play:** a legibilidade da VT323 e da Press Start 2P em janela pequena (~1200×600, o quadro a ~0,56×) e
+  textos que passem a quebrar ou a ser cortados com "…" por causa das letras mais largas só ficam confirmados quando o
+  proprietário apertar Play.
 
 ### A-185 · Cena de pesca em pixel art: composição, céu e água (20/10/2026)
 

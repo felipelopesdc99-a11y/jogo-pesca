@@ -3,6 +3,27 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.23] — 20/10/2026
+
+A interface inteira na **pele ARC** e nas **fontes pixel** (M25-T03, A-184). Só apresentação: nenhuma regra, número,
+recompensa ou save mudou, e as telas continuam organizadas como antes. Vem depois da pixel art ligada no jogo (0.2.0-m24.22).
+
+### Alterado
+
+- **Fontes:** Press Start 2P nos títulos e números e VT323 no resto, ambas OFL (`Resources/Fontes`, com
+  `OFL-PressStart2P.txt` e `OFL-VT323.txt`), nos tamanhos da Bíblia (títulos 24, corpo 28, pequeno 24, chips 22).
+  Títulos com maiúscula acentuada usam a VT323, porque a Press Start 2P desenha "É" como "é".
+- **Janelas:** painel azul-noite com moldura dourada fina em pixel no lugar do "Diário de bordo" (madeira e papel); título
+  em etiqueta ARC, "✕" em pixel, sub-abas laterais ARC, dicas e "Como funciona" em caixa escura.
+- **Botões e chips em pílula:** secundário com linha dourada, ação com linha turquesa, recompensa com face dourada;
+  filtros com linha azul-escura e o escolhido com linha dourada.
+- **Barras quadradas em blocos** (XP em listras verde-água, atributos e genes em azul-claro), cartões com linha interna e
+  selecionado com contorno ouro, contadores vermelhos com linha dourada.
+- **Menu de cima e atalhos:** faixa escura fechada pela moldura, aba aberta em pílula com linha dourada, atalhos redondos
+  com moldura dourada e rótulo em pílula; a plaquinha de Moedas virou pílula (sem cordas).
+- Sem brilho difuso nem sombra borrada: o brilho virou anel de 1 pixel e a sombra, um deslocamento duro.
+- `tema_visual.json` com a paleta ARC e o bloco novo `arc` (moldura, campos, cartões, barras, alerta, véu).
+
 ## [0.2.0-m24.22] — 20/10/2026
 
 A pixel art ligada no jogo (M25-T04 a T12): a cena de pesca dos 10 mapas, o pescador animado, os peixes, os itens e os

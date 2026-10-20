@@ -5176,11 +5176,12 @@
           "title": "Fontes pixel e pele ARC da interface (por código)",
           "subsystem": "client",
           "description": "Press Start 2P e VT323 (OFL) em Resources/Fontes com as licenças; tamanhos mínimos da Bíblia (seção 7.1). Painéis azul-noite com moldura dourada de 3 linhas, pílulas, abas, chips, barras, cards e botões gerados pelo código como texturas 9-slice Point; cores novas como chaves em tema_visual.json. Sai a pele \"Diário de bordo\" (A-170). Conferir que nada se sobrepõe em ~1200×600 e ~1320×840.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T01"
           ],
-          "updated_at": "2026-10-19T21:00:00Z"
+          "updated_at": "2026-10-20T12:00:00Z",
+          "completion_notes": "Pele ARC desenhada pelo código (A-184, TD-061): Press Start 2P e VT323 (OFL, com OFL-PressStart2P.txt e OFL-VT323.txt) em Resources/Fontes, importadas com Hinted Raster; tamanhos da Bíblia 7.1 (títulos 24, números 16/24, corpo 28, pequeno 24, chips 22); títulos com maiúscula acentuada vão para a VT323 (a Press Start 2P espreme Á É Í Ó Ú). UiSkinArc gera molduras de 3 linhas, pílulas, discos e barras em blocos como máscaras 9-slice Point tingidas; cores novas no bloco \"arc\" do tema_visual.json. UiSkin, WindowFrame (painel, etiqueta, ✕ em pixel, abas, balão), TopMenuArt (faixa, abas, placa, atalhos, contadores), Hud (cartão do jogador, dicas, avisos) e o Bem-vindo de volta na pele nova; o modo papel do Diário de bordo não liga mais (arquivos ui_diario_* ficam para o M25-T17). Prévias PNG geradas (tela principal, Caixa de Pesca, Missões). Compila no CI; o visual só fica verificado quando o proprietário apertar Play."
         },
         {
           "id": "M25-T04",
