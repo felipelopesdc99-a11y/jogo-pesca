@@ -66,8 +66,8 @@ namespace FishingIdle.Game.UI
             // ARC fonts (Art Bible 7.1, TD-061): Press Start 2P for titles and big numbers, VT323 for everything else. While
             // a file is missing, Unity's default font is used (null font in a style). The old Fredoka and Nunito left in
             // M25-T17.
-            PixelTitleFont = Resources.Load<Font>("Fontes/PressStart2P-Regular");
-            PixelTextFont = Resources.Load<Font>("Fontes/VT323-Regular");
+            PixelTitleFont = Resources.Load<Font>(TitleFontFile);
+            PixelTextFont = Resources.Load<Font>(TextFontFile);
             TitleFont = PixelTitleFont;
             TitleBoldFont = PixelTitleFont;
             BodyFont = PixelTextFont;
@@ -85,12 +85,12 @@ namespace FishingIdle.Game.UI
             Panel = ArcBox(2, false, frame, Alpha(t.Panel, t.PanelOpacity));
             PanelSolid = ArcBox(2, false, frame, Alpha(t.Panel, 1f));
 
-            // Cards: the card fill with its inner line; a plain card has the idle-chip border (the rarity border is drawn
-            // over it by the window), the selected one the reward gold outside (Art Bible 7: "contorno externo Ouro").
-            Card = ArcBox(1, false, new[] { t.ChipOff, t.CardLine }, Alpha(t.Card, 0.97f));
-            CardHovered = ArcBox(1, false, new[] { Color.Lerp(t.ChipOff, t.Frame, 0.55f), t.CardLine }, Alpha(Color.Lerp(t.Card, t.PanelElevated, 0.6f), 0.98f));
-            CardSelected = ArcBox(1, false, new[] { t.Reward, t.CardLine }, Alpha(Color.Lerp(t.Card, t.ChipOn, 0.6f), 0.98f));
-            CardImportant = ArcBox(1, false, new[] { t.Frame, t.CardLine }, Alpha(Color.Lerp(t.Card, t.Reward, 0.06f), 0.98f));
+            // Cards (A-190, at most two levels of box): the card fill, one shade darker than the panel ("sunken"), with a
+            // single one-pixel line and no inner line; the selected one has the reward gold line (Art Bible 7).
+            Card = ArcBox(1, false, new[] { t.ChipOff }, Alpha(t.Card, 1f));
+            CardHovered = ArcBox(1, false, new[] { Color.Lerp(t.ChipOff, t.Frame, 0.55f) }, Alpha(Color.Lerp(t.Card, t.PanelElevated, 0.5f), 1f));
+            CardSelected = ArcBox(1, false, new[] { t.Reward }, Alpha(Color.Lerp(t.Card, t.PanelElevated, 0.6f), 1f));
+            CardImportant = ArcBox(1, false, new[] { t.Frame }, Alpha(Color.Lerp(t.Card, t.Reward, 0.06f), 1f));
 
             // No soft blur in pixel art: the shadow is a hard offset (HardShadow) and the glow a pixel ring (PixelGlow).
             // The two styles stay for windows that tint them, as plain translucent shapes.
@@ -202,8 +202,23 @@ namespace FishingIdle.Game.UI
             Badge.padding = new RectOffset(6, 6, Badge.padding.top, 1);
         }
 
-        // Text sizes on the 1080-tall virtual canvas (Art Bible 7.1, A-184). The canvas is scaled to the screen, so on a
-        // 600 px tall window 22 px becomes about 12 px: nothing that carries information goes below these.
+        // ------------------------------------------------------------------ fonts and sizes: the one place to change them
+        // (A-190). To swap the typefaces, put the new files in Resources/Fontes, change the two names below, the sizes under
+        // them and the two metrics of the text font (TextLiftEm, AccentTwinScale); every window takes its fonts and sizes
+        // from here. Text sizes are on the 1080-tall virtual canvas (Art Bible 7.1, A-184): on a 600 px tall window 22 px
+        // becomes about 12 px, so nothing that carries information goes below these.
+
+        /// <summary>The title font (Resources path, no extension): Press Start 2P today.</summary>
+        public const string TitleFontFile = "Fontes/PressStart2P-Regular";
+
+        /// <summary>The text font (Resources path, no extension): VT323 today (one weight; "bold" uses the same file).</summary>
+        public const string TextFontFile = "Fontes/VT323-Regular";
+
+        /// <summary>How far a line of the text font is lifted in its rect, in em (VT323: 0,12; see <see cref="TextLift"/>).</summary>
+        private const float TextLiftEm = 0.12f;
+
+        /// <summary>The text-font size that matches the capital height of the title font at 1 (VT323 vs Press Start 2P: 1,75).</summary>
+        private const float AccentTwinScale = 1.75f;
 
         /// <summary>Small labels and secondary text in VT323 ("pequeno"). One line of it needs a <see cref="SmallLine"/> rect.</summary>
         public const int SmallSize = 24;
@@ -231,6 +246,43 @@ namespace FishingIdle.Game.UI
 
         /// <summary>Celebration banners and big headline numbers, in Press Start 2P.</summary>
         public const int DisplaySize = 32;
+
+        /// <summary>The map name of the arrival title, in the title font.</summary>
+        public const int ArrivalSize = 40;
+
+        /// <summary>The Arena's big Honor number, in the title font.</summary>
+        public const int HonorSize = 30;
+
+        /// <summary>The giant "VS" of the battle intro, in the title font.</summary>
+        public const int VsSize = 96;
+
+        /// <summary>The smallest size a squeezed label may shrink to (the Arena's row letters).</summary>
+        public const int ShrinkMinSize = 16;
+
+        /// <summary>Height of the virtual canvas the interface is laid out on.</summary>
+        public const float CanvasHeight = 1080f;
+
+        /// <summary>The tallest canvas a snapped scale may give (beyond it the interface would shrink too much).</summary>
+        private const float CanvasHeightMax = 1280f;
+
+        /// <summary>
+        /// The scale of the interface on a screen <paramref name="screenHeight"/> pixels tall (A-190). The canvas is drawn
+        /// through GUI.matrix, and a pixel font that was rasterised at its size and then scaled by a fraction is resampled
+        /// and blurs. So the scale snaps to a half step (0,5 · 1 · 1,5 · 2 …), the largest that keeps the canvas at least
+        /// 1080 tall, as long as the canvas stays under 1280 (600, 1080 to 1280 and 2160 px tall windows get a clean scale);
+        /// otherwise it falls back to the exact fraction, as before, so the layout never shrinks more than that.
+        /// </summary>
+        public static float CanvasScale(float screenHeight)
+        {
+            var exact = Mathf.Max(1f, screenHeight) / CanvasHeight;
+            var snapped = Mathf.Floor(exact * 2f) / 2f;
+            if (snapped >= 0.5f && screenHeight / snapped <= CanvasHeightMax)
+            {
+                return snapped;
+            }
+
+            return exact;
+        }
 
         /// <summary>Height of a rect holding one line of <see cref="SmallSize"/> text without clipping its descenders.</summary>
         public const float SmallLine = 24f;
@@ -704,7 +756,7 @@ namespace FishingIdle.Game.UI
         public GUIStyle TinyMutedCenter => _tinyMutedCenter ?? (_tinyMutedCenter = new GUIStyle(SmallMutedCenter) { fontSize = ChipSize, font = BodyBoldFont, wordWrap = false });
 
         /// <summary>A large gold number on one line (the Arena's Honor).</summary>
-        public GUIStyle NumberBig => _numberBig ?? (_numberBig = new GUIStyle(Number) { fontSize = 30, wordWrap = false });
+        public GUIStyle NumberBig => _numberBig ?? (_numberBig = new GUIStyle(Number) { fontSize = HonorSize, wordWrap = false });
 
         /// <summary><see cref="Title"/> centred on one line.</summary>
         public GUIStyle TitleCenter => _titleCenter ?? (_titleCenter = new GUIStyle(Title) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
@@ -713,7 +765,7 @@ namespace FishingIdle.Game.UI
         public GUIStyle VsMark => _vsMark ?? (_vsMark = GoldDisplay(DisplaySize));
 
         /// <summary>The big gold "VS" of the battle intro.</summary>
-        public GUIStyle VsDisplay => _vsDisplay ?? (_vsDisplay = GoldDisplay(96));
+        public GUIStyle VsDisplay => _vsDisplay ?? (_vsDisplay = GoldDisplay(VsSize));
 
         /// <summary>Dark bold text centred on a gold medal.</summary>
         public GUIStyle MedalText

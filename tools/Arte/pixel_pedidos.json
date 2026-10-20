@@ -20,7 +20,7 @@
    "cores": 32,
    "margem": 2,
    "modo": "quadros",
-   "alvo_altura": 48,
+   "alvo_altura": 35,
    "ancora_x": 40
   },
   {
@@ -49,7 +49,7 @@
    "cores": 32,
    "margem": 2,
    "modo": "quadros",
-   "alvo_altura": 48,
+   "alvo_altura": 35,
    "ancora_x": 40
   },
   {
@@ -97,7 +97,7 @@
    "margem": 2,
    "modo": "objetos",
    "alvo": {
-    "Cena/caixa_de_pesca": "44x32",
+    "Cena/caixa_de_pesca": "36x26",
     "Cena/boia": "8x14"
    }
   },
@@ -120,7 +120,7 @@
    "cores": 32,
    "margem": 2,
    "modo": "objetos",
-   "alvo": "120x52"
+   "alvo": "96x40"
   },
   {
    "id": "L1-06a",
@@ -228,7 +228,7 @@
    "cores": 32,
    "margem": 2,
    "modo": "quadros",
-   "alvo_altura": 48,
+   "alvo_altura": 35,
    "ancora_x": 40
   },
   {
@@ -1093,7 +1093,7 @@
    "cores": 32,
    "margem": 2,
    "modo": "objetos",
-   "alvo": "120x52"
+   "alvo": "96x40"
   },
   {
    "id": "L5-03",

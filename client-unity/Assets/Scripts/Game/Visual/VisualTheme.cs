@@ -18,41 +18,72 @@ namespace FishingIdle.Game.Visual
 
         private static VisualTheme _current;
 
-        // The ARC interface palette (docs/ART_BIBLE_PIXEL.md, section 6.1; addendum A-184).
-        public Color Night = Hex("#090B18");
-        public Color Panel = Hex("#0D0F20");
-        public Color PanelElevated = Hex("#161A35");
-        public Color Border = Hex("#7D6127");
+        // Palette A "Ardósia" (owner, 20/10/2026; addendum A-190): 14 interface colours in tema_visual.json, the other
+        // pieces derived from them in Derive() (docs/ART_BIBLE_PIXEL.md 6.1 stays the locked reference).
+        public Color Panel = Hex("#283050");
+        public Color PanelElevated = Hex("#36406A");
+        public Color Card = Hex("#1E2541");
+        public Color Ink = Hex("#0A0C1C");
         public Color Text = Hex("#F4ECD6");
-        public Color TextMuted = Hex("#A7A28F");
-        public Color Action = Hex("#25C4C1");
-        public Color ActionHover = Hex("#3AD6D2");
+        public Color TextMuted = Hex("#C9C0A4");
+        public Color Frame = Hex("#D6AD57");
+        public Color FrameDark = Hex("#8A6C30");
+        public Color Action = Hex("#5ED6D2");
+        public Color ActionDark = Hex("#4BC0BC");
         public Color Reward = Hex("#FFD667");
-        public Color RewardLight = Hex("#FFE3A0");
-        public Color Danger = Hex("#EF6B5B");
-        public Color Success = Hex("#2CCB7F");
+        public Color Danger = Hex("#FF7A6B");
+        public Color Success = Hex("#5BDB9A");
         public Color Exceptional = Hex("#F6B93B");
 
-        // ARC pieces drawn by the code (structure, never reward): the thin gold frame and its dark twin, the line between
-        // them, the title colour of Press Start 2P, fields, cards, idle chips, bars and the alert counters.
-        public Color Frame = Hex("#D6AD57");
-        public Color FrameDark = Hex("#7D6127");
-        public Color FrameInner = Hex("#0A0C1A");
-        public Color Title = Hex("#FFE3A0");
-        public Color Field = Hex("#090B18");
-        public Color Card = Hex("#141832");
-        public Color CardLine = Hex("#0B0D1E");
-        public Color ChipOff = Hex("#2A2E50");
-        public Color ChipOn = Hex("#1D2244");
-        public Color BarTrack = Hex("#22264A");
-        public Color Xp = Hex("#7FD6C2");
-        public Color XpStripe = Hex("#62C0AD");
-        public Color Attribute = Hex("#7FC4EA");
-        public Color Alert = Hex("#E0473A");
-        public Color Veil = Hex("#0A0C1C");
+        // Derived pieces (not in the file since A-190): kept as fields so every window keeps its call sites.
+        /// <summary>Sunken fills (wells, pills over the scene): the card colour.</summary>
+        public Color Night;
+        public Color Border;
+        public Color ActionHover;
+        public Color RewardLight;
+        public Color FrameInner;
+        /// <summary>Titles are cream, like the text (A-190): the yellow is only for rewards.</summary>
+        public Color Title;
+        public Color Field;
+        public Color CardLine;
+        /// <summary>The one-pixel line of idle chips and plain cards.</summary>
+        public Color ChipOff;
+        public Color ChipOn;
+        public Color BarTrack;
+        public Color Xp;
+        public Color XpStripe;
+        public Color Attribute;
+        public Color Alert;
+        public Color Veil;
 
-        public float PanelOpacity = 0.93f;
-        public float OverlayOpacity = 0.45f;
+        public VisualTheme()
+        {
+            Derive();
+        }
+
+        /// <summary>Recomputes the derived pieces from the 14 palette colours.</summary>
+        private void Derive()
+        {
+            Night = Card;
+            Field = Card;
+            Border = FrameDark;
+            ActionHover = Color.Lerp(Action, Color.white, 0.2f);
+            RewardLight = Color.Lerp(Reward, Color.white, 0.4f);
+            FrameInner = Ink;
+            CardLine = Ink;
+            Veil = Ink;
+            Title = Text;
+            ChipOff = Color.Lerp(PanelElevated, Text, 0.14f);
+            ChipOn = PanelElevated;
+            BarTrack = Color.Lerp(Card, Ink, 0.45f);
+            Xp = Action;
+            XpStripe = ActionDark;
+            Attribute = Action;
+            Alert = Danger;
+        }
+
+        public float PanelOpacity = 1f;
+        public float OverlayOpacity = 0.35f;
         public float GlowIntensity = 0.7f;
         public float ToastSeconds = 4f;
         public float ToastImportantSeconds = 6f;
@@ -67,11 +98,11 @@ namespace FishingIdle.Game.Visual
         private RarityColor[] _rarities =
         {
             new RarityColor { id = "common", color = "#F2F5F8" },
-            new RarityColor { id = "uncommon", color = "#2CCB7F" },
-            new RarityColor { id = "rare", color = "#4D8DFF" },
-            new RarityColor { id = "epic", color = "#A855F7" },
-            new RarityColor { id = "legendary", color = "#E5484D" },
-            new RarityColor { id = "mythic", color = "#EC4899" },
+            new RarityColor { id = "uncommon", color = "#5BDB9A" },
+            new RarityColor { id = "rare", color = "#7AAEFF" },
+            new RarityColor { id = "epic", color = "#C084FC" },
+            new RarityColor { id = "legendary", color = "#FF6B6E" },
+            new RarityColor { id = "mythic", color = "#F472B6" },
         };
 
         private RarityColor[] _sizes =
@@ -155,40 +186,22 @@ namespace FishingIdle.Game.Visual
             var p = f.palette;
             if (p != null)
             {
-                Night = Parse(p.night, Night);
                 Panel = Parse(p.panel, Panel);
                 PanelElevated = Parse(p.panel_elevated, PanelElevated);
-                Border = Parse(p.border, Border);
+                Card = Parse(p.card, Card);
+                Ink = Parse(p.ink, Ink);
                 Text = Parse(p.text, Text);
                 TextMuted = Parse(p.text_muted, TextMuted);
+                Frame = Parse(p.frame, Frame);
+                FrameDark = Parse(p.frame_dark, FrameDark);
                 Action = Parse(p.action, Action);
-                ActionHover = Parse(p.action_hover, ActionHover);
+                ActionDark = Parse(p.action_dark, ActionDark);
                 Reward = Parse(p.reward, Reward);
-                RewardLight = Parse(p.reward_light, RewardLight);
                 Danger = Parse(p.danger, Danger);
                 Success = Parse(p.success, Success);
             }
 
-            var a = f.arc;
-            if (a != null)
-            {
-                Frame = Parse(a.frame, Frame);
-                FrameDark = Parse(a.frame_dark, FrameDark);
-                FrameInner = Parse(a.frame_inner, FrameInner);
-                Title = Parse(a.title, Title);
-                Field = Parse(a.field, Field);
-                Card = Parse(a.card, Card);
-                CardLine = Parse(a.card_line, CardLine);
-                ChipOff = Parse(a.chip_off, ChipOff);
-                ChipOn = Parse(a.chip_on, ChipOn);
-                BarTrack = Parse(a.bar_track, BarTrack);
-                Xp = Parse(a.xp, Xp);
-                XpStripe = Parse(a.xp_stripe, XpStripe);
-                Attribute = Parse(a.attribute, Attribute);
-                Alert = Parse(a.alert, Alert);
-                Veil = Parse(a.veil, Veil);
-            }
-
+            Derive();
             Exceptional = Parse(f.exceptional_color, Exceptional);
             if (f.rarities != null && f.rarities.Length > 0)
             {
@@ -237,7 +250,6 @@ namespace FishingIdle.Game.Visual
         private sealed class ThemeFile
         {
             public Palette palette;
-            public Arc arc;
             public RarityColor[] rarities;
             public RarityColor[] size_categories;
             public string exceptional_color;
@@ -258,13 +270,7 @@ namespace FishingIdle.Game.Visual
         [Serializable]
         private sealed class Palette
         {
-            public string night, panel, panel_elevated, border, text, text_muted, action, action_hover, reward, reward_light, danger, success;
-        }
-
-        [Serializable]
-        private sealed class Arc
-        {
-            public string frame, frame_dark, frame_inner, title, field, card, card_line, chip_off, chip_on, bar_track, xp, xp_stripe, attribute, alert, veil;
+            public string panel, panel_elevated, card, ink, text, text_muted, frame, frame_dark, action, action_dark, reward, danger, success;
         }
 
         [Serializable]

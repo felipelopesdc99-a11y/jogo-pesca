@@ -24,7 +24,6 @@ namespace FishingIdle.Game.UI
     /// </remarks>
     public sealed class Hud : MonoBehaviour
     {
-        private const float VirtualHeight = 1080f;
 
         // The top strip (M24-T43, A-169). Windows start at y 120 or lower (WindowFrame.Panel centres at most 880 px of
         // height on the 1080 canvas); since A-170 they are logbook pages whose label and seal sit just under the strip's
@@ -406,9 +405,11 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var scale = Screen.height / VirtualHeight;
+            // Snapped to a clean step where it can be, so the pixel fonts do not blur (UiSkin.CanvasScale, A-190): the
+            // canvas is then 1080 to 1280 tall, and every window lays itself out on _height.
+            var scale = UiSkin.CanvasScale(Screen.height);
             _width = Screen.width / scale;
-            _height = VirtualHeight;
+            _height = Screen.height / scale;
             GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(scale, scale, 1f));
 
             UiSkin skin;
@@ -1413,7 +1414,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var scale = Screen.height / VirtualHeight;
+            var scale = UiSkin.CanvasScale(Screen.height);
             var point = camera.WorldToScreenPoint(rig.LastEscapePoint);
             var alpha = Mathf.Clamp01(age / 0.2f) * Mathf.Clamp01((duration - age) / 0.6f);
             var cx = point.x / scale;

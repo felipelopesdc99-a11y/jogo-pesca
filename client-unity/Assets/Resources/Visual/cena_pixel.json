@@ -508,92 +508,92 @@
     "frame": 64,
     "feet_x": 40,
     "feet_y": 63,
-    "rod_px": 60,
+    "rod_px": 48,
     "frames": [
       {
         "name": "pescador",
         "hand_x": 41,
-        "hand_y": 41
+        "hand_y": 47
       },
       {
         "name": "parado_1",
         "hand_x": 41,
-        "hand_y": 41
+        "hand_y": 47
       },
       {
         "name": "parado_2",
         "hand_x": 41,
-        "hand_y": 43
+        "hand_y": 48
       },
       {
         "name": "parado_3",
         "hand_x": 40,
-        "hand_y": 44
+        "hand_y": 49
       },
       {
         "name": "parado_4",
         "hand_x": 41,
-        "hand_y": 45
+        "hand_y": 50
       },
       {
         "name": "arremesso_1",
-        "hand_x": 23,
-        "hand_y": 39
+        "hand_x": 28,
+        "hand_y": 46
       },
       {
         "name": "arremesso_2",
-        "hand_x": 16,
-        "hand_y": 29
+        "hand_x": 22,
+        "hand_y": 38
       },
       {
         "name": "arremesso_3",
-        "hand_x": 45,
-        "hand_y": 41
+        "hand_x": 44,
+        "hand_y": 47
       },
       {
         "name": "arremesso_4",
-        "hand_x": 43,
-        "hand_y": 43
+        "hand_x": 42,
+        "hand_y": 48
       },
       {
         "name": "recolhe_1",
         "hand_x": 41,
-        "hand_y": 45
+        "hand_y": 50
       },
       {
         "name": "recolhe_2",
         "hand_x": 41,
-        "hand_y": 46
+        "hand_y": 51
       },
       {
         "name": "recolhe_3",
         "hand_x": 41,
-        "hand_y": 46
+        "hand_y": 51
       },
       {
         "name": "recolhe_4",
         "hand_x": 40,
-        "hand_y": 47
+        "hand_y": 51
       },
       {
         "name": "fisgada_1",
-        "hand_x": 37,
-        "hand_y": 29
+        "hand_x": 38,
+        "hand_y": 38
       },
       {
         "name": "fisgada_2",
         "hand_x": 41,
-        "hand_y": 40
+        "hand_y": 46
       },
       {
         "name": "mostra_1",
-        "hand_x": 44,
-        "hand_y": 34
+        "hand_x": 43,
+        "hand_y": 42
       },
       {
         "name": "escapou_1",
         "hand_x": 39,
-        "hand_y": 46
+        "hand_y": 51
       }
     ]
   },
@@ -602,60 +602,60 @@
       "id": "boat_00",
       "art": "Barcos/boat_00",
       "front": "Barcos/Cena/boat_00_frente",
-      "pivot_x": 62,
-      "pivot_y": 30,
-      "seat_x": 60,
-      "seat_y": 27
+      "pivot_x": 50,
+      "pivot_y": 25,
+      "seat_x": 48,
+      "seat_y": 22
     },
     {
       "id": "boat_01",
       "art": "Barcos/boat_01",
       "front": "Barcos/Cena/boat_01_frente",
-      "pivot_x": 62,
-      "pivot_y": 37,
-      "seat_x": 60,
-      "seat_y": 34
+      "pivot_x": 50,
+      "pivot_y": 30,
+      "seat_x": 48,
+      "seat_y": 28
     },
     {
       "id": "boat_02",
       "art": "Barcos/boat_02",
       "front": "Barcos/Cena/boat_02_frente",
-      "pivot_x": 62,
-      "pivot_y": 31,
-      "seat_x": 60,
-      "seat_y": 23
+      "pivot_x": 50,
+      "pivot_y": 25,
+      "seat_x": 48,
+      "seat_y": 19
     },
     {
       "id": "boat_03",
       "art": "Barcos/boat_03",
       "front": "Barcos/Cena/boat_03_frente",
-      "pivot_x": 62,
-      "pivot_y": 40,
-      "seat_x": 60,
-      "seat_y": 33
+      "pivot_x": 50,
+      "pivot_y": 32,
+      "seat_x": 48,
+      "seat_y": 27
     },
     {
       "id": "boat_04",
       "art": "Barcos/boat_04",
       "front": "Barcos/Cena/boat_04_frente",
-      "pivot_x": 62,
-      "pivot_y": 41,
-      "seat_x": 54,
-      "seat_y": 30
+      "pivot_x": 50,
+      "pivot_y": 33,
+      "seat_x": 44,
+      "seat_y": 24
     },
     {
       "id": "boat_05",
       "art": "Barcos/boat_05",
       "front": "Barcos/Cena/boat_05_frente",
-      "pivot_x": 54,
-      "pivot_y": 47,
-      "seat_x": 48,
-      "seat_y": 39
+      "pivot_x": 42,
+      "pivot_y": 36,
+      "seat_x": 38,
+      "seat_y": 30
     }
   ],
   "starter_boat": "boat_00",
-  "box_x": 34,
-  "box_y": 25,
+  "box_x": 28,
+  "box_y": 21,
   "bobber_waterline": 11,
   "rods": [
     {

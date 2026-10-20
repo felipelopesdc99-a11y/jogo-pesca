@@ -183,7 +183,9 @@ namespace FishingIdle.Game.UI
         {
             GameTexts.Profile.TabSummary, GameTexts.Profile.TabInventory, GameTexts.Profile.TabCardume, GameTexts.Profile.TabEncyclopedia, GameTexts.Profile.TabRecords,
         };
-        private static readonly string[] TabIcons = { Icons.Profile, Icons.Rod, Icons.Fish, Icons.Book, Icons.Star };
+        // One icon per tab (A-190): Resumo the fisher, Inventário the box, Cardume the fish, Enciclopédia the species book,
+        // Recordes the star.
+        private static readonly string[] TabIcons = { Icons.Profile, "caixa", Icons.Fish, "especies", Icons.Star };
 
         private void DrawIdentityDialog(UiSkin skin, float screenWidth, float screenHeight)
         {
@@ -355,7 +357,7 @@ namespace FishingIdle.Game.UI
             var badge = new Rect(tx, top + 40, lw, 22);
             // A seal in its night colours.
             skin.PixelPill(badge, UiSkin.Accent, Color.clear);
-            UiSkin.ColoredLabel(new Rect(badge.x + 8, badge.y + 1, lw, UiSkin.SmallLine), level, skin.SmallBold, UiSkin.Night, false);
+            UiSkin.ColoredLabel(new Rect(badge.x + 8, badge.y + 1, lw, UiSkin.SmallLine), level, skin.SmallBold, UiSkin.DarkInk, false);
             if (player != null && player.FisherXpToNext > 0)
             {
                 skin.XpBar(new Rect(badge.xMax + 10, badge.y + 7, Mathf.Clamp(tw2 - lw - 10, 60f, 300f), 8), player.FisherXp / (float)player.FisherXpToNext);
@@ -1268,7 +1270,7 @@ namespace FishingIdle.Game.UI
                 skin.ArcFill(badge, selected ? UiSkin.Accent : new Color(0.06f, 0.12f, 0.2f, 0.95f), 13);
                 skin.ArcLine(badge, UiSkin.Accent, 13);
                 UiSkin.ColoredLabel(new Rect(badge.x, badge.y + 4, badge.width, 18), slot.Position.ToString(), CenteredBold(skin),
-                    selected ? UiSkin.Night : Color.white, false);
+                    selected ? UiSkin.DarkInk : Color.white, false);
 
                 if (slot.Fish == null)
                 {

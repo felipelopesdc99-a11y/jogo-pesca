@@ -45,8 +45,9 @@ namespace FishingIdle.Game.UI
         private const float SealSize = 54f, SealInset = 24f, CloseSize = 44f, CloseInset = 18f;
         private const float SideTop = 18f, SideHeight = 46f, SideGap = 12f;
 
-        // The bookmarks: how far they stick out of the frame, and their size.
-        private const float BookmarkOut = 96f, BookmarkUnder = 8f, BookmarkTop = 92f, BookmarkGap = 8f, BookmarkIcon = 28f, BookmarkTuck = 8f;
+        // The bookmarks: how far they stick out of the frame, and their size. 128 since A-190 (was 96): the longest
+        // one-word label, "Enciclopédia" (115 px in VT323 24), fits whole.
+        private const float BookmarkOut = 128f, BookmarkUnder = 8f, BookmarkTop = 92f, BookmarkGap = 8f, BookmarkIcon = 28f, BookmarkTuck = 8f;
 
         // The "i" on the label and its note.
         private const float InfoSize = 28f, TipWidth = 460f, TipPad = 16f;
@@ -219,9 +220,9 @@ namespace FishingIdle.Game.UI
             Side = new Rect(sideX, panel.y + SideTop, Mathf.Max(0f, seal.x - 16f - reserveRight - sideX), SideHeight);
             if (hasCounter && Side.width > 60f)
             {
-                var well = TakeSide(Mathf.Min(_counter.CalcSize(new GUIContent(counter)).x + 36f, Side.width));
-                skin.Inset(well);
-                GUI.Label(well, FishCard.Fit(counter, _counter, well.width - 20f), _counter);
+                // Soft text beside the title, no box (A-190).
+                var well = TakeSide(Mathf.Min(_counter.CalcSize(new GUIContent(counter)).x + 8f, Side.width));
+                GUI.Label(well, FishCard.Fit(counter, _counter, well.width), _counter);
             }
 
             if (CloseSeal(skin, panel))
@@ -258,7 +259,9 @@ namespace FishingIdle.Game.UI
                 var icon = icons != null && i < icons.Count ? icons[i] : null;
                 var note = notes != null && i < notes.Count ? notes[i] : null;
                 var textWidth = width - BookmarkUnder - 8f;
-                var labelHeight = _bookmark.CalcHeight(new GUIContent(labels[i]), textWidth);
+                // A word wider than the tab ends in "…" instead of being cut (A-190).
+                var labelText = labels[i].IndexOf(' ') < 0 ? FishCard.Fit(labels[i], _bookmark, textWidth) : labels[i];
+                var labelHeight = _bookmark.CalcHeight(new GUIContent(labelText), textWidth);
                 var noteHeight = string.IsNullOrEmpty(note) ? 0f : UiSkin.SmallLine;
                 var height = 12f + (icon != null ? BookmarkIcon + 2f : 0f) + labelHeight + noteHeight + 10f;
                 var on = i == active;
@@ -285,7 +288,7 @@ namespace FishingIdle.Game.UI
                     cy += BookmarkIcon + 2f;
                 }
 
-                GUI.Label(new Rect(textX, cy, textWidth, labelHeight), labels[i], on ? _bookmarkOn : _bookmark);
+                GUI.Label(new Rect(textX, cy, textWidth, labelHeight), labelText, on ? _bookmarkOn : _bookmark);
                 if (noteHeight > 0f)
                 {
                     GUI.Label(new Rect(textX, cy + labelHeight, textWidth, noteHeight), note, _bookmarkNote);
@@ -481,10 +484,12 @@ namespace FishingIdle.Game.UI
             GUI.Box(r, GUIContent.none, skin.Panel);
         }
 
-        /// <summary>The title tag: the raised panel with a gold line and the small chamfer, a one-pixel dark gap inside.</summary>
+        /// <summary>
+        /// The title tag. Since A-190 (at most two levels of box) the title is plain text on the panel: nothing is drawn
+        /// behind it. Kept as the one place to bring a tag back.
+        /// </summary>
         private static void DrawLabel(UiSkin skin, Rect r)
         {
-            skin.Shape(r, 2, false, VisualTheme.Current.PanelElevated, 2, UiSkin.FrameGold, UiSkin.FrameInner, Color.clear);
         }
 
         /// <summary>Where the closing "✕" of a frame goes.</summary>
@@ -509,7 +514,11 @@ namespace FishingIdle.Game.UI
             }
 
             var theme = VisualTheme.Current;
-            skin.PixelPill(rect, hover ? theme.PanelElevated : theme.Field, hover ? theme.Title : UiSkin.FrameGold);
+            // Only the cross at rest (A-190); the pill shows on hover, so the 44 px target stays clear.
+            if (hover)
+            {
+                skin.PixelPill(rect, theme.PanelElevated, UiSkin.FrameGold);
+            }
             if (Event.current.type == EventType.Repaint)
             {
                 // A 7 × 7 art-pixel cross, two pixels thick, in the title colour.
@@ -572,8 +581,8 @@ namespace FishingIdle.Game.UI
             _title.normal.textColor = UiSkin.TitleColor;
             _infoGlyph = new GUIStyle(skin.Title) { font = skin.TitleBoldFont, fontSize = UiSkin.NumberSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _infoGlyph.normal.textColor = InfoInk;
-            _counter = new GUIStyle(skin.Heading) { fontSize = UiSkin.BodySize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
-            _counter.normal.textColor = UiSkin.Text;
+            _counter = new GUIStyle(skin.Heading) { fontSize = UiSkin.BodySize, alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Clip };
+            _counter.normal.textColor = UiSkin.Muted;
             _tipTitle = new GUIStyle(skin.Title) { fontSize = UiSkin.NumberSize, wordWrap = false };
             _tipTitle.normal.textColor = UiSkin.TitleColor;
             _tipBody = new GUIStyle(skin.Body) { fontSize = UiSkin.SmallSize, wordWrap = true };

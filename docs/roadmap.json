@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-20T22:00:00Z",
+  "updated_at": "2026-10-20T23:00:00Z",
   "current_milestone": "M25",
   "statuses": [
     "TODO",
@@ -5374,6 +5374,52 @@
             "M25-T17"
           ],
           "updated_at": "2026-10-19T21:00:00Z"
+        },
+        {
+          "id": "M25-T19",
+          "title": "Revisão visual: paleta A \"Ardósia\", fontes num lugar só e escala limpa",
+          "subsystem": "client",
+          "description": "Pedido do proprietário depois de jogar a versão pixel (20/10/2026): menus e ícones menos escuros, menos cores e letra sem borrão. Paleta A escolhida por ele; fontes ficam as mesmas até ele escolher (M25-T22), mas centralizadas para a troca ser fácil.",
+          "status": "DONE",
+          "dependencies": [
+            "M25-T17"
+          ],
+          "updated_at": "2026-10-20T23:00:00Z",
+          "completion_notes": "A-190, TD-066. tema_visual.json com 14 cores de interface (painel #283050 sólido, cartão #1E2541, elevado #36406A, texto #F4ECD6, suave #C9C0A4, ação #5ED6D2, perigo #FF7A6B, ganho #5BDB9A, véu a 35%) e as raridades um tom mais claras (Raro #7AAEFF, Épico #C084FC, Lendário #FF6B6E, Mítico #F472B6); o bloco arc saiu e o VisualTheme deriva o resto (Derive). Título creme, igual ao texto: o amarelo fica só para recompensa. Cartão sem a linha interna. Fontes e tamanhos num bloco só do UiSkin (TitleFontFile, TextFontFile, tamanhos, TextLiftEm, AccentTwinScale; os números soltos de ArrivalTitle, NumberBig, VS e Arena viraram constantes). UiSkin.CanvasScale: escala do GUI.matrix em passos de 0,5 quando o quadro fica entre 1080 e 1280 de altura (600, 1080–1280 e 2160 px sem borrão); nas outras alturas a fração exata de antes. Itens escuros (varas 3 a 5, fragmentos delas, calça, luvas e botas) ganham um encaixe claro no PixelDraw.Fit; fundos escuros do Mapa, Expedição, Clã e Boss, um véu da cor do painel no PixelDraw.Cover. Eventos usa o calendário; o sino fica para os Avisos. Compila pelo CI; visual só verificado no Play."
+        },
+        {
+          "id": "M25-T20",
+          "title": "Pescador de 35 px e barcos de 100 px",
+          "subsystem": "client",
+          "description": "O proprietário pediu barco e boneco um pouco menores (20/10/2026): figura de 35 px (era 48) e barcos de ~100 px (eram 124), recortados de novo das folhas originais.",
+          "status": "DONE",
+          "dependencies": [
+            "M25-T17"
+          ],
+          "updated_at": "2026-10-20T23:00:00Z",
+          "completion_notes": "A-190. pixel_pedidos.json: alvo_altura 35 nos pedidos L1-01, L1-02 e L2-01, alvo 96x40 em L1-05 e L5-02 e a caixa do barco 36x26 (L1-04). Recortados com pixel_folhas.py das folhas originais (a 2ª linha das animações A e B trocadas pelo --nomes, como no 1º recorte): 17 quadros 64 × 64 com a figura de 35 px e os pés na coluna 40, boat_00 a boat_04 com 100 px de largura e boat_05 com 84, caixa 40 × 28. cena_pixel.py: mãos de cada quadro, borda e assento dos barcos, caixa (28, 21) e vara de 48 px recalculados; cena_pixel.json e as frentes dos barcos gerados de novo (dados). Prévia da cena conferida (revisao_visual/depois/cena). Visual só verificado no Play."
+        },
+        {
+          "id": "M25-T22",
+          "title": "Trocar as fontes (o proprietário escolhe)",
+          "subsystem": "client",
+          "description": "A pesquisa de 20/10/2026 mostrou que a VT323 não tem grade de pixel (nunca fica nítida) e que a Press Start 2P achata as maiúsculas acentuadas. O proprietário vai escolher entre outras opções (a pesquisa recomenda Jersey 15 nos títulos e Galmuri 11/9 no texto, OFL). Quando ele escolher: pôr os arquivos em Resources/Fontes com a licença, trocar TitleFontFile/TextFontFile, os tamanhos e as medidas TextLiftEm/AccentTwinScale no UiSkin, medir as colunas com o texto real e conferir os passos do UiSkin.CanvasScale.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T19"
+          ],
+          "updated_at": "2026-10-20T23:00:00Z"
+        },
+        {
+          "id": "M25-T23",
+          "title": "Refazer 10 ícones (pedido ao ChatGPT)",
+          "subsystem": "client",
+          "description": "ASSET_PENDENTE: ico_barco, ico_pesca, ico_vara, ico_isca, ico_expedicao, ico_ranking, ico_peixe, ico_alimentar, ico_caixa e ico_leilao leem mal (silhueta fina ou miolo escuro) sobre o painel mais claro. Pedido pronto em docs/ASSETS_PIXEL.md (\"Revisão visual de 20/10/2026\"): 24 × 24, silhueta cheia de 18 a 20 px, miolo claro, folha L8-01_icones_refeitos.png. Ao chegar, recortar com o comando que está lá; os ícones entram sem mudar código.",
+          "status": "TODO",
+          "dependencies": [
+            "M25-T19"
+          ],
+          "updated_at": "2026-10-20T23:00:00Z"
         }
       ]
     }

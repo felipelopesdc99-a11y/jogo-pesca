@@ -113,33 +113,35 @@ WATER_WEIGHTS = [1.0, 1.4, 1.8, 2.3, 2.8, 3.4]
 # Near gunwale of each pixel boat (x, y from the top-left, pixels of the file), stern to bow. Below the line = the
 # near side of the hull, drawn over the fisherman so he sits inside. seat: where his feet go (column 40 of his frames);
 # waterline: row of the file on the water line (the boat's pivot).
+# Since A-190 (owner, 20/10/2026) the boats are ~100 px wide (were 124) and the fisherman a 35 px figure (was 48): the
+# points below were scaled with the new cut (tools/Arte/pixel_folhas.py, alvo "96x40" and alvo_altura 35).
 BOATS = {
-    'boat_00': dict(gunwale=[(0, 16), (15, 19), (30, 21), (60, 21), (90, 20), (105, 17), (118, 10), (124, 6)], seat=(60, 27)),
-    'boat_01': dict(gunwale=[(0, 20), (15, 25), (35, 28), (60, 28), (85, 25), (105, 20), (118, 12), (124, 8)], seat=(60, 34)),
-    'boat_02': dict(gunwale=[(0, 18), (20, 18), (60, 17), (90, 15), (110, 12), (120, 6), (124, 4)], seat=(60, 23)),
-    'boat_03': dict(gunwale=[(0, 28), (20, 28), (60, 27), (90, 24), (110, 18), (120, 10), (124, 6)], seat=(60, 33)),
-    'boat_04': dict(gunwale=[(0, 26), (20, 25), (60, 24), (90, 22), (110, 19), (124, 16)], seat=(54, 30)),
-    'boat_05': dict(gunwale=[(0, 35), (20, 34), (60, 33), (90, 30), (107, 27)], seat=(48, 39)),
+    'boat_00': dict(gunwale=[(0, 13), (12, 16), (24, 17), (48, 17), (72, 17), (84, 14), (95, 8), (100, 5)], seat=(48, 22)),
+    'boat_01': dict(gunwale=[(0, 16), (12, 20), (28, 23), (48, 23), (68, 20), (84, 16), (95, 10), (100, 7)], seat=(48, 28)),
+    'boat_02': dict(gunwale=[(0, 15), (16, 15), (48, 14), (72, 12), (88, 10), (96, 5), (100, 4)], seat=(48, 19)),
+    'boat_03': dict(gunwale=[(0, 23), (16, 23), (48, 22), (72, 20), (88, 15), (96, 8), (100, 5)], seat=(48, 27)),
+    'boat_04': dict(gunwale=[(0, 21), (16, 20), (48, 20), (72, 18), (88, 16), (100, 13)], seat=(44, 24)),
+    'boat_05': dict(gunwale=[(0, 27), (16, 27), (47, 26), (70, 24), (84, 21)], seat=(38, 30)),
 }
 STARTER_BOAT = 'boat_00'
 # Caixa de Pesca on the starter boat: bottom-centre at this pixel of boat_00 (from the top-left).
-BOX_ON_BOAT = (34, 25)
+BOX_ON_BOAT = (28, 21)
 
 # The fisherman's frames (A-183): 64 × 64, feet centred on column 40, on the last row but one. hand: where his hands
 # close on the rod (pixels from the top-left), measured on each frame; the rod and line are drawn from there.
 FRAME = 64
 FEET = (40, 63)  # the corner under the feet: column 40, bottom edge of row 62
 FRAMES = [
-    ('pescador', (41, 41)),
-    ('parado_1', (41, 41)), ('parado_2', (41, 43)), ('parado_3', (40, 44)), ('parado_4', (41, 45)),
-    ('arremesso_1', (23, 39)), ('arremesso_2', (16, 29)), ('arremesso_3', (45, 41)), ('arremesso_4', (43, 43)),
-    ('recolhe_1', (41, 45)), ('recolhe_2', (41, 46)), ('recolhe_3', (41, 46)), ('recolhe_4', (40, 47)),
-    ('fisgada_1', (37, 29)), ('fisgada_2', (41, 40)),
-    ('mostra_1', (44, 34)),
-    ('escapou_1', (39, 46)),
+    ('pescador', (41, 47)),
+    ('parado_1', (41, 47)), ('parado_2', (41, 48)), ('parado_3', (40, 49)), ('parado_4', (41, 50)),
+    ('arremesso_1', (28, 46)), ('arremesso_2', (22, 38)), ('arremesso_3', (44, 47)), ('arremesso_4', (42, 48)),
+    ('recolhe_1', (41, 50)), ('recolhe_2', (41, 51)), ('recolhe_3', (41, 51)), ('recolhe_4', (40, 51)),
+    ('fisgada_1', (38, 38)), ('fisgada_2', (41, 46)),
+    ('mostra_1', (43, 42)),
+    ('escapou_1', (39, 51)),
 ]
 # Rod drawn by the code: length in grid pixels and the angles of each phase (degrees, as FishermanRig).
-ROD_PX = 60
+ROD_PX = 48  # 60 until A-190, with the 48 px figure
 BOBBER_WATERLINE = 11  # row of Cena/boia (12 × 16) on the water line
 
 # World positions (FishingScene / FishermanRig).

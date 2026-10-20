@@ -149,7 +149,7 @@ namespace FishingIdle.Game.UI
             if (!_accentSafe.TryGetValue(style, out var twin))
             {
                 // Capitals of Press Start 2P fill the em; VT323 capitals are 0,56 em: the same height needs 1,75× the size.
-                twin = new GUIStyle(style) { font = PixelTextFont, fontSize = Mathf.RoundToInt(style.fontSize * 1.75f) };
+                twin = new GUIStyle(style) { font = PixelTextFont, fontSize = Mathf.RoundToInt(style.fontSize * AccentTwinScale) };
                 twin.padding = new RectOffset(style.padding.left, style.padding.right, style.padding.top - TextLift(twin.fontSize), style.padding.bottom);
                 _accentSafe[style] = twin;
             }
@@ -191,7 +191,7 @@ namespace FishingIdle.Game.UI
         /// accents) and its descenders reach the bottom of the line; lifting it by ~0,12 em centres the letters where a
         /// line of the old font sat, so rects sized for one line keep the "g", "p" and "ç" whole.
         /// </summary>
-        private static int TextLift(int fontSize) => Mathf.RoundToInt(fontSize * 0.12f);
+        private static int TextLift(int fontSize) => Mathf.RoundToInt(fontSize * TextLiftEm);
 
         // ------------------------------------------------------------------ textures made once
 

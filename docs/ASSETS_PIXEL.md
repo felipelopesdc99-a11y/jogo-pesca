@@ -159,6 +159,41 @@ Baleias e Talude Noturno e o mandi-amarelo chegaram em pixel).
   `provisorios` do `cena_pixel.py`, a lista `tools/Arte/pixel_provisorios.txt` e `tools/Arte/fontes_antigas/Mapas` (10
   PNGs); em `fontes_antigas/` ficou só `Vivos/`, que o comando `vivos` ainda lê (TD-065).
 
+## Revisão visual de 20/10/2026 (A-190, M25-T19 a T23)
+
+**Recortado de novo, sem pedido novo** (das folhas originais, com `tools/Arte/pixel_folhas.py`; o manifesto
+`pixel_pedidos.json` guarda os tamanhos novos):
+
+- Pescador (L1-01, L1-02, L2-01): `alvo_altura` 48 → **35**. Os 17 quadros continuam 64 × 64 com os pés na coluna 40.
+  Como no primeiro recorte, a 2ª linha da animação A é fisgada/mostrar/escapou e a da B é o arremesso (`--nomes`).
+- Barcos (L1-05, L5-02): `alvo` 120x52 → **96x40**: `boat_00` a `boat_04` com 100 × 34 a 100 × 44, `boat_05` 84 × 44.
+  As frentes (`Barcos/Cena/*_frente`) foram geradas de novo por `cena_pixel.py dados`.
+- Caixa de Pesca no barco (L1-04): `alvo` 44x32 → **36x26** (arquivo 40 × 28). A boia não mudou.
+- Mãos de cada quadro, borda e assento de cada barco, posição da caixa e o comprimento da vara (48 px) estão em
+  `tools/Arte/cena_pixel.py` e em `Resources/Visual/cena_pixel.json`.
+
+**Resolvido pelo código** (nenhum arquivo mudou): varas `rod_03` a `rod_05`, os fragmentos delas e as roupas escuras
+(`pants`, `gloves`, `boots`) ganham um encaixe claro atrás quando aparecem em cartão; os fundos escuros do Mapa
+(`ui_map_sea_bg`), da Expedição (`ui_exp_carta`), do Clã (`cla_fundo`) e do Boss (`boss_fundo_abismo`) recebem um véu da
+cor do painel; Eventos usa o calendário (`ico_atalho_eventos`) em todo lugar e o sino (`ico_avisos`) fica só para os
+Avisos; as abas do Perfil usam um ícone cada (`ico_perfil`, `ico_caixa`, `ico_peixe`, `ico_especies`, `ui_rk_trofeu`).
+
+**Pedido novo pendente (ASSET_PENDENTE, M25-T23): refazer 10 ícones.** Texto pronto para colar no ChatGPT:
+
+> Pixel art no Estilo ARC (o mesmo dos ícones que já te mandei do Fishing Idle), **10 ícones de 24 × 24 pixels** numa
+> folha 5 × 2 com células de 32 × 32 e fundo magenta puro `#FF00FF` (sem sombra, sem degradê, sem texto). Cada ícone com
+> **silhueta cheia ocupando 18 a 20 px**, 2 a 3 tons por cor, **miolo claro**, contorno escuro de 1 px (`#1A1424`), luz
+> vindo de cima à esquerda. Eles ficam sobre um painel azul-ardósia `#283050`, então nada de miolo azul-marinho ou
+> preto. Ordem (linha 1): 1. **barco** a remo de lado (casco azul `#4D8DFF`→`#7AAEFF`, borda de madeira clara);
+> 2. **pesca**: vara curvada com molinete grande e linha com boia vermelha; 3. **vara**: vara em diagonal, cabo de cortiça
+> e molinete, bem grossa; 4. **isca**: minhoca rosa gorda em "S" num anzol prateado; 5. **expedição**: luneta de latão
+> grande, curta e grossa. Linha 2: 6. **ranking**: troféu dourado com base escura (não pódio); 7. **peixe**: peixe
+> laranja de perfil ocupando a célula toda; 8. **alimentar**: pote com ração bege e grãos caindo; 9. **caixa**: caixa
+> de pesca de lado com tampa e alça, verde-claro `#6FCF97` e fecho dourado; 10. **leilão**: martelo de juiz de madeira
+> clara com faixa dourada. Nome do arquivo: `L8-01_icones_refeitos.png`.
+
+Ao chegar: recortar com `--grade 5x2 --celula 32x32 --alvo 24x24 --nomes Icones/ico_barco,Icones/ico_pesca,Icones/ico_vara,Icones/ico_isca,Icones/ico_expedicao,Icones/ico_ranking,Icones/ico_peixe,Icones/ico_alimentar,Icones/ico_caixa,Icones/ico_leilao`.
+
 ## Pedidos por lote
 
 ### Lote 1 · Kit de teste (piloto do Lago Sereno)

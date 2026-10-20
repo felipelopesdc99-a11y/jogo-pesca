@@ -35,7 +35,58 @@ namespace FishingIdle.Game.Visual
             }
 
             var drawn = FitRect(rect, ref tex);
+            if (color.a > 0f && IsDarkItem(tex))
+            {
+                Well(drawn, color.a);
+            }
+
             GUI.DrawTexture(drawn, tex, ScaleMode.StretchToFill, true, 0, color, 0, 0);
+        }
+
+        // Items whose art is mostly navy or dark leather and disappears on the slate cards of A-190 (measured in the
+        // research of 20/10/2026): drawn on a light well, a square of the raised panel colour a little larger than the
+        // drawing. The files did not change.
+        private static readonly System.Collections.Generic.HashSet<string> DarkItems = new System.Collections.Generic.HashSet<string>
+        {
+            "Varas/rod_03", "Varas/rod_04", "Varas/rod_05",
+            "Fragmentos/frag_rod_03", "Fragmentos/frag_rod_04", "Fragmentos/frag_rod_05",
+            "Roupas/pants", "Roupas/gloves", "Roupas/boots",
+        };
+
+        // Backgrounds 55–71% dark that turn into holes on the lighter panel (A-190): a veil of the panel colour over them.
+        private static readonly System.Collections.Generic.HashSet<string> DarkBackdrops = new System.Collections.Generic.HashSet<string>
+        {
+            "UI/ui_map_sea_bg", "UI/ui_exp_carta", "UI/cla_fundo", "Boss/boss_fundo_abismo",
+        };
+
+        /// <summary>How much of the panel colour is laid over a dark backdrop.</summary>
+        private const float BackdropLift = 0.3f;
+
+        private static bool IsDarkItem(Texture tex)
+        {
+            var path = ArtAssets.PathOfTexture(tex);
+            if (path == null)
+            {
+                return false;
+            }
+
+            // The "_p" small versions share the look.
+            return DarkItems.Contains(path.EndsWith("_p", System.StringComparison.Ordinal) ? path.Substring(0, path.Length - 2) : path);
+        }
+
+        private static void Well(Rect drawn, float alpha)
+        {
+            if (Event.current.type != EventType.Repaint)
+            {
+                return;
+            }
+
+            var unit = ScreenScale();
+            var pad = Mathf.Max(2f, Mathf.Round(2f * unit) / unit);
+            var theme = VisualTheme.Current;
+            var c = Color.Lerp(theme.PanelElevated, theme.Text, 0.22f);
+            GUI.DrawTexture(new Rect(drawn.x - pad, drawn.y - pad, drawn.width + pad * 2f, drawn.height + pad * 2f), Texture2D.whiteTexture,
+                ScaleMode.StretchToFill, true, 0, new Color(c.r, c.g, c.b, 0.85f * alpha), 0, 0);
         }
 
         /// <summary>
@@ -131,6 +182,13 @@ namespace FishingIdle.Game.Visual
             GUI.color = previous * color;
             GUI.DrawTextureWithTexCoords(shown, tex, uv, true);
             GUI.color = previous;
+            var path = ArtAssets.PathOfTexture(tex);
+            if (path != null && DarkBackdrops.Contains(path) && Event.current.type == EventType.Repaint)
+            {
+                var panel = VisualTheme.Current.Panel;
+                GUI.DrawTexture(shown, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0, new Color(panel.r, panel.g, panel.b, BackdropLift * color.a), 0, 0);
+            }
+
             return drawn;
         }
 

@@ -3860,3 +3860,31 @@ Só apresentação: nenhuma regra, número, recompensa ou save mudou; as telas c
 - **Retratos e avatares:** o retrato do pescador e os 6 avatares (64 px) em escala inteira (1× na barra de cima, 2× no
   Perfil e na Arena, a versão de 32 px nas linhas do Ranking), sempre apoiados na base da moldura; em moldura redonda
   usa a versão já recortada em círculo de pixels, sobre o disco azul-mar.
+
+### A-190 · Revisão visual: paleta A "Ardósia", pescador de 35 px, barcos de 100 px e regras de layout (20/10/2026)
+
+**Seção do GDD:** telas e cena · `docs/ART_BIBLE_PIXEL.md` 3.3, 6.1, 7 e 7.1 · M25-T19 a T21 · **Situação:** no jogo
+(compila; verificado só no Play)
+
+O proprietário jogou a versão pixel e pediu fontes melhores, cores menos escuras, nada sobreposto, menus mais limpos e
+barco e boneco menores. Decisões dele (20/10/2026), sobre a pesquisa `revisao_visual/pesquisa.md`. Só apresentação:
+nenhuma regra, número, recompensa ou save mudou.
+
+- **Paleta A "Ardósia"** no lugar do azul-noite quase preto (troca a tabela da Bíblia 6.1): painel `#283050` sólido
+  (opacidade 1), cartão `#1E2541` (um tom mais escuro, "afundado"), elevado `#36406A`, texto creme `#F4ECD6`, texto
+  suave `#C9C0A4`, moldura `#D6AD57` e `#8A6C30`, ação turquesa `#5ED6D2` (barras, XP e atributos usam a mesma), perigo e
+  aviso `#FF7A6B`, ganho `#5BDB9A`, véu `#0A0C1C` a 35%. O **título é creme**, igual ao texto: o amarelo `#FFD667` fica
+  só para recompensa. O tema tem 14 cores de interface e 5 de raridade (eram 38); as outras peças saem dessas pelo código.
+- **Raridades um tom mais claras** (mesma família, para ler a 4,5:1 sobre o painel): Raro `#7AAEFF`, Épico `#C084FC`,
+  Lendário `#FF6B6E`, Mítico `#F472B6`; Comum continua `#F2F5F8`.
+- **Cartão sem a linha interna**: uma linha de 1 pixel de arte em volta do fundo do cartão (no máximo 2 níveis de caixa).
+- **Pescador com figura de 35 px** (era 48) no mesmo quadro de 64 × 64, pés na coluna 40, e **barcos de ~100 px** de
+  largura (eram 124; o `boat_05` tem 84) e a Caixa de Pesca no barco com 40 × 28 (era 48 × 33). Tudo recortado de novo das
+  folhas originais (não reduzido do sprite pequeno); mãos, borda do barco, assento e caixa recalculados; a vara desenhada
+  pelo código tem 48 px (era 60).
+- **Fontes:** continuam a Press Start 2P e a VT323 até o proprietário escolher outra (M25-T22). Fontes e tamanhos ficam
+  num lugar só (`UiSkin`), para a troca ser só de arquivo e números.
+- **Escala da interface:** o quadro de 1080 de altura passa a usar uma escala "limpa" (0,5 · 1 · 1,5 · 2) quando ela
+  deixa o quadro entre 1080 e 1280 de altura (janelas de 600, de 1080 a 1280 e de 2160 px). Nessas a letra pixel não
+  borra; nas outras alturas a escala continua a fração exata, como antes (TD-066).
+

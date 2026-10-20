@@ -50,6 +50,9 @@ namespace FishingIdle.Game.Visual
             return tex;
         }
 
+        /// <summary>The ArtePixel path a texture was loaded from (null for textures made by the code).</summary>
+        public static string PathOfTexture(Texture tex) => tex != null && PathOf.TryGetValue(tex, out var path) ? path : null;
+
         /// <summary>True when the file at <paramref name="path"/> exists in ArtePixel.</summary>
         public static bool IsPixel(string path)
         {

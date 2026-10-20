@@ -512,16 +512,20 @@ Cada passo está em `SaveMigrations.Upgrade`.
 - **Animação sincronizada ao serviço:** `FishermanRig` lê `FishingStatus` (início e fim do ciclo)
   para arremessar, esperar, mostrar a mordida e puxar; o peixe só aparece quando o serviço entrega a
   captura (`GameRoot.CatchesArrived`).
-- **Interface em IMGUI** (`Hud`, janelas, `UiSkin`): tela virtual de 1080 px de altura, escalada.
+- **Interface em IMGUI** (`Hud`, janelas, `UiSkin`): tela virtual de pelo menos 1080 px de altura, escalada por
+  `UiSkin.CanvasScale` (passo limpo de 0,5 quando o quadro fica entre 1080 e 1280; senão a fração exata, TD-066). As
+  janelas se posicionam pela altura que o `Hud` passa, nunca por 1080 fixo.
   Todos os estilos ficam em `UiSkin`, o que isola uma futura troca para UI Toolkit. Pele ARC (A-184, TD-061):
   `UiSkinArc.cs` gera as formas em pixel (molduras de 3 linhas, pílulas, discos, barras em blocos) como máscaras
   9-slice brancas com filtro Point, criadas uma vez e tingidas na hora (`Shape`, `PixelPill`, `FramedBox`,
-  `FramedDisc`, `LineBox`, `TipBox`); as cores vêm do bloco `arc` de `tema_visual.json`. Para os desenhos próprios
+  `FramedDisc`, `LineBox`, `TipBox`); as cores vêm das 14 do bloco `palette` de `tema_visual.json`, e as peças (campo, chips, fundo de barra, véu…) saem delas em `VisualTheme.Derive()` (TD-066). Para os desenhos próprios
   de cada janela, `UiSkinArcFill.cs` dá `ArcFill`/`ArcLine`/`ArcFillLine(rect, cor, raio)`, que trocam o retângulo
   arredondado por pílula, chanfro ou quadrado em pixel (TD-063); não usar `GUI.DrawTexture` com raio em tela nova. Fontes: Press Start 2P nos
   títulos e números, VT323 no resto (`Resources/Fontes`, importadas com Hinted Raster); `skin.TitleSafe`/`TitleLabel`
   trocam a Press Start 2P pela VT323 quando o texto tem maiúscula acentuada. Sem um dos dois arquivos, o Unity usa a
-  fonte padrão (Fredoka e Nunito saíram na M25-T17).
+  fonte padrão (Fredoka e Nunito saíram na M25-T17). **Trocar as fontes:** só no bloco "fonts and sizes" do `UiSkin`
+  (`TitleFontFile`, `TextFontFile`, os tamanhos e as medidas `TextLiftEm` e `AccentTwinScale`); nenhuma tela tem
+  tamanho de letra próprio.
 - **Textos:** sempre de `GameTexts`. Nunca escreva uma frase em PT-BR direto num `.cs` fora de `Texts/`.
 - **Avisos e central de notificações** (`ToastFeed`): `Push(texto, tipo, ícone, notify)` mostra o
   aviso; com `notify: true` ele também entra na lista do sino (até 50, só enquanto o jogo está

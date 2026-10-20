@@ -541,7 +541,7 @@ namespace FishingIdle.Game.UI
             var letters = tag.ToCharArray();
             var spacing = Mathf.Min(17f, (rect.height - 6f) / Mathf.Max(1, letters.Length));
             _rowLetter ??= new GUIStyle(skin.TinyMutedCenter) { clipping = TextClipping.Overflow };
-            _rowLetter.fontSize = Mathf.RoundToInt(Mathf.Clamp(spacing * 1.3f, 16f, UiSkin.SmallSize));
+            _rowLetter.fontSize = Mathf.RoundToInt(Mathf.Clamp(spacing * 1.3f, UiSkin.ShrinkMinSize, UiSkin.SmallSize));
             var style = _rowLetter;
             var ly = rect.center.y - letters.Length * spacing / 2f;
             foreach (var ch in letters)

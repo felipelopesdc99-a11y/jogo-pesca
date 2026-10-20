@@ -55,7 +55,7 @@ namespace FishingIdle.Game.UI
             if (_chapterStyle == null || _nameStyle.font != skin.Display.font)
             {
                 _chapterStyle = new GUIStyle(skin.SmallGold) { alignment = TextAnchor.MiddleCenter, fontSize = UiSkin.SmallSize };
-                _nameStyle = new GUIStyle(skin.Display) { alignment = TextAnchor.MiddleCenter, fontSize = 40 };
+                _nameStyle = new GUIStyle(skin.Display) { alignment = TextAnchor.MiddleCenter, fontSize = UiSkin.ArrivalSize };
                 _lineStyle = new GUIStyle(skin.DisplaySub) { alignment = TextAnchor.MiddleCenter, fontSize = UiSkin.BodySize };
             }
 

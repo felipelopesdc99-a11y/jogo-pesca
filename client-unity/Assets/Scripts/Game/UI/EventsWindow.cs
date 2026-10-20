@@ -54,7 +54,11 @@ namespace FishingIdle.Game.UI
         public Action OpenBoss { get; set; }
 
         /// <summary>The menu and sign icon: ico_eventos when it exists, otherwise the clock.</summary>
-        public static string NavIcon => ArtAssets.Icon(Icons.Events) != null ? Icons.Events : Icons.Clock;
+        // One icon per idea (A-190): Eventos is the calendar everywhere; the bell (ico_avisos, and the ribbon bell ico_eventos)
+        // stays only with the Avisos.
+        public static string NavIcon => ArtAssets.Icon(CalendarIcon) != null ? CalendarIcon : ArtAssets.Icon(Icons.Events) != null ? Icons.Events : Icons.Clock;
+
+        private const string CalendarIcon = "atalho_eventos";
 
         public void Open()
         {

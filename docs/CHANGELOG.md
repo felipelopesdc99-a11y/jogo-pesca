@@ -3,6 +3,31 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m25.5] — 20/10/2026
+
+Revisão visual pedida pelo proprietário depois de jogar a versão pixel (A-190), 1ª parte. Nenhuma regra, número ou save
+mudou. Visual só fica verificado quando o proprietário apertar Play.
+
+### Alterado
+
+- **Paleta A "Ardósia"** (escolha do proprietário): painéis azul-ardósia sólidos no lugar do azul-noite quase preto,
+  cartões um tom mais escuros, títulos em creme (o amarelo fica só para recompensa) e raridades um tom mais claras. O
+  tema passou de 38 para 14 cores de interface e 5 de raridade; as outras saem delas pelo código (TD-066).
+- **Pescador menor** (figura de 35 px, era 48) e **barcos menores** (~100 px, eram 124), recortados de novo das folhas
+  originais; a Caixa de Pesca no barco acompanha (40 × 28) e a vara tem 48 px.
+- **Moldura das janelas mais limpa:** o título e o contador ficam como texto sobre o painel (sem caixa), o "✕" sem
+  círculo (aparece ao passar o mouse) e as abas laterais mais largas, para "Enciclopédia" caber inteira.
+- **Letra menos borrada:** a escala da interface usa um passo limpo (0,5 · 1 · 1,5 · 2) quando cabe; nas outras alturas
+  fica como antes.
+- Itens escuros (varas 3 a 5, fragmentos delas, calça, luvas e botas) com um encaixe claro atrás; fundos escuros do
+  Mapa, da Expedição, do Clã e do Boss um pouco mais claros. Eventos usa o calendário; o sino é só dos Avisos. Cada aba
+  do Perfil tem o seu ícone.
+- Fontes e tamanhos de letra num lugar só (`UiSkin`), para a troca de fontes ser só de arquivo e números.
+
+### Pendente
+
+- Trocar as fontes (M25-T22, o proprietário escolhe) e refazer 10 ícones (M25-T23, pedido pronto em `ASSETS_PIXEL.md`).
+
 ## [0.2.0-m25.4] — 20/10/2026
 
 Acabamento da arte pixel. Nenhuma regra, número ou save mudou. Visual só fica verificado quando o proprietário apertar

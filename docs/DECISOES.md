@@ -1606,3 +1606,28 @@ lista `tools/Arte/pixel_provisorios.txt`, que só serviam a essas peças; `fonte
 dava) e `--encostar` (lados retos sem a margem transparente de 2 px, para não abrir fresta na borda da tela). Os
 cantos aprovados do Lago Sereno perderam só essa margem nos lados da borda; nos outros 7 mapas a mesma margem foi aparada
 direto nos PNGs (lado da borda e base de `near_*` e `fg_*`, 20/10/2026), então nenhum mapa tem mais fresta de 2 px.
+
+## TD-066 · Paleta derivada de 14 cores e escala da interface por passos limpos (20/10/2026)
+
+**Origem.** Revisão visual pedida pelo proprietário (A-190): menus menos escuros, menos cores e letra sem borrão.
+
+**Decisão.**
+- `tema_visual.json` passa a ter só 14 cores de interface (bloco `palette`) e as 5 raridades; o bloco `arc` saiu. O
+  `VisualTheme` mantém os campos que as telas usam (`Night`, `Field`, `ChipOff`, `BarTrack`, `Xp`, `Title`…), mas eles
+  são calculados por `Derive()` a partir das 14 (ex.: `Field = Night = Card`, `Title = Text`, `Xp = Attribute = Action`,
+  `Alert = Danger`, `Veil = FrameInner = CardLine = Ink`). Assim nenhuma tela precisou mudar de chamada.
+- `UiSkin.CanvasScale(altura da tela)`: a escala do `GUI.matrix` vira um passo de 0,5 quando isso deixa o quadro virtual
+  entre 1080 e 1280 de altura; fora disso fica a fração exata. A altura do quadro (`_height` do `Hud`) deixa de ser fixa
+  em 1080: as janelas já se posicionavam por ela.
+- Fontes e tamanhos num bloco só no `UiSkin` (`TitleFontFile`, `TextFontFile`, os tamanhos e as duas medidas da fonte de
+  texto `TextLiftEm` e `AccentTwinScale`); os números soltos que restavam (40 da chegada, 30 da Honra, 96 do VS, 16 da
+  Arena) viraram constantes lá.
+
+**Por quê.** Menos cores para ajustar e nenhum risco de uma tela esquecer de mudar uma cor junto. O borrão da letra vem
+de uma letra já rasterizada sendo redimensionada pela matriz; um passo limpo resolve onde dá sem mudar o layout, e onde
+não dá a interface não encolhe mais do que antes. Desenhar o texto fora da matriz (com o tamanho multiplicado) mexeria
+em todas as telas e fica para depois da troca de fontes, se ainda precisar.
+
+**Rever se.** O proprietário escolher as fontes novas (M25-T22): conferir se a grade da fonte nova pede outros passos de
+escala.
+
