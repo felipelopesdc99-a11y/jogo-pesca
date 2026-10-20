@@ -4624,7 +4624,7 @@
     "catch_success_note": "Chance de Sucesso da Captura = chance-base da raridade (rarity.tiers → catch_success_base) + vara + barco + isca, limitada entre catch_success_min e catch_success_max. Se o peixe escapa, nada entra na Caixa: sem XP, sem Conchas, sem descoberta, sem recorde."
   },
   "player_identity": {
-    "note": "Nome e avatar do jogador (M18-T03, aprovado pelo proprietário em 07/10/2026). O nome tem de name_min a name_max caracteres: letras, números, espaço, ponto, hífen e sublinhado. Os avatares são arquivos em Resources/Arte/Avatares/<id>.png (recebidos em 15/10/2026); sem o arquivo, o jogo mostra o retrato do pescador ou um selo com a inicial.",
+    "note": "Nome e avatar do jogador (M18-T03, aprovado pelo proprietário em 07/10/2026). O nome tem de name_min a name_max caracteres: letras, números, espaço, ponto, hífen e sublinhado. Os avatares são arquivos em Resources/ArtePixel/Avatares/<id>.png (em pixel desde 20/10/2026, M25-T16); sem o arquivo, o jogo mostra o retrato do pescador ou um selo com a inicial.",
     "name_min": 3,
     "name_max": 16,
     "avatars": [

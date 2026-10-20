@@ -1604,5 +1604,5 @@ lista `tools/Arte/pixel_provisorios.txt`, que só serviam a essas peças; `fonte
 `vivos` ainda parte dele. Como cada peça de cenário veio numa imagem sozinha, o `pixel_folhas.py` ganhou `--escala`
 (escala fixa, a mesma nas duas peças do par `near_*` ou `fg_*` de um mapa, igual à escala por linha que a folha 2×2
 dava) e `--encostar` (lados retos sem a margem transparente de 2 px, para não abrir fresta na borda da tela). Os
-cantos aprovados do Lago Sereno perderam só essa margem nos lados da borda; os outros 7 mapas ainda têm a margem de 2 px
-(fica para o Play dizer se aparece).
+cantos aprovados do Lago Sereno perderam só essa margem nos lados da borda; nos outros 7 mapas a mesma margem foi aparada
+direto nos PNGs (lado da borda e base de `near_*` e `fg_*`, 20/10/2026), então nenhum mapa tem mais fresta de 2 px.

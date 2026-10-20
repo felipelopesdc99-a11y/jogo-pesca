@@ -3,6 +3,18 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m25.4] — 20/10/2026
+
+Acabamento da arte pixel. Nenhuma regra, número ou save mudou. Visual só fica verificado quando o proprietário apertar
+Play.
+
+### Corrigido
+
+- Laterais e cantos (`near_*`, `fg_*`) dos outros 7 mapas: a margem transparente de 2 px saiu do lado que encosta na
+  beira da tela e da base, como já era nos 3 mapas da 3ª entrega. Evita uma fresta na borda da tela (TD-065).
+- A nota dos avatares em `config/progression.json` apontava para `Resources/Arte/Avatares`, que não existe mais; agora
+  aponta para `Resources/ArtePixel/Avatares`.
+
 ## [0.2.0-m25.3] — 20/10/2026
 
 As 11 imagens que faltavam (3ª entrega, um desenho por imagem): 339 de 339 em pixel. Nenhuma regra, número ou save
