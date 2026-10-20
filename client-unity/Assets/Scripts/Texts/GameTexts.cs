@@ -60,7 +60,6 @@ namespace FishingIdle.Texts
             public const string Trade = "Comércio";
             public const string PassShort = "Passe";
             public const string Missions = "Missões";
-            public const string CoinsTitle = "MOEDAS";
             public const string OpenProfile = "Abrir o Perfil";
         }
 
@@ -83,7 +82,10 @@ namespace FishingIdle.Texts
             public const string EscapeHint = "Melhore sua vara, barco ou isca para aumentar suas chances.";
             public static string EscapeRare(string rarity) => "Um peixe " + rarity + " escapou! Melhore sua vara, barco ou isca para aumentar suas chances.";
 
-            public static string NextCatchIn(string countdown) => "Próxima fisgada em " + countdown;
+            /// <summary>The one status line of the compact fishing panel (A-190): "Esperando o peixe morder… · 0:07".</summary>
+            public static string StatusLine(string phase, string countdown) => phase + " · " + countdown;
+
+            public const string IdleShort = "Pesca parada";
             public static string CycleInfo(string duration) => "1 tentativa a cada " + duration;
             public static string ChanceShort(string rarity, string percent) => rarity + " " + percent;
             public static string RareEscaped(string rarity, string percent) => "Um peixe " + rarity + " escapou! Sua chance de puxar era " + percent + ".";
@@ -133,9 +135,15 @@ namespace FishingIdle.Texts
 
             public static string Count(int count) => count == 1 ? "1 peixe" : Format.Number(count) + " peixes";
             public static string CountOf(int count, int capacity) => Format.Number(count) + " de " + Format.Number(capacity) + " peixes";
+
+            /// <summary>The Caixa button of the HUD (A-190): icon + "128/300".</summary>
+            public static string Ratio(int count, int capacity) => Format.Number(count) + "/" + Format.Number(capacity);
             public const string Full = "Caixa cheia! A pesca está parada até você vender ou guardar peixes.";
             public const string AlmostFull = "Caixa quase cheia: quando encher, a pesca para até você vender.";
             public const string FullShort = "Caixa cheia: venda peixes";
+
+            /// <summary>The Caixa button of the HUD when full (A-190; the name and the reason show on hover).</summary>
+            public const string FullTiny = "Cheia";
             public static string LimitNote(int capacity) => "A Caixa guarda até " + Format.Number(capacity) + " peixes. Cheia, a pesca para até você vender ou guardar algum.";
             public static string SkippedFull(long attempts) => "A Caixa encheu: " + Format.Number(attempts) + (attempts == 1 ? " tentativa ficou" : " tentativas ficaram") + " sem pescar.";
             public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : Format.Number(count) + " selecionados") + " · " + coins + " Moedas";
@@ -877,7 +885,6 @@ namespace FishingIdle.Texts
             public static string Counter(int claimed, int total) => claimed + " / " + total + " concluídas";
             /// <summary>"3 / 10", "523.000 / 1 mi", "431 mi / 1 bi": big numbers in short form so the bar's label fits.</summary>
             public static string Progress(long current, long target) => Format.Short(current) + " / " + Format.Short(target);
-            public static string NumberLabel(int number) => "Nº " + number;
             public static string BestRank(long rank) => rank > 0 ? "Sua melhor posição: " + Format.Number(rank) + "º" : "Você ainda não está no Ranking";
             public static string ReadyToast(string text) => "Missão concluída: " + text + ". Resgate em Missões!";
             public static string ReadyManyToast(int count) => count + " missões concluídas. Resgate em Missões!";
@@ -1273,7 +1280,9 @@ namespace FishingIdle.Texts
 
             /// <summary>Where the fragments of a boat, a rod or the Fragmento de Roupa drop: every map (M24-T47, A-173).</summary>
             public const string FragmentsEverywhere = "Caem em todos os mapas";
-            public static string FragmentsChance(string percent) => percent + " de chance por peixe puxado";
+
+            /// <summary>The short chance line of the Loja sheet (A-190): "0,8% por peixe".</summary>
+            public static string FragmentsChanceShort(string percent) => percent + " por peixe";
             public static string FragmentsExtra(string amount) => "Fragmentos extras: " + amount;
             public const string AssembleHint = "Monte com fragmentos";
 
@@ -1440,8 +1449,9 @@ namespace FishingIdle.Texts
             public static string EncTabProgress(int found, int total) => found + "/" + total;
             public static string EncPage(int page, int pages) => "Página " + page + " de " + pages;
             public static string EncNumber(int number) => "Nº " + number;
-            public static string EncRecordShort(string size) => "Recorde " + size;
-            public static string EncCaughtShort(string count) => "Pescou " + count;
+
+            /// <summary>The catches on an album card (A-190): "37×" (the record and the map are on the sheet).</summary>
+            public static string EncTimes(string count) => count + "×";
             public const string EncNotYet = "Ainda não pescada";
             public const string EncBack = "Voltar";
             public const string EncPrevGlyph = "‹";

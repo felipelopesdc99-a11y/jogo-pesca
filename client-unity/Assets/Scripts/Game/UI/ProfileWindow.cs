@@ -1404,8 +1404,8 @@ namespace FishingIdle.Game.UI
             }
 
             const float gap = 14f;
-            // Wider since M25-T13: VT323 needs the room for "Estuário das Marés" and its "6/10".
-            var tabsW = Mathf.Clamp(area.width * 0.19f, 190f, 232f);
+            // Wider since A-190 (was 190–232): "Arquipélago do Sol" and its "6/10" fit whole in VT323.
+            var tabsW = Mathf.Clamp(area.width * 0.22f, 248f, 264f);
             DrawEncTabs(skin, new Rect(area.x, area.y, tabsW, area.height), all, maps);
 
             // The sheet sits beside the page when there is room for it; otherwise it covers the page, with Voltar.
@@ -1589,7 +1589,7 @@ namespace FishingIdle.Game.UI
                     continue;
                 }
 
-                if (DrawEncCard(skin, r, entries[i], all.IndexOf(entries[i]) + 1, i == selected))
+                if (DrawEncCard(skin, r, entries[i], all.IndexOf(entries[i]) + 1, i == selected, _encMap == null))
                 {
                     clicked = i;
                 }
@@ -1617,7 +1617,7 @@ namespace FishingIdle.Game.UI
         /// One album card: thin frame in the rarity colour, rarity seal and number on top, the fish, name, map, record and
         /// catches. Not found yet: the card back with the silhouette, "?", rarity and map (where to look). Returns true on click.
         /// </summary>
-        private static bool DrawEncCard(UiSkin skin, Rect r, EncyclopediaEntryView e, int number, bool selected)
+        private static bool DrawEncCard(UiSkin skin, Rect r, EncyclopediaEntryView e, int number, bool selected, bool showMap)
         {
             var theme = VisualTheme.Current;
             var hovered = GUI.enabled && r.Contains(Event.current.mousePosition);
@@ -1639,7 +1639,7 @@ namespace FishingIdle.Game.UI
                 frameA = Mathf.Min(1f, frameA + 0.2f);
             }
 
-            skin.Shape(c, 1, false, fill, 2, new Color(rarity.r, rarity.g, rarity.b, frameA), UiSkin.DarkInk, Color.clear);
+            skin.Shape(c, 1, false, fill, 1, new Color(rarity.r, rarity.g, rarity.b, frameA), Color.clear, Color.clear);
             if (!e.Discovered)
             {
                 var pocket = UiSkin.Snap(new Rect(c.x + 8f, c.y + 8f, c.width - 16f, c.height - 16f));
@@ -1670,8 +1670,9 @@ namespace FishingIdle.Game.UI
             }
 
             // The fish (a dark silhouette with "?" until found, Art Bible section 8).
-            // Name, map, record and catches: one 22 px line and three 20 px lines of the small text (A-149).
-            const float bottomH = 88f;
+            // Since A-190 only the name, the map (in "Todas" only: a map tab already says it) and "37×"; the record and the
+            // map are on the sheet.
+            var bottomH = showMap ? 68f : 48f;
             var artTop = c.y + pad + 26f;
             var art = new Rect(x, artTop, w, Mathf.Max(30f, c.yMax - pad - bottomH - artTop));
             ArcArt.Fill(skin, art, e.Discovered ? new Color(0.06f, 0.17f, 0.26f, 0.9f) : new Color(0.03f, 0.07f, 0.12f, 0.9f), 8f);
@@ -1684,22 +1685,19 @@ namespace FishingIdle.Game.UI
                 GUI.contentColor = prevContent;
             }
 
-            // Name, map, record and catches.
+            // Name, map (only in "Todas") and catches.
             var ty = art.yMax + 4f;
             var name = e.Discovered ? e.Name : GameTexts.Profile.Undiscovered;
             GUI.Label(new Rect(c.x + 6f, ty, c.width - 12f, 22f), FishCard.Fit(name ?? string.Empty, skin.CenterBold, c.width - 12f), skin.CenterBold);
-            GUI.Label(new Rect(x, ty + 22f, w, UiSkin.SmallLine), FishCard.Fit(e.MapName ?? string.Empty, skin.SmallMutedCenter, w), skin.SmallMutedCenter);
-            if (e.Discovered)
+            ty += 22f;
+            if (showMap)
             {
-                var record = GameTexts.Profile.EncRecordShort(Format.SizeCm(e.LargestCm));
-                GUI.Label(new Rect(x, ty + 42f, w, UiSkin.SmallLine), FishCard.Fit(record, SmallBoldCenter(skin), w), SmallBoldCenter(skin));
-                var caught = GameTexts.Profile.EncCaughtShort(Format.Short(e.TimesCaught));
-                GUI.Label(new Rect(x, ty + 62f, w, UiSkin.SmallLine), FishCard.Fit(caught, skin.SmallMutedCenter, w), skin.SmallMutedCenter);
+                GUI.Label(new Rect(x, ty, w, UiSkin.SmallLine), FishCard.Fit(e.MapName ?? string.Empty, skin.SmallMutedCenter, w), skin.SmallMutedCenter);
+                ty += 20f;
             }
-            else
-            {
-                GUI.Label(new Rect(x, ty + 52f, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Profile.EncNotYet, skin.SmallMutedCenter, w), skin.SmallMutedCenter);
-            }
+
+            var line = e.Discovered ? GameTexts.Profile.EncTimes(Format.Short(e.TimesCaught)) : GameTexts.Profile.EncNotYet;
+            GUI.Label(new Rect(x, ty, w, UiSkin.SmallLine), FishCard.Fit(line, skin.SmallMutedCenter, w), skin.SmallMutedCenter);
 
             // A record in a special size (Excepcional, Perfeição): its seal on the art and a faint gold light crossing the card.
             if (e.Discovered && e.LargestIsSpecial && !string.IsNullOrEmpty(e.LargestSizeCategoryName))

@@ -15,23 +15,14 @@ namespace FishingIdle.Game.UI
     /// <remarks>
     /// Shows what the service returned in the last sync (GameRoot.WorldBoss); decides nothing. A new event adds its kind to
     /// <see cref="EventKind"/> and one card drawer. Icon provisional (ASSET_PENDENTE: ico_eventos; request in
-    /// docs/ASSETS_PENDENTES.md). Since A-179 the cards sit on the cork of the notice board (eventos_quadro, in pixel
-    /// since M25-T15: a whole scale, cut at the edges); without the file, on the plain sheet.
+    /// docs/ASSETS_PENDENTES.md). From A-179 to A-190 the cards sat on the cork of a notice board; since A-190 they sit
+    /// on the plain panel.
     /// </remarks>
     public sealed class EventsWindow
     {
         private const float CardHeight = 196f, CardPad = 6f, CardGap = 12f, ScrollBar = 18f, ArtSize = 112f, OpenWidth = 168f;
 
-        // A-179: the notice board (eventos_quadro) covers the content like a photo; the cards are pinned on its cork,
-        // a little taller there so "Abrir" goes under the text and the lines get the cork's whole width.
-        private const string BoardArt = "UI/eventos_quadro";
-        private const float BoardCardHeight = 232f;
-
-        /// <summary>
-        /// The cork of the board, in the picture's pixels: the pixel board (ArtePixel, 384×256, M25-T15) inside its wooden
-        /// frame; the old painted one (1600×900) when the pixel file is missing.
-        /// </summary>
-        private static readonly Rect Cork = new Rect(84f, 46f, 224f, 142f), CorkPainted = new Rect(250f, 130f, 1120f, 585f);
+        // A-190: the notice board of A-179 (eventos_quadro) left; the cards sit on the plain panel.
 
         private enum EventKind
         {
@@ -82,29 +73,23 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var board = WindowFrame.PhotoArt(skin, area, BoardArt);
-            var onBoard = board != null;
-            var list = onBoard ? WindowFrame.CropMap(area, board, ArtAssets.IsPixel(board) ? Cork : CorkPainted) : area;
-            var cardHeight = onBoard ? BoardCardHeight : CardHeight;
+            // A plain list on the panel since A-190 (the cork board, eventos_quadro, is no longer drawn: too much decoration
+            // for one event).
+            var list = area;
+            var cardHeight = CardHeight;
             var contentHeight = Kinds.Length * (cardHeight + CardGap) - CardGap + CardPad * 2f;
             var scrolls = contentHeight > list.height;
             var inner = list.width - (scrolls ? ScrollBar : 0f);
             _scroll = GUI.BeginScrollView(list, _scroll, new Rect(0f, 0f, inner, Mathf.Max(contentHeight, list.height - 1f)));
-            // On the board, a short list sits in the middle of the cork.
-            var top = onBoard && !scrolls ? (list.height - contentHeight) / 2f : 0f;
+            // The list starts at the top of the panel.
+            const float top = 0f;
             for (var i = 0; i < Kinds.Length; i++)
             {
                 var card = new Rect(CardPad, top + CardPad + i * (cardHeight + CardGap), inner - CardPad * 2f, cardHeight);
-                if (onBoard)
-                {
-                    // A hard pixel shadow under the card, as if pinned to the cork.
-                    skin.HardShadow(card);
-                }
-
                 switch (Kinds[i])
                 {
                     case EventKind.WorldBoss:
-                        DrawBossCard(skin, card, _root.WorldBoss, onBoard);
+                        DrawBossCard(skin, card, _root.WorldBoss, false);
                         break;
                 }
             }
@@ -118,11 +103,6 @@ namespace FishingIdle.Game.UI
         private void DrawBossCard(UiSkin skin, Rect rect, WorldBossView view, bool tall)
         {
             var open = view != null && view.Open;
-            if (open)
-            {
-                skin.DrawGlow(rect, UiSkin.Gold, 0.25f + 0.1f * Mathf.Sin(Time.unscaledTime * 3f));
-            }
-
             GUI.Box(rect, GUIContent.none, open ? skin.CardImportant : skin.Card);
 
             // The boss icon on a deep disc (ico_boss, or the attack icon while it is missing).
@@ -140,9 +120,11 @@ namespace FishingIdle.Game.UI
             var w = (tall ? rect.xMax : button.x) - 20f - x;
             var y = rect.y + 16f;
 
-            // Title and, during the event, the "AGORA" pill.
-            var titleWidth = Mathf.Min(w - (open ? 96f : 0f), skin.Heading.CalcSize(new GUIContent(GameTexts.WorldBoss.Title)).x + 4f);
-            GUI.Label(new Rect(x, y, titleWidth, 30f), GameTexts.WorldBoss.Title, skin.Heading);
+            // One title (A-190): the boss's name and, during the event, the "AGORA" pill; "Boss Mundial" is the small line
+            // under it (it was a third title level).
+            var title = view != null ? view.BossName : GameTexts.WorldBoss.Title;
+            var titleWidth = Mathf.Min(w - (open ? 96f : 0f), skin.Heading.CalcSize(new GUIContent(title)).x + 4f);
+            GUI.Label(new Rect(x, y, titleWidth, 30f), FishCard.Fit(title, skin.Heading, titleWidth), skin.Heading);
             if (open)
             {
                 skin.AccentPill(new Rect(x + titleWidth + 12f, y + 4f, 84f, 24f), GameTexts.Events.Now, UiSkin.Gold);
@@ -154,7 +136,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(view.BossName, skin.BodyBold, w), skin.BodyBold);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.WorldBoss.Title, skin.SmallMuted);
             y += 24f;
             GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Events.Schedule(WorldBossWindow.StartTime(view), view.DurationMinutes), skin.SmallMuted, w), skin.SmallMuted);
             y += 24f;

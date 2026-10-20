@@ -15,14 +15,10 @@ namespace FishingIdle.Game.UI
     /// services (rods.json, equipment.json); nothing here decides anything.
     /// </summary>
     /// <remarks>
-    /// Layout: a navy plank wall behind everything with a turquoise beam on top; the tabs are small plaques hanging
-    /// from the beam. On the left, the hook wall: one shelf per item, lying on two brass hooks, with a name plate and a
-    /// hanging tag (price, "JÁ É SUA" or "EM USO"; items have no minimum level, M24-T09). In the middle, the pier counter with a
-    /// pedestal and a soft aura where the chosen item rests; on the right, its sheet in the rope-framed card, with the
-    /// bonuses as bars and Comprar / Usar. At the bottom, "Seu equipamento" in an open tackle box and the chance of
-    /// pulling each rarity as five bobbers on the water.
-    /// Choosing an item makes it leave its hook (the hook says "no balcão") and fly in a short arc to the pedestal,
-    /// 0.6 s, eased out, real UI time, once; the card slides in from the right. No loops.
+    /// Layout since A-190 (minimal, the old "Balcão do Píer" decoration left): on the left the list of the tab (picture,
+    /// name, class and the tag: price, fragments, "JÁ É SUA" or "EM USO"); in the middle the chosen item big with
+    /// "‹ 4 de 6 ›"; on the right its sheet with the bonuses as bars and Comprar / Usar. At the bottom, "Seu equipamento"
+    /// in three cards and the chance of pulling each rarity as solid pills. Nothing flies or turns.
     /// </remarks>
     public sealed class ShopWindow
     {
@@ -63,35 +59,19 @@ namespace FishingIdle.Game.UI
 
         // Layout (virtual canvas). The window is the common 1320×840 frame: the content is 1264×736 on any screen of
         // 4:3 or wider (the HUD scales a 1080-tall canvas), a little narrower on 5:4.
-        private const float BeamHeight = 14f, BodyTop = BeamHeight + 12f;
-        private const float Gap = 16f, DockHeight = 184f, LidHeight = 14f;
-        private const float RowGap = 6f, MinRow = 92f, MaxRow = 124f, PlateWidth = 146f, ShelfBoard = 6f;
-
-        // Presentation timing (A-150): the flight, then the aura and the card.
-        private const float FlightSeconds = 0.6f, TrailFade = 0.25f, CardDelay = 0.15f, CardSeconds = 0.35f, CardSlide = 24f;
-        private const float AuraDelay = 0.35f, AuraSeconds = 0.3f, HookAngle = 28f;
-
-        // Pixel art (ArtePixel/UI, M25-T15, A-188): the tackle box seal and the bobber. The plank wall, the beam, the
-        // hooks, the counter, the card and the tackle box are drawn by the code in the ARC skin (the painted files of
-        // before — parede, balcão, moldura de corda — are no longer read). ui_loja_gancho (50 px) is bigger than the
-        // shelf hooks (18 px): kept for later, the hooks are drawn by the code.
-        private const string BoxArt = "UI/ui_loja_caixa", BobberArt = "UI/ui_loja_boia";
+        // Since A-190 a plain list (rows of 64 to 80 on the grid of 8), the chosen item big in the middle and its sheet on
+        // the right; "Seu equipamento" and the chances in one strip at the bottom. The plank wall, the beam, the hooks, the
+        // pedestal, the flight, the tackle box and the bobbers left (ui_loja_caixa and ui_loja_boia are no longer read).
+        private const float Gap = 16f, DockHeight = 168f;
+        private const float RowGap = 8f, MinRow = 64f, MaxRow = 80f;
 
         /// <summary>The card's padding inside the ARC frame.</summary>
         private const float CardInsetX = 20f, CardInsetY = 18f;
 
         // Colours of the Mescla B page the owner approved (Art Bible palette: night blues and turquoise).
-        private static readonly Color PlankA = Rgb(0x132A45), PlankB = Rgb(0x15304E), PlankSeam = Rgb(0x0B1D33);
-        private static readonly Color BeamTop = Rgb(0x2A8B98), BeamBottom = Rgb(0x1B5D68);
-        private static readonly Color PlateTop = Rgb(0x20435F), PlateBottom = Rgb(0x152F47), PlateEdge = Rgb(0x2F5F86);
-        private static readonly Color Shelf = Rgb(0x25476B), Brass = Rgb(0xC9A45A), TagString = Rgb(0xD8CDB6), TagHole = Rgb(0x173244);
-        private static readonly Color TagDark = Rgb(0x0E3A40), TealLight = Rgb(0x3AD6D2), TealInk = Rgb(0x06313A);
-        private static readonly Color CounterTop = Rgb(0x2A5A86), CounterMid = Rgb(0x183A5E), CounterBottom = Rgb(0x0E2442);
-        private static readonly Color BoxTop = Rgb(0x2F6A7A), BoxBottom = Rgb(0x1F4F5E), BoxEdge = Rgb(0x133A46), LidTop = Rgb(0x3A7D8E), LidBottom = Rgb(0x2A6474);
-        private static readonly Color Well = Rgb(0x0B2230), BoxInk = Rgb(0xE9FBFA), WaterTop = Rgb(0x0F2A47), WaterA = Rgb(0x0D3A5C), WaterB = Rgb(0x0A2A48);
-        private static readonly Color WaterLine = Rgb(0x1B5D7A), BobberWhite = Rgb(0xF4F4F4), BobberBand = Rgb(0x2A3646), Antenna = Rgb(0xDDDDDD);
-        private static readonly Color Ghost = new Color(0.62f, 0.68f, 0.75f, 0.13f);
-        private static readonly Color Lying = new Color(0.45f, 0.50f, 0.58f, 0.6f);
+        private static Color TagDark => UiSkin.CardColor;
+        private static Color TealLight => UiSkin.Accent;
+        private static readonly Color TealInk = Rgb(0x06313A);
 
         private readonly GameRoot _root;
         private readonly List<WallItem> _items = new List<WallItem>();
@@ -102,14 +82,12 @@ namespace FishingIdle.Game.UI
         private Vector2 _wallScroll;
         private int _scrollTo = -1;
 
-        // The flight: when it started, where the item left from (its hook, window coordinates) and where it lands.
+        // When the tab or the chosen item changed (kept for the windows that ask; nothing flies since A-190).
         private bool _animPending;
         private float _animStart = -10f;
-        private Rect _flySource, _heroRect;
-        private bool _hasSource;
-        private float _flyAngle;
+        private Rect _heroRect;
 
-        private GUIStyle _plaque, _percent, _boldCenter, _nameCenter, _mutedTop, _bonusBig;
+        private GUIStyle _plaque, _percent, _boldCenter, _mutedTop, _bonusBig;
 
         public ShopWindow(GameRoot root)
         {
@@ -169,14 +147,10 @@ namespace FishingIdle.Game.UI
                 _animStart = Time.unscaledTime;
             }
 
-            // The five tabs are bookmarks on the side of the diary; the pier wall is the window's own scene, a picture on
-            // the sheet in night colours (A-170).
+            // The five tabs are bookmarks on the side of the window. Since A-190 the content sits on the plain panel: the
+            // plank wall, the beam, the hooks, the pedestal and the tackle box left (a menu, not a scene).
             DrawTabs(skin);
-            WindowFrame.Photo(skin, area);
-            DrawWallBackground(skin, area);
-            DrawBeam(skin, new Rect(area.x, area.y, area.width, BeamHeight));
-
-            var body = new Rect(area.x, area.y + BodyTop, area.width, area.height - BodyTop);
+            var body = area;
             if (_tab == Tab.Vip)
             {
                 DrawVip(skin, new Rect(body.x, body.y, body.width, body.height - DockHeight - Gap));
@@ -196,13 +170,11 @@ namespace FishingIdle.Game.UI
             var counter = new Rect(right.x, right.y, right.width - cardWidth - Gap, stageHeight);
             var card = new Rect(right.xMax - cardWidth, right.y, cardWidth, stageHeight);
 
-            _hasSource = false;
             DrawWall(skin, wall, selected);
             selected = SelectedIndex();
             DrawCounter(skin, counter, selected);
             DrawCard(skin, card, gear, selected);
             DrawDock(skin, dock, gear);
-            DrawFlight(skin, selected);
         }
 
         /// <summary>The sentence of the current tab for the "i".</summary>
@@ -330,44 +302,6 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ wall, beam and tab plaques
 
-        /// <summary>
-        /// The navy plank wall behind the whole content, drawn by the code (A-188): planks of 44 art pixels in two night
-        /// blues, a one-pixel dark seam between them and a pixel nail near the top and the bottom of each seam.
-        /// </summary>
-        private static void DrawWallBackground(UiSkin skin, Rect area)
-        {
-            area = UiSkin.Snap(area);
-            Fill(skin, area, PlankA, 0f);
-            const float plank = 44f * UiSkin.ArcPixel;
-            const float p = UiSkin.ArcPixel;
-            var i = 0;
-            for (var x = area.x; x < area.xMax - 1f; x += plank, i++)
-            {
-                var w = Mathf.Min(plank, area.xMax - x);
-                if (i % 2 == 1)
-                {
-                    Fill(skin, new Rect(x, area.y, w, area.height), PlankB, 0f);
-                }
-
-                if (x > area.x)
-                {
-                    Fill(skin, new Rect(x - p, area.y, p, area.height), PlankSeam, 0f);
-                    Fill(skin, new Rect(x + p, area.y + BodyTop + p * 3f, p, p), PlateEdge, 0f);
-                    Fill(skin, new Rect(x + p, area.yMax - p * 5f, p, p), PlateEdge, 0f);
-                }
-            }
-        }
-
-        private static void DrawBeam(UiSkin skin, Rect r)
-        {
-            // Two bands and a one-pixel light edge on top; a hard shadow under it (no rounding in pixel art).
-            r = UiSkin.Snap(r);
-            Fill(skin, new Rect(r.x, r.yMax, r.width, UiSkin.ArcPixel * 2f), new Color(0f, 0f, 0f, 0.35f), 0f);
-            Fill(skin, r, BeamBottom, 0f);
-            Fill(skin, new Rect(r.x, r.y, r.width, Mathf.Round(r.height * 0.5f)), BeamTop, 0f);
-            Fill(skin, new Rect(r.x, r.y, r.width, UiSkin.ArcPixel), new Color(1f, 1f, 1f, 0.15f), 0f);
-        }
-
         private static readonly Tab[] TabOrder = { Tab.Rods, Tab.Boats, Tab.Clothing, Tab.Baits, Tab.Vip };
         private static readonly string[] TabLabels = { GameTexts.Gear.TabRods, GameTexts.Gear.TabBoats, GameTexts.Gear.TabClothing, GameTexts.Gear.TabBaits, GameTexts.Vip.Tab };
         private static readonly string[] TabIcons = { Icons.Rod, Icons.Boat, Icons.Star, Icons.Bait, Icons.Dollar };
@@ -421,14 +355,7 @@ namespace FishingIdle.Game.UI
             {
                 var row = new Rect(origin.x, origin.y + i * (rowHeight + RowGap), width, rowHeight);
 
-                // Inside a scroll view the items are not turned (the GUI matrix would turn them around the wrong point).
-                var itemRect = DrawShelf(skin, row, _items[i], i == selected, Mathf.Min(tagWidth, width * 0.36f), !scrolls);
-                if (i == selected)
-                {
-                    _flySource = scrolls ? new Rect(wall.x + itemRect.x - _wallScroll.x, wall.y + itemRect.y - _wallScroll.y, itemRect.width, itemRect.height) : itemRect;
-                    _flyAngle = _items[i].Turned && !scrolls ? HookAngle : 0f;
-                    _hasSource = true;
-                }
+                DrawShelf(skin, row, _items[i], i == selected, Mathf.Min(tagWidth, width * 0.36f), !scrolls);
 
                 if (GUI.Button(row, GUIContent.none, GUIStyle.none))
                 {
@@ -442,90 +369,45 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>One shelf: name plate, the item lying on two hooks and the hanging tag. Returns the item's rect.</summary>
+        /// <summary>
+        /// One row of the list (A-190): the item's picture on the left, name and "Classe 2" with the tier stripe, and its tag
+        /// (price, fragments, "JÁ É SUA" or "EM USO") on the right; the chosen row on the raised panel with the gold line.
+        /// Returns the picture's rect.
+        /// </summary>
         private static Rect DrawShelf(UiSkin skin, Rect row, WallItem item, bool chosen, float tagColumn, bool turn)
         {
             var hover = GUI.enabled && row.Contains(Event.current.mousePosition);
-            if (chosen)
-            {
-                Fill(skin, row, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.10f), 6f);
-                skin.ArcLine(row, UiSkin.Accent, 6f);
-            }
-            else if (hover)
-            {
-                Fill(skin, row, new Color(1f, 1f, 1f, 0.04f), 6f);
-            }
+            var theme = VisualTheme.Current;
+            skin.LineBox(row, chosen ? theme.PanelElevated : hover ? Color.Lerp(theme.Card, theme.PanelElevated, 0.5f) : theme.Card,
+                chosen ? UiSkin.FrameGold : UiSkin.ChipOffColor, 1);
 
-            // The shelf board under the row.
-            Fill(skin, new Rect(row.x, row.yMax - ShelfBoard, row.width, ShelfBoard), Shelf, 0f);
-            Fill(skin, new Rect(row.x, row.yMax - ShelfBoard, row.width, UiSkin.ArcPixel), PlateEdge, 0f);
-            Fill(skin, new Rect(row.x + UiSkin.ArcPixel, row.yMax, row.width - UiSkin.ArcPixel * 2f, UiSkin.ArcPixel), new Color(0f, 0f, 0f, 0.35f), 0f);
+            var midY = row.center.y;
+            Fill(skin, UiSkin.Snap(new Rect(row.x + UiSkin.ArcPixel * 2f, row.y + 12f, UiSkin.ArcPixel * 2f, row.height - 24f)), UiSkin.TierColor(item.Tier), 0f);
 
-            var midY = row.y + (row.height - ShelfBoard) / 2f;
-
-            // Name plate with a stripe in the tier colour.
-            var plate = new Rect(row.x + 8f, midY - 25f, PlateWidth, 50f);
-            // Two bands inside a one-pixel chamfered line (the top band stays clear of the chamfer).
-            skin.ArcFillLine(plate, PlateBottom, PlateEdge, 6f);
-            Fill(skin, new Rect(plate.x + UiSkin.ArcPixel * 2f, plate.y + UiSkin.ArcPixel, plate.width - UiSkin.ArcPixel * 4f, Mathf.Round(plate.height * 0.5f) - UiSkin.ArcPixel), PlateTop, 0f);
-            Fill(skin, new Rect(plate.x + UiSkin.ArcPixel * 2f, plate.y + 8f, UiSkin.ArcPixel * 2f, plate.height - 16f), UiSkin.TierColor(item.Tier), 0f);
-            GUI.Label(new Rect(plate.x + 12f, plate.y + 4f, plate.width - 18f, UiSkin.SmallLine), FishCard.Fit(item.Name, skin.SmallBold, plate.width - 18f), skin.SmallBold);
-            GUI.Label(new Rect(plate.x + 12f, plate.y + 25f, plate.width - 18f, UiSkin.SmallLine), FishCard.Fit(item.Sub, skin.SmallMuted, plate.width - 18f), skin.SmallMuted);
-
-            // The tag hangs by a string from the top of the row.
-            var tagCol = new Rect(row.xMax - tagColumn - 8f, row.y, tagColumn, row.height - ShelfBoard);
-            DrawTag(skin, tagCol, item, row.y);
-
-            // Mount: two brass hooks and the item lying on them.
-            var mx = plate.xMax + 6f;
-            var mw = Mathf.Max(40f, tagCol.x - 6f - mx);
-            Hook(skin, mx + mw * 0.28f, midY - 8f);
-            Hook(skin, mx + mw * 0.64f, midY - 8f);
-
+            // The picture: a square box for clothing and baits, a wide one for rods and boats.
             Rect itemRect;
             if (item.Square)
             {
-                var s = Mathf.Min(row.height - ShelfBoard - 16f, 72f);
-                itemRect = new Rect(mx + mw / 2f - s / 2f, midY - s / 2f + 2f, s, s);
+                var s = Mathf.Min(row.height - 16f, 56f);
+                itemRect = new Rect(row.x + 16f, midY - s / 2f, s, s);
             }
             else
             {
-                var w = Mathf.Min(mw + 24f, 156f);
-                itemRect = new Rect(mx + mw / 2f - w / 2f, midY - w / 4f + 2f, w, w / 2f);
+                var w = Mathf.Min(row.height * 1.6f, 112f);
+                itemRect = new Rect(row.x + 16f, midY - w / 4f, w, w / 2f);
             }
 
-            var angle = item.Turned && turn ? HookAngle : 0f;
-            if (chosen)
-            {
-                // The item is on the counter: only a faint mark stays, with "no balcão".
-                DrawItemArt(skin, itemRect, item, angle, Ghost);
-                var text = GameTexts.Shop.OnCounter;
-                var tw = skin.SmallMutedCenter.CalcSize(new GUIContent(text)).x + 20f;
-                var pill = new Rect(mx + mw / 2f - tw / 2f, midY - 12f, tw, 24f);
-                skin.PixelPill(pill, new Color(PlankSeam.r, PlankSeam.g, PlankSeam.b, 0.8f), UiSkin.Accent);
-                var previous = GUI.contentColor;
-                GUI.contentColor = TealLight;
-                GUI.Label(pill, text, skin.SmallMutedCenter);
-                GUI.contentColor = previous;
-            }
-            else
-            {
-                DrawItemArt(skin, itemRect, item, angle, Color.white);
-            }
+            var pictureRight = row.x + 16f + Mathf.Max(itemRect.width, 56f);
+            DrawItemArt(skin, itemRect, item, 0f, Color.white);
 
+            var tagCol = new Rect(row.xMax - tagColumn - 12f, row.y, tagColumn, row.height);
+            DrawTag(skin, tagCol, item, row.y);
+
+            var tx = pictureRight + 16f;
+            var tw = Mathf.Max(40f, tagCol.x - 12f - tx);
+            GUI.Label(new Rect(tx, midY - UiSkin.SmallLine, tw, UiSkin.SmallLine), FishCard.Fit(item.Name, skin.SmallBold, tw), skin.SmallBold);
+            GUI.Label(new Rect(tx, midY, tw, UiSkin.SmallLine), FishCard.Fit(item.Sub, skin.SmallMuted, tw), skin.SmallMuted);
             return itemRect;
-        }
-
-        /// <summary>A brass pixel hook (a stem and a J of one-art-pixel blocks), drawn by the code (A-188).</summary>
-        private static void Hook(UiSkin skin, float cx, float top)
-        {
-            const float p = UiSkin.ArcPixel;
-            var x = Mathf.Round(cx - p * 2f);
-            var y = Mathf.Round(top - p * 3f);
-            Fill(skin, new Rect(x, y, p * 2f, p * 2f), PlateEdge, 0f);
-            Fill(skin, new Rect(x, y + p * 2f, p, p * 4f), Brass, 0f);
-            Fill(skin, new Rect(x, y + p * 6f, p * 4f, p), Brass, 0f);
-            Fill(skin, new Rect(x + p * 3f, y + p * 4f, p, p * 2f), Brass, 0f);
         }
 
         private static float TagWidth(UiSkin skin, WallItem item)
@@ -570,10 +452,9 @@ namespace FishingIdle.Game.UI
         private static void DrawTag(UiSkin skin, Rect col, WallItem item, float stringTop)
         {
             var content = TagContentWidth(skin, item);
-            var w = Mathf.Min(col.width, content + 28f);
+            var w = Mathf.Min(col.width, content + 22f);
             var h = item.Tag == TagKind.Price && item.Shells > 0 ? 48f : 28f;
             var tag = new Rect(col.xMax - w, col.center.y - h / 2f, w, h);
-            Fill(skin, new Rect(Mathf.Round(tag.center.x - UiSkin.ArcPixel / 2f), stringTop + 4f, UiSkin.ArcPixel, tag.y - stringTop - 4f), new Color(TagString.r, TagString.g, TagString.b, 0.8f), 0f);
 
             Color fill, edge, ink;
             switch (item.Tag)
@@ -583,11 +464,10 @@ namespace FishingIdle.Game.UI
                 default: fill = TagDark; edge = UiSkin.Accent; ink = UiSkin.Gold; break;
             }
 
-            skin.HardShadow(tag);
+            // A plain pill since A-190 (the string, the hole and the shadow of the hanging tag left).
             skin.ArcFillLine(tag, fill, edge, 5f);
-            Fill(skin, new Rect(tag.x + 6f, Mathf.Round(tag.center.y - UiSkin.ArcPixel * 1.5f), UiSkin.ArcPixel * 3f, UiSkin.ArcPixel * 3f), TagHole, 0f);
 
-            var x = tag.x + 18f;
+            var x = tag.x + 12f;
             var line = new Rect(x, tag.y + 4f, tag.xMax - x - 6f, UiSkin.SmallLine);
             var previous = GUI.contentColor;
             switch (item.Tag)
@@ -659,13 +539,8 @@ namespace FishingIdle.Game.UI
                 Select(selected + 1, true);
             }
 
-            // The counter plank along the bottom (a little wider than the column).
-            var plank = new Rect(counter.x - 8f, counter.yMax - 34f, counter.width + 16f, 34f);
-            DrawCounterPlank(skin, plank);
-
-            var tier = UiSkin.TierColor(item.Tier);
-            var pedestalWidth = Mathf.Min(counter.width * 0.6f, 300f);
-            var pedestalTop = plank.y - 32f;
+            // The chosen item big in the middle of the column (A-190: no aura, pedestal or counter plank, and no flight).
+            var pedestalTop = counter.center.y + Mathf.Min(counter.width * 0.2f, 100f);
 
             if (item.Square)
             {
@@ -678,85 +553,7 @@ namespace FishingIdle.Game.UI
                 _heroRect = new Rect(cx - w / 2f, pedestalTop - w / 2f + 10f, w, w / 2f);
             }
 
-            var t = Time.unscaledTime - _animStart;
-            var aura = Mathf.Clamp01((t - AuraDelay) / AuraSeconds);
-            if (aura > 0f)
-            {
-                HeroSheet.Aura(skin, _heroRect.center, Mathf.Min(_heroRect.height * 1.7f, counter.width * 0.9f), tier, 0.09f * aura);
-            }
-
-            HeroSheet.Pedestal(skin, cx, pedestalTop, pedestalWidth, tier, 0.6f);
-
-            // While it flies, the item is drawn by DrawFlight instead.
-            if (!_hasSource || t >= FlightSeconds)
-            {
-                DrawItemArt(skin, _heroRect, item, 0f, Color.white);
-            }
-        }
-
-        private static void DrawCounterPlank(UiSkin skin, Rect plank)
-        {
-            // Drawn by the code (A-188): three night bands, a turquoise edge on top and a hard shadow.
-            plank = UiSkin.Snap(plank);
-            skin.HardShadow(plank);
-            skin.ArcFill(plank, CounterBottom, 6f);
-            var p = UiSkin.ArcPixel;
-            Fill(skin, new Rect(plank.x + p, plank.y + p, plank.width - p * 2f, Mathf.Round(plank.height * 0.62f) - p), CounterMid, 0f);
-            Fill(skin, new Rect(plank.x + p, plank.y + p, plank.width - p * 2f, Mathf.Round(plank.height * 0.3f) - p), CounterTop, 0f);
-            Fill(skin, new Rect(plank.x + p * 2f, plank.y, plank.width - p * 4f, p), UiSkin.Accent, 0f);
-        }
-
-        /// <summary>The item leaving its hook in a short arc to the pedestal, with a dotted trail that fades after landing.</summary>
-        private void DrawFlight(UiSkin skin, int selected)
-        {
-            if (selected < 0 || !_hasSource)
-            {
-                return;
-            }
-
-            var t = Time.unscaledTime - _animStart;
-            if (t >= FlightSeconds + TrailFade)
-            {
-                return;
-            }
-
-            var from = _flySource.center;
-            var to = _heroRect.center;
-            var control = new Vector2((from.x + to.x) / 2f, Mathf.Min(from.y, to.y) - 90f);
-            var u = Mathf.Clamp01(t / FlightSeconds);
-            var e = 1f - (1f - u) * (1f - u) * (1f - u);
-
-            // The trail: dots along the path already travelled.
-            var trail = t < FlightSeconds ? 0.5f : 0.5f * (1f - (t - FlightSeconds) / TrailFade);
-            for (var i = 0; i <= 14; i++)
-            {
-                var s = i / 14f;
-                if (s > e)
-                {
-                    break;
-                }
-
-                var p = Bezier(from, control, to, s);
-                Fill(skin, new Rect(Mathf.Round(p.x - UiSkin.ArcPixel), Mathf.Round(p.y - UiSkin.ArcPixel), UiSkin.ArcPixel * 2f, UiSkin.ArcPixel * 2f), new Color(TealLight.r, TealLight.g, TealLight.b, trail), 0f);
-            }
-
-            if (t >= FlightSeconds)
-            {
-                return;
-            }
-
-            var centre = Bezier(from, control, to, e);
-            var size = Vector2.Lerp(_flySource.size, _heroRect.size, e);
-            var item = _items[selected];
-            var color = Color.white;
-            color.a *= Mathf.Lerp(0.4f, 1f, Mathf.Clamp01(u * 3f));
-            DrawItemArt(skin, new Rect(centre.x - size.x / 2f, centre.y - size.y / 2f, size.x, size.y), item, Mathf.Lerp(_flyAngle, 0f, e), color);
-        }
-
-        private static Vector2 Bezier(Vector2 a, Vector2 b, Vector2 c, float t)
-        {
-            var k = 1f - t;
-            return k * k * a + 2f * k * t * b + t * t * c;
+            DrawItemArt(skin, _heroRect, item, 0f, Color.white);
         }
 
         /// <summary>The item's picture (turned by <paramref name="angle"/>), or its icon when the art is missing.</summary>
@@ -770,18 +567,8 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // Pixel art never turns (ART_BIBLE_PIXEL 4.9): the rods are already drawn on the diagonal.
-            if (Mathf.Abs(angle) < 0.01f || ArtAssets.IsPixel(tex))
-            {
-                PixelDraw.Fit(rect, tex, color);
-                return;
-            }
-
-            var matrix = GUI.matrix;
-            var p = new Vector3(rect.center.x, rect.center.y, 0f);
-            GUI.matrix = matrix * Matrix4x4.TRS(p, Quaternion.Euler(0f, 0f, angle), Vector3.one) * Matrix4x4.TRS(-p, Quaternion.identity, Vector3.one);
+            // Nothing turns (ART_BIBLE_PIXEL 4.9, A-190): the rods are already drawn on the diagonal.
             PixelDraw.Fit(rect, tex, color);
-            GUI.matrix = matrix;
         }
 
         // ------------------------------------------------------------------ the card
@@ -792,10 +579,6 @@ namespace FishingIdle.Game.UI
             {
                 return;
             }
-
-            // Slides in from the right after the item leaves its hook (ease-out, once).
-            var s = Mathf.Clamp01((Time.unscaledTime - _animStart - CardDelay) / CardSeconds);
-            card.x += (1f - s) * (1f - s) * CardSlide;
 
             var inner = CardFrame(skin, card);
             var id = _items[selected].Id;
@@ -847,8 +630,8 @@ namespace FishingIdle.Game.UI
         /// <summary>The card: the ARC frame (gold, a dark line, dark gold) around the panel night; returns the area inside it.</summary>
         private static Rect CardFrame(UiSkin skin, Rect card)
         {
-            skin.HardShadow(card);
-            skin.FramedBox(card, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.95f), UiSkin.FrameGold);
+            // A card with one line (A-190: at most two levels of box inside the window).
+            skin.LineBox(card, UiSkin.CardColor, UiSkin.ChipOffColor, 1);
             return new Rect(card.x + CardInsetX, card.y + CardInsetY, card.width - CardInsetX * 2f, card.height - CardInsetY * 2f);
         }
 
@@ -973,8 +756,10 @@ namespace FishingIdle.Game.UI
             var fragments = owned
                 ? GameTexts.Gear.FragmentsExtra(Format.Number(have))
                 : GameTexts.Gear.FragmentsLine(Format.Number(have), Format.Number(required));
+            // Two short lines instead of one long sentence (A-190): "Fragmentos 12/25" with the bar, then where they drop
+            // and the chance, small.
             var style = owned ? skin.SmallMuted : skin.SmallBold;
-            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(fragments + " · " + where, style, w), style);
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(owned ? fragments + " · " + where : fragments, style, w), style);
             y += 22f;
             if (owned)
             {
@@ -983,7 +768,7 @@ namespace FishingIdle.Game.UI
 
             skin.Bar(new Rect(x, y + 2f, w, 10f), required > 0 ? have / (float)required : 0f, true);
             y += 18f;
-            var text = GameTexts.Gear.FragmentsChance(Format.Percent(chance, chance < 0.01 ? 2 : 1));
+            var text = where + " · " + GameTexts.Gear.FragmentsChanceShort(Format.Percent(chance, chance < 0.01 ? 2 : 1));
             GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(text, skin.SmallMuted, w), skin.SmallMuted);
             y += 22f;
         }
@@ -1325,73 +1110,39 @@ namespace FishingIdle.Game.UI
             DrawPond(skin, new Rect(dock.x + boxWidth + Gap, dock.y, dock.width - boxWidth - Gap, dock.height), gear);
         }
 
-        /// <summary>"Seu equipamento" in an open tackle box: rod, boat and bait in three wells, and the total bonus.</summary>
+        /// <summary>
+        /// "Seu equipamento" (A-190): rod, boat and bait in three cards with their bonus, and the total, on the plain panel.
+        /// </summary>
         private void DrawBox(UiSkin skin, Rect rect, GearView gear)
         {
-            var body = new Rect(rect.x, rect.y + LidHeight - 2f, rect.width, rect.height - LidHeight + 2f);
-            skin.HardShadow(body);
+            var x = rect.x;
+            var w = rect.width;
+            var y = rect.y;
+            GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Gear.Yours, skin.SmallBold);
 
-            // Drawn by the code in pixel (A-188): the lid and the body as chamfered teal shapes with a dark line, two
-            // bands each, and the lid's handle.
-            var p = UiSkin.ArcPixel;
-            var lid = UiSkin.Snap(new Rect(rect.x + rect.width * 0.04f, rect.y, rect.width * 0.92f, LidHeight));
-            skin.ArcFillLine(lid, LidBottom, BoxEdge, 8f);
-            Fill(skin, new Rect(lid.x + p * 2f, lid.y + p, lid.width - p * 4f, Mathf.Round(lid.height * 0.5f) - p), LidTop, 0f);
-            body = UiSkin.Snap(body);
-            skin.ArcFillLine(body, BoxBottom, BoxEdge, 10f);
-            Fill(skin, new Rect(body.x + p * 2f, body.y + p, body.width - p * 4f, Mathf.Round(body.height * 0.5f) - p), BoxTop, 0f);
-            Fill(skin, new Rect(Mathf.Round(rect.center.x - 22f), rect.y + 4f, 44f, 6f), TagHole, 0f);
-
-            var x = body.x + 12f;
-            var w = body.width - 24f;
-            var y = body.y + 6f;
-            var previous = GUI.contentColor;
-            GUI.contentColor = BoxInk;
-            GUI.Label(new Rect(x, y, w, 24f), GameTexts.Gear.Yours, skin.CenterBold);
-            GUI.contentColor = previous;
-
-            // The pixel tackle box (ui_loja_caixa, 50 × 30) at 1× left of the title, when it fits beside it.
-            var seal = ArtAssets.Texture(BoxArt);
-            var titleWidth = skin.CenterBold.CalcSize(new GUIContent(GameTexts.Gear.Yours)).x;
-            if (seal != null && (w - titleWidth) / 2f >= seal.width + 12f)
-            {
-                PixelDraw.Fit(new Rect(x + w / 2f - titleWidth / 2f - 10f - seal.width, y + 12f - seal.height / 2f, seal.width, seal.height), seal);
-            }
-
-            y += 26f;
-
-            var cw = (w - 12f) / 3f;
-            Compartment(skin, new Rect(x, y, cw, 100f), GameTexts.Gear.Rod, "Varas/" + gear.RodId, Icons.Rod, gear.RodName, gear.RodBonus, true);
-            Compartment(skin, new Rect(x + cw + 6f, y, cw, 100f), GameTexts.Gear.Boat, "Barcos/" + gear.BoatId, Icons.Boat, gear.BoatName, gear.BoatBonus, true);
-            Compartment(skin, new Rect(x + (cw + 6f) * 2f, y, cw, 100f), GameTexts.Gear.Bait, gear.BaitId != null ? "Iscas/" + gear.BaitId : null, Icons.Bait, gear.BaitName ?? GameTexts.Gear.NoBait, gear.BaitBonus, gear.BaitName != null);
-            y += 104f;
-
-            // The total on the right; the bait's attempts left on the left, after its icon.
+            // The total on the right of the title (with the Luvas, M24-T33, the label says so).
             var total = "+" + Format.Percent(gear.TotalBonus, 0);
-            var totalWidth = skin.Heading.CalcSize(new GUIContent(total)).x + 4f;
-            GUI.Label(new Rect(body.xMax - 12f - totalWidth, y - 3f, totalWidth, 26f), total, skin.Heading);
-            // With the Luvas (M24-T33) the total is more than the three compartments: the label says so.
             var totalLabel = gear.ClothingBonus > 0 ? GameTexts.Gear.TotalWithGloves : GameTexts.Gear.Total;
-            var labelWidth = skin.SmallBold.CalcSize(new GUIContent(totalLabel)).x + 4f;
-            var lx = body.xMax - 12f - totalWidth - 8f - labelWidth;
-            GUI.contentColor = BoxInk;
-            GUI.Label(new Rect(lx, y, labelWidth, UiSkin.SmallLine), totalLabel, skin.SmallBold);
-            GUI.contentColor = previous;
-            if (gear.BaitName != null)
-            {
-                skin.DrawIcon(new Rect(x, y + 1f, 18f, 18f), Icons.Bait, UiSkin.Muted);
-                var cl = Mathf.Max(0f, lx - 10f - (x + 24f));
-                GUI.Label(new Rect(x + 24f, y, cl, UiSkin.SmallLine), FishCard.Fit(GameTexts.Gear.ChargesLeft(gear.BaitChargesLeft), skin.SmallMuted, cl), skin.SmallMuted);
-            }
+            var totalWidth = skin.SmallGold.CalcSize(new GUIContent(total)).x + 4f;
+            var labelWidth = skin.SmallMuted.CalcSize(new GUIContent(totalLabel)).x + 4f;
+            GUI.Label(new Rect(rect.xMax - totalWidth, y, totalWidth, UiSkin.SmallLine), total, skin.SmallGold);
+            GUI.Label(new Rect(rect.xMax - totalWidth - 8f - labelWidth, y, labelWidth, UiSkin.SmallLine), totalLabel, skin.SmallMuted);
+            y += UiSkin.SmallLine + 8f;
+
+            var cw = (w - 16f) / 3f;
+            var ch = rect.yMax - y;
+            Compartment(skin, new Rect(x, y, cw, ch), GameTexts.Gear.Rod, "Varas/" + gear.RodId, Icons.Rod, gear.RodName, gear.RodBonus, true);
+            Compartment(skin, new Rect(x + cw + 8f, y, cw, ch), GameTexts.Gear.Boat, "Barcos/" + gear.BoatId, Icons.Boat, gear.BoatName, gear.BoatBonus, true);
+            var bait = gear.BaitName != null ? gear.BaitName + " · " + Format.Number(gear.BaitChargesLeft) : GameTexts.Gear.NoBait;
+            Compartment(skin, new Rect(x + (cw + 8f) * 2f, y, cw, ch), GameTexts.Gear.Bait, gear.BaitId != null ? "Iscas/" + gear.BaitId : null, Icons.Bait, bait, gear.BaitBonus, gear.BaitName != null);
         }
 
         private void Compartment(UiSkin skin, Rect r, string label, string art, string icon, string name, double bonus, bool has)
         {
-            skin.ArcFill(r, Well, 8f);
-            Fill(skin, new Rect(r.x + UiSkin.ArcPixel * 2f, r.y + UiSkin.ArcPixel, r.width - UiSkin.ArcPixel * 4f, UiSkin.ArcPixel * 2f), new Color(0f, 0f, 0f, 0.35f), 0f);
-            GUI.Label(new Rect(r.x + 4f, r.y + 2f, r.width - 8f, UiSkin.SmallLine), FishCard.Fit(label, skin.SmallMuted, r.width - 8f), skin.SmallMutedCenter);
+            skin.LineBox(r, UiSkin.CardColor, UiSkin.ChipOffColor, 1);
+            GUI.Label(new Rect(r.x + 8f, r.y + 6f, r.width - 16f, UiSkin.SmallLine), FishCard.Fit(label, skin.SmallMuted, r.width - 16f), skin.SmallMutedCenter);
 
-            var picture = new Rect(r.x + 8f, r.y + 23f, r.width - 16f, 32f);
+            var picture = new Rect(r.x + 8f, r.y + 30f, r.width - 16f, Mathf.Max(24f, r.height - 30f - 2f * UiSkin.SmallLine - 8f));
             var tex = art != null ? ArtAssets.Texture(art) : null;
             if (tex != null)
             {
@@ -1399,113 +1150,69 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                skin.DrawIcon(new Rect(picture.center.x - 13f, picture.y + 3f, 26f, 26f), icon, has ? UiSkin.Accent : UiSkin.Muted);
+                skin.DrawIcon(new Rect(picture.center.x - 13f, picture.center.y - 13f, 26f, 26f), icon, has ? UiSkin.Accent : UiSkin.Muted);
             }
 
-            GUI.Label(new Rect(r.x + 4f, r.y + 56f, r.width - 8f, UiSkin.SmallLine), FishCard.Fit(name, _boldCenter, r.width - 8f), _boldCenter);
+            var by = r.yMax - 6f - 2f * UiSkin.SmallLine;
+            GUI.Label(new Rect(r.x + 4f, by, r.width - 8f, UiSkin.SmallLine), FishCard.Fit(name, _boldCenter, r.width - 8f), _boldCenter);
             var previous = GUI.contentColor;
             GUI.contentColor = has ? TealLight : UiSkin.Muted;
-            GUI.Label(new Rect(r.x + 4f, r.y + 77f, r.width - 8f, UiSkin.SmallLine), "+" + Format.Percent(bonus, 0), _boldCenter);
+            GUI.Label(new Rect(r.x + 4f, by + UiSkin.SmallLine, r.width - 8f, UiSkin.SmallLine), "+" + Format.Percent(bonus, 0), _boldCenter);
             GUI.contentColor = previous;
         }
 
-        /// <summary>"Chance de puxar o peixe": one bobber per rarity on the water, the percentage above it. The ones that
-        /// do not bite here lie grey on the water, with "não morde aqui". The explanation is behind the "i".</summary>
+        /// <summary>
+        /// "Chance de puxar o peixe" (A-190): one solid pill per rarity with the percentage inside ("Épico 10%"), in rows
+        /// that wrap; the ones that do not bite here are soft outlined pills, with "não morde aqui" under them. Nothing
+        /// is cut or turned. The explanation is behind the "i".
+        /// </summary>
         private void DrawPond(UiSkin skin, Rect rect, GearView gear)
         {
-            // Water in pixel bands (sky strip, waterline, two depths) inside a chamfered line (A-188).
-            rect = UiSkin.Snap(rect);
-            var p = UiSkin.ArcPixel;
-            skin.ArcFill(rect, WaterB, 12f);
-            Fill(skin, new Rect(rect.x + p * 2f, rect.y + p, rect.width - p * 4f, 40f - p), WaterTop, 0f);
-            Fill(skin, new Rect(rect.x + p, rect.y + 40f, rect.width - p * 2f, Mathf.Round((rect.height - 40f) * 0.5f)), WaterA, 0f);
-            Fill(skin, new Rect(rect.x + p, rect.y + 40f, rect.width - p * 2f, p), WaterLine, 0f);
-            Fill(skin, new Rect(rect.x + p, rect.y + 40f + p * 2f, rect.width - p * 2f, p), new Color(WaterLine.r, WaterLine.g, WaterLine.b, 0.5f), 0f);
-            skin.ArcLine(rect, Shelf, 12f);
-            GUI.Label(new Rect(rect.x + 10f, rect.y + 8f, rect.width - 20f, 24f), FishCard.Fit(GameTexts.Gear.ChanceTitle, skin.CenterBold, rect.width - 20f), skin.CenterBold);
-
+            GUI.Label(new Rect(rect.x, rect.y, rect.width, UiSkin.SmallLine), FishCard.Fit(GameTexts.Gear.ChanceTitle, skin.SmallBold, rect.width), skin.SmallBold);
             var count = gear.Chances.Count;
             if (count == 0)
             {
                 return;
             }
 
-            var cw = (rect.width - 16f) / count;
+            const float pillHeight = 32f, gap = 8f;
+            var x = rect.x;
+            var y = rect.y + UiSkin.SmallLine + 8f;
             var anyAway = false;
             for (var i = 0; i < count; i++)
             {
                 var chance = gear.Chances[i];
-                var col = new Rect(rect.x + 8f + i * cw, rect.y, cw, rect.height);
-                var color = chance.BitesHere ? UiSkin.RarityColor(chance.RarityId) : UiSkin.Muted;
-
-                var previous = GUI.contentColor;
-                GUI.contentColor = color;
-                // Above the bobber (the pixel boia stands 50 px tall at 1×).
-                GUI.Label(new Rect(col.x, rect.y + 34f, col.width, 26f), Format.Percent(chance.Chance, 0), _percent);
-                GUI.contentColor = previous;
-
-                Bobber(skin, new Vector2(col.center.x, rect.y + 96f), color, chance.BitesHere);
-
-                GUI.contentColor = color;
-                GUI.Label(new Rect(col.x + 2f, rect.y + 120f, col.width - 4f, UiSkin.SmallLine), FishCard.Fit(chance.RarityName, _nameCenter, col.width - 4f), _nameCenter);
-                GUI.contentColor = previous;
-                anyAway |= !chance.BitesHere;
-            }
-
-            // The pixel fonts are wider than the columns: "não morde aqui" is one line under all of them (A-188).
-            if (anyAway)
-            {
-                GUI.Label(new Rect(rect.x + 10f, rect.y + 148f, rect.width - 20f, UiSkin.SmallLine), FishCard.Fit(GameTexts.Gear.NotHereLegend, _mutedTop, rect.width - 20f), _mutedTop);
-            }
-        }
-
-        /// <summary>
-        /// A bobber centred on <paramref name="centre"/>: the pixel boia (ui_loja_boia) upright at a whole scale, or lying
-        /// grey on the water (a quarter turn, ART_BIBLE_PIXEL 4.9). Pixel art is never tinted (the rarity colour is in the
-        /// percentage above and the name below it); without the file, a bobber drawn by the code with the cap in the
-        /// rarity colour.
-        /// </summary>
-        private static void Bobber(UiSkin skin, Vector2 centre, Color color, bool upright)
-        {
-            const float p = UiSkin.ArcPixel;
-
-            // A flat pixel ripple at the waterline.
-            Fill(skin, new Rect(Mathf.Round(centre.x - 18f), Mathf.Round(centre.y + 16f), 36f, p), new Color(0.75f, 0.92f, 1f, upright ? 0.35f : 0.18f), 0f);
-
-            var art = ArtAssets.Texture(BobberArt);
-            if (art != null)
-            {
-                // At 1× it is 27 × 50 canvas pixels, standing on the ripple.
-                if (upright)
+                var text = GameTexts.Fishing.ChanceShort(chance.RarityName, Format.Percent(chance.Chance, 0));
+                var w = Mathf.Min(rect.width, skin.PillText.CalcSize(new GUIContent(text)).x + 24f);
+                if (x + w > rect.xMax && x > rect.x)
                 {
-                    PixelDraw.Fit(new Rect(centre.x - 15f, centre.y + 17f - 52f, 30f, 52f), art);
-                    return;
+                    x = rect.x;
+                    y += pillHeight + gap;
                 }
 
-                var matrix = GUI.matrix;
-                var pivot = new Vector3(centre.x, centre.y + 4f, 0f);
-                GUI.matrix = matrix * Matrix4x4.TRS(pivot, Quaternion.Euler(0f, 0f, 90f), Vector3.one) * Matrix4x4.TRS(-pivot, Quaternion.identity, Vector3.one);
-                PixelDraw.Fit(new Rect(pivot.x - 15f, pivot.y - 26f, 30f, 52f), art, Lying);
-                GUI.matrix = matrix;
-                return;
+                var pill = new Rect(x, y, w, pillHeight);
+                if (chance.BitesHere)
+                {
+                    skin.Tag(pill, text, UiSkin.RarityColor(chance.RarityId));
+                }
+                else
+                {
+                    skin.PixelPill(pill, Color.clear, UiSkin.ChipOffColor);
+                    var previous = GUI.contentColor;
+                    GUI.contentColor = UiSkin.Muted;
+                    GUI.Label(pill, text, skin.PillText);
+                    GUI.contentColor = previous;
+                    anyAway = true;
+                }
+
+                x += w + gap;
             }
 
-            // Drawn by the code: antenna, cap in the rarity colour, white bottom and a dark band (square pixels).
-            var tint = upright ? Color.white : Lying;
-            var cap = upright ? color : Lying;
-            if (!upright)
+            if (anyAway)
             {
-                var lying = UiSkin.Snap(new Rect(centre.x - 13f, centre.y, 26f, 14f));
-                Fill(skin, lying, BobberWhite * tint, 0f);
-                Fill(skin, new Rect(lying.x, lying.y, Mathf.Round(lying.width / 2f), lying.height), cap, 0f);
-                return;
+                y += pillHeight + 8f;
+                GUI.Label(new Rect(rect.x, y, rect.width, UiSkin.SmallLine), FishCard.Fit(GameTexts.Gear.NotHereLegend, _mutedTop, rect.width), _mutedTop);
             }
-
-            var body = UiSkin.Snap(new Rect(centre.x - 11f, centre.y - 10f, 22f, 26f));
-            Fill(skin, new Rect(Mathf.Round(centre.x - p / 2f), body.y - 10f, p, 10f), Antenna * tint, 0f);
-            skin.ArcFill(new Rect(body.x, body.y, body.width, Mathf.Round(body.height / 2f)), cap, 6f);
-            skin.ArcFill(new Rect(body.x, body.y + Mathf.Round(body.height / 2f), body.width, body.height - Mathf.Round(body.height / 2f)), BobberWhite * tint, 6f);
-            Fill(skin, new Rect(body.x, body.y + Mathf.Round(body.height / 2f) - p / 2f, body.width, p), BobberBand, 0f);
         }
 
         // ------------------------------------------------------------------ VIP (A-110)
@@ -1518,9 +1225,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // The same card as before, on a dark well so it reads over the plank wall.
-            skin.ArcFill(new Rect(content.x, content.y, content.width, Mathf.Min(content.height, 252f)), new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.7f), 12f);
-            content = new Rect(content.x + 12f, content.y + 10f, content.width - 24f, content.height - 20f);
+            // The same card as before, on the plain panel (A-190).
 
             var note = vip.OfflineCycleSeconds > 0
                 ? GameTexts.Vip.NoteWithCycle(Format.Duration(vip.OfflineCycleSeconds), Format.Duration(vip.NormalOfflineCycleSeconds))
@@ -1614,7 +1319,6 @@ namespace FishingIdle.Game.UI
             _boldCenter = new GUIStyle(skin.SmallBold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
             _boldCenter.normal.textColor = Color.white;
             // The rarity names under the bobbers at the chip size: "Lendário" fits a fifth of the pond.
-            _nameCenter = new GUIStyle(_boldCenter) { fontSize = UiSkin.ChipSize };
             _mutedTop = new GUIStyle(skin.SmallMuted) { alignment = TextAnchor.UpperCenter, wordWrap = true };
             _bonusBig = new GUIStyle(skin.Heading) { wordWrap = false, clipping = TextClipping.Clip };
             _bonusBig.normal.textColor = TealLight;

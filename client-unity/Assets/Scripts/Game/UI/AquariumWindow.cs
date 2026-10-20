@@ -821,19 +821,9 @@ namespace FishingIdle.Game.UI
         /// </summary>
         private static void DrawTransformed(Rect rect, Texture tex, Vector2 pivot, float angle, bool flip, Color color)
         {
-            if (ArtAssets.IsPixel(tex))
-            {
-                // Pixel art never turns (ART_BIBLE_PIXEL 4.9): the sway becomes a one-pixel rise or dip, the turn a mirror.
-                rect.y += angle > 1.5f ? -UiSkin.ArcPixel : angle < -1.5f ? UiSkin.ArcPixel : 0f;
-                ArcArt.Fit(rect, tex, color, flip);
-                return;
-            }
-
-            var matrix = GUI.matrix;
-            var p = new Vector3(pivot.x, pivot.y, 0f);
-            GUI.matrix = matrix * Matrix4x4.TRS(p, Quaternion.Euler(0f, 0f, angle), new Vector3(flip ? -1f : 1f, 1f, 1f)) * Matrix4x4.TRS(-p, Quaternion.identity, Vector3.one);
-            PixelDraw.Fit(rect, tex, color);
-            GUI.matrix = matrix;
+            // Nothing turns (ART_BIBLE_PIXEL 4.9, A-190): the sway becomes a one-pixel rise or dip, the turn a mirror.
+            rect.y += angle > 1.5f ? -UiSkin.ArcPixel : angle < -1.5f ? UiSkin.ArcPixel : 0f;
+            ArcArt.Fit(rect, tex, color, flip);
         }
 
         private float Phase(long id)
