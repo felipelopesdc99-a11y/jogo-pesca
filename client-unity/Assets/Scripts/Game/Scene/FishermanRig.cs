@@ -432,10 +432,10 @@ namespace FishingIdle.Game.Scene
 
         private void UpdateIdle()
         {
-            _rodAngle = Mathf.Lerp(_rodAngle, 58f + Mathf.Sin(Time.time * 0.9f) * 1.5f, Time.deltaTime * 3f);
+            // Not fishing: rod and bobber at rest, no sway (owner, 20/10/2026, A-194).
+            _rodAngle = Mathf.Lerp(_rodAngle, 58f, Time.deltaTime * 3f);
             ApplyRod();
-            var swing = Mathf.Sin(Time.time * 1.7f) * 0.06f;
-            _bobber.localPosition = TipPosition() + new Vector3(swing, -0.75f, 0f);
+            _bobber.localPosition = TipPosition() + new Vector3(0f, -0.75f, 0f);
         }
 
         private void UpdateCasting(float t, float duration)

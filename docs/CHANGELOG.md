@@ -3,6 +3,13 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.31] — 20/10/2026
+
+### Corrigido
+
+- O pescador se mexia mesmo sem pescar: com a pesca parada, a vara e a boia ficam em repouso (A-194). Visual só fica
+  verificado quando o proprietário apertar Play.
+
 ## [0.2.0-m24.30] — 20/10/2026
 
 O jogo volta ao visual **Lago Dourado — Clean Premium**, como estava antes da pixel art (decisão do proprietário, A-193,

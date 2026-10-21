@@ -3993,3 +3993,9 @@ essas mudanças visuais?" — escolheu **"Antes da pixel art"** e disse "pode es
 - **Nada de regra, número ou save muda** em relação ao que o proprietário jogou: o save continua o mesmo.
 - `docs/ART_BIBLE_PIXEL.md` e `docs/ASSETS_PIXEL.md` ficam guardados só como histórico; as A-182 a A-192 acima também.
 - Visual só fica verificado quando o proprietário apertar Play.
+
+### A-194 · O pescador fica parado quando não está pescando (20/10/2026)
+
+Pedido do proprietário: "o boneco tá se mexendo mesmo sem pescar". Com a pesca parada, a vara fica no ângulo de
+descanso e a boia pendurada, sem balançar; o movimento volta quando a pesca é ligada. (A A-192 fazia o mesmo no
+pescador em pixel, descartado na A-193; esta vale para o pescador do visual Lago Dourado.)
