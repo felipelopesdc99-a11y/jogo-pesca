@@ -71,7 +71,7 @@ client-unity/Assets/
 ├── Resources/
 │   ├── ArtePixel/       A arte do jogo (pixel art, Estilo ARC): Peixes/, Mapas/<Mapa>/, Cena/, Varas/, Barcos/, Icones/, UI/, Vivos/ (ver docs/ASSETS_PIXEL.md)
 │   ├── Arte/            Arte antiga: só os 6 peixes do Pantanal à espera do pedido L4-03a (M25-T17)
-│   ├── Fontes/          Press Start 2P e VT323 (OFL, pele ARC)
+│   ├── Fontes/          Nunito Regular, Medium, SemiBold e Bold (OFL, todo o texto; A-191, TD-067)
 │   ├── Visual/          tema_visual.json (cores, brilho, tempos) e paisagem_viva.json (plantas, animais, ritmo)
 │   └── Sons/            Sons (.wav)
 ├── Scenes/Principal.unity   Criada automaticamente na primeira abertura
@@ -520,12 +520,14 @@ Cada passo está em `SaveMigrations.Upgrade`.
   9-slice brancas com filtro Point, criadas uma vez e tingidas na hora (`Shape`, `PixelPill`, `FramedBox`,
   `FramedDisc`, `LineBox`, `TipBox`); as cores vêm das 14 do bloco `palette` de `tema_visual.json`, e as peças (campo, chips, fundo de barra, véu…) saem delas em `VisualTheme.Derive()` (TD-066). Para os desenhos próprios
   de cada janela, `UiSkinArcFill.cs` dá `ArcFill`/`ArcLine`/`ArcFillLine(rect, cor, raio)`, que trocam o retângulo
-  arredondado por pílula, chanfro ou quadrado em pixel (TD-063); não usar `GUI.DrawTexture` com raio em tela nova. Fontes: Press Start 2P nos
-  títulos e números, VT323 no resto (`Resources/Fontes`, importadas com Hinted Raster); `skin.TitleSafe`/`TitleLabel`
-  trocam a Press Start 2P pela VT323 quando o texto tem maiúscula acentuada. Sem um dos dois arquivos, o Unity usa a
-  fonte padrão (Fredoka e Nunito saíram na M25-T17). **Trocar as fontes:** só no bloco "fonts and sizes" do `UiSkin`
-  (`TitleFontFile`, `TextFontFile`, os tamanhos e as medidas `TextLiftEm` e `AccentTwinScale`); nenhuma tela tem
-  tamanho de letra próprio.
+  arredondado por pílula, chanfro ou quadrado em pixel (TD-063); não usar `GUI.DrawTexture` com raio em tela nova. Fontes (A-191, TD-067):
+  Nunito em todo o texto, um arquivo por peso (`Resources/Fontes`): Medium no corpo, SemiBold em botões/abas/chips, Bold
+  em títulos, números e ênfase; nunca `FontStyle.Bold`. Tamanhos no quadro de 1080: 21 pequeno (mínimo), 24 corpo e
+  botão, 32 nome, 40 título de janela, 42 número de destaque, 52 faixa da chegada; no máximo 4 numa tela. O texto sai
+  pelo campo de distância do TextCore (`UiSkin.Crisp` liga o `isSDF` de cada estilo base), nítido em qualquer escala.
+  Sem um dos arquivos, o Unity usa a fonte padrão. **Trocar as fontes:** só no bloco "fonts and sizes" do `UiSkin`
+  (`Font*File` e os tamanhos); nenhuma tela tem tamanho de letra próprio. Botão com ícone medido: largura =
+  70 + largura do rótulo (o `IconButton` usa 16 de margem, ícone 22 e 8 de espaço).
 - **Layout das telas (A-190):** grade de 8, no máximo 2 níveis de caixa (janela → cartão de uma linha), texto medido
   com `GUIStyle.CalcSize` e encurtado por `FishCard.Fit` ("…"), nada gira (`PixelDraw.Fit`/`ArcArt.Fit` com espelho). Um
   botão sem rótulo mostra o nome ao passar o mouse (`Hud.HoverName`). Itens e fundos escuros recebem encaixe ou véu

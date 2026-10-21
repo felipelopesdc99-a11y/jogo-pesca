@@ -2,7 +2,7 @@
   "$schema": "./roadmap.schema.json",
   "project": "Fishing Idle",
   "target_version": "0.2.0",
-  "updated_at": "2026-10-20T21:30:00Z",
+  "updated_at": "2026-10-20T23:30:00Z",
   "current_milestone": "M25",
   "statuses": [
     "TODO",
@@ -5368,7 +5368,7 @@
           "id": "M25-T18",
           "title": "Testar no Unity (Play)",
           "subsystem": "client",
-          "description": "O proprietário aperta Play e confere o estilo ARC no jogo inteiro: nitidez dos pixels em 1080p e em janela pequena, legibilidade da VT323, tamanho do pescador na cena, nada sobreposto em ~1200×600 e ~1320×840. Fica para o final do jogo, junto com os outros testes do proprietário (05/10/2026).",
+          "description": "O proprietário aperta Play e confere o estilo ARC no jogo inteiro: nitidez dos pixels em 1080p e em janela pequena, legibilidade da Nunito (A-191), tamanho do pescador na cena, nada sobreposto em ~1200×600 e ~1320×840. Fica para o final do jogo, junto com os outros testes do proprietário (05/10/2026).",
           "status": "TODO",
           "dependencies": [
             "M25-T17"
@@ -5413,14 +5413,15 @@
         },
         {
           "id": "M25-T22",
-          "title": "Trocar as fontes (o proprietário escolhe)",
+          "title": "Trocar as fontes: Nunito em todo o texto",
           "subsystem": "client",
           "description": "A pesquisa de 20/10/2026 mostrou que a VT323 não tem grade de pixel (nunca fica nítida) e que a Press Start 2P achata as maiúsculas acentuadas. O proprietário vai escolher entre outras opções (a pesquisa recomenda Jersey 15 nos títulos e Galmuri 11/9 no texto, OFL). Quando ele escolher: pôr os arquivos em Resources/Fontes com a licença, trocar TitleFontFile/TextFontFile, os tamanhos e as medidas TextLiftEm/AccentTwinScale no UiSkin, medir as colunas com o texto real e conferir os passos do UiSkin.CanvasScale.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T19"
           ],
-          "updated_at": "2026-10-20T21:00:00Z"
+          "updated_at": "2026-10-20T23:30:00Z",
+          "completion_notes": "A-191, TD-067. Escolha do proprietário: Nunito (OFL) em todo o texto; a arte continua em pixel. Regular, Medium, SemiBold e Bold em Resources/Fontes (instanciadas da versão variável, com as setas → ← ↔ e o ▾ e a linha de 1,135 em, registradas no FONTLOG); Press Start 2P e VT323 removidas. UiSkin: um arquivo por peso (corpo Medium, botões/abas SemiBold, títulos/números Bold, sem FontStyle.Bold), tamanhos 21/24/32/40/42/52 num bloco só, TextBleed para acentos e descendentes; saíram TitleSafe/TitleLabel, TextLiftEm, AccentTwinScale e as maiúsculas forçadas. ArtImportSettings versão 8 (Hinted Smooth, textura Bilinear). Nitidez: o texto sai pelo SDF do TextCore em qualquer escala; UiSkin.Crisp liga o isSDF de cada estilo para o Editor. Larguras conferidas em prévias com a Nunito (revisao_nunito): Aquário (miniaturas 112), Loja, Missões, Arena, Boss, Caixa, Mercado, Clã, Passe, Bem-vindo e o título de chegada (faixa escura). Compila pelo CI; visual só verificado no Play."
         },
         {
           "id": "M25-T23",
@@ -5438,11 +5439,12 @@
           "title": "Revisão visual das outras telas (Caixa, Mercado, Arena, Passe, Clã, Bem-vindo)",
           "subsystem": "client",
           "description": "O resto do diagnóstico da pesquisa de 20/10/2026 com as regras de layout da A-190: Caixa de Pesca (chips de raridade, 3 menus num botão Filtros, cartão com menos informações, Selecionar/Limpar num botão só), Mercado (juntar Meus anúncios e Itens para retirar, banner só no cabeçalho), Arena (etiquetas FRENTE/TRÁS de 20 no mínimo, menos adornos por jogador), Passe (faixa só no cabeçalho, célula ícone + número), Clã (aviso do online numa linha, porto só no cabeçalho) e Bem-vindo de volta (3 números, lista de linhas, 1 botão principal). Só apresentação.",
-          "status": "TODO",
+          "status": "DONE",
           "dependencies": [
             "M25-T21"
           ],
-          "updated_at": "2026-10-20T21:30:00Z"
+          "updated_at": "2026-10-20T23:30:00Z",
+          "completion_notes": "A-191. Caixa: abas de raridade com ponto e quantidade, um botão Filtros (ordem, tamanho, qualidade em três colunas), cartão sem a barra de tamanho, Selecionar/Limpar num botão que alterna, valor em moeda + número. Mercado: Meus anúncios e Itens a Retirar numa aba (dois blocos, nota '2 a retirar'), porto só em Comprar, vagas do Aquário em ícone + número, textos 'Itens a Retirar' trocados. Arena: posição em texto (sem medalha), sem brilho, 'Frente'/'Trás' acima das filas, aviso da Força no 'i', nome e nível em duas linhas quando preciso. Passe: célula ícone + número e um estado (botão, visto, cadeado), sem brilho no próximo marco. Clã: porto só no topo, seções sem painel afundado, aviso do online numa linha, contagem só no título. Bem-vindo: números com ícone sem cartão, fragmentos e avisos em linhas, um botão principal medido. Cor de Pequeno/Adulto/Grande mantida (decisão do proprietário). Prévias 1080p e 600p em revisao_nunito/telas_nunito.html. Compila pelo CI; visual só verificado no Play."
         }
       ]
     }

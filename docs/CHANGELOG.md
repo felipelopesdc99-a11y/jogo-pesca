@@ -3,6 +3,29 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m25.7] — 20/10/2026
+
+Fonte nova e as últimas telas da revisão visual (A-191). Nenhuma regra, número ou save mudou. Visual só fica verificado
+quando o proprietário apertar Play.
+
+### Alterado
+
+- **Nunito em todo o texto** (escolha do proprietário): títulos, números, botões, corpo e HUD numa letra lisa e
+  arredondada, em quatro pesos; a Press Start 2P e a VT323 saíram. Ícones, personagens e peixes continuam em pixel art.
+  O texto fica nítido em qualquer tamanho de janela. Selos sem maiúsculas forçadas ("Nova espécie", "Recorde").
+- **Caixa de Pesca:** um botão "Filtros" com ordem, tamanho e qualidade; "Selecionar todos" e "Limpar seleção" num
+  botão só; o valor dos selecionados em moeda + número.
+- **Mercado:** "Meus anúncios" e "Itens a Retirar" viraram uma aba só, com os dois blocos.
+- **Arena:** posição em texto, sem medalha e sem brilho; "Frente" e "Trás" escritos acima das filas.
+- **Passe:** cada recompensa em ícone + número e um estado só (botão, visto ou cadeado).
+- **Clã:** o porto só no topo, seções separadas por espaço e o aviso do jogo online numa linha.
+- **Bem-vindo de volta:** números grandes com ícone, fragmentos e avisos em linhas e um botão principal.
+- **Título de chegada** com uma faixa escura que se lê sobre o céu claro.
+
+### Pendente
+
+- Decisão do proprietário: tirar a cor de Pequeno, Adulto e Grande.
+
 ## [0.2.0-m25.6] — 20/10/2026
 
 Revisão visual pedida pelo proprietário (A-190), 2ª parte: menus mais limpos e nada sobreposto. Nenhuma regra, número ou

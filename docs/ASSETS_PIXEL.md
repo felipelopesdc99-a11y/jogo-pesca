@@ -194,6 +194,12 @@ Avisos; as abas do Perfil usam um ícone cada (`ico_perfil`, `ico_caixa`, `ico_p
 
 Ao chegar: recortar com `--grade 5x2 --celula 32x32 --alvo 24x24 --nomes Icones/ico_barco,Icones/ico_pesca,Icones/ico_vara,Icones/ico_isca,Icones/ico_expedicao,Icones/ico_ranking,Icones/ico_peixe,Icones/ico_alimentar,Icones/ico_caixa,Icones/ico_leilao`.
 
+## Fontes (A-191, 20/10/2026)
+
+O texto do jogo **não é pixel art**: é a **Nunito** (OFL), em `Resources/Fontes` (Regular, Medium, SemiBold e Bold, com
+`OFL-Nunito.txt` e `FONTLOG-Nunito.txt`). A Press Start 2P e a VT323 saíram. Nenhum pedido de arte depende de fonte; se
+um pedido novo tiver texto dentro da imagem, pedir **sem texto** (o jogo escreve por cima).
+
 ## Pedidos por lote
 
 ### Lote 1 · Kit de teste (piloto do Lago Sereno)

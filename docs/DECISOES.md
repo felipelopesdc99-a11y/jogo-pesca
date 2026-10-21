@@ -1631,3 +1631,36 @@ em todas as telas e fica para depois da troca de fontes, se ainda precisar.
 **Rever se.** O proprietário escolher as fontes novas (M25-T22): conferir se a grade da fonte nova pede outros passos de
 escala.
 
+
+## TD-067 · Nunito em quatro pesos e texto pelo campo de distância (20/10/2026)
+
+**Origem.** O proprietário quer a leitura "mais tranquila" e a arte em pixel (A-191, M25-T22).
+
+**Decisão.**
+- **Arquivos:** Nunito 3.602 (OFL, `google/fonts`, versão variável) instanciada em Regular 400, Medium 500, SemiBold 600 e
+  Bold 700 com o `fontTools` (`varLib.instancer`), em `Resources/Fontes` com `OFL-Nunito.txt` e `FONTLOG-Nunito.txt`.
+  Duas mudanças registradas no FONTLOG: as setas → ← ↔ e o ▾ desenhados no peso de cada arquivo (os textos usam e a
+  Nunito não tem) e a caixa da linha em 1,135 em (ascendente 920, descendente −215 em `hhea` e `OS/2`), quase a linha
+  das fontes pixel de antes, para os retângulos das telas continuarem servindo. A Nunito não declara "Reserved Font
+  Name", então a versão modificada pode manter o nome. A Press Start 2P e a VT323 saíram.
+- **Um bloco só no `UiSkin`:** `FontRegularFile`, `FontMediumFile`, `FontSemiBoldFile`, `FontBoldFile` e os tamanhos
+  (`SmallSize` 21, `ChipSize` 21, `BadgeSize` 21, `BodySize` 24, `ButtonSize` 24, `HeadingSize` 24, `TitleSize` 32,
+  `WindowTitleSize` 40, `NumberBigSize` 42, `DisplaySize` 42, `ArrivalSize` 52). Cada estilo aponta para a `Font` do peso;
+  `FontStyle.Bold` não é usado. `TextBleed` (0,125 em) estende a área do rótulo para cima e para baixo, para acento e
+  descendente nunca serem cortados. Saíram `TitleSafe`, `TitleLabel`, `TextLiftEm`, `AccentTwinScale` e `ShrinkMinSize`.
+- **Importação (`ArtImportSettings`, versão 8):** fontes com `Hinted Smooth`, Character Dynamic e dados incluídos;
+  textura do glifo Bilinear (`UiSkin.LoadFont`, refeita em `Font.textureRebuilt`). Point e sem compressão só nos sprites.
+- **Nitidez em qualquer janela:** o Unity 6 desenha o texto do IMGUI pelo TextCore, que converte a `Font` num asset
+  dinâmico de **campo de distância (SDF)**, amostrado a 90 pt; o SDF fica nítido em qualquer escala do `GUI.matrix`,
+  então a letra sai no tamanho final da tela sem mudar uma chamada das ~600 de `GUI.Label`. No Editor, o asset convertido
+  é marcado como "fonte do editor" e pode cair no caminho bitmap (rasterizado no `fontSize` e esticado pela matriz:
+  borrado em 600 e 840 px de altura); `UiSkin.Crisp(style)` liga o `GUIStyle.isSDF` (interno, o mesmo que as vistas com
+  zoom do próprio Unity usam), lido por reflexão uma vez; sem a propriedade (outra versão), nada muda. Todos os estilos
+  base do `UiSkin` passam por ele, e as cópias herdam. A escala por passos limpos (TD-066) fica para a arte pixel.
+
+**Por quê.** Desenhar o texto fora da matriz exigiria trocar todas as chamadas de texto e conferir de novo o recorte das
+áreas com rolagem; o caminho SDF do Unity já entrega a letra no tamanho final, com uma linha por
+estilo. Os pesos em arquivos separados deixam o negrito com o desenho certo.
+
+**Rever se.** No Play a letra parecer mole em algum tamanho (o `_Sharpness` do SDF é do Unity) ou o Unity mudar o
+`isSDF`: aí desenhar o texto fora da matriz com `fontSize` × escala.

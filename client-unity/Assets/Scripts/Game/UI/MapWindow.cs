@@ -40,7 +40,7 @@ namespace FishingIdle.Game.UI
         private const string BoatArt = "UI/ui_map_boat";
         private const string IslandArtPrefix = "UI/ui_map_island_";
 
-        private const float LabelsHeight = 56f; // gap 6 + name 24 + gap 2 + state 24 (VT323 lines, M25-T14; was 50)
+        private const float LabelsHeight = 56f; // gap 6 + name 24 + gap 2 + state 24 (one line of the small text each, M25-T14; was 50)
         private const float RouteDotGap = 14f;
 
         private static readonly Color LockedFrame = new Color(0.45f, 0.52f, 0.60f);

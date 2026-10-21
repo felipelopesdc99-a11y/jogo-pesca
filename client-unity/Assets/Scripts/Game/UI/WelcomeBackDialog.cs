@@ -25,6 +25,9 @@ namespace FishingIdle.Game.UI
         private const float StatHeight = 96f, BestHeight = 184f, GearHeight = 56f, WarningHeight = 40f, FooterHeight = 56f;
         private const float SceneHeight = 120f, RarityBar = 16f, LegendRow = 24f;
 
+        // Three highlights (M25-T24, A-191): 272 wide cards keep the rarity seal and the "Nova espécie" tag on one row.
+        private const int BestCount = 3;
+
         // Presentation only: the count-up at the opening, and from when the box counts as "almost full" for the warning.
         private const float CountUpSeconds = 0.9f, AlmostFullRatio = 0.9f;
 
@@ -212,7 +215,7 @@ namespace FishingIdle.Game.UI
             foreach (var c in catches.Where(c => c.IsImportant)
                          .OrderByDescending(c => c.Genes != null && c.Genes.IsCelebrated)
                          .ThenByDescending(c => c.Genes != null && c.Genes.IsCelebrated ? c.Genes.Total : 0)
-                         .ThenByDescending(c => c.SalePriceCoins).Take(4))
+                         .ThenByDescending(c => c.SalePriceCoins).Take(BestCount))
             {
                 var model = new FishCardModel
                 {
@@ -451,7 +454,7 @@ namespace FishingIdle.Game.UI
                 y += SectionGap;
                 Heading(skin, x, y, w, GameTexts.Offline.Best, _bestNote);
                 y += HeadingHeight;
-                var cw = (w - Gap * 3f) / 4f;
+                var cw = (w - Gap * (BestCount - 1)) / BestCount;
                 for (var i = 0; i < Best.Count; i++)
                 {
                     FishCard.Draw(skin, new Rect(x + i * (cw + Gap), y, cw, BestHeight), Best[i]);

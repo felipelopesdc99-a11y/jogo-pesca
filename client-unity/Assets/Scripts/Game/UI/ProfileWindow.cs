@@ -1399,7 +1399,7 @@ namespace FishingIdle.Game.UI
             }
 
             const float gap = 14f;
-            // Wider since A-190 (was 190–232): "Arquipélago do Sol" and its "6/10" fit whole in VT323.
+            // Wider since A-190 (was 190–232): "Arquipélago do Sol" and its "6/10" fit whole (VT323 then, Nunito since A-191).
             var tabsW = 264f;
             DrawEncTabs(skin, new Rect(area.x, area.y, tabsW, area.height), all, maps);
 

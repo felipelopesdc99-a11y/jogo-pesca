@@ -3919,3 +3919,48 @@ nenhuma regra, número, recompensa ou save mudou.
   e as fontes novas (M25-T22). As outras telas que a pesquisa aponta (Caixa de Pesca, Mercado, Arena, Passe, Clã e
   Bem-vindo de volta) ficam para a M25-T24.
 
+
+### A-191 · Nunito em todo o texto; a arte continua em pixel (20/10/2026)
+
+**Seção do GDD:** telas · `docs/ART_BIBLE_PIXEL.md` 7.1 (fontes) · M25-T22 e M25-T24 · **Situação:** no jogo (compila;
+verificado só no Play)
+
+Decisão do proprietário (20/10/2026): "o visual dos ícones, bonecos, peixes pode ser pixel art, mas para leituras e tudo
+mais eu prefiro algo mais tranquilo". Troca a seção 7.1 da Bíblia (Press Start 2P e VT323). Só apresentação: nenhuma
+regra, número, recompensa ou save mudou.
+
+- **Nunito** (lisa, arredondada, OFL) em **todo** o texto: títulos, números, botões, corpo, HUD, abas e selos. A Press
+  Start 2P e a VT323 saíram do jogo. Ícones, personagens, peixes, cenas e as formas da pele ARC continuam em pixel art.
+- **Cada peso é um arquivo:** Medium no corpo, listas e textos pequenos; SemiBold em botões, abas, chips e pílulas; Bold
+  em títulos, números, nomes e ênfase. O "negrito falso" do Unity não é usado.
+- **Tamanhos no quadro de 1080:** corpo 24, pequeno 21 (o mínimo, também em chips e selos), botão 24, título de janela 40,
+  nome numa ficha 32, número de destaque 42 (Honra, totais do Bem-vindo, "VS"), faixa grande 52 (o nome do mapa na
+  chegada). **No máximo 4 tamanhos numa tela.** Títulos de seção usam o corpo em Bold (sem um 5º tamanho).
+- **Sem maiúsculas forçadas:** selos e etiquetas como "Nova espécie", "Recorde", "Excepcional", "Em uso", "Agora",
+  "Capítulo 2", "Completo!" ficam em caixa normal; a troca de fonte que existia só para os acentos da Press Start 2P saiu.
+- **Texto nítido em qualquer tamanho de janela:** o texto é desenhado pelo contorno da fonte (campo de distância), então
+  sai no tamanho final da tela; a arte pixel continua em escala inteira (TD-067).
+- **O título de chegada** ganhou uma faixa escura de verdade atrás (o creme liso some no céu claro do dia).
+- **Telas revistas com as larguras novas** (nada cortado onde caberia, nada sobreposto):
+  - **Caixa de Pesca:** abas de raridade com ponto, nome e quantidade; um botão **"Filtros"** abre Ordem, Tamanho e
+    Qualidade em três colunas (eram 3 menus); o cartão sem a barra de tamanho (a linha já diz o tamanho);
+    "Selecionar todos" e "Limpar seleção" viraram **um botão que alterna**; o valor dos selecionados vai em moeda +
+    número.
+  - **Mercado:** **"Meus anúncios" e "Itens a Retirar" viraram uma aba só**, com dois blocos ("Seus anúncios · 2/5" e
+    "Para retirar · 2" com "Retirar tudo"); a aba mostra "2 a retirar" ou "2/5"; a ilustração do porto só na aba Comprar;
+    as vagas do Aquário em ícone + número; os textos que falavam de "Itens a Retirar" passaram a dizer "Meus anúncios".
+  - **Arena:** a posição em texto ("#198 de 500"), sem a medalha; sem brilho nos adversários e no botão; as filas
+    "Frente" e "Trás" escritas acima dos lugares (as letras em pé que encolhiam abaixo do mínimo saíram); o aviso "a
+    Força não é mostrada" foi para o "i"; nome e nível do peixe em duas linhas quando não cabem numa.
+  - **Passe:** a faixa do pôr do sol só no cabeçalho; cada célula com **ícone + número** e **um estado**: o botão
+    Resgatar, um visto apagado depois de resgatado ou um cadeado pequeno enquanto o Premium não foi comprado (sem
+    "Resgatado" e "Premium" escritos, sem repetir o "Nv.40" da coluna); o próximo marco sem brilho.
+  - **Clã:** o porto só na faixa do topo; as seções separadas por espaço, sem painel afundado em volta (janela →
+    cartão); o aviso do jogo online numa linha de texto suave ("Ranking e prêmios ligam com o jogo online.");
+    o número de membros só no contador do título.
+  - **Bem-vindo de volta:** a faixa da cena; os números grandes com o ícone, sem cartão em volta (peixes, valor, XP e
+    Conchas quando vierem); a barra por raridade; **3 destaques** (eram 4: o selo da raridade e o "Nova espécie" cabem
+    na mesma linha do cartão); fragmentos e avisos **em linhas**; **um botão principal**
+    ("Abrir a Caixa de Pesca" quando há peixes nela, senão "Continuar") e o "Abrir" repetido no aviso da Caixa saiu.
+  - **Outras:** miniaturas do Aquário 112 × 112; abas laterais 136 (era 128); "Todos os mapas · 0,8% por peixe" na Loja.
+- **Continua para o proprietário decidir:** tirar a cor de Pequeno, Adulto e Grande (a cor ficou como estava).
