@@ -5,64 +5,51 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// Colours, fonts, textures and IMGUI styles of the game interface, in the ARC skin (docs/ART_BIBLE_PIXEL.md,
-    /// section 7; addendum A-184), built once on first use from the visual theme.
+    /// Colours, fonts, textures and IMGUI styles of the game interface ("Lago Dourado — Clean
+    /// Premium", docs/ART_BIBLE_V0_1.md), built once on first use from the visual theme.
     /// </summary>
     /// <remarks>
     /// The MVP interface is drawn with Unity's immediate-mode GUI (docs/DECISOES.md, TD-017). All
-    /// look-and-feel lives here, in UiSkinArc.cs and in <see cref="VisualTheme"/>: night-blue panels with a thin gold
-    /// frame (structure), turquoise for actions, the bright gold only for rewards, rarity colour only as an accent,
-    /// Nunito for every text (owner decision of 20/10/2026, A-191; the art stays pixel). Windows use the shared pieces below (panels, buttons with icons,
-    /// pills, bars, outlines) so every screen speaks the same language.
+    /// look-and-feel lives here and in <see cref="VisualTheme"/>: turquoise for actions, gold only
+    /// for rewards, rarity colour only as an accent. Windows use the shared pieces below (panels,
+    /// buttons with icons, pills, bars, outlines) so every screen speaks the same language.
     /// </remarks>
     public sealed partial class UiSkin
     {
         private static VisualTheme Theme => VisualTheme.Current;
 
-        // The ARC palette (A-184). The paper mode of the old diary (A-170) and its ink colours left in M25-T17.
-        public static Color Text => Theme.Text;
-        public static Color Muted => Theme.TextMuted;
-        public static Color Accent => Theme.Action;
-        public static Color AccentHover => Theme.ActionHover;
-        public static Color Gold => Theme.Reward;
-        public static Color GoldLight => Theme.RewardLight;
-        public static Color Danger => Theme.Danger;
-        public static Color Success => Theme.Success;
-        public static Color Border => Theme.Border;
-        public static Color Night => Theme.Night;
+        // On a window sheet (Paper, A-170) each colour answers with its ink twin; see UiSkinPaper.cs.
+        public static Color Text => Paper ? Ink : Theme.Text;
+        public static Color Muted => Paper ? InkSoft : Theme.TextMuted;
+        public static Color Accent => Paper ? InkAccent : Theme.Action;
+        public static Color AccentHover => Paper ? InkAccent : Theme.ActionHover;
+        public static Color Gold => Paper ? InkReward : Theme.Reward;
+        public static Color GoldLight => Paper ? InkReward : Theme.RewardLight;
+        public static Color Danger => Paper ? InkDanger : Theme.Danger;
+        public static Color Success => Paper ? InkSuccess : Theme.Success;
+        public static Color Border => Paper ? PaperLine : Theme.Border;
+        public static Color Night => Paper ? PaperShade : Theme.Night;
 
         /// <summary>Accent of the Raro tier (kept for older call sites; prefer <see cref="RarityColor"/>).</summary>
         public static Color Rare => RarityColor("rare");
 
         /// <summary>The accent colour of a rarity id.</summary>
-        public static Color RarityColor(string rarityId) => Theme.Rarity(rarityId);
+        public static Color RarityColor(string rarityId) => Paper ? InkOf(Theme.Rarity(rarityId)) : Theme.Rarity(rarityId);
 
         /// <summary>The accent colour of a size category id (Excepcional = gold).</summary>
-        public static Color SizeColor(string sizeCategoryId) => Theme.Size(sizeCategoryId);
+        public static Color SizeColor(string sizeCategoryId) => Paper ? InkOf(Theme.Size(sizeCategoryId)) : Theme.Size(sizeCategoryId);
 
         public GUIStyle Panel, PanelSolid, Card, CardHovered, CardSelected, CardImportant, Shadow, Glow, Outline, Pill, IconTile;
         public GUIStyle Button, ButtonPrimary, ButtonDanger, ButtonReward, Chip, ChipActive, Nav, NavActive, SearchField;
+        // PillText is never tracked by paper mode: it is always tinted with GUI.contentColor or sits on a dark badge.
         public GUIStyle Title, Heading, Body, BodyBold, ChipText, Small, SmallBold, SmallMuted, SmallRight, SmallMutedRight, SmallGold, SmallGoldRight, Number, NumberRight, Center, CenterBold, SmallMutedCenter, Badge, Display, DisplaySub, PillText;
 
         public Texture2D White, Overlay, Coin, Rays;
 
-        /// <summary>Window titles and big numbers: Nunito Bold.</summary>
         public Font TitleFont { get; private set; }
-
-        /// <summary>The same Bold (kept as its own name for the call sites that ask for "bold titles").</summary>
         public Font TitleBoldFont { get; private set; }
-
-        /// <summary>Body text, names and lists: Nunito Medium.</summary>
         public Font BodyFont { get; private set; }
-
-        /// <summary>Emphasis inside text and gold numbers: Nunito Bold (each weight is its own file; FontStyle.Bold is never used).</summary>
         public Font BodyBoldFont { get; private set; }
-
-        /// <summary>Buttons, chips and tabs: Nunito SemiBold.</summary>
-        public Font SemiBoldFont { get; private set; }
-
-        /// <summary>Nunito Regular: loaded for long help texts, unused by the styles today.</summary>
-        public Font RegularFont { get; private set; }
 
         private static UiSkin _instance;
 
@@ -75,116 +62,90 @@ namespace FishingIdle.Game.UI
         private UiSkin()
         {
             var t = Theme;
-
-            // Nunito in four weights (A-191, TD-067): the owner wants the reading calm and smooth; icons, characters and
-            // fish stay pixel art. While a file is missing, Unity's default font is used (null font in a style).
-            RegularFont = LoadFont(FontRegularFile);
-            BodyFont = LoadFont(FontMediumFile);
-            SemiBoldFont = LoadFont(FontSemiBoldFile);
-            BodyBoldFont = LoadFont(FontBoldFile);
-            TitleFont = BodyBoldFont;
-            TitleBoldFont = BodyBoldFont;
+            TitleFont = Resources.Load<Font>("Fontes/Fredoka-SemiBold");
+            TitleBoldFont = Resources.Load<Font>("Fontes/Fredoka-Bold") ?? TitleFont;
+            // Body text in Nunito SemiBold (A-149): the interface is drawn on a 1080-tall canvas and scaled down,
+            // and the Regular weight came out too thin on 600–840 px screens. Regular stays as the fallback.
+            BodyFont = Resources.Load<Font>("Fontes/Nunito-SemiBold") ?? Resources.Load<Font>("Fontes/Nunito-Regular");
+            BodyBoldFont = Resources.Load<Font>("Fontes/Nunito-Bold") ?? BodyFont;
 
             White = Art.SolidTexture(Color.white);
-            Overlay = Art.SolidTexture(new Color(t.Veil.r, t.Veil.g, t.Veil.b, t.OverlayOpacity));
-            // The pixel coin icon (ico_moeda); a coin drawn by the code while it is missing.
-            Coin = ArtAssets.Icon(Icons.Coin) ?? Art.Circle.texture;
+            Overlay = Art.SolidTexture(new Color(t.Night.r, t.Night.g, t.Night.b, t.OverlayOpacity));
+            Coin = ArtAssets.Texture(CoinArt) ?? ArtAssets.Icon(Icons.Coin) ?? Art.Circle.texture;
             Rays = Art.RaysTexture(14);
 
-            // Panels: the three-line frame (gold, dark line, dark gold) with a 2-pixel chamfer (Art Bible 7).
-            var frame = new[] { t.Frame, t.FrameInner, t.FrameDark };
-            Panel = ArcBox(2, false, frame, Alpha(t.Panel, t.PanelOpacity));
-            PanelSolid = ArcBox(2, false, frame, Alpha(t.Panel, 1f));
+            var panelTop = Alpha(Color.Lerp(t.Panel, t.PanelElevated, 0.45f), t.PanelOpacity);
+            var panelBottom = Alpha(t.Panel, t.PanelOpacity);
+            Panel = Box(Art.PanelTexture(panelTop, panelBottom, Alpha(t.Border, 0.9f), 16, 1.5f, 96), 16);
+            PanelSolid = Box(Art.PanelTexture(Alpha(t.PanelElevated, 1f), Alpha(t.Panel, 1f), t.Border, 16, 1.5f, 96), 16);
+            Card = Box(Art.PanelTexture(Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.03f), 0.97f), Alpha(t.PanelElevated, 0.97f), Alpha(t.Border, 0.85f), 12, 1.5f, 64, 0.04f), 12);
+            CardHovered = Box(Art.PanelTexture(Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.08f), 0.98f), Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.04f), 0.98f), Alpha(Color.Lerp(t.Border, Color.white, 0.25f), 1f), 12, 1.5f, 64, 0.05f), 12);
+            CardSelected = Box(Art.PanelTexture(Alpha(Color.Lerp(t.PanelElevated, t.Action, 0.22f), 0.98f), Alpha(Color.Lerp(t.Panel, t.Action, 0.14f), 0.98f), t.Action, 12, 2.5f, 64, 0.05f), 12);
+            CardImportant = Box(Art.PanelTexture(Alpha(Color.Lerp(t.PanelElevated, t.Reward, 0.10f), 0.98f), Alpha(t.Panel, 0.98f), t.Reward, 12, 2f, 64, 0.05f), 12);
 
-            // Cards (A-190, at most two levels of box): the card fill, one shade darker than the panel ("sunken"), with a
-            // single one-pixel line and no inner line; the selected one has the reward gold line (Art Bible 7).
-            Card = ArcBox(1, false, new[] { t.ChipOff }, Alpha(t.Card, 1f));
-            CardHovered = ArcBox(1, false, new[] { Color.Lerp(t.ChipOff, t.Frame, 0.55f) }, Alpha(Color.Lerp(t.Card, t.PanelElevated, 0.5f), 1f));
-            CardSelected = ArcBox(1, false, new[] { t.Reward }, Alpha(Color.Lerp(t.Card, t.PanelElevated, 0.6f), 1f));
-            CardImportant = ArcBox(1, false, new[] { t.Frame }, Alpha(Color.Lerp(t.Card, t.Reward, 0.06f), 1f));
-
-            // No soft blur in pixel art: the shadow is a hard offset (HardShadow) and the glow a pixel ring (PixelGlow).
-            // The two styles stay for windows that tint them, as plain translucent shapes.
-            Shadow = ArcBox(2, false, new Color[0], new Color(0f, 0f, 0f, 0.35f));
-            Glow = ArcBox(2, false, new Color[0], new Color(1f, 1f, 1f, 0.18f));
-            Outline = ArcBox(1, false, new[] { Color.white }, Color.clear);
-            Pill = ArcBox(4, true, new[] { Color.white }, new Color(1f, 1f, 1f, 0.20f));
+            Shadow = Box(Art.SoftTexture(16, 18, 0.55f), 34);
+            Glow = Box(Art.SoftTexture(14, 22, 0.9f), 36);
+            Outline = Box(Art.OutlineTexture(12, 2f), 12);
+            Pill = Box(Art.OutlineTexture(10, 1.5f, 0.20f), 10);
             Pill.padding = new RectOffset(8, 8, 2, 2);
-            IconTile = ArcBox(1, false, new[] { t.FrameDark }, Alpha(t.Field, 1f));
+            IconTile = Box(Art.PanelTexture(Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.06f), 1f), Alpha(t.PanelElevated, 1f), Alpha(t.Border, 1f), 12, 1.5f, 48), 12);
 
-            // Buttons are pills (Art Bible 7). Secondary: field with the structural gold line and title text. Primary
-            // (action): dark with the turquoise line (turquesa = ação). Reward: the gold face in two bands, dark text, for
-            // collecting and claiming only (dourado = recompensa). Danger: dark with the red line.
-            var actionText = Color.Lerp(t.Action, Color.white, 0.45f);
-            var dangerText = Color.Lerp(t.Danger, Color.white, 0.5f);
             Button = ButtonStyle(
-                ArcFace(ButtonRadius, true, Alpha(t.Field, 0.98f), Alpha(t.Field, 0.98f), t.Frame),
-                ArcFace(ButtonRadius, true, Alpha(t.PanelElevated, 1f), Alpha(t.PanelElevated, 1f), t.Title),
-                ArcFace(ButtonRadius, true, Alpha(t.Panel, 1f), Alpha(t.Panel, 1f), t.FrameDark),
-                t.Title);
+                Art.PanelTexture(Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.06f), 0.98f), Alpha(t.PanelElevated, 0.98f), t.Border, 10, 1.5f, 48, 0.05f),
+                Art.PanelTexture(Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.14f), 1f), Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.06f), 1f), Color.Lerp(t.Border, Color.white, 0.3f), 10, 1.5f, 48, 0.06f),
+                Art.PanelTexture(Alpha(t.Panel, 1f), Alpha(t.Panel, 1f), t.Border, 10, 1.5f, 48, 0f),
+                t.Text);
             ButtonPrimary = ButtonStyle(
-                ArcFace(ButtonRadius, true, Alpha(Color.Lerp(t.Field, t.Action, 0.14f), 1f), Alpha(Color.Lerp(t.Field, t.Action, 0.10f), 1f), t.Action),
-                ArcFace(ButtonRadius, true, Alpha(Color.Lerp(t.Field, t.Action, 0.26f), 1f), Alpha(Color.Lerp(t.Field, t.Action, 0.20f), 1f), t.ActionHover),
-                ArcFace(ButtonRadius, true, Alpha(Color.Lerp(t.Field, t.Action, 0.08f), 1f), Alpha(Color.Lerp(t.Field, t.Action, 0.08f), 1f), t.Action),
-                actionText);
-            ButtonPrimary.hover.textColor = Color.white;
+                Art.PanelTexture(Alpha(t.ActionHover, 1f), Alpha(t.Action * 0.92f, 1f), Alpha(Color.Lerp(t.Action, Color.white, 0.25f), 1f), 10, 1f, 48, 0.1f),
+                Art.PanelTexture(Alpha(Color.Lerp(t.ActionHover, Color.white, 0.18f), 1f), Alpha(t.ActionHover, 1f), Alpha(Color.Lerp(t.Action, Color.white, 0.45f), 1f), 10, 1f, 48, 0.12f),
+                Art.PanelTexture(Alpha(t.Action * 0.85f, 1f), Alpha(t.Action * 0.75f, 1f), Alpha(t.Action, 1f), 10, 1f, 48, 0f),
+                Color.white);
             ButtonDanger = ButtonStyle(
-                ArcFace(ButtonRadius, true, Alpha(Color.Lerp(t.Field, t.Danger, 0.16f), 1f), Alpha(Color.Lerp(t.Field, t.Danger, 0.12f), 1f), t.Danger),
-                ArcFace(ButtonRadius, true, Alpha(Color.Lerp(t.Field, t.Danger, 0.28f), 1f), Alpha(Color.Lerp(t.Field, t.Danger, 0.22f), 1f), Color.Lerp(t.Danger, Color.white, 0.3f)),
-                ArcFace(ButtonRadius, true, Alpha(Color.Lerp(t.Field, t.Danger, 0.10f), 1f), Alpha(Color.Lerp(t.Field, t.Danger, 0.10f), 1f), t.Danger),
-                dangerText);
-            ButtonDanger.hover.textColor = Color.white;
-            var ink = new Color32(0x2A, 0x1A, 0x08, 0xFF);
-            Color goldTop = new Color32(0xFF, 0xD9, 0x77, 0xFF), goldBottom = new Color32(0xD6, 0xA4, 0x40, 0xFF), goldLine = new Color32(0xFF, 0xF0, 0xB8, 0xFF);
+                Art.PanelTexture(Alpha(Color.Lerp(t.Danger, Color.white, 0.08f), 1f), Alpha(t.Danger * 0.9f, 1f), Alpha(Color.Lerp(t.Danger, Color.white, 0.2f), 1f), 10, 1f, 48, 0.08f),
+                Art.PanelTexture(Alpha(Color.Lerp(t.Danger, Color.white, 0.2f), 1f), Alpha(t.Danger, 1f), Alpha(Color.Lerp(t.Danger, Color.white, 0.4f), 1f), 10, 1f, 48, 0.1f),
+                Art.PanelTexture(Alpha(t.Danger * 0.8f, 1f), Alpha(t.Danger * 0.7f, 1f), Alpha(t.Danger, 1f), 10, 1f, 48, 0f),
+                Color.white);
+            var ink = new Color(0.23f, 0.15f, 0.02f);
             ButtonReward = ButtonStyle(
-                ArcFace(ButtonRadius, true, goldTop, goldBottom, goldLine),
-                ArcFace(ButtonRadius, true, Color.Lerp(goldTop, Color.white, 0.2f), Color.Lerp(goldBottom, Color.white, 0.15f), Color.white),
-                ArcFace(ButtonRadius, true, goldBottom, goldBottom, goldTop),
+                Art.PanelTexture(Alpha(t.RewardLight, 1f), Alpha(t.Reward, 1f), Alpha(Color.Lerp(t.Reward, Color.white, 0.4f), 1f), 10, 1f, 48, 0.12f),
+                Art.PanelTexture(Alpha(Color.Lerp(t.RewardLight, Color.white, 0.25f), 1f), Alpha(Color.Lerp(t.Reward, Color.white, 0.12f), 1f), Alpha(Color.white, 1f), 10, 1f, 48, 0.15f),
+                Art.PanelTexture(Alpha(t.Reward * 0.9f, 1f), Alpha(t.Reward * 0.8f, 1f), Alpha(t.Reward, 1f), 10, 1f, 48, 0f),
                 ink);
 
-            // Chips (filters, sub-tabs): idle on the field with the dark-blue line and soft text; chosen with the gold line
-            // and the title colour (the prototype's "Todas").
             Chip = ButtonStyle(
-                ArcFace(ButtonRadius, true, Alpha(t.Field, 0.95f), Alpha(t.Field, 0.95f), t.ChipOff),
-                ArcFace(ButtonRadius, true, Alpha(t.PanelElevated, 0.98f), Alpha(t.PanelElevated, 0.98f), Color.Lerp(t.ChipOff, t.Frame, 0.55f)),
-                ArcFace(ButtonRadius, true, Alpha(t.Panel, 1f), Alpha(t.Panel, 1f), t.ChipOff),
+                Art.PanelTexture(Alpha(t.PanelElevated, 0.85f), Alpha(t.Panel, 0.85f), Alpha(t.Border, 0.9f), 10, 1.2f, 40, 0.04f),
+                Art.PanelTexture(Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.1f), 0.95f), Alpha(t.PanelElevated, 0.95f), Color.Lerp(t.Border, Color.white, 0.3f), 10, 1.2f, 40, 0.05f),
+                Art.PanelTexture(Alpha(t.Panel, 1f), Alpha(t.Panel, 1f), t.Border, 10, 1.2f, 40, 0f),
                 t.TextMuted, ChipSize);
-            Chip.hover.textColor = t.Text;
-            Chip.padding = new RectOffset(10, 10, 2, 2);
-            ChipActive = ButtonStyle(
-                ArcFace(ButtonRadius, true, Alpha(t.ChipOn, 1f), Alpha(t.ChipOn, 1f), t.Frame),
-                ArcFace(ButtonRadius, true, Alpha(Color.Lerp(t.ChipOn, Color.white, 0.06f), 1f), Alpha(Color.Lerp(t.ChipOn, Color.white, 0.06f), 1f), t.Title),
-                ArcFace(ButtonRadius, true, Alpha(t.ChipOn, 1f), Alpha(t.ChipOn, 1f), t.Frame),
-                t.Title, ChipSize);
-            ChipActive.padding = new RectOffset(10, 10, 2, 2);
+            ChipActive = ButtonStyle(ButtonPrimary.normal.background, ButtonPrimary.hover.background, ButtonPrimary.active.background, Color.white, ChipSize);
             Nav = new GUIStyle(Chip) { fontSize = SmallSize };
             Nav.normal.textColor = Nav.hover.textColor = Nav.active.textColor = Nav.focused.textColor = t.Text;
             NavActive = new GUIStyle(ChipActive) { fontSize = SmallSize };
 
-            // The name search box (A-084): the field with a dark-gold line, gold on hover, turquoise while typing.
+            // The name search box (A-084): opaque, a touch lighter than the panel and with an accent
+            // border, so it reads as a place to type and not as one more chip.
+            var searchFill = Alpha(Color.Lerp(t.PanelElevated, Color.white, 0.14f), 1f);
             SearchField = new GUIStyle(GUI.skin.textField)
             {
                 font = BodyFont,
-                fontSize = SmallSize,
+                fontSize = 15,
                 alignment = TextAnchor.MiddleLeft,
                 padding = new RectOffset(38, 32, 4, 4),
-                border = new RectOffset(ButtonBorder, ButtonBorder, ButtonBorder, ButtonBorder),
+                border = new RectOffset(10, 10, 10, 10),
                 wordWrap = false,
                 clipping = TextClipping.Clip,
             };
-            SearchField.normal.background = ArcFace(ButtonRadius, true, Alpha(t.Field, 1f), Alpha(t.Field, 1f), t.FrameDark);
-            SearchField.hover.background = ArcFace(ButtonRadius, true, Alpha(t.Field, 1f), Alpha(t.Field, 1f), t.Frame);
-            SearchField.focused.background = SearchField.active.background = ArcFace(ButtonRadius, true, Alpha(t.Field, 1f), Alpha(t.Field, 1f), t.Action);
+            SearchField.normal.background = Art.PanelTexture(searchFill, searchFill, Alpha(t.Action, 0.7f), 10, 2f, 40, 0f);
+            SearchField.hover.background = Art.PanelTexture(searchFill, searchFill, Alpha(t.Action, 0.95f), 10, 2f, 40, 0f);
+            SearchField.focused.background = SearchField.active.background = Art.PanelTexture(searchFill, searchFill, Alpha(t.ActionHover, 1f), 10, 2.5f, 40, 0f);
             SearchField.normal.textColor = SearchField.hover.textColor = SearchField.focused.textColor = SearchField.active.textColor = t.Text;
-            Crisp(SearchField);
 
-            // Text sizes on the 1080-tall canvas (A-191): body 24, small 21, window title 40, big number 42.
-            Title = Label(TitleFont, TitleSize, t.Title);
-            Heading = Label(BodyBoldFont, HeadingSize, Text);
-            Body = Label(BodyFont, BodySize, Text);
-            BodyBold = Label(BodyBoldFont, BodySize, Text);
+            Title = Label(TitleFont, 27, Text);
+            Heading = Label(TitleFont, 20, Text);
+            Body = Label(BodyFont, 16, Text);
+            BodyBold = Label(BodyBoldFont, 16, Text);
             Small = Label(BodyFont, SmallSize, Text);
-            ChipText = Label(SemiBoldFont, ChipSize, Text);
+            ChipText = Label(BodyBoldFont, ChipSize, Text);
             ChipText.alignment = TextAnchor.MiddleCenter;
             ChipText.wordWrap = false;
             SmallMuted = Label(BodyFont, SmallSize, Muted);
@@ -193,140 +154,70 @@ namespace FishingIdle.Game.UI
             SmallMutedRight = new GUIStyle(SmallMuted) { alignment = TextAnchor.UpperRight };
             SmallGold = Label(BodyBoldFont, SmallSize, Gold);
             SmallGoldRight = new GUIStyle(SmallGold) { alignment = TextAnchor.UpperRight };
-            Number = Label(BodyBoldFont, NumberSize, Gold);
+            Number = Label(TitleFont, 21, Gold);
             NumberRight = new GUIStyle(Number) { alignment = TextAnchor.UpperRight };
-            Center = Label(BodyFont, BodySize, Text);
+            Center = Label(BodyFont, 16, Text);
             Center.alignment = TextAnchor.MiddleCenter;
-            CenterBold = Label(BodyBoldFont, BodySize, Text);
+            CenterBold = Label(BodyBoldFont, 17, Text);
             CenterBold.alignment = TextAnchor.MiddleCenter;
             SmallMutedCenter = new GUIStyle(SmallMuted) { alignment = TextAnchor.MiddleCenter };
-            Display = Label(TitleBoldFont, DisplaySize, Text);
+            Display = Label(TitleBoldFont, 44, Text);
             Display.wordWrap = false;
-            DisplaySub = Label(BodyBoldFont, BodySize, Text);
-            PillText = Label(SemiBoldFont, ChipSize, Text);
+            DisplaySub = Label(BodyBoldFont, 18, Text);
+            PillText = Label(BodyBoldFont, ChipSize, Text);
             PillText.alignment = TextAnchor.MiddleCenter;
             PillText.wordWrap = false;
 
-            Badge = Label(BodyBoldFont, BadgeSize, DarkInk);
+            Badge = Label(BodyBoldFont, BadgeSize, new Color(0.06f, 0.08f, 0.12f));
             Badge.alignment = TextAnchor.MiddleCenter;
             Badge.wordWrap = false;
-            Badge.normal.background = ArcFace(3, true, Color.white, Color.white);
-            Badge.border = new RectOffset(ArcFaceBorder(3, 0), ArcFaceBorder(3, 0), ArcFaceBorder(3, 0), ArcFaceBorder(3, 0));
-            Badge.padding = new RectOffset(6, 6, 0, 0);
+            Badge.normal.background = Art.RoundedRectTexture(Color.white, Color.clear, 7, 0f);
+            Badge.border = new RectOffset(7, 7, 7, 7);
+            Badge.padding = new RectOffset(6, 6, 1, 1);
+
+            BuildPaper();
         }
 
-        // ------------------------------------------------------------------ fonts and sizes: the one place to change them
-        // (A-190, A-191). Every window takes its fonts and sizes from here. Sizes are on the 1080-tall virtual canvas: on a
-        // 600 px tall window 21 px becomes about 12 px, so nothing that carries information goes below SmallSize. At most
-        // four sizes on a screen: window title 40, body 24, small 21 and one of the name 32 or the big number 42.
+        // Text sizes on the 1080-tall virtual canvas (A-149). The canvas is scaled to the screen, so on a 600 px
+        // tall window 15 px becomes about 8 px: nothing that carries information goes below these.
 
-        /// <summary>Nunito Regular (Resources path, no extension).</summary>
-        public const string FontRegularFile = "Fontes/Nunito-Regular";
+        /// <summary>Small labels and secondary text (was 13). One line of it needs a 20 px tall rect.</summary>
+        public const int SmallSize = 15;
 
-        /// <summary>Nunito Medium: body, names, lists, small text.</summary>
-        public const string FontMediumFile = "Fontes/Nunito-Medium";
+        /// <summary>Chips, pills and the smallest centred tags (was 12–13; "Volta em" on the compass was 10).</summary>
+        public const int ChipSize = 14;
 
-        /// <summary>Nunito SemiBold: buttons, chips, tabs, pills.</summary>
-        public const string FontSemiBoldFile = "Fontes/Nunito-SemiBold";
-
-        /// <summary>Nunito Bold: titles, numbers, emphasis.</summary>
-        public const string FontBoldFile = "Fontes/Nunito-Bold";
-
-        /// <summary>Small labels and secondary text ("pequeno", Medium). One line of it needs a <see cref="SmallLine"/> rect.</summary>
-        public const int SmallSize = 21;
-
-        /// <summary>Chips, pills and the smallest centred tags (SemiBold): the same size as <see cref="SmallSize"/>, the minimum.</summary>
-        public const int ChipSize = 21;
-
-        /// <summary>Solid tags ("Nova espécie", "Excepcional"): dark Bold text on a bright colour.</summary>
-        public const int BadgeSize = 21;
-
-        /// <summary>Body text, names and long texts (Missões, Mercado, descrições), Medium ("corpo").</summary>
-        public const int BodySize = 24;
-
-        /// <summary>Button labels (SemiBold).</summary>
-        public const int ButtonSize = 24;
-
-        /// <summary>Section headings inside a window: the body size in Bold (no fifth size on a screen).</summary>
-        public const int HeadingSize = 24;
-
-        /// <summary>Window titles (WindowFrame), Bold ("título de janela").</summary>
-        public const int WindowTitleSize = 40;
-
-        /// <summary>
-        /// Names on a sheet or a card (the fish, the opponent, the player) and the titles of small dialogs, Bold
-        /// (<see cref="Title"/>). A screen that uses it keeps to four sizes: 40, 32, 24 and 21 (no 42 beside it).
-        /// </summary>
-        public const int TitleSize = 32;
-
-        /// <summary>Gold numbers in lists and cards (Moedas, prices): the body size in Bold.</summary>
-        public const int NumberSize = 24;
-
-        /// <summary>Big numbers (Honra, damage, the Welcome back totals), Bold ("número de destaque").</summary>
-        public const int NumberBigSize = 42;
-
-        /// <summary>Celebration banners and big headline numbers, Bold (the same as <see cref="NumberBigSize"/>).</summary>
-        public const int DisplaySize = 42;
-
-        /// <summary>The map name of the arrival title over the scene, Bold ("faixa grande").</summary>
-        public const int ArrivalSize = 52;
-
-        /// <summary>The Arena's big Honor number.</summary>
-        public const int HonorSize = NumberBigSize;
-
-        /// <summary>The giant "VS" of the battle intro (two letters drawn as a picture, not read as text).</summary>
-        public const int VsSize = 96;
-
-        /// <summary>See <see cref="TextBleed"/>.</summary>
-        private const float TextBleedEm = 0.125f;
-
-        /// <summary>Height of the virtual canvas the interface is laid out on.</summary>
-        public const float CanvasHeight = 1080f;
-
-        /// <summary>The tallest canvas a snapped scale may give (beyond it the interface would shrink too much).</summary>
-        private const float CanvasHeightMax = 1280f;
-
-        /// <summary>
-        /// The scale of the interface on a screen <paramref name="screenHeight"/> pixels tall (A-190, TD-067). The canvas is
-        /// drawn through GUI.matrix. The text does not depend on it any more: it is drawn from the font's distance field
-        /// (<see cref="Crisp"/>), sharp at any scale. The scale still snaps to a half step (0,5 · 1 · 1,5 · 2 …), the
-        /// largest that keeps the canvas at least 1080 tall, as long as the canvas stays under 1280, because the pixel
-        /// art drawn at a clean step keeps whole pixels (600, 1080 to 1280 and 2160 px tall windows); otherwise it falls
-        /// back to the exact fraction, so the layout never shrinks more than that.
-        /// </summary>
-        public static float CanvasScale(float screenHeight)
-        {
-            var exact = Mathf.Max(1f, screenHeight) / CanvasHeight;
-            var snapped = Mathf.Floor(exact * 2f) / 2f;
-            if (snapped >= 0.5f && screenHeight / snapped <= CanvasHeightMax)
-            {
-                return snapped;
-            }
-
-            return exact;
-        }
+        /// <summary>Solid uppercase tags ("NOVA ESPÉCIE", "EXCEPCIONAL"): dark bold on a bright colour (was 11).</summary>
+        public const int BadgeSize = 13;
 
         /// <summary>Height of a rect holding one line of <see cref="SmallSize"/> text without clipping its descenders.</summary>
-        public const float SmallLine = 24f;
-
-        /// <summary>Corner radius of the button and chip pills, in art pixels, and the border of their 9-slice.</summary>
-        private const int ButtonRadius = 5;
-
-        private static int ButtonBorder => ArcFaceBorder(ButtonRadius, 1);
+        public const float SmallLine = 20f;
 
         private static Color Alpha(Color c, float a) => new Color(c.r, c.g, c.b, a);
 
-        private GUIStyle ButtonStyle(Texture2D normal, Texture2D hover, Texture2D active, Color text, int fontSize = ButtonSize)
+        private static GUIStyle Box(Texture2D texture, int border)
         {
-            var border = ButtonBorder;
-            var style = new GUIStyle(GUI.skin.button)
+            var style = new GUIStyle(GUI.skin.box)
             {
                 border = new RectOffset(border, border, border, border),
-                // Nunito's capitals sit in the middle of its line box (A-191): the same room over and under the text.
-                padding = new RectOffset(12, 12, 4, 4),
+                padding = new RectOffset(16, 16, 14, 14),
+                margin = new RectOffset(0, 0, 0, 0),
+            };
+            style.normal.background = texture;
+            style.normal.textColor = Text;
+            return style;
+        }
+
+        private GUIStyle ButtonStyle(Texture2D normal, Texture2D hover, Texture2D active, Color text, int fontSize = 15)
+        {
+            const int radius = 10;
+            var style = new GUIStyle(GUI.skin.button)
+            {
+                border = new RectOffset(radius, radius, radius, radius),
+                padding = new RectOffset(14, 14, 7, 7),
                 fontSize = fontSize,
-                fontStyle = FontStyle.Normal,
-                font = SemiBoldFont,
+                fontStyle = BodyBoldFont != null ? FontStyle.Normal : FontStyle.Bold,
+                font = BodyBoldFont,
                 alignment = TextAnchor.MiddleCenter,
                 wordWrap = false,
                 clipping = TextClipping.Clip,
@@ -340,115 +231,27 @@ namespace FishingIdle.Game.UI
             style.hover.textColor = text;
             style.active.textColor = text;
             style.focused.textColor = text;
-            return Crisp(style);
+            return style;
         }
 
-        private GUIStyle Label(Font font, int size, Color color)
+        private static GUIStyle Label(Font font, int size, Color color)
         {
             var style = new GUIStyle(GUI.skin.label)
             {
                 font = font,
                 fontSize = size,
-                fontStyle = FontStyle.Normal,
+                fontStyle = font != null ? FontStyle.Normal : FontStyle.Bold,
                 wordWrap = true,
                 richText = false,
-                padding = new RectOffset(0, 0, -TextBleed(size), -TextBleed(size)),
+                padding = new RectOffset(0, 0, 0, 0),
                 margin = new RectOffset(0, 0, 0, 0),
             };
+            if (font == null && size < 17)
+            {
+                style.fontStyle = FontStyle.Normal;
+            }
+
             style.normal.textColor = color;
-            return Crisp(style);
-        }
-
-        /// <summary>
-        /// How far a label's text area reaches over and under its rect (A-191). Nunito's line is 1,135 em (about the line
-        /// of the old pixel fonts, so the rects kept fitting), but its accents and descenders pass it a little; the text
-        /// area grows by 0,125 em on both sides so a clipped label keeps the "É" and the "g" whole. Centred text does not
-        /// move; text aligned to the top sits that much higher, with the capitals near the top of the rect.
-        /// </summary>
-        public static int TextBleed(int fontSize)
-        {
-            return Mathf.RoundToInt(fontSize * TextBleedEm);
-        }
-
-        /// <summary>
-        /// Loads a Nunito weight and keeps its glyph texture Bilinear (A-191: a smooth font is filtered, unlike the pixel
-        /// art, which stays Point). Unity rebuilds a dynamic font's texture when it grows, so the filter is set again then.
-        /// </summary>
-        private static Font LoadFont(string path)
-        {
-            var font = Resources.Load<Font>(path);
-            if (font != null)
-            {
-                SmoothTexture(font);
-                if (!_listening)
-                {
-                    _listening = true;
-                    Font.textureRebuilt += SmoothTexture;
-                }
-            }
-
-            return font;
-        }
-
-        private static bool _listening;
-
-        private static void SmoothTexture(Font font)
-        {
-            var texture = font != null && font.material != null ? font.material.mainTexture : null;
-            if (texture != null && texture.filterMode != FilterMode.Bilinear)
-            {
-                texture.filterMode = FilterMode.Bilinear;
-            }
-        }
-
-        private static System.Reflection.PropertyInfo _sdfProperty;
-        private static bool _sdfLooked;
-
-        /// <summary>
-        /// Draws the style's text from the font's distance field (TD-067). Unity 6 draws IMGUI text through TextCore: the
-        /// Nunito file becomes a dynamic SDF font asset, which stays sharp at any GUI.matrix scale, so a letter always
-        /// lands on the screen at its final size. Inside the Editor the converted font is marked as an editor font and may
-        /// take the bitmap path instead (rasterised at fontSize, then stretched by the canvas scale: soft at 600 or 840 px
-        /// tall); GUIStyle.isSDF (internal, the switch Unity's own zoomable views use) keeps it on the SDF path. Read once
-        /// by reflection; when the property is missing (another Unity version) nothing changes. Every style made by the
-        /// skin passes here, and the styles copied from them keep the flag.
-        /// </summary>
-        public static GUIStyle Crisp(GUIStyle style)
-        {
-            if (style == null)
-            {
-                return null;
-            }
-
-            if (!_sdfLooked)
-            {
-                _sdfLooked = true;
-                try
-                {
-                    _sdfProperty = typeof(GUIStyle).GetProperty("isSDF", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-                    if (_sdfProperty != null && (!_sdfProperty.CanWrite || _sdfProperty.PropertyType != typeof(bool)))
-                    {
-                        _sdfProperty = null;
-                    }
-                }
-                catch (System.Exception)
-                {
-                    _sdfProperty = null;
-                }
-            }
-
-            if (_sdfProperty != null)
-            {
-                try
-                {
-                    _sdfProperty.SetValue(style, true);
-                }
-                catch (System.Exception)
-                {
-                    _sdfProperty = null;
-                }
-            }
-
             return style;
         }
 
@@ -460,61 +263,51 @@ namespace FishingIdle.Game.UI
             Bar(rect, fraction, gold ? Gold : Accent);
         }
 
-        /// <summary>
-        /// A horizontal progress bar in any accent colour (e.g. the rarity colour on a fish card): the ARC bar, square and
-        /// filled in pixel blocks (Art Bible 7).
-        /// </summary>
+        /// <summary>A horizontal progress bar in any accent colour (e.g. the rarity colour on a fish card).</summary>
         public void Bar(Rect rect, float fraction, Color color)
         {
-            ArcBar(rect, fraction, color, new Color(1f, 1f, 1f, 0.22f));
+            var radius = rect.height / 2f;
+            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, Paper ? PaperInset : new Color(Night.r, Night.g, Night.b, 0.75f), 0, radius);
+            var fill = new Rect(rect.x, rect.y, rect.width * Mathf.Clamp01(fraction), rect.height);
+            if (fill.width >= rect.height)
+            {
+                GUI.DrawTexture(fill, White, ScaleMode.StretchToFill, true, 0, color, 0, radius);
+                var shine = new Rect(fill.x + 2, fill.y + 1, fill.width - 4, Mathf.Max(1f, fill.height * 0.35f));
+                GUI.DrawTexture(shine, White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.18f), 0, radius);
+            }
         }
 
         /// <summary>
-        /// A small solid tag like "NOVA ESPÉCIE": dark text on a pixel pill of the colour.
+        /// A small solid tag like "NOVA ESPÉCIE" (dark text on a colour). The colour is always its night version, also
+        /// on the sheet: the dark paper inks under the dark text read at ~2,5:1.
         /// </summary>
         public void Tag(Rect rect, string text, Color color)
         {
-            PixelPill(rect, color, Color.clear);
-            var previous = GUI.contentColor;
-            GUI.contentColor = Color.white;
-            GUI.Label(rect, text, BadgeText);
-            GUI.contentColor = previous;
-        }
-
-        private GUIStyle _badgeText;
-
-        /// <summary>The text of <see cref="Badge"/> with no background (the pill is drawn by <see cref="PixelPill"/>).</summary>
-        private GUIStyle BadgeText
-        {
-            get
-            {
-                if (_badgeText == null)
-                {
-                    _badgeText = new GUIStyle(Badge);
-                    _badgeText.normal.background = null;
-                }
-
-                return _badgeText;
-            }
+            var previous = GUI.backgroundColor;
+            GUI.backgroundColor = NightOf(color);
+            GUI.Label(rect, text, Badge);
+            GUI.backgroundColor = previous;
         }
 
         /// <summary>An outlined pill in an accent colour, e.g. the rarity seal "RARO", with an optional icon.</summary>
         public void AccentPill(Rect rect, string text, Color color, string icon = null)
         {
-            // A pixel pill (Art Bible 7): the colour as a dark tint with a one-pixel line in it.
-            var tint = Color.Lerp(Theme.Field, color, 0.22f);
-            PixelPill(rect, new Color(tint.r, tint.g, tint.b, 0.95f), new Color(color.r, color.g, color.b, 0.95f));
+            // Drawn with Unity's rounded rectangles instead of the 9-slice Pill box: the pills are shorter
+            // than the box's borders, and the squeezed 9-slice drew a line across the text.
+            var radius = rect.height / 2f;
+            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, new Color(color.r, color.g, color.b, 0.20f), 0, radius);
+            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, new Color(color.r, color.g, color.b, 0.85f), 1.5f, radius);
 
             var textRect = rect;
             if (icon != null)
             {
                 var s = rect.height - 8f;
-                DrawIcon(new Rect(rect.x + 7, rect.y + 4, s, s), icon, Color.Lerp(color, Color.white, 0.2f));
+                DrawIcon(new Rect(rect.x + 7, rect.y + 4, s, s), icon, Paper ? InkOf(color) : Color.Lerp(color, Color.white, 0.2f));
                 textRect = new Rect(rect.x + s + 6, rect.y, rect.width - s - 8, rect.height);
             }
 
             var prevContent = GUI.contentColor;
-            GUI.contentColor = Color.Lerp(color, Color.white, 0.45f);
+            GUI.contentColor = Paper ? InkOf(color) : Color.Lerp(color, Color.white, 0.45f);
             GUI.Label(textRect, text, PillText);
             GUI.contentColor = prevContent;
         }
@@ -528,8 +321,7 @@ namespace FishingIdle.Game.UI
             var color = RarityColor(rarityId);
             if (rarityId == "legendary" || rarityId == "mythic")
             {
-                // A one-pixel ring that breathes slowly: the pixel "brilho" of the rare ones (Art Bible 4.10).
-                PixelGlow(rect, color, (rarityId == "mythic" ? 0.55f : 0.4f) * (0.75f + 0.25f * Mathf.Sin(Time.unscaledTime * 2.5f)));
+                DrawGlow(rect, color, rarityId == "mythic" ? 0.55f : 0.4f);
             }
 
             AccentPill(rect, text, color, icon ? Icons.Star : null);
@@ -545,23 +337,29 @@ namespace FishingIdle.Game.UI
             var hovered = GUI.enabled && rect.Contains(Event.current.mousePosition);
             if (active)
             {
-                PixelPill(rect, new Color(Theme.ChipOn.r, Theme.ChipOn.g, Theme.ChipOn.b, 1f), new Color(color.r, color.g, color.b, 0.95f));
+                GUI.DrawTexture(new Rect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2), White, ScaleMode.StretchToFill, true, 0, new Color(color.r, color.g, color.b, 0.2f), 0, 9);
+                DrawOutline(rect, new Color(color.r, color.g, color.b, 0.95f));
             }
             else if (hovered)
             {
-                PixelPill(rect, Color.clear, new Color(color.r, color.g, color.b, 0.55f));
+                DrawOutline(rect, new Color(color.r, color.g, color.b, 0.45f));
             }
 
-            // A square pixel dot (3 × 3 art pixels) in the category colour.
-            var dot = 3f * ArcPixel;
+            var dot = 8f;
             var x = rect.x + 12f;
-            GUI.DrawTexture(Snap(new Rect(x, rect.y + (rect.height - dot) / 2f, dot, dot)), White, ScaleMode.StretchToFill, true, 0, color, 0, 0);
+            GUI.DrawTexture(new Rect(x, rect.y + (rect.height - dot) / 2f, dot, dot), White, ScaleMode.StretchToFill, true, 0, color, 0, dot / 2f);
 
             var previous = GUI.contentColor;
-            GUI.contentColor = active ? Readable(Color.Lerp(color, Color.white, 0.55f)) : hovered ? Text : Muted;
+            GUI.contentColor = active ? (Paper ? InkOf(color) : Color.Lerp(color, Color.white, 0.55f)) : hovered ? Text : Muted;
             GUI.Label(new Rect(x + dot + 2f, rect.y, rect.width - dot - 16f, rect.height), text, ChipText);
             GUI.contentColor = previous;
             return clicked;
+        }
+
+        /// <summary>Width a <see cref="ColorChip"/> needs for its text.</summary>
+        public float ColorChipWidth(string text)
+        {
+            return ChipText.CalcSize(new GUIContent(text)).x + 40f;
         }
 
         /// <summary>
@@ -597,7 +395,7 @@ namespace FishingIdle.Game.UI
                 var width = s.CalcSize(new GUIContent(piece)).x - s.padding.horizontal;
                 if (isSize)
                 {
-                    GUI.contentColor = Color.Lerp(SizeColor(sizeId), Color.white, 0.15f);
+                    GUI.contentColor = Paper ? SizeColor(sizeId) : Color.Lerp(SizeColor(sizeId), Color.white, 0.15f);
                 }
 
                 GUI.Label(new Rect(x - s.padding.left, rect.y, Mathf.Max(0f, rect.xMax - x + s.padding.left), rect.height), piece, s);
@@ -639,41 +437,57 @@ namespace FishingIdle.Game.UI
             return PillText.CalcSize(new GUIContent(text)).x + (icon ? 30f : 18f);
         }
 
-        /// <summary>A coloured one-pixel outline around a rect (rarity accent, selection), with the small chamfer of the cards.</summary>
+        /// <summary>A coloured outline around a rect (rarity accent, selection).</summary>
         public void DrawOutline(Rect rect, Color color)
         {
-            Shape(rect, 1, false, Color.clear, 1, color, Color.clear, Color.clear);
+            var previous = GUI.backgroundColor;
+            GUI.backgroundColor = color;
+            GUI.Box(rect, GUIContent.none, Outline);
+            GUI.backgroundColor = previous;
         }
 
-        /// <summary>
-        /// The glow around a rect, in pixel art (Art Bible 4.10: no diffuse glow): a one-pixel ring just outside it;
-        /// <paramref name="strength"/> 0–1 sets how strong it shows.
-        /// </summary>
+        /// <summary>A soft outer glow around a rect; <paramref name="strength"/> 0–1.</summary>
         public void DrawGlow(Rect rect, Color color, float strength)
         {
-            PixelGlow(rect, color, Mathf.Clamp01(strength * 1.6f));
+            var grow = 22f;
+            var previous = GUI.backgroundColor;
+            GUI.backgroundColor = new Color(color.r, color.g, color.b, Mathf.Clamp01(strength * VisualTheme.Current.GlowIntensity));
+            GUI.Box(new Rect(rect.x - grow, rect.y - grow, rect.width + grow * 2, rect.height + grow * 2), GUIContent.none, Glow);
+            GUI.backgroundColor = previous;
         }
 
-        /// <summary>The hard pixel shadow under a floating panel.</summary>
+        /// <summary>The soft shadow under a floating panel.</summary>
         public void DrawShadow(Rect rect)
         {
-            HardShadow(rect);
+            GUI.Box(new Rect(rect.x - 18, rect.y - 10, rect.width + 36, rect.height + 34), GUIContent.none, Shadow);
         }
 
         /// <summary>A panel with its shadow.</summary>
         public void FloatingPanel(Rect rect)
         {
-            HardShadow(rect);
+            var previous = GUI.backgroundColor;
+            GUI.backgroundColor = new Color(0f, 0f, 0f, 1f);
+            DrawShadow(rect);
+            GUI.backgroundColor = previous;
             GUI.Box(rect, GUIContent.none, Panel);
         }
 
-        /// <summary>Draws an icon tinted with a colour. Missing icon files draw nothing (same as <see cref="DrawIconExact"/>).</summary>
+        /// <summary>
+        /// Draws an icon tinted with a colour. Missing icon files draw nothing. On the diary sheet (A-170) a white glyph
+        /// would vanish on the paper, so a near-white tint becomes ink (the coloured icons — Moeda, Concha, Dólar — keep
+        /// their colours). Icons on a coloured or dark face use <see cref="DrawIconExact"/>.
+        /// </summary>
         public void DrawIcon(Rect rect, string icon, Color color)
         {
+            if (Paper && color.r > 0.85f && color.g > 0.85f && color.b > 0.85f && icon != Icons.Coin && icon != Icons.Shell && icon != Icons.Dollar)
+            {
+                color = new Color(Ink.r, Ink.g, Ink.b, color.a);
+            }
+
             DrawIconExact(rect, icon, color);
         }
 
-        /// <summary>Draws an icon tinted with exactly <paramref name="color"/> (white on a coloured face).</summary>
+        /// <summary>Draws an icon tinted with exactly <paramref name="color"/>, in both modes (white on a coloured face).</summary>
         public void DrawIconExact(Rect rect, string icon, Color color)
         {
             var tex = icon != null ? ArtAssets.Icon(icon) : null;
@@ -682,8 +496,7 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // Pixel icons at the largest whole scale, coloured ones never tinted (PixelDraw, M25-T11 hook).
-            PixelDraw.Icon(rect, tex, icon, color);
+            GUI.DrawTexture(rect, tex, ScaleMode.ScaleToFit, true, 0, color, 0, 0);
         }
 
         /// <summary>An icon inside a small rounded tile, like the window headers.</summary>
@@ -741,7 +554,6 @@ namespace FishingIdle.Game.UI
                     padding = new RectOffset(0, 0, 0, 0),
                 };
                 label.normal.textColor = Color.white;
-                Crisp(label);
                 _labelOf[button] = label;
             }
 
@@ -753,7 +565,7 @@ namespace FishingIdle.Game.UI
         {
             if (Coin != null && Coin != Art.Circle.texture)
             {
-                PixelDraw.Fit(rect, Coin);
+                GUI.DrawTexture(rect, Coin, ScaleMode.ScaleToFit, true);
                 return;
             }
 
@@ -800,7 +612,7 @@ namespace FishingIdle.Game.UI
         /// <summary>A thin divider line.</summary>
         public void Divider(Rect rect)
         {
-            GUI.DrawTexture(Snap(new Rect(rect.x, rect.y, rect.width, ArcPixel)), White, ScaleMode.StretchToFill, true, 0, new Color(Border.r, Border.g, Border.b, 0.7f), 0, 0);
+            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 1f), White, ScaleMode.StretchToFill, true, 0, new Color(Border.r, Border.g, Border.b, 0.7f), 0, 0);
         }
 
         private static readonly Color[] TierColors =
@@ -846,31 +658,31 @@ namespace FishingIdle.Game.UI
         private GUIStyle _smallMutedRightLine, _smallGoldLine;
 
         /// <summary><see cref="SmallMutedRight"/> on one line, never wrapping.</summary>
-        public GUIStyle SmallMutedRightLine => _smallMutedRightLine ?? (_smallMutedRightLine = new GUIStyle(SmallMutedRight) { wordWrap = false, clipping = TextClipping.Clip });
+        public GUIStyle SmallMutedRightLine => _smallMutedRightLine ?? (_smallMutedRightLine = Track(new GUIStyle(SmallMutedRight) { wordWrap = false, clipping = TextClipping.Clip }));
 
         /// <summary><see cref="SmallGold"/> on one line, never wrapping.</summary>
-        public GUIStyle SmallGoldLine => _smallGoldLine ?? (_smallGoldLine = new GUIStyle(SmallGold) { wordWrap = false, clipping = TextClipping.Clip });
+        public GUIStyle SmallGoldLine => _smallGoldLine ?? (_smallGoldLine = Track(new GUIStyle(SmallGold) { wordWrap = false, clipping = TextClipping.Clip }));
 
         // Arena duel and VS intro styles. Made on first use.
         private GUIStyle _smallGoldCenter, _tinyMutedCenter, _numberBig, _titleCenter, _vsMark, _vsDisplay, _medalText;
 
         /// <summary><see cref="SmallGold"/> centred on one line.</summary>
-        public GUIStyle SmallGoldCenter => _smallGoldCenter ?? (_smallGoldCenter = new GUIStyle(SmallGold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
+        public GUIStyle SmallGoldCenter => _smallGoldCenter ?? (_smallGoldCenter = Track(new GUIStyle(SmallGold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip }));
 
         /// <summary>A small bold muted line, centred (short captions such as "Volta em" on the compass). 14 px since A-149 (was 10).</summary>
-        public GUIStyle TinyMutedCenter => _tinyMutedCenter ?? (_tinyMutedCenter = new GUIStyle(SmallMutedCenter) { fontSize = ChipSize, font = BodyBoldFont, wordWrap = false });
+        public GUIStyle TinyMutedCenter => _tinyMutedCenter ?? (_tinyMutedCenter = Track(new GUIStyle(SmallMutedCenter) { fontSize = ChipSize, font = BodyBoldFont, wordWrap = false }));
 
         /// <summary>A large gold number on one line (the Arena's Honor).</summary>
-        public GUIStyle NumberBig => _numberBig ?? (_numberBig = new GUIStyle(Number) { fontSize = HonorSize, wordWrap = false });
+        public GUIStyle NumberBig => _numberBig ?? (_numberBig = Track(new GUIStyle(Number) { fontSize = 30, wordWrap = false }));
 
         /// <summary><see cref="Title"/> centred on one line.</summary>
-        public GUIStyle TitleCenter => _titleCenter ?? (_titleCenter = new GUIStyle(Title) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
+        public GUIStyle TitleCenter => _titleCenter ?? (_titleCenter = Track(new GUIStyle(Title) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip }));
 
-        /// <summary>The gold "VS" between the two formations (Bold 42: fits the 76 px disc).</summary>
-        public GUIStyle VsMark => _vsMark ?? (_vsMark = GoldDisplay(DisplaySize));
+        /// <summary>The gold "VS" between the two formations.</summary>
+        public GUIStyle VsMark => _vsMark ?? (_vsMark = GoldDisplay(46));
 
         /// <summary>The big gold "VS" of the battle intro.</summary>
-        public GUIStyle VsDisplay => _vsDisplay ?? (_vsDisplay = GoldDisplay(VsSize));
+        public GUIStyle VsDisplay => _vsDisplay ?? (_vsDisplay = GoldDisplay(96));
 
         /// <summary>Dark bold text centred on a gold medal.</summary>
         public GUIStyle MedalText
@@ -881,6 +693,7 @@ namespace FishingIdle.Game.UI
                 {
                     _medalText = new GUIStyle(CenterBold) { wordWrap = false, clipping = TextClipping.Overflow };
                     _medalText.normal.textColor = new Color(0.23f, 0.15f, 0.02f);
+                    Track(_medalText);
                 }
 
                 return _medalText;
@@ -891,7 +704,7 @@ namespace FishingIdle.Game.UI
         {
             var style = new GUIStyle(Display) { fontSize = size, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             style.normal.textColor = Gold;
-            return style;
+            return Track(style);
         }
 
         private Texture2D _diagonal;
@@ -943,8 +756,36 @@ namespace FishingIdle.Game.UI
         public const float NavGameIconWidth = 60f;
 
         private const float NavGameGap = 8f;
+        private const float NavGamePadding = 16f;
 
         private GUIStyle _navGame, _navGameActive;
+        private Texture2D _topBarGradient, _topBarShade;
+
+        // The owner's interface art (Resources/Arte/UI, made by tools/Arte/processar_ui_barra.py). Each piece
+        // falls back to the generated look when its file is missing. Sizes below are texture pixels and must
+        // match the script.
+        public const string NavButtonArt = "UI/ui_nav_button_base", NavButtonActiveArt = "UI/ui_nav_button_active",
+            TopBarArt = "UI/ui_topbar_frame", LogoArt = "UI/ui_logo_fishing_idle", AvatarFrameArt = "UI/ui_avatar_frame",
+            CoinArt = "UI/ui_currency_coin", ShellArt = "UI/ui_currency_shell", DollarArt = "UI/ui_currency_dollar",
+            WalletArt = "UI/ui_wallet_inset";
+
+        /// <summary>Height of the menu button face plus its lip in both button files.</summary>
+        private const float NavArtBody = 112f;
+
+        /// <summary>Glow kept around the active button body.</summary>
+        private const float NavArtGlow = 12f;
+
+        /// <summary>Rounded ends kept whole when a button stretches (normal file; the active one adds its glow).</summary>
+        private const float NavArtSide = 32f, NavArtActiveSide = 46f;
+
+        /// <summary>Where the face's centre sits in the drawn body (the lip takes the bottom of the art).</summary>
+        private const float NavArtFaceCentre = 0.43f;
+
+        /// <summary>Rounded ends of the top bar frame, and how far they go past the screen sides.</summary>
+        private const float TopBarArtSide = 90f, TopBarOverhang = 10f;
+
+        /// <summary>Border of the wallet inset, drawn at its own size.</summary>
+        private const float WalletArtBorder = 16f;
 
         private static readonly float[] SliceX = new float[4], SliceY = new float[4], SliceU = new float[4], SliceV = new float[4];
 
@@ -993,7 +834,7 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>The coloured pixel icon of a currency (Conchas, Dólares, Moedas), or the tinted icon when it is not pixel art.</summary>
+        /// <summary>The coloured icon of a currency (Conchas, Dólares, Moedas), or the tinted icon when its art is missing.</summary>
         public void CurrencyIcon(Rect rect, string icon)
         {
             if (icon == Icons.Coin)
@@ -1002,33 +843,45 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            var pixel = ArtAssets.Icon(icon);
-            if (pixel != null && ArtAssets.IsPixel(pixel))
+            var art = icon == Icons.Shell ? ArtAssets.Texture(ShellArt) : icon == Icons.Dollar ? ArtAssets.Texture(DollarArt) : null;
+            if (art != null)
             {
-                PixelDraw.Icon(rect, pixel, icon, Color.white);
+                GUI.DrawTexture(rect, art, ScaleMode.ScaleToFit, true);
                 return;
             }
 
             DrawIcon(rect, icon, Color.white);
         }
 
-        /// <summary>The round-ended button of the top strip (bell, options), idle: the field with the structural gold line.</summary>
+        /// <summary>The chunky main-menu button face, neutral (font 17; the old menu used 14).</summary>
         public GUIStyle NavGame => _navGame ?? (_navGame = ButtonStyle(
-            ArcFace(ButtonRadius, true, Alpha(Theme.Field, 0.98f), Alpha(Theme.Field, 0.98f), Theme.Frame),
-            ArcFace(ButtonRadius, true, Alpha(Theme.PanelElevated, 1f), Alpha(Theme.PanelElevated, 1f), Theme.Title),
-            ArcFace(ButtonRadius, true, Alpha(Theme.Panel, 1f), Alpha(Theme.Panel, 1f), Theme.FrameDark),
-            Theme.Text, SmallSize));
+            Art.PanelTexture(Alpha(Color.Lerp(Theme.PanelElevated, Color.white, 0.10f), 0.98f), Alpha(Theme.Panel, 0.98f), Alpha(Color.Lerp(Theme.Border, Color.white, 0.10f), 1f), 10, 1.5f, 56, 0.10f),
+            Art.PanelTexture(Alpha(Color.Lerp(Theme.PanelElevated, Color.white, 0.20f), 1f), Alpha(Color.Lerp(Theme.Panel, Color.white, 0.06f), 1f), Alpha(Color.Lerp(Theme.Border, Color.white, 0.35f), 1f), 10, 1.5f, 56, 0.12f),
+            Art.PanelTexture(Alpha(Theme.Panel, 1f), Alpha(Theme.Panel, 1f), Alpha(Theme.Border, 1f), 10, 1.5f, 56, 0f),
+            Theme.Text, 17));
 
-        /// <summary>The same button while its panel is open: the raised panel colour with the gold line, title-coloured.</summary>
+        /// <summary>The main-menu button face of the open menu: turquoise (Art Bible: turquesa = menu ativo).</summary>
         public GUIStyle NavGameActive => _navGameActive ?? (_navGameActive = ButtonStyle(
-            ArcFace(ButtonRadius, true, Alpha(Theme.PanelElevated, 1f), Alpha(Theme.PanelElevated, 1f), Theme.Frame),
-            ArcFace(ButtonRadius, true, Alpha(Theme.PanelElevated, 1f), Alpha(Theme.PanelElevated, 1f), Theme.Title),
-            ArcFace(ButtonRadius, true, Alpha(Theme.PanelElevated, 1f), Alpha(Theme.PanelElevated, 1f), Theme.Frame),
-            Theme.Title, SmallSize));
+            Art.PanelTexture(Alpha(Color.Lerp(Theme.ActionHover, Color.white, 0.10f), 1f), Alpha(Theme.Action * 0.85f, 1f), Alpha(Color.Lerp(Theme.Action, Color.white, 0.45f), 1f), 10, 1.5f, 56, 0.14f),
+            Art.PanelTexture(Alpha(Color.Lerp(Theme.ActionHover, Color.white, 0.20f), 1f), Alpha(Theme.Action * 0.92f, 1f), Alpha(Color.Lerp(Theme.Action, Color.white, 0.55f), 1f), 10, 1.5f, 56, 0.16f),
+            Art.PanelTexture(Alpha(Theme.Action * 0.85f, 1f), Alpha(Theme.Action * 0.75f, 1f), Alpha(Theme.Action, 1f), 10, 1.5f, 56, 0f),
+            Color.white, 17));
+
+        /// <summary>Width a main-menu button needs for its label (icon, gap, label and side padding).</summary>
+        /// <param name="tight">Half the side padding, for a crowded bar (A-167).</param>
+        public float NavGameWidth(string label, bool tight = false)
+        {
+            if (string.IsNullOrEmpty(label))
+            {
+                return NavGameIconWidth;
+            }
+
+            return LabelOf(NavGame).CalcSize(new GUIContent(label)).x + NavGameIconSize + NavGameGap + (tight ? NavGamePadding : NavGamePadding * 2f);
+        }
 
         /// <summary>
-        /// A button of the top strip in the ARC skin (A-184): a dark pill with the thin gold line, the raised panel colour
-        /// and title-coloured icon while its panel is open, and the icon left of the label (or alone when
+        /// A main-menu button with a game feel: a darker 3D lip 4 px under the face, a turquoise face and
+        /// glow when it is the open menu, and the icon left of the label (or alone when
         /// <paramref name="label"/> is null). Returns true when clicked.
         /// </summary>
         public bool NavGameButton(Rect rect, string icon, string label, bool active)
@@ -1036,8 +889,58 @@ namespace FishingIdle.Game.UI
             var enabled = GUI.enabled;
             var hover = enabled && rect.Contains(Event.current.mousePosition);
             var style = active ? NavGameActive : NavGame;
-            var clicked = GUI.Button(rect, GUIContent.none, style);
-            var color = active ? Theme.Title : hover ? Color.white : Theme.Text;
+            var art = ArtAssets.Texture(active ? NavButtonActiveArt : NavButtonArt);
+            bool clicked;
+            Color color;
+            var centreY = rect.center.y;
+            if (art != null)
+            {
+                // The owner's button: face and lip are in the art, which covers the face rect plus the
+                // 4 px lip under it; the active one also carries its glow around that body.
+                var body = new Rect(rect.x, rect.y, rect.width, rect.height + 4f);
+                var k = body.height / NavArtBody;
+                var previousColor = GUI.color;
+                if (!enabled)
+                {
+                    GUI.color = previousColor * new Color(1f, 1f, 1f, 0.5f);
+                }
+
+                if (active)
+                {
+                    var glow = NavArtGlow * k;
+                    NineSlice(new Rect(body.x - glow, body.y - glow, body.width + glow * 2f, body.height + glow * 2f), art, NavArtActiveSide, NavArtActiveSide, 0f, 0f, k);
+                }
+                else
+                {
+                    NineSlice(body, art, NavArtSide, NavArtSide, 0f, 0f, k);
+                }
+
+                GUI.color = previousColor;
+                centreY = body.y + body.height * NavArtFaceCentre;
+                if (hover && !active)
+                {
+                    // A light veil over the face: the art has no hover state.
+                    GUI.DrawTexture(new Rect(rect.x + 2f, rect.y + 2f, rect.width - 4f, (centreY - rect.y - 2f) * 2f), White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.07f), 0, 10);
+                }
+
+                clicked = GUI.Button(rect, GUIContent.none, GUIStyle.none);
+                // Dark text on the bright turquoise face, white on the navy one.
+                color = active ? Night : hover ? Color.white : Text;
+            }
+            else
+            {
+                if (active)
+                {
+                    DrawGlow(rect, Accent, 0.45f);
+                }
+
+                var lip = active ? Color.Lerp(Accent, Night, 0.55f) : Color.Lerp(Night, Color.black, 0.35f);
+                lip.a = enabled ? 0.95f : 0.5f;
+                GUI.DrawTexture(new Rect(rect.x, rect.y + 4f, rect.width, rect.height), White, ScaleMode.StretchToFill, true, 0, lip, 0, 11);
+                clicked = GUI.Button(rect, GUIContent.none, style);
+                color = active || hover ? Color.white : Text;
+            }
+
             if (!enabled)
             {
                 color.a *= 0.5f;
@@ -1050,8 +953,7 @@ namespace FishingIdle.Game.UI
             var gap = textWidth > 0f ? NavGameGap : 0f;
             var total = Mathf.Min(rect.width - 12f, iconSize + gap + textWidth);
             var x = rect.center.x - total / 2f;
-            var centreY = rect.center.y;
-            DrawIcon(Snap(new Rect(x, centreY - iconSize / 2f, iconSize, iconSize)), icon, color);
+            DrawIcon(new Rect(x, centreY - iconSize / 2f, iconSize, iconSize), icon, color);
             if (textWidth > 0f)
             {
                 var previous = GUI.contentColor;
@@ -1064,28 +966,72 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// The main bar background in the ARC skin: the panel night across the top, closed at the bottom by the frame
-        /// lines (gold, a dark line, dark gold), each one art pixel tall.
+        /// The main bar background: a vertical gradient, a border-and-turquoise rim along the bottom and
+        /// a soft shade under it, so the bar reads as a solid piece over the scene.
         /// </summary>
         public void TopBarBackground(Rect bar)
         {
-            if (Event.current.type != EventType.Repaint)
+            if (_topBarGradient == null)
             {
+                var top = Color.Lerp(Theme.Night, Theme.PanelElevated, 0.55f);
+                _topBarGradient = VerticalGradient(Alpha(top, 0.95f), Alpha(Theme.Night, 0.90f), 64);
+                _topBarShade = VerticalGradient(Alpha(Theme.Night, 0.45f), Alpha(Theme.Night, 0f), 16);
+            }
+
+            var art = ArtAssets.Texture(TopBarArt);
+            if (art != null)
+            {
+                // The owner's frame, 4 px taller than the bar for its turquoise rim, its rounded ends a little past
+                // the screen sides so the bell and settings never sit on the curve.
+                var frame = new Rect(bar.x - TopBarOverhang, bar.y, bar.width + TopBarOverhang * 2f, bar.height + 4f);
+                GUI.DrawTexture(new Rect(bar.x, frame.yMax - 3f, bar.width, 12f), _topBarShade, ScaleMode.StretchToFill, true);
+                NineSlice(frame, art, TopBarArtSide, TopBarArtSide, 0f, 0f, frame.height / art.height);
                 return;
             }
 
-            bar = Snap(bar);
-            GUI.DrawTexture(bar, White, ScaleMode.StretchToFill, true, 0, Alpha(Theme.Panel, Theme.PanelOpacity), 0, 0);
-            var y = bar.yMax - ArcPixel * 3;
-            GUI.DrawTexture(new Rect(bar.x, y, bar.width, ArcPixel), White, ScaleMode.StretchToFill, true, 0, Theme.FrameDark, 0, 0);
-            GUI.DrawTexture(new Rect(bar.x, y + ArcPixel, bar.width, ArcPixel), White, ScaleMode.StretchToFill, true, 0, Theme.FrameInner, 0, 0);
-            GUI.DrawTexture(new Rect(bar.x, y + ArcPixel * 2, bar.width, ArcPixel), White, ScaleMode.StretchToFill, true, 0, Theme.Frame, 0, 0);
+            GUI.DrawTexture(bar, _topBarGradient, ScaleMode.StretchToFill, true);
+            GUI.DrawTexture(new Rect(bar.x, bar.yMax, bar.width, 12f), _topBarShade, ScaleMode.StretchToFill, true);
+            GUI.DrawTexture(new Rect(bar.x, bar.yMax - 2f, bar.width, 2f), White, ScaleMode.StretchToFill, true, 0, Alpha(Border, 1f), 0, 0);
+            GUI.DrawTexture(new Rect(bar.x, bar.yMax - 2f, bar.width, 1f), White, ScaleMode.StretchToFill, true, 0, Alpha(Accent, 0.35f), 0, 0);
         }
 
-        /// <summary>A sunken area inside a panel (the wallet of the player card, a counter): the field with a dark-gold line.</summary>
+        /// <summary>A sunken rounded area inside a panel (the wallet of the player card).</summary>
         public void Inset(Rect rect)
         {
-            LineBox(rect, Alpha(Theme.Field, 0.95f), Theme.FrameDark, 1);
+            if (Paper)
+            {
+                GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, PaperInset, 0, 10);
+                GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, Alpha(PaperLine, 0.9f), 1f, 10);
+                return;
+            }
+
+            var art = ArtAssets.Texture(WalletArt);
+            if (art != null)
+            {
+                NineSlice(rect, art, WalletArtBorder, WalletArtBorder, WalletArtBorder, WalletArtBorder, 1f);
+                return;
+            }
+
+            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, Alpha(Night, 0.55f), 0, 10);
+            GUI.DrawTexture(rect, White, ScaleMode.StretchToFill, true, 0, Alpha(Border, 0.6f), 1f, 10);
+        }
+
+        /// <summary>A 1-pixel-wide vertical gradient texture (row 0 is the bottom), stretched over a rect.</summary>
+        private static Texture2D VerticalGradient(Color top, Color bottom, int height)
+        {
+            var tex = new Texture2D(1, height, TextureFormat.RGBA32, false)
+            {
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+            for (var y = 0; y < height; y++)
+            {
+                tex.SetPixel(0, y, Color.Lerp(bottom, top, y / (float)(height - 1)));
+            }
+
+            tex.Apply();
+            return tex;
         }
     }
 }

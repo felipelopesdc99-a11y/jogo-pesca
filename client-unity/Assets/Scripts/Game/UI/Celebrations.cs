@@ -109,12 +109,12 @@ namespace FishingIdle.Game.UI
                 {
                     // The silhouette colours in, like the Encyclopedia filling a page.
                     var k = Mathf.Clamp01((age - 0.35f) / 0.8f);
-                    PixelDraw.Fit(new Rect(art.x, art.y + bob, art.width, art.height), item.Art, new Color(0.02f, 0.05f, 0.09f, alpha * (1f - k)));
-                    PixelDraw.Fit(new Rect(art.x, art.y + bob, art.width, art.height), item.Art, new Color(1f, 1f, 1f, alpha * k));
+                    GUI.DrawTexture(new Rect(art.x, art.y + bob, art.width, art.height), item.Art, ScaleMode.ScaleToFit, true, 0, new Color(0.02f, 0.05f, 0.09f, alpha * (1f - k)), 0, 0);
+                    GUI.DrawTexture(new Rect(art.x, art.y + bob, art.width, art.height), item.Art, ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, alpha * k), 0, 0);
                 }
                 else
                 {
-                    PixelDraw.Fit(new Rect(art.x, art.y + bob, art.width, art.height), item.Art);
+                    GUI.DrawTexture(new Rect(art.x, art.y + bob, art.width, art.height), item.Art, ScaleMode.ScaleToFit, true);
                 }
 
                 textX = art.xMax + 18f;

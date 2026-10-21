@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace FishingIdle.Game.Scene
 {
-    // Small, quiet signs of life in the scenery: fish shadows under the surface, ripples around the
-    // boat and splashes at a catch. All of it is pure presentation, uses UnityEngine.Random, stays at
-    // low opacity and scales with "ambient_life" in tema_visual.json (0 turns it off). The pieces that
-    // only the old painted scenery used (dust, dragonflies, sun rays, mist, wave strips, sliced
-    // reflections) were removed in M25-T17.
+    // Small, quiet signs of life in the scenery (Art Bible, sections 9 and 15, level 1 "Calmo"):
+    // dust in the warm light, dragonflies near the reeds, fish shadows under the surface, sun rays,
+    // drifting mist, ripples around the boat, glints on the water and splashes at a catch. All of it
+    // is pure presentation, uses UnityEngine.Random, stays at low opacity and scales with
+    // "ambient_life" in tema_visual.json (0 turns it off).
 
     internal static class LifeSettings
     {
@@ -16,6 +16,168 @@ namespace FishingIdle.Game.Scene
         public static float Intensity => VisualTheme.Current.AmbientLife;
 
         public static bool Off => Intensity <= 0.01f;
+    }
+
+    /// <summary>Specks of dust or pollen floating slowly in the warm light.</summary>
+    public sealed class GoldenMotes : MonoBehaviour
+    {
+        public int Count = 14;
+        public Rect Area = new Rect(-9f, -3f, 18f, 6f);
+        public Color Color = new Color(1f, 0.88f, 0.6f, 1f);
+        public int SortingOrder = FishingScene.OrderRod;
+
+        private readonly List<SpriteRenderer> _motes = new List<SpriteRenderer>();
+        private readonly List<Vector3> _seed = new List<Vector3>();
+
+        private void Start()
+        {
+            var count = Mathf.RoundToInt(Count * LifeSettings.Intensity);
+            for (var i = 0; i < count; i++)
+            {
+                var r = FishingScene.Sprite(transform, "Poeira", Art.Glow,
+                    new Vector3(Random.Range(Area.xMin, Area.xMax), Random.Range(Area.yMin, Area.yMax), 0f),
+                    Vector3.one * Random.Range(0.06f, 0.13f), SortingOrder, new Color(Color.r, Color.g, Color.b, 0f));
+                _motes.Add(r);
+                _seed.Add(new Vector3(Random.value * 10f, Random.Range(0.05f, 0.14f), Random.Range(3f, 7f)));
+            }
+        }
+
+        private void Update()
+        {
+            for (var i = 0; i < _motes.Count; i++)
+            {
+                var m = _motes[i];
+                var s = _seed[i];
+                var t = Time.time + s.x;
+                var p = m.transform.localPosition;
+                p.x += (s.y + Mathf.Sin(t * 0.4f) * 0.06f) * Time.deltaTime;
+                p.y += Mathf.Sin(t * 0.7f) * 0.05f * Time.deltaTime;
+                if (p.x > Area.xMax)
+                {
+                    p.x = Area.xMin;
+                    p.y = Random.Range(Area.yMin, Area.yMax);
+                }
+
+                m.transform.localPosition = p;
+                var a = Mathf.Max(0f, Mathf.Sin(t * Mathf.PI * 2f / s.z)) * 0.55f;
+                m.color = new Color(Color.r, Color.g, Color.b, a);
+            }
+        }
+    }
+
+    /// <summary>Now and then a dragonfly darts in near the reeds, hovers a little, and leaves.</summary>
+    public sealed class Dragonflies : MonoBehaviour
+    {
+        public float MinDelay = 25f;
+        public float MaxDelay = 55f;
+        public int SortingOrder = FishingScene.OrderForeground + 2;
+        public float HalfWidth = 9.6f;
+
+        private float _nextAt;
+
+        private void Start()
+        {
+            _nextAt = Time.time + Random.Range(8f, 18f);
+        }
+
+        private void Update()
+        {
+            if (LifeSettings.Off || Time.time < _nextAt)
+            {
+                return;
+            }
+
+            // The scene director keeps small effects apart and holds them while a window is open.
+            if (!SceneDirector.AllowSmall())
+            {
+                _nextAt = Time.time + Random.Range(2f, 5f);
+                return;
+            }
+
+            _nextAt = Time.time + Random.Range(MinDelay, MaxDelay) / LifeSettings.Intensity;
+            var fromLeft = Random.value > 0.5f;
+            var go = new GameObject("Libélula");
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = new Vector3((fromLeft ? -1f : 1f) * (HalfWidth + 1f), Random.Range(-3.6f, -2.2f), 0f);
+            var r = go.AddComponent<SpriteRenderer>();
+            r.sprite = Art.Dragonfly;
+            r.sortingOrder = SortingOrder;
+            var fly = go.AddComponent<Dragonfly>();
+            fly.FromLeft = fromLeft;
+            fly.HalfWidth = HalfWidth;
+        }
+    }
+
+    public sealed class Dragonfly : MonoBehaviour
+    {
+        public bool FromLeft;
+        public float HalfWidth = 9.6f;
+
+        private Vector3 _from;
+        private Vector3 _to;
+        private float _legStarted;
+        private float _legSeconds;
+        private float _hoverUntil;
+        private int _legs;
+        private SpriteRenderer _renderer;
+
+        private void Start()
+        {
+            _renderer = GetComponent<SpriteRenderer>();
+            NextLeg();
+        }
+
+        private void NextLeg()
+        {
+            _from = transform.localPosition;
+            _legs++;
+            var leaving = _legs > 4;
+            var side = FromLeft ? -1f : 1f;
+            _to = leaving
+                ? new Vector3(-side * (HalfWidth + 2f), _from.y + Random.Range(0.5f, 1.5f), 0f)
+                : new Vector3(side * Random.Range(HalfWidth - 4.5f, HalfWidth - 1.2f), Random.Range(-3.8f, -1.8f), 0f);
+            _legSeconds = leaving ? 2.2f : Random.Range(0.35f, 0.7f);
+            _legStarted = Time.time;
+            _hoverUntil = 0f;
+        }
+
+        private void Update()
+        {
+            // Wings flicker; the body leans the way it flies.
+            var flicker = 0.75f + 0.25f * Mathf.Sin(Time.time * 60f);
+            var dir = Mathf.Sign(_to.x - _from.x);
+            transform.localScale = new Vector3(0.36f * (dir == 0f ? 1f : dir), 0.36f * flicker, 1f);
+
+            if (_hoverUntil > 0f)
+            {
+                transform.localPosition = _to + new Vector3(Mathf.Sin(Time.time * 7f) * 0.03f, Mathf.Sin(Time.time * 9f) * 0.04f, 0f);
+                if (Time.time > _hoverUntil)
+                {
+                    NextLeg();
+                }
+
+                return;
+            }
+
+            var k = Mathf.Clamp01((Time.time - _legStarted) / _legSeconds);
+            var eased = 1f - (1f - k) * (1f - k);
+            transform.localPosition = Vector3.Lerp(_from, _to, eased) + new Vector3(0f, Mathf.Sin(k * Mathf.PI) * 0.25f, 0f);
+            if (k >= 1f)
+            {
+                if (_legs > 4)
+                {
+                    Destroy(gameObject);
+                    return;
+                }
+
+                _hoverUntil = Time.time + Random.Range(0.8f, 2.2f);
+            }
+
+            if (_renderer != null)
+            {
+                _renderer.color = new Color(1f, 1f, 1f, 0.9f);
+            }
+        }
     }
 
     /// <summary>Now and then the dark shape of a fish glides slowly under the surface.</summary>
@@ -98,6 +260,74 @@ namespace FishingIdle.Game.Scene
         }
     }
 
+    /// <summary>A few soft beams of light fanning from the low sun, breathing very slowly.</summary>
+    public sealed class SunRays : MonoBehaviour
+    {
+        public Vector2 Sun;
+        public Color Color = new Color(1f, 0.86f, 0.6f, 1f);
+        public int SortingOrder = FishingScene.OrderWaterDetail;
+
+        private readonly List<SpriteRenderer> _beams = new List<SpriteRenderer>();
+        private readonly List<float> _phase = new List<float>();
+
+        private void Start()
+        {
+            if (LifeSettings.Off)
+            {
+                return;
+            }
+
+            var angles = new[] { 18f, 32f, 47f, 63f };
+            foreach (var angle in angles)
+            {
+                var beam = FishingScene.Sprite(transform, "Raio de sol", Art.Beam, new Vector3(Sun.x, Sun.y, 0f),
+                    new Vector3(Random.Range(0.9f, 1.6f), Random.Range(2.2f, 3.2f), 1f), SortingOrder, new Color(Color.r, Color.g, Color.b, 0f));
+                beam.transform.localRotation = Quaternion.Euler(0f, 0f, -angle);
+                _beams.Add(beam);
+                _phase.Add(Random.value * 10f);
+            }
+        }
+
+        private void Update()
+        {
+            for (var i = 0; i < _beams.Count; i++)
+            {
+                var k = 0.5f + 0.5f * Mathf.Sin((Time.time + _phase[i]) * 0.35f);
+                _beams[i].color = new Color(Color.r, Color.g, Color.b, Mathf.Lerp(0.015f, 0.06f, k) * LifeSettings.Intensity);
+            }
+        }
+    }
+
+    /// <summary>Wide, faint banks of mist drifting along the horizon.</summary>
+    public sealed class HorizonMist : MonoBehaviour
+    {
+        public float Y = 0.3f;
+        public Color Color = new Color(1f, 0.92f, 0.85f, 1f);
+        public float MaxAlpha = 0.22f;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
+
+        private void Start()
+        {
+            if (LifeSettings.Off)
+            {
+                return;
+            }
+
+            for (var i = 0; i < 4; i++)
+            {
+                var mist = FishingScene.Sprite(transform, "Névoa", Art.Glow, new Vector3(-12f + i * 7f + Random.Range(-1f, 1f), Y + Random.Range(-0.05f, 0.1f), 0f),
+                    new Vector3(Random.Range(6f, 9f), Random.Range(0.45f, 0.8f), 1f), SortingOrder, new Color(Color.r, Color.g, Color.b, MaxAlpha * LifeSettings.Intensity));
+                var drift = mist.gameObject.AddComponent<Drift>();
+                drift.Speed = Random.Range(0.03f, 0.07f);
+                drift.WrapHalfWidth = 15f;
+                var breathe = mist.gameObject.AddComponent<Breathe>();
+                breathe.MinAlpha = MaxAlpha * 0.4f * LifeSettings.Intensity;
+                breathe.MaxAlpha = MaxAlpha * LifeSettings.Intensity;
+                breathe.Period = Random.Range(9f, 14f);
+            }
+        }
+    }
+
     /// <summary>Soft rings spreading from the hull now and then, so the boat sits in the water.</summary>
     public sealed class BoatRipples : MonoBehaviour
     {
@@ -118,6 +348,35 @@ namespace FishingIdle.Game.Scene
             var local = transform.InverseTransformPoint(Boat.position);
             var at = new Vector3(local.x + Random.Range(-HalfLength, HalfLength), local.y - 0.22f, 0f);
             RippleEffect.Spawn(transform, at, SortingOrder, Random.Range(1.4f, 2.2f), 0.18f);
+        }
+    }
+
+    /// <summary>Little four-pointed glints popping on the sun's reflection.</summary>
+    public sealed class SunGlints : MonoBehaviour
+    {
+        public float X;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
+
+        private float _nextAt;
+
+        private void Update()
+        {
+            if (LifeSettings.Off || Time.time < _nextAt)
+            {
+                return;
+            }
+
+            _nextAt = Time.time + Random.Range(0.5f, 1.3f) / LifeSettings.Intensity;
+            var y = Random.Range(-4.6f, 0.05f);
+            var spread = 0.3f + Mathf.InverseLerp(0.2f, -5f, y) * 1.4f;
+            var go = new GameObject("Brilho");
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = new Vector3(X + Random.Range(-spread, spread), y, 0f);
+            var r = go.AddComponent<SpriteRenderer>();
+            r.sprite = Art.Sparkle;
+            r.sortingOrder = SortingOrder;
+            var pop = go.AddComponent<Pop>();
+            pop.Size = Mathf.Lerp(0.18f, 0.4f, Mathf.InverseLerp(0.2f, -5f, y));
         }
     }
 
@@ -146,6 +405,105 @@ namespace FishingIdle.Game.Scene
             {
                 Destroy(gameObject);
             }
+        }
+    }
+
+    /// <summary>
+    /// Rows of small wave glints sliding over the water (Resources/Arte/Agua/ondas.png): tiny and slow
+    /// near the horizon, bigger and faster close to the viewer, so the surface reads as deep and alive.
+    /// Rows alternate direction on a lake; on a river they all run with the current.
+    /// </summary>
+    public sealed class WaterWaves : MonoBehaviour
+    {
+        public float Horizon = 0.2f;
+        public float Current;
+        public Color Tint = Color.white;
+        public int SortingOrder = FishingScene.OrderWaterDetail;
+
+        private const int Rows = 10;
+        private const float TileAtScaleOne = 10f;
+
+        private readonly List<Transform> _rows = new List<Transform>();
+        private readonly List<float> _speed = new List<float>();
+        private readonly List<float> _tile = new List<float>();
+        private readonly List<float> _baseY = new List<float>();
+
+        private void Start()
+        {
+            var sprite = ArtAssets.Sprite("Agua/ondas", TileAtScaleOne, new Vector2(0f, 0.5f));
+            if (sprite == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < Rows; i++)
+            {
+                // Perspective: rows get further apart, bigger and faster towards the viewer.
+                var k = i / (Rows - 1f);
+                var depth = k * k;
+                var y = Mathf.Lerp(Horizon - 0.55f, -5.1f, Mathf.Pow(k, 1.2f));
+                var scale = Mathf.Lerp(0.45f, 1.5f, depth);
+                var tile = TileAtScaleOne * scale;
+                var row = new GameObject("Ondas " + (i + 1)).transform;
+                row.SetParent(transform, false);
+                row.localPosition = new Vector3(-15f, y, 0f);
+                var copies = Mathf.CeilToInt(32f / tile) + 1;
+                var alpha = Mathf.Lerp(0.22f, 0.5f, k);
+                for (var c = 0; c < copies; c++)
+                {
+                    FishingScene.Sprite(row, "Faixa", sprite, new Vector3(c * tile, 0f, 0f), new Vector3(scale, scale * 0.8f, 1f), SortingOrder,
+                        new Color(Tint.r, Tint.g, Tint.b, alpha));
+                }
+
+                var direction = Current > 0f ? 1f : (i % 2 == 0 ? 1f : -1f);
+                var speed = Current > 0f ? Current * Mathf.Lerp(0.4f, 1.5f, k) : Mathf.Lerp(0.04f, 0.22f, k);
+                _rows.Add(row);
+                _speed.Add(direction * speed);
+                _tile.Add(tile);
+                _baseY.Add(y);
+            }
+        }
+
+        private void Update()
+        {
+            for (var i = 0; i < _rows.Count; i++)
+            {
+                var p = _rows[i].localPosition;
+                p.x += _speed[i] * Time.deltaTime;
+                // Wrap by one tile so the strip never shows an edge.
+                if (p.x > -15f + _tile[i])
+                {
+                    p.x -= _tile[i];
+                }
+                else if (p.x < -15f - _tile[i])
+                {
+                    p.x += _tile[i];
+                }
+
+                p.y = _baseY[i] + Mathf.Sin(Time.time * 0.7f + i * 1.3f) * 0.015f * (1f + i * 0.4f);
+                _rows[i].localPosition = p;
+            }
+        }
+    }
+
+    /// <summary>One horizontal slice of a reflection, swaying a little more the further it is from the horizon.</summary>
+    public sealed class ReflectionSlice : MonoBehaviour
+    {
+        public float Amplitude = 0.03f;
+        public float Phase;
+
+        private Vector3 _origin;
+
+        private void Start()
+        {
+            _origin = transform.localPosition;
+        }
+
+        private void Update()
+        {
+            var t = Time.time;
+            var dx = Mathf.Sin(t * 0.9f + Phase) * Amplitude + Mathf.Sin(t * 2.3f + Phase * 1.7f) * Amplitude * 0.35f;
+            transform.localPosition = _origin + new Vector3(dx, 0f, 0f);
         }
     }
 

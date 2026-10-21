@@ -18,72 +18,23 @@ namespace FishingIdle.Game.Visual
 
         private static VisualTheme _current;
 
-        // Palette A "Ardósia" (owner, 20/10/2026; addendum A-190): 14 interface colours in tema_visual.json, the other
-        // pieces derived from them in Derive() (docs/ART_BIBLE_PIXEL.md 6.1 stays the locked reference).
-        public Color Panel = Hex("#283050");
-        public Color PanelElevated = Hex("#36406A");
-        public Color Card = Hex("#1E2541");
-        public Color Ink = Hex("#0A0C1C");
-        public Color Text = Hex("#F4ECD6");
-        public Color TextMuted = Hex("#C9C0A4");
-        public Color Frame = Hex("#D6AD57");
-        public Color FrameDark = Hex("#8A6C30");
-        public Color Action = Hex("#5ED6D2");
-        public Color ActionDark = Hex("#4BC0BC");
-        public Color Reward = Hex("#FFD667");
-        public Color Danger = Hex("#FF7A6B");
-        public Color Success = Hex("#5BDB9A");
+        public Color Night = Hex("#0A1422");
+        public Color Panel = Hex("#11223A");
+        public Color PanelElevated = Hex("#183050");
+        public Color Border = Hex("#274A70");
+        // Legibility pass (addendum A-149): Text a touch warmer, TextMuted lighter (the Art Bible lists #EEF4FB and #9DB2C9).
+        public Color Text = Hex("#EEF3F8");
+        public Color TextMuted = Hex("#B4C6DB");
+        public Color Action = Hex("#25C4C1");
+        public Color ActionHover = Hex("#3AD6D2");
+        public Color Reward = Hex("#F6B93B");
+        public Color RewardLight = Hex("#FFE08A");
+        public Color Danger = Hex("#EF6B5B");
+        public Color Success = Hex("#2CCB7F");
         public Color Exceptional = Hex("#F6B93B");
 
-        // Derived pieces (not in the file since A-190): kept as fields so every window keeps its call sites.
-        /// <summary>Sunken fills (wells, pills over the scene): the card colour.</summary>
-        public Color Night;
-        public Color Border;
-        public Color ActionHover;
-        public Color RewardLight;
-        public Color FrameInner;
-        /// <summary>Titles are cream, like the text (A-190): the yellow is only for rewards.</summary>
-        public Color Title;
-        public Color Field;
-        public Color CardLine;
-        /// <summary>The one-pixel line of idle chips and plain cards.</summary>
-        public Color ChipOff;
-        public Color ChipOn;
-        public Color BarTrack;
-        public Color Xp;
-        public Color XpStripe;
-        public Color Attribute;
-        public Color Alert;
-        public Color Veil;
-
-        public VisualTheme()
-        {
-            Derive();
-        }
-
-        /// <summary>Recomputes the derived pieces from the 14 palette colours.</summary>
-        private void Derive()
-        {
-            Night = Card;
-            Field = Card;
-            Border = FrameDark;
-            ActionHover = Color.Lerp(Action, Color.white, 0.2f);
-            RewardLight = Color.Lerp(Reward, Color.white, 0.4f);
-            FrameInner = Ink;
-            CardLine = Ink;
-            Veil = Ink;
-            Title = Text;
-            ChipOff = Color.Lerp(PanelElevated, Text, 0.14f);
-            ChipOn = PanelElevated;
-            BarTrack = Color.Lerp(Card, Ink, 0.45f);
-            Xp = Action;
-            XpStripe = ActionDark;
-            Attribute = Action;
-            Alert = Danger;
-        }
-
-        public float PanelOpacity = 1f;
-        public float OverlayOpacity = 0.35f;
+        public float PanelOpacity = 0.94f;
+        public float OverlayOpacity = 0.5f;
         public float GlowIntensity = 0.7f;
         public float ToastSeconds = 4f;
         public float ToastImportantSeconds = 6f;
@@ -98,11 +49,11 @@ namespace FishingIdle.Game.Visual
         private RarityColor[] _rarities =
         {
             new RarityColor { id = "common", color = "#F2F5F8" },
-            new RarityColor { id = "uncommon", color = "#5BDB9A" },
-            new RarityColor { id = "rare", color = "#7AAEFF" },
-            new RarityColor { id = "epic", color = "#C084FC" },
-            new RarityColor { id = "legendary", color = "#FF6B6E" },
-            new RarityColor { id = "mythic", color = "#F472B6" },
+            new RarityColor { id = "uncommon", color = "#2CCB7F" },
+            new RarityColor { id = "rare", color = "#4D8DFF" },
+            new RarityColor { id = "epic", color = "#A855F7" },
+            new RarityColor { id = "legendary", color = "#E5484D" },
+            new RarityColor { id = "mythic", color = "#EC4899" },
         };
 
         private RarityColor[] _sizes =
@@ -186,22 +137,20 @@ namespace FishingIdle.Game.Visual
             var p = f.palette;
             if (p != null)
             {
+                Night = Parse(p.night, Night);
                 Panel = Parse(p.panel, Panel);
                 PanelElevated = Parse(p.panel_elevated, PanelElevated);
-                Card = Parse(p.card, Card);
-                Ink = Parse(p.ink, Ink);
+                Border = Parse(p.border, Border);
                 Text = Parse(p.text, Text);
                 TextMuted = Parse(p.text_muted, TextMuted);
-                Frame = Parse(p.frame, Frame);
-                FrameDark = Parse(p.frame_dark, FrameDark);
                 Action = Parse(p.action, Action);
-                ActionDark = Parse(p.action_dark, ActionDark);
+                ActionHover = Parse(p.action_hover, ActionHover);
                 Reward = Parse(p.reward, Reward);
+                RewardLight = Parse(p.reward_light, RewardLight);
                 Danger = Parse(p.danger, Danger);
                 Success = Parse(p.success, Success);
             }
 
-            Derive();
             Exceptional = Parse(f.exceptional_color, Exceptional);
             if (f.rarities != null && f.rarities.Length > 0)
             {
@@ -270,7 +219,7 @@ namespace FishingIdle.Game.Visual
         [Serializable]
         private sealed class Palette
         {
-            public string panel, panel_elevated, card, ink, text, text_muted, frame, frame_dark, action, action_dark, reward, danger, success;
+            public string night, panel, panel_elevated, border, text, text_muted, action, action_hover, reward, reward_light, danger, success;
         }
 
         [Serializable]

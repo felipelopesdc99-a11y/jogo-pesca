@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 namespace FishingIdle.Game.Scene
 {
     // The living landscape (addendum A-078): loose plants that bend in gusts of wind and animals that
-    // show up now and then, in pixel art (Resources/ArtePixel/Vivos). Pure presentation: no rule,
+    // show up now and then, painted by the owner (Resources/Arte/Vivos). Pure presentation: no rule,
     // reward or mechanic. Placement, weights and rhythm live in Resources/Visual/paisagem_viva.json.
 
     /// <summary>The shape of Resources/Visual/paisagem_viva.json (read with JsonUtility).</summary>
@@ -198,8 +198,6 @@ namespace FishingIdle.Game.Scene
         private float _velocity;
         private float _phase;
         private float _base;
-        private Vector3 _origin;
-        private bool _hasOrigin;
 
         private void Start()
         {
@@ -224,20 +222,6 @@ namespace FishingIdle.Game.Scene
             var w = Mathf.PI * 2f * Stiffness;
             _velocity += (w * w * (target - _angle) - 2f * 0.35f * w * _velocity) * dt;
             _angle += _velocity * dt;
-            if (PixelGrid.Active)
-            {
-                // Pixel art never turns (ART_BIBLE_PIXEL 5): a gust leans the plant one grid pixel to the right.
-                if (!_hasOrigin)
-                {
-                    _origin = transform.localPosition;
-                    _hasOrigin = true;
-                }
-
-                transform.localRotation = Quaternion.Euler(0f, 0f, _base);
-                transform.localPosition = _origin + new Vector3(_angle < -Bend * 0.3f ? PixelGrid.Unit : 0f, 0f, 0f);
-                return;
-            }
-
             transform.localRotation = Quaternion.Euler(0f, 0f, _base + _angle);
         }
     }
@@ -258,8 +242,7 @@ namespace FishingIdle.Game.Scene
         {
             var t = Time.time + _phase;
             transform.localPosition = _origin + new Vector3(Mathf.Sin(t * 0.45f) * 0.012f, Mathf.Sin(t * 1.2f) * 0.008f, 0f);
-            // Pixel art never turns (ART_BIBLE_PIXEL 4.9): on the pixel grid the pad only drifts.
-            transform.localRotation = PixelGrid.Active ? Quaternion.identity : Quaternion.Euler(0f, 0f, Mathf.Sin(t * 0.8f) * 1.2f);
+            transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * 0.8f) * 1.2f);
         }
     }
 

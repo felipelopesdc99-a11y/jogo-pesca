@@ -3,6 +3,28 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m24.30] — 20/10/2026
+
+O jogo volta ao visual **Lago Dourado — Clean Premium**, como estava antes da pixel art (decisão do proprietário, A-193,
+TD-068). Nenhuma regra, número ou save mudou. Visual só fica verificado quando o proprietário apertar Play.
+
+### Alterado
+
+- **Pixel art descartada:** saem a pele ARC, a cena e a câmera pixel, as fontes pixel e a Nunito em quatro pesos, a paleta
+  "Ardósia" e as telas reorganizadas da M25 (A-182 a A-192). Voltam o cenário pintado, o pescador, os peixes, os ícones,
+  as telas "Diário de bordo" e as fontes de antes (commit `f1ae044`), por um commit novo, sem reescrever o histórico.
+- `docs/ART_BIBLE_V0_1.md` volta a ser a fonte de verdade visual (CLAUDE.md); `docs/ART_BIBLE_PIXEL.md` e
+  `docs/ASSETS_PIXEL.md` ficam só como histórico. O M25 fica marcado como descartado e o milestone atual volta ao M24.
+
+### Mantido
+
+- Duração do leilão no `GameTexts`; Cardume dos adversários da Arena pelo `cardume.max_fish`; variação dos adversários em
+  `config/arena_bots.json` (`size_percentile_spread`, 0,1, validado); viagem só pelo `travel.duration_seconds`, validado.
+
+### Removido
+
+- `Resources/ArtePixel` e as ferramentas `tools/Arte/pixel_*` (ficam no histórico do git).
+
 ## [0.2.0-m25.8] — 20/10/2026
 
 ### Corrigido

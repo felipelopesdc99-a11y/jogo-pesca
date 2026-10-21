@@ -40,7 +40,7 @@ namespace FishingIdle.Game.UI
         private const string BoatArt = "UI/ui_map_boat";
         private const string IslandArtPrefix = "UI/ui_map_island_";
 
-        private const float LabelsHeight = 56f; // gap 6 + name 24 + gap 2 + state 24 (one line of the small text each, M25-T14; was 50)
+        private const float LabelsHeight = 50f; // gap 6 + name 22 + gap 2 + state 20 (A-149; was 46)
         private const float RouteDotGap = 14f;
 
         private static readonly Color LockedFrame = new Color(0.45f, 0.52f, 0.60f);
@@ -98,8 +98,10 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // The archipelago is the window's own scene, framed like a photo over its dark sea.
+            // The archipelago is the window's own scene: a picture pinned on the diary sheet, drawn in night colours
+            // over its dark sea (A-170).
             WindowFrame.Photo(skin, area);
+            using var night = UiSkin.NightScope();
             EnsureStyles(skin);
             _tip = null;
 
@@ -145,12 +147,12 @@ namespace FishingIdle.Game.UI
 
         private static void DrawSea(UiSkin skin, Rect area)
         {
-            // The sea seen from above (L7-03) at the smallest whole scale that fills the chart, cropped at the edges
-            // (M25-T14); the ARC frame around it is WindowFrame.Photo. The generated gradient stays only without the file.
+            // The painted sea (turquoise to night, its own sparkles) replaces the generated gradient and stars.
             var painted = ArtAssets.Texture(SeaArt);
             if (painted != null)
             {
-                ArcArt.Cover(area, painted, Color.white);
+                GUI.DrawTexture(area, painted, ScaleMode.ScaleAndCrop, false, 0, Color.white, 0, 14);
+                GUI.DrawTexture(area, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.8f), 1.5f, 14);
                 return;
             }
 
@@ -166,7 +168,8 @@ namespace FishingIdle.Game.UI
                 }, new[] { 0f, 0.35f, 0.65f, 0.85f, 1f });
             }
 
-            GUI.DrawTexture(area, _sea, ScaleMode.StretchToFill, true, 0, Color.white, 0, 0);
+            GUI.DrawTexture(area, _sea, ScaleMode.StretchToFill, true, 0, Color.white, 0, 14);
+            GUI.DrawTexture(area, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.8f), 1.5f, 14);
 
             if (Event.current.type != EventType.Repaint)
             {
@@ -180,7 +183,7 @@ namespace FishingIdle.Game.UI
                 var y = area.y + 8f + (area.height - 16f) * Hash(i * 2 + 2);
                 var size = 1.5f + 2f * Hash(i * 7 + 3);
                 var alpha = 0.25f + 0.5f * Hash(i * 5 + 4) * Mathf.InverseLerp(area.x + area.width * 0.70f, area.xMax, x);
-                ArcArt.Fill(skin, new Rect(x, y, size, size), new Color(1f, 1f, 1f, alpha), size / 2f);
+                GUI.DrawTexture(new Rect(x, y, size, size), skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, alpha), 0, size / 2f);
             }
         }
 
@@ -299,10 +302,7 @@ namespace FishingIdle.Game.UI
                 for (var k = 0; k <= dots; k++)
                 {
                     var p = Bezier(points[i - 1], points[i], k / (float)dots, bend);
-                    // A 2 × 2 art-pixel dot on the art-pixel grid.
-                    var dx = Mathf.Round(p.x / UiSkin.ArcPixel) * UiSkin.ArcPixel;
-                    var dy = Mathf.Round(p.y / UiSkin.ArcPixel) * UiSkin.ArcPixel;
-                    ArcArt.Fill(skin, new Rect(dx - UiSkin.ArcPixel, dy - UiSkin.ArcPixel, UiSkin.ArcPixel * 2, UiSkin.ArcPixel * 2), color, 0f);
+                    GUI.DrawTexture(new Rect(p.x - 2.5f, p.y - 2.5f, 5f, 5f), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, 2.5f);
                 }
             }
         }
@@ -340,25 +340,14 @@ namespace FishingIdle.Game.UI
 
                 var size = rect.width * 1.25f; // the hull is about 95 % wide and 55 % tall in the 128 px file
                 var drawn = new Rect(rect.center.x - size / 2f, rect.center.y - size / 2f, size, size);
-                if (ArtAssets.IsPixel(art))
-                {
-                    // Pixel art never turns (ART_BIBLE_PIXEL 4.9): heading left is a mirror image instead; whole scale,
-                    // a hard shadow one art pixel down and right, the bob in whole art pixels.
-                    var flip = Mathf.Cos(angle * Mathf.Deg2Rad) < -0.2f;
-                    drawn.y = Mathf.Round(drawn.y / UiSkin.ArcPixel) * UiSkin.ArcPixel;
-                    ArcArt.Fit(new Rect(drawn.x + UiSkin.ArcPixel, drawn.y + UiSkin.ArcPixel, size, size), art, new Color(0f, 0f, 0f, 0.3f), flip);
-                    ArcArt.Fit(drawn, art, Color.white, flip);
-                    return;
-                }
-
                 var matrix = GUI.matrix;
                 if (Mathf.Abs(angle) > 0.5f)
                 {
                     GUIUtility.RotateAroundPivot(angle, drawn.center);
                 }
 
-                PixelDraw.Fit(new Rect(drawn.x + 2f, drawn.y + 3f, size, size), art, new Color(0f, 0f, 0f, 0.3f));
-                PixelDraw.Fit(drawn, art);
+                GUI.DrawTexture(new Rect(drawn.x + 2f, drawn.y + 3f, size, size), art, ScaleMode.ScaleToFit, true, 0, new Color(0f, 0f, 0f, 0.3f), 0, 0);
+                GUI.DrawTexture(drawn, art, ScaleMode.ScaleToFit, true);
                 GUI.matrix = matrix;
                 return;
             }
@@ -376,39 +365,37 @@ namespace FishingIdle.Game.UI
             var locked = !map.LevelUnlocked;
             var frame = map.IsCurrent ? UiSkin.Gold : locked ? LockedFrame : UiSkin.Accent;
 
-            // The pixel island (L3-08) brings its own rocky rim: no drawn frame around it; the current map has the slow
-            // gold pixel ring (3,5 s, calm), the chosen one the turquoise ring (Art Bible 4.10: rings, no soft halo).
-            var pixelIsland = PixelIsland(map.MapId);
-            if (!pixelIsland)
-            {
-                ArcArt.Fill(skin, new Rect(center.x - d * 0.42f, center.y + d * 0.42f, d * 0.84f, d * 0.14f), new Color(0f, 0f, 0f, 0.22f), 0f);
-            }
+            // Soft shadow on the water.
+            GUI.DrawTexture(new Rect(center.x - d * 0.42f, center.y + d * 0.42f, d * 0.84f, d * 0.14f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.22f), 0, d * 0.07f);
 
             if (map.IsCurrent)
             {
-                var pulse = 0.6f + 0.4f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f / 3.5f);
-                Ring(skin, circle, UiSkin.ArcPixel * 4, new Color(UiSkin.GoldLight.r, UiSkin.GoldLight.g, UiSkin.GoldLight.b, 0.85f * pulse));
+                // A slow gold halo (3,5 s): calm, not a celebration.
+                var pulse = 0.75f + 0.25f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f / 3.5f);
+                for (var g = 1; g <= 3; g++)
+                {
+                    Ring(skin, circle, 2f + g * 3f, 3f, new Color(UiSkin.GoldLight.r, UiSkin.GoldLight.g, UiSkin.GoldLight.b, (0.5f - g * 0.13f) * pulse));
+                }
             }
 
             if (selected)
             {
-                Ring(skin, circle, UiSkin.ArcPixel * 2, UiSkin.Accent);
+                Ring(skin, circle, 8f, 3f, UiSkin.Accent);
             }
             else if (hovered)
             {
-                Ring(skin, circle, UiSkin.ArcPixel * 2, new Color(1f, 1f, 1f, 0.45f));
+                Ring(skin, circle, 8f, 2f, new Color(1f, 1f, 1f, 0.45f));
             }
 
             DrawPicture(skin, map, circle, locked);
-            if (!pixelIsland)
-            {
-                Ring(skin, circle, 0f, frame);
-            }
+            Ring(skin, circle, 2f, 2f, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.5f));
+            Ring(skin, circle, 0f, Mathf.Max(4f, d * 0.05f), frame);
 
             // Number medal (turquoise, gold or grey).
             var r = Mathf.Clamp(d * 0.14f, 12f, 18f);
             var medal = new Rect(center.x - d * 0.36f - r, center.y - d * 0.36f - r, r * 2f, r * 2f);
-            ArcArt.Disc(skin, medal, frame, UiSkin.DarkInk);
+            GUI.DrawTexture(medal, skin.White, ScaleMode.StretchToFill, true, 0, frame, 0, r);
+            GUI.DrawTexture(medal, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.35f), 2f, r);
             var previous = GUI.contentColor;
             GUI.contentColor = locked ? Color.white : Ink;
             GUI.Label(medal, (index + 1).ToString(), _badgeStyle);
@@ -418,8 +405,8 @@ namespace FishingIdle.Game.UI
             var labelWidth = Mathf.Min(step * 2f - 16f, 220f);
             var name = FishCard.Fit(map.Name, _nameStyle, labelWidth - 14f);
             var nameWidth = _nameStyle.CalcSize(new GUIContent(name)).x + 14f;
-            var nameRect = new Rect(center.x - nameWidth / 2f, circle.yMax + 6f, nameWidth, UiSkin.SmallLine);
-            skin.PixelPill(nameRect, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.78f), Color.clear);
+            var nameRect = new Rect(center.x - nameWidth / 2f, circle.yMax + 6f, nameWidth, 22f);
+            GUI.DrawTexture(nameRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.72f), 0, 11f);
             GUI.Label(nameRect, name, _nameStyle);
             if (name != map.Name && (hovered || nameRect.Contains(Event.current.mousePosition)))
             {
@@ -431,7 +418,7 @@ namespace FishingIdle.Game.UI
             {
                 var stateRect = new Rect(center.x - labelWidth / 2f, nameRect.yMax + 2f, labelWidth, UiSkin.SmallLine);
                 var stateWidth = skin.SmallGoldCenter.CalcSize(new GUIContent(state)).x + 14f;
-                skin.PixelPill(new Rect(center.x - stateWidth / 2f, stateRect.y, stateWidth, stateRect.height), new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.68f), Color.clear);
+                GUI.DrawTexture(new Rect(center.x - stateWidth / 2f, stateRect.y, stateWidth, stateRect.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.6f), 0, 10f);
                 GUI.Label(stateRect, state, skin.SmallGoldCenter);
             }
 
@@ -450,24 +437,11 @@ namespace FishingIdle.Game.UI
             var islandPath = IslandPath(map.MapId);
             var island = islandPath.Length > 0 ? ArtAssets.Texture(islandPath) : null;
             var thumb = island == null ? ArtAssets.Texture(ThumbPath(map.MapId)) : null;
-            if (island != null && ArtAssets.IsPixel(island))
-            {
-                // The pixel island at the largest whole scale in the circle, greyed when locked, with the padlock.
-                PixelDraw.Fit(circle, island, locked ? LockedTint : Color.white);
-                if (locked)
-                {
-                    var lockSize = circle.width * 0.3f;
-                    skin.DrawIcon(new Rect(circle.center.x - lockSize / 2f, circle.center.y - lockSize / 2f, lockSize, lockSize), Icons.Lock, Color.white);
-                }
-
-                return;
-            }
-
             if (island != null)
             {
                 // Water under the island's transparent shore, so the round frame always closes on a full disc.
-                ArcArt.Fill(skin, circle, new Color(0.10f, 0.42f, 0.62f, 1f), radius);
-                PixelDraw.Fit(circle, island, locked ? LockedTint : Color.white);
+                GUI.DrawTexture(circle, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.10f, 0.42f, 0.62f, 1f), 0, radius);
+                GUI.DrawTexture(circle, island, ScaleMode.ScaleToFit, true, 0, locked ? LockedTint : Color.white, 0, 0);
             }
             else if (thumb != null)
             {
@@ -475,22 +449,15 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                ArcArt.Fill(skin, circle, Color.Lerp(UiSkin.Accent, UiSkin.Night, locked ? 0.7f : 0.35f), radius);
+                GUI.DrawTexture(circle, skin.White, ScaleMode.StretchToFill, true, 0, Color.Lerp(UiSkin.Accent, UiSkin.Night, locked ? 0.7f : 0.35f), 0, radius);
             }
 
             if (locked)
             {
-                ArcArt.Fill(skin, circle, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.3f), radius);
+                GUI.DrawTexture(circle, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.3f), 0, radius);
                 var s = circle.width * 0.3f;
                 skin.DrawIcon(new Rect(circle.center.x - s / 2f, circle.center.y - s / 2f, s, s), Icons.Lock, Color.white);
             }
-        }
-
-        /// <summary>Whether the map's island is pixel art (ArtePixel, L3-08).</summary>
-        private bool PixelIsland(string mapId)
-        {
-            var path = IslandPath(mapId);
-            return path.Length > 0 && ArtAssets.IsPixel(ArtAssets.Texture(path));
         }
 
         /// <summary>"map_03" → "UI/ui_map_island_03" (cached, so no string is built per frame).</summary>
@@ -518,11 +485,10 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>A circular ring <paramref name="grow"/> px outside <paramref name="circle"/>.</summary>
-        /// <summary>A one-art-pixel pixel circle <paramref name="grow"/> outside <paramref name="circle"/>.</summary>
-        private static void Ring(UiSkin skin, Rect circle, float grow, Color color)
+        private static void Ring(UiSkin skin, Rect circle, float grow, float width, Color color)
         {
             var rect = new Rect(circle.x - grow, circle.y - grow, circle.width + grow * 2f, circle.height + grow * 2f);
-            ArcArt.Line(skin, rect, color, rect.width / 2f);
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, color, width, rect.width / 2f);
         }
 
         // ------------------------------------------------------------------ chosen map panel
@@ -541,10 +507,7 @@ namespace FishingIdle.Game.UI
             var thumb = new Rect(inner.x, inner.center.y - thumbSize / 2f, thumbSize, thumbSize);
             var locked = !map.LevelUnlocked;
             DrawPicture(skin, map, thumb, locked);
-            if (!PixelIsland(map.MapId))
-            {
-                Ring(skin, thumb, 0f, map.IsCurrent ? UiSkin.Gold : locked ? LockedFrame : UiSkin.Accent);
-            }
+            Ring(skin, thumb, 0f, 3f, map.IsCurrent ? UiSkin.Gold : locked ? LockedFrame : UiSkin.Accent);
 
             var tx = thumb.xMax + 16f;
             var tw = inner.x + leftWidth - tx;
@@ -560,7 +523,7 @@ namespace FishingIdle.Game.UI
             var feeling = GameTexts.Map.Feeling(map.MapId);
             if (!string.IsNullOrEmpty(feeling))
             {
-                GUI.Label(new Rect(tx, ty + 48f, tw, UiSkin.SmallLine), FishCard.Fit(feeling, skin.SmallMuted, tw), skin.SmallMuted);
+                GUI.Label(new Rect(tx, ty + 48f, tw, 20f), FishCard.Fit(feeling, skin.SmallMuted, tw), skin.SmallMuted);
             }
 
             // Hovering the left block shows the full name (when cut) and the map's description.
@@ -596,15 +559,15 @@ namespace FishingIdle.Game.UI
             if (travel != null && travel.Active && travel.ToMapId == map.MapId)
             {
                 var y = rect.center.y - 30f;
-                GUI.Label(new Rect(rect.x, y, rect.width, UiSkin.SmallLine), FishCard.Fit(GameTexts.Map.Traveling(map.Name), skin.SmallBold, rect.width), skin.SmallBold);
+                GUI.Label(new Rect(rect.x, y, rect.width, 20f), FishCard.Fit(GameTexts.Map.Traveling(map.Name), skin.SmallBold, rect.width), skin.SmallBold);
                 skin.Bar(new Rect(rect.x, y + 24f, rect.width, 10f), (float)travel.Progress);
-                GUI.Label(new Rect(rect.x, y + 40f, rect.width, UiSkin.SmallLine), GameTexts.Map.ArrivesIn(Format.Countdown(travel.SecondsLeft)), skin.SmallMuted);
+                GUI.Label(new Rect(rect.x, y + 40f, rect.width, 20f), GameTexts.Map.ArrivesIn(Format.Countdown(travel.SecondsLeft)), skin.SmallMuted);
                 return;
             }
 
             if (map.IsCurrent)
             {
-                var label = GameTexts.Map.YouAreHere;
+                var label = GameTexts.Map.YouAreHere.ToUpperInvariant();
                 var width = Mathf.Min(rect.width, skin.PillWidth(label, true) + 6f);
                 skin.AccentPill(new Rect(rect.center.x - width / 2f, rect.center.y - 14f, width, 28f), label, UiSkin.Accent, Icons.Pin);
                 return;
@@ -632,9 +595,9 @@ namespace FishingIdle.Game.UI
 
         private void Row(UiSkin skin, float x, ref float y, float w, string label, string value, bool met)
         {
-            GUI.Label(new Rect(x, y, w * 0.5f, UiSkin.SmallLine), FishCard.Fit(label, skin.SmallMuted, w * 0.5f - 4f), skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w * 0.5f, 22f), FishCard.Fit(label, skin.SmallMuted, w * 0.5f - 4f), skin.SmallMuted);
             var style = met ? _rowValue : _rowValueGold;
-            GUI.Label(new Rect(x + w * 0.5f, y, w * 0.5f, UiSkin.SmallLine), FishCard.Fit(value ?? string.Empty, style, w * 0.5f), style);
+            GUI.Label(new Rect(x + w * 0.5f, y, w * 0.5f, 22f), FishCard.Fit(value ?? string.Empty, style, w * 0.5f), style);
             y += 26f;
         }
 
@@ -660,7 +623,8 @@ namespace FishingIdle.Game.UI
             var x = Mathf.Clamp(mouse.x + 14f, bounds.x, bounds.xMax - width);
             var y = mouse.y + 20f + height > bounds.yMax ? mouse.y - height - 8f : mouse.y + 20f;
             var rect = new Rect(x, y, width, height);
-            skin.TipBox(rect);
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.95f), 0, 8f);
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Border, 1.5f, 8f);
             GUI.Label(new Rect(rect.x + 10f, rect.y + 7f, rect.width - 20f, rect.height - 14f), _tip, _tipStyle);
         }
 
@@ -672,7 +636,7 @@ namespace FishingIdle.Game.UI
             }
 
             _nameStyle = new GUIStyle(skin.SmallBold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
-            _badgeStyle = new GUIStyle(skin.SmallBold) { fontSize = UiSkin.ChipSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
+            _badgeStyle = new GUIStyle(skin.SmallBold) { fontSize = 14, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _noteStyle = new GUIStyle(skin.SmallMuted) { alignment = TextAnchor.UpperCenter, wordWrap = true };
             _tipStyle = new GUIStyle(skin.Small) { wordWrap = true };
             _rowValue = new GUIStyle(skin.SmallRight) { wordWrap = false, clipping = TextClipping.Clip };

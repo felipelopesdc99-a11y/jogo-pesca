@@ -24,13 +24,15 @@ namespace FishingIdle.Game.UI
     {
         private const string ChartArt = "UI/ui_exp_carta", HarbourArt = "UI/ui_exp_porto", RoseArt = "UI/ui_exp_rosa",
             MedallionArt = "UI/ui_exp_medalhao", PierArt = "UI/ui_exp_pier", MarkerArt = "UI/ui_exp_marcador",
-            SealArt = "UI/ui_exp_selo", CompassArt = "UI/ui_exp_bussola";
+            CardArt = "UI/ui_exp_moldura_carta", SealArt = "UI/ui_exp_selo", CompassArt = "UI/ui_exp_bussola";
 
-        // Measured on the pixel art (L3-06, M25-T14): the see-through hole of the 50 px medallion is 28 px across and its
-        // brass ring reaches 23 px from the centre, so a picture square of 30 art px fills the hole and hides its corners
-        // under the ring; the compass dial (centre and size as shares of the 48 × 50 picture).
-        private const float MedallionPicture = 30f / 50f;
-        private const float DialX = 0.5f, DialY = 0.66f, DialW = 0.46f, DialH = 0.44f;
+        // Measured on the owner's art (tools/Arte/processar_expedicao.py): the see-through hole of the medallion
+        // (share of its diameter), the border of the mission card (share of its width and height), the compass dial
+        // (centre and size as shares of the picture) and the plain face of the seal.
+        private const float MedallionHole = 0.711f;
+        private const float CardInsetX = 0.095f, CardInsetY = 0.065f;
+        private const float DialX = 0.5f, DialY = 0.73f, DialW = 0.80f, DialH = 0.38f;
+        private const float SealFaceY = 0.565f, SealFaceW = 0.65f;
 
         private static readonly Color Brass = new Color(0.79f, 0.65f, 0.42f);
         private static readonly Color DimTint = new Color(0.45f, 0.50f, 0.58f, 1f);
@@ -131,12 +133,12 @@ namespace FishingIdle.Game.UI
                 var dialog = WindowFrame.Dialog(skin, screenWidth, screenHeight, 220f);
                 GUI.Label(new Rect(dialog.x + 28, dialog.y + 24, dialog.width - 56, 30), GameTexts.Expedition.CancelTitle, skin.Heading);
                 GUI.Label(new Rect(dialog.x + 28, dialog.y + 64, dialog.width - 56, 70), GameTexts.Expedition.CancelBody, skin.Body);
-                if (GUI.Button(new Rect(dialog.x + 28, dialog.yMax - 64, 216, 42), GameTexts.Expedition.KeepGoing, skin.Button))
+                if (GUI.Button(new Rect(dialog.x + 28, dialog.yMax - 64, 190, 42), GameTexts.Expedition.KeepGoing, skin.Button))
                 {
                     _confirmCancel = false;
                 }
 
-                if (GUI.Button(new Rect(dialog.xMax - 268, dialog.yMax - 64, 240, 42), GameTexts.Expedition.Cancel, skin.ButtonDanger))
+                if (GUI.Button(new Rect(dialog.xMax - 238, dialog.yMax - 64, 210, 42), GameTexts.Expedition.Cancel, skin.ButtonDanger))
                 {
                     _confirmCancel = false;
                     _root.CancelExpedition();
@@ -175,10 +177,12 @@ namespace FishingIdle.Game.UI
             }
 
             _nameStyle = new GUIStyle(skin.SmallBold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
-            _sealStyle = new GUIStyle(skin.Number) { font = skin.TitleBoldFont, fontSize = UiSkin.NumberSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
+            _sealStyle = new GUIStyle(skin.Number) { font = skin.TitleBoldFont, fontSize = 17, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _sealStyle.normal.textColor = Ink;
-            _dialStyle = new GUIStyle(skin.Number) { font = skin.TitleBoldFont, fontSize = UiSkin.NumberSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
+            _dialStyle = new GUIStyle(skin.Number) { font = skin.TitleBoldFont, fontSize = 19, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _dialStyle.normal.textColor = UiSkin.Text;
+            skin.Track(_nameStyle);
+            skin.Track(_dialStyle);
         }
 
         // ------------------------------------------------------------------ nautical chart (A-147)
@@ -198,8 +202,10 @@ namespace FishingIdle.Game.UI
                 }
             }
 
-            // The nautical chart and its card are the window's own scene, framed like a photo.
+            // The nautical chart and its card are the window's own scene: a picture on the diary sheet, in night
+            // colours (A-170).
             WindowFrame.Photo(skin, area);
+            using var night = UiSkin.NightScope();
             GUI.Box(area, GUIContent.none, skin.PanelSolid);
 
             // The Cardume strength moved up into the header (A-148): the chart starts at the top of the content.
@@ -257,9 +263,8 @@ namespace FishingIdle.Game.UI
 
         private void DrawChart(UiSkin skin, Rect sea, Texture2D chart, ExpeditionOfferView selected, ActiveExpeditionView active, int activeIndex)
         {
-            // The nautical chart (L7-12) at the smallest whole scale that fills the sea, cropped at the edges, with a dark-gold line.
-            ArcArt.Cover(sea, chart, Color.white);
-            ArcArt.Line(skin, sea, UiSkin.FrameDark, 4f);
+            GUI.DrawTexture(sea, chart, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 14f);
+            GUI.DrawTexture(sea, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.8f), 1.5f, 14f);
 
             var offers = _view.Expeditions;
             var n = offers.Count;
@@ -302,7 +307,7 @@ namespace FishingIdle.Game.UI
             if (rose != null)
             {
                 var rs = Mathf.Clamp(sea.height * 0.17f, 64f, 100f);
-                PixelDraw.Fit(new Rect(sea.x + 16f, sea.y + 16f, rs, rs), rose, new Color(1f, 1f, 1f, 0.85f));
+                GUI.DrawTexture(new Rect(sea.x + 16f, sea.y + 16f, rs, rs), rose, ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, 0.85f), 0, 0);
             }
 
             // Routes: the chosen one turquoise; away, the travelled stretch turquoise and the rest light.
@@ -337,11 +342,11 @@ namespace FishingIdle.Game.UI
             var pierRect = new Rect(pier.x - pierSize / 2f, pier.y - pierSize / 2f, pierSize, pierSize);
             if (pierArt != null)
             {
-                PixelDraw.Fit(pierRect, pierArt);
+                GUI.DrawTexture(pierRect, pierArt, ScaleMode.ScaleToFit, true);
             }
             else
             {
-                ArcArt.Fill(skin, new Rect(pier.x - pierSize * 0.18f, origin.y, pierSize * 0.36f, pierRect.yMax - origin.y), new Color(0.54f, 0.38f, 0.25f), 6f);
+                GUI.DrawTexture(new Rect(pier.x - pierSize * 0.18f, origin.y, pierSize * 0.36f, pierRect.yMax - origin.y), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.54f, 0.38f, 0.25f), 0, 6f);
             }
 
             for (var i = 0; i < n; i++)
@@ -356,16 +361,16 @@ namespace FishingIdle.Game.UI
                 var end = new Vector2(_points[activeIndex].x, _points[activeIndex].y + d / 2f + 4f);
                 var at = RoutePoint(origin, end, (float)active.Progress);
                 var ms = Mathf.Clamp(d * 0.5f, 44f, 60f);
-                var bob = Mathf.Round(Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f / 2.5f)) * UiSkin.ArcPixel;
+                var bob = Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f / 2.5f) * 2f;
                 var marker = new Rect(at.x - ms / 2f, at.y - ms + 4f + bob, ms, ms);
                 var markerArt = ArtAssets.Texture(MarkerArt);
                 if (markerArt != null)
                 {
-                    PixelDraw.Fit(marker, markerArt);
+                    GUI.DrawTexture(marker, markerArt, ScaleMode.ScaleToFit, true);
                 }
                 else
                 {
-                    ArcArt.Fill(skin, marker, UiSkin.Accent, ms / 2f);
+                    GUI.DrawTexture(marker, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 0, ms / 2f);
                     skin.DrawIcon(new Rect(marker.x + ms * 0.2f, marker.y + ms * 0.2f, ms * 0.6f, ms * 0.6f), Icons.Fish, Ink);
                 }
             }
@@ -381,11 +386,8 @@ namespace FishingIdle.Game.UI
                 var t = k / (float)dots;
                 var p = RoutePoint(from, to, t);
                 var reached = done > 0f && t <= done;
-                // Square dots of 2 or 3 art pixels on the art-pixel grid.
-                var s = (reached ? size : size * 0.8f) >= 5f ? UiSkin.ArcPixel * 3f : UiSkin.ArcPixel * 2f;
-                var dx = Mathf.Round(p.x / UiSkin.ArcPixel) * UiSkin.ArcPixel;
-                var dy = Mathf.Round(p.y / UiSkin.ArcPixel) * UiSkin.ArcPixel;
-                ArcArt.Fill(skin, new Rect(dx - s / 2f, dy - s / 2f, s, s), reached ? doneColor : restColor, 0f);
+                var s = reached ? size : size * 0.8f;
+                GUI.DrawTexture(new Rect(p.x - s / 2f, p.y - s / 2f, s, s), skin.White, ScaleMode.StretchToFill, true, 0, reached ? doneColor : restColor, 0, s / 2f);
             }
         }
 
@@ -404,42 +406,37 @@ namespace FishingIdle.Game.UI
             var circle = new Rect(c.x - d / 2f, c.y - d / 2f, d, d);
             var hovered = clickable && GUI.enabled && circle.Contains(Event.current.mousePosition);
 
+            GUI.DrawTexture(new Rect(c.x - d * 0.4f, c.y + d * 0.42f, d * 0.8f, d * 0.14f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.28f), 0, d * 0.07f);
             if (chosen)
             {
-                Ring(skin, circle, UiSkin.ArcPixel * 3, UiSkin.Accent);
+                Ring(skin, circle, 9f, 5f, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.25f));
+                Ring(skin, circle, 5f, 3f, UiSkin.Accent);
             }
             else if (hovered)
             {
-                Ring(skin, circle, UiSkin.ArcPixel * 3, new Color(1f, 1f, 1f, 0.45f));
+                Ring(skin, circle, 5f, 2f, new Color(1f, 1f, 1f, 0.45f));
             }
 
-            Texture frame = ArtAssets.Texture(MedallionArt);
+            var frame = ArtAssets.Texture(MedallionArt);
+            var hole = frame != null ? d * MedallionHole * 1.04f : d;
+            var inner = new Rect(c.x - hole / 2f, c.y - hole / 2f, hole, hole);
             var picture = ArtAssets.Texture("Expedicoes/" + e.ExpeditionId);
-            if (frame != null && ArtAssets.IsPixel(frame))
+            if (picture != null)
             {
-                // The brass medallion at the largest whole scale; the landscape at its own whole scale in a square under
-                // the medallion's hole, its corners hidden by the ring (pixel art is never cut by a smooth circle).
-                var medal = PixelDraw.FitRect(circle, ref frame);
-                var side = medal.width * MedallionPicture;
-                var square = new Rect(medal.center.x - side / 2f, medal.center.y - side / 2f, side, side);
-                ArcArt.Fill(skin, square, UiSkin.Night, 0f);
-                if (picture != null)
-                {
-                    ArcArt.Cover(square, picture, dimmed ? DimTint : Color.white);
-                }
-
-                GUI.DrawTexture(medal, frame, ScaleMode.StretchToFill, true);
+                GUI.DrawTexture(inner, picture, ScaleMode.ScaleAndCrop, true, 0, dimmed ? DimTint : Color.white, 0, hole / 2f);
             }
             else
             {
-                var inner = new Rect(c.x - d * 0.37f, c.y - d * 0.37f, d * 0.74f, d * 0.74f);
-                ArcArt.Fill(skin, inner, Color.Lerp(UiSkin.Accent, UiSkin.Night, dimmed ? 0.75f : 0.4f), inner.width / 2f);
-                if (picture != null)
-                {
-                    ArcArt.Cover(inner, picture, dimmed ? DimTint : Color.white);
-                }
+                GUI.DrawTexture(inner, skin.White, ScaleMode.StretchToFill, true, 0, Color.Lerp(UiSkin.Accent, UiSkin.Night, dimmed ? 0.75f : 0.4f), 0, hole / 2f);
+            }
 
-                Ring(skin, circle, 0f, Brass);
+            if (frame != null)
+            {
+                GUI.DrawTexture(circle, frame, ScaleMode.ScaleToFit, true);
+            }
+            else
+            {
+                Ring(skin, circle, 0f, Mathf.Max(4f, d * 0.08f), Brass);
             }
 
             if (dimmed)
@@ -452,17 +449,21 @@ namespace FishingIdle.Game.UI
             const float maxWidth = 176f;
             var name = FishCard.Fit(e.Name, _nameStyle, maxWidth - 16f);
             var nameWidth = _nameStyle.CalcSize(new GUIContent(name)).x + 16f;
-            var nameRect = new Rect(c.x - nameWidth / 2f, circle.y - 52f, nameWidth, UiSkin.SmallLine);
-            skin.PixelPill(nameRect, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.78f), chosen ? UiSkin.Accent : Color.clear);
+            var nameRect = new Rect(c.x - nameWidth / 2f, circle.y - 50f, nameWidth, 22f);
+            GUI.DrawTexture(nameRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.72f), 0, 11f);
+            if (chosen)
+            {
+                GUI.DrawTexture(nameRect, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 1.5f, 11f);
+            }
 
             GUI.Label(nameRect, name, _nameStyle);
 
             var duration = Format.Duration(e.DurationMinutes * 60);
             var durationWidth = Mathf.Min(maxWidth, skin.SmallMutedCenter.CalcSize(new GUIContent(duration)).x + 34f);
             var durationRect = new Rect(c.x - durationWidth / 2f, nameRect.yMax + 2f, durationWidth, UiSkin.SmallLine);
-            skin.PixelPill(durationRect, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.68f), Color.clear);
-            skin.DrawIcon(new Rect(durationRect.x + 6f, durationRect.y + 2f, 20f, 20f), Icons.Clock, UiSkin.Muted);
-            GUI.Label(new Rect(durationRect.x + 26f, durationRect.y, durationRect.width - 30f, durationRect.height), duration, skin.SmallMutedCenter);
+            GUI.DrawTexture(durationRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.6f), 0, 10f);
+            skin.DrawIcon(new Rect(durationRect.x + 8f, durationRect.y + 4f, 12f, 12f), Icons.Clock, UiSkin.Muted);
+            GUI.Label(new Rect(durationRect.x + 22f, durationRect.y, durationRect.width - 26f, durationRect.height), duration, skin.SmallMutedCenter);
 
             if (clickable && GUI.Button(circle, GUIContent.none, GUIStyle.none))
             {
@@ -470,26 +471,29 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>A one-art-pixel pixel circle <paramref name="grow"/> px outside <paramref name="circle"/>.</summary>
-        private static void Ring(UiSkin skin, Rect circle, float grow, Color color)
+        /// <summary>A circular ring <paramref name="grow"/> px outside <paramref name="circle"/>.</summary>
+        private static void Ring(UiSkin skin, Rect circle, float grow, float width, Color color)
         {
             var rect = new Rect(circle.x - grow, circle.y - grow, circle.width + grow * 2f, circle.height + grow * 2f);
-            ArcArt.Line(skin, rect, color, rect.width / 2f);
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, color, width, rect.width / 2f);
         }
 
-        /// <summary>The mission card in the ARC skin (the solid panel with the three-line frame); returns the area inside it.</summary>
+        /// <summary>The mission card frame (or a plain card without the art); returns the area inside its border.</summary>
         private static Rect CardFrame(UiSkin skin, Rect panel)
         {
-            skin.HardShadow(panel);
-            GUI.Box(panel, GUIContent.none, skin.PanelSolid);
-            return new Rect(panel.x + 20f, panel.y + 18f, panel.width - 40f, panel.height - 36f);
-        }
+            var frame = ArtAssets.Texture(CardArt);
+            if (frame == null)
+            {
+                GUI.Box(panel, GUIContent.none, skin.Card);
+                return new Rect(panel.x + 18f, panel.y + 16f, panel.width - 36f, panel.height - 32f);
+            }
 
-        /// <summary>An Expedition's landscape (96 × 64 pixel art) filling <paramref name="rect"/> at a whole scale, cropped, with a dark-gold line.</summary>
-        private static void Landscape(UiSkin skin, Rect rect, Texture picture)
-        {
-            ArcArt.Cover(rect, picture, Color.white, 0.5f, 0.6f);
-            ArcArt.Line(skin, rect, UiSkin.FrameDark, 4f);
+            var padX = panel.width * CardInsetX;
+            var padY = panel.height * CardInsetY;
+            var fill = new Rect(panel.x + padX * 0.5f, panel.y + padY * 0.5f, panel.width - padX, panel.height - padY);
+            GUI.DrawTexture(fill, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.95f), 0, 18f);
+            GUI.DrawTexture(panel, frame, ScaleMode.StretchToFill, true);
+            return new Rect(panel.x + padX + 8f, panel.y + padY + 8f, panel.width - padX * 2f - 16f, panel.height - padY * 2f - 16f);
         }
 
         /// <summary>The chosen destination: landscape, name, duration, the numbers in blocks and "Enviar o Cardume" right under them.</summary>
@@ -506,14 +510,14 @@ namespace FishingIdle.Game.UI
             var pictureHeight = Mathf.Min(inner.height - fixedHeight - 12f, w / 1.45f);
             if (picture != null && pictureHeight >= 70f)
             {
-                Landscape(skin, new Rect(x, y, w, pictureHeight), picture);
+                GUI.DrawTexture(new Rect(x, y, w, pictureHeight), picture, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 10f);
                 y += pictureHeight + 12f;
             }
 
             GUI.Label(new Rect(x, y, w, 28f), FishCard.Fit(e.Name, skin.Heading, w), skin.Heading);
             y += 28f;
             skin.DrawIcon(new Rect(x, y + 1f, 18f, 18f), Icons.Clock, UiSkin.Muted);
-            GUI.Label(new Rect(x + 24f, y, w - 24f, UiSkin.SmallLine), FishCard.Fit(GameTexts.Expedition.Duration(Format.Duration(e.DurationMinutes * 60)), skin.SmallMuted, w - 24f), skin.SmallMuted);
+            GUI.Label(new Rect(x + 24f, y, w - 24f, 20f), FishCard.Fit(GameTexts.Expedition.Duration(Format.Duration(e.DurationMinutes * 60)), skin.SmallMuted, w - 24f), skin.SmallMuted);
             y += 32f;
 
             // Row 1: recommended strength and efficiency (with its bar). The left block is a little wider: its label,
@@ -544,23 +548,19 @@ namespace FishingIdle.Game.UI
             var sealSize = secondRow - 22f;
             var seal = new Rect(sealArea.center.x - sealSize / 2f, sealArea.y, sealSize, sealSize);
             var sealArt = ArtAssets.Texture(SealArt);
+            var face = new Rect(seal.x + seal.width * (1f - SealFaceW) / 2f, seal.y + seal.height * SealFaceY - 14f, seal.width * SealFaceW, 28f);
             if (sealArt != null)
             {
-                // The rosette with its fish (L3-06) at a whole scale; the chance on a night pill over its lower edge, so the
-                // fish drawn on it stays in sight.
-                PixelDraw.Fit(seal, sealArt);
-                var chance = Format.Percent(e.FishFindChance, 1);
-                var pw = Mathf.Min(sealArea.width, _sealStyle.CalcSize(new GUIContent(chance)).x + 20f);
-                var pill = new Rect(seal.center.x - pw / 2f, seal.yMax - 30f, pw, 28f);
-                skin.PixelPill(pill, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.9f), UiSkin.FrameDark);
-                GUI.Label(pill, chance, _sealStyle);
+                GUI.DrawTexture(seal, sealArt, ScaleMode.ScaleToFit, true);
             }
             else
             {
                 var disc = new Rect(seal.x + 6f, seal.y + 6f, seal.width - 12f, seal.height - 12f);
-                ArcArt.Disc(skin, disc, UiSkin.Accent, Color.clear);
-                GUI.Label(new Rect(disc.x, disc.center.y - 14f, disc.width, 28f), Format.Percent(e.FishFindChance, 1), _sealStyle);
+                GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 0, disc.width / 2f);
+                face = new Rect(disc.x, disc.center.y - 14f, disc.width, 28f);
             }
+
+            GUI.Label(face, Format.Percent(e.FishFindChance, 1), _sealStyle);
             GUI.Label(new Rect(sealArea.x - 4f, seal.yMax + 2f, sealArea.width + 8f, UiSkin.SmallLine), FishCard.Fit(GameTexts.Expedition.FishChanceShort, skin.SmallMutedCenter, sealArea.width + 8f), skin.SmallMutedCenter);
             y += secondRow + 12f;
 
@@ -583,8 +583,8 @@ namespace FishingIdle.Game.UI
         private static void Block(UiSkin skin, Rect rect, bool gold)
         {
             var edge = gold ? UiSkin.Gold : UiSkin.Border;
-            ArcArt.Fill(skin, rect, gold ? new Color(edge.r, edge.g, edge.b, 0.08f) : new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.6f), 10f);
-            ArcArt.Line(skin, rect, new Color(edge.r, edge.g, edge.b, gold ? 0.6f : 0.7f), 10f);
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, gold ? new Color(edge.r, edge.g, edge.b, 0.08f) : new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.6f), 0, 10f);
+            GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(edge.r, edge.g, edge.b, gold ? 0.6f : 0.7f), 1.5f, 10f);
         }
 
         private static void BlockLabel(UiSkin skin, Rect block, string label)
@@ -607,7 +607,7 @@ namespace FishingIdle.Game.UI
             var pictureHeight = Mathf.Min(bottom - y - labels - 8f - 240f - 12f, 110f);
             if (picture != null && pictureHeight >= 60f)
             {
-                Landscape(skin, new Rect(x, y, w, pictureHeight), picture);
+                GUI.DrawTexture(new Rect(x, y, w, pictureHeight), picture, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 10f);
                 y += pictureHeight + 12f;
             }
 
@@ -622,23 +622,21 @@ namespace FishingIdle.Game.UI
             float dialRadius;
             if (compassArt != null)
             {
-                // The pocket compass (L3-06) at the largest whole scale; the dial gets a night disc under the ring and the
-                // countdown, so the numbers read over the drawn needle.
-                var h = Mathf.Min(space.height, 300f);
-                var box = new Rect(space.center.x - space.width / 2f, space.center.y - h / 2f, space.width, h);
-                var compass = ArcArt.Fit(box, compassArt, Color.white);
+                var aspect = compassArt.width / (float)compassArt.height;
+                var h = Mathf.Min(space.height, 300f, space.width / aspect);
+                var cw = h * aspect;
+                var compass = new Rect(space.center.x - cw / 2f, space.center.y - h / 2f, cw, h);
+                GUI.DrawTexture(compass, compassArt, ScaleMode.StretchToFill, true);
                 dialCenter = new Vector2(compass.x + compass.width * DialX, compass.y + compass.height * DialY);
                 dialRadius = Mathf.Min(compass.width * DialW, compass.height * DialH) / 2f;
-                var face = new Rect(dialCenter.x - dialRadius, dialCenter.y - dialRadius, dialRadius * 2f, dialRadius * 2f);
-                ArcArt.Disc(skin, face, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.82f), Color.clear);
             }
             else
             {
                 dialRadius = Mathf.Min(space.width, space.height) * 0.4f;
                 dialCenter = space.center;
                 var disc = new Rect(dialCenter.x - dialRadius, dialCenter.y - dialRadius, dialRadius * 2f, dialRadius * 2f);
-                ArcArt.Disc(skin, disc, UiSkin.Night, Color.clear);
-                Ring(skin, disc, 6f, Brass);
+                GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Night, 0, dialRadius);
+                Ring(skin, disc, 6f, 6f, Brass);
             }
 
             if (dialRadius > 12f)
@@ -664,16 +662,14 @@ namespace FishingIdle.Game.UI
             }
 
             var dots = Mathf.Clamp(Mathf.RoundToInt(radius * 1.5f), 36, 90);
-            var size = radius >= 50f ? UiSkin.ArcPixel * 2f : UiSkin.ArcPixel;
+            var size = Mathf.Clamp(radius * 0.09f, 3f, 5f);
             for (var k = 0; k < dots; k++)
             {
                 var t = k / (float)dots;
                 var angle = (t * 360f - 90f) * Mathf.Deg2Rad;
                 var p = new Vector2(center.x + Mathf.Cos(angle) * radius, center.y + Mathf.Sin(angle) * radius);
-                var color = t < progress ? UiSkin.Accent : new Color(1f, 1f, 1f, 0.18f);
-                var px = Mathf.Round(p.x / UiSkin.ArcPixel) * UiSkin.ArcPixel;
-                var py = Mathf.Round(p.y / UiSkin.ArcPixel) * UiSkin.ArcPixel;
-                ArcArt.Fill(skin, new Rect(px - size / 2f, py - size / 2f, size, size), color, 0f);
+                var color = t < progress ? UiSkin.Accent : UiSkin.Paper ? UiSkin.PaperLine : new Color(1f, 1f, 1f, 0.18f);
+                GUI.DrawTexture(new Rect(p.x - size / 2f, p.y - size / 2f, size, size), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, size / 2f);
             }
         }
 
@@ -687,8 +683,8 @@ namespace FishingIdle.Game.UI
             {
                 var box = new Rect(area.x, top, area.width, 110);
                 GUI.Box(box, GUIContent.none, skin.CardSelected);
-                GUI.Label(new Rect(box.x + 20, box.y + 14, box.width - 284, 26), FishCard.Fit(GameTexts.Expedition.Away + ": " + active.Name, skin.Heading, box.width - 284), skin.Heading);
-                if (GUI.Button(new Rect(box.xMax - 260, box.y + 10, 240, 34), GameTexts.Expedition.Cancel, skin.ButtonDanger))
+                GUI.Label(new Rect(box.x + 20, box.y + 14, box.width - 260, 26), FishCard.Fit(GameTexts.Expedition.Away + ": " + active.Name, skin.Heading, box.width - 260), skin.Heading);
+                if (GUI.Button(new Rect(box.xMax - 220, box.y + 10, 200, 34), GameTexts.Expedition.Cancel, skin.ButtonDanger))
                 {
                     _confirmCancel = true;
                 }
@@ -727,14 +723,14 @@ namespace FishingIdle.Game.UI
             if (picture != null && pictureHeight >= 60f)
             {
                 var pr = new Rect(rect.x + 10, rect.y + 10, rect.width - 20, pictureHeight);
-                Landscape(skin, pr, picture);
+                GUI.DrawTexture(pr, picture, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 10);
                 y = pr.yMax + 12;
             }
 
             GUI.Label(new Rect(x, y, w, 28), FishCard.Fit(e.Name, skin.Heading, w), skin.Heading);
             y += 30;
             skin.DrawIcon(new Rect(x, y + 1, 18, 18), Icons.Clock, UiSkin.Muted);
-            GUI.Label(new Rect(x + 24, y, w - 24, UiSkin.SmallLine), GameTexts.Expedition.Duration(Format.Duration(e.DurationMinutes * 60)), skin.SmallMuted);
+            GUI.Label(new Rect(x + 24, y, w - 24, 20), GameTexts.Expedition.Duration(Format.Duration(e.DurationMinutes * 60)), skin.SmallMuted);
             y += 30;
 
             Row(skin, x, ref y, w, GameTexts.Expedition.Recommended, Format.Number(e.RecommendedStrength));
@@ -764,8 +760,8 @@ namespace FishingIdle.Game.UI
             // The label takes what the value leaves, on one line ("Chance de achar um peixe" must not wrap).
             var vw = Mathf.Min(w, skin.SmallRight.CalcSize(new GUIContent(value)).x + 4f);
             var lw = Mathf.Max(0f, w - vw - 8f);
-            GUI.Label(new Rect(x, y, lw, UiSkin.SmallLine), FishCard.Fit(label, skin.SmallMuted, lw), skin.SmallMuted);
-            GUI.Label(new Rect(x + w - vw, y, vw, UiSkin.SmallLine), value, skin.SmallRight);
+            GUI.Label(new Rect(x, y, lw, 20), FishCard.Fit(label, skin.SmallMuted, lw), skin.SmallMuted);
+            GUI.Label(new Rect(x + w - vw, y, vw, 20), value, skin.SmallRight);
             y += 24;
         }
 
@@ -800,14 +796,14 @@ namespace FishingIdle.Game.UI
             {
                 // The harbour fills the window; the report sits on it on a dark, slightly see-through panel.
                 var scene = WindowFrame.Panel(skin, screenWidth, screenHeight, 1320f, 760f);
-                // The harbour at dusk (L7-11) at a whole scale inside the frame, cropped at the edges; the report on the ARC
-                // panel, a little see-through.
-                var inset = WindowFrame.Sheet(scene);
-                ArcArt.Cover(inset, harbour, Color.white, 0.5f, 0.55f);
-                ArcArt.Fill(skin, inset, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.3f), 0f);
+                UiSkin.SetPaper(false);
+                var inset = new Rect(scene.x + 4f, scene.y + 4f, scene.width - 8f, scene.height - 8f);
+                GUI.DrawTexture(inset, harbour, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 16f);
+                GUI.DrawTexture(inset, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.3f), 0, 16f);
                 rect = new Rect(screenWidth / 2f - width / 2f, screenHeight / 2f - height / 2f, width, height);
-                skin.HardShadow(rect);
-                skin.Shape(rect, 2, false, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.9f), 3, UiSkin.FrameGold, UiSkin.FrameInner, UiSkin.FrameDark);
+                skin.DrawShadow(rect);
+                GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.88f), 0, 16f);
+                GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.9f), 1.5f, 16f);
             }
             else
             {
@@ -818,7 +814,7 @@ namespace FishingIdle.Game.UI
             var y = rect.y + 14;
             if (picture != null)
             {
-                Landscape(skin, new Rect(rect.x + 14, y, rect.width - 28, 96), picture);
+                GUI.DrawTexture(new Rect(rect.x + 14, y, rect.width - 28, 96), picture, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 10);
                 y += 108;
             }
 
@@ -826,7 +822,7 @@ namespace FishingIdle.Game.UI
             var w = rect.width - 60;
             GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Expedition.ReportLabel, skin.SmallGold);
             GUI.Label(new Rect(x, y + 18, w, 34), GameTexts.Expedition.ResultTitle, skin.Title);
-            GUI.Label(new Rect(x, y + 54, w, UiSkin.SmallLine), GameTexts.Expedition.ReturnedAt(report.Name, Format.DateTimeFromUnixMs(report.CompletedAtMs)), skin.SmallMuted);
+            GUI.Label(new Rect(x, y + 54, w, 20), GameTexts.Expedition.ReturnedAt(report.Name, Format.DateTimeFromUnixMs(report.CompletedAtMs)), skin.SmallMuted);
             y += 86;
 
             GUI.Label(new Rect(x, y, w, 22), GameTexts.Expedition.Brought, skin.BodyBold);

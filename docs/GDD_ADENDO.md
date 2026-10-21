@@ -3970,3 +3970,26 @@ regra, número, recompensa ou save mudou.
 Pedido do proprietário: "o boneco tá se mexendo mesmo sem pescar". Sem pesca ativa, o pescador mostra só o primeiro
 quadro da animação "parado", a vara fica no ângulo de descanso e a boia pendurada, sem balançar. O balanço de 4 quadros
 continua só enquanto ele espera o peixe morder, com a pesca ligada.
+
+### A-193 · Pixel art descartada: o jogo volta ao visual Lago Dourado (20/10/2026)
+
+Decisão do proprietário, 20/10/2026, 23h: "Acho que o jogo piorou, conseguimos voltar para a versão antes de começarmos
+essas mudanças visuais?" — escolheu **"Antes da pixel art"** e disse "pode esquecer essa versão que fizemos, ficou ruim".
+
+- **O Estilo ARC em pixel art (A-182 a A-192, M25) foi descartado.** O jogo volta ao visual **"Lago Dourado — Clean
+  Premium"** (`docs/ART_BIBLE_V0_1.md`, de novo a fonte de verdade visual), exatamente como estava no commit `f1ae044`
+  (último antes de a pele ARC entrar): cenário pintado, pescador, peixes, ícones, as telas no padrão "Diário de bordo"
+  (A-170) e as artes das telas do M24-T60 (A-181), com as fontes Fredoka e Nunito daquela época.
+- **Saem do jogo:** a pele ARC, a cena e a câmera pixel, as fontes Press Start 2P e VT323, a Nunito em quatro pesos da
+  A-191, a paleta "Ardósia", as telas reorganizadas da A-188 a A-191 e o pescador parado da A-192 (feito para o pescador
+  em pixel), a pasta `Resources/ArtePixel` e as ferramentas `tools/Arte/pixel_*`. Ficam só no histórico do git.
+- **Continuam (correções que não são visuais, feitas no checkup da M25-T17):**
+  - a duração do leilão ("1 hora" / "6 horas") vem do `GameTexts.Market.AuctionDuration`, não do código da tela;
+  - o Cardume dos adversários da Arena tem o tamanho do `cardume.max_fish` (era 6 fixo no código);
+  - a variação sorteada no tamanho dos peixes dos adversários está em `config/arena_bots.json`
+    (`strength_by_rank.size_percentile_spread`, o mesmo 0,1 de antes, validado entre 0 e 1);
+  - a viagem entre mapas usa só o `travel.duration_seconds` do `maps.json` (os 30 s escondidos no código saíram) e o
+    validador exige o campo, com pelo menos 1 s.
+- **Nada de regra, número ou save muda** em relação ao que o proprietário jogou: o save continua o mesmo.
+- `docs/ART_BIBLE_PIXEL.md` e `docs/ASSETS_PIXEL.md` ficam guardados só como histórico; as A-182 a A-192 acima também.
+- Visual só fica verificado quando o proprietário apertar Play.

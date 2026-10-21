@@ -1664,3 +1664,34 @@ estilo. Os pesos em arquivos separados deixam o negrito com o desenho certo.
 
 **Rever se.** No Play a letra parecer mole em algum tamanho (o `_Sharpness` do SDF é do Unity) ou o Unity mudar o
 `isSDF`: aí desenhar o texto fora da matriz com `fontSize` × escala.
+
+
+## TD-068 · Volta ao visual de antes da pixel art por um commit novo, sem reescrever o histórico (20/10/2026)
+
+**Origem.** O proprietário descartou o Estilo ARC em pixel art e pediu o jogo como estava antes dele (A-193).
+
+**Decisão.**
+- **Ponto de volta:** `f1ae044` ("Teste do Nv.10 em 20 minutos com sementes fixas"), o último commit em que o jogo lia
+  só a arte antiga. Os commits `b7e78ea` e `9360c83` só mudaram documentos e o CLAUDE.md; o `c79e2c4` só acrescentou
+  `Resources/ArtePixel` e a regra de importação, sem o jogo ler. A pele ARC entra em `fb5ed58` e a arte pixel é ligada
+  em `2baa038`.
+- **Como:** um commit novo na mesma branch, sem `reset`, `revert` em série, force push nem branch nova: a árvore inteira
+  foi trazida de `f1ae044` (`git checkout f1ae044 -- .`) e os arquivos criados depois foram apagados (comparação sem
+  detecção de renomeação, para pegar também os que só mudaram de pasta). O histórico da M25 continua no git.
+- **Mantido por cima:** as correções não visuais do checkup (TD-065): `GameTexts.Market.AuctionDuration`, Cardume dos
+  adversários pelo `config.CardumeSize`, `size_percentile_spread` no `arena_bots.json` com validação, viagem sem o `?? 30`
+  e validação de `travel.duration_seconds`. Todas são de regra/config/texto e não dependem da pele.
+- **Não trazido:** os textos tirados do `GameTexts` por estarem sem uso na pele ARC (o código antigo ainda pode usá-los)
+  e a remoção do `skin.Track` no `NameSearch` (o `Track` existe no `UiSkin` antigo).
+- **Removido também:** `Resources/ArtePixel` (417 arquivos, que voltaram com o `f1ae044`) e `tools/Arte/pixel_*`; no
+  `ArtImportSettings` sai a regra da pasta pixel (volta o arquivo de antes do `c79e2c4`) e a versão do importador sobe
+  para 9 (passou de 8 na M25), para o Unity reimportar a arte antiga com as regras dela.
+- **Documentação não perde história:** CHANGELOG, GDD_ADENDO, DECISOES, roadmap e ROADMAP.md continuam com as entradas da
+  M25; o M25 fica marcado como descartado (como o M23) e o `current_milestone` volta a `M24`. A versão segue a regra do
+  `docs/VERSIONAMENTO.md` com o `-m24` e um contador que não colide com nenhum já usado: `0.2.0-m24.30`, build 133.
+
+**Por quê.** Reescrever o histórico apagaria o trabalho que o proprietário pode querer consultar e quebraria quem já
+baixou a branch; reverter os 21 commits um a um misturaria correções que valem com as que não valem. A árvore de um commit
+conhecido mais as correções conferidas uma a uma é o caminho mais curto e verificável.
+
+**Rever se.** O proprietário quiser alguma peça da M25 de volta: ela está no histórico do git (`git show <commit>:<arquivo>`).

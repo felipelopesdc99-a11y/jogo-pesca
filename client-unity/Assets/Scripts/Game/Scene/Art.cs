@@ -95,6 +95,65 @@ namespace FishingIdle.Game.Scene
             return ToSprite(tex, w, new Vector2(0.5f, 0.5f));
         });
 
+        /// <summary>A four-pointed sparkle, 1 unit across, for glints of sun on the water.</summary>
+        public static Sprite Sparkle => Cached("sparkle", () =>
+        {
+            const int size = 64;
+            var tex = NewTexture(size, size);
+            var r = size / 2f;
+            Paint(tex, (x, y) =>
+            {
+                var dx = Mathf.Abs(x + 0.5f - r) / r;
+                var dy = Mathf.Abs(y + 0.5f - r) / r;
+                var cross = Mathf.Max(Mathf.Clamp01(1f - dx * 9f) * (1f - dy), Mathf.Clamp01(1f - dy * 9f) * (1f - dx));
+                var core = Mathf.Clamp01(1f - Mathf.Sqrt(dx * dx + dy * dy) * 3f);
+                var a = Mathf.Clamp01(cross * cross + core * core);
+                return new Color(1, 1, 1, a);
+            });
+            return ToSprite(tex, size, new Vector2(0.5f, 0.5f));
+        });
+
+        /// <summary>A soft beam of light, 1 unit wide and 4 tall, pivot at its top (for sun rays).</summary>
+        public static Sprite Beam => Cached("beam", () =>
+        {
+            const int w = 32, h = 128;
+            var tex = NewTexture(w, h);
+            Paint(tex, (x, y) =>
+            {
+                var u = Mathf.Abs((x + 0.5f) / w * 2f - 1f);
+                var v = (y + 0.5f) / h; // 1 at the top
+                var a = Mathf.Clamp01(1f - u * u) * Mathf.SmoothStep(0f, 1f, v) * Mathf.Clamp01((1f - v) * 12f + 0.2f);
+                return new Color(1, 1, 1, a);
+            });
+            return ToSprite(tex, 32, new Vector2(0.5f, 1f));
+        });
+
+        /// <summary>A small dragonfly seen from above-side: thin body and four clear wings (wings tinted by the renderer alpha).</summary>
+        public static Sprite Dragonfly => Cached("dragonfly", () =>
+        {
+            const int w = 96, h = 48;
+            var tex = NewTexture(w, h);
+            Paint(tex, (x, y) =>
+            {
+                var p = new Vector2(x + 0.5f, y + 0.5f);
+                var body = Mathf.Abs(p.y - h * 0.5f) < 2.2f && p.x > w * 0.12f && p.x < w * 0.86f ? 1f : 0f;
+                var head = Vector2.Distance(p, new Vector2(w * 0.86f, h * 0.5f)) < 4.2f ? 1f : 0f;
+                var wing = 0f;
+                foreach (var c in new[] { new Vector2(w * 0.60f, h * 0.78f), new Vector2(w * 0.60f, h * 0.22f), new Vector2(w * 0.44f, h * 0.74f), new Vector2(w * 0.44f, h * 0.26f) })
+                {
+                    wing = Mathf.Max(wing, Edge((1f - EllipseDistance(p, c, new Vector2(w * 0.13f, h * 0.2f))) * 6f));
+                }
+
+                if (body > 0f || head > 0f)
+                {
+                    return new Color(0.16f, 0.36f, 0.42f, 1f);
+                }
+
+                return new Color(0.86f, 0.95f, 1f, wing * 0.45f);
+            });
+            return ToSprite(tex, 96, new Vector2(0.5f, 0.5f));
+        });
+
         /// <summary>A vertical gradient, 1×1 unit, top colour first.</summary>
         public static Sprite VerticalGradient(string key, params Color[] topToBottom)
         {
@@ -350,7 +409,8 @@ namespace FishingIdle.Game.Scene
         });
 
         /// <summary>
-        /// The master art file of a species (ArtePixel/Peixes/fish_&lt;id&gt;_master.png), or null when it does not exist.
+        /// The master art file of a species (Resources/Arte/Peixes/fish_&lt;id&gt;_master.png, Art Bible
+        /// section 8), or null when it does not exist yet.
         /// </summary>
         public static Texture2D FishMaster(string speciesId)
         {
@@ -505,6 +565,72 @@ namespace FishingIdle.Game.Scene
                 var col = borderWidth > 0f && d > -borderWidth ? border : fill;
                 col.a *= a;
                 return col;
+            });
+            return tex;
+        }
+
+        /// <summary>
+        /// A rounded panel texture with a vertical gradient, a border and a faint highlight along the
+        /// top edge (the "Clean Premium" panel). <paramref name="height"/> gives the gradient room.
+        /// </summary>
+        public static Texture2D PanelTexture(Color top, Color bottom, Color border, int radius, float borderWidth, int height, float highlight = 0.06f)
+        {
+            var w = radius * 2 + 4;
+            var h = Mathf.Max(height, radius * 2 + 4);
+            var tex = NewTexture(w, h);
+            var centre = new Vector2(w / 2f, h / 2f);
+            var half = new Vector2(w / 2f, h / 2f);
+            Paint(tex, (x, y) =>
+            {
+                var d = RoundedRectDistance(new Vector2(x + 0.5f, y + 0.5f), centre, half, radius);
+                var a = Edge(-d);
+                var v = (y + 0.5f) / h; // 0 bottom, 1 top
+                var col = Color.Lerp(bottom, top, v);
+                if (borderWidth > 0f && d > -borderWidth)
+                {
+                    col = Color.Lerp(col, border, border.a);
+                    col.a = Mathf.Max(top.a, bottom.a);
+                }
+                else if (highlight > 0f && y > h - radius * 0.6f - borderWidth - 2f)
+                {
+                    col = Color.Lerp(col, Color.white, highlight);
+                }
+
+                col.a *= a;
+                return col;
+            });
+            return tex;
+        }
+
+        /// <summary>A white rounded outline only (tint it for rarity accents and selection).</summary>
+        public static Texture2D OutlineTexture(int radius, float borderWidth, float fillAlpha = 0f)
+        {
+            var size = radius * 2 + 4;
+            var tex = NewTexture(size, size);
+            var half = new Vector2(size / 2f, size / 2f);
+            Paint(tex, (x, y) =>
+            {
+                var d = RoundedRectDistance(new Vector2(x + 0.5f, y + 0.5f), half, half, radius);
+                var inside = Edge(-d);
+                var ring = Mathf.Clamp01(borderWidth + 0.5f + d);
+                var a = Mathf.Max(fillAlpha, ring) * inside;
+                return new Color(1f, 1f, 1f, a);
+            });
+            return tex;
+        }
+
+        /// <summary>A soft blurred rounded shape for shadows and outer glows (9-slice with border = radius + blur).</summary>
+        public static Texture2D SoftTexture(int radius, int blur, float strength = 1f)
+        {
+            var size = (radius + blur) * 2 + 4;
+            var tex = NewTexture(size, size);
+            var half = new Vector2(size / 2f, size / 2f);
+            var inner = half - new Vector2(blur, blur);
+            Paint(tex, (x, y) =>
+            {
+                var d = RoundedRectDistance(new Vector2(x + 0.5f, y + 0.5f), half, inner, radius);
+                var t = Mathf.Clamp01(1f - d / blur);
+                return new Color(1f, 1f, 1f, t * t * strength);
             });
             return tex;
         }

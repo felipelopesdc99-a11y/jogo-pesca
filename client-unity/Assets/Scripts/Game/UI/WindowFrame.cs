@@ -7,15 +7,14 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// The shared look of a full window in the ARC skin (addendum A-184, which updates the "Diário de bordo" of A-170):
-    /// the scene dimmed behind the night veil; a night-blue panel with the thin gold frame; the title in Nunito Bold 40
-    /// (A-191) on a raised tag with a gold line at the top-left; a pixel "✕" pill at the top-right to close; the window's
-    /// sub-tabs as ARC tabs sticking out of the right side.
+    /// The shared look of a full window, the "Diário de bordo" pattern the owner chose on 12/10/2026 (addendum A-170):
+    /// the scene dimmed behind a dark, slightly warm veil; a wooden frame with a sheet of light paper inside; the
+    /// title on a navy label with a gold border pinned to the top-left corner; a red seal "✕" on the top-right corner
+    /// to close; the window's sub-tabs as coloured bookmarks sticking out of the right side.
     /// </summary>
     /// <remarks>
-    /// The layout of A-170 is kept to the pixel (content area, header strip, tabs), so no window had to move its content;
-    /// only the pieces are drawn differently (the paper mode left in M25-T17). What used to be the subtitle is split by
-    /// what it is:
+    /// The sheet turns the skin's paper mode on (<see cref="UiSkin.Paper"/>): everything a window draws on it uses
+    /// dark ink (contrasts in A-170). What used to be the subtitle is split by what it is:
     /// <list type="bullet">
     /// <item><b>info</b> — a sentence that explains the menu, behind a round turquoise "i" on the label; clicking it
     /// opens the "Como funciona" note, drawn over the window body by <see cref="DrawInfoBalloon"/>.</item>
@@ -24,40 +23,52 @@ namespace FishingIdle.Game.UI
     /// </list>
     /// The free strip between the label (and its counter) and the seal is left in <see cref="Side"/> for the window's
     /// own header pieces (the Expedition's Cardume strength, the Ranking trophy).
-    /// Every piece is drawn by the code (<see cref="UiSkin.Shape"/>); the diary's painted files (ui_diario_*) are no longer
-    /// read and leave in M25-T17.
+    /// ASSET_PENDENTE: ui_diario_madeira, ui_diario_papel, ui_diario_etiqueta, ui_diario_lacre, ui_diario_marcador
+    /// (docs/ASSETS_PENDENTES.md); each piece falls back to the drawing below while its file is missing.
     /// </remarks>
     public static class WindowFrame
     {
-        // Layout, relative to the panel. The content area keeps the old place (28 px in, 80 px down), so no window had to
-        // move its content.
+        // Layout, relative to the wooden frame. The content area keeps the old place (28 px in, 80 px down), so no
+        // window had to move its content.
         private const float Margin = 28f, Wood = 14f;
 
         // Each side keeps clear of the HUD's round shortcuts (20 margin + 96 column + room for their labels), which stay
         // clickable beside an open window.
         private const float ShortcutClearance = 140f;
         private const float ContentTop = 80f, ContentBottom = 24f;
-        // The title tag sits inside the frame now (the diary's label stuck out of the corner).
-        private const float LabelLeft = 12f, LabelTop = 14f, LabelHeight = 52f;
-        private const float LabelPadLeft = 16f, LabelPadRight = 16f, LabelIcon = 32f, LabelIconGap = 10f;
-
-        // The closing "✕": a 44 px pill 18 px inside the top-right corner (its left edge stays right of HeaderRight).
-        private const float SealSize = 54f, SealInset = 24f, CloseSize = 44f, CloseInset = 18f;
+        private const float LabelLeft = -12f, LabelTop = -10f, LabelHeight = 56f;
+        private const float LabelPadLeft = 18f, LabelPadRight = 16f, LabelIcon = 32f, LabelIconGap = 10f;
+        private const float SealSize = 54f, SealInset = 24f;
         private const float SideTop = 18f, SideHeight = 46f, SideGap = 12f;
 
-        // The bookmarks: how far they stick out of the frame, and their size. 136 since A-191 (was 128): the longest
-        // one-word label, "Enciclopédia" (120 px in Nunito SemiBold 21), fits whole.
-        private const float BookmarkOut = 136f, BookmarkUnder = 8f, BookmarkTop = 92f, BookmarkGap = 8f, BookmarkIcon = 28f, BookmarkTuck = 8f;
+        // The bookmarks: how far they stick out of the frame, and their size.
+        private const float BookmarkOut = 96f, BookmarkUnder = 8f, BookmarkTop = 92f, BookmarkGap = 8f, BookmarkIcon = 28f, BookmarkTuck = 8f;
 
         // The "i" on the label and its note.
         private const float InfoSize = 28f, TipWidth = 460f, TipPad = 16f;
 
-        /// <summary>Dark text on the turquoise "i" (#06313A, 6,3:1).</summary>
-        private static readonly Color InfoInk = Rgb(0x06313A);
+        // Art (Resources/Arte/UI), delivered 12/10/2026; the drawing below each one is the fallback if a file is removed.
+        private const string WoodArt = "UI/ui_diario_madeira", PaperArt = "UI/ui_diario_papel", LabelArt = "UI/ui_diario_etiqueta",
+            SealArt = "UI/ui_diario_lacre", BookmarkArt = "UI/ui_diario_marcador";
+
+        /// <summary>Borders kept whole by the 9-slice files (texture pixels; see docs/ASSETS_PENDENTES.md).</summary>
+        private const float WoodArtBorder = 76f, PaperArtBorder = 32f, LabelArtSide = 40f, LabelArtTail = 44f, LabelArtCap = 24f, BookmarkArtSide = 24f;
+
+        // Colours of the drawn fallback (the example the owner chose).
+        private static readonly Color WoodFill = Rgb(0x9B673D), WoodSeam = Rgb(0x8A5A33), WoodEdge = Rgb(0x4B301A);
+        private static readonly Color LabelFill = Rgb(0x16304E), LabelTopFill = Rgb(0x1D3D60), LabelEdge = Rgb(0xF6B93B);
+        private static readonly Color SealFill = Rgb(0xB83A2E), SealLight = Rgb(0xE0675A), SealLip = Rgb(0x6B1D16), SealEdge = Rgb(0xFFD2CB);
+        private static readonly Color TitleInk = Rgb(0xF4F8FC), TitleShade = Rgb(0x061423), InfoInk = Rgb(0x06313A), PaperShade = Rgb(0x7A5A36);
+
+        /// <summary>Bookmark colours, in tab order (white text on each at 4.7:1 or more).</summary>
+        private static readonly Color[] BookmarkColors =
+        {
+            Rgb(0x1E7F7C), Rgb(0x2F5F9E), Rgb(0x94621A), Rgb(0x6A43A0), Rgb(0xA0473A), Rgb(0x2E7A4A),
+        };
 
         private static readonly Dictionary<string, int> LastFrame = new Dictionary<string, int>();
 
-        private static GUIStyle _title, _infoGlyph, _counter, _tipTitle, _tipBody, _bookmark, _bookmarkNote, _bookmarkOn;
+        private static GUIStyle _title, _titleShadow, _infoGlyph, _counter, _tipTitle, _tipBody, _paper, _bookmark, _bookmarkNote;
 
         // The open "Como funciona" note: which header owns it, its text and where it goes.
         private static string _tipKey, _tipText;
@@ -86,8 +97,8 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// Where the closing "✕" of a frame starts on the left (the old seal's place, kept), less the usual 16 px gap:
-        /// header pieces a window draws itself (search, wallet) end here.
+        /// Where the closing seal of a frame starts on the left, less the usual 16 px gap: header pieces a window draws
+        /// itself (search, wallet) end here.
         /// </summary>
         public static float HeaderRight(Rect panel) => panel.xMax - SealInset - SealSize / 2f - 16f;
 
@@ -98,16 +109,18 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// Dims the scene behind the night veil and draws the ARC panel; returns the frame rect.
+        /// Dims the scene, draws the wooden frame and its sheet, and turns paper mode on; returns the frame rect.
         /// With <paramref name="bookmarks"/>, the frame is narrower by the bookmarks' width so the whole window keeps
         /// its old footprint.
         /// </summary>
         public static Rect Panel(UiSkin skin, float screenWidth, float screenHeight, float maxWidth, float maxHeight, bool bookmarks = false)
         {
+            UiSkin.SetPaper(false);
             EnsureStyles(skin);
 
-            // The veil (#0A0C1C at 45%, Art Bible 7).
+            // The veil: the night overlay plus a light warm tone (a real blur costs a render texture; not worth it).
             GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), skin.Overlay);
+            Fill(skin, new Rect(0, 0, screenWidth, screenHeight), new Color(UiSkin.Ink.r, UiSkin.Ink.g, UiSkin.Ink.b, 0.12f), 0f);
 
             var width = Mathf.Min(maxWidth, screenWidth - ShortcutClearance * 2f);
             var height = Mathf.Min(maxHeight, screenHeight - 120f);
@@ -117,12 +130,14 @@ namespace FishingIdle.Game.UI
                 panel = new Rect(panel.x, panel.y, panel.width - BookmarkOut, panel.height);
             }
 
-            DrawFrame(skin, panel);
+            DrawWood(skin, panel);
+            DrawSheet(skin, Sheet(panel));
             _panel = panel;
+            UiSkin.SetPaper(true);
             return panel;
         }
 
-        /// <summary>The inside of a frame.</summary>
+        /// <summary>The paper sheet inside a frame.</summary>
         public static Rect Sheet(Rect panel)
         {
             return new Rect(panel.x + Wood, panel.y + Wood, panel.width - Wood * 2f, panel.height - Wood * 2f);
@@ -146,7 +161,7 @@ namespace FishingIdle.Game.UI
 
             LastFrame[key] = frame;
 
-            var seal = CloseRect(panel);
+            var seal = new Rect(panel.xMax - SealInset - SealSize / 2f, panel.y + SealInset - SealSize / 2f, SealSize, SealSize);
             var hasInfo = !string.IsNullOrEmpty(info);
             var hasCounter = !string.IsNullOrEmpty(counter);
 
@@ -156,9 +171,8 @@ namespace FishingIdle.Game.UI
             var infoWidth = hasInfo ? InfoSize + 12f : 0f;
             var maxLabel = seal.x - 16f - reserveRight - labelX - 16f - (hasCounter ? 150f : 0f);
             var titleSpace = Mathf.Max(40f, maxLabel - LabelPadLeft - iconWidth - infoWidth - LabelPadRight);
-            var titleStyle = _title;
-            var titleText = FishCard.Fit(title ?? string.Empty, titleStyle, titleSpace);
-            var titleWidth = Mathf.Min(titleStyle.CalcSize(new GUIContent(titleText)).x, titleSpace);
+            var titleText = FishCard.Fit(title ?? string.Empty, _title, titleSpace);
+            var titleWidth = Mathf.Min(_title.CalcSize(new GUIContent(titleText)).x, titleSpace);
             var label = new Rect(labelX, panel.y + LabelTop, LabelPadLeft + iconWidth + titleWidth + infoWidth + LabelPadRight, LabelHeight);
             var infoRect = new Rect(label.xMax - LabelPadRight - InfoSize, label.center.y - InfoSize / 2f, InfoSize, InfoSize);
 
@@ -203,7 +217,8 @@ namespace FishingIdle.Game.UI
             }
 
             var titleRect = new Rect(x, label.y, titleWidth + 4f, label.height);
-            GUI.Label(titleRect, titleText, titleStyle);
+            GUI.Label(new Rect(titleRect.x, titleRect.y + 2f, titleRect.width, titleRect.height), titleText, _titleShadow);
+            GUI.Label(titleRect, titleText, _title);
 
             if (hasInfo && InfoButton(skin, infoRect, tipOpen))
             {
@@ -215,14 +230,14 @@ namespace FishingIdle.Game.UI
                 }
             }
 
-            // The free strip right of the label; a counter takes its start, on a sunken field.
+            // The free strip right of the label; a counter takes its start, on a sunken spot of the sheet.
             var sideX = label.xMax + 16f;
             Side = new Rect(sideX, panel.y + SideTop, Mathf.Max(0f, seal.x - 16f - reserveRight - sideX), SideHeight);
             if (hasCounter && Side.width > 60f)
             {
-                // Soft text beside the title, no box (A-190).
-                var well = TakeSide(Mathf.Min(_counter.CalcSize(new GUIContent(counter)).x + 8f, Side.width));
-                GUI.Label(well, FishCard.Fit(counter, _counter, well.width), _counter);
+                var well = TakeSide(Mathf.Min(_counter.CalcSize(new GUIContent(counter)).x + 36f, Side.width));
+                skin.Inset(well);
+                GUI.Label(well, FishCard.Fit(counter, _counter, well.width - 20f), _counter);
             }
 
             if (CloseSeal(skin, panel))
@@ -254,41 +269,53 @@ namespace FishingIdle.Game.UI
             var clicked = -1;
             var width = BookmarkOut + BookmarkUnder;
             var y = _panel.y + BookmarkTop;
+            var art = ArtAssets.Texture(BookmarkArt);
             for (var i = 0; i < labels.Count; i++)
             {
                 var icon = icons != null && i < icons.Count ? icons[i] : null;
                 var note = notes != null && i < notes.Count ? notes[i] : null;
                 var textWidth = width - BookmarkUnder - 8f;
-                // A word wider than the tab ends in "…" instead of being cut (A-190).
-                var labelText = labels[i].IndexOf(' ') < 0 ? FishCard.Fit(labels[i], _bookmark, textWidth) : labels[i];
-                var labelHeight = _bookmark.CalcHeight(new GUIContent(labelText), textWidth);
-                var noteHeight = string.IsNullOrEmpty(note) ? 0f : UiSkin.SmallLine;
+                var labelHeight = _bookmark.CalcHeight(new GUIContent(labels[i]), textWidth);
+                var noteHeight = string.IsNullOrEmpty(note) ? 0f : 18f;
                 var height = 12f + (icon != null ? BookmarkIcon + 2f : 0f) + labelHeight + noteHeight + 10f;
                 var on = i == active;
                 var tab = new Rect(_panel.xMax - BookmarkUnder - (on ? 0f : BookmarkTuck), y, width, height);
                 var hover = GUI.enabled && tab.Contains(Event.current.mousePosition);
-
-                // ARC tabs (A-184): the open one is the raised panel with the gold frame and title-coloured text; the others
-                // are the field with the dark-blue line and soft text (gold line on hover).
-                skin.HardShadow(tab);
-                if (on)
+                var color = BookmarkColors[i % BookmarkColors.Length];
+                if (!on)
                 {
-                    skin.FramedBox(tab, VisualTheme.Current.PanelElevated, UiSkin.FrameGold);
+                    color = Color.Lerp(color, UiSkin.Ink, hover ? 0.05f : 0.22f);
+                }
+
+                // A shadow, the coloured tab (rounded on the outer side only) and a white edge on the open one.
+                GUI.DrawTexture(new Rect(tab.x + 3f, tab.y + 4f, tab.width, tab.height), skin.White, ScaleMode.StretchToFill, true, 0, new Color(0f, 0f, 0f, 0.28f), Vector4.zero, new Vector4(0f, 12f, 12f, 0f));
+                if (art != null)
+                {
+                    var previous = GUI.color;
+                    GUI.color = previous * color;
+                    UiSkin.NineSlice(tab, art, BookmarkArtSide, BookmarkArtSide, BookmarkArtSide, BookmarkArtSide, 1f);
+                    GUI.color = previous;
                 }
                 else
                 {
-                    skin.LineBox(tab, VisualTheme.Current.Field, hover ? UiSkin.FrameGold : UiSkin.ChipOffColor, 2);
+                    GUI.DrawTexture(tab, skin.White, ScaleMode.StretchToFill, true, 0, color, Vector4.zero, new Vector4(0f, 12f, 12f, 0f));
+                    GUI.DrawTexture(new Rect(tab.x, tab.y, tab.width, 3f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.14f), Vector4.zero, new Vector4(0f, 3f, 0f, 0f));
+                }
+
+                if (on)
+                {
+                    GUI.DrawTexture(tab, skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.7f), new Vector4(0f, 2f, 2f, 2f), new Vector4(0f, 12f, 12f, 0f));
                 }
 
                 var cy = tab.y + 12f;
                 var textX = tab.x + BookmarkUnder + 4f;
                 if (icon != null)
                 {
-                    skin.DrawIconExact(UiSkin.Snap(new Rect(textX + textWidth / 2f - BookmarkIcon / 2f, cy, BookmarkIcon, BookmarkIcon)), icon, on || hover ? Color.white : new Color(1f, 1f, 1f, 0.75f));
+                    skin.DrawIconExact(new Rect(textX + textWidth / 2f - BookmarkIcon / 2f, cy, BookmarkIcon, BookmarkIcon), icon, Color.white);
                     cy += BookmarkIcon + 2f;
                 }
 
-                GUI.Label(new Rect(textX, cy, textWidth, labelHeight), labelText, on ? _bookmarkOn : _bookmark);
+                GUI.Label(new Rect(textX, cy, textWidth, labelHeight), labels[i], _bookmark);
                 if (noteHeight > 0f)
                 {
                     GUI.Label(new Rect(textX, cy + labelHeight, textWidth, noteHeight), note, _bookmarkNote);
@@ -306,24 +333,24 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// The window's own scene (aquarium tank, archipelago, nautical chart) set in the panel like a framed picture: the
-        /// three-line ARC frame (gold, a dark line, dark gold) around <paramref name="scene"/>. Draw it before the scene.
+        /// The window's own scene (aquarium tank, archipelago, nautical chart) set on the sheet like a photo: a white
+        /// border with a soft shadow around <paramref name="scene"/>. Draw it before the scene.
         /// </summary>
         public static void Photo(UiSkin skin, Rect scene)
         {
             const float border = 6f;
             var outer = new Rect(scene.x - border, scene.y - border, scene.width + border * 2f, scene.height + border * 2f);
-            skin.FramedBox(outer, VisualTheme.Current.Field, UiSkin.FrameGold);
+            Fill(skin, new Rect(outer.x + 3f, outer.y + 4f, outer.width, outer.height), new Color(PaperShade.r, PaperShade.g, PaperShade.b, 0.35f), 6f);
+            Fill(skin, outer, Rgb(0xFFFAF0), 6f);
         }
 
         /// <summary>
-        /// A window's own picture (Resources/ArtePixel/<paramref name="artPath"/>) set on the sheet like a photo (A-170, A-179):
-        /// the ARC frame, then the art covering <paramref name="rect"/> (PixelDraw.Cover: pixel art at a whole scale, cut at
-        /// the edges; never stretched). <paramref name="focusX"/>/<paramref name="focusY"/> pick the part of the picture
-        /// that stays in the middle. Returns the texture, or null when the file is missing (nothing is drawn; the caller keeps
+        /// A window's own picture (Resources/Arte/<paramref name="artPath"/>) set on the sheet like a photo (A-170, A-179):
+        /// the white border with its shadow, then the art covering <paramref name="rect"/> (ScaleAndCrop: cropped to fit,
+        /// never stretched). Returns the texture, or null when the file is missing (nothing is drawn; the caller keeps
         /// its old look).
         /// </summary>
-        public static Texture2D PhotoArt(UiSkin skin, Rect rect, string artPath, float focusX = 0.5f, float focusY = 0.5f)
+        public static Texture2D PhotoArt(UiSkin skin, Rect rect, string artPath)
         {
             var art = ArtAssets.Texture(artPath);
             if (art == null || rect.width <= 0f || rect.height <= 0f)
@@ -332,8 +359,7 @@ namespace FishingIdle.Game.UI
             }
 
             Photo(skin, rect);
-            // Pixel art at a whole scale, cut at the edges (M25-T15); the old art keeps its ScaleAndCrop.
-            PixelDraw.Cover(rect, art, Color.white, focusX, focusY);
+            GUI.DrawTexture(rect, art, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, 4f);
             return art;
         }
 
@@ -344,12 +370,13 @@ namespace FishingIdle.Game.UI
         public static void Veil(UiSkin skin, Rect rect, float left, float right)
         {
             const int bands = 12;
-            var night = UiSkin.Night;
+            var night = UiSkin.SceneNight;
             var bandWidth = rect.width / bands;
             for (var i = 0; i < bands; i++)
             {
                 var alpha = Mathf.Lerp(left, right, (i + 0.5f) / bands);
-                Fill(skin, new Rect(rect.x + i * bandWidth, rect.y, bandWidth + (i < bands - 1 ? 1f : 0f), rect.height), new Color(night.r, night.g, night.b, alpha), 0f);
+                var radius = i == 0 || i == bands - 1 ? 4f : 0f;
+                Fill(skin, new Rect(rect.x + i * bandWidth, rect.y, bandWidth + (i < bands - 1 ? 1f : 0f), rect.height), new Color(night.r, night.g, night.b, alpha), radius);
             }
         }
 
@@ -358,13 +385,11 @@ namespace FishingIdle.Game.UI
         /// <paramref name="region"/> is in the picture's pixels (top-left origin). Used to put cards on a part of the art
         /// (the cork of the Eventos board).
         /// </summary>
-        public static Rect CropMap(Rect drawn, Texture art, Rect region, float focusX = 0.5f, float focusY = 0.5f)
+        public static Rect CropMap(Rect drawn, Texture art, Rect region)
         {
-            // The same placement PhotoArt used (PixelDraw.Cover): a whole scale for pixel art.
-            var whole = PixelDraw.CoverRect(drawn, art, focusX, focusY);
-            var scale = whole.width / art.width;
-            var ox = whole.x;
-            var oy = whole.y;
+            var scale = Mathf.Max(drawn.width / art.width, drawn.height / art.height);
+            var ox = drawn.x + (drawn.width - art.width * scale) / 2f;
+            var oy = drawn.y + (drawn.height - art.height * scale) / 2f;
             var r = Rect.MinMaxRect(ox + region.xMin * scale, oy + region.yMin * scale, ox + region.xMax * scale, oy + region.yMax * scale);
             return Rect.MinMaxRect(Mathf.Max(r.xMin, drawn.xMin), Mathf.Max(r.yMin, drawn.yMin), Mathf.Min(r.xMax, drawn.xMax), Mathf.Min(r.yMax, drawn.yMax));
         }
@@ -376,7 +401,7 @@ namespace FishingIdle.Game.UI
         public static void OutlinedLabel(Rect rect, string text, GUIStyle style)
         {
             var previous = GUI.contentColor;
-            var night = UiSkin.Night;
+            var night = UiSkin.SceneNight;
             GUI.contentColor = new Color(night.r, night.g, night.b, previous.a * 0.95f);
             GUI.Label(new Rect(rect.x - 2f, rect.y, rect.width, rect.height), text, style);
             GUI.Label(new Rect(rect.x + 2f, rect.y, rect.width, rect.height), text, style);
@@ -387,22 +412,18 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// The footer of a window: a dotted dark-gold line (art pixels two apart) over the bottom <paramref name="height"/>
-        /// px of <paramref name="area"/>, where the main action goes. Returns the footer rect (below the line).
+        /// The footer of a sheet: a dashed line over the bottom <paramref name="height"/> px of <paramref name="area"/>,
+        /// where the main action goes. Returns the footer rect (below the line).
         /// </summary>
         public static Rect Footer(UiSkin skin, Rect area, float height)
         {
-            var y = Mathf.Round(area.yMax - height - 8f);
-            if (Event.current.type == EventType.Repaint)
+            var y = area.yMax - height;
+            for (var x = area.x; x < area.xMax; x += 10f)
             {
-                const float step = UiSkin.ArcPixel * 3;
-                for (var x = Mathf.Round(area.x); x < area.xMax; x += step)
-                {
-                    Fill(skin, new Rect(x, y, Mathf.Min(UiSkin.ArcPixel * 2, area.xMax - x), UiSkin.ArcPixel), UiSkin.FrameDark, 0f);
-                }
+                Fill(skin, new Rect(x, y - 8f, Mathf.Min(6f, area.xMax - x), 1.5f), UiSkin.PaperLine, 0f);
             }
 
-            return new Rect(area.x, area.yMax - height, area.width, height);
+            return new Rect(area.x, y, area.width, height);
         }
 
         /// <summary>Records the open note's text and place for <see cref="DrawInfoBalloon"/> this frame.</summary>
@@ -410,7 +431,7 @@ namespace FishingIdle.Game.UI
         {
             var width = Mathf.Min(TipWidth, panel.width - Margin * 2f);
             var textHeight = _tipBody.CalcHeight(new GUIContent(info), width - TipPad * 2f);
-            _tipRect = new Rect(label.x + 18f, label.yMax + 12f, width, TipPad + 32f + textHeight + TipPad);
+            _tipRect = new Rect(label.x + 18f, label.yMax + 12f, width, TipPad + 22f + 4f + textHeight + TipPad);
             _tipText = info;
             _tipFrame = frame;
         }
@@ -425,12 +446,13 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// Ends the windows: draws the open "Como funciona" note over everything the windows
+        /// Ends the windows: turns paper mode off and draws the open "Como funciona" note over everything the windows
         /// drew this frame. The HUD calls it right after the windows; <paramref name="blocked"/> (a window dialog is
         /// open) closes the note.
         /// </summary>
         public static void DrawInfoBalloon(UiSkin skin, bool blocked)
         {
+            UiSkin.SetPaper(false);
             if (_tipKey == null)
             {
                 return;
@@ -445,12 +467,12 @@ namespace FishingIdle.Game.UI
 
             EnsureStyles(skin);
             var r = _tipRect;
-            // The ARC tooltip: the panel night with a dark-gold line and a turquoise stripe (the "i" is turquoise).
-            skin.HardShadow(r);
-            skin.TipBox(r);
-            Fill(skin, UiSkin.Snap(new Rect(r.x + UiSkin.ArcPixel * 2, r.y + UiSkin.ArcPixel * 3, UiSkin.ArcPixel * 2, r.height - UiSkin.ArcPixel * 6)), UiSkin.Accent, 0f);
-            GUI.Label(new Rect(r.x + TipPad, r.y + TipPad, r.width - TipPad * 2f, 28f), GameTexts.WindowHeader.InfoTitle, _tipTitle);
-            GUI.Label(new Rect(r.x + TipPad, r.y + TipPad + 32f, r.width - TipPad * 2f, r.height - TipPad * 2f - 32f), _tipText, _tipBody);
+            Fill(skin, new Rect(r.x - 2f, r.y + 5f, r.width + 4f, r.height + 4f), new Color(0f, 0f, 0f, 0.3f), 10f);
+            Fill(skin, r, UiSkin.PaperCard, 8f);
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.PaperLine, 1.5f, 8f);
+            GUI.DrawTexture(new Rect(r.x, r.y, 5f, r.height), skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.NightAccent, Vector4.zero, new Vector4(8f, 0f, 0f, 8f));
+            GUI.Label(new Rect(r.x + TipPad, r.y + TipPad - 2f, r.width - TipPad * 2f, 22f), GameTexts.WindowHeader.InfoTitle, _tipTitle);
+            GUI.Label(new Rect(r.x + TipPad, r.y + TipPad + 24f, r.width - TipPad * 2f, r.height - TipPad * 2f - 24f), _tipText, _tipBody);
         }
 
         /// <summary>Closes the "Como funciona" note (Esc). Returns true when it was open.</summary>
@@ -465,9 +487,13 @@ namespace FishingIdle.Game.UI
             return true;
         }
 
-        /// <summary>A centred confirmation box over everything, on the ARC panel. Returns the box rect.</summary>
+        /// <summary>
+        /// A centred confirmation box over everything, on the night panel (paper mode off: dialogs keep the light
+        /// text of the Art Bible). Returns the box rect.
+        /// </summary>
         public static Rect Dialog(UiSkin skin, float screenWidth, float screenHeight, float height, float width = 640f)
         {
+            UiSkin.SetPaper(false);
             var rect = new Rect(screenWidth / 2f - width / 2f, screenHeight / 2f - height / 2f, width, height);
             GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), skin.Overlay);
             skin.DrawShadow(rect);
@@ -477,35 +503,70 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ the frame
 
-        /// <summary>The ARC panel of a window: its hard shadow and the three-line gold frame around the night.</summary>
-        private static void DrawFrame(UiSkin skin, Rect r)
+        private static void DrawWood(UiSkin skin, Rect r)
         {
-            skin.HardShadow(r);
-            GUI.Box(r, GUIContent.none, skin.Panel);
+            var previous = GUI.backgroundColor;
+            GUI.backgroundColor = new Color(0f, 0f, 0f, 1f);
+            skin.DrawShadow(r);
+            GUI.backgroundColor = previous;
+
+            var art = ArtAssets.Texture(WoodArt);
+            if (art != null)
+            {
+                UiSkin.NineSlice(r, art, WoodArtBorder, WoodArtBorder, WoodArtBorder, WoodArtBorder, Wood / WoodArtBorder);
+                return;
+            }
+
+            // Vertical planks: the wood with a darker seam every 46 px, a dark edge and a light line along the top.
+            const float radius = 16f;
+            Fill(skin, r, WoodFill, radius);
+            for (var x = r.x + 46f; x < r.xMax - 10f; x += 46f)
+            {
+                Fill(skin, new Rect(x, r.y + 3f, 2f, r.height - 6f), WoodSeam, 0f);
+            }
+
+            Fill(skin, new Rect(r.x + 10f, r.y + 3f, r.width - 20f, 1.5f), new Color(1f, 1f, 1f, 0.16f), 0f);
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, WoodEdge, 3f, radius);
         }
 
-        /// <summary>
-        /// The title tag. Since A-190 (at most two levels of box) the title is plain text on the panel: nothing is drawn
-        /// behind it. Kept as the one place to bring a tag back.
-        /// </summary>
+        private static void DrawSheet(UiSkin skin, Rect r)
+        {
+            var art = ArtAssets.Texture(PaperArt);
+            if (art != null)
+            {
+                UiSkin.NineSlice(r, art, PaperArtBorder, PaperArtBorder, PaperArtBorder, PaperArtBorder, 0.5f);
+                return;
+            }
+
+            GUI.Box(r, GUIContent.none, _paper);
+            // A soft brown shade along the edges, as if the sheet sat a little under the frame.
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(PaperShade.r, PaperShade.g, PaperShade.b, 0.30f), 3f, 10f);
+            GUI.DrawTexture(new Rect(r.x + 3f, r.y + 3f, r.width - 6f, r.height - 6f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(PaperShade.r, PaperShade.g, PaperShade.b, 0.10f), 4f, 8f);
+        }
+
         private static void DrawLabel(UiSkin skin, Rect r)
         {
-        }
+            Fill(skin, new Rect(r.x + 2f, r.y + 6f, r.width, r.height), new Color(0f, 0f, 0f, 0.35f), 10f);
+            var art = ArtAssets.Texture(LabelArt);
+            if (art != null)
+            {
+                UiSkin.NineSlice(r, art, LabelArtSide, LabelArtTail, LabelArtCap, LabelArtCap, r.height / art.height);
+                return;
+            }
 
-        /// <summary>Where the closing "✕" of a frame goes.</summary>
-        private static Rect CloseRect(Rect panel)
-        {
-            return new Rect(panel.xMax - CloseInset - CloseSize, panel.y + CloseInset, CloseSize, CloseSize);
+            const float radius = 9f;
+            Fill(skin, r, LabelFill, radius);
+            GUI.DrawTexture(new Rect(r.x, r.y, r.width, r.height * 0.45f), skin.White, ScaleMode.StretchToFill, true, 0, LabelTopFill, Vector4.zero, new Vector4(radius, radius, 0f, 0f));
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, LabelEdge, 2.5f, radius);
         }
 
         /// <summary>
-        /// The pixel "✕" on the top-right corner of <paramref name="panel"/>: a field pill with the gold line and a
-        /// reward-gold cross drawn in art pixels (windows that draw their own header, like the Profile, use it directly).
-        /// Returns true when clicked.
+        /// The red wax seal with a "✕" on the top-right corner of <paramref name="panel"/> (windows that draw their own
+        /// header, like the Profile, use it directly). Returns true when clicked.
         /// </summary>
         public static bool CloseSeal(UiSkin skin, Rect panel)
         {
-            var rect = CloseRect(panel);
+            var rect = new Rect(panel.xMax - SealInset - SealSize / 2f, panel.y + SealInset - SealSize / 2f, SealSize, SealSize);
             var hover = GUI.enabled && rect.Contains(Event.current.mousePosition);
             var previous = GUI.color;
             if (!GUI.enabled)
@@ -513,31 +574,26 @@ namespace FishingIdle.Game.UI
                 GUI.color = previous * new Color(1f, 1f, 1f, 0.5f);
             }
 
-            var theme = VisualTheme.Current;
-            // Only the cross at rest (A-190); the pill shows on hover, so the 44 px target stays clear.
-            if (hover)
+            var art = ArtAssets.Texture(SealArt);
+            if (art != null)
             {
-                skin.PixelPill(rect, theme.PanelElevated, UiSkin.FrameGold);
-            }
-            if (Event.current.type == EventType.Repaint)
-            {
-                // A 7 × 7 art-pixel cross, two pixels thick, in the title colour.
-                const int p = UiSkin.ArcPixel;
-                var x0 = Mathf.Round(rect.center.x - 3.5f * p);
-                var y0 = Mathf.Round(rect.center.y - 3.5f * p);
-                var ink = hover ? Color.white : theme.Title;
-                for (var i = 0; i < 7; i++)
+                GUI.DrawTexture(rect, art, ScaleMode.ScaleToFit, true);
+                if (hover)
                 {
-                    Fill(skin, new Rect(x0 + i * p, y0 + i * p, p, p), ink, 0f);
-                    Fill(skin, new Rect(x0 + (6 - i) * p, y0 + i * p, p, p), ink, 0f);
-                    if (i < 6)
-                    {
-                        Fill(skin, new Rect(x0 + (i + 1) * p, y0 + i * p, p, p), ink, 0f);
-                        Fill(skin, new Rect(x0 + (5 - i) * p, y0 + i * p, p, p), ink, 0f);
-                    }
+                    Fill(skin, rect, new Color(1f, 1f, 1f, 0.12f), rect.width / 2f);
                 }
             }
+            else
+            {
+                var r = rect.width / 2f;
+                Fill(skin, new Rect(rect.x, rect.y + 4f, rect.width, rect.height), SealLip, r);
+                Fill(skin, rect, hover ? Color.Lerp(SealFill, Color.white, 0.12f) : SealFill, r);
+                Fill(skin, new Rect(rect.x + rect.width * 0.18f, rect.y + rect.height * 0.12f, rect.width * 0.5f, rect.height * 0.42f), new Color(SealLight.r, SealLight.g, SealLight.b, 0.55f), rect.width * 0.25f);
+                GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, SealEdge, 2f, r);
+            }
 
+            var glyph = rect.width * 0.4f;
+            skin.DrawIconExact(new Rect(rect.center.x - glyph / 2f, rect.center.y - glyph / 2f, glyph, glyph), Icons.Close, Color.white);
             GUI.color = previous;
             return GUI.Button(rect, GUIContent.none, GUIStyle.none);
         }
@@ -546,13 +602,14 @@ namespace FishingIdle.Game.UI
         private static bool InfoButton(UiSkin skin, Rect rect, bool open)
         {
             var hover = GUI.enabled && rect.Contains(Event.current.mousePosition);
-            var face = open || hover ? UiSkin.AccentHover : UiSkin.Accent;
+            var face = open || hover ? UiSkin.NightAccentHover : UiSkin.NightAccent;
             if (!GUI.enabled)
             {
                 face.a *= 0.5f;
             }
 
-            skin.PixelPill(rect, face, UiSkin.FrameInner);
+            Fill(skin, new Rect(rect.x - 2f, rect.y - 2f, rect.width + 4f, rect.height + 4f), LabelFill, rect.width / 2f + 2f);
+            Fill(skin, rect, face, rect.width / 2f);
             GUI.Label(new Rect(rect.x, rect.y - 1f, rect.width, rect.height), GameTexts.WindowHeader.InfoButton, _infoGlyph);
             return GUI.Button(rect, GUIContent.none, GUIStyle.none);
         }
@@ -569,7 +626,7 @@ namespace FishingIdle.Game.UI
             return new Color(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f, (rgb & 0xFF) / 255f, 1f);
         }
 
-        // These styles set their own colours (title colour on the tag, text on the panel) and are not tracked by the skin.
+        // These styles set their own colours (white on the label, ink on the sheet) and are not tracked by the skin.
         private static void EnsureStyles(UiSkin skin)
         {
             if (_title != null)
@@ -577,23 +634,25 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            _title = new GUIStyle(skin.Title) { font = skin.TitleBoldFont, fontSize = UiSkin.WindowTitleSize, alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Overflow };
-            _title.normal.textColor = UiSkin.TitleColor;
-            _infoGlyph = new GUIStyle(skin.Title) { font = skin.TitleBoldFont, fontSize = UiSkin.NumberSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
+            _title = new GUIStyle(skin.Title) { font = skin.TitleBoldFont, fontSize = 28, alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Overflow };
+            _title.normal.textColor = TitleInk;
+            _titleShadow = new GUIStyle(_title);
+            _titleShadow.normal.textColor = new Color(TitleShade.r, TitleShade.g, TitleShade.b, 0.9f);
+            _infoGlyph = new GUIStyle(skin.Title) { font = skin.TitleBoldFont, fontSize = 18, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _infoGlyph.normal.textColor = InfoInk;
-            _counter = new GUIStyle(skin.Heading) { fontSize = UiSkin.BodySize, alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Clip };
-            _counter.normal.textColor = UiSkin.Muted;
-            _tipTitle = new GUIStyle(skin.Heading) { wordWrap = false };
-            _tipTitle.normal.textColor = UiSkin.TitleColor;
+            _counter = new GUIStyle(skin.Heading) { fontSize = 18, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip };
+            _counter.normal.textColor = UiSkin.Ink;
+            _tipTitle = new GUIStyle(skin.Heading) { fontSize = 16, wordWrap = false };
+            _tipTitle.normal.textColor = UiSkin.InkAccent;
             _tipBody = new GUIStyle(skin.Body) { fontSize = UiSkin.SmallSize, wordWrap = true };
-            _tipBody.normal.textColor = UiSkin.Text;
-            // The tab label at the small size, the note under it at the chip size (Art Bible 7.1 minimums).
-            _bookmark = new GUIStyle(skin.SmallBold) { font = skin.SemiBoldFont, fontSize = UiSkin.SmallSize, alignment = TextAnchor.UpperCenter, wordWrap = true, clipping = TextClipping.Overflow };
-            _bookmark.normal.textColor = UiSkin.Muted;
-            _bookmarkOn = new GUIStyle(_bookmark);
-            _bookmarkOn.normal.textColor = UiSkin.TitleColor;
+            _tipBody.normal.textColor = UiSkin.Ink;
+            // Legible at 1200×600 (A-149): the label at 15 px, the note under it at 14 px.
+            _bookmark = new GUIStyle(skin.SmallBold) { fontSize = UiSkin.SmallSize, alignment = TextAnchor.UpperCenter, wordWrap = true, clipping = TextClipping.Overflow };
+            _bookmark.normal.textColor = Color.white;
             _bookmarkNote = new GUIStyle(_bookmark) { font = skin.BodyFont, fontSize = UiSkin.ChipSize, wordWrap = false, clipping = TextClipping.Clip };
-            _bookmarkNote.normal.textColor = UiSkin.Muted;
+            _bookmarkNote.normal.textColor = new Color(1f, 1f, 1f, 0.92f);
+            _paper = new GUIStyle(GUIStyle.none) { border = new RectOffset(10, 10, 10, 10) };
+            _paper.normal.background = Art.PanelTexture(UiSkin.PaperFill, UiSkin.PaperFillBottom, UiSkin.PaperFill, 10, 0f, 128, 0f);
         }
     }
 }

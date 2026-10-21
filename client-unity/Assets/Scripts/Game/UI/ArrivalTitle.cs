@@ -44,11 +44,9 @@ namespace FishingIdle.Game.UI
             var rise = (1f - Mathf.Clamp01(t / FadeIn)) * 12f;
             var centreY = screenHeight * 0.3f + rise;
 
-            // A dark band behind the words, so the cream Nunito reads over the pale sky of the day maps (A-191: the soft glow
-            // texture tinted at 45% left almost nothing, about 8%). A pixel shape of the panel night at 55%.
-            var band = new Rect(screenWidth / 2f - 460f, centreY - 72f, 920f, 144f);
-            var night = UiSkin.Night;
-            skin.ArcFill(band, new Color(night.r, night.g, night.b, 0.55f * alpha), 12f);
+            // A soft dark band behind the words, so they read over any sky.
+            var band = new Rect(screenWidth / 2f - 460f, centreY - 70f, 920f, 150f);
+            GUI.DrawTexture(band, skin.Glow.normal.background, ScaleMode.StretchToFill, true, 0, new Color(0.02f, 0.05f, 0.1f, 0.45f * alpha), 0, 0);
 
             var previous = GUI.color;
             GUI.color = new Color(1f, 1f, 1f, alpha);
@@ -56,9 +54,9 @@ namespace FishingIdle.Game.UI
             // The three styles are built once (they were rebuilt on every GUI event).
             if (_chapterStyle == null || _nameStyle.font != skin.Display.font)
             {
-                _chapterStyle = new GUIStyle(skin.SmallGold) { alignment = TextAnchor.MiddleCenter, fontSize = UiSkin.SmallSize };
-                _nameStyle = new GUIStyle(skin.Display) { alignment = TextAnchor.MiddleCenter, fontSize = UiSkin.ArrivalSize };
-                _lineStyle = new GUIStyle(skin.DisplaySub) { alignment = TextAnchor.MiddleCenter, fontSize = UiSkin.BodySize };
+                _chapterStyle = new GUIStyle(skin.SmallGold) { alignment = TextAnchor.MiddleCenter, fontSize = 15 };
+                _nameStyle = new GUIStyle(skin.Display) { alignment = TextAnchor.MiddleCenter, fontSize = 52 };
+                _lineStyle = new GUIStyle(skin.DisplaySub) { alignment = TextAnchor.MiddleCenter, fontSize = 18 };
             }
 
             var chapterStyle = _chapterStyle;
@@ -68,7 +66,7 @@ namespace FishingIdle.Game.UI
 
             if (!string.IsNullOrEmpty(_chapter))
             {
-                UiSkin.ShadowLabel(new Rect(0, centreY - 60f, screenWidth, UiSkin.SmallLine), _chapter, chapterStyle);
+                UiSkin.ShadowLabel(new Rect(0, centreY - 58f, screenWidth, 22f), _chapter, chapterStyle);
                 var lw = 60f;
                 GUI.DrawTexture(new Rect(screenWidth / 2f - 150f - lw, centreY - 47f, lw, 1.5f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(gold.r, gold.g, gold.b, 0.7f * alpha), 0, 0);
                 GUI.DrawTexture(new Rect(screenWidth / 2f + 150f, centreY - 47f, lw, 1.5f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(gold.r, gold.g, gold.b, 0.7f * alpha), 0, 0);

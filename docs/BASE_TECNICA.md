@@ -69,9 +69,8 @@ client-unity/Assets/
 │   ├── Editor/         FishingIdle.Editor       Só no Editor: Painel de Desenvolvimento, setup do projeto, passo de build
 │   └── Core/ Diagnostics/  FishingIdle.Client   Dormente: cliente HTTP e diagnóstico do servidor online (M12)
 ├── Resources/
-│   ├── ArtePixel/       A arte do jogo (pixel art, Estilo ARC): Peixes/, Mapas/<Mapa>/, Cena/, Varas/, Barcos/, Icones/, UI/, Vivos/ (ver docs/ASSETS_PIXEL.md)
-│   ├── Arte/            Arte antiga: só os 6 peixes do Pantanal à espera do pedido L4-03a (M25-T17)
-│   ├── Fontes/          Nunito Regular, Medium, SemiBold e Bold (OFL, todo o texto; A-191, TD-067)
+│   ├── Arte/            Arte trocável: Peixes/, Mapas/<Mapa>/, Cena/, Varas/, Expedicoes/, Icones/, Vivos/ (ver docs/ASSETS_PENDENTES.md)
+│   ├── Fontes/          Fredoka e Nunito (OFL)
 │   ├── Visual/          tema_visual.json (cores, brilho, tempos) e paisagem_viva.json (plantas, animais, ritmo)
 │   └── Sons/            Sons (.wav)
 ├── Scenes/Principal.unity   Criada automaticamente na primeira abertura
@@ -393,82 +392,72 @@ Cada passo está em `SaveMigrations.Upgrade`.
     tamanho na cor dele onde quer que ele esteja. A busca pelo nome (`UI/NameSearch`: campo com lupa e ✕, estilo `UiSkin.SearchField`; no Mercado, `MarketWindow.DrawSearch` o põe no alto de cada aba com peixes;
     `NameSearch.Matches` ignora maiúsculas e acentos) filtra só o que é mostrado. Filtros coloridos usam `UiSkin.ColorChip` (ponto na cor; fundo e borda
     na cor quando escolhido).
-  - **Arte trocável** (`Visual/ArtAssets`): toda imagem é um arquivo em `Resources/ArtePixel`, carregado
+  - **Arte trocável** (`Visual/ArtAssets`): toda imagem é um arquivo em `Resources/Arte`, carregado
     pelo nome (`ArtAssets.Texture("Peixes/fish_lambari_master")`, `ArtAssets.Sprite(caminho, largura em
     unidades, pivô)`, `ArtAssets.Icon(Icons.X)`). Um arquivo que falta devolve `null` e quem chamou
     volta para a arte de reserva feita por código (`Art.cs`, `FishLooks.cs`), então o jogo nunca
-    quebra por falta de arte. `Editor/ArtImportSettings` configura a importação (pixel art: Point, sem
-    compressão, sem mipmaps; fontes com fallback do sistema).
-  - **Equipamento na cena** (A-096): a `FishingScene` lê `GearView` (BoatId, RodId, BaitId) a cada quadro e, quando
-    muda, troca o barco (`ShowPixelBoat`, números em `cena_pixel.json`), pinta a vara nas cores dela
-    (`FishermanRig.UseRod`) e pendura a isca na boia (`UseBait`, cor da isca em `Resources/Visual/equipamento_cena.json`,
-    lido por `Scene/EquipmentLook`; o arquivo é editado à mão desde a M25-T17).
+    quebra por falta de arte. `Editor/ArtImportSettings` configura a importação (tamanho real, sem
+    reescalar para potência de 2, mipmaps, até 4096 px; fontes com fallback do sistema).
+  - **Arte provisória gerada por script** (`tools/Arte/`, Python com numpy e Pillow, sempre igual):
+    `gerar_icones.py` (44 ícones brancos, pintados na cor certa pelo jogo), `gerar_peixes.py` (20
+    peixes de lado, mesmo "artista") e `gerar_cenarios.py` (camadas dos mapas, nuvens, barco,
+    pescador, varas, fotos dos mapas e das Expedições). A lista do que falta como arte final e as
+    regras de tamanho estão em `docs/ASSETS_PENDENTES.md`.
+  - **Equipamento na cena** (`Scene/EquipmentLook`, A-096): a `FishingScene` lê `GearView` (BoatId,
+    RodId, BaitId) a cada quadro e, quando muda, troca o casco (pintura da Loja atrás do pescador e a
+    lateral da frente recortada na frente dele), põe a vara pintada ao longo da vara animada
+    (`FishermanRig.UseRod`) e pendura a isca na boia (`UseBait`). Posições e tamanhos ficam em
+    `Resources/Visual/equipamento_cena.json`; `tools/Arte/equipamento_na_cena.py` recorta as laterais
+    (`Arte/Barcos/Cena/boat_XX_frente.png`), mede as varas e grava o arquivo (`--previa` monta uma
+    prévia fora do Unity).
+  - **Arte dos mapas 3 e 4** (`tools/Arte/processar_mapas_3_4.py`): mesmo processo, com o fundo
+    votado na borda inteira (verde, magenta ou azul), limpeza do magenta que vaza em partes finas, nuvens
+    lado a lado ou empilhadas, o lado oposto espelhado quando uma margem vem sem fundo chapado, e a faixa
+    do meio montada com duas pinturas diferentes alternadas (`alternate`, pedidos Refazer 01 a 04). Os
+    animais novos (`LivingAnimals`: araras-azuis, tuiuiú, colhereiros, guarás, trinta-réis, caranguejo,
+    boto) reaproveitam os comportamentos existentes com outra arte.
   - **Mapas 5 a 10** (A-104, A-105): `tools/Progressao/aplicar_mapas.py map_05 map_06 ...` copia de
     `docs/propostas/mapas_5_10.json` para `/config` as espécies, os mapas, a vara mínima de cada mapa (até o M24-T58; hoje os mapas não pedem vara) e a
-    raridade nova que eles usam (sem duplicar nada se rodar de novo). O cenário de cada mapa é um `SceneTheme` em
-    `FishingScene.For` (cores do cenário de reserva e a pasta/prefixo das camadas); a paisagem viva, uma cena em
-    `paisagem_viva.json`, e os animais novos são comportamentos existentes (`Flock`, `Surfacer`) com outra arte, ou
-    rotinas curtas novas (`FlyingFish`, `Spout`, `Breach`).
-  - **Desempenho** (TD-032): o `GameRoot` baixa para 15 quadros por segundo sem foco.
+    raridade nova que eles usam (sem duplicar nada se rodar de novo). A arte de cada par de mapas tem seu
+    script (`tools/Arte/processar_mapas_5_6.py`), que reaproveita `processar_mapas_3_4.py` trocando só os
+    nomes e tira o mar pintado embaixo das faixas do horizonte (`drop_painted_sea`). `gerar_cenarios.py
+    CostaDeCoral ArquipelagoDoSol` pinta o provisório só desses mapas. O cenário de cada mapa novo é um
+    `SceneTheme` em `FishingScene.For`; a paisagem viva, uma cena em `paisagem_viva.json`, e os animais
+    novos são comportamentos existentes (`Flock`, `Surfacer`) com outra arte, ou rotinas curtas novas
+    (`FlyingFish`, `Spout`, `Breach`). `processar_mapas_7_8.py` separa os peixes da grade pela forma
+    (`grid_by_pieces`), não pela linha da célula. Mapas noturnos: `SceneTheme.Night` e `SunGlow` (luz fria),
+    brilho de plâncton feito no jogo; o provisório é o `open_sea` de `gerar_cenarios.py`.
+  - **Tamanho e desempenho** (TD-031, TD-032): `ArtImportSettings.MaxSizeFor` limita cada tipo de
+    imagem ao que a tela mostra (as fontes continuam grandes); `tools/Arte/otimizar_png.py` recomprime os
+    PNG sem perdas e roda depois de qualquer script de arte; o `GameRoot` baixa para 15 quadros por segundo
+    sem foco.
   - **Relógio** (TD-030): as regras recebem o `SteadyClock` do `GameSession`, que nunca volta no tempo.
-  - **Pixel art (Estilo ARC, M25)** (TD-059, TD-060): `tools/Arte/pixel_folhas.py FOLHA.png --pedido <código>`
-    acha cada desenho da folha por forma (componentes conectados sobre o magenta), tira a escala da caixa-alvo
-    do pedido (`tools/Arte/pixel_pedidos.json`: `modo`, `alvo`, `escala`, `alvo_altura`, `ancora_x`, `largura`),
-    amostra por moda numa paleta própria e grava em `Resources/ArtePixel/` com os nomes da arte antiga.
-    Um desenho por imagem: `--grade 1x1 --celula 192x128`, com `--escala` (px da imagem por px de arte, a mesma nas
-    peças do mesmo mapa) e `--encostar esq,dir,base,topo` (lados retos sem margem transparente; as laterais e os
-    cantos `_left` encostam à esquerda e embaixo, os `_right` à direita e embaixo, porque `FishingScene.BuildPixel`
-    os prende na borda da tela). `ArtImportSettings.ApplyPixel` importa essa pasta com Point, sem compressão e sem
-    mipmaps. Teste:
-    `python3 tools/Arte/pixel_folhas_teste.py`.
-  - **Carregamento (M25-T04, TD-059, TD-062, TD-065):** `ArtAssets.Texture(caminho)` procura só em
-    `Resources/ArtePixel/`; sem o arquivo devolve null e quem chamou usa a arte gerada pelo código. A pasta antiga
-    `Resources/Arte/` e o fallback `LegacyRoot` saíram em 20/10/2026, quando o último peixe chegou em pixel. Cada textura
-    vinda de `ArtePixel` fica marcada (`ArtAssets.IsPixel(tex)` / `IsPixel(caminho)`), recebe filtro Point e
-    lembra o caminho, para achar a versão pequena (`ArtAssets.Small(tex)` = o mesmo arquivo com `_p`).
-    `ArtAssets.PixelSprite(caminho, pivô)` / `PixelSpriteAt(caminho, x, y)` fazem o sprite de cena com 20 pixels
-    por unidade e o pivô num canto de pixel. Na interface, `Visual/PixelDraw.Fit(rect, tex[, cor])`
-    substitui o `GUI.DrawTexture(..., ScaleToFit, ...)`: para pixel art usa a maior escala inteira em pixels de
-    tela (escala do `GUI.matrix` × rect), a versão `_p` quando nem 1× cabe e cai no ScaleToFit quando nem ela cabe;
-    a arte antiga continua igual. `PixelDraw.Icon` não tinge os ícones coloridos (só a transparência), menos os 12
-    símbolos (`Icons.IsSymbol`), que são brancos e tingíveis (`tools/Arte/cena_pixel.py simbolos`). Fundos e faixas
-    das telas usam `PixelDraw.Cover(rect, tex, cor, focoX, focoY)` (menor escala inteira que cobre, cortando as bordas;
-    `CoverRect` só faz a conta) — `WindowFrame.PhotoArt` e `CropMap` já passam por ele (TD-063).
-    `UI/ArcArt.cs` (TD-064) tem o resto das peças pixel das telas: `Fit` com espelho (nada em pixel gira), `Glass`,
-    `Diagonal`, a bolha e a aura feitas pelo código. Retratos e avatares: `AvatarArt` usa a variante `_r` (círculo de
-    pixels) em moldura redonda e a `_p` (32 px) quando 1× não cabe, geradas por `tools/Arte/retratos_pixel.py`.
-  - **Câmera pixel (M25-T05, TD-059):** `Scene/PixelCamera` cria uma segunda câmera que desenha o mundo numa
-    `RenderTexture` de 216 px de altura (largura pela janela, par; Point) e, no `OnRenderImage` da câmera principal
-    (que passa a não desenhar nada), põe a grade na tela pela maior escala inteira, ou pela escala inteira de cima
-    reduzida com bilinear quando a altura da janela não é múltipla de 216. A câmera principal continua com a
-    posição, o tamanho e a tag, então `WorldToScreenPoint` (mensagem da boia no HUD) continua certo. Logo antes
-    de a câmera pixel desenhar (`PixelSnapPass.OnPreCull`), todo sprite sem rotação da cena vai para o pixel
-    inteiro da grade e volta depois (`OnPostRender`): o código de movimento não muda. `PixelGrid` tem as
-    constantes (216, 20 px/unidade), `Snap` e `Active` (ligado só quando o mapa tem faixas em pixel).
-  - **Cena em pixel (M25-T06 a T08, T12):** `FishingScene.BuildPixel` monta o mapa pelo
-    `Resources/Visual/cena_pixel.json` (`Scene/PixelSceneConfig`), gravado por `tools/Arte/cena_pixel.py dados`:
-    céu e água numa textura só por mapa (`Scene/PixelScenery.PixelSky`, faixas da paleta, linha de pontilhado
-    no céu, estrelas e lua nos mapas de noite), as 6 nuvens comuns tingidas (`Drift`), as faixas `bg_far/mid/near`
-    no horizonte com cópias espelhadas dos lados, as laterais nas bordas, os cantos embaixo, reflexos espelhados
-    na cor da água (`PixelMirror`), brilhos de 1 px que trocam de lugar a cada 0,25–0,5 s (`PixelGlints`) e a
-    paisagem viva convertida (`ArtePixel/Vivos`). O barco em pixel usa a figura inteira atrás e a frente cortada
-    (`ArtePixel/Barcos/Cena/boat_XX_frente`, linha da borda à mão no script) na frente do pescador, pivô na linha
-    d'água; a Caixa de Pesca vai só no barco inicial. `FishermanRig` em modo pixel troca o quadro pela fase que
-    ele já tem (parado/esperando, arremesso pelo andamento do arremesso, fisgada, recolher, mostrando, escapou),
-    põe a vara (código, 1 px, cores da vara) no ponto das mãos de cada quadro e mostra o peixe `_p` a 1×, sem
-    girar. `WindSway` e `Floating` deixam de girar na grade pixel. `python3 tools/Arte/cena_pixel.py previa
-    <pasta> [map_01 ...]` monta a cena como o jogo (mesmos números) e o GIF do pescador; `vivos` e `miniaturas`
-    geram a paisagem viva em pixel e as miniaturas dos mapas. A arte antiga de onde `vivos` parte fica em
-    `tools/Arte/fontes_antigas/Vivos`, fora de `Resources`, para não ir no build (M25-T17). Não há mais peças
-    provisórias convertidas: todas as laterais e cantos são desenhos em pixel (TD-065).
-  - **Cenário de reserva** (sem faixas em pixel no mapa): `BuildSky`, `BuildLand`, `BuildWater` e `BuildForeground`
-    desenham céu, morros, água e juncos pelo código (`Art.cs`), com o casco `Art.Boat` e o pescador de formas simples
-    do `FishermanRig`. Hoje os 10 mapas têm faixas em pixel; o cenário pintado antigo (`BuildPainted`) saiu na
-    M25-T17.
-  - **Vida na cena** (`Scene/Life.cs`): sombras de peixe (`FishShadows`), anéis do barco (`BoatRipples`) e respingos
-    (`Droplet.Splash`, usado pelo `FishermanRig`). Tudo de baixa opacidade e escalado por `ambient_life` do tema (0
-    desliga). As peças do cenário pintado (poeira, libélulas, raios de sol, névoa, ondas, reflexo em faixas) saíram na
-    M25-T17.
+  - **Arte final do proprietário** (`tools/Arte/processar_pedidos.py`): recorta as imagens do ChatGPT
+    (fundo verde, magenta ou preto), separa grades de peixes e ícones, estende o céu e as camadas de
+    montanha até as 26 unidades (espelhando faixas sem marcos, para a cachoeira aparecer uma vez só) e
+    grava os arquivos do jogo. `tools/Arte/finais.txt` lista esses arquivos, e `finais.proteger_finais()`
+    impede os geradores provisórios de sobrescrevê-los.
+  - **Pixel art (Estilo ARC, M25): descartada em 20/10/2026** (A-193, TD-068). O recortador `tools/Arte/pixel_folhas.py`,
+    o manifesto `pixel_pedidos.json`, a pasta `Resources/ArtePixel` e a regra `ApplyPixel` do `ArtImportSettings`
+    saíram; ficam só no histórico do git (commit `59511c9` e anteriores).
+  - **Margens e reflexos:** as margens (`near_left` / `near_right`) ficam presas às bordas da tela, com
+    altura fixa por mapa (`SceneTheme.NearLeftHeight` etc., `ArtAssets.SpriteByHeight`); cada camada de
+    terra ganha um reflexo na água, espelhado, achatado, escurecido e cortado em 12 faixas que balançam
+    fora de compasso (`Reflect`, `ReflectionSlice`). A superfície se mexe com 10 fileiras de brilhos de
+    onda em perspectiva, deslizando (`WaterWaves`, textura `Arte/Agua/ondas.png`).
+    O pescador pintado senta no banco entre as duas camadas do casco (`barco_fundo` atrás,
+    `barco_frente` na frente, separadas por `processar_pedidos.split_boat`) e segura a vara apoiada no
+    joelho (`FishermanRig`: pivô onde ele senta, mãos medidas na imagem).
+  - **Cena em camadas** (`FishingScene.BuildPainted`): céu, montanhas, morros, mata da margem, água e
+    os dois cantos, cada camada com 26 unidades de largura e base numa altura fixa em relação ao
+    horizonte; cantos presos às bordas da tela pela proporção da câmera. Por cima, o movimento: nuvens
+    (sprites separados), brilho do sol que respira (`Breathe`), reflexos (`Twinkle`), pássaros, peixes
+    saltando, juncos balançando.
+  - **Vida na cena** (`Scene/Life.cs`, montada em `FishingScene.BuildLife`): poeira no ar
+    (`GoldenMotes`), libélulas (`Dragonflies`), sombras de peixe (`FishShadows`), raios de sol
+    (`SunRays`), névoa (`HorizonMist`), brilhos no reflexo (`SunGlints`), anéis do barco (`BoatRipples`)
+    e respingos (`Droplet.Splash`, usado pelo `FishermanRig`). Tudo de baixa opacidade e escalado por
+    `ambient_life` do tema (0 desliga).
   - **Paisagem viva** (`Scene/LivingScenery.cs`, `Scene/LivingAnimals.cs`, montada em
     `FishingScene.BuildLiving`; dados em `Resources/Visual/paisagem_viva.json`, lido por `LivingConfig`):
     plantas soltas na margem do fundo (com reflexo), nos cantos e boiando (`WindSway`: uma mola que verga
@@ -478,7 +467,7 @@ Cada passo está em `SaveMigrations.Upgrade`.
     último, nada novo com janela aberta (`GameRoot.WindowOpen`, marcado pelo `Hud`), celebração ou
     viagem. Cada animal é uma corrotina em `LivingAnimals` que termina quando ele sai; posições por mapa
     ("spots", medidas a partir da borda da tela, como os cantos) no JSON. Libélulas, sombras e saltos de
-    peixe pedem vez a `SceneDirector.AllowSmall()`. Os quadros em pixel vêm de `tools/Arte/cena_pixel.py vivos`,
+    peixe pedem vez a `SceneDirector.AllowSmall()`. Os quadros vêm de `tools/Arte/processar_vivos.py`,
     todos do mesmo tamanho e alinhados num ponto fixo (bico, pés ou traseira), para a troca de quadro
     não fazer o corpo pular. Novas ordens de desenho: `OrderSkyLife`, `OrderShorePlants`,
     `OrderShoreLife`, `OrderWaterLife`, `OrderCornerBack`, `OrderCornerFront`.
@@ -492,13 +481,16 @@ Cada passo está em `SaveMigrations.Upgrade`.
   - **Peças da interface** (`UiSkin`): `FloatingPanel` (painel com sombra), `IconButton`,
     `AccentPill`, `Tag`, `Bar(rect, fração, cor)`, `DrawOutline`, `DrawGlow`, `IconBadge`, `CoinAmount`,
     e as janelas via `WindowFrame.Panel` + `WindowFrame.Header(…, ícone)`.
-  - **Janelas** (A-170, pele ARC desde A-184): `WindowFrame.Panel` desenha o painel ARC; cena escura dentro da janela
-    (tanque, arquipélago, carta náutica, parede da Loja, batalha) vai depois de `WindowFrame.Photo(skin, rect)`.
-    Texto colorido usa `UiSkin.ColoredLabel` (a cor fica legível nos cartões por `UiSkin.Readable`). Sub-abas:
+  - **Janelas no papel ("Diário de bordo", A-170):** `WindowFrame.Panel` desenha a moldura de madeira e a folha e
+    liga o **modo papel** do `UiSkin` (`UiSkin.Paper`); o `Hud` desliga ao chamar `WindowFrame.DrawInfoBalloon` depois
+    das janelas, e `WindowFrame.Dialog` desliga para os diálogos (que continuam no painel noturno). No modo papel as
+    cores (`UiSkin.Text`, `Muted`, `Gold`, `Accent`, `RarityColor`…) respondem com a tinta escura e os estilos
+    registrados com `skin.Track(estilo)` trocam texto e fundo na hora; um estilo copiado do skin numa janela
+    (`new GUIStyle(skin.X)`) precisa de `skin.Track(...)` para acompanhar. Cena escura dentro da janela (tanque,
+    arquipélago, carta náutica, parede da Loja, batalha) vai num `using var night = UiSkin.NightScope();` depois de
+    `WindowFrame.Photo(skin, rect)`. Um preenchimento escuro atrás de texto usa `UiSkin.OnSheet(cor)`. Sub-abas:
     `Panel(…, bookmarks: true)` (ou `Draw(…, bookmarks: true)`) e `WindowFrame.Bookmarks(...)`; rodapé com
-    `WindowFrame.Footer`; fechar com `WindowFrame.CloseSeal` (o `Header` já desenha). O "modo papel" do Diário de
-    bordo (`UiSkinPaper.cs`, `UiSkin.Paper`, `Track`, `NightScope`, `OnSheet` e as cores `Paper*`/`Ink*`) saiu na
-    M25-T17: as telas usam direto as cores ARC.
+    `WindowFrame.Footer`; fechar com `WindowFrame.CloseSeal` (o `Header` já desenha).
   - **Dois cuidados com texto:** os rótulos do `UiSkin` quebram linha, então um rótulo da largura
     exata do texto (`CalcSize`) pode jogar o último dígito para uma linha invisível. Dê folga (+4 px)
     ou use `CoinAmountWidth` para moedas. E um texto que cita um número de `/config` (tempos, taxas,
@@ -512,26 +504,10 @@ Cada passo está em `SaveMigrations.Upgrade`.
 - **Animação sincronizada ao serviço:** `FishermanRig` lê `FishingStatus` (início e fim do ciclo)
   para arremessar, esperar, mostrar a mordida e puxar; o peixe só aparece quando o serviço entrega a
   captura (`GameRoot.CatchesArrived`).
-- **Interface em IMGUI** (`Hud`, janelas, `UiSkin`): tela virtual de pelo menos 1080 px de altura, escalada por
-  `UiSkin.CanvasScale` (passo limpo de 0,5 quando o quadro fica entre 1080 e 1280; senão a fração exata, TD-066). As
-  janelas se posicionam pela altura que o `Hud` passa, nunca por 1080 fixo.
-  Todos os estilos ficam em `UiSkin`, o que isola uma futura troca para UI Toolkit. Pele ARC (A-184, TD-061):
-  `UiSkinArc.cs` gera as formas em pixel (molduras de 3 linhas, pílulas, discos, barras em blocos) como máscaras
-  9-slice brancas com filtro Point, criadas uma vez e tingidas na hora (`Shape`, `PixelPill`, `FramedBox`,
-  `FramedDisc`, `LineBox`, `TipBox`); as cores vêm das 14 do bloco `palette` de `tema_visual.json`, e as peças (campo, chips, fundo de barra, véu…) saem delas em `VisualTheme.Derive()` (TD-066). Para os desenhos próprios
-  de cada janela, `UiSkinArcFill.cs` dá `ArcFill`/`ArcLine`/`ArcFillLine(rect, cor, raio)`, que trocam o retângulo
-  arredondado por pílula, chanfro ou quadrado em pixel (TD-063); não usar `GUI.DrawTexture` com raio em tela nova. Fontes (A-191, TD-067):
-  Nunito em todo o texto, um arquivo por peso (`Resources/Fontes`): Medium no corpo, SemiBold em botões/abas/chips, Bold
-  em títulos, números e ênfase; nunca `FontStyle.Bold`. Tamanhos no quadro de 1080: 21 pequeno (mínimo), 24 corpo e
-  botão, 32 nome, 40 título de janela, 42 número de destaque, 52 faixa da chegada; no máximo 4 numa tela. O texto sai
-  pelo campo de distância do TextCore (`UiSkin.Crisp` liga o `isSDF` de cada estilo base), nítido em qualquer escala.
-  Sem um dos arquivos, o Unity usa a fonte padrão. **Trocar as fontes:** só no bloco "fonts and sizes" do `UiSkin`
-  (`Font*File` e os tamanhos); nenhuma tela tem tamanho de letra próprio. Botão com ícone medido: largura =
-  70 + largura do rótulo (o `IconButton` usa 16 de margem, ícone 22 e 8 de espaço).
-- **Layout das telas (A-190):** grade de 8, no máximo 2 níveis de caixa (janela → cartão de uma linha), texto medido
-  com `GUIStyle.CalcSize` e encurtado por `FishCard.Fit` ("…"), nada gira (`PixelDraw.Fit`/`ArcArt.Fit` com espelho). Um
-  botão sem rótulo mostra o nome ao passar o mouse (`Hud.HoverName`). Itens e fundos escuros recebem encaixe ou véu
-  claro no `PixelDraw` (listas `DarkItems` e `DarkBackdrops`), sem mexer nos arquivos.
+- **Interface em IMGUI** (`Hud`, janelas, `UiSkin`): tela virtual de 1080 px de altura, escalada.
+  Todos os estilos ficam em `UiSkin`, o que isola uma futura troca para UI Toolkit. Fontes: Fredoka
+  nos títulos e números, Nunito SemiBold no texto e Nunito Bold no negrito (`Resources/Fontes`; a
+  SemiBold é gerada por `tools/Arte/gerar_nunito_semibold.py`).
 - **Textos:** sempre de `GameTexts`. Nunca escreva uma frase em PT-BR direto num `.cs` fora de `Texts/`.
 - **Avisos e central de notificações** (`ToastFeed`): `Push(texto, tipo, ícone, notify)` mostra o
   aviso; com `notify: true` ele também entra na lista do sino (até 50, só enquanto o jogo está
@@ -597,8 +573,8 @@ Cada passo está em `SaveMigrations.Upgrade`.
   não respondem. As peças de desenho (faixa, abas coloridas, placa, moldura redonda, contagens) estão em
   `UI/TopMenuArt`; os ícones pendentes (`ico_aba_*`, `ico_atalho_*`, `ui_atalho_moldura`) são usados quando o arquivo
   existir (`ASSET_PENDENTE`). O tutorial aponta para as abas pelas mesmas posições.
-- **Janelas** (M24-T44, A-170; pele ARC desde A-184): painel, etiqueta e marcadores em `WindowFrame`. Como usar: veja
-  "Janelas" acima.
+- **Janelas "Diário de bordo"** (M24-T44, A-170): moldura, folha, etiqueta, lacre e marcadores em `WindowFrame`; as cores e
+  estilos no papel em `UI/UiSkinPaper` (parte do `UiSkin`). Como usar: veja "Janelas no papel" acima.
 - **Tela de erro** (M24-T38, A-166, TD-050): `GameRoot.Awake` monta a cena e o som em `try/catch` e sempre acrescenta o
   `Hud`; `Hud.Start` e `Hud.OnGUI` também ficam em `try/catch` e mandam a exceção para `GameRoot.ReportFailure`, que
   para o serviço e mostra `DrawStartupError` (tipo e mensagem, momento, três pontos do código, pasta do save; textos em

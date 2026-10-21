@@ -20,9 +20,8 @@ namespace FishingIdle.Game.UI
     /// </remarks>
     public sealed class MissionsWindow
     {
-        // On the grid of 8 since A-190: one row of 88 (goal, bar and progress, the rewards in line), 8 between rows.
-        private const float SummaryHeight = 48f, Gap = 16f, CardHeight = 88f, CardGap = 8f, ScrollBar = 18f;
-        private const float RewardWidth = 232f, ActionWidth = 168f, ProgressWidth = 184f, RefreshSeconds = 1f;
+        private const float SummaryHeight = 60f, Gap = 12f, CardHeight = 104f, CardGap = 10f, ScrollBar = 18f;
+        private const float RewardWidth = 200f, ActionWidth = 170f, RefreshSeconds = 1f;
 
         private enum Tab
         {
@@ -37,6 +36,7 @@ namespace FishingIdle.Game.UI
         private sealed class Row
         {
             public MissionView View;
+            public string Number;
             public string Progress;
             public string Coins;
             public string Shells;
@@ -149,6 +149,7 @@ namespace FishingIdle.Game.UI
                 _rows.Add(new Row
                 {
                     View = m,
+                    Number = GameTexts.Missions.NumberLabel(m.Number),
                     Progress = GameTexts.Missions.Progress(m.Current, m.Target),
                     Coins = m.RewardCoins > 0 ? Format.Short(m.RewardCoins) : null,
                     Shells = m.RewardShells > 0 ? Format.Number(m.RewardShells) : null,
@@ -162,12 +163,13 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ summary
 
-        /// <summary>
-        /// "Resgatar todas (N)" on the right, with no box behind it (A-190: the tab's name was already on the tab).
-        /// </summary>
+        /// <summary>The tab's name on the left, "Resgatar todas (N)" on the right.</summary>
         private void DrawSummary(UiSkin skin, Rect rect)
         {
-            var all = new Rect(rect.xMax - 300f, rect.y, 300f, rect.height);
+            skin.Inset(rect);
+            GUI.Label(new Rect(rect.x + 20f, rect.y + 14f, rect.width * 0.5f, 30f), _tabLabels[(int)_tab], skin.Heading);
+
+            var all = new Rect(rect.xMax - 16f - 300f, rect.y + 8f, 300f, 44f);
             var ready = _view.ReadyCount > 0;
             var was = GUI.enabled;
             GUI.enabled = was && ready;
@@ -214,7 +216,7 @@ namespace FishingIdle.Game.UI
             GUI.Box(rect, GUIContent.none, m.Ready ? skin.CardImportant : skin.Card);
             if (m.Ready)
             {
-                skin.ArcLine(rect, UiSkin.Gold, 10f);
+                GUI.DrawTexture(rect, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Gold, 2f, 10f);
             }
 
             var previous = GUI.color;
@@ -223,22 +225,21 @@ namespace FishingIdle.Game.UI
                 GUI.color = previous * new Color(1f, 1f, 1f, 0.7f);
             }
 
-            // The goal, then its bar with the progress at the right of it (measured, never cut); the rewards in one
-            // line in their own column (A-190: no "Nº 13" and no state written on each row, the tab says it).
+            // The number, then the goal and its bar.
             var action = new Rect(rect.xMax - 16f - ActionWidth, rect.center.y - 22f, ActionWidth, 44f);
-            var reward = new Rect(action.x - 16f - RewardWidth, rect.y, RewardWidth, rect.height);
-            var x = rect.x + 16f;
-            var w = reward.x - 16f - x;
-            GUI.Label(new Rect(x, rect.y + 8f, w, 28f), FishCard.Fit(m.Text, skin.BodyBold, w), skin.BodyBold);
+            var reward = new Rect(action.x - 16f - RewardWidth, rect.y + 12f, RewardWidth, rect.height - 24f);
+            var x = rect.x + 18f;
+            var w = reward.x - 20f - x;
+            GUI.Label(new Rect(x, rect.y + 10f, w, UiSkin.SmallLine), row.Number, skin.SmallMuted);
+            GUI.Label(new Rect(x, rect.y + 30f, w, 28f), FishCard.Fit(m.Text, skin.BodyBold, w), skin.BodyBold);
 
-            var barY = rect.y + 40f;
-            // One width for every row (the longest real text, "52,3 mil / 100 mil", is 173 px), so the bars line up.
-            var progressWidth = Mathf.Min(w * 0.5f, ProgressWidth);
-            skin.Bar(new Rect(x, barY + 6f, Mathf.Max(24f, w - progressWidth - 16f), 12f), (float)m.Fraction, m.Ready || m.Claimed);
-            GUI.Label(new Rect(x + w - progressWidth, barY, progressWidth, UiSkin.SmallLine), FishCard.Fit(row.Progress, skin.SmallRight, progressWidth), skin.SmallRight);
+            var barY = rect.y + 66f;
+            var progressWidth = Mathf.Min(180f, w * 0.4f);
+            skin.Bar(new Rect(x, barY + 4f, Mathf.Max(20f, w - progressWidth - 12f), 12f), (float)m.Fraction, m.Ready || m.Claimed);
+            GUI.Label(new Rect(x + w - progressWidth, barY, progressWidth, UiSkin.SmallLine), row.Progress, skin.SmallRight);
             if (row.Note != null)
             {
-                GUI.Label(new Rect(x, rect.yMax - 8f - UiSkin.SmallLine, w, UiSkin.SmallLine), FishCard.Fit(row.Note, skin.SmallMuted, w), skin.SmallMuted);
+                GUI.Label(new Rect(x, rect.yMax - 22f, w, UiSkin.SmallLine), FishCard.Fit(row.Note, skin.SmallMuted, w), skin.SmallMuted);
             }
 
             DrawReward(skin, reward, row);
@@ -259,40 +260,31 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>The reward column: Moedas, Conchas and, in the hard missions, Dólares, in one line (icon + number).</summary>
+        /// <summary>The reward column: Moedas, Conchas and, in the hard missions, Dólares.</summary>
         private static void DrawReward(UiSkin skin, Rect rect, Row row)
         {
-            var x = rect.x;
-            var y = rect.center.y - UiSkin.SmallLine / 2f;
-            // The coloured pixel icons at 1× (24 px, M25-T15).
+            var lines = (row.Coins != null ? 1 : 0) + (row.Shells != null ? 1 : 0) + (row.Dollars != null ? 1 : 0);
+            var step = 26f;
+            var y = rect.center.y - lines * step / 2f + 3f;
             if (row.Coins != null)
             {
-                x = RewardPiece(skin, x, y, rect.xMax, Icons.Coin, row.Coins, skin.SmallGoldLine);
+                skin.CoinIcon(new Rect(rect.x, y, 20f, 20f));
+                GUI.Label(new Rect(rect.x + 26f, y, rect.width - 26f, UiSkin.SmallLine), row.Coins, skin.SmallGoldLine);
+                y += step;
             }
 
             if (row.Shells != null)
             {
-                x = RewardPiece(skin, x, y, rect.xMax, Icons.Shell, row.Shells, skin.SmallBold);
+                skin.CurrencyIcon(new Rect(rect.x, y, 20f, 20f), Icons.Shell);
+                GUI.Label(new Rect(rect.x + 26f, y, rect.width - 26f, UiSkin.SmallLine), row.Shells, skin.Small);
+                y += step;
             }
 
             if (row.Dollars != null)
             {
-                RewardPiece(skin, x, y, rect.xMax, Icons.Dollar, row.Dollars, skin.SmallBold);
+                skin.CurrencyIcon(new Rect(rect.x, y, 20f, 20f), Icons.Dollar);
+                GUI.Label(new Rect(rect.x + 26f, y, rect.width - 26f, UiSkin.SmallLine), row.Dollars, skin.SmallBold);
             }
-        }
-
-        /// <summary>One icon + number of the reward line; returns where the next one starts (16 px after it).</summary>
-        private static float RewardPiece(UiSkin skin, float x, float y, float right, string icon, string text, GUIStyle style)
-        {
-            if (x >= right - 24f)
-            {
-                return x;
-            }
-
-            skin.CurrencyIcon(new Rect(x, y - 1f, 24f, 24f), icon);
-            var w = Mathf.Min(style.CalcSize(new GUIContent(text)).x + 4f, right - x - 30f);
-            GUI.Label(new Rect(x + 30f, y, w, UiSkin.SmallLine), FishCard.Fit(text, style, w), style);
-            return x + 30f + w + 16f;
         }
     }
 }

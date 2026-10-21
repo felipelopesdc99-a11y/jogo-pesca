@@ -29,23 +29,25 @@ namespace FishingIdle.Game.UI
 
         // The tank and its drawer.
         private const int MaxSwimming = 24;
+        private const float TankRadius = 14f;
         private const float MinSwimHeight = 220f;
         private const float DrawerHeader = 38f;
-        // 112 × 112 since A-191: "Tambaqui" (94 px in Nunito SemiBold 21) and the level line fit under the disc.
-        private const float TileWidth = 112f;
-        private const float TileHeight = 112f;
+        private const float TileWidth = 92f;
+        private const float TileHeight = 104f;
         private const float TileGap = 8f;
 
-        // Pixel art (ArtePixel/UI, L7-01 and L7-02, M25-T13): the water and the sand at a whole scale, cropped at the edges.
-        // Without a file the tank or the sand keep the drawn fallback below (A-144). The glass and the bubbles are drawn
-        // by the code (ArcArt).
+        // Painted art (Resources/Arte/UI, received 15/10/2026, A-181). Without a file the tank, the sand,
+        // the bubbles or the glass keep the drawn fallback below (A-144).
         private const string TankBackgroundArt = "UI/ui_aquarium_bg";
         private const string TankSandArt = "UI/ui_aquarium_sand";
+        private const string BubbleArt = "UI/ui_aquarium_bubble";
+        private const string GlassArt = "UI/ui_aquarium_glass";
+        private const float GlassArtBorder = 36f; // ui_aquarium_glass.png is 496×289 with ~34 px rounded corners
         private const float SandRise = 56f;       // how far above the floor line the sand strip starts
 
         private static readonly AquariumSort[] Sorts = { AquariumSort.Size, AquariumSort.Level, AquariumSort.Species, AquariumSort.Newest, AquariumSort.Quality };
 
-        // Plants that already exist (ArtePixel/Vivos/Plantas): x across the tank, height as a share of the water.
+        // Plants that already exist (Arte/Vivos/Plantas): x across the tank, height as a share of the water.
         private static readonly (string Path, float X, float Height)[] Plants =
         {
             ("Vivos/Plantas/junco_01", 0.02f, 0.50f),
@@ -87,7 +89,6 @@ namespace FishingIdle.Game.UI
         private readonly Dictionary<long, float> _swimPhase = new Dictionary<long, float>();
         private readonly List<SwimSlot> _slots = new List<SwimSlot>();
         private readonly Dictionary<long, (string Name, string Line)> _tileText = new Dictionary<long, (string Name, string Line)>();
-        private readonly Dictionary<long, (string Level, string Badge)> _tileLevel = new Dictionary<long, (string Level, string Badge)>();
         private float _lastSwimTime = -1f;
         private float _logMinCm;
         private float _logMaxCm;
@@ -272,9 +273,7 @@ namespace FishingIdle.Game.UI
             // becomes icon-only, and if even that would touch the sort chips it goes to the next line.
             var multiLabel = new GUIContent(GameTexts.Aquarium.MultiSelect);
             var multiWidth = skin.Chip.CalcSize(multiLabel).x + 34;
-            // Measured (A-191): "Ordenar:" in Nunito 21, then 12 to the first chip.
-            var sortLabelWidth = skin.SmallMuted.CalcSize(new GUIContent(GameTexts.Aquarium.SortLabel)).x + 4f;
-            var chipsEnd = area.x + 24 + sortLabelWidth + 12;
+            var chipsEnd = area.x + 100;
             foreach (var sort in Sorts)
             {
                 chipsEnd += skin.Chip.CalcSize(new GUIContent(SortName(sort))).x + 8 + 8;
@@ -297,8 +296,8 @@ namespace FishingIdle.Game.UI
             // Sort chips
             var x = area.x;
             skin.DrawIcon(new Rect(x, area.y + 7, 18, 18), Icons.Sort, UiSkin.Muted);
-            GUI.Label(new Rect(x + 24, area.y + 4, sortLabelWidth, UiSkin.SmallLine), GameTexts.Aquarium.SortLabel, skin.SmallMuted);
-            x += 24 + sortLabelWidth + 12;
+            GUI.Label(new Rect(x + 24, area.y + 7, 80, 24), GameTexts.Aquarium.SortLabel, skin.SmallMuted);
+            x += 100;
             foreach (var sort in Sorts)
             {
                 var label = new GUIContent(SortName(sort));
@@ -343,9 +342,10 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // The tank is the window's own scene, framed like a photo.
+            // The tank is the window's own scene: a picture on the diary sheet, in night colours (A-170).
             var glass = new Rect(right.x, tank.y + 10f, right.width - 10f, tank.height - 20f);
             WindowFrame.Photo(skin, tank);
+            using var night = UiSkin.NightScope();
             DrawTank(skin, tank, glass.x);
 
             if (_multi)
@@ -387,8 +387,9 @@ namespace FishingIdle.Game.UI
                 DrawSwimmers(skin, swim, t);
             }
 
-            // The glass of the tank: a one-pixel light edge under the ARC frame (WindowFrame.Photo), the light from above.
-            ArcArt.Fill(skin, new Rect(tank.x, tank.y, tank.width, UiSkin.ArcPixel), new Color(1f, 1f, 1f, 0.16f), 0f);
+            // The glass rim of the tank.
+            GUI.DrawTexture(tank, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.95f), 1.5f, TankRadius);
+            GUI.DrawTexture(new Rect(tank.x + TankRadius, tank.y + 2f, tank.width - TankRadius * 2f, 1f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.16f), 0, 0);
 
             DrawDrawer(skin, drawer);
         }
@@ -412,24 +413,24 @@ namespace FishingIdle.Game.UI
             var background = ArtAssets.Texture(TankBackgroundArt);
             if (background != null)
             {
-                // Pixel art at the smallest whole scale that fills the tank, the light from the surface kept in sight.
-                ArcArt.Cover(tank, background, Color.white, 0.5f, 0f);
+                GUI.DrawTexture(tank, background, ScaleMode.ScaleAndCrop, true, 0, Color.white, 0, TankRadius);
             }
             else
             {
                 // Fallback without ui_aquarium_bg.png: a gradient and soft rays.
-                GUI.DrawTexture(tank, WaterTexture, ScaleMode.StretchToFill, true, 0, Color.white, 0, 0);
+                GUI.DrawTexture(tank, WaterTexture, ScaleMode.StretchToFill, true, 0, Color.white, 0, TankRadius);
                 var pulse = 0.55f + 0.15f * Mathf.Sin(t * 0.35f);
                 GUI.DrawTexture(new Rect(tank.x, tank.y, tank.width, (floorY - tank.y) * 0.9f), RaysTexture, ScaleMode.StretchToFill, true, 0,
-                    new Color(0.82f, 0.96f, 1f, pulse), 0, 0);
+                    new Color(0.82f, 0.96f, 1f, pulse), 0, TankRadius);
             }
 
+            var bottom = new Vector4(0f, 0f, TankRadius, TankRadius);
             var sandArt = ArtAssets.Texture(TankSandArt);
             if (sandArt != null)
             {
-                // At a whole scale that covers the tank's width, its top on the floor line (it follows the floor as the
-                // drawer opens); the sides and the bottom (behind the drawer) are cropped, the stones never stretched.
-                ArcArt.Cover(new Rect(tank.x, floorY - SandRise, tank.width, tank.yMax - floorY + SandRise), sandArt, Color.white, 0.5f, 0f);
+                // Anchored at the bottom of the tank and kept in proportion (ScaleAndCrop trims the sides or a few
+                // rows of the transparent top, never stretches the stones); its top follows the floor as the drawer opens.
+                GUI.DrawTexture(new Rect(tank.x, floorY - SandRise, tank.width, tank.yMax - floorY + SandRise), sandArt, ScaleMode.ScaleAndCrop, true, 0, Color.white, Vector4.zero, bottom);
                 return;
             }
 
@@ -439,15 +440,15 @@ namespace FishingIdle.Game.UI
             {
                 var dx = Mathf.Max(tank.x, tank.x + i * tank.width / 5f - 40f);
                 var dw = Mathf.Min(tank.xMax, tank.x + (i + 1) * tank.width / 5f + 40f) - dx;
-                ArcArt.Fill(skin, new Rect(dx, floorY - 36f + (i % 2) * 7f, dw, 30f), top, 15f);
+                GUI.DrawTexture(new Rect(dx, floorY - 36f + (i % 2) * 7f, dw, 30f), skin.White, ScaleMode.StretchToFill, true, 0, top, 0, 15f);
             }
 
-            GUI.DrawTexture(new Rect(tank.x, floorY - 26f, tank.width, tank.yMax - floorY + 26f), SandTexture, ScaleMode.StretchToFill, true, 0, Color.white, 0, 0);
+            GUI.DrawTexture(new Rect(tank.x, floorY - 26f, tank.width, tank.yMax - floorY + 26f), SandTexture, ScaleMode.StretchToFill, true, 0, Color.white, Vector4.zero, bottom);
             foreach (var p in Pebbles)
             {
                 var px = Mathf.Clamp(tank.x + p.x * tank.width, tank.x + 8f, tank.xMax - 8f - p.y);
                 var colour = Color.Lerp(new Color(0.36f, 0.40f, 0.44f), new Color(0.55f, 0.50f, 0.42f), p.w);
-                ArcArt.Fill(skin, new Rect(px, floorY - p.z * 0.5f - 6f, p.y, p.z), colour, p.z * 0.5f);
+                GUI.DrawTexture(new Rect(px, floorY - p.z * 0.5f - 6f, p.y, p.z), skin.White, ScaleMode.StretchToFill, true, 0, colour, 0, p.z * 0.5f);
             }
         }
 
@@ -474,6 +475,7 @@ namespace FishingIdle.Game.UI
         private static void DrawBubbles(UiSkin skin, Rect swim, float floorY, float t)
         {
             const int perColumn = 6;
+            var bubble = ArtAssets.Texture(BubbleArt);
             var start = floorY - 8f;
             var rise = start - swim.y;
             if (rise <= 20f)
@@ -489,11 +491,19 @@ namespace FishingIdle.Game.UI
                 {
                     var p = Mathf.Repeat(t * column.y / rise + k / (float)perColumn + c * 0.37f, 1f);
                     var fade = Mathf.Clamp01(p * 8f) * Mathf.Clamp01((1f - p) * 6f);
+                    var size = (5f + 4f * Mathf.Repeat(k * 0.618f + c * 0.3f, 1f)) * (0.7f + 0.3f * p);
+                    var bx = cx + Mathf.Sin(t * 1.6f + k * 1.3f + c) * 5f;
+                    var r = new Rect(bx - size / 2f, start - p * rise - size / 2f, size, size);
+                    if (bubble != null)
+                    {
+                        GUI.DrawTexture(r, bubble, ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, 0.8f * fade), 0, 0);
+                        continue;
+                    }
 
-                    // Pixel bubbles drawn by the code (M25-T13): some grow as they rise; they wobble in whole pixels.
-                    var big = Mathf.Repeat(k * 0.618f + c * 0.3f, 1f) > 0.55f && p > 0.3f;
-                    var bx = cx + Mathf.Round(Mathf.Sin(t * 1.6f + k * 1.3f + c) * 2f) * UiSkin.ArcPixel;
-                    ArcArt.Bubble(new Vector2(bx, start - p * rise), big, new Color(0.85f, 0.97f, 1f, 0.85f * fade));
+                    // Fallback without ui_aquarium_bubble.png: a drawn ring.
+                    GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.85f, 0.97f, 1f, 0.45f * fade), 1.2f, size / 2f);
+                    GUI.DrawTexture(new Rect(r.x + size * 0.25f, r.y + size * 0.2f, size * 0.25f, size * 0.25f), skin.White, ScaleMode.StretchToFill, true, 0,
+                        new Color(1f, 1f, 1f, 0.55f * fade), 0, size * 0.125f);
                 }
             }
         }
@@ -618,8 +628,8 @@ namespace FishingIdle.Game.UI
             if (selected)
             {
                 var ring = new Rect(r.x - 8f, r.y - 4f, r.width + 16f, r.height + 8f);
-                ArcArt.Fill(skin, ring, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.10f), ring.height / 2f);
-                ArcArt.Line(skin, ring, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.9f), ring.height / 2f);
+                GUI.DrawTexture(ring, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.10f), 0, ring.height / 2f);
+                GUI.DrawTexture(ring, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.9f), 2f, ring.height / 2f);
             }
 
             DrawTransformed(r, Art.FishTexture(f.SpeciesId), r.center, slot.Tilt, slot.Flip, Color.white);
@@ -639,8 +649,8 @@ namespace FishingIdle.Game.UI
             var tw = Mathf.Min(260f, skin.ChipText.CalcSize(new GUIContent(tag)).x + 20f);
             var ty = r.y - 34f < swim.y ? r.yMax + 8f : r.y - 34f;
             var tagRect = new Rect(Mathf.Clamp(r.center.x - tw / 2f, swim.x, swim.xMax - tw), ty, tw, 24f);
-            ArcArt.Fill(skin, tagRect, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.86f), 12f);
-            ArcArt.Line(skin, tagRect, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.6f), 12f);
+            GUI.DrawTexture(tagRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.86f), 0, 12f);
+            GUI.DrawTexture(tagRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.6f), 1f, 12f);
             GUI.Label(tagRect, UI.FishCard.Fit(tag, skin.ChipText, tw - 14f), skin.ChipText);
         }
 
@@ -713,36 +723,28 @@ namespace FishingIdle.Game.UI
             var selected = !_multi && f.FishId == _selectedId;
             var hover = GUI.enabled && tile.Contains(Event.current.mousePosition);
             var night = UiSkin.Night;
-            ArcArt.Fill(skin, tile, new Color(night.r, night.g, night.b, hover ? 0.78f : 0.5f), 12f);
+            GUI.DrawTexture(tile, skin.White, ScaleMode.StretchToFill, true, 0, new Color(night.r, night.g, night.b, hover ? 0.78f : 0.5f), 0, 12f);
             if (selected || marked)
             {
-                ArcArt.Line(skin, tile, UiSkin.Accent, 12f);
+                GUI.DrawTexture(tile, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 12f);
             }
 
             const float d = 56f;
             var disc = new Rect(tile.center.x - d / 2f, tile.y + 6f, d, d);
             var panel = VisualTheme.Current.Panel;
-            ArcArt.Fill(skin, disc, new Color(panel.r, panel.g, panel.b, 0.95f), d / 2f);
-            ArcArt.Line(skin, disc, UiSkin.RarityColor(f.RarityId), d / 2f);
+            GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, new Color(panel.r, panel.g, panel.b, 0.95f), 0, d / 2f);
+            GUI.DrawTexture(disc, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.RarityColor(f.RarityId), 2f, d / 2f);
             if (VisualTheme.IsSpecialSize(f.SizeCategoryId))
             {
                 var outer = new Rect(disc.x - 3f, disc.y - 3f, d + 6f, d + 6f);
-                ArcArt.Line(skin, outer, UiSkin.SizeColor(f.SizeCategoryId), outer.width / 2f);
+                GUI.DrawTexture(outer, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.SizeColor(f.SizeCategoryId), 1.5f, outer.width / 2f);
             }
 
-            PixelDraw.Fit(new Rect(disc.x + 5f, disc.y + 13f, d - 10f, d - 26f), Art.FishTexture(f.SpeciesId));
+            GUI.DrawTexture(new Rect(disc.x + 5f, disc.y + 13f, d - 10f, d - 26f), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
 
             var text = TileText(skin, f);
-            GUI.Label(new Rect(tile.x + 4f, tile.y + 64f, tile.width - 8f, UiSkin.SmallLine), text.Name, skin.ChipText);
-            // The tile keeps "Nv. X" under the name and the Cardume position ("C1") in a small badge on the disc's corner
-            // (M25-T13).
-            var level = TileLevel(f);
-            GUI.Label(new Rect(tile.x + 4f, tile.y + 86f, tile.width - 8f, UiSkin.SmallLine), level.Level, skin.SmallMutedCenter);
-            if (level.Badge != null)
-            {
-                var bw = skin.Badge.CalcSize(new GUIContent(level.Badge)).x + 8f;
-                skin.Tag(new Rect(tile.x + 4f, tile.y + 4f, bw, 20f), level.Badge, UiSkin.Accent);
-            }
+            GUI.Label(new Rect(tile.x + 4f, tile.y + 63f, tile.width - 8f, UiSkin.SmallLine), text.Name, skin.ChipText);
+            GUI.Label(new Rect(tile.x + 4f, tile.y + 82f, tile.width - 8f, UiSkin.SmallLine), text.Line, skin.SmallMutedCenter);
 
             if (marked)
             {
@@ -753,18 +755,6 @@ namespace FishingIdle.Game.UI
             {
                 OnFishClicked(f, Event.current != null && (Event.current.control || Event.current.command));
             }
-        }
-
-        /// <summary>The tile's "Nv. X" and its Cardume badge ("C1", or null), built once per fish.</summary>
-        private (string Level, string Badge) TileLevel(FishView f)
-        {
-            if (!_tileLevel.TryGetValue(f.FishId, out var level))
-            {
-                level = (GameTexts.Player.LevelShort + " " + f.Level, f.CardumePosition > 0 ? GameTexts.Cardume.Badge(f.CardumePosition) : null);
-                _tileLevel[f.FishId] = level;
-            }
-
-            return level;
         }
 
         /// <summary>The tile's name (shortened to fit) and "Nv. X · C1" line, built once per fish.</summary>
@@ -782,7 +772,7 @@ namespace FishingIdle.Game.UI
 
         private static void CheckBadge(UiSkin skin, Rect badge)
         {
-            ArcArt.Fill(skin, badge, UiSkin.Accent, badge.width / 2f);
+            GUI.DrawTexture(badge, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 0, badge.width / 2f);
             skin.DrawIcon(new Rect(badge.x + 4f, badge.y + 4f, badge.width - 8f, badge.height - 8f), Icons.Check, UiSkin.Night);
         }
 
@@ -812,10 +802,23 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>A translucent glass panel over the water (the sheet, the sale, the drawer), drawn by the code in the ARC skin.</summary>
+        /// <summary>A translucent glass panel over the water (the sheet, the sale, the drawer).</summary>
         private static void Glass(UiSkin skin, Rect r)
         {
-            ArcArt.Glass(skin, r);
+            var art = ArtAssets.Texture(GlassArt);
+            if (art != null)
+            {
+                // Low panels (the closed drawer bar is 38 px) scale the corners down instead of squashing them.
+                var scale = Mathf.Min(1f, Mathf.Min(r.width, r.height) / (GlassArtBorder * 2f));
+                UiSkin.NineSlice(r, art, GlassArtBorder, GlassArtBorder, GlassArtBorder, GlassArtBorder, scale);
+                return;
+            }
+
+            // Fallback without ui_aquarium_glass.png: drawn glass.
+            var night = UiSkin.Night;
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(night.r, night.g, night.b, 0.86f), 0, 14f);
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.75f, 0.92f, 1f, 0.22f), 1f, 14f);
+            GUI.DrawTexture(new Rect(r.x + 16f, r.y + 1f, r.width - 32f, 1f), skin.White, ScaleMode.StretchToFill, true, 0, new Color(1f, 1f, 1f, 0.18f), 0, 0);
         }
 
         /// <summary>
@@ -824,9 +827,11 @@ namespace FishingIdle.Game.UI
         /// </summary>
         private static void DrawTransformed(Rect rect, Texture tex, Vector2 pivot, float angle, bool flip, Color color)
         {
-            // Nothing turns (ART_BIBLE_PIXEL 4.9, A-190): the sway becomes a one-pixel rise or dip, the turn a mirror.
-            rect.y += angle > 1.5f ? -UiSkin.ArcPixel : angle < -1.5f ? UiSkin.ArcPixel : 0f;
-            ArcArt.Fit(rect, tex, color, flip);
+            var matrix = GUI.matrix;
+            var p = new Vector3(pivot.x, pivot.y, 0f);
+            GUI.matrix = matrix * Matrix4x4.TRS(p, Quaternion.Euler(0f, 0f, angle), new Vector3(flip ? -1f : 1f, 1f, 1f)) * Matrix4x4.TRS(-p, Quaternion.identity, Vector3.one);
+            GUI.DrawTexture(rect, tex, ScaleMode.ScaleToFit, true, 0, color, 0, 0);
+            GUI.matrix = matrix;
         }
 
         private float Phase(long id)
@@ -961,22 +966,22 @@ namespace FishingIdle.Game.UI
                     exceptional ? UiSkin.SizeColor(fish.SizeCategoryId) : accent, 0.4f);
             }
 
-            PixelDraw.Fit(art, Art.FishTexture(fish.SpeciesId));
+            GUI.DrawTexture(art, Art.FishTexture(fish.SpeciesId), ScaleMode.ScaleToFit, true);
             y += artHeight + 16;
 
             GUI.Label(new Rect(x, y, w, 30), UI.FishCard.Fit(fish.SpeciesName, skin.Heading, w), skin.Heading);
             y += 32;
-            var rarityLabel = fish.RarityName;
+            var rarityLabel = fish.RarityName.ToUpperInvariant();
             var pillWidth = skin.PillWidth(rarityLabel, true);
             skin.RarityPill(new Rect(x, y, pillWidth, 22), fish.RarityId, rarityLabel);
             if (exceptional)
             {
-                UI.FishCard.ExceptionalSeal(skin, new Rect(x + pillWidth + 8, y + 1, 110, 20), fish.SizeCategoryName, UiSkin.SizeColor(fish.SizeCategoryId));
+                UI.FishCard.ExceptionalSeal(skin, new Rect(x + pillWidth + 8, y + 1, 110, 20), fish.SizeCategoryName.ToUpperInvariant(), UiSkin.SizeColor(fish.SizeCategoryId));
             }
             else
             {
                 // The size seal next to the rarity, in the size colour (addendum A-079).
-                var sizeLabel = fish.SizeCategoryName;
+                var sizeLabel = fish.SizeCategoryName.ToUpperInvariant();
                 skin.AccentPill(new Rect(x + pillWidth + 8, y, skin.PillWidth(sizeLabel, false), 22), sizeLabel, UiSkin.SizeColor(fish.SizeCategoryId));
             }
 
@@ -1226,24 +1231,26 @@ namespace FishingIdle.Game.UI
             var rarity = UiSkin.RarityColor(f.RarityId);
             var low = f.RarityId == "common" || f.RarityId == "rare";
 
-            var fill = selected ? theme.PanelElevated : Color.Lerp(theme.Panel, theme.PanelElevated, hover ? 0.6f : 0.2f);
-            ArcArt.Fill(skin, r, fill, 10f);
-            ArcArt.Line(skin, r, new Color(rarity.r, rarity.g, rarity.b, (low ? 0.45f : 0.85f) + (hover ? 0.15f : 0f)), 10f);
-            ArcArt.Fill(skin, new Rect(r.x + 5f, r.y + 10f, 3f, r.height - 20f), rarity, 1.5f);
+            var fill = UiSkin.Paper
+                ? (selected || hover ? Color.white : UiSkin.PaperCard)
+                : selected ? theme.PanelElevated : Color.Lerp(theme.Panel, theme.PanelElevated, hover ? 0.6f : 0.2f);
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, fill, 0, 10f);
+            GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, new Color(rarity.r, rarity.g, rarity.b, (low ? 0.45f : 0.85f) + (hover ? 0.15f : 0f)), 1.5f, 10f);
+            GUI.DrawTexture(new Rect(r.x + 5f, r.y + 10f, 3f, r.height - 20f), skin.White, ScaleMode.StretchToFill, true, 0, rarity, 0, 1.5f);
             if (selected || marked)
             {
-                ArcArt.Line(skin, r, UiSkin.Accent, 10f);
+                GUI.DrawTexture(r, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.Accent, 2f, 10f);
             }
 
             // The miniature, ringed in the size colour for Excepcional / Perfeição.
             var art = new Rect(r.x + 14f, r.y + 8f, 70f, r.height - 16f);
-            ArcArt.Fill(skin, art, new Color(0.06f, 0.17f, 0.26f, 0.9f), 8f);
+            GUI.DrawTexture(art, skin.White, ScaleMode.StretchToFill, true, 0, new Color(0.06f, 0.17f, 0.26f, 0.9f), 0, 8f);
             if (VisualTheme.IsSpecialSize(f.SizeCategoryId))
             {
-                ArcArt.Line(skin, art, UiSkin.SizeColor(f.SizeCategoryId), 8f);
+                GUI.DrawTexture(art, skin.White, ScaleMode.StretchToFill, true, 0, UiSkin.SizeColor(f.SizeCategoryId), 1.5f, 8f);
             }
 
-            PixelDraw.Fit(new Rect(art.x + 4f, art.y + 4f, art.width - 8f, art.height - 8f), Art.FishTexture(f.SpeciesId));
+            GUI.DrawTexture(new Rect(art.x + 4f, art.y + 4f, art.width - 8f, art.height - 8f), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
 
             // Right column: the Cardume position on top, the check below while selecting several.
             var badge = f.CardumePosition > 0 ? GameTexts.Cardume.Badge(f.CardumePosition) : null;
@@ -1251,7 +1258,7 @@ namespace FishingIdle.Game.UI
             var rightWidth = Mathf.Max(badgeWidth, marked ? 20f : 0f);
             if (badge != null)
             {
-                skin.Tag(new Rect(r.xMax - 10f - badgeWidth, r.y + 9f, badgeWidth, 20f), badge, UiSkin.Accent);
+                skin.Tag(new Rect(r.xMax - 10f - badgeWidth, r.y + 9f, badgeWidth, 20f), badge, UiSkin.NightAccent);
             }
 
             if (marked)
@@ -1313,6 +1320,7 @@ namespace FishingIdle.Game.UI
         {
             // The fish on its pedestal is a dark picture on the sheet (A-170).
             WindowFrame.Photo(skin, rect);
+            using var night = UiSkin.NightScope();
             var rarity = UiSkin.RarityColor(fish.RarityId);
             HeroSheet.Backdrop(skin, rect);
             var index = IndexOfSelected();
@@ -1341,7 +1349,7 @@ namespace FishingIdle.Game.UI
             var t = Mathf.Clamp01((Time.unscaledTime - _heroChangedAt) / 0.25f);
             var bob = Mathf.Sin(Time.unscaledTime * 1.6f) * 3f;
             var art = new Rect(centre.x - artW / 2f, centre.y - artH / 2f + bob + (1f - t) * 10f, artW, artH);
-            PixelDraw.Fit(art, Art.FishTexture(fish.SpeciesId), new Color(1f, 1f, 1f, t));
+            GUI.DrawTexture(art, Art.FishTexture(fish.SpeciesId), ScaleMode.ScaleToFit, true, 0, new Color(1f, 1f, 1f, t), 0, 0);
 
             // ‹ › walk the current list.
             if (index >= 0 && _shown.Count > 1)
@@ -1385,10 +1393,10 @@ namespace FishingIdle.Game.UI
             y += 36f;
 
             // Rarity seal, then the size seal (gold Excepcional / diamond Perfeição, or the size pill).
-            var rarityLabel = fish.RarityName;
+            var rarityLabel = fish.RarityName.ToUpperInvariant();
             var pillWidth = Mathf.Min(skin.PillWidth(rarityLabel, true), w * 0.55f);
             skin.RarityPill(new Rect(x, y, pillWidth, 22f), fish.RarityId, rarityLabel);
-            var sizeLabel = fish.SizeCategoryName;
+            var sizeLabel = fish.SizeCategoryName.ToUpperInvariant();
             var sizeRoom = w - pillWidth - 8f;
             if (exceptional)
             {
@@ -1424,8 +1432,8 @@ namespace FishingIdle.Game.UI
             const float disc = 52f;
             var discRect = new Rect(x, y + 2f, disc, disc);
             var night = UiSkin.Night;
-            ArcArt.Fill(skin, discRect, new Color(night.r, night.g, night.b, 0.85f), disc / 2f);
-            ArcArt.Line(skin, discRect, accent, disc / 2f);
+            GUI.DrawTexture(discRect, skin.White, ScaleMode.StretchToFill, true, 0, new Color(night.r, night.g, night.b, 0.85f), 0, disc / 2f);
+            GUI.DrawTexture(discRect, skin.White, ScaleMode.StretchToFill, true, 0, accent, 2.5f, disc / 2f);
             GUI.Label(discRect, fish.Level.ToString(), skin.TitleCenter);
             var lx = x + disc + 12f;
             var lw = w - disc - 12f;
@@ -1603,9 +1611,9 @@ namespace FishingIdle.Game.UI
                 var f = chosen[i];
                 var row = new Rect(0, i * rowHeight, w - 18, rowHeight - 4);
                 GUI.Box(row, GUIContent.none, skin.Card);
-                PixelDraw.Fit(new Rect(row.x + 6, row.y + 4, 48, row.height - 8), Art.FishTexture(f.SpeciesId));
+                GUI.DrawTexture(new Rect(row.x + 6, row.y + 4, 48, row.height - 8), Art.FishTexture(f.SpeciesId), ScaleMode.ScaleToFit, true);
                 var color = UiSkin.RarityColor(f.RarityId);
-                ArcArt.Fill(skin, new Rect(row.x + 60, row.y + 14, 8, 8), color, 4);
+                GUI.DrawTexture(new Rect(row.x + 60, row.y + 14, 8, 8), skin.White, ScaleMode.StretchToFill, true, 0, color, 0, 4);
                 var priceText = Format.Number(f.SalePriceCoins);
                 var priceWidth = skin.SmallRight.CalcSize(new GUIContent(priceText)).x + 4;
                 var nameWidth = row.width - 74 - priceWidth - 34;
@@ -1793,7 +1801,7 @@ namespace FishingIdle.Game.UI
             var y = area.y + 18;
             var fish = _selected;
 
-            PixelDraw.Fit(new Rect(x, y, w, 100), Art.FishTexture(fish.SpeciesId));
+            GUI.DrawTexture(new Rect(x, y, w, 100), Art.FishTexture(fish.SpeciesId), ScaleMode.ScaleToFit, true);
             y += 110;
             GUI.Label(new Rect(x, y, w, 28), fish.SpeciesName + " · " + GameTexts.Player.LevelShort + " " + fish.Level, skin.Heading);
             y += 34;
@@ -1977,7 +1985,6 @@ namespace FishingIdle.Game.UI
             }
 
             _tileText.Clear();
-            _tileLevel.Clear();
             _cardText.Clear();
             for (var k = 0; k < _statMax.Length; k++)
             {
