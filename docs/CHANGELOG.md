@@ -3,6 +3,13 @@
 As versões seguem `docs/VERSIONAMENTO.md`. As versões de cada componente ficam em `version.json` na
 raiz do repositório, que o servidor serve em `GET /api/dev/version`.
 
+## [0.2.0-m25.8] — 20/10/2026
+
+### Corrigido
+
+- O pescador se mexia mesmo sem pescar: agora, com a pesca parada, ele fica imóvel no primeiro quadro, com a vara e a
+  boia em repouso (A-192). Visual só fica verificado quando o proprietário apertar Play.
+
 ## [0.2.0-m25.7] — 20/10/2026
 
 Fonte nova e as últimas telas da revisão visual (A-191). Nenhuma regra, número ou save mudou. Visual só fica verificado

@@ -3964,3 +3964,9 @@ regra, número, recompensa ou save mudou.
     ("Abrir a Caixa de Pesca" quando há peixes nela, senão "Continuar") e o "Abrir" repetido no aviso da Caixa saiu.
   - **Outras:** miniaturas do Aquário 112 × 112; abas laterais 136 (era 128); "Todos os mapas · 0,8% por peixe" na Loja.
 - **Continua para o proprietário decidir:** tirar a cor de Pequeno, Adulto e Grande (a cor ficou como estava).
+
+### A-192 · O pescador fica parado quando não está pescando (20/10/2026)
+
+Pedido do proprietário: "o boneco tá se mexendo mesmo sem pescar". Sem pesca ativa, o pescador mostra só o primeiro
+quadro da animação "parado", a vara fica no ângulo de descanso e a boia pendurada, sem balançar. O balanço de 4 quadros
+continua só enquanto ele espera o peixe morder, com a pesca ligada.
