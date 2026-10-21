@@ -963,17 +963,17 @@ namespace FishingIdle.Game.UI
 
             GUI.Label(new Rect(x, y, w, 30), UI.FishCard.Fit(fish.SpeciesName, skin.Heading, w), skin.Heading);
             y += 32;
-            var rarityLabel = fish.RarityName.ToUpperInvariant();
+            var rarityLabel = fish.RarityName;
             var pillWidth = skin.PillWidth(rarityLabel, true);
             skin.RarityPill(new Rect(x, y, pillWidth, 22), fish.RarityId, rarityLabel);
             if (exceptional)
             {
-                UI.FishCard.ExceptionalSeal(skin, new Rect(x + pillWidth + 8, y + 1, 110, 20), fish.SizeCategoryName.ToUpperInvariant(), UiSkin.SizeColor(fish.SizeCategoryId));
+                UI.FishCard.ExceptionalSeal(skin, new Rect(x + pillWidth + 8, y + 1, 110, 20), fish.SizeCategoryName, UiSkin.SizeColor(fish.SizeCategoryId));
             }
             else
             {
                 // The size seal next to the rarity, in the size colour (addendum A-079).
-                var sizeLabel = fish.SizeCategoryName.ToUpperInvariant();
+                var sizeLabel = fish.SizeCategoryName;
                 skin.AccentPill(new Rect(x + pillWidth + 8, y, skin.PillWidth(sizeLabel, false), 22), sizeLabel, UiSkin.SizeColor(fish.SizeCategoryId));
             }
 
@@ -1378,14 +1378,14 @@ namespace FishingIdle.Game.UI
             var withSizeBar = (buttons - y - fixedHeight - 16f) / 8f >= 20f;
             var rowH = Mathf.Clamp((buttons - y - fixedHeight - (withSizeBar ? 16f : 0f)) / 8f, 20f, 28f);
 
-            skin.TitleLabel(new Rect(x, y, w, 34f), UI.FishCard.Fit(fish.SpeciesName, skin.Title, w), skin.Title);
+            GUI.Label(new Rect(x, y, w, 34f), UI.FishCard.Fit(fish.SpeciesName, skin.Title, w), skin.Title);
             y += 36f;
 
             // Rarity seal, then the size seal (gold Excepcional / diamond Perfeição, or the size pill).
-            var rarityLabel = fish.RarityName.ToUpperInvariant();
+            var rarityLabel = fish.RarityName;
             var pillWidth = Mathf.Min(skin.PillWidth(rarityLabel, true), w * 0.55f);
             skin.RarityPill(new Rect(x, y, pillWidth, 22f), fish.RarityId, rarityLabel);
-            var sizeLabel = fish.SizeCategoryName.ToUpperInvariant();
+            var sizeLabel = fish.SizeCategoryName;
             var sizeRoom = w - pillWidth - 8f;
             if (exceptional)
             {
@@ -1714,7 +1714,7 @@ namespace FishingIdle.Game.UI
 
         private void DrawFoodPicker(UiSkin skin, Rect area)
         {
-            skin.TitleLabel(new Rect(area.x, area.y, area.width, 32), GameTexts.Aquarium.FeedTitle + ": " + _selected.SpeciesName, skin.Title);
+            GUI.Label(new Rect(area.x, area.y, area.width, 32), GameTexts.Aquarium.FeedTitle + ": " + _selected.SpeciesName, skin.Title);
             GUI.Label(new Rect(area.x + 2, area.y + 36, area.width, 22), GameTexts.Aquarium.FeedPickHint, skin.SmallMuted);
 
             RefreshFoodLists();

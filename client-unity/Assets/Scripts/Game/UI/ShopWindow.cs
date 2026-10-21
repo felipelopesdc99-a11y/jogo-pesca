@@ -439,7 +439,7 @@ namespace FishingIdle.Game.UI
 
         private static string TagText(WallItem item)
         {
-            return (item.Tag == TagKind.InUse ? GameTexts.Gear.InUse : item.OwnedText ?? GameTexts.Shop.Owned).ToUpperInvariant();
+            return item.Tag == TagKind.InUse ? GameTexts.Gear.InUse : item.OwnedText ?? GameTexts.Shop.Owned;
         }
 
         /// <summary>The tag hanging from the shelf: price, "JÁ É SUA" / "JÁ É SEU" or "EM USO".</summary>
@@ -794,7 +794,7 @@ namespace FishingIdle.Game.UI
         /// <summary>The gold "MONTE COM FRAGMENTOS" pill in the button's place (boats and rods are not sold).</summary>
         private static void AssemblePill(UiSkin skin, Rect button, string icon)
         {
-            var hint = GameTexts.Gear.AssembleHint.ToUpperInvariant();
+            var hint = GameTexts.Gear.AssembleHint;
             var hw = skin.PillWidth(hint, true) + 6f;
             skin.AccentPill(new Rect(button.center.x - hw / 2f, button.center.y - 13f, hw, 26f), hint, UiSkin.Gold, icon);
         }
@@ -1253,7 +1253,7 @@ namespace FishingIdle.Game.UI
 
             if (vip.Active)
             {
-                var label = GameTexts.Vip.Active.ToUpperInvariant();
+                var label = GameTexts.Vip.Active;
                 skin.AccentPill(new Rect(button.x, button.y + 61, skin.PillWidth(label, true) + 6, 26), label, UiSkin.Accent, Icons.Check);
             }
         }
@@ -1278,7 +1278,7 @@ namespace FishingIdle.Game.UI
         /// <summary>"JÁ É SUA" / "EM USO" as a pill centred in the button's place.</summary>
         private static void OwnedPill(UiSkin skin, Rect button, string text)
         {
-            var label = text.ToUpperInvariant();
+            var label = text;
             var w = skin.PillWidth(label, true) + 6f;
             skin.AccentPill(new Rect(button.center.x - w / 2f, button.center.y - 13f, w, 26f), label, UiSkin.Accent, Icons.Check);
         }

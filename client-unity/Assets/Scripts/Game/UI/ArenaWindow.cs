@@ -219,14 +219,12 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(nameX, r.y + 7, nameW, UiSkin.SmallLine), GameTexts.Arena.You, skin.SmallMuted);
             GUI.Label(new Rect(nameX, r.y + 26, nameW, 28), FishCard.Fit(PlayerName, skin.Heading, nameW), skin.Heading);
 
-            // The rank as a gold medal, "de N" beside it.
+            // The rank as text (M25-T24: one adornment per player, the avatar): "Posição" over "#198 de 500".
             var rx = r.x + playerW;
-            var medal = new Rect(rx, r.y + 4, 56, 56);
-            DrawMedal(skin, medal, GameTexts.Arena.RankOf(_arena.Rank));
-            var lx = medal.xMax + 10;
-            var lw = Mathf.Max(20f, rankW - (lx - rx) - 12);
-            GUI.Label(new Rect(lx, r.y + 11, lw, UiSkin.SmallLine), GameTexts.Arena.Rank, skin.SmallMuted);
-            GUI.Label(new Rect(lx, r.y + 30, lw, 22), FishCard.Fit(GameTexts.Arena.OfTotal(_arena.Participants), skin.BodyBold, lw), skin.BodyBold);
+            var lx = rx;
+            var lw = Mathf.Max(20f, rankW - 12);
+            GUI.Label(new Rect(lx, r.y + 7, lw, UiSkin.SmallLine), GameTexts.Arena.Rank, skin.SmallMuted);
+            GUI.Label(new Rect(lx, r.y + 26, lw, 28), FishCard.Fit(GameTexts.Arena.RankOf(_arena.Rank) + " " + GameTexts.Arena.OfTotal(_arena.Participants), skin.Heading, lw), skin.Heading);
 
             // Energy: label and amount, one segment per point, and the time to the next point.
             var ex = rx + rankW;
@@ -261,16 +259,6 @@ namespace FishingIdle.Game.UI
             ArcArt.Fill(skin, rect, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.92f), radius);
             AvatarArt.Draw(skin, new Rect(rect.x + 3, rect.y + 3, rect.width - 6, rect.height - 6), avatarId, Mathf.Max(0f, radius - 3f));
             ArcArt.Line(skin, rect, ring, radius);
-        }
-
-        /// <summary>A round gold medal with the position written on it ("#198").</summary>
-        private static void DrawMedal(UiSkin skin, Rect rect, string text)
-        {
-            var radius = rect.width / 2f;
-            ArcArt.Fill(skin, rect, UiSkin.Gold, radius);
-            var inner = new Rect(rect.x + 4, rect.y + 4, rect.width - 8, rect.height - 8);
-            ArcArt.Line(skin, inner, UiSkin.GoldLight, radius - 4f);
-            GUI.Label(rect, FishCard.Fit(text, skin.MedalText, rect.width - 8), skin.MedalText);
         }
 
         /// <summary>One segment per Energy point; a plain bar when there are too many points to tell apart.</summary>
@@ -333,13 +321,14 @@ namespace FishingIdle.Game.UI
             var bandTop = area.y + pedestalH + 10f;
             var band = messageY - 6f - bandTop;
             var headerH = band < 260f ? 34f : 42f;
-            const float rowGap = 8f;
+            // Each row has its name ("Frente", "Trás") on a line of the small text above it (M25-T24, A-191).
+            const float rowGap = RowLabel;
             var vsW = Mathf.Clamp(area.width * 0.08f, 70f, 120f);
             var panelW = (area.width - vsW) / 2f;
-            var slotH = Mathf.Clamp((band - headerH - 8f - 10f - rowGap) / 2f, 24f, 150f);
-            var widthBased = (panelW - 2 * FormationPad - TagW - 6f - BackShift - 2 * SlotGap) / 3f;
+            var slotH = Mathf.Clamp((band - headerH - RowLabel - 10f - rowGap) / 2f, 24f, 150f);
+            var widthBased = (panelW - 2 * FormationPad - BackShift - 2 * SlotGap) / 3f;
             var slotW = Mathf.Max(24f, Mathf.Min(widthBased, slotH * 1.9f));
-            var panelH = headerH + 8f + slotH * 2f + rowGap + 10f;
+            var panelH = headerH + RowLabel + slotH * 2f + rowGap + 10f;
             var panelY = bandTop + Mathf.Max(0f, (band - panelH) / 2f);
             var left = new Rect(area.x, panelY, panelW, panelH);
             var right = new Rect(area.xMax - panelW, panelY, panelW, panelH);
@@ -366,10 +355,6 @@ namespace FishingIdle.Game.UI
             var attackW = Mathf.Min(380f, area.width * 0.34f);
             var attack = new Rect(area.center.x - attackW / 2f, bottomY, attackW, buttonH);
             var canAttack = _arena.AttackBlocker == ServiceError.None && selected != null;
-            if (canAttack && GUI.enabled)
-            {
-                skin.DrawGlow(attack, UiSkin.Accent, 0.3f);
-            }
 
             var enabledBefore = GUI.enabled;
             GUI.enabled = enabledBefore && canAttack;
@@ -391,10 +376,10 @@ namespace FishingIdle.Game.UI
             }
             else
             {
-                GUI.Label(new Rect(area.x, bottomY + 4, sideW, buttonH - 4), GameTexts.Arena.RerollUsed, skin.SmallMuted);
+                GUI.Label(new Rect(area.x, bottomY, sideW, buttonH + 4), GameTexts.Arena.RerollUsed, skin.SmallMuted);
             }
 
-            GUI.Label(new Rect(area.xMax - sideW, bottomY + 4, sideW, buttonH - 4), GameTexts.Arena.NoForceNote, skin.SmallMutedRight);
+            // "A Força não é mostrada" moved to the "i" of the window (M25-T24): one line less under the formations.
         }
 
         /// <summary>The opponents as selector chips, each a little taller than the previous one (the service orders them).</summary>
@@ -412,28 +397,20 @@ namespace FishingIdle.Game.UI
                 var rect = new Rect(x0 + i * (chipW + gap), row.yMax - h, chipW, h);
                 var isSelected = i == _selected;
                 var hovered = GUI.enabled && rect.Contains(Event.current.mousePosition);
-                if (isSelected)
-                {
-                    skin.DrawGlow(rect, UiSkin.Accent, 0.35f);
-                }
-
+                // The chosen one is the selected card (gold line); no glow and no extra edge (M25-T24).
                 if (GUI.Button(rect, GUIContent.none, isSelected ? skin.CardSelected : hovered ? skin.CardHovered : skin.Card))
                 {
                     _selected = i;
                 }
-
-                // The pedestal's top edge: accent on the chosen one, neutral on the others.
-                var edge = isSelected ? UiSkin.Accent : new Color(UiSkin.Border.r, UiSkin.Border.g, UiSkin.Border.b, 0.8f);
-                ArcArt.Fill(skin, new Rect(rect.x + 12, rect.yMax - 7, rect.width - 24, 3), edge, 1.5f);
 
                 var a = Mathf.Clamp(rect.height - 20f, 20f, 56f);
                 var avatar = new Rect(rect.x + 12, rect.y + (rect.height - a) / 2f - 2f, a, a);
                 AvatarFrame(skin, avatar, null, isSelected ? UiSkin.Accent : UiSkin.Border);
                 var tx = avatar.xMax + 12;
                 var tw = Mathf.Max(20f, rect.xMax - 12 - tx);
-                var ty = rect.y + rect.height / 2f - 23f;
-                GUI.Label(new Rect(tx, ty, tw, 22), FishCard.Fit(o.Name, skin.BodyBold, tw), skin.BodyBold);
-                GUI.Label(new Rect(tx, ty + 22, tw, 20), GameTexts.Arena.RankOf(o.Rank), skin.SmallGold);
+                var ty = rect.y + rect.height / 2f - 26f;
+                GUI.Label(new Rect(tx, ty, tw, 28), FishCard.Fit(o.Name, skin.BodyBold, tw), skin.BodyBold);
+                GUI.Label(new Rect(tx, ty + 28, tw, UiSkin.SmallLine), GameTexts.Arena.RankOf(o.Rank), skin.SmallGold);
             }
         }
 
@@ -494,7 +471,7 @@ namespace FishingIdle.Game.UI
         }
 
         private const float FormationPad = 12f;
-        private const float TagW = 22f;
+        private const float RowLabel = 28f;
         private const float BackShift = 18f;
         private const float SlotGap = 8f;
 
@@ -510,16 +487,15 @@ namespace FishingIdle.Game.UI
             ArcArt.Line(skin, panel, UiSkin.Border, 16);
             skin.Divider(new Rect(panel.x + FormationPad, panel.y + headerH, panel.width - FormationPad * 2, 1));
 
-            var rowW = TagW + 6f + 3f * slotW + 2f * SlotGap + BackShift;
+            var rowW = 3f * slotW + 2f * SlotGap + BackShift;
             var x0 = panel.x + (panel.width - rowW) / 2f;
-            var y = panel.y + headerH + 8f;
+            var y = panel.y + headerH + RowLabel;
             for (var row = 0; row < 2; row++)
             {
                 var offset = row == 1 ? BackShift : 0f;
                 var start = mirrored ? x0 + (BackShift - offset) : x0 + offset;
-                var tagX = mirrored ? start + 3f * slotW + 2f * SlotGap + 6f : start;
-                var slotsX = mirrored ? start : start + TagW + 6f;
-                RowTag(skin, new Rect(tagX, y, TagW, slotH), row == 0 ? GameTexts.Cardume.FrontTag : GameTexts.Cardume.BackTag);
+                var slotsX = start;
+                RowTag(skin, new Rect(slotsX, y - RowLabel + 2f, 3f * slotW + 2f * SlotGap, UiSkin.SmallLine), row == 0 ? GameTexts.Cardume.FrontTag : GameTexts.Cardume.BackTag, mirrored);
                 for (var k = 0; k < 3; k++)
                 {
                     // Position 1 (and 4) sits next to the row tag on both sides.
@@ -532,23 +508,13 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        private static GUIStyle _rowLetter;
-
-        /// <summary>A vertical "FRENTE" / "TRÁS" tag; letters get smaller when the row is short (never below 10 px, up to the small size, A-149).</summary>
-        private static void RowTag(UiSkin skin, Rect rect, string tag)
+        /// <summary>
+        /// The row's name over it, "Frente" / "Trás", in the small text (M25-T24, A-191: the vertical letters that shrank
+        /// under the minimum left); on the side of position 1 and 4, like the old tag.
+        /// </summary>
+        private static void RowTag(UiSkin skin, Rect rect, string tag, bool mirrored)
         {
-            ArcArt.Fill(skin, rect, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.14f), 8);
-            var letters = tag.ToCharArray();
-            var spacing = Mathf.Min(17f, (rect.height - 6f) / Mathf.Max(1, letters.Length));
-            _rowLetter ??= new GUIStyle(skin.TinyMutedCenter) { clipping = TextClipping.Overflow };
-            _rowLetter.fontSize = Mathf.RoundToInt(Mathf.Clamp(spacing * 1.3f, UiSkin.ShrinkMinSize, UiSkin.SmallSize));
-            var style = _rowLetter;
-            var ly = rect.center.y - letters.Length * spacing / 2f;
-            foreach (var ch in letters)
-            {
-                GUI.Label(new Rect(rect.x, ly, rect.width, spacing), ch.ToString(), style);
-                ly += spacing;
-            }
+            GUI.Label(rect, tag, mirrored ? skin.SmallMutedRight : skin.SmallMuted);
         }
 
         /// <summary>One place: number, rarity seal, fish art and level. Never the Strength (GDD section 28).</summary>
@@ -573,7 +539,7 @@ namespace FishingIdle.Game.UI
 
             if (!string.IsNullOrEmpty(fish.RarityName))
             {
-                var rarity = fish.RarityName.ToUpperInvariant();
+                var rarity = fish.RarityName;
                 var pw = Mathf.Min(skin.PillWidth(rarity, false), rect.width - badgeSize - 18);
                 var pill = new Rect(rect.xMax - 6 - pw, rect.y + 6, pw, badgeSize);
                 skin.RarityPill(pill, fish.RarityId, rarity, false);
@@ -865,7 +831,7 @@ namespace FishingIdle.Game.UI
             var o = _viewing;
             var rect = WindowFrame.Dialog(skin, screenWidth, screenHeight, 560f, 820f);
             skin.IconBadge(new Rect(rect.x + 28, rect.y + 24, 58, 58), Icons.Profile, UiSkin.Accent);
-            skin.TitleLabel(new Rect(rect.x + 100, rect.y + 24, rect.width - 260, 32), FishCard.Fit(o.Name, skin.Title, rect.width - 260), skin.Title);
+            GUI.Label(new Rect(rect.x + 100, rect.y + 24, rect.width - 260, 32), FishCard.Fit(o.Name, skin.Title, rect.width - 260), skin.Title);
             GUI.Label(new Rect(rect.x + 101, rect.y + 60, rect.width - 260, 22), GameTexts.Arena.Rank + ": " + GameTexts.Arena.RankOf(o.Rank), skin.SmallGold);
             if (skin.IconButton(new Rect(rect.xMax - 156, rect.y + 24, 128, 42), Icons.Close, GameTexts.Box.Close, skin.Button))
             {
@@ -960,12 +926,13 @@ namespace FishingIdle.Game.UI
             {
                 var h = rows[i];
                 var y = i * 40f;
-                GUI.Label(new Rect(0, y + 8, 150, 20), Format.DateTimeFromUnixMs(h.AtMs), skin.SmallMuted);
-                GUI.Label(new Rect(160, y + 8, 110, 20), h.IsDefense ? GameTexts.Arena.Defended : GameTexts.Arena.Attacked, skin.Small);
-                GUI.Label(new Rect(270, y + 8, 300, 20), h.OpponentName, skin.Small);
-                GUI.Label(new Rect(580, y + 8, 100, 20), h.PlayerWon ? GameTexts.Arena.Win : GameTexts.Arena.Loss, h.PlayerWon ? skin.SmallGold : skin.Small);
-                GUI.Label(new Rect(690, y + 8, 260, 20), GameTexts.Arena.RankChange(h.RankBefore, h.RankAfter), skin.Small);
-                GUI.Label(new Rect(960, y + 8, 180, 20), h.HonorChange == 0 ? string.Empty : GameTexts.Arena.HonorChange(h.HonorChange), skin.Small);
+                // Columns measured in Nunito 21 (A-191): date 176, kind 96, name 264, result 96, place 232, Honor the rest, 16 apart.
+                GUI.Label(new Rect(0, y + 8, 184, UiSkin.SmallLine), Format.DateTimeFromUnixMs(h.AtMs), skin.SmallMuted);
+                GUI.Label(new Rect(200, y + 8, 96, UiSkin.SmallLine), h.IsDefense ? GameTexts.Arena.Defended : GameTexts.Arena.Attacked, skin.Small);
+                GUI.Label(new Rect(312, y + 8, 264, UiSkin.SmallLine), FishCard.Fit(h.OpponentName, skin.Small, 264), skin.Small);
+                GUI.Label(new Rect(592, y + 8, 96, UiSkin.SmallLine), h.PlayerWon ? GameTexts.Arena.Win : GameTexts.Arena.Loss, h.PlayerWon ? skin.SmallGold : skin.Small);
+                GUI.Label(new Rect(704, y + 8, 232, UiSkin.SmallLine), GameTexts.Arena.RankChange(h.RankBefore, h.RankAfter), skin.Small);
+                GUI.Label(new Rect(952, y + 8, Mathf.Max(0f, area.width - 20 - 952), UiSkin.SmallLine), h.HonorChange == 0 ? string.Empty : GameTexts.Arena.HonorChange(h.HonorChange), skin.Small);
             }
 
             GUI.EndScrollView();
@@ -1065,7 +1032,7 @@ namespace FishingIdle.Game.UI
             if (vsT > 0f)
             {
                 var vsEase = 1f - Mathf.Pow(1f - vsT, 3f);
-                // Whole steps (3×, 2×, 1×): the pixel letters never land between pixels.
+                // Whole steps (3×, 2×, 1×), as with the pixel font before (kept: a short, clean pop).
                 var scale = Mathf.Ceil(Mathf.Lerp(3f, 1f, vsEase) - 0.001f);
                 var vs = new Rect(cx - 160f, top + avatarSize / 2f - 70f, 320f, 140f);
                 skin.DrawGlow(new Rect(vs.center.x - 70f, vs.center.y - 50f, 140f, 100f), UiSkin.Gold, 0.5f * vsEase);
@@ -1076,7 +1043,7 @@ namespace FishingIdle.Game.UI
                 var pivot = new Vector3(vs.center.x, vs.center.y, 0f);
                 GUI.matrix = before * Matrix4x4.TRS(pivot, Quaternion.identity, new Vector3(scale, scale, 1f)) * Matrix4x4.TRS(-pivot, Quaternion.identity, Vector3.one);
                 GUI.color = new Color(color.r, color.g, color.b, color.a * vsEase);
-                // The "VS" by the code (M25-T14): Press Start 2P in gold with a hard pixel shadow (the painted emblem leaves).
+                // The "VS" by the code (M25-T14): Nunito Bold in gold with a hard shadow (the painted emblem left).
                 GUI.contentColor = new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.9f);
                 GUI.Label(new Rect(vs.x + UiSkin.ArcPixel * 3, vs.y + UiSkin.ArcPixel * 3, vs.width, vs.height), GameTexts.Arena.VsMark, skin.VsDisplay);
                 GUI.contentColor = content;
@@ -1101,7 +1068,7 @@ namespace FishingIdle.Game.UI
             var avatar = new Rect(cx - size / 2f, top, size, size);
             skin.DrawGlow(avatar, ring, 0.4f);
             AvatarFrame(skin, avatar, avatarId, ring);
-            skin.TitleLabel(new Rect(cx - width / 2f, avatar.yMax + 14f, width, 36f), FishCard.Fit(name, skin.TitleCenter, width), skin.TitleCenter);
+            GUI.Label(new Rect(cx - width / 2f, avatar.yMax + 14f, width, 36f), FishCard.Fit(name, skin.TitleCenter, width), skin.TitleCenter);
             var rankText = GameTexts.Arena.RankOf(rank);
             if (plate)
             {
@@ -1208,7 +1175,7 @@ namespace FishingIdle.Game.UI
             var textX = panel.x + 84;
             var textW = panel.width - 84 - 268;
             GUI.contentColor = won ? UiSkin.GoldLight : Color.white;
-            skin.TitleLabel(new Rect(textX, panel.y + 16, textW, 34), won ? GameTexts.Arena.Victory : GameTexts.Arena.Defeat, skin.Title);
+            GUI.Label(new Rect(textX, panel.y + 16, textW, 34), won ? GameTexts.Arena.Victory : GameTexts.Arena.Defeat, skin.Title);
             GUI.contentColor = Color.white;
             GUI.Label(new Rect(textX, panel.y + 56, textW, 22), GameTexts.Arena.RankChange(_battle.RankBefore, _battle.RankAfter), skin.Body);
             GUI.Label(new Rect(textX, panel.y + 80, textW, 22), GameTexts.Arena.HonorChange(_battle.HonorChange), skin.Body);

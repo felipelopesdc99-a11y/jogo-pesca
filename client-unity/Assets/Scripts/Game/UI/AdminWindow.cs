@@ -55,7 +55,7 @@ namespace FishingIdle.Game.UI
             var w = _rect.width;
             GUI.Label(new Rect(20, 14, w - 140, 28), GameTexts.Dev.Title, skin.Heading);
             GUI.Label(new Rect(20, 40, w - 140, UiSkin.SmallLine), GameTexts.Dev.Subtitle, skin.SmallMuted);
-            if (GUI.Button(new Rect(w - 110, 14, 90, 32), GameTexts.Dev.Close, skin.Button))
+            if (GUI.Button(new Rect(w - 124, 14, 104, 32), GameTexts.Dev.Close, skin.Button))
             {
                 IsOpen = false;
             }

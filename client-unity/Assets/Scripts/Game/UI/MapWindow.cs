@@ -604,7 +604,7 @@ namespace FishingIdle.Game.UI
 
             if (map.IsCurrent)
             {
-                var label = GameTexts.Map.YouAreHere.ToUpperInvariant();
+                var label = GameTexts.Map.YouAreHere;
                 var width = Mathf.Min(rect.width, skin.PillWidth(label, true) + 6f);
                 skin.AccentPill(new Rect(rect.center.x - width / 2f, rect.center.y - 14f, width, 28f), label, UiSkin.Accent, Icons.Pin);
                 return;

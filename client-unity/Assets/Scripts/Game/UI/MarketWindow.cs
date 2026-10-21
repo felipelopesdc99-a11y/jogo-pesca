@@ -13,8 +13,8 @@ using UnityEngine;
 namespace FishingIdle.Game.UI
 {
     /// <summary>
-    /// The Market (GDD sections 33–34): Buy with combined filters, Sell, My Listings and Items to
-    /// Withdraw. Prices, fees, availability and custody are decided by the game service; this only
+    /// The Market (GDD sections 33–34): Buy with combined filters, Sell, My Listings (with the items to withdraw under
+    /// them since M25-T24), Auction and Conchas e Dólares. Prices, fees, availability and custody are decided by the game service; this only
     /// shows its views and sends the player's requests.
     /// </summary>
     public sealed class MarketWindow
@@ -24,8 +24,8 @@ namespace FishingIdle.Game.UI
         private const float Gap = 12f;
         private const float SidePanelWidth = 330f;
 
-        // The harbour market scene (A-179): a strip on top of the content, left of the side panel; the side panel keeps
-        // the full height, where the buy, sell and bid forms need it.
+        // The harbour market scene (A-179): a strip on top of the Comprar tab only (M25-T24: one picture, on the tab
+        // that opens first), left of the side panel; the side panel keeps the full height for the forms.
         private const string BannerArt = "UI/merc_feira_porto";
         private const float BannerHeight = 110f, BannerGap = 18f;
 
@@ -35,7 +35,6 @@ namespace FishingIdle.Game.UI
             Sell,
             Mine,
             Auction,
-            Withdraw,
             Currency,
         }
 
@@ -139,10 +138,9 @@ namespace FishingIdle.Game.UI
             DrawTabs(skin);
             _full = area;
             var content = area;
-            var hasSide = _tab != Tab.Withdraw && _tab != Tab.Currency;
-            var banner = new Rect(area.x, area.y, hasSide ? area.width - SidePanelWidth - 16 : area.width, BannerHeight);
+            var banner = new Rect(area.x, area.y, area.width - SidePanelWidth - 16, BannerHeight);
             // The pixel harbour market at a whole scale, cut at the edges, centred on the fish crates (M25-T15).
-            if (WindowFrame.PhotoArt(skin, banner, BannerArt, 0.5f, 0.62f) != null)
+            if (_tab == Tab.Buy && WindowFrame.PhotoArt(skin, banner, BannerArt, 0.5f, 0.62f) != null)
             {
                 content = new Rect(area.x, area.y + BannerHeight + BannerGap, area.width, area.height - BannerHeight - BannerGap);
             }
@@ -152,7 +150,6 @@ namespace FishingIdle.Game.UI
                 case Tab.Sell: DrawSell(skin, content); break;
                 case Tab.Mine: DrawMine(skin, content); break;
                 case Tab.Auction: DrawAuction(skin, content); break;
-                case Tab.Withdraw: DrawWithdraw(skin, content); break;
                 case Tab.Currency: DrawCurrency(skin, content); break;
                 default: DrawBuy(skin, content); break;
             }
@@ -183,8 +180,8 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        private static readonly Tab[] TabOrder = { Tab.Buy, Tab.Sell, Tab.Mine, Tab.Auction, Tab.Withdraw, Tab.Currency };
-        private static readonly string[] TabIcons = { Icons.Market, Icons.Sell, Icons.Box, Icons.Hourglass, Icons.Arrow, Icons.Dollar };
+        private static readonly Tab[] TabOrder = { Tab.Buy, Tab.Sell, Tab.Mine, Tab.Auction, Tab.Currency };
+        private static readonly string[] TabIcons = { Icons.Market, Icons.Sell, Icons.Box, Icons.Hourglass, Icons.Dollar };
 
         // The whole content area of this frame (the side panels use its full height, under or beside the banner).
         private Rect _full;
@@ -192,21 +189,23 @@ namespace FishingIdle.Game.UI
         /// <summary>The side panel on the right of the content: full height, next to the banner (A-179).</summary>
         private Rect SideRect() => new Rect(_full.xMax - SidePanelWidth, _full.y, SidePanelWidth, _full.height);
 
-        /// <summary>The six tabs as bookmarks on the side of the diary (A-170).</summary>
+        /// <summary>The five tabs as bookmarks on the side of the window (M25-T24: the items to withdraw joined Meus anúncios).</summary>
         private void DrawTabs(UiSkin skin)
         {
             var labels = new[]
             {
                 GameTexts.Market.TabBuy,
                 GameTexts.Market.TabSell,
-                GameTexts.Market.TabMineCount(_market.MyListings.Count, _market.MaxListings),
+                GameTexts.Market.TabMine,
                 GameTexts.Market.TabAuction,
-                GameTexts.Market.TabWithdrawCount(_market.Withdrawals.Count),
                 GameTexts.Market.TabCurrency,
             };
 
+            // The short line under Meus anúncios: how many listings, or how many items wait to be withdrawn.
+            var notes = new[] { null, null, GameTexts.Market.MineNote(_market.MyListings.Count, _market.MaxListings, _market.Withdrawals.Count), null, null };
+
             TabIcons[3] = Icons.AuctionOrFallback;
-            var clicked = WindowFrame.Bookmarks(skin, labels, TabIcons, System.Array.IndexOf(TabOrder, _tab));
+            var clicked = WindowFrame.Bookmarks(skin, labels, TabIcons, System.Array.IndexOf(TabOrder, _tab), notes);
             if (clicked >= 0 && TabOrder[clicked] != _tab)
             {
                 _tab = TabOrder[clicked];
@@ -231,9 +230,11 @@ namespace FishingIdle.Game.UI
 
             if (WindowFrame.Side.width >= 120f)
             {
+                // The Aquarium slots as icon + number (A-190 rule 7).
                 var slots = GameTexts.Market.AquariumSlots(_market.AquariumCount, _market.AquariumCapacity);
-                var piece = WindowFrame.TakeSide(Mathf.Min(WindowFrame.Side.width, skin.SmallMuted.CalcSize(new GUIContent(slots)).x + 4f));
-                GUI.Label(new Rect(piece.x, piece.center.y - 10f, piece.width, 20), FishCard.Fit(slots, skin.SmallMuted, piece.width), skin.SmallMuted);
+                var piece = WindowFrame.TakeSide(Mathf.Min(WindowFrame.Side.width, 32f + skin.SmallMuted.CalcSize(new GUIContent(slots)).x + 4f));
+                skin.DrawIconExact(new Rect(piece.x, piece.center.y - 12f, 24f, 24f), Icons.Aquarium, Color.white);
+                GUI.Label(new Rect(piece.x + 32f, piece.center.y - UiSkin.SmallLine / 2f, piece.width - 32f, UiSkin.SmallLine), FishCard.Fit(slots, skin.SmallMuted, piece.width - 32f), skin.SmallMuted);
             }
         }
 
@@ -241,10 +242,11 @@ namespace FishingIdle.Game.UI
 
         private void DrawBuy(UiSkin skin, Rect area)
         {
-            var filters = new Rect(area.x, area.y, 270, area.height);
+            // 288 wide (A-191): the three kind chips keep "Todos", "Peixes" and "Varas" whole in Nunito.
+            var filters = new Rect(area.x, area.y, 288, area.height);
             DrawFilters(skin, filters);
 
-            var grid = new Rect(area.x + 290, area.y + 46, area.width - 290 - SidePanelWidth - 16, area.height - 46);
+            var grid = new Rect(area.x + 304, area.y + 46, area.width - 304 - SidePanelWidth - 16, area.height - 46);
             DrawSearch(skin, grid.xMax, area.y, "busca_mercado");
             var shownResults = _results.Where(l => NameSearch.Matches(l.Goods.Name, _search)).ToList();
             if (shownResults.Count == 0)
@@ -634,40 +636,79 @@ namespace FishingIdle.Game.UI
 
         // ------------------------------------------------------------------ My Listings
 
+        // Rows of Meus anúncios and of the items to withdraw (M25-T24): the picture, the name and its line, a value column and
+        // one button, laid out from the right so nothing overlaps whatever the width.
+        private const float RowHeight = 88f, RowGap = 8f, RowButton = 168f, RowValue = 200f, SectionGap = 32f, SectionHead = 40f;
+
         private void DrawMine(UiSkin skin, Rect area)
         {
             var list = new Rect(area.x, area.y, area.width - SidePanelWidth - 16, area.height);
-            if (_market.MyListings.Count == 0)
+            var withdrawals = _market.Withdrawals;
+            var listings = _market.MyListings;
+            var listingsHeight = SectionHead + Mathf.Max(1, listings.Count) * (RowHeight + RowGap);
+            var withdrawHeight = withdrawals.Count > 0 ? SectionGap + SectionHead + 56f + withdrawals.Count * (RowHeight + RowGap) : 0f;
+            var total = listingsHeight + withdrawHeight;
+            var scrolls = total > list.height;
+            var width = list.width - (scrolls ? 20f : 0f);
+            _scroll = GUI.BeginScrollView(list, _scroll, new Rect(0, 0, width, total), false, scrolls);
+
+            // Block 1: the player's listings.
+            GUI.Label(new Rect(0, 4, width, 28), GameTexts.Market.MineTitle(listings.Count, _market.MaxListings), skin.Heading);
+            var y = SectionHead;
+            if (listings.Count == 0)
             {
-                GUI.Label(new Rect(list.x, list.y + 8, list.width, 40), GameTexts.Market.NoListings, skin.Body);
+                GUI.Label(new Rect(0, y + 4, width, 28), GameTexts.Market.NoListings, skin.Body);
+                y += RowHeight + RowGap;
             }
 
-            // Scrolls when the listings do not fit (rows are laid out inside the scroll view).
-            var listHeight = _market.MyListings.Count * 102f;
-            var listScrolls = listHeight > list.height;
-            var rowWidth = list.width - (listScrolls ? 20f : 0f);
-            _scroll = GUI.BeginScrollView(list, _scroll, new Rect(0, 0, rowWidth, listHeight), false, listScrolls);
-            var y = 0f;
-            foreach (var l in _market.MyListings)
+            foreach (var l in listings)
             {
-                var row = new Rect(0, y, rowWidth, 92);
-                GUI.Box(row, GUIContent.none, skin.Card);
-                GoodsIcon(skin, new Rect(row.x + 14, row.y + 12, 110, 60), l.Goods);
-                GUI.Label(new Rect(row.x + 140, row.y + 14, 320, 24), l.Goods.Name, skin.BodyBold);
-                GoodsLabel(skin, new Rect(row.x + 140, row.y + 40, 320, 20), l.Goods, skin.Small);
-                GUI.Label(new Rect(row.x + 140, row.y + 62, 320, 20), GameTexts.Market.EndsIn(Format.TimeLeft(l.RemainingSeconds)), skin.SmallMuted);
-
-                GUI.Label(new Rect(row.x + 480, row.y + 14, 200, 20), GameTexts.Market.Price, skin.SmallMuted);
-                GUI.Label(new Rect(row.x + 480, row.y + 34, 200, 28), Format.Number(l.PriceCoins), skin.Number);
-                GUI.Label(new Rect(row.x + 480, row.y + 64, 280, 20), GameTexts.Market.YouReceive + ": " + Format.Number(l.NetCoins), skin.SmallMuted);
-
-                if (skin.IconButton(new Rect(row.xMax - 200, row.y + 24, 184, 42), Icons.Close, GameTexts.Market.Cancel, skin.Button))
+                var row = new Rect(0, y, width, RowHeight);
+                var value = GoodsRow(skin, row, l.Goods, GameTexts.Market.EndsIn(Format.TimeLeft(l.RemainingSeconds)));
+                GUI.Label(new Rect(value.x, value.y, value.width, 28), Format.Number(l.PriceCoins), skin.Number);
+                GUI.Label(new Rect(value.x, value.y + 32, value.width, UiSkin.SmallLine), FishCard.Fit(GameTexts.Market.YouReceive + ": " + Format.Number(l.NetCoins), skin.SmallMuted, value.width), skin.SmallMuted);
+                if (skin.IconButton(RowButtonRect(row), Icons.Close, GameTexts.Market.CancelShort, skin.Button))
                 {
                     _root.CancelListing(l.ListingId);
                     _nextRefresh = 0f;
                 }
 
-                y += 102;
+                y += RowHeight + RowGap;
+            }
+
+            // Block 2: what came back or was bought and waits to be withdrawn (it was a tab of its own before M25-T24).
+            if (withdrawals.Count > 0)
+            {
+                y += SectionGap - RowGap;
+                GUI.Label(new Rect(0, y + 4, width - 236, 28), GameTexts.Market.WithdrawTitle(withdrawals.Count), skin.Heading);
+                if (skin.IconButton(new Rect(width - 220, y, 220, 40), Icons.Box, GameTexts.Market.WithdrawAll, skin.ButtonPrimary))
+                {
+                    _root.WithdrawAll();
+                    _nextRefresh = 0f;
+                }
+
+                y += SectionHead + 8f;
+                // Two lines of the small text: the note is never cut.
+                GUI.Label(new Rect(0, y - 8f, width, 48f), GameTexts.Market.WithdrawNote, skin.SmallMuted);
+                y += 48f;
+                foreach (var w in withdrawals)
+                {
+                    var row = new Rect(0, y, width, RowHeight);
+                    var value = GoodsRow(skin, row, w.Goods, Format.DateTimeFromUnixMs(w.AtMs));
+                    GUI.Label(new Rect(value.x, value.y + 4, value.width, UiSkin.SmallLine), FishCard.Fit(GameTexts.Market.Reason(w.Reason), skin.SmallGold, value.width), skin.SmallGold);
+                    if (w.Blocker != ServiceError.None)
+                    {
+                        var note = RowButtonRect(row);
+                        GUI.Label(new Rect(note.x - 40f, row.y + 12f, note.width + 40f, row.height - 24f), GameTexts.ServiceErrorMessage(w.Blocker.ToString()), skin.SmallGold);
+                    }
+                    else if (skin.IconButton(RowButtonRect(row), Icons.Box, GameTexts.Market.Withdraw, skin.Button))
+                    {
+                        _root.Withdraw(w.WithdrawalId);
+                        _nextRefresh = 0f;
+                    }
+
+                    y += RowHeight + RowGap;
+                }
             }
 
             GUI.EndScrollView();
@@ -683,13 +724,13 @@ namespace FishingIdle.Game.UI
             }
 
             var inner = new Rect(side.x + 12, side.y + 50, side.width - 24, side.height - 62);
-            _sideScroll = GUI.BeginScrollView(inner, _sideScroll, new Rect(0, 0, inner.width - 20, sales.Count * 64));
+            _sideScroll = GUI.BeginScrollView(inner, _sideScroll, new Rect(0, 0, inner.width - 20, sales.Count * 80));
             var sy = 0f;
             foreach (var e in sales)
             {
-                GUI.Label(new Rect(8, sy, inner.width - 36, 20), Format.DateTimeFromUnixMs(e.AtMs), skin.SmallMuted);
-                GUI.Label(new Rect(8, sy + 20, inner.width - 36, 40), GameTexts.Market.SaleLine(e.GoodsName, e.BuyerName, Format.Number(e.PriceCoins), Format.Number(e.FeeCoins)), skin.Small);
-                sy += 64;
+                GUI.Label(new Rect(8, sy, inner.width - 36, UiSkin.SmallLine), Format.DateTimeFromUnixMs(e.AtMs), skin.SmallMuted);
+                GUI.Label(new Rect(8, sy + 24, inner.width - 36, 48), GameTexts.Market.SaleLine(e.GoodsName, e.BuyerName, Format.Number(e.PriceCoins), Format.Number(e.FeeCoins)), skin.Small);
+                sy += 80;
             }
 
             GUI.EndScrollView();
@@ -764,9 +805,9 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // The note shares its row with the search box, so it gets room for four lines of the small text (A-149).
-            GUI.Label(new Rect(body.x, body.y, body.width - 320 - 16, 84), GameTexts.Market.AuctionNote(AuctionHours(), Format.Percent(_auctions.MinIncrementRatio, 0), Format.Percent(_auctions.BidFeeRatio, 0), Format.Duration(_auctions.AntiSnipeResetSeconds)), skin.SmallMuted);
-            var grid = new Rect(body.x, body.y + 90, body.width, body.height - 90);
+            // The note shares its row with the search box, so it gets room for four lines of the small text (A-191: 96).
+            GUI.Label(new Rect(body.x, body.y, body.width - 320 - 16, 96), GameTexts.Market.AuctionNote(AuctionHours(), Format.Percent(_auctions.MinIncrementRatio, 0), Format.Percent(_auctions.BidFeeRatio, 0), Format.Duration(_auctions.AntiSnipeResetSeconds)), skin.SmallMuted);
+            var grid = new Rect(body.x, body.y + 104, body.width, body.height - 104);
             DrawSearch(skin, grid.xMax, body.y, "busca_leilao");
             var shownAuctions = _auctions.Open.Where(a => NameSearch.Matches(a.Goods.Name, _search)).ToList();
             if (shownAuctions.Count == 0)
@@ -904,56 +945,27 @@ namespace FishingIdle.Game.UI
             GUI.enabled = true;
         }
 
-        // ------------------------------------------------------------------ Items to Withdraw
+        // ------------------------------------------------------------------ pieces
 
-        private void DrawWithdraw(UiSkin skin, Rect area)
+        /// <summary>
+        /// One row of Meus anúncios: a card with the picture, the name, its line and <paramref name="sub"/> on the left.
+        /// Returns the value column (left of the button) for the caller's number or reason.
+        /// </summary>
+        private static Rect GoodsRow(UiSkin skin, Rect row, GoodsView goods, string sub)
         {
-            GUI.Label(new Rect(area.x, area.y, area.width - 240, 40), GameTexts.Market.WithdrawNote, skin.SmallMuted);
-            GUI.enabled = _market.Withdrawals.Count > 0;
-            if (skin.IconButton(new Rect(area.xMax - 220, area.y - 4, 220, 38), Icons.Box, GameTexts.Market.WithdrawAll, skin.ButtonPrimary))
-            {
-                _root.WithdrawAll();
-                _nextRefresh = 0f;
-            }
-
-            GUI.enabled = true;
-            var list = new Rect(area.x, area.y + 48, area.width, area.height - 48);
-            if (_market.Withdrawals.Count == 0)
-            {
-                GUI.Label(new Rect(list.x, list.y + 8, list.width, 40), GameTexts.Market.NothingToWithdraw, skin.Body);
-                return;
-            }
-
-            var content = new Rect(0, 0, list.width - 20, _market.Withdrawals.Count * 96);
-            _scroll = GUI.BeginScrollView(list, _scroll, content);
-            var y = 0f;
-            foreach (var w in _market.Withdrawals)
-            {
-                var row = new Rect(0, y, content.width, 86);
-                GUI.Box(row, GUIContent.none, skin.Card);
-                GoodsIcon(skin, new Rect(row.x + 14, row.y + 12, 110, 60), w.Goods);
-                GUI.Label(new Rect(row.x + 140, row.y + 12, 360, 24), w.Goods.Name, skin.BodyBold);
-                GoodsLabel(skin, new Rect(row.x + 140, row.y + 38, 360, 20), w.Goods, skin.Small);
-                GUI.Label(new Rect(row.x + 520, row.y + 16, 300, 20), GameTexts.Market.Reason(w.Reason), skin.SmallGold);
-                GUI.Label(new Rect(row.x + 520, row.y + 38, 300, 20), Format.DateTimeFromUnixMs(w.AtMs), skin.SmallMuted);
-
-                if (w.Blocker != ServiceError.None)
-                {
-                    GUI.Label(new Rect(row.xMax - 330, row.y + 22, 314, 44), GameTexts.ServiceErrorMessage(w.Blocker.ToString()), skin.SmallGold);
-                }
-                else if (skin.IconButton(new Rect(row.xMax - 180, row.y + 22, 164, 42), Icons.Box, GameTexts.Market.Withdraw, skin.Button))
-                {
-                    _root.Withdraw(w.WithdrawalId);
-                    _nextRefresh = 0f;
-                }
-
-                y += 96;
-            }
-
-            GUI.EndScrollView();
+            GUI.Box(row, GUIContent.none, skin.Card);
+            GoodsIcon(skin, new Rect(row.x + 16, row.y + 12, 96, row.height - 24), goods);
+            var button = RowButtonRect(row);
+            var value = new Rect(button.x - 16 - RowValue, row.y + 16, RowValue, row.height - 32);
+            var tx = row.x + 128;
+            var tw = Mathf.Max(40f, value.x - 16 - tx);
+            GUI.Label(new Rect(tx, row.y + 8, tw, 28), FishCard.Fit(goods.Name, skin.BodyBold, tw), skin.BodyBold);
+            GoodsLabel(skin, new Rect(tx, row.y + 36, tw, UiSkin.SmallLine), goods, skin.Small);
+            GUI.Label(new Rect(tx, row.y + 60, tw, UiSkin.SmallLine), FishCard.Fit(sub, skin.SmallMuted, tw), skin.SmallMuted);
+            return value;
         }
 
-        // ------------------------------------------------------------------ pieces
+        private static Rect RowButtonRect(Rect row) => new Rect(row.xMax - 16 - RowButton, row.center.y - 20, RowButton, 40);
 
         /// <summary>The detail block at the top of a side panel. Returns the y below it.</summary>
         private static float DrawGoodsDetail(UiSkin skin, Rect side, GoodsView goods)

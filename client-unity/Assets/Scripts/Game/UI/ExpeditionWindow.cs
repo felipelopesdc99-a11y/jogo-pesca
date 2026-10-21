@@ -131,12 +131,12 @@ namespace FishingIdle.Game.UI
                 var dialog = WindowFrame.Dialog(skin, screenWidth, screenHeight, 220f);
                 GUI.Label(new Rect(dialog.x + 28, dialog.y + 24, dialog.width - 56, 30), GameTexts.Expedition.CancelTitle, skin.Heading);
                 GUI.Label(new Rect(dialog.x + 28, dialog.y + 64, dialog.width - 56, 70), GameTexts.Expedition.CancelBody, skin.Body);
-                if (GUI.Button(new Rect(dialog.x + 28, dialog.yMax - 64, 190, 42), GameTexts.Expedition.KeepGoing, skin.Button))
+                if (GUI.Button(new Rect(dialog.x + 28, dialog.yMax - 64, 216, 42), GameTexts.Expedition.KeepGoing, skin.Button))
                 {
                     _confirmCancel = false;
                 }
 
-                if (GUI.Button(new Rect(dialog.xMax - 238, dialog.yMax - 64, 210, 42), GameTexts.Expedition.Cancel, skin.ButtonDanger))
+                if (GUI.Button(new Rect(dialog.xMax - 268, dialog.yMax - 64, 240, 42), GameTexts.Expedition.Cancel, skin.ButtonDanger))
                 {
                     _confirmCancel = false;
                     _root.CancelExpedition();
@@ -687,8 +687,8 @@ namespace FishingIdle.Game.UI
             {
                 var box = new Rect(area.x, top, area.width, 110);
                 GUI.Box(box, GUIContent.none, skin.CardSelected);
-                GUI.Label(new Rect(box.x + 20, box.y + 14, box.width - 260, 26), FishCard.Fit(GameTexts.Expedition.Away + ": " + active.Name, skin.Heading, box.width - 260), skin.Heading);
-                if (GUI.Button(new Rect(box.xMax - 220, box.y + 10, 200, 34), GameTexts.Expedition.Cancel, skin.ButtonDanger))
+                GUI.Label(new Rect(box.x + 20, box.y + 14, box.width - 284, 26), FishCard.Fit(GameTexts.Expedition.Away + ": " + active.Name, skin.Heading, box.width - 284), skin.Heading);
+                if (GUI.Button(new Rect(box.xMax - 260, box.y + 10, 240, 34), GameTexts.Expedition.Cancel, skin.ButtonDanger))
                 {
                     _confirmCancel = true;
                 }
@@ -825,7 +825,7 @@ namespace FishingIdle.Game.UI
             var x = rect.x + 30;
             var w = rect.width - 60;
             GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Expedition.ReportLabel, skin.SmallGold);
-            skin.TitleLabel(new Rect(x, y + 18, w, 34), GameTexts.Expedition.ResultTitle, skin.Title);
+            GUI.Label(new Rect(x, y + 18, w, 34), GameTexts.Expedition.ResultTitle, skin.Title);
             GUI.Label(new Rect(x, y + 54, w, UiSkin.SmallLine), GameTexts.Expedition.ReturnedAt(report.Name, Format.DateTimeFromUnixMs(report.CompletedAtMs)), skin.SmallMuted);
             y += 86;
 

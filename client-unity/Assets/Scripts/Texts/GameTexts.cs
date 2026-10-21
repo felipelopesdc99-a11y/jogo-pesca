@@ -107,8 +107,8 @@ namespace FishingIdle.Texts
             public const string ClearSelection = "Limpar seleção";
             public const string SellSelected = "Vender selecionados";
             public const string NothingSelected = "Clique nos peixes para selecionar.";
-            public const string NewSpeciesBadge = "NOVA ESPÉCIE";
-            public const string RecordBadge = "RECORDE";
+            public const string NewSpeciesBadge = "Nova espécie";
+            public const string RecordBadge = "Recorde";
             public const string Value = "Valor";
 
             // Filters: rarity and size are separate groups that combine (addendum A-079).
@@ -123,14 +123,14 @@ namespace FishingIdle.Texts
             public const string SortLargest = "Maiores";
             public const string SortRarest = "Mais raros";
             public const string SortSpecies = "Por espécie";
-            public const string SortNewestHint = "O último peixe pescado primeiro";
-            public const string SortValuableHint = "Quem vale mais na venda primeiro";
-            public const string SortLargestHint = "Pelo tamanho em relação à espécie";
-            public const string SortRarestHint = "Mítico → Comum, e o maior de cada";
-            public const string SortSpeciesHint = "Mesmos peixes juntos, de A a Z";
             public const string SortQuality = "Melhor qualidade";
-            public const string SortQualityHint = "Genes mais altos primeiro";
-            public static string SizeMenu(string size) => "Tamanho: " + size;
+
+            // The one "Filtros" button and its three columns (M25-T24, A-191).
+            public const string Filters = "Filtros";
+            public static string FiltersOn(int count) => "Filtros · " + count;
+            public const string SortHeading = "Ordem";
+            public const string SizeHeading = "Tamanho";
+            public const string QualityHeading = "Qualidade";
             public static string Showing(int count) => count == 1 ? "1 peixe neste filtro" : Format.Number(count) + " peixes neste filtro";
 
             public static string Count(int count) => count == 1 ? "1 peixe" : Format.Number(count) + " peixes";
@@ -157,7 +157,7 @@ namespace FishingIdle.Texts
             public const string Title = "Genes";
             public const string Quality = "Qualidade";
             public const string PerfectGene = "Gene perfeito";
-            public const string PerfectSpecimen = "EXEMPLAR PERFEITO";
+            public const string PerfectSpecimen = "Exemplar perfeito";
 
             /// <summary>One gene against the maximum, e.g. "27/31".</summary>
             public static string Value(int gene, int max) => gene + "/" + max;
@@ -168,7 +168,6 @@ namespace FishingIdle.Texts
 
             // The quality filter of the Fishing Box and the Aquarium.
             public const string FilterAll = "Todas";
-            public static string FilterMenu(string value) => "Qualidade: " + value;
             public static string FilterAtLeast(int stars, int top) => stars >= top ? StarsName(stars) : stars + " estrelas ou mais";
             public static string FilterChip(string value) => "Qualidade: " + value;
 
@@ -368,8 +367,7 @@ namespace FishingIdle.Texts
             public const string Attack = "Atacar";
             public const string Reroll = "Trocar adversários";
             public const string RerollUsed = "Troca já usada: ataque para receber novos adversários.";
-            public const string Note = "Ataque um dos três adversários. Vencer troca a sua posição com a dele e dá Honra; perder custa um pouco de Honra. Cada ataque gasta 1 de Energia, vencendo ou perdendo. Outros jogadores também podem atacar você, inclusive com o jogo fechado.";
-            public const string NoForceNote = "A Força dos adversários não é mostrada. Olhe o Cardume, os níveis e as raridades para decidir.";
+            public const string Note = "Ataque um dos três adversários. Vencer troca a sua posição com a dele e dá Honra; perder custa um pouco de Honra. Cada ataque gasta 1 de Energia, vencendo ou perdendo. Outros jogadores também podem atacar você, inclusive com o jogo fechado. A Força dos adversários não é mostrada: olhe o Cardume, os níveis e as raridades para decidir.";
             public const string EmptyHistory = "Nenhuma batalha ainda.";
             public const string ShopEmpty = "A Loja da Arena ainda não tem itens.";
             public const string ViewProfile = "Ver perfil";
@@ -496,12 +494,11 @@ namespace FishingIdle.Texts
         public static class Market
         {
             public const string Title = "Mercado";
-            public const string Note = "Compre e venda peixes e varas. Tudo o que sai do Mercado — compras, anúncios cancelados ou vencidos — espera em Itens a Retirar. No jogo local, os outros jogadores são simulados.\n\nCada peixe tem genes: as estrelas no cartão mostram a qualidade, e a ficha mostra o gene de cada atributo (de 0 a 31). Compare antes de comprar; o preço de venda ao jogo não muda com os genes.";
+            public const string Note = "Compre e venda peixes e varas. Tudo o que sai do Mercado — compras, anúncios cancelados ou vencidos — espera em Meus anúncios, para você retirar. No jogo local, os outros jogadores são simulados.\n\nCada peixe tem genes: as estrelas no cartão mostram a qualidade, e a ficha mostra o gene de cada atributo (de 0 a 31). Compare antes de comprar; o preço de venda ao jogo não muda com os genes.";
             public const string SortQuality = "Melhor qualidade";
             public const string TabBuy = "Comprar";
             public const string TabSell = "Vender";
-            public const string TabMine = "Meus Anúncios";
-            public const string TabWithdraw = "Itens a Retirar";
+            public const string TabMine = "Meus anúncios";
             public const string TabCurrency = "Conchas e Dólares";
             public const string CurrencySellTitle = "Anunciar Conchas ou Dólares";
             public const string CurrencyWhat = "O que vender";
@@ -548,7 +545,7 @@ namespace FishingIdle.Texts
             public const string EndsLabel = "Termina em";
             public const string Price = "Preço";
             public const string Buy = "Comprar";
-            public const string BuyNote = "A compra vai para Itens a Retirar. Mesmo com o Aquário cheio você pode comprar; só a retirada espera uma vaga.";
+            public const string BuyNote = "A compra vai para Meus anúncios, para você retirar. Mesmo com o Aquário cheio você pode comprar; só a retirada espera uma vaga.";
 
             public const string SellHint = "Escolha um peixe do Aquário ou uma vara do Inventário para anunciar.";
             public const string NothingToSell = "Você não tem peixes no Aquário nem varas para anunciar.";
@@ -559,32 +556,31 @@ namespace FishingIdle.Texts
             public const string ListingNote = "Sem taxa para anunciar. O preço é livre. Enquanto estiver anunciado, o item não pode ser usado.";
 
             public const string NoListings = "Você não tem anúncios ativos.";
-            public const string Cancel = "Cancelar anúncio";
+            public const string CancelShort = "Cancelar";
             public const string RecentSales = "Últimas vendas";
             public const string NoSales = "Nenhuma venda ainda.";
 
             public const string WithdrawNote = "Estes itens são seus: não ocupam vaga, não vencem e não podem ser usados até você retirar.";
             public const string Withdraw = "Retirar";
             public const string WithdrawAll = "Retirar tudo";
-            public const string NothingToWithdraw = "Nada para retirar.";
             public const string Rod = "Vara";
 
             public const string TabAuction = "Leilão";
             /// <summary>How long an auction lasts, for the notes ("1 hora", "6 horas").</summary>
             public static string AuctionDuration(double hours) => hours == 1 ? "1 hora" : Format.Decimal(hours, 0) + " horas";
-            public static string AuctionNote(string duration, string increment, string fee, string reset) => "Leilões duram " + duration + ". Cada lance precisa ser pelo menos " + increment + " maior que o atual e custa " + fee + " dele em taxa, que não volta. O valor do lance fica reservado enquanto você estiver ganhando; se alguém passar, ele volta na hora. Lance nos últimos instantes faz o tempo voltar para " + reset + ".";
+            public static string AuctionNote(string duration, string increment, string fee, string reset) => "Duram " + duration + ". Cada lance: " + increment + " acima do atual e taxa de " + fee + ", que não volta. O lance fica reservado enquanto você ganha e volta se alguém passar. Lance no fim leva o tempo de volta a " + reset + ".";
             public const string MyAuction = "Meu leilão";
             public const string NoMyAuction = "Você não tem leilão ativo.";
             public const string CreateAuction = "Criar leilão";
             public const string BackToAuctions = "Voltar aos leilões";
             public const string StartingBid = "Lance inicial (Moedas)";
-            public static string StartAuctionNote(string duration) => "Depois de criado, o leilão não pode ser cancelado. Sem lances, ele dura " + duration + " e o item volta por Itens a Retirar.";
+            public static string StartAuctionNote(string duration) => "Depois de criado, o leilão não pode ser cancelado. Sem lances, ele dura " + duration + " e o item volta para Meus anúncios.";
             public const string CurrentBid = "Lance atual";
             public const string NoBids = "Sem lances";
             public const string YourBid = "Seu lance (Moedas)";
             public const string PlaceBid = "Dar lance";
             public const string YouAreWinning = "Você está ganhando este leilão.";
-            public const string Winning = "GANHANDO";
+            public const string Winning = "Ganhando";
             public const string NoAuctions = "Nenhum leilão aberto agora.";
 
             public static string StartAuctionFor(double hours) => "Leiloar por " + Format.Decimal(hours, 0) + " horas";
@@ -598,13 +594,15 @@ namespace FishingIdle.Texts
             public static string AuctionStarted(string name) => "Leilão de " + name + " criado. Ele termina em 6 horas.";
             public static string BidPlaced(string name, string bid, string fee) => "Lance de " + bid + " em " + name + ". Taxa paga: " + fee + ".";
             public static string Outbid(string name, string bidder) => bidder + " passou o seu lance em " + name + ". O valor do seu lance voltou.";
-            public static string AuctionWon(string name) => "Você ganhou o leilão de " + name + ". Ele está em Itens a Retirar.";
+            public static string AuctionWon(string name) => "Você ganhou o leilão de " + name + ". Ele está em Meus anúncios, para retirar.";
             public static string AuctionLost(string name) => "O leilão de " + name + " terminou com outro vencedor.";
             public static string AuctionSold(string name, string net) => "Seu leilão de " + name + " terminou. +" + net + " Moedas.";
-            public static string AuctionUnsold(string name) => "Seu leilão de " + name + " terminou sem lances. O item está em Itens a Retirar.";
+            public static string AuctionUnsold(string name) => "Seu leilão de " + name + " terminou sem lances. O item está em Meus anúncios, para retirar.";
 
-            public static string TabMineCount(int count, int max) => TabMine + " (" + count + "/" + max + ")";
-            public static string TabWithdrawCount(int count) => count > 0 ? TabWithdraw + " (" + count + ")" : TabWithdraw;
+            /// <summary>The line under the Meus anúncios tab (M25-T24): the items to withdraw first, otherwise "3/5".</summary>
+            public static string MineNote(int count, int max, int withdrawals) => withdrawals > 0 ? withdrawals + " a retirar" : count + "/" + max;
+            public static string MineTitle(int count, int max) => "Seus anúncios · " + count + "/" + max;
+            public static string WithdrawTitle(int count) => "Para retirar · " + count;
             public static string EndsIn(string time) => "Termina em " + time;
             public static string BuyFor(string price) => "Comprar por " + price;
             public static string ListFor(double days) => "Anunciar por " + Format.Decimal(days, 0) + " dias";
@@ -613,11 +611,11 @@ namespace FishingIdle.Texts
             public static string FishLine(string size, string category) => size + " · " + category;
             public static string RodLine(string tier, int level, bool hasLevels) => hasLevels ? tier + " · Nível " + level : tier;
 
-            public static string Bought(string name) => "Compra feita: " + name + ". Está em Itens a Retirar.";
+            public static string Bought(string name) => "Compra feita: " + name + ". Está em Meus anúncios, para retirar.";
             public static string Listed(string name, string price) => "Anúncio criado: " + name + " por " + price + " Moedas.";
-            public static string Cancelled(string name) => "Anúncio cancelado. " + name + " está em Itens a Retirar.";
+            public static string Cancelled(string name) => "Anúncio cancelado. " + name + " está em Meus anúncios, para retirar.";
             public static string Sold(string buyer, string name, string net) => buyer + " comprou " + name + ". +" + net + " Moedas (já sem a taxa).";
-            public static string Expired(string name) => "O anúncio de " + name + " venceu. Ele está em Itens a Retirar.";
+            public static string Expired(string name) => "O anúncio de " + name + " venceu. Ele está em Meus anúncios, para retirar.";
             public static string Withdrawn(string name) => "Item retirado: " + name + ".";
             public static string WithdrewAll(int count, int left) => left > 0
                 ? (count == 1 ? "1 item retirado. " : Format.Number(count) + " itens retirados. ")
@@ -656,7 +654,7 @@ namespace FishingIdle.Texts
             public const string Note = "Expedições dão Moedas e, às vezes, um peixe (que vai para a Caixa de Pesca). Não dão XP nem Conchas, e nenhum peixe se perde. Funcionam com o jogo fechado.";
             public const string CompletedToast = "Seu Cardume voltou da Expedição! Abra a Expedição para ver o que ele trouxe.";
             public const string ResultTitle = "Seu Cardume voltou!";
-            public const string ReportLabel = "RELATÓRIO DA EXPEDIÇÃO";
+            public const string ReportLabel = "Relatório da expedição";
             public const string Brought = "O que ele trouxe";
             public const string FoundFish = "Seu Cardume encontrou um peixe!";
             public const string NoFish = "Nenhum peixe desta vez.";
@@ -700,7 +698,7 @@ namespace FishingIdle.Texts
             public static string TravelTime(string duration) => "Viagem: " + duration;
             public static string Discovered(int found, int total) => found + " de " + total + " descobertas";
             public static string LevelRequirement(int level) => "Nível " + level;
-            public static string Chapter(int number) => "CAPÍTULO " + number;
+            public static string Chapter(int number) => "Capítulo " + number;
             public static string LevelShort(int level) => "Nv. " + level;
             public static string TravelWithTime(string duration) => Travel + " · " + duration;
 
@@ -1080,7 +1078,7 @@ namespace FishingIdle.Texts
                 "Eventos, na coluna de atalhos à direita, fica dourado com o tempo que falta.";
             public const string Back = "‹ Eventos";
             public const string Open = "Abrir";
-            public const string Now = "AGORA";
+            public const string Now = "Agora";
             public static string Schedule(string time, int minutes) => "Todo dia às " + time + " (Brasília), " + minutes + " minutos";
             public static string StartsIn(string countdown) => "Começa em " + countdown;
             public static string Happening(string countdown) => "Acontecendo agora · faltam " + countdown;
@@ -1095,7 +1093,7 @@ namespace FishingIdle.Texts
         public static class WorldBoss
         {
             public const string Title = "Boss Mundial";
-            public const string NowOpen = "AGORA";
+            public const string NowOpen = "Agora";
             public static string Info(string time, int minutes, string interval) =>
                 "Todo dia às " + time + " (horário de Brasília) o Boss Mundial aparece por " + minutes + " minutos. Ele tem vida infinita: " +
                 "o objetivo é causar o maior dano possível. Com o jogo aberto, seu Cardume ataca sozinho a cada " + interval + " segundos, " +
@@ -1372,8 +1370,8 @@ namespace FishingIdle.Texts
             public const string Title = "Cardume";
             public const string Front = "Frente";
             public const string Back = "Trás";
-            public const string FrontTag = "FRENTE";
-            public const string BackTag = "TRÁS";
+            public const string FrontTag = "Frente";
+            public const string BackTag = "Trás";
             public const string OrderShort = "Os adversários atacam na ordem 1 → 6: peixes resistentes na frente protegem os de trás.";
             public static string BonusShort(string percent) => "Cardume completo · +" + percent;
             public static string BonusMissingShort(int missing, string percent) => "Faltam " + missing + " para +" + percent;
@@ -1496,7 +1494,7 @@ namespace FishingIdle.Texts
             public static string Discovery(int found, int total) => found + " de " + total + " espécies";
 
             // The backpack inventory: equipped gear on the left, the rods in a grid of slots.
-            public const string EquippedHeader = "EQUIPADO";
+            public const string EquippedHeader = "Equipado";
             public const string BonusTotals = "Bônus somados";
             public const string NoBaitSlot = "Nenhuma isca";
             public const string NoBaitLine = "Isca · compre na Loja";
@@ -1596,7 +1594,7 @@ namespace FishingIdle.Texts
             public static string RecordLine(string species, string before, string after) => species + " · " + before + " → " + after;
             public static string NewSpeciesLine(string species) => species + " entrou na sua Enciclopédia";
             public const string LevelUpLine = "Pescador subiu de nível";
-            public static string AuctionLine(string item) => item + " espera em Itens a Retirar";
+            public static string AuctionLine(string item) => item + " espera em Meus anúncios, para retirar";
             public static string Coins(string amount) => "+" + amount;
         }
 
@@ -1719,7 +1717,7 @@ namespace FishingIdle.Texts
                 case "FishInCardume": return "Tire o peixe do Cardume antes de anunciar.";
                 case "RodNotTradable": return "Esta vara não pode ser vendida no Mercado.";
                 case "OwnListing": return "Esse anúncio é seu.";
-                case "WithdrawalNotFound": return "Esse item não está mais em Itens a Retirar.";
+                case "WithdrawalNotFound": return "Esse item não está mais para retirar.";
                 case "AuctionNotFound": return "Esse leilão não existe mais.";
                 case "AuctionLimitReached": return "Você já tem um leilão ativo. Espere ele terminar.";
                 case "BidTooLow": return "O lance precisa ser pelo menos o mínimo mostrado.";

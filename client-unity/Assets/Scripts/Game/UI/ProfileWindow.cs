@@ -337,7 +337,7 @@ namespace FishingIdle.Game.UI
         private void DrawIdentity(UiSkin skin, FishingIdle.GameService.Fishing.PlayerView player, Rect portrait, float tx, float tw2, float top)
         {
             var nameText = FishCard.Fit(_profile.PlayerName, skin.Title, tw2 - 96);
-            skin.TitleLabel(new Rect(tx, top, tw2 - 90, 36), nameText, skin.Title);
+            GUI.Label(new Rect(tx, top, tw2 - 90, 36), nameText, skin.Title);
 
             // Name and avatar (M18-T03): a small "Editar" next to the name, or a click on the portrait.
             var nw = Mathf.Min(tw2 - 96, skin.Title.CalcSize(new GUIContent(nameText)).x);
@@ -913,7 +913,7 @@ namespace FishingIdle.Game.UI
             var sell = bw - 16f - side * 2f;
             if (rod.IsEquipped)
             {
-                var equipped = GameTexts.Profile.Equipped.ToUpperInvariant();
+                var equipped = GameTexts.Profile.Equipped;
                 skin.AccentPill(new Rect(bx, row2 + 7f, Mathf.Min(bw, skin.PillWidth(equipped, true) + 6f), 24), equipped, UiSkin.Accent, Icons.Check);
             }
             else if (GUI.Button(new Rect(bx, row2, side, 38), FishCard.Fit(GameTexts.Profile.Equip, skin.ButtonPrimary, side - 24f), skin.ButtonPrimary))
@@ -1198,7 +1198,8 @@ namespace FishingIdle.Game.UI
             y += 68;
 
             // The two rows. Slots are as wide as fits; the back row is shifted a little to the right.
-            var tagWidth = 34f;
+            // The row's name written across its tag (A-191: no vertical letters): "Frente" fits in 64.
+            var tagWidth = 72f;
             var slotW = Mathf.Min(210f, (w - tagWidth - 24 - 2 * 12f) / 3f);
             // The slot height comes from the room left once the footer is reserved, so the footer always
             // fits; when space is short the footer becomes one line with a lower button.
@@ -1236,16 +1237,10 @@ namespace FishingIdle.Game.UI
 
         private void DrawRow(UiSkin skin, List<CardumeSlotView> slots, string tag, float x, float y, float tagWidth, float slotW, float slotH, float maxStrength)
         {
-            // A vertical tag for the row ("FRENTE" / "TRÁS").
+            // The row's tag ("Frente" / "Trás"), the word across it in the small text.
             var tagRect = new Rect(x, y, tagWidth - 8, slotH);
             skin.ArcFill(tagRect, new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.14f), 10);
-            var letters = tag.ToCharArray();
-            var ly = tagRect.center.y - letters.Length * 9f;
-            foreach (var ch in letters)
-            {
-                GUI.Label(new Rect(tagRect.x, ly, tagRect.width, 18), ch.ToString(), skin.SmallMutedCenter);
-                ly += 18;
-            }
+            GUI.Label(tagRect, tag, skin.SmallMutedCenter);
 
             var sx = x + tagWidth;
             foreach (var slot in slots)
@@ -1291,7 +1286,7 @@ namespace FishingIdle.Game.UI
 
                 if (!string.IsNullOrEmpty(slot.Fish.RarityName))
                 {
-                    var rarity = slot.Fish.RarityName.ToUpperInvariant();
+                    var rarity = slot.Fish.RarityName;
                     var pw = skin.PillWidth(rarity, false);
                     skin.RarityPill(new Rect(rect.xMax - 10 - pw, rect.y + 13, pw, 20), slot.Fish.RarityId, rarity, false);
                 }
@@ -1655,7 +1650,7 @@ namespace FishingIdle.Game.UI
             const float pad = 10f;
             var x = c.x + pad;
             var w = c.width - pad * 2f;
-            var seal = (e.RarityName ?? string.Empty).ToUpperInvariant();
+            var seal = (e.RarityName ?? string.Empty);
             var sealW = seal.Length > 0 ? Mathf.Min(skin.PillWidth(seal, false), w) : 0f;
             if (sealW > 0)
             {
@@ -1702,7 +1697,7 @@ namespace FishingIdle.Game.UI
             // A record in a special size (Excepcional, Perfeição): its seal on the art and a faint gold light crossing the card.
             if (e.Discovered && e.LargestIsSpecial && !string.IsNullOrEmpty(e.LargestSizeCategoryName))
             {
-                var sizeSeal = e.LargestSizeCategoryName.ToUpperInvariant();
+                var sizeSeal = e.LargestSizeCategoryName;
                 var sw = Mathf.Min(skin.Badge.CalcSize(new GUIContent(sizeSeal)).x + 10f, art.width - 8f);
                 FishCard.ExceptionalSeal(skin, new Rect(art.xMax - 4f - sw, art.yMax - 24f, sw, 20f), sizeSeal, UiSkin.SizeColor(e.LargestSizeCategoryId));
                 EncGleam(skin, c, number);
@@ -1873,10 +1868,10 @@ namespace FishingIdle.Game.UI
             var found = e.Discovered;
             var unknown = GameTexts.Profile.EncUnknownValue;
 
-            skin.TitleLabel(new Rect(x, y, w, 34f), FishCard.Fit(found ? e.Name ?? string.Empty : GameTexts.Profile.Undiscovered, skin.TitleCenter, w), skin.TitleCenter);
+            GUI.Label(new Rect(x, y, w, 34f), FishCard.Fit(found ? e.Name ?? string.Empty : GameTexts.Profile.Undiscovered, skin.TitleCenter, w), skin.TitleCenter);
             y += 36f;
 
-            var seal = (e.RarityName ?? string.Empty).ToUpperInvariant();
+            var seal = (e.RarityName ?? string.Empty);
             var sealW = seal.Length > 0 ? Mathf.Min(skin.PillWidth(seal, true), w * 0.5f) : 0f;
             var mapText = e.MapName == null ? string.Empty : found ? e.MapName : GameTexts.Profile.EncLivesIn(e.MapName);
             var mapW = Mathf.Max(0f, Mathf.Min(skin.SmallMuted.CalcSize(new GUIContent(mapText)).x + 4f, w - sealW - 10f));

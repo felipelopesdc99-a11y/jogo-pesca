@@ -404,7 +404,8 @@ namespace FishingIdle.Game.UI
             var text = position > 0 ? Format.Number(position) : GameTexts.Ranking.VacantMark;
             var style = position == 1 || position == 2 ? _shieldDark : _shieldLight;
             var fontSize = Mathf.RoundToInt(Mathf.Clamp(rect.height * 0.58f, UiSkin.ChipSize, UiSkin.BodySize));
-            style.fontSize = text.Length > 2 ? fontSize - 4 : fontSize;
+            // Never under the small size (A-191): a three-digit place keeps the minimum instead of shrinking under it.
+            style.fontSize = text.Length > 2 ? Mathf.Max(UiSkin.ChipSize, fontSize - 4) : fontSize;
             GUI.Label(new Rect(rect.x, rect.y - rect.height * 0.06f, rect.width, rect.height), text, style);
         }
 

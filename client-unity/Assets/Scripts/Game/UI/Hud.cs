@@ -411,8 +411,9 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            // Snapped to a clean step where it can be, so the pixel fonts do not blur (UiSkin.CanvasScale, A-190): the
-            // canvas is then 1080 to 1280 tall, and every window lays itself out on _height.
+            // Snapped to a clean step where it can be, so the pixel art keeps whole pixels (UiSkin.CanvasScale, A-190); the
+            // text is drawn from the font's distance field and stays sharp at any scale (TD-067). The canvas is 1080 to
+            // 1280 tall at a clean step, and every window lays itself out on _height.
             var scale = UiSkin.CanvasScale(Screen.height);
             _width = Screen.width / scale;
             _height = Screen.height / scale;
@@ -1633,7 +1634,7 @@ namespace FishingIdle.Game.UI
             if (tutorial.Step == TutorialSteps.Welcome)
             {
                 var dialog = WindowFrame.Dialog(skin, _width, _height, 300f, 680f);
-                skin.TitleLabel(new Rect(dialog.x + 28, dialog.y + 24, dialog.width - 56, 32), GameTexts.Tutorial.Title(tutorial.Step), skin.Title);
+                GUI.Label(new Rect(dialog.x + 28, dialog.y + 24, dialog.width - 56, 32), GameTexts.Tutorial.Title(tutorial.Step), skin.Title);
                 GUI.Label(new Rect(dialog.x + 28, dialog.y + 70, dialog.width - 56, 120), GameTexts.Tutorial.Body(tutorial.Step), skin.Body);
                 if (GUI.Button(new Rect(dialog.xMax - 228, dialog.yMax - 66, 200, 44), GameTexts.Tutorial.Begin, skin.ButtonPrimary))
                 {
@@ -1656,8 +1657,8 @@ namespace FishingIdle.Game.UI
             skin.DrawOutline(rect, UiSkin.Accent);
             if (windowOpen)
             {
-                GUI.Label(new Rect(rect.x + 18, rect.y + 10, rect.width - 260, 22), GameTexts.Tutorial.Title(tutorial.Step), skin.BodyBold);
-                GUI.Label(new Rect(rect.x + 18, rect.y + 33, rect.width - 260, 42), GameTexts.Tutorial.Body(tutorial.Step), skin.Small);
+                GUI.Label(new Rect(rect.x + 18, rect.y + 8, rect.width - 324, 28), GameTexts.Tutorial.Title(tutorial.Step), skin.BodyBold);
+                GUI.Label(new Rect(rect.x + 18, rect.y + 36, rect.width - 324, 48), GameTexts.Tutorial.Body(tutorial.Step), skin.Small);
             }
             else
             {
@@ -1668,14 +1669,14 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(rect.x + 16, rect.y + 60, rect.width - 32, 130), GameTexts.Tutorial.Body(tutorial.Step), skin.Small);
             }
 
-            // With a window open: "Entendi" (84) + 8 + "Pular tutorial" (120), ending 18 px before the edge.
-            var buttons = windowOpen ? new Rect(rect.xMax - 230, rect.y + 20, 212, 36) : new Rect(rect.x + 16, rect.yMax - 46, 140, 32);
-            if (tutorial.NeedsAcknowledge && GUI.Button(new Rect(buttons.x, buttons.y, 84, buttons.height), GameTexts.Tutorial.GotIt, skin.ButtonPrimary))
+            // With a window open: "Entendi" (112) + 8 + "Pular tutorial" (152), ending 18 px before the edge.
+            var buttons = windowOpen ? new Rect(rect.xMax - 290, rect.y + 20, 272, 36) : new Rect(rect.x + 16, rect.yMax - 46, 140, 32);
+            if (tutorial.NeedsAcknowledge && GUI.Button(new Rect(buttons.x, buttons.y, 112, buttons.height), GameTexts.Tutorial.GotIt, skin.ButtonPrimary))
             {
                 _root.AcknowledgeTutorial(tutorial.Step);
             }
 
-            var skipRect = windowOpen ? new Rect(buttons.x + (tutorial.NeedsAcknowledge ? 92 : 0), rect.y + 20, tutorial.NeedsAcknowledge ? 120 : 212, 36)
+            var skipRect = windowOpen ? new Rect(buttons.x + (tutorial.NeedsAcknowledge ? 120 : 0), rect.y + 20, tutorial.NeedsAcknowledge ? 152 : 272, 36)
                                       : new Rect(rect.xMax - 16 - 150, rect.yMax - 46, 150, 32);
             if (GUI.Button(skipRect, GameTexts.Tutorial.Skip, skin.Chip))
             {
@@ -1918,7 +1919,7 @@ namespace FishingIdle.Game.UI
             var width = Screen.width / scale;
             GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(scale, scale, 1f));
 
-            if (GUI.Button(new Rect(width - 108, 8, 100, 30), GameTexts.Hud.Expand, skin.Chip))
+            if (GUI.Button(new Rect(width - 120, 8, 112, 30), GameTexts.Hud.Expand, skin.Chip))
             {
                 ExitCompact();
                 return;

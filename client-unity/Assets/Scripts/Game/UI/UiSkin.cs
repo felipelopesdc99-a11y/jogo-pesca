@@ -12,7 +12,7 @@ namespace FishingIdle.Game.UI
     /// The MVP interface is drawn with Unity's immediate-mode GUI (docs/DECISOES.md, TD-017). All
     /// look-and-feel lives here, in UiSkinArc.cs and in <see cref="VisualTheme"/>: night-blue panels with a thin gold
     /// frame (structure), turquoise for actions, the bright gold only for rewards, rarity colour only as an accent,
-    /// Press Start 2P for titles and VT323 for text. Windows use the shared pieces below (panels, buttons with icons,
+    /// Nunito for every text (owner decision of 20/10/2026, A-191; the art stays pixel). Windows use the shared pieces below (panels, buttons with icons,
     /// pills, bars, outlines) so every screen speaks the same language.
     /// </remarks>
     public sealed partial class UiSkin
@@ -46,10 +46,23 @@ namespace FishingIdle.Game.UI
 
         public Texture2D White, Overlay, Coin, Rays;
 
+        /// <summary>Window titles and big numbers: Nunito Bold.</summary>
         public Font TitleFont { get; private set; }
+
+        /// <summary>The same Bold (kept as its own name for the call sites that ask for "bold titles").</summary>
         public Font TitleBoldFont { get; private set; }
+
+        /// <summary>Body text, names and lists: Nunito Medium.</summary>
         public Font BodyFont { get; private set; }
+
+        /// <summary>Emphasis inside text and gold numbers: Nunito Bold (each weight is its own file; FontStyle.Bold is never used).</summary>
         public Font BodyBoldFont { get; private set; }
+
+        /// <summary>Buttons, chips and tabs: Nunito SemiBold.</summary>
+        public Font SemiBoldFont { get; private set; }
+
+        /// <summary>Nunito Regular: loaded for long help texts, unused by the styles today.</summary>
+        public Font RegularFont { get; private set; }
 
         private static UiSkin _instance;
 
@@ -63,16 +76,14 @@ namespace FishingIdle.Game.UI
         {
             var t = Theme;
 
-            // ARC fonts (Art Bible 7.1, TD-061): Press Start 2P for titles and big numbers, VT323 for everything else. While
-            // a file is missing, Unity's default font is used (null font in a style). The old Fredoka and Nunito left in
-            // M25-T17.
-            PixelTitleFont = Resources.Load<Font>(TitleFontFile);
-            PixelTextFont = Resources.Load<Font>(TextFontFile);
-            TitleFont = PixelTitleFont;
-            TitleBoldFont = PixelTitleFont;
-            BodyFont = PixelTextFont;
-            // VT323 has one weight: "bold" text keeps the same letters (emphasis comes from colour).
-            BodyBoldFont = PixelTextFont;
+            // Nunito in four weights (A-191, TD-067): the owner wants the reading calm and smooth; icons, characters and
+            // fish stay pixel art. While a file is missing, Unity's default font is used (null font in a style).
+            RegularFont = LoadFont(FontRegularFile);
+            BodyFont = LoadFont(FontMediumFile);
+            SemiBoldFont = LoadFont(FontSemiBoldFile);
+            BodyBoldFont = LoadFont(FontBoldFile);
+            TitleFont = BodyBoldFont;
+            TitleBoldFont = BodyBoldFont;
 
             White = Art.SolidTexture(Color.white);
             Overlay = Art.SolidTexture(new Color(t.Veil.r, t.Veil.g, t.Veil.b, t.OverlayOpacity));
@@ -139,11 +150,13 @@ namespace FishingIdle.Game.UI
                 ArcFace(ButtonRadius, true, Alpha(t.Panel, 1f), Alpha(t.Panel, 1f), t.ChipOff),
                 t.TextMuted, ChipSize);
             Chip.hover.textColor = t.Text;
+            Chip.padding = new RectOffset(10, 10, 2, 2);
             ChipActive = ButtonStyle(
                 ArcFace(ButtonRadius, true, Alpha(t.ChipOn, 1f), Alpha(t.ChipOn, 1f), t.Frame),
                 ArcFace(ButtonRadius, true, Alpha(Color.Lerp(t.ChipOn, Color.white, 0.06f), 1f), Alpha(Color.Lerp(t.ChipOn, Color.white, 0.06f), 1f), t.Title),
                 ArcFace(ButtonRadius, true, Alpha(t.ChipOn, 1f), Alpha(t.ChipOn, 1f), t.Frame),
                 t.Title, ChipSize);
+            ChipActive.padding = new RectOffset(10, 10, 2, 2);
             Nav = new GUIStyle(Chip) { fontSize = SmallSize };
             Nav.normal.textColor = Nav.hover.textColor = Nav.active.textColor = Nav.focused.textColor = t.Text;
             NavActive = new GUIStyle(ChipActive) { fontSize = SmallSize };
@@ -154,7 +167,7 @@ namespace FishingIdle.Game.UI
                 font = BodyFont,
                 fontSize = SmallSize,
                 alignment = TextAnchor.MiddleLeft,
-                padding = new RectOffset(38, 32, 2, 6),
+                padding = new RectOffset(38, 32, 4, 4),
                 border = new RectOffset(ButtonBorder, ButtonBorder, ButtonBorder, ButtonBorder),
                 wordWrap = false,
                 clipping = TextClipping.Clip,
@@ -163,15 +176,15 @@ namespace FishingIdle.Game.UI
             SearchField.hover.background = ArcFace(ButtonRadius, true, Alpha(t.Field, 1f), Alpha(t.Field, 1f), t.Frame);
             SearchField.focused.background = SearchField.active.background = ArcFace(ButtonRadius, true, Alpha(t.Field, 1f), Alpha(t.Field, 1f), t.Action);
             SearchField.normal.textColor = SearchField.hover.textColor = SearchField.focused.textColor = SearchField.active.textColor = t.Text;
+            Crisp(SearchField);
 
-            // Text sizes on the 1080-tall canvas (Art Bible 7.1): Press Start 2P at 16, 24 and 32; VT323 body 28,
-            // small 24, chips and tags 22 (the absolute minimum).
+            // Text sizes on the 1080-tall canvas (A-191): body 24, small 21, window title 40, big number 42.
             Title = Label(TitleFont, TitleSize, t.Title);
-            Heading = Label(BodyFont, HeadingSize, Text);
+            Heading = Label(BodyBoldFont, HeadingSize, Text);
             Body = Label(BodyFont, BodySize, Text);
             BodyBold = Label(BodyBoldFont, BodySize, Text);
             Small = Label(BodyFont, SmallSize, Text);
-            ChipText = Label(BodyBoldFont, ChipSize, Text);
+            ChipText = Label(SemiBoldFont, ChipSize, Text);
             ChipText.alignment = TextAnchor.MiddleCenter;
             ChipText.wordWrap = false;
             SmallMuted = Label(BodyFont, SmallSize, Muted);
@@ -180,7 +193,7 @@ namespace FishingIdle.Game.UI
             SmallMutedRight = new GUIStyle(SmallMuted) { alignment = TextAnchor.UpperRight };
             SmallGold = Label(BodyBoldFont, SmallSize, Gold);
             SmallGoldRight = new GUIStyle(SmallGold) { alignment = TextAnchor.UpperRight };
-            Number = Label(TitleFont, NumberSize, Gold);
+            Number = Label(BodyBoldFont, NumberSize, Gold);
             NumberRight = new GUIStyle(Number) { alignment = TextAnchor.UpperRight };
             Center = Label(BodyFont, BodySize, Text);
             Center.alignment = TextAnchor.MiddleCenter;
@@ -190,7 +203,7 @@ namespace FishingIdle.Game.UI
             Display = Label(TitleBoldFont, DisplaySize, Text);
             Display.wordWrap = false;
             DisplaySub = Label(BodyBoldFont, BodySize, Text);
-            PillText = Label(BodyBoldFont, ChipSize, Text);
+            PillText = Label(SemiBoldFont, ChipSize, Text);
             PillText.alignment = TextAnchor.MiddleCenter;
             PillText.wordWrap = false;
 
@@ -199,65 +212,73 @@ namespace FishingIdle.Game.UI
             Badge.wordWrap = false;
             Badge.normal.background = ArcFace(3, true, Color.white, Color.white);
             Badge.border = new RectOffset(ArcFaceBorder(3, 0), ArcFaceBorder(3, 0), ArcFaceBorder(3, 0), ArcFaceBorder(3, 0));
-            Badge.padding = new RectOffset(6, 6, Badge.padding.top, 1);
+            Badge.padding = new RectOffset(6, 6, 0, 0);
         }
 
         // ------------------------------------------------------------------ fonts and sizes: the one place to change them
-        // (A-190). To swap the typefaces, put the new files in Resources/Fontes, change the two names below, the sizes under
-        // them and the two metrics of the text font (TextLiftEm, AccentTwinScale); every window takes its fonts and sizes
-        // from here. Text sizes are on the 1080-tall virtual canvas (Art Bible 7.1, A-184): on a 600 px tall window 22 px
-        // becomes about 12 px, so nothing that carries information goes below these.
+        // (A-190, A-191). Every window takes its fonts and sizes from here. Sizes are on the 1080-tall virtual canvas: on a
+        // 600 px tall window 21 px becomes about 12 px, so nothing that carries information goes below SmallSize. At most
+        // four sizes on a screen: window title 40, body 24, small 21 and one of the name 32 or the big number 42.
 
-        /// <summary>The title font (Resources path, no extension): Press Start 2P today.</summary>
-        public const string TitleFontFile = "Fontes/PressStart2P-Regular";
+        /// <summary>Nunito Regular (Resources path, no extension).</summary>
+        public const string FontRegularFile = "Fontes/Nunito-Regular";
 
-        /// <summary>The text font (Resources path, no extension): VT323 today (one weight; "bold" uses the same file).</summary>
-        public const string TextFontFile = "Fontes/VT323-Regular";
+        /// <summary>Nunito Medium: body, names, lists, small text.</summary>
+        public const string FontMediumFile = "Fontes/Nunito-Medium";
 
-        /// <summary>How far a line of the text font is lifted in its rect, in em (VT323: 0,12; see <see cref="TextLift"/>).</summary>
-        private const float TextLiftEm = 0.12f;
+        /// <summary>Nunito SemiBold: buttons, chips, tabs, pills.</summary>
+        public const string FontSemiBoldFile = "Fontes/Nunito-SemiBold";
 
-        /// <summary>The text-font size that matches the capital height of the title font at 1 (VT323 vs Press Start 2P: 1,75).</summary>
-        private const float AccentTwinScale = 1.75f;
+        /// <summary>Nunito Bold: titles, numbers, emphasis.</summary>
+        public const string FontBoldFile = "Fontes/Nunito-Bold";
 
-        /// <summary>Small labels and secondary text in VT323 ("pequeno"). One line of it needs a <see cref="SmallLine"/> rect.</summary>
-        public const int SmallSize = 24;
+        /// <summary>Small labels and secondary text ("pequeno", Medium). One line of it needs a <see cref="SmallLine"/> rect.</summary>
+        public const int SmallSize = 21;
 
-        /// <summary>Chips, pills and the smallest centred tags in VT323 (the Art Bible's absolute minimum).</summary>
-        public const int ChipSize = 22;
+        /// <summary>Chips, pills and the smallest centred tags (SemiBold): the same size as <see cref="SmallSize"/>, the minimum.</summary>
+        public const int ChipSize = 21;
 
-        /// <summary>Solid uppercase tags ("NOVA ESPÉCIE", "EXCEPCIONAL"): dark text on a bright colour, in VT323.</summary>
-        public const int BadgeSize = 22;
+        /// <summary>Solid tags ("Nova espécie", "Excepcional"): dark Bold text on a bright colour.</summary>
+        public const int BadgeSize = 21;
 
-        /// <summary>Body text, names and long texts (Missões, Mercado, descrições) in VT323 ("corpo").</summary>
-        public const int BodySize = 28;
+        /// <summary>Body text, names and long texts (Missões, Mercado, descrições), Medium ("corpo").</summary>
+        public const int BodySize = 24;
 
-        /// <summary>Section headings inside a window, in VT323.</summary>
-        public const int HeadingSize = 32;
+        /// <summary>Button labels (SemiBold).</summary>
+        public const int ButtonSize = 24;
 
-        /// <summary>Window titles and big names, in Press Start 2P.</summary>
-        public const int TitleSize = 24;
+        /// <summary>Section headings inside a window: the body size in Bold (no fifth size on a screen).</summary>
+        public const int HeadingSize = 24;
 
-        /// <summary>Gold numbers (Moedas, prices), in Press Start 2P (its minimum).</summary>
-        public const int NumberSize = 16;
+        /// <summary>Window titles (WindowFrame), Bold ("título de janela").</summary>
+        public const int WindowTitleSize = 40;
 
-        /// <summary>Big numbers (Honra, damage), in Press Start 2P.</summary>
-        public const int NumberBigSize = 24;
+        /// <summary>
+        /// Names on a sheet or a card (the fish, the opponent, the player) and the titles of small dialogs, Bold
+        /// (<see cref="Title"/>). A screen that uses it keeps to four sizes: 40, 32, 24 and 21 (no 42 beside it).
+        /// </summary>
+        public const int TitleSize = 32;
 
-        /// <summary>Celebration banners and big headline numbers, in Press Start 2P.</summary>
-        public const int DisplaySize = 32;
+        /// <summary>Gold numbers in lists and cards (Moedas, prices): the body size in Bold.</summary>
+        public const int NumberSize = 24;
 
-        /// <summary>The map name of the arrival title, in the title font.</summary>
-        public const int ArrivalSize = 40;
+        /// <summary>Big numbers (Honra, damage, the Welcome back totals), Bold ("número de destaque").</summary>
+        public const int NumberBigSize = 42;
 
-        /// <summary>The Arena's big Honor number, in the title font.</summary>
-        public const int HonorSize = 30;
+        /// <summary>Celebration banners and big headline numbers, Bold (the same as <see cref="NumberBigSize"/>).</summary>
+        public const int DisplaySize = 42;
 
-        /// <summary>The giant "VS" of the battle intro, in the title font.</summary>
+        /// <summary>The map name of the arrival title over the scene, Bold ("faixa grande").</summary>
+        public const int ArrivalSize = 52;
+
+        /// <summary>The Arena's big Honor number.</summary>
+        public const int HonorSize = NumberBigSize;
+
+        /// <summary>The giant "VS" of the battle intro (two letters drawn as a picture, not read as text).</summary>
         public const int VsSize = 96;
 
-        /// <summary>The smallest size a squeezed label may shrink to (the Arena's row letters).</summary>
-        public const int ShrinkMinSize = 16;
+        /// <summary>See <see cref="TextBleed"/>.</summary>
+        private const float TextBleedEm = 0.125f;
 
         /// <summary>Height of the virtual canvas the interface is laid out on.</summary>
         public const float CanvasHeight = 1080f;
@@ -266,11 +287,12 @@ namespace FishingIdle.Game.UI
         private const float CanvasHeightMax = 1280f;
 
         /// <summary>
-        /// The scale of the interface on a screen <paramref name="screenHeight"/> pixels tall (A-190). The canvas is drawn
-        /// through GUI.matrix, and a pixel font that was rasterised at its size and then scaled by a fraction is resampled
-        /// and blurs. So the scale snaps to a half step (0,5 · 1 · 1,5 · 2 …), the largest that keeps the canvas at least
-        /// 1080 tall, as long as the canvas stays under 1280 (600, 1080 to 1280 and 2160 px tall windows get a clean scale);
-        /// otherwise it falls back to the exact fraction, as before, so the layout never shrinks more than that.
+        /// The scale of the interface on a screen <paramref name="screenHeight"/> pixels tall (A-190, TD-067). The canvas is
+        /// drawn through GUI.matrix. The text does not depend on it any more: it is drawn from the font's distance field
+        /// (<see cref="Crisp"/>), sharp at any scale. The scale still snaps to a half step (0,5 · 1 · 1,5 · 2 …), the
+        /// largest that keeps the canvas at least 1080 tall, as long as the canvas stays under 1280, because the pixel
+        /// art drawn at a clean step keeps whole pixels (600, 1080 to 1280 and 2160 px tall windows); otherwise it falls
+        /// back to the exact fraction, so the layout never shrinks more than that.
         /// </summary>
         public static float CanvasScale(float screenHeight)
         {
@@ -294,17 +316,17 @@ namespace FishingIdle.Game.UI
 
         private static Color Alpha(Color c, float a) => new Color(c.r, c.g, c.b, a);
 
-        private GUIStyle ButtonStyle(Texture2D normal, Texture2D hover, Texture2D active, Color text, int fontSize = SmallSize)
+        private GUIStyle ButtonStyle(Texture2D normal, Texture2D hover, Texture2D active, Color text, int fontSize = ButtonSize)
         {
             var border = ButtonBorder;
             var style = new GUIStyle(GUI.skin.button)
             {
                 border = new RectOffset(border, border, border, border),
-                // VT323 sits low in its line: two more pixels under it than over it centre the letters on the pill.
-                padding = new RectOffset(14, 14, 4, 8),
+                // Nunito's capitals sit in the middle of its line box (A-191): the same room over and under the text.
+                padding = new RectOffset(12, 12, 4, 4),
                 fontSize = fontSize,
                 fontStyle = FontStyle.Normal,
-                font = BodyBoldFont,
+                font = SemiBoldFont,
                 alignment = TextAnchor.MiddleCenter,
                 wordWrap = false,
                 clipping = TextClipping.Clip,
@@ -318,7 +340,7 @@ namespace FishingIdle.Game.UI
             style.hover.textColor = text;
             style.active.textColor = text;
             style.focused.textColor = text;
-            return style;
+            return Crisp(style);
         }
 
         private GUIStyle Label(Font font, int size, Color color)
@@ -327,23 +349,106 @@ namespace FishingIdle.Game.UI
             {
                 font = font,
                 fontSize = size,
-                fontStyle = font != null ? FontStyle.Normal : FontStyle.Bold,
+                fontStyle = FontStyle.Normal,
                 wordWrap = true,
                 richText = false,
-                padding = new RectOffset(0, 0, 0, 0),
+                padding = new RectOffset(0, 0, -TextBleed(size), -TextBleed(size)),
                 margin = new RectOffset(0, 0, 0, 0),
             };
-            if (font == null && size < 17)
-            {
-                style.fontStyle = FontStyle.Normal;
-            }
-
-            if (font != null && font == PixelTextFont)
-            {
-                style.padding = new RectOffset(0, 0, -TextLift(size), 0);
-            }
-
             style.normal.textColor = color;
+            return Crisp(style);
+        }
+
+        /// <summary>
+        /// How far a label's text area reaches over and under its rect (A-191). Nunito's line is 1,135 em (about the line
+        /// of the old pixel fonts, so the rects kept fitting), but its accents and descenders pass it a little; the text
+        /// area grows by 0,125 em on both sides so a clipped label keeps the "É" and the "g" whole. Centred text does not
+        /// move; text aligned to the top sits that much higher, with the capitals near the top of the rect.
+        /// </summary>
+        public static int TextBleed(int fontSize)
+        {
+            return Mathf.RoundToInt(fontSize * TextBleedEm);
+        }
+
+        /// <summary>
+        /// Loads a Nunito weight and keeps its glyph texture Bilinear (A-191: a smooth font is filtered, unlike the pixel
+        /// art, which stays Point). Unity rebuilds a dynamic font's texture when it grows, so the filter is set again then.
+        /// </summary>
+        private static Font LoadFont(string path)
+        {
+            var font = Resources.Load<Font>(path);
+            if (font != null)
+            {
+                SmoothTexture(font);
+                if (!_listening)
+                {
+                    _listening = true;
+                    Font.textureRebuilt += SmoothTexture;
+                }
+            }
+
+            return font;
+        }
+
+        private static bool _listening;
+
+        private static void SmoothTexture(Font font)
+        {
+            var texture = font != null && font.material != null ? font.material.mainTexture : null;
+            if (texture != null && texture.filterMode != FilterMode.Bilinear)
+            {
+                texture.filterMode = FilterMode.Bilinear;
+            }
+        }
+
+        private static System.Reflection.PropertyInfo _sdfProperty;
+        private static bool _sdfLooked;
+
+        /// <summary>
+        /// Draws the style's text from the font's distance field (TD-067). Unity 6 draws IMGUI text through TextCore: the
+        /// Nunito file becomes a dynamic SDF font asset, which stays sharp at any GUI.matrix scale, so a letter always
+        /// lands on the screen at its final size. Inside the Editor the converted font is marked as an editor font and may
+        /// take the bitmap path instead (rasterised at fontSize, then stretched by the canvas scale: soft at 600 or 840 px
+        /// tall); GUIStyle.isSDF (internal, the switch Unity's own zoomable views use) keeps it on the SDF path. Read once
+        /// by reflection; when the property is missing (another Unity version) nothing changes. Every style made by the
+        /// skin passes here, and the styles copied from them keep the flag.
+        /// </summary>
+        public static GUIStyle Crisp(GUIStyle style)
+        {
+            if (style == null)
+            {
+                return null;
+            }
+
+            if (!_sdfLooked)
+            {
+                _sdfLooked = true;
+                try
+                {
+                    _sdfProperty = typeof(GUIStyle).GetProperty("isSDF", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                    if (_sdfProperty != null && (!_sdfProperty.CanWrite || _sdfProperty.PropertyType != typeof(bool)))
+                    {
+                        _sdfProperty = null;
+                    }
+                }
+                catch (System.Exception)
+                {
+                    _sdfProperty = null;
+                }
+            }
+
+            if (_sdfProperty != null)
+            {
+                try
+                {
+                    _sdfProperty.SetValue(style, true);
+                }
+                catch (System.Exception)
+                {
+                    _sdfProperty = null;
+                }
+            }
+
             return style;
         }
 
@@ -636,6 +741,7 @@ namespace FishingIdle.Game.UI
                     padding = new RectOffset(0, 0, 0, 0),
                 };
                 label.normal.textColor = Color.white;
+                Crisp(label);
                 _labelOf[button] = label;
             }
 
@@ -684,7 +790,6 @@ namespace FishingIdle.Game.UI
         /// </summary>
         public static void ShadowLabel(Rect rect, string text, GUIStyle style)
         {
-            style = _instance != null ? _instance.TitleSafe(style, text) : style;
             var previous = GUI.contentColor;
             GUI.contentColor = new Color(0f, 0f, 0f, previous.a * 0.5f);
             GUI.Label(new Rect(rect.x + 1f, rect.y + 1f, rect.width, rect.height), text, style);
@@ -761,7 +866,7 @@ namespace FishingIdle.Game.UI
         /// <summary><see cref="Title"/> centred on one line.</summary>
         public GUIStyle TitleCenter => _titleCenter ?? (_titleCenter = new GUIStyle(Title) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip });
 
-        /// <summary>The gold "VS" between the two formations (Press Start 2P at 32: fits the 76 px disc, M25-T14).</summary>
+        /// <summary>The gold "VS" between the two formations (Bold 42: fits the 76 px disc).</summary>
         public GUIStyle VsMark => _vsMark ?? (_vsMark = GoldDisplay(DisplaySize));
 
         /// <summary>The big gold "VS" of the battle intro.</summary>

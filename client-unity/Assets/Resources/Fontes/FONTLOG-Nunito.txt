@@ -1,0 +1,18 @@
+Nunito no Fishing Idle
+======================
+
+Origem: Nunito[wght].ttf (versão variável) do repositório google/fonts (ofl/nunito), licença SIL Open Font License 1.1
+(OFL-Nunito.txt, ao lado). A Nunito não declara "Reserved Font Name".
+
+Os quatro arquivos estáticos (Regular 400, Medium 500, SemiBold 600, Bold 700) foram gerados com o fontTools
+(varLib.instancer, com os nomes atualizados pela tabela STAT) e depois modificados assim (20/10/2026):
+
+- acrescentadas as setas → (U+2192), ← (U+2190) e ↔ (U+2194) e o triângulo ▾ (U+25BE), desenhados com a espessura do
+  traço de cada peso, porque os textos do jogo usam essas setas e a Nunito não as tem;
+- a caixa da linha ficou em 1,135 em (ascendente 920, descendente -215 nas tabelas hhea e OS/2), no lugar de 1,364 em:
+  é quase a altura de linha das fontes pixel de antes, então os retângulos das telas continuam servindo, e as
+  maiúsculas ficam no meio da linha (ascendente menos descendente = altura da maiúscula, 705), então o texto centrado
+  fica centrado. Os acentos das maiúsculas (até 0,953 em) e as descendentes (até -0,195 em) passam um pouco da linha.
+
+Os desenhos das letras não mudaram. Os scripts ficam fora do repositório; o processo está descrito em
+docs/DECISOES.md (TD-067).

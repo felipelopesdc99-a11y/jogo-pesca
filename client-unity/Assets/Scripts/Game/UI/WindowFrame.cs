@@ -8,8 +8,8 @@ namespace FishingIdle.Game.UI
 {
     /// <summary>
     /// The shared look of a full window in the ARC skin (addendum A-184, which updates the "Diário de bordo" of A-170):
-    /// the scene dimmed behind the night veil; a night-blue panel with the thin gold frame; the title in Press Start 2P
-    /// on a raised tag with a gold line at the top-left; a pixel "✕" pill at the top-right to close; the window's
+    /// the scene dimmed behind the night veil; a night-blue panel with the thin gold frame; the title in Nunito Bold 40
+    /// (A-191) on a raised tag with a gold line at the top-left; a pixel "✕" pill at the top-right to close; the window's
     /// sub-tabs as ARC tabs sticking out of the right side.
     /// </summary>
     /// <remarks>
@@ -45,9 +45,9 @@ namespace FishingIdle.Game.UI
         private const float SealSize = 54f, SealInset = 24f, CloseSize = 44f, CloseInset = 18f;
         private const float SideTop = 18f, SideHeight = 46f, SideGap = 12f;
 
-        // The bookmarks: how far they stick out of the frame, and their size. 128 since A-190 (was 96): the longest
-        // one-word label, "Enciclopédia" (115 px in VT323 24), fits whole.
-        private const float BookmarkOut = 128f, BookmarkUnder = 8f, BookmarkTop = 92f, BookmarkGap = 8f, BookmarkIcon = 28f, BookmarkTuck = 8f;
+        // The bookmarks: how far they stick out of the frame, and their size. 136 since A-191 (was 128): the longest
+        // one-word label, "Enciclopédia" (120 px in Nunito SemiBold 21), fits whole.
+        private const float BookmarkOut = 136f, BookmarkUnder = 8f, BookmarkTop = 92f, BookmarkGap = 8f, BookmarkIcon = 28f, BookmarkTuck = 8f;
 
         // The "i" on the label and its note.
         private const float InfoSize = 28f, TipWidth = 460f, TipPad = 16f;
@@ -156,7 +156,7 @@ namespace FishingIdle.Game.UI
             var infoWidth = hasInfo ? InfoSize + 12f : 0f;
             var maxLabel = seal.x - 16f - reserveRight - labelX - 16f - (hasCounter ? 150f : 0f);
             var titleSpace = Mathf.Max(40f, maxLabel - LabelPadLeft - iconWidth - infoWidth - LabelPadRight);
-            var titleStyle = skin.TitleSafe(_title, title);
+            var titleStyle = _title;
             var titleText = FishCard.Fit(title ?? string.Empty, titleStyle, titleSpace);
             var titleWidth = Mathf.Min(titleStyle.CalcSize(new GUIContent(titleText)).x, titleSpace);
             var label = new Rect(labelX, panel.y + LabelTop, LabelPadLeft + iconWidth + titleWidth + infoWidth + LabelPadRight, LabelHeight);
@@ -410,7 +410,7 @@ namespace FishingIdle.Game.UI
         {
             var width = Mathf.Min(TipWidth, panel.width - Margin * 2f);
             var textHeight = _tipBody.CalcHeight(new GUIContent(info), width - TipPad * 2f);
-            _tipRect = new Rect(label.x + 18f, label.yMax + 12f, width, TipPad + 22f + 4f + textHeight + TipPad);
+            _tipRect = new Rect(label.x + 18f, label.yMax + 12f, width, TipPad + 32f + textHeight + TipPad);
             _tipText = info;
             _tipFrame = frame;
         }
@@ -449,8 +449,8 @@ namespace FishingIdle.Game.UI
             skin.HardShadow(r);
             skin.TipBox(r);
             Fill(skin, UiSkin.Snap(new Rect(r.x + UiSkin.ArcPixel * 2, r.y + UiSkin.ArcPixel * 3, UiSkin.ArcPixel * 2, r.height - UiSkin.ArcPixel * 6)), UiSkin.Accent, 0f);
-            GUI.Label(new Rect(r.x + TipPad, r.y + TipPad - 2f, r.width - TipPad * 2f, 22f), GameTexts.WindowHeader.InfoTitle, _tipTitle);
-            GUI.Label(new Rect(r.x + TipPad, r.y + TipPad + 24f, r.width - TipPad * 2f, r.height - TipPad * 2f - 24f), _tipText, _tipBody);
+            GUI.Label(new Rect(r.x + TipPad, r.y + TipPad, r.width - TipPad * 2f, 28f), GameTexts.WindowHeader.InfoTitle, _tipTitle);
+            GUI.Label(new Rect(r.x + TipPad, r.y + TipPad + 32f, r.width - TipPad * 2f, r.height - TipPad * 2f - 32f), _tipText, _tipBody);
         }
 
         /// <summary>Closes the "Como funciona" note (Esc). Returns true when it was open.</summary>
@@ -577,18 +577,18 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
-            _title = new GUIStyle(skin.Title) { font = skin.TitleBoldFont, fontSize = UiSkin.TitleSize, alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Overflow };
+            _title = new GUIStyle(skin.Title) { font = skin.TitleBoldFont, fontSize = UiSkin.WindowTitleSize, alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Overflow };
             _title.normal.textColor = UiSkin.TitleColor;
             _infoGlyph = new GUIStyle(skin.Title) { font = skin.TitleBoldFont, fontSize = UiSkin.NumberSize, alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Overflow };
             _infoGlyph.normal.textColor = InfoInk;
             _counter = new GUIStyle(skin.Heading) { fontSize = UiSkin.BodySize, alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Clip };
             _counter.normal.textColor = UiSkin.Muted;
-            _tipTitle = new GUIStyle(skin.Title) { fontSize = UiSkin.NumberSize, wordWrap = false };
+            _tipTitle = new GUIStyle(skin.Heading) { wordWrap = false };
             _tipTitle.normal.textColor = UiSkin.TitleColor;
             _tipBody = new GUIStyle(skin.Body) { fontSize = UiSkin.SmallSize, wordWrap = true };
             _tipBody.normal.textColor = UiSkin.Text;
             // The tab label at the small size, the note under it at the chip size (Art Bible 7.1 minimums).
-            _bookmark = new GUIStyle(skin.SmallBold) { fontSize = UiSkin.SmallSize, alignment = TextAnchor.UpperCenter, wordWrap = true, clipping = TextClipping.Overflow };
+            _bookmark = new GUIStyle(skin.SmallBold) { font = skin.SemiBoldFont, fontSize = UiSkin.SmallSize, alignment = TextAnchor.UpperCenter, wordWrap = true, clipping = TextClipping.Overflow };
             _bookmark.normal.textColor = UiSkin.Muted;
             _bookmarkOn = new GUIStyle(_bookmark);
             _bookmarkOn.normal.textColor = UiSkin.TitleColor;

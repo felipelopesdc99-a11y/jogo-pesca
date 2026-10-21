@@ -157,7 +157,7 @@ namespace FishingIdle.Game.UI
             {
                 var band = new Rect(rect.x + 20f, rect.yMax - 64f, rect.width - 40f, 52f);
                 ArcArt.Fill(skin, band, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.88f), 10f);
-                skin.TitleLabel(new Rect(band.x, band.y + 4f, band.width, 26f), GameTexts.WorldBoss.StartsIn(Format.Countdown(view.SecondsToStart)), skin.TitleCenter);
+                GUI.Label(new Rect(band.x, band.y + 4f, band.width, 26f), GameTexts.WorldBoss.StartsIn(Format.Countdown(view.SecondsToStart)), skin.TitleCenter);
                 GUI.Label(new Rect(band.x, band.y + 30f, band.width, UiSkin.SmallLine), GameTexts.WorldBoss.Daily(StartTime(view), view.DurationMinutes) + " · " + GameTexts.WorldBoss.ClosedHint, skin.SmallMutedCenter);
             }
         }

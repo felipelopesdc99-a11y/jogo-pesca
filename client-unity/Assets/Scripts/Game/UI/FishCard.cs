@@ -23,7 +23,7 @@ namespace FishingIdle.Game.UI
         public string Footer;
         /// <summary>Bottom-right amount of coins, already formatted, or null.</summary>
         public string Coins;
-        /// <summary>A small tag in the top-right corner, e.g. "NOVA ESPÉCIE".</summary>
+        /// <summary>A small tag in the top-right corner, e.g. "Nova espécie".</summary>
         public string Badge;
         public Color BadgeColor = Color.white;
         public bool Selected;
@@ -72,7 +72,7 @@ namespace FishingIdle.Game.UI
             var badgeOnArt = m.Selected && badgeWidth > 0f;
             if (!string.IsNullOrEmpty(m.RarityName))
             {
-                var label = m.RarityName.ToUpperInvariant();
+                var label = m.RarityName;
                 var withStar = skin.PillWidth(label, true);
                 var plain = skin.PillWidth(label, false);
                 var star = withStar + 6f + rightWidth <= w;
@@ -93,8 +93,8 @@ namespace FishingIdle.Game.UI
             // coins / footer row, then the bar, the size line and the name; the fish gets the space left.
             var hasBottomRow = !string.IsNullOrEmpty(m.Coins) || !string.IsNullOrEmpty(m.Footer);
             var cursor = rect.yMax - 8f;
-            // Rows are one line of the 15 px small text each (A-149): 21 px for the footer and the size line.
-            var bottomRowY = cursor - 21f;
+            // Rows are one line of the small text each (A-191, Nunito 21: 24 px) and the name one line of the body (28 px).
+            var bottomRowY = cursor - 24f;
             if (hasBottomRow)
             {
                 cursor = bottomRowY - 4f;
@@ -107,13 +107,13 @@ namespace FishingIdle.Game.UI
             }
 
             var hasLine = !string.IsNullOrEmpty(m.Line) || (exceptional && !string.IsNullOrEmpty(m.SizeCategoryName));
-            var lineY = cursor - 21f;
+            var lineY = cursor - 24f;
             if (hasLine)
             {
                 cursor = lineY - 1f;
             }
 
-            var nameY = cursor - 21f;
+            var nameY = cursor - 28f;
             cursor = nameY - 4f;
 
             // The quality stars of the genes (M24-T52, A-176), small, under the rarity seal.
@@ -141,23 +141,23 @@ namespace FishingIdle.Game.UI
                 skin.Tag(new Rect(rect.xMax - pad - badgeWidth, artTop, badgeWidth, 20), m.Badge, m.BadgeColor);
             }
 
-            GUI.Label(new Rect(x, nameY, w, 22), Fit(m.Name, skin.BodyBold, w), skin.BodyBold);
+            GUI.Label(new Rect(x, nameY, w, 28), Fit(m.Name, skin.BodyBold, w), skin.BodyBold);
 
             if (exceptional && !string.IsNullOrEmpty(m.SizeCategoryName))
             {
                 // The gold seal sits at the right end of the size line, never over the fish.
-                var seal = m.SizeCategoryName.ToUpperInvariant();
+                var seal = m.SizeCategoryName;
                 var sw = skin.Badge.CalcSize(new GUIContent(seal)).x + 10f;
-                ExceptionalSeal(skin, new Rect(x + w - sw, lineY + 1, sw, 20), seal, sizeColor);
+                ExceptionalSeal(skin, new Rect(x + w - sw, lineY + 2, sw, 20), seal, sizeColor);
                 var rest = WithoutSize(m.Line, m.SizeCategoryName);
                 if (!string.IsNullOrEmpty(rest))
                 {
-                    GUI.Label(new Rect(x, lineY, w - sw - 6f, 21), Fit(rest, skin.SmallMuted, w - sw - 6f), skin.SmallMuted);
+                    GUI.Label(new Rect(x, lineY, w - sw - 6f, 24), Fit(rest, skin.SmallMuted, w - sw - 6f), skin.SmallMuted);
                 }
             }
             else if (!string.IsNullOrEmpty(m.Line))
             {
-                DrawLine(skin, new Rect(x, lineY, w, 21), m);
+                DrawLine(skin, new Rect(x, lineY, w, 24), m);
             }
 
             if (m.Bar >= 0f)
@@ -169,15 +169,15 @@ namespace FishingIdle.Game.UI
             var coinsWidth = 0f;
             if (!string.IsNullOrEmpty(m.Coins))
             {
-                coinsWidth = skin.CoinAmountWidth(m.Coins, 21f);
-                skin.CoinAmount(new Rect(rect.xMax - pad - coinsWidth, bottomRowY - 1, coinsWidth, 21), m.Coins);
+                coinsWidth = skin.CoinAmountWidth(m.Coins, 24f);
+                skin.CoinAmount(new Rect(rect.xMax - pad - coinsWidth, bottomRowY, coinsWidth, 24), m.Coins);
             }
 
             if (!string.IsNullOrEmpty(m.Footer))
             {
                 var fw = w - coinsWidth - (coinsWidth > 0f ? 8f : 0f);
                 GUI.contentColor = Color.Lerp(accent, Color.white, 0.35f);
-                GUI.Label(new Rect(x, bottomRowY, fw, 21), Fit(m.Footer, skin.SmallBold, fw), skin.SmallBold);
+                GUI.Label(new Rect(x, bottomRowY, fw, 24), Fit(m.Footer, skin.SmallBold, fw), skin.SmallBold);
                 GUI.contentColor = Color.white;
             }
 
@@ -270,7 +270,7 @@ namespace FishingIdle.Game.UI
             return string.Join(sep, System.Array.FindAll(parts, p => p != size));
         }
 
-        /// <summary>The "EXCEPCIONAL" (gold) or "PERFEIÇÃO" (diamond) size seal, with a light sweeping across it.</summary>
+        /// <summary>The "Excepcional" (gold) or "Perfeição" (diamond) size seal, with a light sweeping across it.</summary>
         public static void ExceptionalSeal(UiSkin skin, Rect rect, string text, Color? color = null)
         {
             skin.Tag(rect, text, color ?? VisualTheme.Current.Exceptional);

@@ -9,7 +9,8 @@ namespace FishingIdle.Editor
     /// </summary>
     /// <remarks>
     /// The pixel art keeps every pixel exact (TD-059); the old painted folder and its import rule are gone (TD-065).
-    /// Fonts fall back to a system font for the rare symbol they lack.
+    /// The text is Nunito since A-191 (TD-067): a smooth font, rasterised with anti-aliasing and filtered Bilinear (the
+    /// Point rule is only for the sprites). Fonts fall back to a system font for the rare symbol they lack.
     /// </remarks>
     public sealed class ArtImportSettings : AssetPostprocessor
     {
@@ -18,7 +19,7 @@ namespace FishingIdle.Editor
         private const string PixelFolder = "Assets/Resources/ArtePixel/";
 
         // Raise this when the rules below change, so Unity re-imports the art with them.
-        public override uint GetVersion() => 7;
+        public override uint GetVersion() => 8;
 
         /// <summary>
         /// TD-059: the pixel art (Estilo ARC) keeps every pixel sharp and exact: Point filter, no compression,
@@ -59,13 +60,9 @@ namespace FishingIdle.Editor
             font.includeFontData = true;
             font.fontNames = new[] { "Segoe UI", "Arial" };
 
-            // TD-059 / TD-061: the two pixel fonts of the ARC skin are rasterised without smoothing, so their square
-            // pixels stay sharp.
-            var file = System.IO.Path.GetFileNameWithoutExtension(assetPath);
-            if (file == "PressStart2P-Regular" || file == "VT323-Regular")
-            {
-                font.fontRenderingMode = FontRenderingMode.HintedRaster;
-            }
+            // TD-067: Nunito is smooth; hinted smoothing keeps its stems on whole pixels at the small sizes of the game
+            // (never HintedRaster, which is for pixel fonts). The glyph texture is set to Bilinear by UiSkin.LoadFont.
+            font.fontRenderingMode = FontRenderingMode.HintedSmooth;
         }
     }
 }

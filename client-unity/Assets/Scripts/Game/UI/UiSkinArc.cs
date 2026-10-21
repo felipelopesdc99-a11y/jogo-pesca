@@ -5,7 +5,7 @@ namespace FishingIdle.Game.UI
 {
     /// <summary>
     /// The ARC skin of the interface (docs/ART_BIBLE_PIXEL.md, section 7; addendum A-184): night-blue panels with a thin
-    /// gold frame, pixel pills, pixel bars and the two pixel fonts. Everything here is drawn by the code from small
+    /// gold frame, pixel pills and pixel bars (the text is Nunito since A-191). Everything here is drawn by the code from small
     /// textures made once (Point filter), never from painted files.
     /// </summary>
     /// <remarks>
@@ -32,7 +32,7 @@ namespace FishingIdle.Game.UI
         /// <summary>The dark line between the two gold lines.</summary>
         public static Color FrameInner => Theme.FrameInner;
 
-        /// <summary>The colour of titles in Press Start 2P.</summary>
+        /// <summary>The colour of titles.</summary>
         public static Color TitleColor => Theme.Title;
 
         /// <summary>Where a window's content sits: the panel night (#0D0F20).</summary>
@@ -71,7 +71,6 @@ namespace FishingIdle.Game.UI
         /// </summary>
         public static void ColoredLabel(Rect rect, string text, GUIStyle style, Color color, bool readable = true)
         {
-            style = _instance != null ? _instance.TitleSafe(style, text) : style;
             if (!ColoredStyles.TryGetValue(style, out var colored))
             {
                 colored = new GUIStyle(style);
@@ -123,75 +122,6 @@ namespace FishingIdle.Game.UI
         {
             return v <= 0.03928f ? v / 12.92f : Mathf.Pow((v + 0.055f) / 1.055f, 2.4f);
         }
-
-        // ------------------------------------------------------------------ fonts
-
-        /// <summary>Press Start 2P, the title font (OFL). Null when the file is missing.</summary>
-        public Font PixelTitleFont { get; private set; }
-
-        /// <summary>VT323, the text font (OFL). Null when the file is missing.</summary>
-        public Font PixelTextFont { get; private set; }
-
-        private readonly Dictionary<GUIStyle, GUIStyle> _accentSafe = new Dictionary<GUIStyle, GUIStyle>();
-
-        /// <summary>
-        /// Press Start 2P draws the accented capitals (Á É Í Ó Ú Â Ê Ô Ã Õ À) squeezed into the letter cell, so they read as
-        /// lower case ("ÉPICO" looks like "éPICO"). A title whose text has one of them is drawn in VT323 at the same visual
-        /// size instead (the twin style is made once and kept). Returns <paramref name="style"/> for every other text.
-        /// </summary>
-        public GUIStyle TitleSafe(GUIStyle style, string text)
-        {
-            if (style == null || PixelTitleFont == null || PixelTextFont == null || style.font != PixelTitleFont || !HasAccentedCapital(text))
-            {
-                return style;
-            }
-
-            if (!_accentSafe.TryGetValue(style, out var twin))
-            {
-                // Capitals of Press Start 2P fill the em; VT323 capitals are 0,56 em: the same height needs 1,75× the size.
-                twin = new GUIStyle(style) { font = PixelTextFont, fontSize = Mathf.RoundToInt(style.fontSize * AccentTwinScale) };
-                twin.padding = new RectOffset(style.padding.left, style.padding.right, style.padding.top - TextLift(twin.fontSize), style.padding.bottom);
-                _accentSafe[style] = twin;
-            }
-
-            // The style may have been recoloured since (ColoredLabel and the window styles set their own colours).
-            twin.normal.textColor = style.normal.textColor;
-            twin.hover.textColor = style.hover.textColor;
-            return twin;
-        }
-
-        /// <summary>A label in a title style, switched to VT323 when the text has an accented capital (<see cref="TitleSafe"/>).</summary>
-        public void TitleLabel(Rect rect, string text, GUIStyle style)
-        {
-            GUI.Label(rect, text, TitleSafe(style, text));
-        }
-
-        /// <summary>Whether <paramref name="text"/> has an accented capital (no allocation).</summary>
-        public static bool HasAccentedCapital(string text)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return false;
-            }
-
-            for (var i = 0; i < text.Length; i++)
-            {
-                switch (text[i])
-                {
-                    case 'Á': case 'É': case 'Í': case 'Ó': case 'Ú': case 'Â': case 'Ê': case 'Ô': case 'Ã': case 'Õ': case 'À': case 'Ü':
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// How far a VT323 line is lifted inside its rect. VT323 keeps a quarter of its line above the capitals (room for
-        /// accents) and its descenders reach the bottom of the line; lifting it by ~0,12 em centres the letters where a
-        /// line of the old font sat, so rects sized for one line keep the "g", "p" and "ç" whole.
-        /// </summary>
-        private static int TextLift(int fontSize) => Mathf.RoundToInt(fontSize * TextLiftEm);
 
         // ------------------------------------------------------------------ textures made once
 
@@ -284,7 +214,7 @@ namespace FishingIdle.Game.UI
             };
             style.normal.background = tex;
             style.normal.textColor = Theme.Text;
-            return style;
+            return Crisp(style);
         }
 
         private static Texture2D ArcFace(int radiusUi, bool round, Color fill, Color fillBottom, params Color[] rings)
