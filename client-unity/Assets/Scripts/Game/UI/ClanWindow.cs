@@ -19,11 +19,14 @@ namespace FishingIdle.Game.UI
     /// <remarks>
     /// Shows what the clan service returned (GameRoot.Clan); decides nothing. Icon ico_cla (received 13/10/2026; the
     /// Honra icon only if the file is missing). Since A-179 the clan column opens with the night harbour (cla_fundo) and the
-    /// crest (cla_brasao) as a photo on the sheet; without the files, the plain sunken panels.
+    /// crest (cla_brasao) as a photo on the sheet; without the files, the plain sunken panels. M25-T24 (A-191): the harbour
+    /// only as the header strip, the sections separated by space (no sunken panel around them: window, then the row cards),
+    /// and the online notice as one line of soft text.
     /// </remarks>
     public sealed class ClanWindow
     {
-        private const float Gap = 16f, Pad = 18f, MemberRow = 58f, ScrollBar = 18f, PickRow = 64f;
+        // Grid of 8 (A-190): 16 between elements, 32 between the sections and the two columns.
+        private const float Gap = 16f, SectionGap = 32f, Pad = 16f, MemberRow = 64f, ScrollBar = 18f, PickRow = 64f;
 
         /// <summary>The clan icon (ico_cla.png, received 13/10/2026; the Honra icon if the file is missing).</summary>
         private const string ClanIcon = "cla";
@@ -31,7 +34,7 @@ namespace FishingIdle.Game.UI
         // A-179: the harbour at night (cla_fundo) as a photo on top of the clan column, with the crest (cla_brasao) on
         // its left; in a clan, the name goes on the crest's ribbon too. Missing files = the plain sunken panels.
         private const string SceneArt = "UI/cla_fundo", CrestArt = "UI/cla_brasao";
-        private const float SceneHeight = 176f, SceneGap = 18f;
+        private const float SceneHeight = 160f, SceneGap = 32f;
 
         /// <summary>
         /// The blank ribbon of the crest, in the picture's pixels: the pixel crest (ArtePixel, 51×48, M25-T15), or the old
@@ -107,7 +110,7 @@ namespace FishingIdle.Game.UI
                 // Left: the clan (or how to have one); right: the daily ranking and the top 3.
                 var leftWidth = Mathf.Floor(area.width * 0.58f);
                 var left = new Rect(area.x, area.y, leftWidth, area.height);
-                var right = new Rect(area.x + leftWidth + Gap, area.y, area.width - leftWidth - Gap, area.height);
+                var right = new Rect(area.x + leftWidth + SectionGap, area.y, area.width - leftWidth - SectionGap, area.height);
                 if (view.Clan != null)
                 {
                     DrawClan(skin, left, view);
@@ -140,10 +143,9 @@ namespace FishingIdle.Game.UI
         private static void DrawLevelRequired(UiSkin skin, Rect rect, ClanView view)
         {
             rect = SceneOnTop(skin, rect, null);
-            skin.Inset(rect);
-            var x = rect.x + Pad;
-            var w = rect.width - Pad * 2f;
-            var y = rect.y + Pad;
+            var x = rect.x;
+            var w = rect.width;
+            var y = rect.y;
             skin.DrawIconExact(new Rect(x, y, 40f, 40f), Icons.Lock, UiSkin.Muted);
             GUI.Label(new Rect(x + 52f, y + 4f, w - 52f, 32f), GameTexts.Clan.LevelTitle(view.MinFisherLevel), skin.Heading);
             y += 56f;
@@ -159,10 +161,9 @@ namespace FishingIdle.Game.UI
         private void DrawNoClan(UiSkin skin, Rect rect, ClanView view)
         {
             rect = SceneOnTop(skin, rect, null);
-            skin.Inset(rect);
-            var x = rect.x + Pad;
-            var w = rect.width - Pad * 2f;
-            var y = rect.y + Pad;
+            var x = rect.x;
+            var w = rect.width;
+            var y = rect.y;
             GUI.Label(new Rect(x, y, w, 32f), GameTexts.Clan.NoClanTitle, skin.Heading);
             y += 38f;
             GUI.Label(new Rect(x, y, w, 44f), GameTexts.Clan.BonusLine(Format.PercentShort(view.XpBonus)), skin.Small);
@@ -172,17 +173,18 @@ namespace FishingIdle.Game.UI
             GUI.Label(new Rect(x, y, w, 28f), GameTexts.Clan.CreateTitle, skin.BodyBold);
             y += 32f;
             GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Clan.NameLabel, skin.SmallMuted);
-            y += 22f;
-            _nameDraft = GUI.TextField(new Rect(x, y, w, 38f), _nameDraft ?? string.Empty, Mathf.Max(1, view.NameMaxLength), skin.SearchField);
-            y += 44f;
-            GUI.Label(new Rect(x, y, w, 40f), GameTexts.Clan.NameRule(view.NameMinLength, view.NameMaxLength), skin.SmallMuted);
+            y += 24f;
+            _nameDraft = GUI.TextField(new Rect(x, y, Mathf.Min(w, 480f), 40f), _nameDraft ?? string.Empty, Mathf.Max(1, view.NameMaxLength), skin.SearchField);
             y += 48f;
+            GUI.Label(new Rect(x, y, w, 48f), GameTexts.Clan.NameRule(view.NameMinLength, view.NameMaxLength), skin.SmallMuted);
+            y += 56f;
 
             var canCreate = view.CreateBlocker == ServiceError.None;
-            var button = new Rect(x, y, Mathf.Min(w, 380f), 46f);
+            var createLabel = view.CreateCostDollars == 0 ? GameTexts.Clan.CreateButtonFree : GameTexts.Clan.CreateButton(Format.Number(view.CreateCostDollars));
+            var button = new Rect(x, y, Mathf.Min(w, Mathf.Ceil(70f + skin.Button.CalcSize(new GUIContent(createLabel)).x - skin.Button.padding.horizontal)), 48f);
             var enabled = GUI.enabled;
             GUI.enabled = enabled && canCreate;
-            if (skin.IconButton(button, Icons.Dollar, view.CreateCostDollars == 0 ? GameTexts.Clan.CreateButtonFree : GameTexts.Clan.CreateButton(Format.Number(view.CreateCostDollars)), canCreate ? skin.ButtonPrimary : skin.Button))
+            if (skin.IconButton(button, Icons.Dollar, createLabel, canCreate ? skin.ButtonPrimary : skin.Button))
             {
                 if (_root.CreateClan(_nameDraft))
                 {
@@ -194,14 +196,12 @@ namespace FishingIdle.Game.UI
             var style = canCreate ? skin.SmallGold : skin.SmallMuted;
             var below = view.CreateCostDollars == 0 ? GameTexts.Clan.CreateFreeNote : GameTexts.Clan.YourDollars(Format.Number(view.Dollars));
             GUI.Label(new Rect(x, button.yMax + 8f, w, UiSkin.SmallLine), FishCard.Fit(below, style, w), style);
-            y = button.yMax + 44f;
+            y = button.yMax + 8f + UiSkin.SmallLine + SectionGap;
 
-            // Join a clan: the list comes from the server (TD-055).
-            skin.Divider(new Rect(x, y, w, 1f));
-            y += 16f;
-            GUI.Label(new Rect(x, y, w, 28f), GameTexts.Clan.JoinTitle, skin.BodyBold);
+            // Join a clan: the list comes from the server (TD-055). One heading and one soft line, no divider.
+            GUI.Label(new Rect(x, y, w, 28f), GameTexts.Clan.JoinTitle, skin.Heading);
             y += 32f;
-            GUI.Label(new Rect(x, y, w, 44f), GameTexts.Clan.JoinOnline, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w, 48f), GameTexts.Clan.JoinOnline, skin.SmallMuted);
         }
 
         // ------------------------------------------------------------------ the clan
@@ -242,16 +242,16 @@ namespace FishingIdle.Game.UI
                 }
 
                 var ax = summary.xMax - Pad - actionsWidth;
-                var buy = new Rect(ax, top + 14f, actionsWidth, 44f);
+                var buy = new Rect(ax, top + 16f, actionsWidth, 48f);
                 var canBuy = clan.BuySlotBlocker == ServiceError.None;
                 var enabled = GUI.enabled;
                 if (clan.NextSlotPriceDollars > 0 && clan.IsOwner)
                 {
                     GUI.enabled = enabled && canBuy;
-                    // The pixel fonts are wider: the short label when the long one does not fit the button.
+                    // The short label when the long one does not fit the button with its icon (measured, A-191).
                     var buyStyle = canBuy ? skin.ButtonPrimary : skin.Button;
                     var buyLabel = GameTexts.Clan.BuySlot(Format.Number(clan.NextSlotPriceDollars));
-                    if (buyStyle.CalcSize(new GUIContent(buyLabel)).x > buy.width - 30f)
+                    if (buyStyle.CalcSize(new GUIContent(buyLabel)).x - buyStyle.padding.horizontal + 46f > buy.width - 16f)
                     {
                         buyLabel = GameTexts.Clan.BuySlotShort(Format.Number(clan.NextSlotPriceDollars));
                     }
@@ -266,22 +266,22 @@ namespace FishingIdle.Game.UI
                 else
                 {
                     var note = clan.IsOwner ? GameTexts.Clan.SlotsMaxed : GameTexts.Clan.OnlyOwnerBuys;
-                    GUI.Label(new Rect(ax, top + 18f, actionsWidth, 40f), note, skin.SmallMuted);
+                    GUI.Label(new Rect(ax, top + 16f, actionsWidth, 48f), note, skin.SmallMuted);
                 }
 
-                if (GUI.Button(new Rect(ax, top + 70f, actionsWidth, 40f), GameTexts.Clan.Leave, skin.ButtonDanger))
+                if (GUI.Button(new Rect(ax, top + 72f, actionsWidth, 40f), GameTexts.Clan.Leave, skin.ButtonDanger))
                 {
                     _confirmLeave = true;
                 }
             }
 
             // The clan's Cardume: the player's fish.
-            const float fishHeight = 132f;
-            var fishRect = new Rect(rect.x, summary.yMax + (onArt ? SceneGap : Gap), rect.width, fishHeight);
+            const float fishHeight = 120f;
+            var fishRect = new Rect(rect.x, summary.yMax + SectionGap, rect.width, fishHeight);
             DrawMyFish(skin, fishRect, clan);
 
             // Members and places.
-            var membersRect = new Rect(rect.x, fishRect.yMax + Gap, rect.width, rect.yMax - fishRect.yMax - Gap);
+            var membersRect = new Rect(rect.x, fishRect.yMax + SectionGap, rect.width, rect.yMax - fishRect.yMax - SectionGap);
             DrawMembers(skin, membersRect, clan);
         }
 
@@ -350,17 +350,16 @@ namespace FishingIdle.Game.UI
 
         private void DrawMyFish(UiSkin skin, Rect rect, ClanInfoView clan)
         {
-            skin.Inset(rect);
-            var x = rect.x + Pad;
-            var w = rect.width - Pad * 2f;
-            GUI.Label(new Rect(x, rect.y + 10f, w, 28f), GameTexts.Clan.ClanCardume, skin.BodyBold);
-            GUI.Label(new Rect(x, rect.y + 38f, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Clan.ClanCardumeHint, skin.SmallMuted, w), skin.SmallMuted);
+            var x = rect.x;
+            var w = rect.width;
+            GUI.Label(new Rect(x, rect.y, w, 28f), GameTexts.Clan.ClanCardume, skin.Heading);
+            GUI.Label(new Rect(x, rect.y + 28f, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Clan.ClanCardumeHint, skin.SmallMuted, w), skin.SmallMuted);
 
             var fish = clan.MyFish;
-            var buttonsWidth = fish != null ? 260f : 220f;
-            var bx = rect.xMax - Pad - buttonsWidth;
+            var buttonsWidth = fish != null ? 272f : Mathf.Ceil(70f + skin.Button.CalcSize(new GUIContent(GameTexts.Clan.ChooseFish)).x - skin.Button.padding.horizontal);
+            var bx = rect.xMax - buttonsWidth;
             var textWidth = bx - Gap - x;
-            var y = rect.y + 66f;
+            var y = rect.y + 64f;
             if (fish == null)
             {
                 GUI.Label(new Rect(x, y + 8f, textWidth, UiSkin.SmallLine), FishCard.Fit(GameTexts.Clan.NoFishYet, skin.Small, textWidth), skin.Small);
@@ -384,13 +383,13 @@ namespace FishingIdle.Game.UI
             var where = fish.CardumePosition > 0 ? GameTexts.Clan.InYourCardume(fish.CardumePosition) : fish.SizeCategoryName;
             GUI.Label(new Rect(tx, y + 24f, tw, UiSkin.SmallLine), FishCard.Fit(where ?? string.Empty, skin.SmallMuted, tw), skin.SmallMuted);
 
-            var half = (buttonsWidth - 10f) / 2f;
+            var half = (buttonsWidth - 8f) / 2f;
             if (skin.IconButton(new Rect(bx, y, half, 44f), Icons.Swap, GameTexts.Clan.ChangeFish, skin.Button))
             {
                 OpenPicker();
             }
 
-            if (GUI.Button(new Rect(bx + half + 10f, y, half, 44f), GameTexts.Clan.RemoveFish, skin.Button))
+            if (GUI.Button(new Rect(bx + half + 8f, y, half, 44f), GameTexts.Clan.RemoveFish, skin.Button))
             {
                 _root.ClearClanFish();
             }
@@ -398,14 +397,14 @@ namespace FishingIdle.Game.UI
 
         private void DrawMembers(UiSkin skin, Rect rect, ClanInfoView clan)
         {
-            skin.Inset(rect);
-            var x = rect.x + Pad;
-            var w = rect.width - Pad * 2f;
-            GUI.Label(new Rect(x, rect.y + 10f, w * 0.5f, 28f), GameTexts.Clan.Members + " · " + GameTexts.Clan.Counter(clan.MemberCount, clan.Capacity), skin.BodyBold);
+            var x = rect.x;
+            var w = rect.width;
+            // The count is already in the window's counter (A-190: no duplicate): "Membros" and the places on the right.
+            GUI.Label(new Rect(x, rect.y, w * 0.4f, 28f), GameTexts.Clan.Members, skin.Heading);
             var slots = GameTexts.Clan.SlotsLine(clan.BaseMembers, clan.ExtraSlots, clan.MaxMembers);
-            GUI.Label(new Rect(x + w * 0.5f, rect.y + 14f, w * 0.5f, UiSkin.SmallLine), FishCard.Fit(slots, skin.SmallMutedRightLine, w * 0.5f), skin.SmallMutedRightLine);
+            GUI.Label(new Rect(x + w * 0.4f, rect.y + 2f, w * 0.6f, UiSkin.SmallLine), FishCard.Fit(slots, skin.SmallMutedRightLine, w * 0.6f), skin.SmallMutedRightLine);
 
-            var list = new Rect(rect.x + 8f, rect.y + 44f, rect.width - 16f, rect.height - 52f);
+            var list = new Rect(rect.x, rect.y + 40f, rect.width, rect.height - 40f);
             var contentHeight = clan.Members.Count * MemberRow;
             var scrolls = contentHeight > list.height;
             var inner = list.width - (scrolls ? ScrollBar : 0f);
@@ -413,15 +412,15 @@ namespace FishingIdle.Game.UI
             for (var i = 0; i < clan.Members.Count; i++)
             {
                 var m = clan.Members[i];
-                var row = new Rect(0f, i * MemberRow, inner, MemberRow - 6f);
+                var row = new Rect(0f, i * MemberRow, inner, MemberRow - 8f);
                 GUI.Box(row, GUIContent.none, m.IsPlayer ? skin.CardSelected : skin.Card);
                 var nameWidth = row.width * 0.42f;
                 var name = m.Name + (m.IsPlayer ? " " + GameTexts.Clan.You : string.Empty);
-                GUI.Label(new Rect(row.x + 14f, row.y + 6f, nameWidth, 24f), FishCard.Fit(name, skin.BodyBold, nameWidth), skin.BodyBold);
+                GUI.Label(new Rect(row.x + 16f, row.y + 2f, nameWidth, 28f), FishCard.Fit(name, skin.BodyBold, nameWidth), skin.BodyBold);
                 var level = GameTexts.Clan.MemberLevel(m.FisherLevel) + (m.IsOwner ? " · " + GameTexts.Clan.Owner : string.Empty);
-                GUI.Label(new Rect(row.x + 14f, row.y + 28f, nameWidth, UiSkin.SmallLine), FishCard.Fit(level, m.IsOwner ? skin.SmallGoldLine : skin.SmallMuted, nameWidth), m.IsOwner ? skin.SmallGoldLine : skin.SmallMuted);
-                var fx = row.x + 14f + nameWidth + 12f;
-                var fw = row.xMax - fx - 14f;
+                GUI.Label(new Rect(row.x + 16f, row.y + 28f, nameWidth, UiSkin.SmallLine), FishCard.Fit(level, m.IsOwner ? skin.SmallGoldLine : skin.SmallMuted, nameWidth), m.IsOwner ? skin.SmallGoldLine : skin.SmallMuted);
+                var fx = row.x + 16f + nameWidth + 16f;
+                var fw = row.xMax - fx - 16f;
                 var fishText = m.HasFish ? GameTexts.Clan.MemberFish(m.FishSpeciesName, m.FishLevel, Format.Number(m.FishStrength)) : GameTexts.Clan.NoFish;
                 GUI.Label(new Rect(fx, row.y + 16f, fw, UiSkin.SmallLine), FishCard.Fit(fishText, m.HasFish ? skin.Small : skin.SmallMuted, fw), m.HasFish ? skin.Small : skin.SmallMuted);
             }
@@ -433,41 +432,45 @@ namespace FishingIdle.Game.UI
 
         private static void DrawRanking(UiSkin skin, Rect rect, ClanView view)
         {
-            skin.Inset(rect);
             var ranking = view.Ranking;
-            var x = rect.x + Pad;
-            var w = rect.width - Pad * 2f;
-            var y = rect.y + Pad;
-            skin.DrawIconExact(new Rect(x, y, 30f, 30f), Icons.Ranking, UiSkin.Gold);
-            GUI.Label(new Rect(x + 40f, y, w - 40f, 30f), FishCard.Fit(GameTexts.Clan.Ranking, skin.Heading, w - 40f), skin.Heading);
-            y += 38f;
+            var x = rect.x;
+            var w = rect.width;
+            var y = rect.y;
+            GUI.Label(new Rect(x, y, w, 28f), FishCard.Fit(GameTexts.Clan.Ranking, skin.Heading, w), skin.Heading);
+            y += 32f;
             if (ranking == null)
             {
                 return;
             }
 
             GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(GameTexts.Clan.RankingReset(Format.Countdown(ranking.SecondsToReset)), skin.SmallMuted, w), skin.SmallMuted);
-            y += 30f;
+            y += 24f;
 
-            GUI.Label(new Rect(x, y, w, 24f), FishCard.Fit(GameTexts.Clan.RewardsTitle, skin.BodyBold, w), skin.BodyBold);
-            y += 30f;
+            // The online notice right under the heading, one line of soft text (M25-T24), not a gold box.
+            if (!ranking.OnlineRewards)
+            {
+                skin.DrawIcon(new Rect(x, y + 2f, 20f, 20f), Icons.Lock, UiSkin.Muted);
+                GUI.Label(new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), FishCard.Fit(GameTexts.Clan.RewardsOffline, skin.SmallMuted, w - 28f), skin.SmallMuted);
+                y += 24f;
+            }
+
+            y += SectionGap;
+            GUI.Label(new Rect(x, y, w, 28f), FishCard.Fit(GameTexts.Clan.RewardsTitle, skin.Heading, w), skin.Heading);
+            y += 32f;
             foreach (var reward in ranking.Rewards)
             {
                 var row = new Rect(x, y, w, 64f);
                 GUI.Box(row, GUIContent.none, reward.Rank == 1 ? skin.CardImportant : skin.Card);
-                GUI.Label(new Rect(row.x + 12f, row.y + 14f, 48f, 32f), GameTexts.Clan.Rank(reward.Rank), reward.Rank == 1 ? skin.SmallGold : skin.SmallBold);
+                GUI.Label(new Rect(row.x + 16f, row.y + 20f, 48f, UiSkin.SmallLine), GameTexts.Clan.Rank(reward.Rank), reward.Rank == 1 ? skin.SmallGold : skin.SmallBold);
                 var items = WorldBossWindow.RewardItems(reward.Coins, reward.Shells, reward.ClothingFragments, reward.BoatFragments, reward.BoatName, reward.Dollars);
-                GUI.Label(new Rect(row.x + 64f, row.y + 6f, row.width - 76f, 52f), items, skin.Small);
+                GUI.Label(new Rect(row.x + 72f, row.y + 8f, row.width - 88f, 48f), items, skin.Small);
                 y += 72f;
             }
 
-            y += 6f;
+            y += Gap;
             if (!ranking.OnlineRewards)
             {
-                // Off in the local game (TD-055): only the player's clan exists here.
-                var note = new Rect(x, y, w, 52f);
-                skin.ArcFill(note, new Color(UiSkin.Gold.r, UiSkin.Gold.g, UiSkin.Gold.b, 0.12f), 10);
-                GUI.Label(new Rect(note.x + 12f, note.y + 6f, note.width - 24f, note.height - 12f), GameTexts.Clan.RewardsOffline, skin.SmallGold);
+                // Off in the local game (TD-055): only the player's clan exists here (the notice is under the heading).
                 return;
             }
 

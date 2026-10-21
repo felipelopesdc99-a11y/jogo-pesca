@@ -271,7 +271,9 @@ namespace FishingIdle.Game.UI
             // becomes icon-only, and if even that would touch the sort chips it goes to the next line.
             var multiLabel = new GUIContent(GameTexts.Aquarium.MultiSelect);
             var multiWidth = skin.Chip.CalcSize(multiLabel).x + 34;
-            var chipsEnd = area.x + 100;
+            // Measured (A-191): "Ordenar:" in Nunito 21, then 12 to the first chip.
+            var sortLabelWidth = skin.SmallMuted.CalcSize(new GUIContent(GameTexts.Aquarium.SortLabel)).x + 4f;
+            var chipsEnd = area.x + 24 + sortLabelWidth + 12;
             foreach (var sort in Sorts)
             {
                 chipsEnd += skin.Chip.CalcSize(new GUIContent(SortName(sort))).x + 8 + 8;
@@ -294,8 +296,8 @@ namespace FishingIdle.Game.UI
             // Sort chips
             var x = area.x;
             skin.DrawIcon(new Rect(x, area.y + 7, 18, 18), Icons.Sort, UiSkin.Muted);
-            GUI.Label(new Rect(x + 24, area.y + 7, 80, 24), GameTexts.Aquarium.SortLabel, skin.SmallMuted);
-            x += 100;
+            GUI.Label(new Rect(x + 24, area.y + 4, sortLabelWidth, UiSkin.SmallLine), GameTexts.Aquarium.SortLabel, skin.SmallMuted);
+            x += 24 + sortLabelWidth + 12;
             foreach (var sort in Sorts)
             {
                 var label = new GUIContent(SortName(sort));

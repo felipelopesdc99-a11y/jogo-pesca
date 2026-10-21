@@ -11,18 +11,19 @@ namespace FishingIdle.Game.UI
 {
     /// <summary>
     /// The "Bem-vindo de volta" report of offline fishing (GDD section 10 / START HERE M5), redone as a report in M24-T51
-    /// (A-175): a scene strip with the time away, big number cards (fish, sale value, XP with the levels, Conchas), the
-    /// catches by rarity, the highlights, the fragments with their progress and the useful warnings, on the ARC
-    /// panel. Every number comes from the service's <see cref="OfflineReport"/>; the screen only lays them out. What it
+    /// (A-175) and simplified in M25-T24 (A-191): the scene strip with the time away, a row of big numbers with their icon
+    /// (fish, sale value, XP, and the Conchas when some came), the catches by rarity, the highlights, then the fragments
+    /// and the warnings as plain lines, one primary button. No card around a number and no glow. Every number comes from the service's <see cref="OfflineReport"/>; the screen only lays them out. What it
     /// shows is built once per report; only the short count-up at the opening formats numbers frame by frame.
     /// </summary>
     public static class WelcomeBackDialog
     {
-        // Layout on the HUD's 1080-tall canvas (A-149): the frame is 920 wide (content 864) on every screen, ~1200×600 and
-        // ~1320×840 alike; only its height follows the report, up to the canvas less 120.
-        private const float MaxWidth = 920f, Gap = 12f, SectionGap = 18f, HeadingHeight = 28f;
-        private const float StatHeight = 100f, BestHeight = 184f, GearHeight = 68f, WarningHeight = 34f, FooterHeight = 52f;
-        private const float SceneHeight = 124f, RarityBar = 14f, LegendRow = 24f;
+        // Layout on the HUD's 1080-tall canvas (A-149, grid of 8 since A-190): the frame is 920 wide (content 864) on every
+        // screen, ~1200×600 and ~1320×840 alike; only its height follows the report, up to the canvas less 120. Four text
+        // sizes (A-191): the window title 40, the numbers 42, the body 24 (headings and the scene title in Bold) and 21.
+        private const float MaxWidth = 920f, Gap = 16f, SectionGap = 32f, HeadingHeight = 32f;
+        private const float StatHeight = 96f, BestHeight = 184f, GearHeight = 56f, WarningHeight = 40f, FooterHeight = 56f;
+        private const float SceneHeight = 120f, RarityBar = 16f, LegendRow = 24f;
 
         // Presentation only: the count-up at the opening, and from when the box counts as "almost full" for the warning.
         private const float CountUpSeconds = 0.9f, AlmostFullRatio = 0.9f;
@@ -48,7 +49,7 @@ namespace FishingIdle.Game.UI
         private sealed class Warning
         {
             public string Icon, Text;
-            public bool Strong, OpensBox;
+            public bool Strong;
             public float Fill = -1f;
         }
 
@@ -113,16 +114,27 @@ namespace FishingIdle.Game.UI
                 openBox = DrawBody(skin, report, area.x, area.y, area.width, sceneHeight, ease);
             }
 
+            // One primary button (A-190 rule 8): "Abrir a Caixa de Pesca" when fish wait in it, otherwise "Continuar". Both
+            // measured with their icon, so the label is never cut.
             var footer = WindowFrame.Footer(skin, content, FooterHeight);
-            var buttonY = footer.y + (footer.height - 44f) / 2f;
-            if (skin.IconButton(new Rect(footer.xMax - 200f, buttonY, 200f, 44f), Icons.Play, GameTexts.Offline.Continue, skin.ButtonPrimary))
+            var buttonY = footer.y + (footer.height - 48f) / 2f;
+            var hasBox = report.FishingBoxCount > 0;
+            var continueWidth = ButtonWidth(skin, GameTexts.Offline.Continue);
+            var right = footer.xMax;
+            if (hasBox)
             {
-                closed = true;
+                var boxWidth = ButtonWidth(skin, GameTexts.Offline.OpenBox);
+                if (skin.IconButton(new Rect(right - boxWidth, buttonY, boxWidth, 48f), Icons.Box, GameTexts.Offline.OpenBox, skin.ButtonPrimary))
+                {
+                    openBox = true;
+                }
+
+                right -= boxWidth + Gap;
             }
 
-            if (report.FishingBoxCount > 0 && skin.IconButton(new Rect(footer.xMax - 200f - Gap - 280f, buttonY, 280f, 44f), Icons.Box, GameTexts.Offline.OpenBox, skin.Button))
+            if (skin.IconButton(new Rect(right - continueWidth, buttonY, continueWidth, 48f), Icons.Play, GameTexts.Offline.Continue, hasBox ? skin.Button : skin.ButtonPrimary))
             {
-                openBox = true;
+                closed = true;
             }
 
             if (closed || openBox)
@@ -211,7 +223,6 @@ namespace FishingIdle.Game.UI
                     RarityName = c.RarityName,
                     SizeCategoryId = c.SizeCategoryId,
                     SizeCategoryName = c.SizeCategoryName,
-                    Bar = (float)c.SizePercentile,
                     Coins = Format.Short(c.SalePriceCoins),
                     Genes = c.Genes,
                 };
@@ -331,7 +342,6 @@ namespace FishingIdle.Game.UI
                     Icon = Icons.Box,
                     Text = report.FishingBoxFull ? GameTexts.Offline.BoxFull(count, capacity) : GameTexts.Offline.BoxAlmostFull(count, capacity),
                     Strong = true,
-                    OpensBox = true,
                     Fill = Mathf.Clamp01(report.FishingBoxCount / (float)cap),
                 });
             }
@@ -356,7 +366,7 @@ namespace FishingIdle.Game.UI
 
         private static float BodyHeight(UiSkin skin, float width, float sceneHeight)
         {
-            var h = sceneHeight + 12f;
+            var h = sceneHeight;
             if (Stats.Count > 0)
             {
                 h += SectionGap + StatHeight;
@@ -364,7 +374,7 @@ namespace FishingIdle.Game.UI
 
             if (Rarities.Count > 0)
             {
-                h += SectionGap + HeadingHeight + RarityBar + 10f + LegendRows(width) * LegendRow;
+                h += SectionGap + HeadingHeight + RarityBar + 8f + LegendRows(width) * LegendRow;
             }
 
             if (Best.Count > 0)
@@ -374,8 +384,7 @@ namespace FishingIdle.Game.UI
 
             if (Gears.Count > 0 || _clothingLevels != null)
             {
-                var rows = (Gears.Count + GearColumns(width) - 1) / GearColumns(width);
-                h += SectionGap + HeadingHeight + rows * (GearHeight + Gap) + (_clothingLevels != null ? 24f : 0f);
+                h += SectionGap + HeadingHeight + Gears.Count * GearHeight + (_clothingLevels != null ? LegendRow : 0f);
             }
 
             if (Warnings.Count > 0)
@@ -384,10 +393,8 @@ namespace FishingIdle.Game.UI
             }
 
             Measure.text = _note;
-            return h + SectionGap + skin.SmallMuted.CalcHeight(Measure, width) + 4f;
+            return h + SectionGap + skin.SmallMuted.CalcHeight(Measure, width) + 8f;
         }
-
-        private static int GearColumns(float width) => width >= 600f ? 2 : 1;
 
         /// <summary>The rows the rarity legend takes at this width (a dot, the name and the count per rarity).</summary>
         private static int LegendRows(float width)
@@ -403,7 +410,7 @@ namespace FishingIdle.Game.UI
                     x = 0f;
                 }
 
-                x += w + 18f;
+                x += w + 24f;
             }
 
             return rows;
@@ -416,8 +423,8 @@ namespace FishingIdle.Game.UI
         private static bool DrawBody(UiSkin skin, OfflineReport report, float x, float y, float w, float sceneHeight, float ease)
         {
             var openBox = false;
-            DrawScene(skin, new Rect(x + 6f, y + 6f, w - 12f, sceneHeight - 6f));
-            y += sceneHeight + 12f;
+            DrawScene(skin, new Rect(x, y, w, sceneHeight));
+            y += sceneHeight;
 
             if (Stats.Count > 0)
             {
@@ -458,18 +465,16 @@ namespace FishingIdle.Game.UI
                 y += SectionGap;
                 Heading(skin, x, y, w, GameTexts.Offline.Equipment, null);
                 y += HeadingHeight;
-                var columns = GearColumns(w);
-                var gw = (w - Gap * (columns - 1)) / columns;
-                for (var i = 0; i < Gears.Count; i++)
+                foreach (var gear in Gears)
                 {
-                    DrawGear(skin, new Rect(x + (i % columns) * (gw + Gap), y + (i / columns) * (GearHeight + Gap), gw, GearHeight), Gears[i], ease);
+                    DrawGear(skin, new Rect(x, y, w, GearHeight), gear, ease);
+                    y += GearHeight;
                 }
 
-                y += (Gears.Count + columns - 1) / columns * (GearHeight + Gap);
                 if (_clothingLevels != null)
                 {
-                    UiSkin.ColoredLabel(new Rect(x, y, w, 22f), FishCard.Fit(_clothingLevels, skin.SmallBold, w), skin.SmallBold, UiSkin.Gold);
-                    y += 24f;
+                    UiSkin.ColoredLabel(new Rect(x, y, w, UiSkin.SmallLine), FishCard.Fit(_clothingLevels, skin.SmallBold, w), skin.SmallBold, UiSkin.Gold);
+                    y += LegendRow;
                 }
             }
 
@@ -480,14 +485,14 @@ namespace FishingIdle.Game.UI
                 y += HeadingHeight;
                 foreach (var warning in Warnings)
                 {
-                    openBox |= DrawWarning(skin, new Rect(x, y, w, WarningHeight - 4f), warning);
+                    DrawWarning(skin, new Rect(x, y, w, WarningHeight), warning);
                     y += WarningHeight;
                 }
             }
 
             y += SectionGap;
             Measure.text = _note;
-            GUI.Label(new Rect(x, y, w, skin.SmallMuted.CalcHeight(Measure, w) + 4f), _note, skin.SmallMuted);
+            GUI.Label(new Rect(x, y, w, skin.SmallMuted.CalcHeight(Measure, w) + 8f), _note, skin.SmallMuted);
             return openBox;
         }
 
@@ -519,10 +524,11 @@ namespace FishingIdle.Game.UI
             }
 
             {
-                const float titleHeight = 40f;
-                var top = r.y + (r.height - titleHeight - 24f) / 2f;
-                UiSkin.ShadowLabel(new Rect(r.x + 22f, top, r.width - 44f, titleHeight), FishCard.Fit(_sceneTitle, skin.Title, r.width - 44f), skin.Title);
-                UiSkin.ShadowLabel(new Rect(r.x + 22f, top + titleHeight, r.width - 44f, 24f), FishCard.Fit(_sceneLine, skin.Small, r.width - 44f), skin.Small);
+                // The body size in Bold over the small line (A-191: no fifth text size on this screen).
+                const float titleHeight = 32f;
+                var top = r.y + (r.height - titleHeight - UiSkin.SmallLine) / 2f;
+                UiSkin.ShadowLabel(new Rect(r.x + 24f, top, r.width - 48f, titleHeight), FishCard.Fit(_sceneTitle, skin.Heading, r.width - 48f), skin.Heading);
+                UiSkin.ShadowLabel(new Rect(r.x + 24f, top + titleHeight, r.width - 48f, UiSkin.SmallLine), FishCard.Fit(_sceneLine, skin.Small, r.width - 48f), skin.Small);
             }
         }
 
@@ -558,18 +564,13 @@ namespace FishingIdle.Game.UI
             }
         }
 
-        /// <summary>A big number card: icon and label, the number (counting up at the opening) and a short line under it.</summary>
+        /// <summary>
+        /// A big number with its icon (A-190 rule 7), no card: the number counting up at the opening, its name under it in
+        /// the small text and the short line (new species, the levels) under that, gold when it is a level up.
+        /// </summary>
         private static void DrawStat(UiSkin skin, Rect r, Stat stat, float ease)
         {
-            if (stat.Highlight)
-            {
-                skin.DrawGlow(r, UiSkin.Gold, 0.35f + 0.08f * Mathf.Sin(Time.unscaledTime * 2.2f));
-            }
-
-            Card(skin, r, stat.Highlight ? UiSkin.Gold : UiSkin.FrameDark, stat.Highlight ? 2f : 1f);
-            var x = r.x + 14f;
-            var w = r.width - 28f;
-            var icon = new Rect(x, r.y + 12f, 24f, 24f);
+            var icon = new Rect(r.x, r.y + 12f, 32f, 32f);
             if (stat.Currency)
             {
                 skin.CurrencyIcon(icon, stat.Icon);
@@ -579,27 +580,21 @@ namespace FishingIdle.Game.UI
                 skin.DrawIcon(icon, stat.Icon, UiSkin.Accent);
             }
 
-            GUI.Label(new Rect(x + 30f, r.y + 12f, w - 30f, 24f), FishCard.Fit(stat.Label, skin.SmallMuted, w - 30f), skin.SmallMuted);
-
+            var x = icon.xMax + 8f;
+            var w = r.xMax - x;
             var text = ease >= 1f ? stat.Final : Format.Number((long)(stat.Value * (double)ease));
             if (Width(skin.NumberBig, stat.Final) > w)
             {
                 text = ease >= 1f ? stat.FinalShort : Format.Short((long)(stat.Value * (double)ease));
             }
 
-            GUI.Label(new Rect(x, r.y + 36f, w, 38f), text, skin.NumberBig);
+            GUI.Label(new Rect(x, r.y, w, 56f), text, skin.NumberBig);
+            GUI.Label(new Rect(x, r.y + 48f, w, UiSkin.SmallLine), FishCard.Fit(stat.Label, skin.SmallMuted, w), skin.SmallMuted);
             if (!string.IsNullOrEmpty(stat.Sub))
             {
                 var style = stat.Highlight ? skin.SmallBold : skin.SmallMuted;
                 var line = FishCard.Fit(stat.Sub, style, w);
-                if (stat.Highlight)
-                {
-                    UiSkin.ColoredLabel(new Rect(x, r.y + 74f, w, 22f), line, style, UiSkin.Gold);
-                }
-                else
-                {
-                    GUI.Label(new Rect(x, r.y + 74f, w, 22f), line, style);
-                }
+                UiSkin.ColoredLabel(new Rect(x, r.y + 72f, w, UiSkin.SmallLine), line, style, stat.Highlight ? UiSkin.Gold : UiSkin.Muted);
             }
         }
 
@@ -622,7 +617,7 @@ namespace FishingIdle.Game.UI
                 sx += sw + seam * ease;
             }
 
-            y += RarityBar + 10f;
+            y += RarityBar + 8f;
             var lx = x;
             foreach (var r in Rarities)
             {
@@ -633,123 +628,101 @@ namespace FishingIdle.Game.UI
                     y += LegendRow;
                 }
 
-                GUI.DrawTexture(new Rect(lx, y + 6f, 10f, 10f), skin.White, ScaleMode.StretchToFill, true, 0, r.Color, 0, 0f);
-                GUI.Label(new Rect(lx + 16f, y, r.NameWidth + 2f, 22f), r.Name, skin.SmallMuted);
-                GUI.Label(new Rect(lx + 16f + r.NameWidth + 6f, y, r.CountWidth + 2f, 22f), r.Count, skin.SmallBold);
-                lx += lw + 18f;
+                GUI.DrawTexture(new Rect(lx, y + 7f, 10f, 10f), skin.White, ScaleMode.StretchToFill, true, 0, r.Color, 0, 0f);
+                GUI.Label(new Rect(lx + 16f, y, r.NameWidth + 2f, UiSkin.SmallLine), r.Name, skin.SmallMuted);
+                GUI.Label(new Rect(lx + 16f + r.NameWidth + 6f, y, r.CountWidth + 2f, UiSkin.SmallLine), r.Count, skin.SmallBold);
+                lx += lw + 24f;
             }
 
             return y + LegendRow;
         }
 
-        /// <summary>A fragment card: the fragment's icon, what it is, how many came and the progress until it is assembled.</summary>
+        /// <summary>
+        /// A fragment line (M25-T24: a line, not a card): the fragment's icon, its name over what it is, the progress bar
+        /// with "12/25" and, on the right, how many came ("+3") in gold.
+        /// </summary>
         private static void DrawGear(UiSkin skin, Rect r, Gear gear, float ease)
         {
-            Card(skin, r, gear.Tag != null ? UiSkin.Gold : UiSkin.FrameDark, gear.Tag != null ? 2f : 1f);
-            var icon = new Rect(r.x + 10f, r.y + (r.height - 46f) / 2f, 46f, 46f);
-            skin.LineBox(icon, UiSkin.FieldColor, UiSkin.FrameDark, 1);
+            var icon = new Rect(r.x, r.y + (r.height - 40f) / 2f, 40f, 40f);
             var art = ArtAssets.Texture(gear.Art);
             if (art != null)
             {
-                PixelDraw.Fit(new Rect(icon.x + 3f, icon.y + 3f, icon.width - 6f, icon.height - 6f), art);
+                PixelDraw.Fit(icon, art);
             }
             else
             {
-                skin.DrawIcon(new Rect(icon.x + 10f, icon.y + 10f, 26f, 26f), gear.Icon, UiSkin.Accent);
+                skin.DrawIcon(new Rect(icon.x + 8f, icon.y + 8f, 24f, 24f), gear.Icon, UiSkin.Accent);
             }
 
-            var x = icon.xMax + 12f;
-            var w = r.xMax - 12f - x;
-
-            // Right column: what came (+N), or the "montado" tag.
             var gainedWidth = Width(skin.Heading, gear.Gained) + 4f;
-            UiSkin.ColoredLabel(new Rect(r.xMax - 12f - gainedWidth, r.y + 6f, gainedWidth, 26f), gear.Gained, skin.Heading, UiSkin.Gold);
-            GUI.Label(new Rect(x, r.y + 8f, w - gainedWidth - 8f, 22f), FishCard.Fit(gear.Name, skin.BodyBold, w - gainedWidth - 8f), skin.BodyBold);
+            UiSkin.ColoredLabel(new Rect(r.xMax - gainedWidth, r.y + (r.height - 28f) / 2f, gainedWidth, 28f), gear.Gained, skin.Heading, UiSkin.Gold);
 
-            var countWidth = 0f;
+            // The progress column: the bar and "12/25" (or the "Completo!" tag), 200 wide, left of the gain.
+            const float progressWidth = 200f;
+            var progressX = r.xMax - gainedWidth - Gap - progressWidth;
             if (gear.Tag != null)
             {
-                countWidth = Width(skin.Badge, gear.Tag) + 10f;
-                skin.Tag(new Rect(r.xMax - 12f - countWidth, r.y + 32f, countWidth, 20f), gear.Tag, UiSkin.Gold);
+                var tw = Width(skin.Badge, gear.Tag) + 12f;
+                skin.Tag(new Rect(progressX + progressWidth - tw, r.y + (r.height - 22f) / 2f, tw, 22f), gear.Tag, UiSkin.Gold);
             }
-            else if (gear.Count != null)
+            else if (gear.Fill >= 0f)
             {
-                countWidth = Width(skin.SmallMuted, gear.Count) + 4f;
-                GUI.Label(new Rect(r.xMax - 12f - countWidth, r.y + 30f, countWidth, 22f), gear.Count, skin.SmallMuted);
-            }
-
-            var kindWidth = w - countWidth - 8f;
-            var kind = FishCard.Fit(gear.Kind, skin.SmallMuted, kindWidth);
-            if (gear.KindGold)
-            {
-                UiSkin.ColoredLabel(new Rect(x, r.y + 30f, kindWidth, 22f), kind, skin.SmallBold, UiSkin.Gold);
-            }
-            else
-            {
-                GUI.Label(new Rect(x, r.y + 30f, kindWidth, 22f), kind, skin.SmallMuted);
-            }
-
-            if (gear.Fill >= 0f)
-            {
-                skin.Bar(new Rect(x, r.y + 54f, w, 7f), gear.Fill * ease, gear.Tag != null || gear.KindGold ? UiSkin.Gold : UiSkin.Accent);
-            }
-        }
-
-        /// <summary>A warning line: an icon and the text; the box's one has its fill bar and a button to open it.</summary>
-        private static bool DrawWarning(UiSkin skin, Rect r, Warning warning)
-        {
-            if (warning.Strong)
-            {
-                skin.LineBox(r, UiSkin.FieldColor, Color.clear, 1);
-            }
-
-            skin.DrawIcon(new Rect(r.x + 8f, r.y + (r.height - 20f) / 2f, 20f, 20f), warning.Icon, warning.Strong ? UiSkin.Gold : UiSkin.Muted);
-            var right = r.xMax - 8f;
-            var clicked = false;
-            if (warning.OpensBox)
-            {
-                var bw = Mathf.Max(120f, Width(skin.SmallBold, GameTexts.Offline.OpenBoxShort) + 28f);
-                clicked = GUI.Button(new Rect(right - bw, r.y + 2f, bw, r.height - 4f), GameTexts.Offline.OpenBoxShort, skin.Chip);
-                right -= bw + 12f;
-                if (warning.Fill >= 0f)
+                var countWidth = gear.Count != null ? Width(skin.SmallMuted, gear.Count) + 4f : 0f;
+                skin.Bar(new Rect(progressX, r.y + (r.height - 8f) / 2f, progressWidth - countWidth - 8f, 8f), gear.Fill * ease, gear.KindGold ? UiSkin.Gold : UiSkin.Accent);
+                if (gear.Count != null)
                 {
-                    skin.Bar(new Rect(right - 120f, r.y + (r.height - 8f) / 2f, 120f, 8f), warning.Fill, warning.Fill >= 1f ? UiSkin.Danger : UiSkin.Gold);
-                    right -= 132f;
+                    GUI.Label(new Rect(progressX + progressWidth - countWidth, r.y + (r.height - UiSkin.SmallLine) / 2f, countWidth, UiSkin.SmallLine), gear.Count, skin.SmallMuted);
                 }
             }
 
-            var x = r.x + 36f;
+            var x = icon.xMax + 16f;
+            var w = Mathf.Max(40f, progressX - 16f - x);
+            GUI.Label(new Rect(x, r.y + 2f, w, 28f), FishCard.Fit(gear.Name, skin.BodyBold, w), skin.BodyBold);
+            var kind = FishCard.Fit(gear.Kind, gear.KindGold ? skin.SmallBold : skin.SmallMuted, w);
+            UiSkin.ColoredLabel(new Rect(x, r.y + 30f, w, UiSkin.SmallLine), kind, gear.KindGold ? skin.SmallBold : skin.SmallMuted, gear.KindGold ? UiSkin.Gold : UiSkin.Muted);
+        }
+
+        /// <summary>
+        /// A warning line: an icon and the text, and the box's fill bar on the right. The Fishing Box opens from the footer
+        /// button (M25-T24: no second "Abrir" here).
+        /// </summary>
+        private static void DrawWarning(UiSkin skin, Rect r, Warning warning)
+        {
+            skin.DrawIcon(new Rect(r.x + 4f, r.y + (r.height - 24f) / 2f, 24f, 24f), warning.Icon, warning.Strong ? UiSkin.Gold : UiSkin.Muted);
+            var right = r.xMax;
+            if (warning.Fill >= 0f)
+            {
+                skin.Bar(new Rect(right - 160f, r.y + (r.height - 8f) / 2f, 160f, 8f), warning.Fill, warning.Fill >= 1f ? UiSkin.Danger : UiSkin.Gold);
+                right -= 160f + Gap;
+            }
+
+            var x = r.x + 40f;
             var style = warning.Strong ? skin.SmallBold : skin.SmallMuted;
-            GUI.Label(new Rect(x, r.y + (r.height - 22f) / 2f, right - x, 22f), FishCard.Fit(warning.Text, style, right - x), style);
-            return clicked;
+            GUI.Label(new Rect(x, r.y + (r.height - UiSkin.SmallLine) / 2f, right - x, UiSkin.SmallLine), FishCard.Fit(warning.Text, style, right - x), style);
         }
 
         private static void Heading(UiSkin skin, float x, float y, float w, string title, string note)
         {
             var tw = Width(skin.Heading, title) + 4f;
-            GUI.Label(new Rect(x, y, tw, 24f), title, skin.Heading);
+            GUI.Label(new Rect(x, y, tw, 28f), title, skin.Heading);
             if (!string.IsNullOrEmpty(note))
             {
-                UiSkin.ColoredLabel(new Rect(x + tw + 12f, y + 2f, w - tw - 12f, 22f), FishCard.Fit(note, skin.SmallBold, w - tw - 12f), skin.SmallBold, UiSkin.Gold);
+                UiSkin.ColoredLabel(new Rect(x + tw + 16f, y + 2f, w - tw - 16f, UiSkin.SmallLine), FishCard.Fit(note, skin.SmallBold, w - tw - 16f), skin.SmallBold, UiSkin.Gold);
             }
         }
 
         // ------------------------------------------------------------------ helpers
 
-        /// <summary>
-        /// An ARC card (A-184): the card colour with a one-pixel line in <paramref name="border"/> and the card's inner dark
-        /// line; a <paramref name="borderWidth"/> of 2 or more (a highlight) adds a second line in the same colour.
-        /// </summary>
-        private static void Card(UiSkin skin, Rect r, Color border, float borderWidth)
-        {
-            var inner = borderWidth >= 2f ? border : VisualTheme.Current.CardLine;
-            skin.Shape(r, 1, false, UiSkin.CardColor, 2, border, inner, Color.clear);
-        }
-
         /// <summary>A fill in the ARC skin: a pixel shape in place of the old rounded rect (UiSkin.ArcFill, A-188).</summary>
         private static void Fill(UiSkin skin, Rect rect, Color color, float radius)
         {
             skin.ArcFill(rect, color, radius);
+        }
+
+        /// <summary>A footer button's width: the icon, the label in the button font and the padding (IconButton's layout).</summary>
+        private static float ButtonWidth(UiSkin skin, string label)
+        {
+            return Mathf.Ceil(16f + 22f + 8f + Width(skin.Button, label) - skin.Button.padding.horizontal + 24f);
         }
 
         private static float Width(GUIStyle style, string text)

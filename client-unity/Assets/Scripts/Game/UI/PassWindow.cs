@@ -10,7 +10,8 @@ namespace FishingIdle.Game.UI
     /// <summary>
     /// The "Passe do Pescador" window (M24-T17, addendum A-158): the player's level and the next milestone, the premium
     /// (buy with Dólares, or "Premium ativo"), "Resgatar tudo", and a horizontal track of milestones with two rows, Grátis
-    /// and Premium. Each cell shows its reward and Resgatar / Resgatado / the padlock / the level it needs.
+    /// and Premium. Each cell shows its reward as icon + number and one state: the Resgatar button, a faint check once
+    /// claimed, a small padlock while the Premium is not bought (M25-T24, A-191).
     /// </summary>
     /// <remarks>
     /// Shows what the pass service returns; nothing here decides a reward or whether it can be claimed. Only the columns
@@ -20,7 +21,8 @@ namespace FishingIdle.Game.UI
     /// </remarks>
     public sealed class PassWindow
     {
-        private const float SummaryHeight = 104f, Gap = 12f, LabelColumn = 118f, Column = 168f, ColumnGap = 10f, HeaderHeight = 44f;
+        // Grid of 8 (A-190): 16 between the columns and the rows, the cells 168 wide.
+        private const float SummaryHeight = 104f, Gap = 16f, LabelColumn = 128f, Column = 168f, ColumnGap = 16f, HeaderHeight = 40f;
         private const float RefreshSeconds = 0.5f, WheelStep = 48f;
 
         /// <summary>The fragment icon of each boat (Resources/ArtePixel/Fragmentos/frag_&lt;boat id&gt;). Missing = the boat icon.</summary>
@@ -94,7 +96,7 @@ namespace FishingIdle.Game.UI
 
             var banner = ArtAssets.Texture(BannerArt);
             var summaryHeight = banner != null ? SummaryArtHeight : SummaryHeight;
-            var gap = banner != null ? Gap + 6f : Gap;
+            var gap = banner != null ? Gap + 8f : Gap;
             DrawSummary(skin, new Rect(area.x, area.y, area.width, summaryHeight), view, banner != null);
             DrawTrack(skin, new Rect(area.x, area.y + summaryHeight + gap, area.width, area.height - summaryHeight - gap), view);
         }
@@ -149,18 +151,21 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(x, rect.y + 46f, leftWidth, UiSkin.SmallLine), GameTexts.Pass.AllReached, skin.SmallGoldLine);
             }
 
-            // The premium: buy it, or the gold pill once bought.
-            var premium = new Rect(rect.x + leftWidth + 20f, rect.y + 14f, rect.width * 0.32f, 44f);
+            // The premium: buy it, or the gold pill once bought. The button is as wide as its label (A-191, measured).
+            var buyLabel = GameTexts.Pass.BuyPremium(Format.Number(view.PremiumPriceDollars));
+            var buyWidth = Mathf.Min(rect.width * 0.36f, Mathf.Ceil(70f + skin.Button.CalcSize(new GUIContent(buyLabel)).x - skin.Button.padding.horizontal));
+            var premium = new Rect(rect.x + leftWidth + 32f, rect.y + 16f, buyWidth, 48f);
             if (view.Premium)
             {
-                skin.AccentPill(new Rect(premium.x, premium.y + 6f, premium.width, 32f), GameTexts.Pass.PremiumActive, UiSkin.Gold, Icons.Star);
+                var activeWidth = skin.PillWidth(GameTexts.Pass.PremiumActive, true) + 8f;
+                skin.AccentPill(new Rect(premium.x, premium.y + 8f, activeWidth, 32f), GameTexts.Pass.PremiumActive, UiSkin.Gold, Icons.Star);
             }
             else
             {
                 var affordable = view.BuyPremiumBlocker == ServiceError.None;
                 var enabled = GUI.enabled;
                 GUI.enabled = enabled && affordable;
-                if (skin.IconButton(premium, Icons.Dollar, GameTexts.Pass.BuyPremium(Format.Number(view.PremiumPriceDollars)), affordable ? skin.ButtonPrimary : skin.Button))
+                if (skin.IconButton(premium, Icons.Dollar, buyLabel, affordable ? skin.ButtonPrimary : skin.Button))
                 {
                     _root.BuyPassPremium();
                     Refresh();
@@ -171,12 +176,14 @@ namespace FishingIdle.Game.UI
                 GUI.Label(new Rect(premium.x, premium.yMax + 8f, premium.width, UiSkin.SmallLine), FishCard.Fit(GameTexts.Pass.YourDollars(Format.Number(view.Dollars)), style, premium.width), style);
             }
 
-            // Claim everything that is ready.
-            var all = new Rect(rect.xMax - 20f - 250f, rect.y + 14f, 250f, 44f);
+            // Claim everything that is ready (measured, the longer of its two labels).
             var ready = view.ClaimableCount > 0;
+            var allLabel = ready ? GameTexts.Pass.ClaimAllCount(view.ClaimableCount) : GameTexts.Pass.NothingToClaim;
+            var allWidth = Mathf.Ceil(70f + skin.Button.CalcSize(new GUIContent(allLabel)).x - skin.Button.padding.horizontal);
+            var all = new Rect(rect.xMax - 24f - allWidth, rect.y + 16f, allWidth, 48f);
             var was = GUI.enabled;
             GUI.enabled = was && ready;
-            if (skin.IconButton(all, Icons.Check, ready ? GameTexts.Pass.ClaimAllCount(view.ClaimableCount) : GameTexts.Pass.NothingToClaim, ready ? skin.ButtonPrimary : skin.Button))
+            if (skin.IconButton(all, Icons.Check, allLabel, ready ? skin.ButtonReward : skin.Button))
             {
                 _root.ClaimAllPass();
                 Refresh();
@@ -192,11 +199,11 @@ namespace FishingIdle.Game.UI
         {
             var count = view.Milestones.Count;
             var rowsTop = rect.y + HeaderHeight + 8f;
-            var rowHeight = (rect.yMax - 20f - rowsTop - Gap) / 2f;
+            var rowHeight = (rect.yMax - 24f - rowsTop - Gap) / 2f;
 
             // Row labels: Grátis, Premium (with the padlock until it is bought).
-            var freeLabel = new Rect(rect.x, rowsTop, LabelColumn - 10f, rowHeight);
-            var premiumLabel = new Rect(rect.x, rowsTop + rowHeight + Gap, LabelColumn - 10f, rowHeight);
+            var freeLabel = new Rect(rect.x, rowsTop, LabelColumn - Gap, rowHeight);
+            var premiumLabel = new Rect(rect.x, rowsTop + rowHeight + Gap, LabelColumn - Gap, rowHeight);
             RowLabel(skin, freeLabel, GameTexts.Pass.Free, null, UiSkin.Accent);
             if (!PremiumSeal(skin, premiumLabel, view.Premium))
             {
@@ -230,7 +237,7 @@ namespace FishingIdle.Game.UI
                 Event.current.Use();
             }
 
-            _scroll = GUI.BeginScrollView(track, _scroll, new Rect(0f, 0f, contentWidth, track.height - 20f), true, false);
+            _scroll = GUI.BeginScrollView(track, _scroll, new Rect(0f, 0f, contentWidth, track.height - 24f), true, false);
             var first = Mathf.Max(0, Mathf.FloorToInt(_scroll.x / (Column + ColumnGap)) - 1);
             var last = Mathf.Min(count - 1, Mathf.CeilToInt((_scroll.x + track.width) / (Column + ColumnGap)) + 1);
             for (var i = first; i <= last; i++)
@@ -292,17 +299,17 @@ namespace FishingIdle.Game.UI
         /// <summary>"Nv.40" over the column: gold when reached, outlined in turquoise when it is the next one.</summary>
         private static void Header(UiSkin skin, Rect rect, PassMilestoneView m, bool isNext)
         {
-            var pill = new Rect(rect.x + 20f, rect.y + 6f, rect.width - 40f, rect.height - 12f);
-            if (isNext)
-            {
-                skin.DrawGlow(pill, UiSkin.Accent, 0.35f);
-            }
-
+            // No glow on the next one (A-190 rule 12: light is for rewards): its turquoise pill is enough.
+            var pill = new Rect(rect.x + 24f, rect.y + 4f, rect.width - 48f, rect.height - 8f);
             var color = m.Reached ? UiSkin.Gold : isNext ? UiSkin.Accent : UiSkin.Muted;
             skin.AccentPill(pill, GameTexts.Pass.MilestoneLevel(m.Level), color);
         }
 
-        /// <summary>One reward: its lines, then Resgatar / Resgatado / the padlock / the level it needs.</summary>
+        /// <summary>
+        /// One reward: its lines as icon + number (M25-T24), then one state at the bottom: the Resgatar button, a faint check
+        /// once claimed, a small padlock while the Premium is not bought; nothing while the milestone is ahead (the
+        /// column's "Nv.40" says it).
+        /// </summary>
         private void Cell(UiSkin skin, Rect rect, PassMilestoneView m, PassRewardView reward, PassTrack track)
         {
             GUI.Box(rect, GUIContent.none, skin.Card);
@@ -318,14 +325,14 @@ namespace FishingIdle.Game.UI
                 GUI.color = previous * new Color(1f, 1f, 1f, reward.Claimed ? 0.55f : 0.75f);
             }
 
-            var x = rect.x + 12f;
-            var w = rect.width - 24f;
+            var x = rect.x + 16f;
+            var w = rect.width - 32f;
             var y = rect.y + 12f;
 
             // Up to six lines (M24-T32/T33 added rod and clothing fragments): they get closer when the cell is short.
             var lines = (reward.Coins > 0 ? 1 : 0) + (reward.Shells > 0 ? 1 : 0) + (reward.Dollars > 0 ? 1 : 0) + (reward.Fragments > 0 ? 1 : 0)
                 + (reward.RodFragments > 0 ? 1 : 0) + (reward.ClothingFragments > 0 ? 1 : 0);
-            var step = Mathf.Clamp((rect.height - 70f) / Mathf.Max(1, lines), 22f, 26f);
+            var step = Mathf.Clamp((rect.height - 76f) / Mathf.Max(1, lines), 24f, 32f);
             if (reward.IsEmpty)
             {
                 GUI.Label(new Rect(x, y, w, UiSkin.SmallLine), GameTexts.Pass.Empty, skin.SmallMuted);
@@ -333,100 +340,90 @@ namespace FishingIdle.Game.UI
 
             if (reward.Coins > 0)
             {
-                skin.CoinIcon(new Rect(x, y, 20f, 20f));
-                GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), FishCard.Fit(Format.Short(reward.Coins), skin.SmallGoldLine, w - 26f), skin.SmallGoldLine);
+                skin.CoinIcon(new Rect(x, y + 2f, 20f, 20f));
+                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Short(reward.Coins), null, skin.SmallGoldLine);
                 y += step;
             }
 
             if (reward.Shells > 0)
             {
-                skin.CurrencyIcon(new Rect(x, y, 20f, 20f), Icons.Shell);
-                GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), Format.Number(reward.Shells), skin.Small);
+                skin.CurrencyIcon(new Rect(x, y + 2f, 20f, 20f), Icons.Shell);
+                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.Shells), null, skin.SmallBold);
                 y += step;
             }
 
             if (reward.Dollars > 0)
             {
-                skin.CurrencyIcon(new Rect(x, y, 20f, 20f), Icons.Dollar);
-                var text = GameTexts.Pass.DollarsLine(Format.Number(reward.Dollars)) + (reward.DollarsAlreadyPaid ? " · " + GameTexts.Pass.DollarsPaid : string.Empty);
-                var style = reward.DollarsAlreadyPaid ? skin.SmallMuted : skin.Small;
-                GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), FishCard.Fit(text, style, w - 26f), style);
+                skin.CurrencyIcon(new Rect(x, y + 2f, 20f, 20f), Icons.Dollar);
+                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.Dollars), reward.DollarsAlreadyPaid ? GameTexts.Pass.DollarsPaid : null,
+                    reward.DollarsAlreadyPaid ? skin.SmallMuted : skin.SmallBold);
                 y += step;
             }
 
             if (reward.Fragments > 0)
             {
                 // frag_boat_NN (art delivered 13/10/2026); the boat icon if the file is missing.
-                var art = ArtAssets.Texture(FragmentFolder + reward.BoatId);
-                if (art != null)
-                {
-                    PixelDraw.Fit(new Rect(x, y, 20f, 20f), art);
-                }
-                else
-                {
-                    skin.DrawIcon(new Rect(x, y, 20f, 20f), Icons.Boat, UiSkin.Accent);
-                }
-
-                var text = GameTexts.Pass.Fragments(Format.Number(reward.Fragments), reward.BoatName);
-                GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), FishCard.Fit(text, skin.Small, w - 26f), skin.Small);
+                FragmentIcon(skin, new Rect(x, y + 2f, 20f, 20f), FragmentFolder + reward.BoatId, Icons.Boat);
+                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.Fragments), reward.BoatName, skin.SmallBold);
                 y += step;
             }
 
             if (reward.RodFragments > 0)
             {
                 // frag_rod_NN (art delivered 13/10/2026); the rod icon if the file is missing.
-                var art = ArtAssets.Texture(FragmentFolder + reward.RodId);
-                if (art != null)
-                {
-                    PixelDraw.Fit(new Rect(x, y, 20f, 20f), art);
-                }
-                else
-                {
-                    skin.DrawIcon(new Rect(x, y, 20f, 20f), Icons.Rod, UiSkin.Accent);
-                }
-
-                var text = GameTexts.Pass.RodFragments(Format.Number(reward.RodFragments), reward.RodName);
-                GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), FishCard.Fit(text, skin.Small, w - 26f), skin.Small);
+                FragmentIcon(skin, new Rect(x, y + 2f, 20f, 20f), FragmentFolder + reward.RodId, Icons.Rod);
+                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.RodFragments), reward.RodName, skin.SmallBold);
                 y += step;
             }
 
             if (reward.ClothingFragments > 0)
             {
                 // frag_roupa (art delivered 13/10/2026); the star icon if the file is missing.
-                var art = ArtAssets.Texture(ClothingFragmentArt);
-                if (art != null)
-                {
-                    PixelDraw.Fit(new Rect(x, y, 20f, 20f), art);
-                }
-                else
-                {
-                    skin.DrawIcon(new Rect(x, y, 20f, 20f), Icons.Star, UiSkin.Accent);
-                }
-
-                var text = GameTexts.Pass.ClothingFragments(Format.Number(reward.ClothingFragments));
-                GUI.Label(new Rect(x + 26f, y, w - 26f, UiSkin.SmallLine), FishCard.Fit(text, skin.Small, w - 26f), skin.Small);
+                FragmentIcon(skin, new Rect(x, y + 2f, 20f, 20f), ClothingFragmentArt, Icons.Star);
+                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.ClothingFragments), GameTexts.Pass.ClothingShort, skin.SmallBold);
             }
 
             GUI.color = previous;
 
-            // The bottom of the cell.
-            var bottom = new Rect(rect.x + 10f, rect.yMax - 46f, rect.width - 20f, 36f);
+            // The bottom of the cell: one state.
+            var bottom = new Rect(rect.x + 8f, rect.yMax - 56f, rect.width - 16f, 48f);
             if (reward.Claimed)
             {
-                skin.AccentPill(bottom, GameTexts.Pass.Claimed, UiSkin.Muted, Icons.Check);
+                skin.DrawIcon(new Rect(bottom.center.x - 12f, bottom.center.y - 12f, 24f, 24f), Icons.Check, new Color(UiSkin.Muted.r, UiSkin.Muted.g, UiSkin.Muted.b, 0.7f));
             }
             else if (reward.Locked)
             {
-                skin.AccentPill(bottom, GameTexts.Pass.Locked, UiSkin.Gold, Icons.Lock);
+                skin.DrawIcon(new Rect(bottom.center.x - 10f, bottom.center.y - 10f, 20f, 20f), Icons.Lock, UiSkin.Gold);
             }
-            else if (!m.Reached)
-            {
-                GUI.Label(bottom, GameTexts.Pass.MilestoneLevel(m.Level), skin.SmallMutedCenter);
-            }
-            else if (skin.IconButton(bottom, Icons.Check, GameTexts.Pass.Claim, track == PassTrack.Premium ? skin.ButtonReward : skin.ButtonPrimary))
+            else if (m.Reached && skin.IconButton(bottom, Icons.Check, GameTexts.Pass.Claim, track == PassTrack.Premium ? skin.ButtonReward : skin.ButtonPrimary))
             {
                 _root.ClaimPass(m.Level, track);
                 Refresh();
+            }
+        }
+
+        /// <summary>A number in <paramref name="style"/>, then an optional name in the soft small text, cut with "…" if needed.</summary>
+        private static void Amount(UiSkin skin, Rect rect, string number, string name, GUIStyle style)
+        {
+            var nw = Mathf.Min(rect.width, style.CalcSize(new GUIContent(number)).x + 2f);
+            GUI.Label(new Rect(rect.x, rect.y, nw, rect.height), number, style);
+            if (!string.IsNullOrEmpty(name) && rect.width - nw - 8f > 24f)
+            {
+                var rest = rect.width - nw - 8f;
+                GUI.Label(new Rect(rect.x + nw + 8f, rect.y, rest, rect.height), FishCard.Fit(name, skin.SmallMuted, rest), skin.SmallMuted);
+            }
+        }
+
+        private static void FragmentIcon(UiSkin skin, Rect rect, string art, string fallback)
+        {
+            var texture = ArtAssets.Texture(art);
+            if (texture != null)
+            {
+                PixelDraw.Fit(rect, texture);
+            }
+            else
+            {
+                skin.DrawIcon(rect, fallback, UiSkin.Accent);
             }
         }
     }

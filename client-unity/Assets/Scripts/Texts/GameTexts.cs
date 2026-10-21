@@ -302,7 +302,6 @@ namespace FishingIdle.Texts
             public const string Title = "Bem-vindo de volta!";
             public const string Continue = "Continuar";
             public const string OpenBox = "Abrir a Caixa de Pesca";
-            public const string OpenBoxShort = "Abrir a Caixa";
             public static string Note(string cycle, string cap) => "Enquanto o jogo fica fechado, o pescador continua: 1 tentativa a cada " + cycle + ", por até " + cap + ", com a mesma chance de puxar. Os peixes esperam na Caixa de Pesca.";
             public static string NoteWithVip(string vipCycle, string cycle, string cap) => "Enquanto o jogo fica fechado, o pescador continua: 1 tentativa a cada " + vipCycle + " com o VIP (" + cycle + " sem ele), por até " + cap + ", com a mesma chance de puxar. Os peixes esperam na Caixa de Pesca.";
             public static string Hours(double hours) => hours == 1 ? "1 hora" : Format.Decimal(hours, 0) + " horas";
@@ -340,8 +339,8 @@ namespace FishingIdle.Texts
             public const string ClothingAllAssembled = "Todas as roupas montadas";
             public static string Extras(string amount) => "Já é seu · " + amount + " de sobra";
             // Fragments completed while away (M24-T58, A-180): nothing assembles by itself, the player presses "Montar".
-            public const string BoatReadyTag = "COMPLETO!";
-            public const string RodReadyTag = "COMPLETA!";
+            public const string BoatReadyTag = "Completo!";
+            public const string RodReadyTag = "Completa!";
             public const string BoatReadyKind = "Pronto para montar na Loja";
             public const string RodReadyKind = "Pronta para montar na Loja";
             public static string ClothingLevels(string pieces) => "Roupas subiram de nível: " + pieces;
@@ -826,11 +825,9 @@ namespace FishingIdle.Texts
             public const string PremiumRow = "Premium";
             public const string PremiumActive = "Premium ativo";
             public const string Claim = "Resgatar";
-            public const string Claimed = "Resgatado";
             public const string ClaimAll = "Resgatar tudo";
             public const string NothingToClaim = "Nada para resgatar";
             public const string AllReached = "Todos os marcos alcançados";
-            public const string Locked = "Premium";
             public const string Empty = "—";
             public const string DollarsPaid = "já recebidos";
             public static string Info(int every, string price) =>
@@ -846,8 +843,9 @@ namespace FishingIdle.Texts
             public static string YourDollars(string dollars) => "Você tem " + dollars + " Dólares";
             public static string ClaimAllCount(int count) => "Resgatar tudo (" + count + ")";
             public static string Fragments(string amount, string boat) => amount + " frag. · " + boat;
-            public static string RodFragments(string amount, string rod) => amount + " frag. · " + rod;
             public static string ClothingFragments(string amount) => amount + " frag. de Roupa";
+            /// <summary>The name after the clothing fragments' number in a Passe cell (M25-T24: icon + number + name).</summary>
+            public const string ClothingShort = "Roupa";
             public static string DollarsLine(string amount) => amount + " Dólares";
             public const string BoughtPremium = "Premium do Passe comprado! As recompensas Premium dos marcos que você já passou estão prontas para resgatar.";
             public static string ClaimedToast(int count) => count == 1 ? "Passe: 1 recompensa resgatada." : "Passe: " + count + " recompensas resgatadas.";
@@ -1220,7 +1218,7 @@ namespace FishingIdle.Texts
             public static string RankingReset(string countdown) => "Fecha todo dia às 00:00 (Brasília) · faltam " + countdown;
             public const string RewardsTitle = "Prêmios do top 3 (cada membro recebe)";
             public static string Rank(int rank) => rank + "º";
-            public const string RewardsOffline = "O ranking entre clãs e os prêmios ligam quando o jogo estiver online.";
+            public const string RewardsOffline = "Ranking e prêmios ligam com o jogo online.";
             public const string RankingEmpty = "Nenhum clã com peixe no Cardume ainda.";
             public static string RankLine(int rank, string name, string strength, int members) => rank + "º  " + name + " · Força " + strength + " · " + members + " membros";
             public static string LastResult(string date, int rank, string items) => "Último prêmio (" + date + "): " + rank + "º lugar · " + items;
