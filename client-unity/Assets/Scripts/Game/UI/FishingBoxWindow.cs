@@ -302,12 +302,24 @@ namespace FishingIdle.Game.UI
 
             // Recomputed only when the selection or the box changes, not on every GUI event.
             var preview = _preview ?? (_preview = _root.PreviewSale(_selected.ToList()));
-            var info = preview.Count == 0 ? GameTexts.Box.NothingSelected : GameTexts.Box.Selected(preview.Count, Format.Short(preview.TotalCoins));
-            // The status gets the room actually free between the selection button and "Guardar no Aquário".
+            // The status gets the room actually free between the selection button and "Guardar no Aquário": how many are
+            // selected, then the sale value as icon + number (A-190 rule 7; the word "Moedas" no longer cut).
             var keepX = panel.xMax - 28 - SellWidth - 16 - KeepWidth;
             var infoX = x + SelectWidth + 16;
             var infoWidth = Mathf.Max(0f, keepX - 16 - infoX);
-            GUI.Label(new Rect(infoX, y + 8, infoWidth, 24), FishCard.Fit(info, skin.Body, infoWidth), skin.Body);
+            if (preview.Count == 0)
+            {
+                GUI.Label(new Rect(infoX, y + 6, infoWidth, 28), FishCard.Fit(GameTexts.Box.NothingSelected, skin.Body, infoWidth), skin.Body);
+            }
+            else
+            {
+                var coins = Format.Short(preview.TotalCoins);
+                var coinsWidth = skin.CoinAmountWidth(coins, 24f, skin.Number);
+                var countText = GameTexts.Box.SelectedShort(preview.Count);
+                var countWidth = Mathf.Min(Mathf.Max(0f, infoWidth - coinsWidth - 16f), skin.Body.CalcSize(new GUIContent(countText)).x + 4f);
+                GUI.Label(new Rect(infoX, y + 6, countWidth, 28), FishCard.Fit(countText, skin.Body, countWidth), skin.Body);
+                skin.CoinAmount(new Rect(infoX + countWidth + 16f, y + 8, coinsWidth, 24), coins, skin.Number);
+            }
 
             GUI.enabled = GUI.enabled && preview.Count > 0;
             if (skin.IconButton(new Rect(keepX, y, KeepWidth, 40), Icons.Aquarium, GameTexts.Aquarium.KeepSelected, skin.Button))

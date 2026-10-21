@@ -146,7 +146,8 @@ namespace FishingIdle.Texts
             public const string FullTiny = "Cheia";
             public static string LimitNote(int capacity) => "A Caixa guarda até " + Format.Number(capacity) + " peixes. Cheia, a pesca para até você vender ou guardar algum.";
             public static string SkippedFull(long attempts) => "A Caixa encheu: " + Format.Number(attempts) + (attempts == 1 ? " tentativa ficou" : " tentativas ficaram") + " sem pescar.";
-            public static string Selected(int count, string coins) => (count == 1 ? "1 selecionado" : Format.Number(count) + " selecionados") + " · " + coins + " Moedas";
+            /// <summary>How many fish are selected; the sale value goes beside it as coin + number (M25-T24).</summary>
+            public static string SelectedShort(int count) => count == 1 ? "1 selecionado" : Format.Number(count) + " selecionados";
             public static string Sold(int count, string coins) => (count == 1 ? "1 peixe vendido" : Format.Number(count) + " peixes vendidos") + " por " + coins + " Moedas.";
         }
 
@@ -552,6 +553,8 @@ namespace FishingIdle.Texts
             public const string Reference = "Referência do mercado simulado";
             public const string YourPrice = "Seu preço (Moedas)";
             public const string YouReceive = "Você recebe se vender";
+            /// <summary>The net of a listing in the Meus anúncios row (M25-T24): "Você recebe 3.705".</summary>
+            public static string NetShort(string net) => "Você recebe " + net;
             public const string ListingNote = "Sem taxa para anunciar. O preço é livre. Enquanto estiver anunciado, o item não pode ser usado.";
 
             public const string NoListings = "Você não tem anúncios ativos.";
@@ -844,8 +847,6 @@ namespace FishingIdle.Texts
             public static string ClaimAllCount(int count) => "Resgatar tudo (" + count + ")";
             public static string Fragments(string amount, string boat) => amount + " frag. · " + boat;
             public static string ClothingFragments(string amount) => amount + " frag. de Roupa";
-            /// <summary>The name after the clothing fragments' number in a Passe cell (M25-T24: icon + number + name).</summary>
-            public const string ClothingShort = "Roupa";
             public static string DollarsLine(string amount) => amount + " Dólares";
             public const string BoughtPremium = "Premium do Passe comprado! As recompensas Premium dos marcos que você já passou estão prontas para resgatar.";
             public static string ClaimedToast(int count) => count == 1 ? "Passe: 1 recompensa resgatada." : "Passe: " + count + " recompensas resgatadas.";
@@ -1180,7 +1181,7 @@ namespace FishingIdle.Texts
 
             // The clan
             public static string OwnerLine(string owner) => "Dono: " + owner;
-            public static string BonusActive(string bonus) => "Bônus do clã: +" + bonus + " de XP de Pescador";
+            public static string BonusActive(string bonus) => "Bônus: +" + bonus + " de XP";
             public const string Members = "Membros";
             public const string Owner = "Dono";
             public const string You = "(você)";
@@ -1190,7 +1191,7 @@ namespace FishingIdle.Texts
             public static string SlotsLine(int baseMembers, int extra, int max) => baseMembers + " vagas + " + extra + " compradas (máximo " + max + ")";
             public static string BuySlot(string price) => "Comprar vaga · " + price + " Dólares";
             /// <summary>The same button when the long one does not fit (the "+" icon already says "comprar").</summary>
-            public static string BuySlotShort(string price) => "Vaga · " + price + " Dólares";
+            public static string BuySlotShort(string price) => "Vaga · " + price;
             public const string SlotsMaxed = "O clã já tem o máximo de vagas.";
             public const string OnlyOwnerBuys = "Só o dono compra vagas.";
             public const string Leave = "Sair do clã";
@@ -1275,7 +1276,7 @@ namespace FishingIdle.Texts
             public static string FragmentsLine(string have, string required) => "Fragmentos " + have + "/" + required;
 
             /// <summary>Where the fragments of a boat, a rod or the Fragmento de Roupa drop: every map (M24-T47, A-173).</summary>
-            public const string FragmentsEverywhere = "Caem em todos os mapas";
+            public const string FragmentsEverywhere = "Todos os mapas";
 
             /// <summary>The short chance line of the Loja sheet (A-190): "0,8% por peixe".</summary>
             public static string FragmentsChanceShort(string percent) => percent + " por peixe";

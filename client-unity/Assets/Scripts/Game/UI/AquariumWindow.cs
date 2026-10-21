@@ -31,8 +31,9 @@ namespace FishingIdle.Game.UI
         private const int MaxSwimming = 24;
         private const float MinSwimHeight = 220f;
         private const float DrawerHeader = 38f;
-        private const float TileWidth = 92f;
-        private const float TileHeight = 104f;
+        // 112 × 112 since A-191: "Tambaqui" (94 px in Nunito SemiBold 21) and the level line fit under the disc.
+        private const float TileWidth = 112f;
+        private const float TileHeight = 112f;
         private const float TileGap = 8f;
 
         // Pixel art (ArtePixel/UI, L7-01 and L7-02, M25-T13): the water and the sand at a whole scale, cropped at the edges.
@@ -732,11 +733,11 @@ namespace FishingIdle.Game.UI
             PixelDraw.Fit(new Rect(disc.x + 5f, disc.y + 13f, d - 10f, d - 26f), Art.FishTexture(f.SpeciesId));
 
             var text = TileText(skin, f);
-            GUI.Label(new Rect(tile.x + 4f, tile.y + 63f, tile.width - 8f, UiSkin.SmallLine), text.Name, skin.ChipText);
-            // VT323 is wider than the old font: the tile keeps "Nv. X" under the name and moves the Cardume position
-            // ("C1") to a small badge on the disc's corner (M25-T13).
+            GUI.Label(new Rect(tile.x + 4f, tile.y + 64f, tile.width - 8f, UiSkin.SmallLine), text.Name, skin.ChipText);
+            // The tile keeps "Nv. X" under the name and the Cardume position ("C1") in a small badge on the disc's corner
+            // (M25-T13).
             var level = TileLevel(f);
-            GUI.Label(new Rect(tile.x + 4f, tile.y + 82f, tile.width - 8f, UiSkin.SmallLine), level.Level, skin.SmallMutedCenter);
+            GUI.Label(new Rect(tile.x + 4f, tile.y + 86f, tile.width - 8f, UiSkin.SmallLine), level.Level, skin.SmallMutedCenter);
             if (level.Badge != null)
             {
                 var bw = skin.Badge.CalcSize(new GUIContent(level.Badge)).x + 8f;

@@ -251,12 +251,15 @@ namespace FishingIdle.Game.UI
                     // The short label when the long one does not fit the button with its icon (measured, A-191).
                     var buyStyle = canBuy ? skin.ButtonPrimary : skin.Button;
                     var buyLabel = GameTexts.Clan.BuySlot(Format.Number(clan.NextSlotPriceDollars));
+                    var buyIcon = Icons.Add;
                     if (buyStyle.CalcSize(new GUIContent(buyLabel)).x - buyStyle.padding.horizontal + 46f > buy.width - 16f)
                     {
+                        // The short one: the Dólar icon and "Vaga · 120" (icon + number, A-190 rule 7).
                         buyLabel = GameTexts.Clan.BuySlotShort(Format.Number(clan.NextSlotPriceDollars));
+                        buyIcon = Icons.Dollar;
                     }
 
-                    if (skin.IconButton(buy, Icons.Add, buyLabel, buyStyle))
+                    if (skin.IconButton(buy, buyIcon, buyLabel, buyStyle))
                     {
                         _root.BuyClanSlot();
                     }
@@ -463,7 +466,9 @@ namespace FishingIdle.Game.UI
                 GUI.Box(row, GUIContent.none, reward.Rank == 1 ? skin.CardImportant : skin.Card);
                 GUI.Label(new Rect(row.x + 16f, row.y + 20f, 48f, UiSkin.SmallLine), GameTexts.Clan.Rank(reward.Rank), reward.Rank == 1 ? skin.SmallGold : skin.SmallBold);
                 var items = WorldBossWindow.RewardItems(reward.Coins, reward.Shells, reward.ClothingFragments, reward.BoatFragments, reward.BoatName, reward.Dollars);
-                GUI.Label(new Rect(row.x + 72f, row.y + 8f, row.width - 88f, 48f), items, skin.Small);
+                // The prize list centred in the row, on one or two lines.
+                var itemsHeight = Mathf.Min(48f, skin.Small.CalcHeight(new GUIContent(items), row.width - 88f));
+                GUI.Label(new Rect(row.x + 72f, row.y + (row.height - itemsHeight) / 2f, row.width - 88f, itemsHeight + 4f), items, skin.Small);
                 y += 72f;
             }
 

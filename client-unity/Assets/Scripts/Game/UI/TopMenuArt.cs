@@ -22,7 +22,8 @@ namespace FishingIdle.Game.UI
 
         private static VisualTheme Theme => VisualTheme.Current;
 
-        private static GUIStyle TabLabel(UiSkin skin) => _tabLabel ?? (_tabLabel = new GUIStyle(skin.SmallBold) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip, normal = { textColor = UiSkin.Muted } });
+        // The tab names in SemiBold 21, like every tab and chip (A-191).
+        private static GUIStyle TabLabel(UiSkin skin) => _tabLabel ?? (_tabLabel = new GUIStyle(skin.ChipText) { alignment = TextAnchor.MiddleCenter, wordWrap = false, clipping = TextClipping.Clip, normal = { textColor = UiSkin.Muted } });
 
         private static GUIStyle TabLabelOn(UiSkin skin) => _tabLabelOn ?? (_tabLabelOn = new GUIStyle(TabLabel(skin)) { normal = { textColor = UiSkin.TitleColor } });
 

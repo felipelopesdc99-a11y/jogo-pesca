@@ -22,7 +22,7 @@ namespace FishingIdle.Game.UI
     public sealed class PassWindow
     {
         // Grid of 8 (A-190): 16 between the columns and the rows, the cells 168 wide.
-        private const float SummaryHeight = 104f, Gap = 16f, LabelColumn = 128f, Column = 168f, ColumnGap = 16f, HeaderHeight = 40f;
+        private const float SummaryHeight = 104f, Gap = 16f, LabelColumn = 144f, Column = 168f, ColumnGap = 16f, HeaderHeight = 40f;
         private const float RefreshSeconds = 0.5f, WheelStep = 48f;
 
         /// <summary>The fragment icon of each boat (Resources/ArtePixel/Fragmentos/frag_&lt;boat id&gt;). Missing = the boat icon.</summary>
@@ -306,7 +306,8 @@ namespace FishingIdle.Game.UI
         }
 
         /// <summary>
-        /// One reward: its lines as icon + number (M25-T24), then one state at the bottom: the Resgatar button, a faint check
+        /// One reward: its lines as icon + number (M25-T24: the fragment's own picture tells the boat, the rod or the
+        /// clothing; the names did not fit the 168 column in Nunito), then one state at the bottom: the Resgatar button, a faint check
         /// once claimed, a small padlock while the Premium is not bought; nothing while the milestone is ahead (the
         /// column's "Nv.40" says it).
         /// </summary>
@@ -364,7 +365,7 @@ namespace FishingIdle.Game.UI
             {
                 // frag_boat_NN (art delivered 13/10/2026); the boat icon if the file is missing.
                 FragmentIcon(skin, new Rect(x, y + 2f, 20f, 20f), FragmentFolder + reward.BoatId, Icons.Boat);
-                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.Fragments), reward.BoatName, skin.SmallBold);
+                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.Fragments), null, skin.SmallBold);
                 y += step;
             }
 
@@ -372,7 +373,7 @@ namespace FishingIdle.Game.UI
             {
                 // frag_rod_NN (art delivered 13/10/2026); the rod icon if the file is missing.
                 FragmentIcon(skin, new Rect(x, y + 2f, 20f, 20f), FragmentFolder + reward.RodId, Icons.Rod);
-                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.RodFragments), reward.RodName, skin.SmallBold);
+                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.RodFragments), null, skin.SmallBold);
                 y += step;
             }
 
@@ -380,7 +381,7 @@ namespace FishingIdle.Game.UI
             {
                 // frag_roupa (art delivered 13/10/2026); the star icon if the file is missing.
                 FragmentIcon(skin, new Rect(x, y + 2f, 20f, 20f), ClothingFragmentArt, Icons.Star);
-                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.ClothingFragments), GameTexts.Pass.ClothingShort, skin.SmallBold);
+                Amount(skin, new Rect(x + 28f, y, w - 28f, UiSkin.SmallLine), Format.Number(reward.ClothingFragments), null, skin.SmallBold);
             }
 
             GUI.color = previous;

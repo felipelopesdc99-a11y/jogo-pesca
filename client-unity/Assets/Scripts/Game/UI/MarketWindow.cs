@@ -666,7 +666,7 @@ namespace FishingIdle.Game.UI
                 var row = new Rect(0, y, width, RowHeight);
                 var value = GoodsRow(skin, row, l.Goods, GameTexts.Market.EndsIn(Format.TimeLeft(l.RemainingSeconds)));
                 GUI.Label(new Rect(value.x, value.y, value.width, 28), Format.Number(l.PriceCoins), skin.Number);
-                GUI.Label(new Rect(value.x, value.y + 32, value.width, UiSkin.SmallLine), FishCard.Fit(GameTexts.Market.YouReceive + ": " + Format.Number(l.NetCoins), skin.SmallMuted, value.width), skin.SmallMuted);
+                GUI.Label(new Rect(value.x, value.y + 32, value.width, UiSkin.SmallLine), FishCard.Fit(GameTexts.Market.NetShort(Format.Number(l.NetCoins)), skin.SmallMuted, value.width), skin.SmallMuted);
                 if (skin.IconButton(RowButtonRect(row), Icons.Close, GameTexts.Market.CancelShort, skin.Button))
                 {
                     _root.CancelListing(l.ListingId);
@@ -695,7 +695,8 @@ namespace FishingIdle.Game.UI
                 {
                     var row = new Rect(0, y, width, RowHeight);
                     var value = GoodsRow(skin, row, w.Goods, Format.DateTimeFromUnixMs(w.AtMs));
-                    GUI.Label(new Rect(value.x, value.y + 4, value.width, UiSkin.SmallLine), FishCard.Fit(GameTexts.Market.Reason(w.Reason), skin.SmallGold, value.width), skin.SmallGold);
+                    // Up to two lines ("Comprado no Mercado" is wider than the column in Nunito Bold 21).
+                    GUI.Label(new Rect(value.x, value.y, value.width, 48f), GameTexts.Market.Reason(w.Reason), skin.SmallGold);
                     if (w.Blocker != ServiceError.None)
                     {
                         var note = RowButtonRect(row);

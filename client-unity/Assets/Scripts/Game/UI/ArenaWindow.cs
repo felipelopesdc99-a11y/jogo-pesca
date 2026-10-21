@@ -368,7 +368,10 @@ namespace FishingIdle.Game.UI
             var sideW = Mathf.Max(60f, (area.width - attackW) / 2f - 16f);
             if (_arena.RerollsLeft > 0)
             {
-                if (skin.IconButton(new Rect(area.x, bottomY, Mathf.Min(300f, sideW), buttonH), Icons.Swap, GameTexts.Arena.RerollsLeft(_arena.RerollsLeft), skin.Button))
+                // As wide as its label with the icon (measured, A-191), never past the side room.
+                var reroll = GameTexts.Arena.RerollsLeft(_arena.RerollsLeft);
+                var rerollW = Mathf.Min(sideW, Mathf.Ceil(70f + skin.Button.CalcSize(new GUIContent(reroll)).x - skin.Button.padding.horizontal));
+                if (skin.IconButton(new Rect(area.x, bottomY, rerollW, buttonH), Icons.Swap, reroll, skin.Button))
                 {
                     _root.RerollOpponents();
                     _nextRefresh = 0f;
@@ -564,9 +567,23 @@ namespace FishingIdle.Game.UI
                 return;
             }
 
+            // "Pirarucu · Nv. 12" on one line when it fits; otherwise the name and the level on two lines (A-191: never
+            // "Pirarucu · Nv…" with the level, the thing that matters, cut away).
             var line = fish.Name + " · " + level;
-            GUI.Label(new Rect(rect.x + 8, rect.yMax - 28, rect.width - 16, UiSkin.SmallLine), FishCard.Fit(line, skin.ChipText, rect.width - 16), skin.ChipText);
-            var artBottom = rect.yMax - 32;
+            var textWidth = rect.width - 16;
+            float artBottom;
+            if (skin.ChipText.CalcSize(new GUIContent(line)).x <= textWidth || rect.height < 124f)
+            {
+                GUI.Label(new Rect(rect.x + 8, rect.yMax - 28, textWidth, UiSkin.SmallLine), FishCard.Fit(line, skin.ChipText, textWidth), skin.ChipText);
+                artBottom = rect.yMax - 32;
+            }
+            else
+            {
+                GUI.Label(new Rect(rect.x + 8, rect.yMax - 52, textWidth, UiSkin.SmallLine), FishCard.Fit(fish.Name, skin.ChipText, textWidth), skin.ChipText);
+                GUI.Label(new Rect(rect.x + 8, rect.yMax - 28, textWidth, UiSkin.SmallLine), level, skin.SmallMuted);
+                artBottom = rect.yMax - 56;
+            }
+
             if (artBottom - artTop > 8f)
             {
                 DrawFish(new Rect(rect.x + 8, artTop, rect.width - 16, artBottom - artTop), fish.SpeciesId, flipped);
