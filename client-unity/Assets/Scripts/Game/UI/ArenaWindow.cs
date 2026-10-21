@@ -231,10 +231,10 @@ namespace FishingIdle.Game.UI
             var ew = energyW - 24;
             skin.DrawIcon(new Rect(ex, r.y + 6, 22, 22), Icons.Energy, UiSkin.Gold);
             var labelW = skin.SmallMuted.CalcSize(new GUIContent(GameTexts.Arena.Energy)).x + 8;
-            GUI.Label(new Rect(ex + 28, r.y + 8, labelW, 20), GameTexts.Arena.Energy, skin.SmallMuted);
+            GUI.Label(new Rect(ex + 28, r.y + 6, labelW, UiSkin.SmallLine), GameTexts.Arena.Energy, skin.SmallMuted);
             var amountX = ex + 28 + labelW;
             var amountW = Mathf.Max(20f, ex + ew - amountX);
-            GUI.Label(new Rect(amountX, r.y + 6, amountW, 22), FishCard.Fit(GameTexts.Arena.EnergyOf(_arena.Energy, _arena.EnergyMax), skin.BodyBold, amountW), skin.BodyBold);
+            GUI.Label(new Rect(amountX, r.y + 3, amountW, 28), FishCard.Fit(GameTexts.Arena.EnergyOf(_arena.Energy, _arena.EnergyMax), skin.BodyBold, amountW), skin.BodyBold);
             EnergyBar(skin, new Rect(ex, r.y + 34, ew, 10), _arena.Energy, _arena.EnergyMax);
             if (_arena.NextEnergySeconds > 0)
             {
@@ -520,7 +520,8 @@ namespace FishingIdle.Game.UI
         /// <summary>One place: number, rarity seal, fish art and level. Never the Strength (GDD section 28).</summary>
         private static void DrawSlot(UiSkin skin, Rect rect, int position, SlotFish fish, bool flipped)
         {
-            var badgeSize = Mathf.Clamp(rect.height * 0.28f, 16f, 22f);
+            // 22 at least (A-191): the seal and the number carry the 21 px text.
+            var badgeSize = Mathf.Clamp(rect.height * 0.28f, 22f, 24f);
             var badge = new Rect(rect.x + 6, rect.y + 6, badgeSize, badgeSize);
             if (fish.SpeciesId == null)
             {
@@ -528,7 +529,7 @@ namespace FishingIdle.Game.UI
                 ArcArt.Fill(skin, rect, new Color(1f, 1f, 1f, 0.03f), 10);
                 ArcArt.Line(skin, new Rect(rect.x + 3, rect.y + 3, rect.width - 6, rect.height - 6), new Color(UiSkin.Accent.r, UiSkin.Accent.g, UiSkin.Accent.b, 0.22f), 10);
                 PositionBadge(skin, badge, position, false);
-                GUI.Label(new Rect(rect.x, rect.center.y - 10, rect.width, 20), GameTexts.Cardume.Empty, skin.SmallMutedCenter);
+                GUI.Label(new Rect(rect.x, rect.center.y - UiSkin.SmallLine / 2f, rect.width, UiSkin.SmallLine), GameTexts.Cardume.Empty, skin.SmallMutedCenter);
                 return;
             }
 
@@ -556,16 +557,16 @@ namespace FishingIdle.Game.UI
                     DrawFish(new Rect(rect.x + 8, artTop, rect.width - 16, artH), fish.SpeciesId, flipped);
                 }
 
-                var lw = Mathf.Min(rect.width - 12, skin.SmallBold.CalcSize(new GUIContent(level)).x + 10);
-                var tag = new Rect(rect.xMax - 6 - lw, rect.yMax - 22, lw, 18);
+                var lw = Mathf.Min(rect.width - 12, skin.ChipText.CalcSize(new GUIContent(level)).x + 12);
+                var tag = new Rect(rect.xMax - 6 - lw, rect.yMax - 4 - UiSkin.SmallLine, lw, UiSkin.SmallLine);
                 ArcArt.Fill(skin, tag, new Color(UiSkin.Night.r, UiSkin.Night.g, UiSkin.Night.b, 0.8f), 9);
                 GUI.Label(tag, FishCard.Fit(level, skin.ChipText, lw - 6), skin.ChipText);
                 return;
             }
 
             var line = fish.Name + " · " + level;
-            GUI.Label(new Rect(rect.x + 8, rect.yMax - 26, rect.width - 16, 20), FishCard.Fit(line, skin.ChipText, rect.width - 16), skin.ChipText);
-            var artBottom = rect.yMax - 28;
+            GUI.Label(new Rect(rect.x + 8, rect.yMax - 28, rect.width - 16, UiSkin.SmallLine), FishCard.Fit(line, skin.ChipText, rect.width - 16), skin.ChipText);
+            var artBottom = rect.yMax - 32;
             if (artBottom - artTop > 8f)
             {
                 DrawFish(new Rect(rect.x + 8, artTop, rect.width - 16, artBottom - artTop), fish.SpeciesId, flipped);
@@ -605,9 +606,9 @@ namespace FishingIdle.Game.UI
             var rw = skin.SmallGold.CalcSize(new GUIContent(rankText)).x + 4;
             var nx = avatar.xMax + 10;
             var nw = Mathf.Max(20f, right - nx - rw - 10);
-            var ty = panel.y + (headerH - 22f) / 2f;
-            GUI.Label(new Rect(nx, ty, nw, 22), FishCard.Fit(name, skin.BodyBold, nw), skin.BodyBold);
-            GUI.Label(new Rect(right - rw, ty + 2, rw, 20), rankText, skin.SmallGoldRight);
+            var ty = panel.y + (headerH - 28f) / 2f;
+            GUI.Label(new Rect(nx, ty, nw, 28), FishCard.Fit(name, skin.BodyBold, nw), skin.BodyBold);
+            GUI.Label(new Rect(right - rw, ty + 3, rw, UiSkin.SmallLine), rankText, skin.SmallGoldRight);
         }
 
         /// <summary>The gold "VS" between the formations.</summary>
@@ -885,11 +886,12 @@ namespace FishingIdle.Game.UI
                 skin.IconBadge(new Rect(rect.x + 24, rect.y + 20, 56, 56), dollars ? Icons.Dollar : Icons.Shell, UiSkin.Gold);
 
                 var x = rect.x + 100;
-                GUI.Label(new Rect(x, rect.y + 14, 320, 28), item.Name, skin.Heading);
-                GUI.Label(new Rect(x, rect.y + 44, 320, 22), GameTexts.Arena.ShopReward(Format.Number(item.RewardAmount), dollars), skin.BodyBold);
+                var textWidth = Mathf.Max(80f, rect.xMax - 250 - 200 - 16 - x);
+                GUI.Label(new Rect(x, rect.y + 12, textWidth, 28), FishCard.Fit(item.Name, skin.Heading, textWidth), skin.Heading);
+                GUI.Label(new Rect(x, rect.y + 42, textWidth, 28), FishCard.Fit(GameTexts.Arena.ShopReward(Format.Number(item.RewardAmount), dollars), skin.BodyBold, textWidth), skin.BodyBold);
                 if (item.WeeklyLimit > 0)
                 {
-                    GUI.Label(new Rect(x, rect.y + 68, 320, 20), GameTexts.Arena.ShopWeekly(item.BoughtThisWeek, item.WeeklyLimit), skin.SmallMuted);
+                    GUI.Label(new Rect(x, rect.y + 68, textWidth, UiSkin.SmallLine), GameTexts.Arena.ShopWeekly(item.BoughtThisWeek, item.WeeklyLimit), skin.SmallMuted);
                 }
 
                 var px = rect.xMax - 250 - 200;

@@ -350,12 +350,12 @@ namespace FishingIdle.Game.UI
                 var noteStyle = warn ? skin.SmallGold : skin.SmallMuted;
                 var noteWidth = Mathf.Max(0f, panel.xMax - 28 - slotsWidth - 16 - (x + 216));
                 var note = full ? GameTexts.Box.Full : warn ? GameTexts.Box.AlmostFull : GameTexts.Box.LimitNote(capacity);
-                GUI.Label(new Rect(x + 216, lineY - 1, noteWidth, 22), FishCard.Fit(note, noteStyle, noteWidth), noteStyle);
+                GUI.Label(new Rect(x + 216, lineY - 3, noteWidth, UiSkin.SmallLine), FishCard.Fit(note, noteStyle, noteWidth), noteStyle);
             }
 
             if (slotsText != null)
             {
-                GUI.Label(new Rect(panel.xMax - 360, lineY - 1, 332, 22), slotsText, skin.SmallMutedRight);
+                GUI.Label(new Rect(panel.xMax - 28 - slotsWidth, lineY - 3, slotsWidth, UiSkin.SmallLine), slotsText, skin.SmallMutedRight);
             }
         }
 

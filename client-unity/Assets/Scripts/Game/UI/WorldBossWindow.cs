@@ -401,10 +401,11 @@ namespace FishingIdle.Game.UI
             {
                 var line = new Rect(x, y, w, 30f);
                 ArcArt.Fill(skin, line, row.IsPlayer ? new Color(UiSkin.Gold.r, UiSkin.Gold.g, UiSkin.Gold.b, 0.14f) : new Color(1f, 1f, 1f, 0.04f), 6f);
-                GUI.Label(new Rect(line.x + 8f, line.y + 5f, 34f, 20f), GameTexts.WorldBoss.DollarsRank(row.Rank), skin.SmallBold);
+                // "10º" in Nunito Bold 21 is 33 px: a 40 px column (A-191).
+                GUI.Label(new Rect(line.x + 8f, line.y + 4f, 40f, UiSkin.SmallLine), GameTexts.WorldBoss.DollarsRank(row.Rank), skin.SmallBold);
                 var name = row.Name + (row.IsPlayer ? " " + GameTexts.WorldBoss.You : string.Empty);
-                GUI.Label(new Rect(line.x + 44f, line.y + 5f, w - 44f - 110f, 20f), FishCard.Fit(name, skin.Small, w - 44f - 110f), skin.Small);
-                GUI.Label(new Rect(line.xMax - 110f, line.y + 5f, 102f, 20f), Format.Short(row.Damage), skin.SmallGoldRight);
+                GUI.Label(new Rect(line.x + 56f, line.y + 4f, w - 56f - 110f, UiSkin.SmallLine), FishCard.Fit(name, skin.Small, w - 56f - 110f), skin.Small);
+                GUI.Label(new Rect(line.xMax - 110f, line.y + 4f, 102f, UiSkin.SmallLine), Format.Short(row.Damage), skin.SmallGoldRight);
                 y += 34f;
             }
 
