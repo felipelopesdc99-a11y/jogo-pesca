@@ -1,0 +1,596 @@
+{
+  "gerado_por": "tools/Progressao/fragmentos_qualquer_mapa.py simular",
+  "nota": "Fragmentos em qualquer mapa (M24-T47, A-173). Dias contados da meia-noite do primeiro dia, por valor esperado (sem sorte). \"antes\": cada barco e cada vara só no mapa deles (a regra até 12/10/2026); \"varas_15_a_60\": todos em qualquer mapa, 0,1% cada, com as varas pedindo 15 / 25 / 35 / 45 / 60 fragmentos (M24-T47); \"agora\": o mesmo com as varas pedindo 5 / 8 / 12 / 15 / 20 (OD-070, opção c, M24-T48; o Passe continua dando 3 / 4 / 6 / 7 / 9 fragmentos de vara). Conta a pesca (online e offline, continuando depois do Nv.1000) e o Passe grátis; não conta o Boss Mundial nem o Premium. Desde o M24-T58 (A-180), nas três: o jogador aperta Montar assim que pode, em ordem (cada barco e cada vara pedem o anterior), e os mapas abrem só pelo nível. null = não chegou em 400 dias.",
+  "chances_agora": {
+    "boat_01": 0.001,
+    "boat_02": 0.001,
+    "boat_03": 0.001,
+    "boat_04": 0.001,
+    "boat_05": 0.001,
+    "rod_01": 0.001,
+    "rod_02": 0.001,
+    "rod_03": 0.001,
+    "rod_04": 0.001,
+    "rod_05": 0.001,
+    "clothing": 0.001
+  },
+  "fragmentos_para_montar": {
+    "boat_01": 20,
+    "boat_02": 25,
+    "boat_03": 35,
+    "boat_04": 45,
+    "boat_05": 55,
+    "rod_01": 5,
+    "rod_02": 8,
+    "rod_03": 12,
+    "rod_04": 15,
+    "rod_05": 20,
+    "roupas": [
+      15,
+      25,
+      40,
+      60,
+      80
+    ]
+  },
+  "perfis": {
+    "sempre_aberto": {
+      "descricao": "Deixa o jogo aberto o dia todo",
+      "antes": {
+        "barcos": {
+          "boat_01": 27.65,
+          "boat_02": 27.65,
+          "boat_03": 27.65,
+          "boat_04": 27.65,
+          "boat_05": 27.65
+        },
+        "varas": {
+          "rod_01": null,
+          "rod_02": null,
+          "rod_03": null,
+          "rod_04": null,
+          "rod_05": null
+        },
+        "roupas": {
+          "gloves": 0.2,
+          "hat": 1.49,
+          "pants": 4.74,
+          "boots": 9.63,
+          "shirt": 16.23
+        },
+        "todos_os_itens": null,
+        "mapas_liberados": {
+          "map_01": 0.0,
+          "map_02": 0.01,
+          "map_03": 0.04,
+          "map_04": 0.07,
+          "map_05": 0.1,
+          "map_06": 0.13,
+          "map_07": 0.16,
+          "map_08": 0.2,
+          "map_09": 0.26,
+          "map_10": 0.34
+        },
+        "primeiro_dia_pescando_no_mapa": {
+          "map_01": 0.0,
+          "map_02": 0.01,
+          "map_03": 0.04,
+          "map_04": 0.07,
+          "map_05": 0.1,
+          "map_06": 0.13,
+          "map_07": 0.16,
+          "map_08": 0.2,
+          "map_09": 0.26,
+          "map_10": 0.34
+        },
+        "niveis": {
+          "Nv.10": 0.01,
+          "Nv.100": 0.42,
+          "Nv.500": 40.47,
+          "Nv.1000": 158.0
+        },
+        "fragmentos_de_barco_do_passe": {
+          "boat_01": 42.0,
+          "boat_02": 62.0,
+          "boat_03": 84.0,
+          "boat_04": 104.0,
+          "boat_05": 126.0
+        }
+      },
+      "varas_15_a_60": {
+        "barcos": {
+          "boat_01": 1.86,
+          "boat_02": 2.18,
+          "boat_03": 2.46,
+          "boat_04": 3.11,
+          "boat_05": 3.6
+        },
+        "varas": {
+          "rod_01": 1.99,
+          "rod_02": 3.11,
+          "rod_03": 4.09,
+          "rod_04": 5.2,
+          "rod_05": 6.79
+        },
+        "roupas": {
+          "gloves": 0.21,
+          "hat": 2.18,
+          "pants": 5.69,
+          "boots": 11.31,
+          "shirt": 19.26
+        },
+        "todos_os_itens": 19.26,
+        "mapas_liberados": {
+          "map_01": 0.0,
+          "map_02": 0.01,
+          "map_03": 0.04,
+          "map_04": 0.07,
+          "map_05": 0.1,
+          "map_06": 0.13,
+          "map_07": 0.16,
+          "map_08": 0.2,
+          "map_09": 0.26,
+          "map_10": 0.34
+        },
+        "primeiro_dia_pescando_no_mapa": {
+          "map_01": 0.0,
+          "map_02": 0.01,
+          "map_03": 0.04,
+          "map_04": 0.07,
+          "map_05": 0.1,
+          "map_06": 0.13,
+          "map_07": 0.16,
+          "map_08": 0.2,
+          "map_09": 0.26,
+          "map_10": 0.34
+        },
+        "niveis": {
+          "Nv.10": 0.01,
+          "Nv.100": 0.42,
+          "Nv.500": 15.18,
+          "Nv.1000": 55.81
+        },
+        "fragmentos_de_barco_do_passe": {
+          "boat_01": 42.0,
+          "boat_02": 62.0,
+          "boat_03": 84.0,
+          "boat_04": 104.0,
+          "boat_05": 126.0
+        }
+      },
+      "agora": {
+        "barcos": {
+          "boat_01": 1.45,
+          "boat_02": 1.57,
+          "boat_03": 2.07,
+          "boat_04": 2.81,
+          "boat_05": 3.17
+        },
+        "varas": {
+          "rod_01": 0.38,
+          "rod_02": 0.67,
+          "rod_03": 0.93,
+          "rod_04": 1.19,
+          "rod_05": 1.57
+        },
+        "roupas": {
+          "gloves": 0.21,
+          "hat": 1.7,
+          "pants": 5.05,
+          "boots": 10.73,
+          "shirt": 18.77
+        },
+        "todos_os_itens": 18.77,
+        "mapas_liberados": {
+          "map_01": 0.0,
+          "map_02": 0.01,
+          "map_03": 0.04,
+          "map_04": 0.07,
+          "map_05": 0.1,
+          "map_06": 0.13,
+          "map_07": 0.16,
+          "map_08": 0.2,
+          "map_09": 0.26,
+          "map_10": 0.34
+        },
+        "primeiro_dia_pescando_no_mapa": {
+          "map_01": 0.0,
+          "map_02": 0.01,
+          "map_03": 0.04,
+          "map_04": 0.07,
+          "map_05": 0.1,
+          "map_06": 0.13,
+          "map_07": 0.16,
+          "map_08": 0.2,
+          "map_09": 0.26,
+          "map_10": 0.34
+        },
+        "niveis": {
+          "Nv.10": 0.01,
+          "Nv.100": 0.4,
+          "Nv.500": 13.58,
+          "Nv.1000": 54.21
+        },
+        "fragmentos_de_barco_do_passe": {
+          "boat_01": 42.0,
+          "boat_02": 62.0,
+          "boat_03": 84.0,
+          "boat_04": 104.0,
+          "boat_05": 126.0
+        }
+      }
+    },
+    "quatro_vezes": {
+      "descricao": "Abre 4 vezes por dia, 30 min de cada vez",
+      "antes": {
+        "barcos": {
+          "boat_01": 52.94,
+          "boat_02": 52.94,
+          "boat_03": 52.94,
+          "boat_04": 52.94,
+          "boat_05": 52.94
+        },
+        "varas": {
+          "rod_01": null,
+          "rod_02": null,
+          "rod_03": null,
+          "rod_04": null,
+          "rod_05": null
+        },
+        "roupas": {
+          "gloves": 0.75,
+          "hat": 3.33,
+          "pants": 9.5,
+          "boots": 18.75,
+          "shirt": 31.33
+        },
+        "todos_os_itens": null,
+        "mapas_liberados": {
+          "map_01": 0.0,
+          "map_02": 0.35,
+          "map_03": 0.5,
+          "map_04": 0.5,
+          "map_05": 0.51,
+          "map_06": 0.75,
+          "map_07": 0.75,
+          "map_08": 0.75,
+          "map_09": 0.92,
+          "map_10": 1.33
+        },
+        "primeiro_dia_pescando_no_mapa": {
+          "map_01": 0.33,
+          "map_02": 0.35,
+          "map_03": null,
+          "map_04": 0.5,
+          "map_05": 0.51,
+          "map_06": null,
+          "map_07": 0.75,
+          "map_08": 0.75,
+          "map_09": 0.92,
+          "map_10": 1.33
+        },
+        "niveis": {
+          "Nv.10": 0.35,
+          "Nv.100": 1.33,
+          "Nv.500": 77.33,
+          "Nv.1000": 296.33
+        },
+        "fragmentos_de_barco_do_passe": {
+          "boat_01": 42.0,
+          "boat_02": 62.0,
+          "boat_03": 84.0,
+          "boat_04": 104.0,
+          "boat_05": 126.0
+        }
+      },
+      "varas_15_a_60": {
+        "barcos": {
+          "boat_01": 3.94,
+          "boat_02": 4.75,
+          "boat_03": 5.33,
+          "boat_04": 6.33,
+          "boat_05": 7.33
+        },
+        "varas": {
+          "rod_01": 4.33,
+          "rod_02": 6.33,
+          "rod_03": 8.33,
+          "rod_04": 10.33,
+          "rod_05": 13.33
+        },
+        "roupas": {
+          "gloves": 0.75,
+          "hat": 4.75,
+          "pants": 11.33,
+          "boots": 21.5,
+          "shirt": 36.33
+        },
+        "todos_os_itens": 36.33,
+        "mapas_liberados": {
+          "map_01": 0.0,
+          "map_02": 0.35,
+          "map_03": 0.5,
+          "map_04": 0.5,
+          "map_05": 0.51,
+          "map_06": 0.75,
+          "map_07": 0.75,
+          "map_08": 0.75,
+          "map_09": 0.92,
+          "map_10": 1.33
+        },
+        "primeiro_dia_pescando_no_mapa": {
+          "map_01": 0.33,
+          "map_02": 0.35,
+          "map_03": null,
+          "map_04": 0.5,
+          "map_05": 0.51,
+          "map_06": null,
+          "map_07": 0.75,
+          "map_08": 0.75,
+          "map_09": 0.92,
+          "map_10": 1.33
+        },
+        "niveis": {
+          "Nv.10": 0.35,
+          "Nv.100": 1.33,
+          "Nv.500": 28.92,
+          "Nv.1000": 104.33
+        },
+        "fragmentos_de_barco_do_passe": {
+          "boat_01": 42.0,
+          "boat_02": 62.0,
+          "boat_03": 84.0,
+          "boat_04": 104.0,
+          "boat_05": 126.0
+        }
+      },
+      "agora": {
+        "barcos": {
+          "boat_01": 3.33,
+          "boat_02": 3.5,
+          "boat_03": 4.5,
+          "boat_04": 5.75,
+          "boat_05": 6.51
+        },
+        "varas": {
+          "rod_01": 1.33,
+          "rod_02": 1.75,
+          "rod_03": 2.33,
+          "rod_04": 2.75,
+          "rod_05": 3.5
+        },
+        "roupas": {
+          "gloves": 0.75,
+          "hat": 3.75,
+          "pants": 10.33,
+          "boots": 20.5,
+          "shirt": 35.33
+        },
+        "todos_os_itens": 35.33,
+        "mapas_liberados": {
+          "map_01": 0.0,
+          "map_02": 0.35,
+          "map_03": 0.5,
+          "map_04": 0.5,
+          "map_05": 0.51,
+          "map_06": 0.75,
+          "map_07": 0.75,
+          "map_08": 0.75,
+          "map_09": 0.92,
+          "map_10": 1.33
+        },
+        "primeiro_dia_pescando_no_mapa": {
+          "map_01": 0.33,
+          "map_02": 0.35,
+          "map_03": null,
+          "map_04": 0.5,
+          "map_05": 0.51,
+          "map_06": null,
+          "map_07": 0.75,
+          "map_08": 0.75,
+          "map_09": 0.92,
+          "map_10": 1.33
+        },
+        "niveis": {
+          "Nv.10": 0.35,
+          "Nv.100": 1.33,
+          "Nv.500": 25.92,
+          "Nv.1000": 101.33
+        },
+        "fragmentos_de_barco_do_passe": {
+          "boat_01": 42.0,
+          "boat_02": 62.0,
+          "boat_03": 84.0,
+          "boat_04": 104.0,
+          "boat_05": 126.0
+        }
+      }
+    },
+    "uma_vez": {
+      "descricao": "Abre 1 vez por dia, 30 min",
+      "antes": {
+        "barcos": {
+          "boat_01": 60.83,
+          "boat_02": 60.83,
+          "boat_03": 60.83,
+          "boat_04": 69.83,
+          "boat_05": 69.83
+        },
+        "varas": {
+          "rod_01": null,
+          "rod_02": null,
+          "rod_03": null,
+          "rod_04": null,
+          "rod_05": null
+        },
+        "roupas": {
+          "gloves": 1.83,
+          "hat": 4.83,
+          "pants": 11.83,
+          "boots": 21.83,
+          "shirt": 35.83
+        },
+        "todos_os_itens": null,
+        "mapas_liberados": {
+          "map_01": 0.0,
+          "map_02": 0.85,
+          "map_03": 1.83,
+          "map_04": 1.83,
+          "map_05": 1.83,
+          "map_06": 1.83,
+          "map_07": 1.83,
+          "map_08": 1.83,
+          "map_09": 2.83,
+          "map_10": 2.83
+        },
+        "primeiro_dia_pescando_no_mapa": {
+          "map_01": 0.83,
+          "map_02": 0.85,
+          "map_03": null,
+          "map_04": null,
+          "map_05": null,
+          "map_06": null,
+          "map_07": null,
+          "map_08": 1.83,
+          "map_09": null,
+          "map_10": 2.83
+        },
+        "niveis": {
+          "Nv.10": 0.85,
+          "Nv.100": 2.83,
+          "Nv.500": 87.83,
+          "Nv.1000": 332.83
+        },
+        "fragmentos_de_barco_do_passe": {
+          "boat_01": 42.0,
+          "boat_02": 62.0,
+          "boat_03": 84.0,
+          "boat_04": 104.0,
+          "boat_05": 126.0
+        }
+      },
+      "varas_15_a_60": {
+        "barcos": {
+          "boat_01": 5.83,
+          "boat_02": 6.83,
+          "boat_03": 6.83,
+          "boat_04": 7.83,
+          "boat_05": 8.83
+        },
+        "varas": {
+          "rod_01": 5.83,
+          "rod_02": 7.83,
+          "rod_03": 9.83,
+          "rod_04": 12.83,
+          "rod_05": 15.83
+        },
+        "roupas": {
+          "gloves": 1.83,
+          "hat": 6.83,
+          "pants": 13.83,
+          "boots": 24.83,
+          "shirt": 39.83
+        },
+        "todos_os_itens": 39.83,
+        "mapas_liberados": {
+          "map_01": 0.0,
+          "map_02": 0.85,
+          "map_03": 1.83,
+          "map_04": 1.83,
+          "map_05": 1.83,
+          "map_06": 1.83,
+          "map_07": 1.83,
+          "map_08": 1.83,
+          "map_09": 2.83,
+          "map_10": 2.83
+        },
+        "primeiro_dia_pescando_no_mapa": {
+          "map_01": 0.83,
+          "map_02": 0.85,
+          "map_03": null,
+          "map_04": null,
+          "map_05": null,
+          "map_06": null,
+          "map_07": null,
+          "map_08": 1.83,
+          "map_09": null,
+          "map_10": 2.83
+        },
+        "niveis": {
+          "Nv.10": 0.85,
+          "Nv.100": 2.83,
+          "Nv.500": 32.83,
+          "Nv.1000": 112.83
+        },
+        "fragmentos_de_barco_do_passe": {
+          "boat_01": 42.0,
+          "boat_02": 62.0,
+          "boat_03": 84.0,
+          "boat_04": 104.0,
+          "boat_05": 126.0
+        }
+      },
+      "agora": {
+        "barcos": {
+          "boat_01": 4.83,
+          "boat_02": 4.83,
+          "boat_03": 5.83,
+          "boat_04": 7.83,
+          "boat_05": 8.83
+        },
+        "varas": {
+          "rod_01": 1.83,
+          "rod_02": 2.83,
+          "rod_03": 3.83,
+          "rod_04": 3.83,
+          "rod_05": 4.83
+        },
+        "roupas": {
+          "gloves": 1.83,
+          "hat": 4.83,
+          "pants": 11.83,
+          "boots": 22.83,
+          "shirt": 38.83
+        },
+        "todos_os_itens": 38.83,
+        "mapas_liberados": {
+          "map_01": 0.0,
+          "map_02": 0.85,
+          "map_03": 1.83,
+          "map_04": 1.83,
+          "map_05": 1.83,
+          "map_06": 1.83,
+          "map_07": 1.83,
+          "map_08": 1.83,
+          "map_09": 1.85,
+          "map_10": 2.83
+        },
+        "primeiro_dia_pescando_no_mapa": {
+          "map_01": 0.83,
+          "map_02": 0.85,
+          "map_03": null,
+          "map_04": null,
+          "map_05": null,
+          "map_06": null,
+          "map_07": null,
+          "map_08": 1.83,
+          "map_09": 1.85,
+          "map_10": 2.83
+        },
+        "niveis": {
+          "Nv.10": 0.85,
+          "Nv.100": 2.83,
+          "Nv.500": 28.83,
+          "Nv.1000": 108.83
+        },
+        "fragmentos_de_barco_do_passe": {
+          "boat_01": 42.0,
+          "boat_02": 62.0,
+          "boat_03": 84.0,
+          "boat_04": 104.0,
+          "boat_05": 126.0
+        }
+      }
+    }
+  }
+}

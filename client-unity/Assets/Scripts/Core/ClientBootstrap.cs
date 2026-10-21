@@ -7,16 +7,16 @@ namespace FishingIdle.Client.Core
     /// Installs the persistent client services when the game starts.
     /// </summary>
     /// <remarks>
-    /// Bootstrapping happens in code rather than from a scene asset so pressing Play in any scene
-    /// brings up the health probe and the diagnostic overlay. The first designed scene — Map 1,
-    /// Lago Sereno — is task M2-T01.
+    /// Dormant since the local-MVP pivot (docs/DECISOES.md, TD-015): the game no longer needs a
+    /// remote server, so nothing calls this automatically any more. The code is kept as the starting
+    /// point for the future Remote...Service implementations, which will need the same HTTP access
+    /// and connection diagnostics. Call <see cref="Install"/> by hand to bring the probe back.
     /// </remarks>
     public static class ClientBootstrap
     {
-        private const string RootObjectName = "[FishingIdle]";
+        private const string RootObjectName = "[FishingIdle.Remote]";
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Install()
+        public static void Install()
         {
             var root = new GameObject(RootObjectName);
             Object.DontDestroyOnLoad(root);

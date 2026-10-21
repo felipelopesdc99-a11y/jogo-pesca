@@ -1,0 +1,17 @@
+{
+  "name": "FishingIdle.Game",
+  "rootNamespace": "FishingIdle.Game",
+  "references": [
+    "FishingIdle.Texts",
+    "FishingIdle.GameService"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

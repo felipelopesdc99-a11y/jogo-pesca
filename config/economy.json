@@ -15,7 +15,7 @@
       "display_name": "Conchas",
       "is_primary": false,
       "spendable_in_v0_1": false,
-      "note": "Ganháveis na V0.1, mas de propósito ainda não têm onde ser gastas. Não podem ser usadas para melhorar varas nem peixes."
+      "note": "Na V0.1 não tinham onde ser gastas. Desde a V0.2 compram iscas (equipment.json, docs/SISTEMA_SUCESSO_PESCA.md) e, desde 02/10/2026 (A-099), melhoram varas (desde 12/10/2026 as varas vêm de fragmentos, M24-T32, e não são compradas); todo nível de vara e de barco custa Moedas e Conchas (A-156, regra do proprietário reforçada em 12/10/2026, M24-T30). Não melhoram peixes."
     },
     {
       "id": "honor",
@@ -26,13 +26,16 @@
     }
   ],
   "npc_fish_sale": {
-    "formula": "arredondar(base_sale_value_coins × multiplicador_de_raridade × influência_do_tamanho)",
+    "formula": "arredondar(base_sale_value_coins × multiplicador_de_raridade × influência_do_tamanho × price_multiplier)",
     "reimburses_invested_fish_xp": false,
-    "minimum_price_coins": 1
+    "minimum_price_coins": 1,
+    "price_multiplier": 1.0,
+    "price_multiplier_note": "Ajuste geral de todos os preços de venda (1 = valores do catálogo). Foi 0,5 por algumas horas em 02/10/2026 e voltou a 1: melhorar varas e barcos já pede bastante."
   },
   "shells": {
     "source": "fishing_only_in_v0_1",
-    "base_drop_chance_per_catch": 0.05,
+    "base_drop_chance_per_catch": 0.07,
+    "base_drop_chance_note": "Era 0,05; dobrou para 0,1 junto com a Chance de Sucesso da Captura, porque só peixe puxado dá Conchas. Em 02/10/2026 caiu para 0,07 (A-099): as Conchas ficaram um pouco mais difíceis, agora que todo equipamento pede Conchas. A Vara Inicial também passa a dar Conchas.",
     "amount_per_drop": {
       "min": 1,
       "max": 2
@@ -40,7 +43,14 @@
     "starter_rod_generates_shells": false,
     "rod_bonus_axis": "shell_yield"
   },
+  "currency_trade": {
+    "note": "Venda de Conchas e Dólares entre jogadores reais, por Moedas (A-101). No jogo local só dá para anunciar e cancelar: ninguém compra até o jogo ser online.",
+    "max_active_listings_per_player": 5,
+    "completed_sale_fee_ratio": 0.03,
+    "minimum_price_coins": 1
+  },
   "market_fixed_price": {
+    "reference_keys_note": "O jogo lê max_active_listings_per_player, max_listing_duration_days, listing_fee_coins, completed_sale_fee_ratio e minimum_listing_price_coins. As outras chaves são referência, o jogo não lê (withdrawal_expiry_days, os booleanos).",
     "max_active_listings_per_player": 5,
     "max_listing_duration_days": 7,
     "listing_fee_coins": 0,
@@ -53,6 +63,7 @@
     "withdrawal_expiry_days": null
   },
   "auction": {
+    "reference_keys_note": "O jogo lê max_active_auctions_per_seller, duration_hours, min_bid_increment_ratio, bid_fee_ratio, anti_snipe_window_seconds, anti_snipe_reset_to_seconds, seller_early_close_fee_ratio e timed_completion_fee_ratio. Os booleanos e max_auctions_a_buyer_can_join são referência, o jogo não lê (as regras deles estão no código).",
     "max_active_auctions_per_seller": 1,
     "duration_hours": 6,
     "seller_defines_starting_bid": true,
@@ -70,9 +81,149 @@
     "seller_cancellation_without_bids": false,
     "max_auctions_a_buyer_can_join": null
   },
+  "fishing_box": {
+    "capacity": 8640,
+    "capacity_note": "OD-025 (decisão do proprietário, 07/10/2026): a Caixa de Pesca guarda até capacity peixes (cabe um dia inteiro de pesca offline). Cheia, a pesca não puxa mais peixes (nem gasta isca) até o jogador vender ou guardar algum. Peixes achados em Expedição ou retirados do Mercado ainda entram. 0 = sem limite. Era 1.500; dobrou para 3.000 em 11/10/2026 (M24-T22, A-159) junto com o ciclo de pesca na metade, para continuar cabendo um dia inteiro de pesca offline (24 h a cada 30 s = 2.880 tentativas) e as mesmas horas de pesca online. Desde 12/10/2026 (M24-T27, A-160, decisão do proprietário: \"caixa de pesca comporta 1 dia de pesca online\") são 8.640 peixes = 24 h de pesca online a cada 10 s; cabe também um dia inteiro de pesca offline (24 h a cada 20 s = 4.320 tentativas, ou 5.760 com o VIP a cada 15 s).",
+    "bulk_sale_protection": {
+      "note": "Peixes que disparam a confirmação única \"Revisar peixes / Confirmar\" quando entram numa venda da Caixa de Pesca (seção 11 do GDD). Por raridade e por categoria de tamanho. Desde 13/10/2026 (M24-T52, A-176) também por qualidade de genes: gene_stars_at_or_above estrelas ou mais (0 = desligado).",
+      "rarities": [
+        "rare",
+        "epic",
+        "legendary",
+        "mythic"
+      ],
+      "size_categories": [
+        "exceptional",
+        "perfect"
+      ],
+      "gene_stars_at_or_above": 5
+    }
+  },
   "aquarium": {
     "hard_capacity": 100,
     "expansion_allowed": false,
     "fishing_box_keeps_receiving_when_full": true
+  },
+  "vip": {
+    "note": "VIP (A-110, decisão do proprietário em 07/10/2026): comprado com Dólares do jogo, dá XP de Pescador a mais e uma tentativa mais frequente na pesca offline por um tempo. Comprar de novo com o VIP ativo soma os dias ao fim do atual.",
+    "price_dollars": 100,
+    "duration_days": 30,
+    "offline_fisher_xp_bonus": 0.5,
+    "offline_cycle_seconds": 15,
+    "offline_cycle_note": "M24-T27 (A-160, decisão do proprietário em 12/10/2026): com o VIP ativo, a pesca offline faz 1 tentativa a cada offline_cycle_seconds (15 s) em vez de progression.json → fishing.offline_cycle_seconds (20 s). O bônus de XP offline continua junto (OD-065). Um VIP que acaba enquanto o jogador está fora conta 15 s só até o fim dele. 0 = o VIP não muda o ciclo.",
+    "dollars_real_money_reference": {
+      "dollars": 100,
+      "price_brl": 4.99,
+      "note": "Referência do proprietário: 100 Dólares = R$ 4,99. A compra com dinheiro real só existe quando o jogo tiver uma loja (Steam, Google Play); o jogo ainda não lê este valor."
+    }
+  },
+  "crew_removal_refund": {
+    "note": "A Tripulação e as Melhorias saíram do jogo em 12/10/2026 (decisão do proprietário, M24-T46, A-172). Estes são os preços de antes (crew.json e upgrades.json), guardados só para devolver a quem já jogava as Moedas que gastou: ao abrir um save antigo, cada tripulante vira base_cost × (cost_growth^unidades − 1) ÷ (cost_growth − 1) Moedas, cada Melhoria de tripulante comprada vira cost_factor × base_cost × cost_growth^unlock_count do tripulante dela (as ids eram crew_XX_up_N, N = a linha de crew_upgrade_tiers), e cada Melhoria geral vira a soma de base_cost × cost_growth^(n−1) do nível 1 ao nível que tinha (no máximo max_level). Tudo em Moedas: nenhuma das duas custava Conchas. Não muda nada no jogo de hoje.",
+    "crew_members": [
+      {
+        "id": "crew_01",
+        "base_cost": 15,
+        "cost_growth": 1.1
+      },
+      {
+        "id": "crew_02",
+        "base_cost": 160,
+        "cost_growth": 1.097
+      },
+      {
+        "id": "crew_03",
+        "base_cost": 1800,
+        "cost_growth": 1.093
+      },
+      {
+        "id": "crew_04",
+        "base_cost": 20000,
+        "cost_growth": 1.09
+      },
+      {
+        "id": "crew_05",
+        "base_cost": 220000,
+        "cost_growth": 1.087
+      },
+      {
+        "id": "crew_06",
+        "base_cost": 2400000,
+        "cost_growth": 1.083
+      },
+      {
+        "id": "crew_07",
+        "base_cost": 26000000,
+        "cost_growth": 1.08
+      },
+      {
+        "id": "crew_08",
+        "base_cost": 290000000,
+        "cost_growth": 1.077
+      },
+      {
+        "id": "crew_09",
+        "base_cost": 3200000000,
+        "cost_growth": 1.073
+      },
+      {
+        "id": "crew_10",
+        "base_cost": 35000000000,
+        "cost_growth": 1.07
+      }
+    ],
+    "crew_upgrade_tiers": [
+      {
+        "unlock_count": 1,
+        "cost_factor": 10
+      },
+      {
+        "unlock_count": 10,
+        "cost_factor": 50
+      },
+      {
+        "unlock_count": 25,
+        "cost_factor": 250
+      },
+      {
+        "unlock_count": 50,
+        "cost_factor": 1250
+      },
+      {
+        "unlock_count": 100,
+        "cost_factor": 6250
+      }
+    ],
+    "general_upgrades": [
+      {
+        "id": "port_radio",
+        "base_cost": 20000,
+        "cost_growth": 12.0,
+        "max_level": 10
+      },
+      {
+        "id": "fair_customers",
+        "base_cost": 1500,
+        "cost_growth": 4.0,
+        "max_level": 10
+      },
+      {
+        "id": "cooler_box",
+        "base_cost": 50000,
+        "cost_growth": 15.0,
+        "max_level": 5
+      },
+      {
+        "id": "school_sonar",
+        "base_cost": 100000,
+        "cost_growth": 8.0,
+        "max_level": 10
+      },
+      {
+        "id": "good_tide",
+        "base_cost": 2500,
+        "cost_growth": 4.0,
+        "max_level": 10
+      }
+    ]
   }
 }

@@ -1,0 +1,4001 @@
+# Adendo ao GDD — detalhes de design definidos durante a implementação
+
+O GDD (`docs/GDD_V0_1.md`) é a fonte de verdade travada e continua no original, sem edições (regra
+do `CLAUDE.md`). Durante a implementação aparecem detalhes que o GDD não fixa por completo. Cada um
+é registrado **aqui**, em PT-BR, para que o design do jogo continue num lugar só e nada fique
+decidido apenas dentro do código.
+
+Como ler:
+
+- **Seção do GDD:** a parte do GDD que o detalhe complementa.
+- **Situação:**
+  - **Em vigor:** já implementado dessa forma.
+  - **Confirmar:** implementado assim, mas é uma escolha que o proprietário pode querer mudar.
+  - **Decidido pelo proprietário:** confirmado pelo proprietário.
+- Mudar qualquer item é, em geral, uma mudança de balanceamento em `/config` ou uma alteração
+  pequena de código. Nenhum deles é uma mecânica nova.
+
+Aspectos técnicos (como o código funciona) não entram aqui: ficam em `docs/BASE_TECNICA.md`.
+
+---
+
+## Prioridade atual do projeto
+
+Desde o `docs/CLAUDE_START_HERE_V0_1_1.md`, o proprietário mudou a ordem de construção: primeiro um
+**MVP local, jogável no PC**, depois a infraestrutura online. O design do jogo (GDD) não mudou; mudou
+a ordem e o lugar onde as regras rodam por enquanto (no próprio PC, num "serviço de jogo local"
+separado da parte visual, pronto para virar servidor).
+
+---
+
+## Milestone 1 — Loop de pesca
+
+### A-001 · Só conta como pesca online o tempo em que o jogo está aberto
+**Seção do GDD:** 10 · **Situação:** Em vigor
+
+Com a pesca ligada, sai 1 peixe a cada 30 segundos **enquanto o jogo estiver rodando**. Se o jogo
+ficar sem rodar por mais de 2 minutos (fechado, PC em suspensão, relógio adiantado), esse período
+não gera capturas online: o ciclo recomeça do zero quando o jogo volta. Esse período é exatamente o
+que a pesca offline (60s por captura, até 24h) vai recompensar no **Milestone 5**.
+
+Desde o Milestone 5, esse período vira pesca offline (A-034).
+
+### A-002 · A pesca continua ligada depois de fechar e abrir o jogo
+**Seção do GDD:** 10 · **Situação:** Confirmar
+
+Se você fechou o jogo pescando, ao abrir ele continua pescando sozinho, sem precisar apertar
+"Iniciar pesca" de novo. Só "Parar pesca" desliga.
+
+### A-003 · Todo jogador novo começa com a Vara Inicial equipada
+**Seção do GDD:** 19, 40 · **Situação:** Em vigor (provisório)
+
+O GDD prevê que o jogador resgate a Vara Inicial na Loja durante o tutorial. Como a Loja e o
+tutorial são do Milestone 10, até lá a vara já vem equipada. O tutorial substitui isso quando chegar.
+
+### A-004 · Quais peixes pedem confirmação numa venda em lote
+**Seção do GDD:** 11 · **Situação:** Confirmar
+
+Pedem a confirmação única **Revisar peixes / Confirmar** os peixes **Raros** (ou acima) e os de
+tamanho **Excepcional**. Espécie nova e recorde pessoal **não** pedem, porque a descoberta e o
+recorde ficam guardados para sempre mesmo depois de vender. Configurável em
+`economy.json → fishing_box.bulk_sale_protection`.
+
+"Revisar peixes" mostra na Caixa exatamente os peixes valiosos daquela venda, para você desmarcar
+algum; "Confirmar" vende tudo; "Cancelar" não vende nada.
+
+### A-005 · Filtros da Caixa de Pesca
+**Seção do GDD:** 11 · **Situação:** Em vigor
+
+Um filtro por vez: **Todos**, cada raridade (Comum, Raro) e cada categoria de tamanho (Pequeno,
+Adulto, Grande, Excepcional). A lista vem de `/config`, então uma raridade nova aparece sozinha.
+Seleção múltipla com **Selecionar todos** (do filtro atual) e **Limpar seleção**.
+
+### A-006 · A Caixa de Pesca não tem limite de quantidade
+**Seção do GDD:** 11 · **Situação:** Confirmar
+
+*Atualizado em 12/10/2026 (A-117, A-159, A-160): a Caixa de Pesca tem limite, hoje 8.640 peixes (1 dia de pesca online, em `/config`); cheia, a pesca para até vender.*
+
+O GDD define o limite do Aquário (100), mas não da Caixa. Por enquanto a Caixa aceita qualquer
+quantidade. Se o proprietário quiser um limite, ele entra como um valor em `/config`.
+
+### A-007 · "Guardar" no Milestone 1
+**Seção do GDD:** 11, 12 · **Situação:** Substituído pelo Milestone 2 (A-015)
+
+No Milestone 1, o peixe que você não vende **fica guardado na Caixa de Pesca**, que é persistente.
+O botão "Guardar no Aquário", que transforma a captura num peixe completo com nível e atributos,
+chega com o Aquário no **Milestone 2**. A tela avisa isso.
+
+### A-008 · Descobertas e recordes são registrados desde a primeira captura
+**Seção do GDD:** 38 · **Situação:** Em vigor
+
+A Enciclopédia é do Milestone 3, mas o jogo já guarda, desde a primeira captura, a data em que cada
+espécie foi descoberta, o maior exemplar e quantos foram pescados. Assim ninguém perde o histórico
+de antes da Enciclopédia existir. Na Caixa, capturas marcam **NOVA ESPÉCIE** ou **RECORDE**.
+
+### A-009 · Destaque visual das capturas importantes
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+Aura **dourada** para tamanho Excepcional, **lilás** para Raro e **azul-claro** para espécie nova.
+O peixe na tela fica maior ou menor conforme o tamanho real do exemplar. Nas cartas da Caixa, os
+peixes importantes têm borda dourada.
+
+### A-010 · Avisos na tela (toasts)
+**Seção do GDD:** 39 · **Situação:** Em vigor
+
+Um aviso por captura, com a mensagem mais importante: espécie nova > Excepcional > recorde >
+captura comum. Avisos separados para subida de nível e Conchas. No máximo 5 avisos na tela ao mesmo
+tempo; nada é guardado em histórico (a central de notificações é do Milestone 10).
+
+### A-011 · Menus que ainda não existem não aparecem
+**Seção do GDD:** 7, 20 · **Situação:** Em vigor
+
+A barra superior mostra só **Pesca**. Mapa, Aquário, Arena, Expedição, Mercado, Loja e Perfil
+aparecem quando o milestone de cada um for entregue, nunca como botões mortos. Conchas só aparecem
+no topo quando você tiver alguma (a Vara Inicial não gera Conchas).
+
+### A-012 · Tamanho gravado em milímetros e categoria fixada na captura
+**Seção do GDD:** 14 · **Situação:** Em vigor
+
+O tamanho exato é guardado em milímetros e exibido com uma casa decimal (`35,2 cm`). A categoria
+(Pequeno, Adulto…) é a do momento da captura: se os limites de categoria mudarem no balanceamento,
+peixes já pescados não mudam de categoria. O preço, que depende do tamanho exato, acompanha o
+balanceamento atual.
+
+### A-013 · Como os bônus da vara entram no sorteio
+**Seção do GDD:** 19 · **Situação:** Em vigor (usado a partir do Milestone 4)
+
+- **Raridade:** multiplica só o peso das espécies não comuns já presentes no mapa. Com o Aruanã em
+  0,5%, o bônus máximo da Vara 1 (+22%) leva a cerca de 0,6%, nunca a 22%.
+- **Tamanho:** multiplica o peso das categorias Grande e Excepcional; o total é renormalizado.
+- **Conchas:** multiplica a chance base de Concha por captura.
+- A vara nunca cria uma raridade que o mapa não tem, e a Vara Inicial nunca pega Raro.
+
+### A-014 · Arredondamentos
+**Seção do GDD:** 17, 36 · **Situação:** Em vigor
+
+XP do Pescador por captura e preço de venda são arredondados para inteiro (mínimo 1 XP; preço
+mínimo configurável). No Mapa 1, o Nível 10 sai em cerca de 2 horas de pesca online, como pede o
+GDD (verificado por simulação nos testes).
+
+---
+
+## Milestone 2 — Aquário e peixe persistente
+
+### A-015 · Guardar no Aquário
+**Seção do GDD:** 11, 12 · **Situação:** Em vigor
+
+Na Caixa de Pesca, selecione os peixes e clique em **Guardar no Aquário**. Se não houver vagas para
+todos, nada é guardado e o jogo avisa quantas vagas faltam. O Aquário mostra a ocupação no menu
+(ex.: `Aquário 12/100`).
+
+### A-016 · Fórmula dos atributos
+**Seção do GDD:** 13, 24 · **Situação:** Confirmar
+
+`atributo = base da espécie × raridade × tamanho × nível`, onde tamanho vai de −10% (menor exemplar)
+a +10% (maior) e cada nível acima do 1 soma +4% (nível 10 = +36%). Raro = ×1,15. Os quatro atributos
+usam a mesma conta. Todos os números estão em `/config` e no Painel de Desenvolvimento.
+
+### A-017 · Alimento pode vir da Caixa ou do Aquário
+**Seção do GDD:** 11, 22 · **Situação:** Em vigor
+
+O GDD permite usar a Caixa como fonte de alimento. Na tela de alimentação há duas abas: **Da Caixa
+de Pesca** e **Do Aquário**. Dá para misturar as duas numa mesma alimentação.
+
+### A-018 · XP acima do nível 10 é perdido
+**Seção do GDD:** 22 · **Situação:** Confirmar
+
+Um peixe no nível 10 não pode mais ser alimentado. Se uma alimentação passar do nível 10, o que
+sobrar é perdido; a prévia mostra quanto e pede confirmação antes.
+
+### A-019 · Quais alimentos pedem confirmação
+**Seção do GDD:** 22 · **Situação:** Confirmar
+
+Pede confirmação consumir peixe **Raro**, de tamanho **Excepcional** ou já **evoluído (nível 2+)**
+(`progression.json → feeding.valuable_feed_rules`). Vender um peixe do Aquário sempre pede
+confirmação, porque ele é único.
+
+### A-020 · Ordenação do Aquário
+**Seção do GDD:** 12 · **Situação:** Confirmar
+
+Padrão: Excepcional → Grande → Adulto → Pequeno; dentro da categoria, primeiro o maior **para a sua
+espécie** (percentual dentro da faixa de tamanho), não o maior em centímetros — assim um lambari
+recorde não fica atrás de qualquer pirarucu. Também dá para ordenar por nível, espécie ou mais
+recentes.
+
+### A-021 · Venda de peixe do Aquário
+**Seção do GDD:** 36 · **Situação:** Em vigor
+
+Mesmo preço que teria na Caixa (espécie, raridade e tamanho). O XP investido não é reembolsado.
+
+---
+
+## Milestone 3 — Perfil, Cardume, Inventário e Vara
+
+### A-022 · Posições do Cardume podem ficar vazias
+**Seção do GDD:** 23, 26 · **Situação:** Confirmar
+
+O Cardume tem 1 a 6 peixes em posições fixas, e qualquer posição pode ficar vazia (por exemplo,
+só a fileira de trás). Na Arena, o alvo segue a ordem 1 → 6 pulando as posições vazias, como o GDD
+já define para peixes derrotados.
+
+### A-023 · Montar o Cardume
+**Seção do GDD:** 23 · **Situação:** Em vigor
+
+Clique numa posição e depois num peixe do Aquário. Se o peixe já estava em outra posição, ele muda
+de lugar (cada peixe aparece uma vez só). "Tirar da posição" esvazia a posição escolhida.
+
+### A-024 · Onde a Força do Cardume aparece
+**Seção do GDD:** 31, 37 · **Situação:** Em vigor
+
+Só no Perfil do próprio jogador: no topo e na aba Cardume, com a Força de cada peixe. Nunca em telas
+de outros jogadores (quando existirem).
+
+### A-025 · Peixe do Cardume consumido ou vendido
+**Seção do GDD:** 22 · **Situação:** Em vigor
+
+Alimentar outro peixe com um peixe do Cardume, ou vendê-lo, pede confirmação e deixa a posição vazia.
+A trava durante Expedições chega no Milestone 6.
+
+### A-026 · Enciclopédia
+**Seção do GDD:** 38 · **Situação:** Em vigor
+
+As 20 espécies, na ordem do catálogo. Não descobertas: silhueta escura, nome "???". Descobertas:
+nome, mapa, raridade, maior exemplar já pescado e quantas foram pescadas. Espécies com raridade
+acima de Comum têm borda dourada.
+
+### A-027 · Destaques do Perfil
+**Seção do GDD:** 37 · **Situação:** Confirmar
+
+Capturas totais, espécies descobertas, maior peixe já pescado (em cm), peixe de nível mais alto no
+Aquário, capturas Excepcionais, capturas Raras, peixes vendidos e moedas com vendas. As contagens de
+Excepcionais e Raras começaram a ser registradas nesta versão; capturas anteriores não entram nelas.
+
+### A-028 · Equipar vara
+**Seção do GDD:** 19, 20 · **Situação:** Em vigor
+
+*Atualizado em 13/10/2026 (A-180): qualquer vara pode ser equipada em qualquer mapa; uma vara mais fraca só pesca menos raridades ali.*
+
+O Perfil mostra a vara equipada (tier, nível, bônus, se pesca Raros e se gera Conchas) e o Inventário
+com todas as varas. Uma vara que não serve no mapa atual não pode ser equipada. Trocar de vara no
+meio da pesca vale a partir do próximo ciclo.
+
+---
+
+## Milestone 4 — Mapas e Varas
+
+### A-029 · Viagem
+**Seção do GDD:** 18 · **Situação:** Em vigor
+
+Menu Mapa → Viajar. A viagem leva 10 segundos desde 08/10/2026, antes 30 (`maps.json → travel`, A-140). Ao partir, o que já estava
+pescado é entregue e a pesca pausa; na chegada, ela volta sozinha se estava ligada. Durante a
+viagem não dá para pescar nem viajar para outro lugar. Se o jogo for fechado no meio, a viagem é
+concluída ao abrir. Nunca há viagem automática ao subir de nível.
+
+### A-030 · Requisitos do Rio Selvagem
+**Seção do GDD:** 17, 19 · **Situação:** Em vigor
+
+*Atualizado em 13/10/2026 (A-180): os mapas abrem só pelo nível do Pescador; a Vara 1 não é mais pedida, e a Vara Inicial pode ser usada no Rio Selvagem (pesca só os Comuns de lá).*
+
+Nível 10 **e** a Vara 1 equipada. No Rio Selvagem, a Vara Inicial não pode ser equipada.
+
+### A-031 · Comprar vara
+**Seção do GDD:** 19 · **Situação:** Confirmar
+
+*Atualizado em 13/10/2026 (A-180): nada mais monta sozinho. Com os fragmentos e a vara anterior no Inventário, o jogador aperta Montar; a vara montada vai para o Inventário e não é equipada sozinha.*
+
+*Atualizado em 12/10/2026 (A-153, A-163): as varas não são mais compradas na Loja nem pedem nível; vêm de fragmentos que caem pescando e do Passe e montam sozinhas. A vara montada vai para o Inventário e é equipada se for de categoria maior que a vara em uso.*
+
+Na Loja. A vara comprada vai para o Inventário e **já fica equipada**. Por enquanto só dá para ter
+**uma de cada vara** (não dá para comprar a Vara 1 duas vezes); isso pode mudar quando o Mercado
+existir.
+
+### A-032 · Melhorar, vender e destruir vara
+**Seção do GDD:** 19 · **Situação:** Confirmar
+
+No Perfil → Inventário. Melhorar custa as moedas de `rods.json → upgrade_costs`, sem falha. Vender ao
+jogo paga 40% do preço de compra + 25% do que foi gasto em melhorias. Vender e destruir pedem
+confirmação. **A vara equipada e a Vara Inicial não podem ser vendidas nem destruídas**, para o
+jogador nunca ficar sem vara.
+
+### A-033 · Aparência do Rio Selvagem
+**Seção do GDD:** 18 · **Situação:** Em vigor (arte provisória)
+
+Morros mais altos, mata densa e escura, água mais funda, brilhos que correm com a correnteza,
+pedras com espuma e uma cachoeira ao longe com névoa. A luz é mais fria que a do Lago Sereno.
+
+---
+
+## Milestone 5 — Pesca offline
+
+### A-034 · Pesca offline
+**Seção do GDD:** 10 · **Situação:** Em vigor
+
+*Atualizado em 12/10/2026 (A-159, A-160): a pesca offline faz 1 tentativa a cada 20 s (15 s com o VIP), não mais a cada 60 s; o limite de 24 h continua.*
+
+Se a pesca estava ligada quando o jogo fechou (ou quando o PC entrou em suspensão), o tempo fora
+vira capturas: 1 a cada 60 segundos, contando no máximo 24 horas. Tudo é calculado ao voltar. Se a
+pesca estava parada, ou se o jogo fechou no meio de uma viagem, não há pesca offline nesse período.
+
+### A-035 · Tela de retorno
+**Seção do GDD:** 10 · **Situação:** Em vigor
+
+*Atualizado em 13/10/2026 (A-175): a tela virou um relatório no padrão "Diário de bordo", com faixa de cena, cartões de números grandes, raridades, destaques, fragmentos e avisos.*
+
+Aparece ao voltar, se houve pelo menos um ciclo offline: tempo fora (e o aviso de limite de 24 h,
+quando passou), peixes pescados, XP, espécies novas, Conchas, subida de nível e até 4 capturas em
+destaque. Botões: "Abrir a Caixa de Pesca" e "Continuar".
+
+---
+
+## Milestone 6 — Expedições
+
+### A-036 · Força fotografada na partida
+**Seção do GDD:** 32 · **Situação:** Em vigor
+
+A recompensa usa a Força do Cardume do momento em que ele saiu. O Cardume fica travado durante a
+Expedição, então ela não muda até a volta.
+
+### A-037 · Moedas e peixe
+**Seção do GDD:** 32 · **Situação:** Confirmar
+
+Moedas = recompensa da Expedição × aproveitamento. A chance de achar um peixe é a configurada
+quando o Cardume está na força recomendada ou acima, e cai proporcionalmente quando está abaixo (o
+bônus acima da recomendada vale só para as moedas). O peixe vem das espécies do mapa de onde o
+Cardume saiu, com as raridades daquele mapa, e vai para a Caixa de Pesca.
+
+### A-038 · Travas durante a Expedição
+**Seção do GDD:** 32 · **Situação:** Em vigor
+
+Não dá para mudar a formação, alimentar, usar como alimento ou vender peixes do Cardume. Peixes
+fora do Cardume, a pesca, a viagem e a Loja continuam normais. A trava de ataque na Arena entra com
+a Arena (Milestone 7).
+
+### A-039 · Resultado
+**Seção do GDD:** 32 · **Situação:** Em vigor
+
+Com o jogo aberto: aviso na tela e a janela do resultado. Com o jogo fechado: a janela aparece na
+próxima vez que o jogo abrir (depois do Bem-vindo de volta, se houver).
+
+---
+
+## Milestone 7 — Arena local
+
+### A-040 · Adversários simulados
+**Seção do GDD:** 28, START HERE M7 · **Situação:** Em vigor (só no MVP local)
+
+200 adversários gerados no seu PC (`config/arena_bots.json`), sempre iguais: quanto melhor a posição
+inicial, maior o Cardume (2 a 6 peixes), maior o nível (1 a 10) e maior o tamanho; os de cima usam
+peixes do Rio Selvagem. Eles colocam os peixes mais resistentes na frente. Você começa em último.
+
+### A-041 · Seleção de adversários perto do topo
+**Seção do GDD:** 28 · **Situação:** Confirmar
+
+A janela é de ~10% acima da sua posição (arredondada para cima, no mínimo 1). Se ela tiver menos de
+três adversários (perto do 1º lugar), completa com os mais próximos logo abaixo de você. No 1º
+lugar, os três adversários são o 2º, o 3º e o 4º.
+
+### A-042 · Vencer contra alguém abaixo de você
+**Seção do GDD:** 29 · **Situação:** Confirmar
+
+Só acontece perto do topo. Você ganha a Honra da vitória, mas ninguém troca de posição.
+
+### A-043 · Ataques recebidos
+**Seção do GDD:** 28–30 · **Situação:** Confirmar
+
+A cada hora (também com o jogo fechado, até 24 verificações seguidas) há 35% de chance de um
+adversário até ~10% abaixo de você atacar. Se ele vence, as posições trocam; se você defende, +8 de
+Honra. Perder uma defesa não tira Honra. Quem está em último não é atacado (não há ninguém abaixo).
+
+### A-044 · Formação dos adversários na tela
+**Seção do GDD:** 26–27 · **Situação:** Em vigor
+
+Os dois Cardumes aparecem espelhados, frente perto do centro. Cada ataque é um pequeno avanço do
+peixe, um número de dano que sobe e some, e a barra de vida caindo. Não há efeito especial por
+espécie nesta versão.
+
+### A-045 · Loja da Arena vazia
+**Seção do GDD:** 30 · **Situação:** Precisa de decisão (`OD-009`)
+
+A aba existe e lê os itens de `arena.json → shop.items`, que está vazio. Nenhum item foi inventado.
+
+---
+
+## Milestone 8 — Mercado local
+
+### A-046 · O que pode ir para o Mercado
+**Seção do GDD:** 33 · **Situação:** Confirmar
+
+Peixes do Aquário e varas do Inventário. Capturas da Caixa de Pesca não: elas ainda não são peixes
+completos (seção 11), então precisam ser guardadas no Aquário antes. Peixe que está no Cardume
+precisa sair dele antes de ser anunciado. A Vara Inicial e a vara equipada não podem ser anunciadas.
+
+### A-047 · Duração do anúncio
+**Seção do GDD:** 33 · **Situação:** Confirmar
+
+Todo anúncio dura o máximo, 7 dias. O jogador pode cancelar a qualquer momento (o item vai para
+Itens a Retirar). Não há escolha de duração menor.
+
+### A-048 · Vara comprada no Mercado e revenda ao NPC
+**Seção do GDD:** 19, 33 · **Situação:** Confirmar
+
+A vara mantém tier, nível e bônus. A revenda ao NPC passa a considerar o que **você** pagou por ela
+no Mercado (e o que você gastar em melhorias depois), não o que o dono anterior gastou. Assim não
+dá para comprar barato no Mercado e revender ao NPC com lucro.
+
+### A-049 · Mercado simulado
+**Seção do GDD:** 33–34, START HERE M8 · **Situação:** Em vigor (só no MVP local)
+
+Os outros jogadores são simulados (`config/market_bots.json`). Vendedores: cerca de 30 anúncios de
+peixes dos dois mapas (alguns já com nível) e, às vezes, varas; novos anúncios de hora em hora,
+cada um válido por 48 h. Eles nunca vendem abaixo do que o NPC paga. Compradores: a cada 20 minutos
+cada anúncio seu tem uma chance de ser comprado — 25% no preço de referência, até o dobro se estiver
+barato, e zero a partir de 4× a referência. Referência de um peixe = venda ao NPC × 1,5 × (1 + 15% por
+nível acima do 1). A tela Vender mostra essa referência para ajudar a escolher o preço.
+
+### A-050 · Filtros e ordenação
+**Seção do GDD:** 34 · **Situação:** Em vigor
+
+Filtros combinados: tipo (peixes/varas), espécie, raridade, categoria de tamanho, tamanho mín./máx.,
+nível mín./máx. e preço mín./máx. Ordenação: menor preço, maior preço, maior tamanho, menor tamanho,
+mais recentes. "Maior tamanho" ordena pelo tamanho relativo à espécie (percentil), para comparar
+espécies diferentes de forma justa.
+
+---
+
+## Milestone 9 — Leilão local
+
+### A-051 · Quem já lidera não dá outro lance
+**Seção do GDD:** 35 · **Situação:** Confirmar
+
+Enquanto você tem o maior lance, não pode aumentar o próprio lance. Isso evita pagar a taxa de 1%
+duas vezes por engano (clique duplo, reconexão) e é o que torna um pedido repetido seguro.
+
+### A-052 · Arredondamentos
+**Seção do GDD:** 35 · **Situação:** Em vigor
+
+Lance mínimo seguinte = lance atual × 1,03 arredondado para cima (no exemplo do GDD, 10.000 →
+10.300). Taxa de 1% arredondada para o inteiro mais próximo (10.300 → 103). O primeiro lance
+precisa ser pelo menos o lance inicial.
+
+### A-053 · Leilão e anúncios
+**Seção do GDD:** 33, 35 · **Situação:** Confirmar
+
+O leilão conta separado dos 5 anúncios de preço fixo. As regras do que pode ir são as mesmas do
+Mercado (peixe fora do Cardume; nem a Vara Inicial nem a vara equipada). Vara ganha em leilão: a
+revenda ao NPC considera o lance vencedor, como em A-048.
+
+### A-054 · Leilões simulados
+**Seção do GDD:** 35, START HERE M9 · **Situação:** Em vigor (só no MVP local)
+
+Cerca de 8 leilões de outros jogadores ficam abertos, com 2 novos por hora; o lance inicial fica
+entre 50% e 90% da referência e nunca abaixo do que o NPC paga. A cada 10 minutos cada leilão —
+inclusive o seu — tem 30% de chance de receber um lance simulado, de até 1,4× a referência. Tudo em
+`config/market_bots.json → auctions`.
+
+---
+
+## Milestone 10 — Tutorial, UX e polimento
+
+### A-055 · Passos do tutorial
+**Seção do GDD:** 40 · **Situação:** Confirmar
+
+Nove passos: boas-vindas → pegar a Vara Inicial na Loja (grátis, equipa sozinha) → iniciar a pesca →
+primeira captura (o aviso mostra espécie, tamanho e categoria) → abrir a Caixa de Pesca → vender um
+peixe → guardar um peixe no Aquário → colocar um peixe no Cardume → conhecer a Expedição (basta abrir
+o menu ou clicar em Entendi; não precisa enviar). Os passos "ver as informações do peixe" e "a
+Caixa" do GDD ficaram juntos no aviso da primeira captura e na abertura da Caixa. Arena, Mercado e
+Leilão não entram no tutorial.
+
+### A-056 · Pular o tutorial e saves antigos
+**Seção do GDD:** 40 · **Situação:** Em vigor
+
+O botão Pular tutorial aparece em todos os passos. Quem pula antes de pegar a vara recebe a Vara
+Inicial na hora, para nunca ficar sem poder pescar. Quem já jogava antes desta versão não vê o
+tutorial.
+
+### A-057 · Central de notificações
+**Seção do GDD:** 39 · **Situação:** Confirmar
+
+O sino guarda os últimos 50 avisos relevantes enquanto o jogo está aberto (não são gravados). Entram:
+espécie nova, recorde pessoal, Excepcional, subir de nível, venda no Mercado, leilão vendido/sem
+lances/ganho/perdido, lance superado, anúncio vencido, Expedição concluída e ataques recebidos na
+Arena. Capturas comuns e mensagens de erro ficam só como aviso rápido.
+
+### A-058 · Modo compacto
+**Seção do GDD:** 9 · **Situação:** Em vigor
+
+Opções → Modo compacto muda a janela para 480×270 e esconde tudo, menos a cena, uma linha com o estado
+da pesca e a Caixa, e o nome da última captura por 5 segundos. Expandir volta ao tamanho anterior.
+
+### A-059 · Menu secundário
+**Seção do GDD:** 7 · **Situação:** Em vigor
+
+À direita do menu de cima: Moedas, Avisos (o sino, com contador de não lidos) e Opções (som, som
+ambiente, volume e modo compacto). As Conchas foram para o cartão do jogador, só quando houver alguma.
+
+### A-060 · Destaque de captura importante
+**Seção do GDD:** 8 · **Situação:** Em vigor
+
+Além da aura pulsante (roxa para rara, dourada para Excepcional, azul-clara para espécie nova), a
+captura importante solta um punhado de faíscas da mesma cor que sobem e somem.
+
+---
+
+## Milestone 11 — Preparação do balanceamento
+
+### A-061 · Nenhum número foi balanceado
+**Seção do GDD:** 46, START HERE M11 · **Situação:** Em vigor
+
+A pedido do proprietário, o Milestone 11 não mudou valores de `/config`. Ele entregou o simulador
+(`./ops/scripts/simular.sh`) e o relatório com os números atuais; as revisões de progressão,
+economia, raridade, combate, Expedições, varas, Mercado e Leilão ficam como tarefas abertas até o
+proprietário decidir as metas.
+
+### A-062 · Comprador simulado e vendedor
+**Seção do GDD:** 35 · **Situação:** Em vigor (só no MVP local)
+
+No leilão, o jogador simulado que dá o lance nunca é o próprio vendedor nem quem já tem o maior
+lance.
+
+---
+
+## Revisão geral (após o Milestone 11)
+
+### A-063 · Pesca depois de uma viagem com o jogo fechado
+**Seção do GDD:** 10, 18 · **Situação:** Em vigor
+
+Se a pesca estava ligada ao partir, ela volta a contar a partir do momento em que o barco **chega**,
+mesmo com o jogo fechado: o tempo entre a chegada e a volta do jogador vira pesca offline (1 captura
+por minuto, até 24 h), como qualquer outro tempo fora do jogo.
+
+### A-064 · Trocar de vara durante a viagem
+**Seção do GDD:** 18, 19 · **Situação:** Em vigor
+
+Durante a viagem, só dá para equipar uma vara que sirva tanto no mapa de onde o barco saiu quanto no
+de destino. Assim ninguém chega a um mapa com uma vara que ele não aceita.
+
+### A-065 · Vender um peixe do Cardume pelo Aquário
+**Seção do GDD:** 12, 23 · **Situação:** Em vigor
+
+A confirmação de venda avisa, em destaque, quando o peixe está no Cardume e vai sair dele.
+
+---
+
+## V0.2 — Milestone 13: Áudio e ambiente
+
+### A-066 · Som de cada momento
+**Seção do GDD:** 8, 39 · **Situação:** Confirmar
+
+| Momento | Som |
+|---|---|
+| Peixe pescado | Respingo curto e uma nota de marimba |
+| Captura rara, Excepcional ou espécie nova | Respingo e um arpejo de sininhos |
+| Recorde pessoal | Duas notas de marimba com brilho |
+| Subir de nível (Pescador ou peixe) | Arpejo subindo com um acorde suave |
+| Moedas (venda) | Tilintar de moedas |
+| Momento importante (Expedição, leilão ganho…) | Dois sininhos |
+| Aviso ou erro | Duas notas graves de marimba |
+| Outros avisos (iniciar pesca…) | Clique bem discreto |
+
+Se vários chegam juntos, toca só o mais importante, nesta ordem: recorde, subir de nível, captura
+rara, momento importante, moedas, peixe pescado, aviso, clique.
+
+### A-067 · Ambiente
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+Mar calmo (ondas a cada 6–9 s) na frente e uma brisa bem baixa atrás, os dois em loop. O mesmo
+ambiente nos dois mapas por enquanto. Entra e sai com fade de 3 s. "Som ambiente" em Opções liga e
+desliga os dois.
+
+---
+
+## V0.2 — Milestone 14: Visual Lago Dourado
+
+### A-068 · A Bíblia de Arte decide o visual
+**Seção do GDD:** 8 · **Situação:** Em vigor
+
+O visual do jogo segue `docs/ART_BIBLE_V0_1.md`, enviada pelo proprietário em 29/09/2026. Ela
+responde três dúvidas que estavam em aberto:
+
+| Dúvida | Decisão | Seção da Bíblia |
+|---|---|---|
+| Câmera da cena de pesca | Continua lateral 2.5D, com camadas de profundidade | 9 |
+| Quais raridades aparecem | Só as que existem nos dados (hoje Comum e Raro); as outras cores ficam reservadas | 4 |
+| Fontes | Fredoka nos títulos e números, Nunito no corpo (as duas gratuitas) | 11 |
+
+O tamanho Excepcional continua sendo tamanho, não raridade: tem um selo próprio com brilho dourado,
+separado da cor de raridade do card.
+
+### A-069 · O documento de 185 referências
+**Seção do GDD:** 8 · **Situação:** Em vigor
+
+O documento "Visual Bible 0.1 — 185 referências", enviado pelo proprietário em 29/09/2026, é
+vocabulário visual: composição das telas, cards, cenário e momentos especiais. Ele **não** cria
+mecânicas. Onde uma referência mostra algo que o jogo não tem (filtros extras no Mercado, cards
+Incomum/Épico/Lendário, "Excepcional" como raridade, cachorro no barco, Força do Cardume na tela de
+pesca), vale o que existe nos dados e o GDD. Em especial, **Excepcional continua sendo tamanho**, com
+o seu selo dourado, separado da cor de raridade.
+
+### A-070 · Três níveis de intensidade
+**Seção do GDD:** 8, 39 · **Situação:** Confirmar
+
+| Nível | Quando | O que aparece |
+|---|---|---|
+| Calmo | Cena e menus | Água, nuvens, sol, barco, boia e juncos sempre se movendo, sem brilho chamativo |
+| Recompensa | Peixe pescado, venda, moedas | Aviso com acento colorido à esquerda (turquesa, dourado ou vermelho), contador de moedas que sobe com "+N" |
+| Celebração | Captura rara, tamanho Excepcional, recorde, espécie nova, subir de nível, leilão vencido | Faixa grande no alto da tela com raios de luz, 3,2 s (ajustável), sem travar o jogo |
+
+Quando vários peixes chegam juntos, só o mais valioso ganha faixa. As faixas nunca se empilham: uma
+espera a outra (no máximo três na fila). A volta do offline continua sendo **um resumo só**.
+
+### A-071 · Cor de cada momento
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+| Momento | Cor da faixa | Texto |
+|---|---|---|
+| Captura rara | A cor da raridade (Raro = azul) | "Captura rara!" · espécie · raridade · tamanho |
+| Tamanho Excepcional | Dourado | "Tamanho Excepcional!" · espécie · tamanho |
+| Novo recorde pessoal | Dourado | "Novo recorde!" · espécie · tamanho antigo → novo |
+| Nova espécie | Turquesa | "Nova espécie!" · a silhueta do peixe se colore |
+| Subir de nível | Dourado | "Nível N!" |
+| Leilão vencido | Dourado | "Você venceu o leilão!" · onde o item está |
+| Vitória na Arena | Dourado, com raios, no resultado da batalha | — |
+
+A aura do peixe na cena segue a mesma regra: cor da raridade, dourado para Excepcional, turquesa para
+espécie nova ou recorde.
+
+### A-072 · Card de peixe
+**Seção do GDD:** 11, 12, 44 · **Situação:** Em vigor
+
+Todo peixe aparece no mesmo card: selo da raridade no alto à esquerda (com estrela), selo de status
+no alto à direita ("NOVA ESPÉCIE", "RECORDE") ou o ✓ quando selecionado, o peixe grande no meio,
+nome, tamanho, barra na cor da raridade e, embaixo, nível à esquerda e preço à direita. A borda do
+card é a cor da raridade (Comum bem discreta). O tamanho Excepcional ganha um selo dourado sobre o
+peixe, com um brilho que passa de tempos em tempos, e um halo dourado suave atrás do peixe.
+
+### A-073 · Tela principal
+**Seção do GDD:** 7, 8 · **Situação:** Em vigor
+
+Barra do topo com o nome do jogo e o mapa, os menus com ícone e nome (só ícones quando a tela é
+estreita), o contador de moedas, o sino com a bolinha vermelha de não lidos e Opções. Cartão do
+pescador com retrato, nível, barra de XP e linhas com ícone. Painel de pesca com ícone do anzol,
+estado, próxima captura, barra do ciclo e o botão Iniciar/Parar pesca. Botão da Caixa de Pesca no
+canto com a caixa dourada. O tutorial passa a destacar em turquesa (dourado fica para recompensa).
+
+### A-074 · Fotos nos menus
+**Seção do GDD:** 18, 30, 31 · **Situação:** Em vigor
+
+Os cards do Mapa mostram uma foto do lugar (escurecida com cadeado se ainda bloqueado), as quatro
+Expedições têm cada uma a sua paisagem, e a Loja e o Mercado mostram a vara desenhada.
+
+### A-075 · Vida na cena
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+Pequenos sinais de vida, sempre discretos (nível Calmo da Bíblia de Arte):
+
+| O quê | Onde | Com que frequência |
+|---|---|---|
+| Poeira dourada flutuando na luz | Ar sobre o lago (no Rio, clara) | Sempre, 14 partículas no Lago e 9 no Rio |
+| Libélula que entra, paira perto dos juncos e vai embora | Cantos de baixo | A cada 25–55 s |
+| Sombra de peixe passando embaixo d'água | Água | A cada 12–26 s |
+| Raios de sol bem fracos saindo do sol | Céu e água | Sempre, "respirando" devagar |
+| Névoa fina correndo no horizonte | Horizonte | Sempre |
+| Brilhos em estrela no reflexo do sol | Coluna de luz (só no Lago) | A cada 0,5–1,3 s |
+| Anéis na água em volta do barco e da boia | Água | A cada 2–4 s |
+| Respingos quando o peixe sai da água, e gotas pingando dele | Captura | Em toda captura; mais respingo na captura importante |
+| Brilho suave pulsando atrás de "Iniciar pesca" | Painel de pesca | Só com a pesca parada |
+
+Tudo pode ser reduzido ou desligado em `ambient_life` no `tema_visual.json` (0 desliga, 1 é o normal,
+até 2).
+
+### A-076 · A arte final do proprietário
+**Seção do GDD:** 8, 44 · **Situação:** Em vigor
+
+Os 32 pedidos feitos no ChatGPT (29/09/2026) substituíram a arte provisória: céu, montanhas, morros,
+margens, juncos e nuvens dos dois mapas; os 20 peixes; barco, pescador, retrato e caixa de pesca; 16
+ícones, a moeda e a concha; as duas varas; as quatro Expedições; e as fotos dos mapas. Na cena, o
+pescador fica sentado no banco, dentro do barco (o casco é desenhado em duas camadas, atrás e na
+frente dele), com as mãos no joelho e a vara apoiada nelas; as margens e montanhas se
+refletem na água, ondulando devagar. O retrato aparece no cartão do pescador e no Perfil.
+
+### A-077 · Água viva
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+A superfície da água se mexe: dez fileiras de ondinhas (um brilho claro com uma sombra fina embaixo)
+deslizam devagar, pequenas perto do horizonte e maiores perto de quem olha. No Lago Sereno as
+fileiras vão para lados alternados; no Rio Selvagem todas descem com a correnteza, mais rápido na
+frente. Os reflexos das margens e montanhas são cortados em faixas que balançam fora de compasso,
+mais longe do horizonte, mais balançam e mais apagados ficam. A textura das ondas é o arquivo
+`Arte/Agua/ondas.png` (pode ser trocada).
+
+### A-078 · Paisagem viva
+**Seção do GDD:** 8 · **Situação:** Confirmar
+
+Plantas e árvores soltas balançando na frente das margens, e animais que aparecem de vez em quando
+(aves voando; garça, capivara, tartaruga, sapo e patos nas margens e na água; jacaré e macacos só no
+Rio Selvagem) entram quando o proprietário mandar as imagens do documento "Pedidos de arte: paisagem
+viva". São só cenário: nenhuma regra, recompensa ou mecânica nova.
+
+Ritmo, a pedido do proprietário (sem "spam" de animação): um diretor de cenário deixa aparecer no
+máximo um animal por vez, com descanso mínimo entre eles; os intervalos são sorteados (nunca fixos),
+cada animal tem a sua raridade e não repete logo em seguida; as plantas balançam em rajadas de vento
+que atravessam a tela, quase paradas entre elas; nada novo aparece durante uma celebração ou com
+uma janela aberta. O ritmo do que já existe (peixes saltando, pássaros, libélulas, sombras) passa
+pela mesma regra quando isso for feito.
+
+**Feito (30/09/2026), com as imagens Vivo 01 a 18.** Plantas: pinheiros e uma árvore de copa redonda
+nas pontas das margens do Lago Sereno, palmeiras e bananeiras nas do Rio Selvagem (com reflexo na
+água), juncos e taboas (Lago) ou folhagens tropicais (Rio) junto das moitas dos cantos, e
+vitórias-régias boiando no Lago. Elas vergam nas rajadas de vento, que atravessam a tela da esquerda
+para a direita a cada 8 a 20 segundos; entre as rajadas, ficam quase paradas.
+
+Animais (um por vez; depois que um sai, a cena descansa de 25 a 60 segundos; o primeiro aparece de
+12 a 25 segundos depois de abrir o jogo):
+
+| Animal | Onde | Como se comporta |
+|---|---|---|
+| Patos-do-mato voando | Céu, os dois mapas | Bando de 3 a 5 em fila solta, batendo as asas rápido |
+| Garça-branca voando | Céu, os dois mapas | Sozinha, asas lentas (umas duas batidas por segundo) |
+| Garça-branca na beira | Água rasa junto da moita da direita | Pousa planando, fica parada muito tempo, às vezes espreita e dá uma bicada na água; depois voa embora |
+| Andorinhas | Rente à água | 2 ou 3, rasantes rápidos, batendo as asas em rajadas |
+| Martim-pescador | Galho na moita da esquerda | Chega voando, espera no galho, mergulha com respingo e sai voando (às vezes só vai embora); o galho fica |
+| Patos nadando | Meio do lago/rio | Casal atravessando devagar (no Rio, com a correnteza), às vezes mergulha a cabeça ou sacode as asas |
+| Capivaras | Margem esquerda, ao fundo | Chega andando (às vezes com filhote), pasta um tempo e volta |
+| Tartaruga | Pedra do canto direito | Sobe da água, toma sol, estica a cabeça de vez em quando e escorrega de volta |
+| Sapo | Vitória-régia (só Lago) | Pula na folha, coaxa em sequências curtas e pula na água |
+| Araras | Céu (só Rio) | Sempre em casal |
+| Tucano | Céu (só Rio) | Voo em "bate e plana" |
+| Jacaré | Água (só Rio) | Sobe à tona, desce o rio só com olhos e focinho de fora e afunda |
+| Jacaré na margem | Margem direita (só Rio) | Sai da água e fica deitado de boca entreaberta |
+| Macaco-prego e bugio | Árvores das margens (só Rio) | Aparecem entre as folhas, um pendurado pela cauda balançando |
+
+As posições, a chance de cada animal e os tempos ficam em `Resources/Visual/paisagem_viva.json` e
+podem ser ajustados sem mexer em código.
+
+### A-079 · Dois filtros na Caixa de Pesca e cores de raridade e tamanho
+**Seção do GDD:** 11 · **Situação:** Decidido pelo proprietário (29/09/2026)
+
+Muda a regra "um filtro principal por vez" da seção 11, a pedido do proprietário: a Caixa de Pesca
+tem **dois grupos de filtro separados**, Raridade (Todas · Comum · Raro) e Tamanho (Todos · Pequeno ·
+Adulto · Grande · Excepcional). Um de cada grupo pode estar escolhido ao mesmo tempo e eles se
+combinam (Raro + Grande mostra só os Raros grandes). "Revisar peixes", na confirmação de venda,
+continua mostrando só os peixes valiosos da venda, por cima dos dois filtros.
+
+Cores (primeira definição, ajustáveis em `Resources/Visual/tema_visual.json`):
+
+| | Cor |
+|---|---|
+| Comum | branco |
+| Raro | azul |
+| Pequeno | verde |
+| Adulto | lilás |
+| Grande | laranja |
+| Excepcional | dourado (o mesmo selo com brilho de sempre) |
+
+A cor continua sendo só acento, como manda a Bíblia de Arte: um ponto colorido no filtro (fundo e
+borda na cor quando escolhido), a borda, o selo e a barra do card para a raridade, e o nome do
+tamanho escrito na cor dele no card. No tamanho Excepcional, o selo dourado ocupa esse mesmo lugar (o canto
+direito da linha do tamanho, abaixo do nome), em vez de ficar por cima do desenho do peixe. As raridades reservadas para depois (Incomum, Épico, Lendário,
+Mítico) têm cores guardadas no tema; se alguma entrar no jogo, as cores de tamanho são revistas para
+não se confundirem.
+
+A cor do tamanho vale em todas as telas, não só na Caixa de Pesca: nos cards do Aquário (inclusive
+na escolha de alimento) e do Mercado, na ficha do peixe no Aquário (um selo na cor do tamanho ao lado
+do selo da raridade), nas linhas do Mercado (anúncios, retiradas e detalhes), nos filtros de
+raridade e tamanho do Mercado e na lista de peixes do Cardume, no Perfil.
+
+### A-080 · Som só nos momentos que importam
+**Seção do GDD:** 8, 39 · **Situação:** Decidido pelo proprietário (29/09/2026)
+
+Muda a A-066: o proprietário achou cansativo ter som em todo aviso. Agora os avisos só fazem som em
+três momentos:
+
+| Momento | Som |
+|---|---|
+| Subir de nível (Pescador ou peixe) | Arpejo subindo com um acorde suave |
+| Captura Excepcional | Respingo e um arpejo de sininhos |
+| Espécie nova | Respingo e um arpejo de sininhos |
+
+Os outros avisos (peixe pescado, peixe raro, recorde, moedas, Expedição, Mercado, avisos e erros,
+iniciar pesca…) continuam aparecendo na tela, mas em silêncio. O som ambiente (mar e brisa) não muda
+e continua com a sua própria chave em Opções. Os arquivos dos sons silenciados ficam guardados em
+`Resources/Sons`, sem uso.
+
+### A-081 · Ambiente com gravações longas
+**Seção do GDD:** 8, 39 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+Muda a A-067: o proprietário achou esquisito o som de ondas feito por código, que se repete a cada
+poucos segundos. O ambiente de cada mapa passa a ser uma lista de gravações reais e sem direitos
+autorais, de 2 a 3 minutos cada (Lago Sereno: água calma batendo na margem, pássaros ao longe; Rio
+Selvagem: correnteza, mata), tocadas uma depois da outra em ordem sorteada, com 8 segundos de
+passagem suave entre elas e sem repetir a que acabou de tocar. Com 4 gravações por mapa, o que se
+ouviu só volta depois de uns 10 minutos. Ao trocar de mapa, o som passa suavemente para o do mapa
+novo. Enquanto as gravações não chegam, fica o som antigo. `ASSET_PENDENTE`: as gravações.
+
+### A-082 · Relatório da Expedição dentro da aba Expedição
+**Seção do GDD:** 32 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+Quando o Cardume volta, o resultado não aparece mais solto por cima da tela, onde o jogador estiver.
+Aparece um aviso ("Seu Cardume voltou da Expedição!") e um ponto vermelho no botão Expedição. Na
+próxima vez que o jogador abrir a Expedição, o **relatório** abre por cima da aba: a foto da
+Expedição, quando ela voltou (data e hora), as moedas que trouxe, o aproveitamento e o peixe
+encontrado, com o card oficial em destaque. Enquanto o relatório está aberto, a aba fica por trás,
+sem poder ser usada. Ao clicar em "Ótimo!", o relatório some e não volta; se o jogador fechar a aba
+sem clicar, ele continua lá na próxima vez (também depois de fechar o jogo). As moedas e o peixe já
+estão com o jogador desde a volta: o relatório só mostra.
+
+### A-083 · Peixes mais raros vêm grandes um pouco menos
+**Seção do GDD:** 36 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+Muda o sorteio de tamanho da seção 36, que era igual para toda raridade: quanto mais rara a raridade
+do peixe, um pouco menor a chance de ele vir Grande ou Excepcional, e maior a de vir Pequeno ou
+Adulto. A mudança é pequena de propósito. Com os valores atuais (`progression.json`,
+`size_weight_multipliers` de cada raridade):
+
+| Raridade | Pequeno | Adulto | Grande | Excepcional |
+|---|---|---|---|---|
+| Comum | 20% | 60% | 19% | 1% |
+| Raro | 20,7% | 62,0% | 16,7% | 0,72% |
+
+O bônus de qualidade de tamanho da vara continua valendo por cima (ele multiplica Grande e
+Excepcional, e a raridade multiplica de novo). Raridades novas, quando entrarem, ganham os seus
+próprios multiplicadores, cada vez menores.
+
+### A-084 · Busca pelo nome do peixe
+**Seção do GDD:** 11, 12, 30 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+A Caixa de Pesca, o Aquário e o Mercado têm um campo "Buscar peixe pelo nome", com uma lupa:
+
+- **Caixa de Pesca e Aquário:** no alto da janela, ao lado de "Fechar". Na Caixa, a busca se soma
+  aos filtros de raridade e tamanho; no Aquário, vale para a lista e para a escolha de alimento.
+- **Mercado:** no alto, à direita, nas abas Comprar, Vender e Leilão (também na escolha do peixe para
+  criar um leilão). Trocar de aba começa a busca vazia. *(Revisto em 01/10/2026: antes, em Comprar, a
+  busca era o primeiro filtro da coluna e passava despercebida, e o Leilão não tinha busca.)*
+
+Basta digitar parte do nome, sem se preocupar com maiúsculas ou acentos ("tilapia" acha "Tilápia",
+"dour" acha "Dourado"). O ✕ limpa a busca. Ao abrir a janela de novo, a busca começa vazia. É só um
+jeito de achar o peixe na tela: não muda nenhuma regra.
+
+### A-085 · Cada mapa é um capítulo da jornada
+**Seção do GDD:** 18 · **Situação:** Decidido pelo proprietário (30/09/2026, `docs/IDENTIDADE_POR_MAPA.md`)
+
+Ao chegar a um mapa depois da viagem, o nome dele aparece por cima da cena como o título de um
+capítulo: "CAPÍTULO 2" em dourado, o nome do mapa grande e uma frase curta com a sensação do lugar
+(Lago Sereno: "Um começo tranquilo e bonito."; Rio Selvagem: "A aventura sai do conforto do lago.").
+Ele surge devagar, fica uns 4 segundos e some sozinho, sem caixa, sem raios e sem bloquear nada; o
+aviso "Você chegou a…" saiu, porque o título faz esse papel. No menu do Mapa, cada card mostra o
+capítulo e a mesma frase. O número do capítulo segue o nível que libera o mapa.
+
+O resto do documento de identidade já vale para os dois mapas: fauna própria (A-078), água própria
+(A-077: calma no Lago, correnteza no Rio), luz própria (fim de tarde e manhã) e som ambiente próprio
+por mapa (A-081, gravações pendentes). Os mapas 3 e 4 dependem da decisão `OD-018`.
+
+### A-086 · Tamanho Perfeição, acima do Excepcional
+**Seção do GDD:** 36 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+Nova categoria de tamanho, acima do Excepcional: **Perfeição**. De cada 100 peixes que viriam
+Excepcionais, 1 vem Perfeição (no Comum: Excepcional 0,99% e Perfeição 0,01%; no Raro, os dois caem
+na mesma proporção, 0,72% e 0,007%). É o maior tamanho possível da espécie (percentil 99,8 a 100) e dá
+**+5% em todos os atributos** daquele peixe (Vida, Ataque, Defesa e Velocidade), para sempre.
+
+Como o Excepcional, ela tem selo próprio (PERFEIÇÃO, em azul-diamante com o brilho que passa),
+aviso com som, celebração própria ("Perfeição!"), pede confirmação na venda em lote, conta como
+alimento valioso e ganha um filtro na Caixa de Pesca. O Perfil conta as capturas Perfeição. O bônus
+de tamanho da vara vale para ela como vale para o Excepcional. Tudo ajustável em
+`config/progression.json` (`draw_weight`, `stat_multiplier`).
+
+### A-087 · Ordenar a Caixa de Pesca pelos mais caros
+**Seção do GDD:** 11 · **Situação:** Decidido pelo proprietário (30/09/2026, aprovado pela prévia)
+
+Abaixo dos filtros da Caixa de Pesca, uma linha "Ordenar:" com **Mais recentes** (a ordem de sempre,
+a que aparece ao abrir) e **Mais caros** (o peixe que vale mais moedas primeiro, pelo mesmo valor do
+card; em empate, o mais recente primeiro). A ordem se soma aos filtros e à busca.
+
+### A-088 · Sucesso da Captura: o peixe pode escapar
+**Seção do GDD:** 8, 9, 10 · **Situação:** Decidido pelo proprietário (30/09/2026, `docs/SISTEMA_SUCESSO_PESCA.md`)
+
+Cada tentativa de pesca tem duas etapas. Primeiro o jogo sorteia o peixe que mordeu, como sempre.
+Depois sorteia se o pescador consegue puxá-lo, com a **Chance de Sucesso da Captura**:
+
+> chance = chance-base da raridade + vara + barco + isca, sempre entre 5% e 95%
+
+Chance-base: **Comum 50%**, **Raro 38%**. A do **Épico (24%)** entra quando essa raridade existir
+(mapas 3 e 4, decisão `OD-019`). Se o peixe escapa, nada acontece com o save além da contagem de
+escapes: sem peixe na Caixa, sem XP, sem Conchas, sem espécie descoberta, sem recorde. A pesca
+offline usa a mesma regra, tentativa por tentativa. O intervalo da pesca não mudou (30 s online,
+60 s offline); os textos agora falam em "tentativa" e "fisgada" em vez de "captura".
+
+O escape dura poucos segundos e nunca bloqueia: a vara luta, a boia afunda e uma sombra escura se
+mexe na água; depois a linha afrouxa, sobe um respingo curto, a sombra foge e o pescador lança de
+novo. Por cima da boia sobe **"Você ainda não é bom o suficiente."** e, menor, "Melhore sua vara,
+barco ou isca para aumentar suas chances.". A espécie que escapou não é revelada, só a raridade.
+Peixe mais raro luta mais tempo e mais forte, a mensagem ganha a cor da raridade e fica um aviso na
+lista ("Um peixe Raro escapou! Sua chance de puxar era 43%."). O escape de um Comum não gera aviso na
+lista, para não virar spam. **Sem som:** decidido pelo proprietário em 01/10/2026 (`OD-020`); vale a
+regra de som só no nível, no Excepcional/Perfeição e na espécie nova (A-080). O "Bem-vindo de volta" mostra quantos peixes escaparam. O Perfil ainda não mostra
+os escapes (só ficam contados no save).
+
+### A-089 · Barcos
+**Seção do GDD:** 7, 19 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+*Atualizado em 12/10/2026 (A-153, A-156, A-157, A-168): os barcos não são mais vendidos nem pedem nível. São 5 (mais o inicial, sem bônus), montados com fragmentos que caem pescando (cada barco em dois mapas) e no Passe, e sobem do Nv.1 ao Nv.100 com Moedas e Conchas (+2% a +10% no Nv.1, 3× no Nv.100). A tabela abaixo é a de 30/09/2026.*
+
+Nova aba **Barcos** na Loja. O barco é para sempre, soma pontos na Chance de Sucesso e pode ser
+trocado por outro que o jogador já tem. Comprar já coloca em uso.
+
+| Barco | Bônus | Custo | Nível |
+|---|---:|---:|---:|
+| Barco Inicial | +0% | todo jogador tem | 1 |
+| Barco 1 | +3% | 3.000 moedas | 5 |
+| Barco 2 | +6% | 15.000 moedas | 12 |
+| Barco 3 | +9% | 45.000 moedas + 30 conchas | 20 |
+| Barco 4 | +12% | 130.000 moedas + 120 conchas | 30 |
+| Barco 5 | +15% | 350.000 moedas + 350 conchas | 40 |
+
+São as primeiras compras que gastam **Conchas**. O barco ainda não aparece na cena: cada um usa o
+ícone de barco até a arte existir (`ASSET_PENDENTE`, `M15-T07`). Números provisórios, em
+`config/equipment.json`.
+
+### A-090 · Iscas
+**Seção do GDD:** 7 · **Situação:** Decidido pelo proprietário (30/09/2026)
+
+*Atualizado em 12/10/2026 (A-161): são três iscas (Terra Viva +5%, Maré Viva +10%, Ouro de Maré +15%), com 999 tentativas por compra e sem nível mínimo. A tabela abaixo é a de 30/09/2026.*
+
+Nova aba **Iscas** na Loja. Cada compra dá **100 tentativas**; comprar de novo soma. A isca em uso
+gasta 1 tentativa por pescaria, puxando o peixe ou não, também offline. Só uma fica em uso;
+"Guardar" tira a isca de uso sem perder as tentativas, e "Usar" troca por outra que ainda tem
+tentativas. Quando a última tentativa acaba, a isca sai de uso sozinha e aparece o aviso "Sua Isca
+Simples acabou. Compre mais na Loja → Iscas." (também no "Bem-vindo de volta"). O jogo não troca
+sozinho para outra isca.
+
+| Isca | Bônus | Custo (100 tentativas) | Nível |
+|---|---:|---:|---:|
+| Isca Simples | +5% | 200 moedas | 1 |
+| Isca Melhorada | +10% | 1.200 moedas | 10 |
+| Isca Premium | +15% | 800 moedas + 6 conchas | 18 |
+
+### A-091 · Onde o jogador vê a chance
+**Seção do GDD:** 8 · **Situação:** Decidido na implementação (30/09/2026)
+
+- **Painel de pesca:** a segunda linha da direita (antes, o nome do mapa, que continua na barra de
+  cima) mostra a chance de cada raridade que morde ali ("Comum 50% · Raro 38%") e, com isca em uso, o
+  ícone da isca com as tentativas que faltam. Clicar abre a Loja.
+- **Loja:** à esquerda, "Seu equipamento" com a vara, o barco e a isca, o bônus de cada um e o total,
+  e "Chance de puxar o peixe" por raridade, com barra. Raridade que não morde no mapa atual aparece
+  apagada, com "não morde aqui". A vara mostra o novo bônus "Sucesso da captura" (Vara Inicial +0%,
+  Vara 1 de +2% a +12%).
+
+### A-092 · Rebalanceamento do Sucesso da Captura
+**Seção do GDD:** 17, 36 · **Situação:** Decidido na implementação (30/09/2026), números provisórios
+
+Com metade das mordidas escapando no começo, o jogo ficaria duas vezes mais lento. Para manter o
+ritmo sem mexer no intervalo de pesca:
+
+- XP do Pescador, valor de venda e XP como alimento de todas as espécies foram **dobrados**;
+- a chance de Conchas por peixe puxado foi de 5% para **10%**;
+- o Aruanã (Raro) morde duas vezes mais: peso de 5 para **10** no Rio Selvagem.
+
+Resultado medido no simulador (5 jogadores, estratégia da seção 1 do relatório):
+
+| Medida | Antes | Agora |
+|---|---:|---:|
+| Nível 10 | 2,1 h | 2,1 h |
+| Nível 20 | 4,6 h | 4,4 h |
+| Nível 30 | 10,1 h | 8,8 h |
+| Peixes na Caixa por hora | 120 | 78 (e 42 escapes) |
+| Moedas por hora, Lago Sereno | 3.375 | 3.298 |
+| Moedas por hora, Rio Selvagem | 27.182 | 37.481 |
+| Conchas por hora, Rio Selvagem | 5,6 | 7,6 |
+| Primeiro peixe Raro | 3,8 h | 3,9 h |
+
+O Rio Selvagem rende mais que antes porque o jogador simulado compra barcos. Os barcos (543 mil
+moedas e 500 conchas no total) e as iscas são o gasto novo. Detalhes em
+`docs/relatorios/SIMULACAO_BALANCEAMENTO.md`, seção 7.
+
+### A-093 · Mapas 3 e 4, raridade Épico e Vara 2
+**Seção do GDD:** 17, 19, 21, 22 · **Situação:** Decidido pelo proprietário (30/09/2026, `docs/PROGRESSAO_MAPAS_3_4.md`)
+
+*Atualizado em 13/10/2026 (A-180): a coluna "Vara mínima" é histórica; os mapas abrem só pelo nível do Pescador.*
+
+| Mapa | Nível | Vara mínima | Espécies | Épicos |
+|---|---:|---|---|---|
+| Pantanal Dourado (`map_03`) | 20 | Vara 1 | 6 Comuns, 3 Raros, 1 Épico | Barbado |
+| Estuário das Marés (`map_04`) | 30 | Vara 2 | 5 Comuns, 3 Raros, 2 Épicos | Camurupim e Mero |
+
+- **Épico**, acima do Raro: roxo `#A855F7`, venda ×4, atributos ×1,3, XP do Pescador ×5, XP como
+  alimento ×3,5. Chance de puxar 24% (A-088). Vem Grande ×0,7, Excepcional ×0,45 e Perfeição ×0,45 (a
+  regra do A-083 levada ao Épico). Pede confirmação na venda em lote e conta como alimento valioso.
+- **Vara 1** agora pesca Épico, mas só onde o mapa tem Épico: o Rio Selvagem continua sem nenhum.
+- **Vara 2:** 90.000 moedas, liberada no nível 30, Nv.1 a 10 (melhorias de 10.000 a 260.000; 765.000 no
+  total), bônus de raridade de +24% a +50%, tamanho de +23% a +42%, Conchas de +55% a +110% e puxar de
+  +8% a +20%. O Nv.1 começa um pouco acima da Vara 1 Nv.10.
+- Atributos, tamanhos e pesos das 20 espécies são os do documento. **Venda, XP e XP como alimento
+  foram multiplicados por 1,75 no Pantanal e 1,55 no Estuário.** O documento mede com 100% de captura;
+  nessa fase a vara e o barco já puxam 60% a 70% dos peixes, então o fator é menor que o ×2 dos mapas 1 e
+  2. Assim as metas do documento se mantêm: Nível 20→30 em 3,7 h online (meta 3,8 h) e 30→40 em 4,0 h
+  (meta 4,0 h).
+- Com a Chance de Sucesso, um Épico puxado leva em média umas 11 h no Pantanal com a Vara 1 Nv.1 sem
+  barco (0,30% de mordida × 26%), umas 5 h com a Vara 1 Nv.10 e o Barco 3, e umas 2,5 h no Estuário
+  com a Vara 2 e o Barco 4. Sem pity timer.
+- Viagem igual (manual, 30 s). Ao abrir o jogo, quem já está no nível 20 ou 30 vê os mapas liberados,
+  sem ser levado para eles. A Enciclopédia passa a ter 40 espécies. O título de capítulo tem as frases
+  "Agora o mundo se abriu de verdade." (Capítulo 3) e "Cheguei em uma nova fronteira do jogo."
+  (Capítulo 4).
+- Cenários, peixes, Vara 2 e miniaturas dos mapas são **provisórios**, pintados por script
+  (`ASSET_PENDENTE`); os pedidos para o ChatGPT estão no documento "Pedidos de arte: Pantanal Dourado e
+  Estuário das Marés". A paisagem viva usa os animais que já existem (araras, garças, capivaras,
+  jacaré, patos, andorinhas) até as artes novas chegarem. O som ambiente espera gravações
+  `pantanal_01..04` e `estuario_01..04` (até lá, o som antigo).
+
+### A-094 · Paisagem viva dos mapas 3 e 4
+**Seção do GDD:** 18 · **Situação:** Decidido na implementação (01/10/2026), com a arte do proprietário
+
+Os animais novos reaproveitam os comportamentos que já existem (A-078), com o mesmo diretor de cenário
+(um animal por vez, descanso sorteado):
+
+- **Pantanal Dourado:** casal de araras-azuis cruzando o céu; tuiuiú voando devagar e às vezes pousando
+  na beira para caçar (como a garça); colhereiros em fila de 1 a 3; andorinhas, patos, jacaré e
+  capivaras. Palmeiras carandaá balançam nas margens e aguapés boiam perto dos cantos.
+- **Estuário das Marés:** bando de 3 a 6 guarás; trinta-réis rápidos e baixos sobre a água; garça; um
+  caranguejo chama-maré que sai da lama do canto, acena com a garra e volta para a toca; um boto-cinza ao
+  longe que aparece duas ou três vezes seguidas, às vezes saltando. Capim e samambaias do mangue
+  balançam nos cantos.
+- No Pantanal, uma ou duas borboletas amarelas (uma limão, uma laranja) passam baixo pelos cantos, com
+  batidas rápidas e planadas curtas.
+- O fundo de cada mapa alterna duas faixas pintadas diferentes (capões no Pantanal, mangue no
+  Estuário), em vez de repetir a mesma espelhada.
+
+### A-095 · Bônus de puxar das varas, barcos e iscas um terço menores
+**Seção do GDD:** 19 · **Situação:** Decidido pelo proprietário (01/10/2026)
+
+O proprietário achou altos os bônus de chance do equipamento. Todos caem um terço, e a chance-base de
+cada raridade não muda:
+
+| Equipamento | Antes | Agora |
+|---|---|---|
+| Barcos 1 a 5 | +3%, +6%, +9%, +12%, +15% | +2%, +4%, +6%, +8%, +10% |
+| Iscas Simples, Melhorada e Premium | +5%, +10%, +15% | +3%, +7%, +10% |
+| Vara 1, do Nv. 1 ao 10 | +2% a +12% | +1,5% a +8% |
+| Vara 2, do Nv. 1 ao 10 | +8% a +20% | +5,5% a +13,5% |
+
+Na simulação, do Nível 20 ao 30 passa de 3,7 h para 4,0 h online, e do 30 ao 40, de 4,0 h para 4,5 h.
+Escapam cerca de 45 peixes por hora, contra 37 antes.
+
+*Ajuste no mesmo dia (pedido do proprietário):* para voltar às metas de `docs/PROGRESSAO_MAPAS_3_4.md`,
+o XP para subir de nível ficou menor entre os níveis 20 e 50 — de 3% a 5% menos do 20 ao 29, 9% menos
+do 30 ao 39, e voltando aos poucos ao normal até o 50. Simulação: 20→30 em 3,8 h e 30→40 em 4,0 h.
+
+### A-096 · O barco, a vara e a isca equipados aparecem na cena
+**Seção do GDD:** 8, 19 · **Situação:** Pedido do proprietário (01/10/2026)
+
+O que o jogador equipa na Loja aparece na cena de pesca, na hora:
+
+- **Barco:** os Barcos 1 a 5 usam a mesma pintura da Loja. O pescador fica sentado dentro dele, atrás
+  da lateral da frente. Barcos maiores aparecem maiores. O Barco Inicial continua com o casco próprio
+  da cena.
+- **Vara:** a vara na mão dele é a pintura da vara em uso (Vara Inicial, Vara 1 ou Vara 2) e se mexe
+  com o arremesso como antes.
+- **Isca:** com uma isca em uso, ela fica pendurada no anzol logo abaixo da boia. Dentro da água ela
+  aparece mais apagada, e some quando o peixe é puxado (o peixe levou a isca). Sem isca, só a boia.
+  Por enquanto a isca é uma forma simples em uma cor para cada tipo (`ASSET_PENDENTE`, ver
+  `docs/ASSETS_PENDENTES.md`).
+
+É só visual: não muda nenhuma chance. Os números de posição e tamanho ficam em
+`Resources/Visual/equipamento_cena.json`, gerados por `tools/Arte/equipamento_na_cena.py`.
+
+### A-097 · Peixes pela metade do preço e iscas bem mais caras
+**Seção do GDD:** 21 · **Situação:** Decidido pelo proprietário (02/10/2026)
+
+O proprietário juntava moedas demais sem ter onde gastar. Então:
+
+- **Venda de peixes:** todo preço de venda ao comerciante vale metade. Um ajuste geral novo
+  (`economy.json → npc_fish_sale.price_multiplier`, hoje 0,5) multiplica todos os preços de uma vez,
+  sem mexer no valor de cada espécie.
+- **Iscas:** Simples 1.000 moedas (antes 200), Melhorada 6.000 (antes 1.200), Premium 4.000 moedas e
+  12 Conchas (antes 800 e 6). Continuam com 100 tentativas por compra.
+
+Na simulação, a pesca rende 1.649 moedas por hora no primeiro mapa (antes 3.246) e 13.783 no segundo
+(antes 28.215). A Vara 2 chega com 9,2 h de pesca (antes 8,6 h). No primeiro mapa as iscas quase não
+se pagam: valem mais nos mapas de peixe caro.
+
+*Revisto no mesmo dia (pedido do proprietário):* a venda de peixes **voltou ao preço normal**
+(`price_multiplier` = 1), porque melhorar a vara e comprar barcos já pede bastante. As iscas continuam
+mais caras. O ajuste geral fica no Painel de Balanceamento para uso futuro.
+
+### A-098 · Dólares, a terceira moeda
+**Seção do GDD:** 21 · **Situação:** Pedido do proprietário (02/10/2026); uso ainda a decidir (OD-021)
+
+O jogo passa a ter três moedas: **Moedas**, **Conchas** e **Dólares**. Os Dólares começam em zero
+para todo mundo, inclusive em saves antigos, e por enquanto não se ganham nem se gastam. O que eles
+fazem é decisão do proprietário (OD-021). A intenção registrada é que Conchas e Dólares sejam
+negociados entre jogadores.
+
+Na tela, as Conchas e os Dólares ficam numa faixa pequena logo abaixo das Moedas, no canto de cima à
+direita, sempre visíveis. Os avisos (toasts) descem um pouco para não cobrir a faixa. O ícone dos
+Dólares é provisório (`ASSET_PENDENTE`).
+
+### A-099 · Todo equipamento pede Conchas, e as Conchas ficaram mais raras
+**Seção do GDD:** 19, 21 · **Situação:** Pedido do proprietário (02/10/2026)
+
+O objetivo do proprietário é que os jogadores negociem Conchas (e Dólares) para comprar os itens
+antes. Por isso toda compra e toda melhoria de equipamento pede Conchas, além das Moedas:
+
+| Item | Moedas | Conchas |
+|---|---:|---:|
+| Vara 1 | 2.500 | 5 |
+| Melhorias da Vara 1 (Nv. 2 a 10) | como antes | 2, 3, 4, 5, 6, 8, 10, 12, 15 |
+| Vara 2 | 90.000 | 40 |
+| Melhorias da Vara 2 (Nv. 2 a 10) | como antes | 10, 12, 15, 18, 22, 26, 30, 35, 40 |
+| Barcos 1 a 5 | como antes | 5, 15, 25, 90, 250 (antes 0, 0, 30, 120, 350) |
+| Iscas Simples, Melhorada, Premium | 1.000, 6.000, 4.000 | 1, 3, 12 |
+
+As Conchas ficaram um pouco mais difíceis: a chance-base por peixe puxado caiu de 10% para 7%. Para
+ninguém ficar travado sem Conchas no começo, a Vara Inicial agora também dá Conchas, na chance-base e
+sem bônus.
+
+Na simulação, sem comércio: a Vara 1 chega com 2,2 h de pesca, como antes; a Vara 2 com 10,8 h (antes
+8,4 h), e o trecho do nível 30 ao 40 leva 4,9 h (antes 4,0 h). Os Barcos 3, 4 e 5 chegam com 9,9 h,
+20,3 h e 40,8 h. A diferença é o espaço do comércio de Conchas.
+
+### A-100 · Ranking só de jogadores reais
+**Seção do GDD:** 7 · **Situação:** Pedido do proprietário (02/10/2026)
+
+Um menu **Ranking** mostra a posição dos jogadores em quatro listas: **Nível**, **Moedas**, **Conchas**
+e **Peixes pescados**. Só entram jogadores reais: nunca jogadores simulados (nem os da Arena ou do
+Mercado).
+
+Enquanto o jogo é local, o único jogador real é o deste computador, então ele aparece sozinho em 1º,
+com uma nota explicando que, quando o jogo for online, todos os jogadores reais aparecem ali. O
+serviço do ranking já tem o formato da versão online; só a fonte muda.
+
+*Revisto no mesmo dia (pedido do proprietário):* o **Ranking** fica na barra de menus do topo, logo
+depois da Arena. Para os nove menus caberem com nome, o sino de avisos e as opções viraram só ícone, e
+a barra mede o espaço de verdade dos dois lados em vez de reservar um valor fixo.
+
+### A-101 · Comércio de Conchas e Dólares no Mercado
+**Seção do GDD:** 31–33 · **Situação:** Pedido do proprietário (02/10/2026); no jogo local, só a tela
+
+O Mercado ganha a aba **Conchas e Dólares**: o jogador anuncia uma quantidade de Conchas ou de Dólares
+por um preço total em Moedas. Enquanto estiver anunciada, a quantidade sai da carteira; cancelar
+devolve na hora. Na venda, o vendedor paga a mesma taxa de 3% dos outros anúncios. Até 5 anúncios ao
+mesmo tempo (`economy.json → currency_trade`).
+
+Só jogadores reais negociam. Decisão do proprietário: enquanto o jogo for local, ninguém fica do outro
+lado (sem jogadores simulados). A lista "Ofertas de outros jogadores" aparece vazia, com uma nota
+explicando que os anúncios dos outros jogadores chegam com o jogo online. Comprar uma oferta e receber
+pela venda entram junto com o servidor.
+
+### A-102 · Zoom da cena
+**Seção do GDD:** 8 · **Situação:** Pedido do proprietário (02/10/2026)
+
+O jogador pode aproximar um pouco a câmera do pescador: girando a rodinha do mouse sobre a cena, ou no
+controle **Aproximar** em Configurações. Vai do cenário inteiro até cerca de 20% mais perto, mirando
+o barco, sempre com uma transição suave. Com uma janela ou painel aberto, a rodinha rola as listas e
+não mexe no zoom. A escolha fica guardada neste PC, como o volume. É só visual: não muda nada na pesca.
+
+### A-103 · Nomes próprios, descrições e preços do equipamento
+**Seção do GDD:** 19 · **Situação:** Decidido pelo proprietário (02/10/2026, `docs/EQUIPAMENTOS_NOMES_PRECOS.md`)
+
+Os itens ganham nomes próprios (os ids internos e os saves não mudam):
+
+- **Varas:** Caniço Manso (inicial) → Ponta Selvagem (Vara 1) → Maré Dourada (Vara 2).
+- **Barcos:** Água Mansa → Remo Valente → Rastro Azul → Proa Selvagem → Costa Nobre → Horizonte Dourado.
+- **Iscas:** Terra Viva (minhoca) → Maré Viva (camarão) → Ouro de Maré (artificial dourada).
+
+Cada um tem uma frase curta na Loja. Preços e desbloqueios:
+
+| Barco | Nível | Moedas | Conchas |
+|---|---:|---:|---:|
+| Remo Valente | 10 | 12.000 | 5 |
+| Rastro Azul | 20 | 45.000 | 15 |
+| Proa Selvagem | 30 | 160.000 | 25 |
+| Costa Nobre | 50 | 600.000 | 120 |
+| Horizonte Dourado | 80 | 2.500.000 | 500 |
+
+| Isca | Tentativas | Moedas | Conchas |
+|---|---:|---:|---:|
+| Terra Viva | 60 | 1.500 | 1 |
+| Maré Viva | 60 | 6.000 | 3 |
+| Ouro de Maré | 60 | 15.000 | 5 |
+
+As varas mantêm preços e melhorias. Onde o documento conflitava com decisões mais recentes do
+proprietário, valeu a decisão mais recente, como o próprio documento pede ("a build atual é a fonte de
+verdade"):
+
+- **Bônus de puxar:** continuam um terço menores (A-095): barcos +2% a +10%, iscas +3%, +7% e +10%. O
+  documento sugeria +3% a +18% e +4%, +8% e +12%.
+- **Conchas:** todo item pede Conchas (A-099), então os barcos e iscas baratos também pedem algumas.
+  O Ouro de Maré pede 5 Conchas, e não 10: com 10, gastaria mais Conchas por hora do que o jogador
+  ganha.
+
+Na simulação (sem comércio): o Remo Valente é comprado cerca de 20 minutos depois de liberar e o
+Rastro Azul logo ao liberar (o jogador chega com moedas guardadas); o Proa Selvagem cerca de 3 h
+depois, porque disputa com a Maré Dourada; Costa Nobre e Horizonte Dourado ficam para o longo prazo.
+No Lago Sereno as iscas não se pagam; elas valem a partir do Rio Selvagem.
+
+### A-104 · Progressão dos Mapas 5 a 10, adaptada às regras atuais
+**Seção do GDD:** 2, 15, 16, 17, 19 · **Situação:** Aprovado pelo proprietário (05/10/2026); Mapas 5 e 6 no jogo (A-105), Mapas 7 a 10 a seguir
+
+O proprietário mandou `docs/PROGRESSAO_MAPAS_5_A_10.md` (Mapas 5 a 10, 60 espécies, Lendário e Mítico,
+Varas 3 a 5) e pediu para manter os mapas e os peixes, adaptando ao jogo de agora. A versão adaptada é
+`docs/PROGRESSAO_MAPAS_5_A_10_ADAPTADA.md`, com os números em `docs/propostas/mapas_5_10.json`. Como na
+A-103, onde o documento conflitava com uma regra mais recente, valeu a regra mais recente:
+
+- **Valores dos peixes:** o Mapa 5 do documento rendia menos que o Mapa 4 atual. Venda e XP de alimento
+  foram reescalados por raridade (Mapa 5 = 1,5× e 1,3× o Mapa 4), mantendo a escada entre os mapas e a
+  proporção entre as espécies.
+- **XP do Pescador:** calibrado para cada faixa de 10 níveis levar o tempo da faixa 30–40 de hoje, sem o
+  XP de um peixe cair de um mapa para o outro; do Nv.60 em diante as faixas ficam mais rápidas (OD-047).
+- **Varas 3 a 5:** chance de puxar um terço menor (A-095), Conchas em toda compra e melhoria (A-099) e
+  preço em Moedas proporcional à renda nova (cerca de 3 h online para cada compra).
+- **Cores:** Lendário vermelho-rubi `#E5484D` (o laranja do documento colide com o tamanho Grande e o
+  dourado com Excepcional); Mítico rosa-framboesa `#EC4899`, como no documento.
+- **Tamanho:** Lendário e Mítico vêm Grandes, Excepcionais e Perfeição um pouco menos, seguindo Raro e Épico.
+- **Capítulos 5 a 10** com uma frase de chegada cada (A-085).
+
+### A-105 · Mapas 5 e 6 no jogo, com Lendário e Corrente Mestra
+**Seção do GDD:** 2, 9, 16, 17, 19 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Primeira leva da A-104: o **Mapa 5 · Costa de Coral** (Nv.40, Vara 2 ou melhor) e o **Mapa 6 ·
+Arquipélago do Sol** (Nv.50, Vara 3), com as 20 espécies deles, a raridade **Lendário** e a **Vara 3 ·
+Corrente Mestra** (Nv.50, 730.000 Moedas + 85 Conchas). Os números vêm de
+`docs/propostas/mapas_5_10.json`, aplicados por `tools/Progressao/aplicar_mapas.py`.
+
+- **Lendário** entra agora (o Veleiro é o primeiro). O **Mítico** fica para o Mapa 10, porque os filtros
+  da Caixa, do Aquário e do Mercado mostram todas as raridades que existem, e um filtro Mítico sem
+  nenhum peixe confundiria.
+- A celebração do Lendário diz **"Captura lendária!"**; a do Mítico, quando entrar, **"Captura mítica!"**.
+  Os peixes Lendários puxam a linha com a mesma força dos Épicos.
+- A Corrente Mestra aparece na Loja e no Perfil como **"Pesca peixes Raros, Épicos e Lendários"**.
+- Venda em lote protege Raros, Épicos e Lendários.
+- **Cenário:** arte final do proprietário, completa desde 06/10/2026 (o céu da Costa de Coral e as nuvens
+  dos dois mapas chegaram com o pacote dos Mapas 7 e 8). As faixas do horizonte vieram com mar pintado embaixo;
+  esse mar é retirado no recorte, porque a água é a do jogo.
+- **Paisagem viva:** na Costa de Coral, gaivotas, trinta-réis, tartaruga-marinha e, às vezes, golfinho;
+  coqueiros na praia e capim de restinga nos cantos. No Arquipélago do Sol, atobás, fragata, golfinhos
+  que saltam mais que o boto, de vez em quando gaivotas e tartaruga.
+- **Frase de chegada:** "Finalmente cheguei ao mar aberto da costa." (Mapa 5) e "Longe da costa, os
+  peixes viram troféus." (Mapa 6).
+- **Som:** os dois mapas já têm a lista de gravações (`coral_01..04`, `arquipelago_01..04`); enquanto os
+  arquivos não existem, toca o som antigo de mar e vento.
+
+### A-106 · Mapas 7 a 10 no jogo, com Mítico, Atlântico Nobre e Soberana Abissal
+**Seção do GDD:** 2, 9, 16, 17, 19 · **Situação:** No jogo (não aberto no Unity ainda)
+
+O resto da A-104 entrou: **Mapa 7 · Corrente Azul** (Nv.60, Vara 3), **Mapa 8 · Banco das Baleias**
+(Nv.70, Vara 4), **Mapa 9 · Talude Noturno** (Nv.80, Vara 4) e **Mapa 10 · Abismo Atlântico** (Nv.90,
+Vara 5), com as 40 espécies deles (100 no catálogo), a raridade **Mítico** (só o Tubarão-boca-grande, no
+Mapa 10) e as varas **Atlântico Nobre** (Nv.70, 3.280.000 Moedas + 180 Conchas) e **Soberana Abissal**
+(Nv.90, 15.610.000 Moedas + 650 Conchas). O jogo agora vai do Nv.1 ao Nv.100 sem buraco de conteúdo.
+
+- **Mítico:** chance-base de puxar 8%, cor rosa-framboesa, celebração **"Captura mítica!"**, protegido na
+  venda em lote. A Soberana Abissal aparece como **"Pesca peixes Raros, Épicos, Lendários e Míticos"**.
+- **Corrente Azul:** não tem terra; as margens são ondas grandes (com a ponta de dentro esfumada) e os
+  cantos são sargaço. Paisagem viva: peixes-voadores que saltam e planam, pardelas rente à água, golfinho
+  de vez em quando, fragata e sargaço boiando.
+- **Banco das Baleias:** amanhecer frio, ilhotas e rochedos distantes. Paisagem viva: a baleia-jubarte
+  respira ao longe (dorso e borrifo) e, mais raramente, salta e mostra a cauda; trinta-réis e atobás.
+- **Talude Noturno e Abismo Atlântico:** primeiros mapas à noite. Até a arte chegar, o cenário é
+  provisório, pintado pelo gerador: céu estrelado com lua, água escura, brilho frio e alguns pontos de
+  plâncton. O brilho da água e o halo da lua usam luz fria. Ainda sem animais.
+- **Frases de chegada:** "Só o horizonte e o mar azul em volta." (7), "Aqui o oceano mostra o seu
+  tamanho." (8), "A noite revela o que vive no fundo." (9) e "O destino final de todo pescador." (10).
+- **Ainda provisórios:** céu da Corrente Azul (Corrente 02) e os 4 peixes da Corrente 11 (Peixe-lua,
+  Espadarte, Marlim-branco e Marlim-azul), que não vieram no pacote; todo o visual dos Mapas 9 e 10 e a
+  Vara 5. Pedidos de novo no documento dos Mapas 9 e 10.
+
+### A-107 · Correções da revisão de segurança (06/10/2026)
+**Seção do GDD:** 21, 33, 36, 40 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Correções de brechas que deixavam o jogador ganhar sem jogar. Nenhuma regra de jogo mudou de propósito.
+
+- **Relógio:** voltar o relógio do PC agora só congela o tempo do jogo até a hora real chegar; não abre
+  mais pesca offline, Energia ou Expedição de graça (TD-030).
+- **Mercado e varas:** os compradores simulados nunca pagam por uma vara mais do que ela custa nova na
+  Loja (mais as melhorias já feitas). Uma vara anunciada no Mercado, no Leilão ou esperando em Itens para
+  Retirar conta como sua: não dá para comprar outra igual na Loja enquanto isso.
+- **Leilão:** um lance maior que o saldo é recusado antes de calcular a taxa.
+- **Save editado:** nível de peixe e de vara volta para dentro do máximo, cargas de isca negativas viram
+  zero e um barco que não foi comprado não é usado (vale o barco inicial).
+
+### A-108 · Arte final dos Mapas 9 e 10 e da Soberana Abissal
+**Seção do GDD:** 9, 16, 19 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Chegou a arte do Talude Noturno, do Abismo Atlântico, da Vara 5 e as duas imagens que faltavam da
+Corrente Azul (céu e a grade com o Marlim-azul). Com isso todos os 100 peixes e as 6 varas têm arte final.
+
+- **Céus noturnos:** a pintura continua para os lados com cópias espelhadas dela mesma (as estrelas e a
+  via láctea seguem pela tela toda), com a lua apagada nas cópias para existir uma só.
+- **Ondas e cantos:** as ondas grandes das margens e as cristas dos cantos somem suavemente do lado de
+  dentro, para não aparecer o corte reto da pintura.
+- **Paisagem viva:** no Talude Noturno, petréis voando rente ao mar e, de vez em quando, o vulto escuro de
+  um peixe grande passando sob a superfície. No Abismo Atlântico, o vulto de um tubarão gigante passa bem fundo,
+  mais devagar e mais apagado (Abismo 12, chegou em 07/10/2026).
+
+### A-109 · Do Nv.1 ao Nv.100 em cerca de 10 dias
+**Seção do GDD:** 15, 16 · **Situação:** No jogo (não aberto no Unity ainda)
+
+O proprietário pediu (07/10/2026) que o jogador leve uns 10 dias para chegar ao nível máximo, e depois
+definiu a referência: **quem deixa o jogo aberto o dia todo chega em ~10 dias; quem joga menos leva mais.**
+A simulação (`docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md`) mostrou que, com a tabela antiga, dava para chegar
+ao Nv.100 em 3 a 6 dias. A tabela de XP do Pescador foi recalibrada:
+
+- **Níveis 1 a 9 iguais** (Nv.10 em ~2 h online, como antes).
+- **Do Nv.10 em diante** cada nível pede mais XP, numa curva suave que cresce com o nível: cada faixa de 10
+  níveis demora um pouco mais que a anterior.
+- **Resultado:** deixando o jogo aberto o dia todo, ~10 dias; abrindo 4 vezes por dia, ~19 dias; 2 vezes por
+  dia, ~20 dias; 1 vez por dia, ~24 dias. (Uma primeira versão, no mesmo dia, mirava 10 dias para quem abre 4
+  vezes por dia; foi trocada pela decisão acima.)
+- **O XP dos peixes não mudou**: continua subindo de mapa para mapa (um peixe do mapa novo sempre vale mais
+  que um do mapa anterior). Isso fecha a OD-047 (opção A) e a OD-049.
+- O dinheiro acompanha: a vara de cada mapa fica paga antes ou logo depois de o nível liberar o mapa, mesmo
+  vendendo só um quarto dos peixes.
+
+### A-110 · VIP: +50% de XP na pesca offline
+**Seção do GDD:** 10, 15 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026): um VIP que custa **100 Dólares do jogo** (100 Dólares = R$ 4,99) e dá
+**+50% de XP de Pescador na pesca offline**, para quem quiser pagar. Ele escolheu **30 dias** de duração.
+
+- Comprado na **Loja**, aba **VIP**. Comprar com o VIP ativo soma 30 dias ao fim do atual.
+- Vale só para as capturas **offline** (jogo fechado). A pesca com o jogo aberto, as chances, os tamanhos,
+  as vendas e as Conchas não mudam. Cada captura offline confere se o VIP valia na hora dela: se o VIP
+  acaba no meio da ausência, o bônus conta só até ali.
+- A tela de "Bem-vindo de volta" mostra quanto do XP veio do VIP.
+- Valores em `config/economy.json` → `vip`.
+- *Desde 12/10/2026 (A-160) o VIP também faz a pesca offline mais rápida: 1 tentativa a cada 15 s em vez de 20 s. O
+  bônus de XP continua (OD-065).*
+- **Efeito simulado** (`docs/relatorios/SIMULACAO_PROGRESSAO_NV100.md`): abrindo 4 vezes por dia, o Nv.100 passa
+  de ~19 para ~15 dias; 1 vez por dia, de ~24 para ~18 dias. Quem deixa o jogo aberto o dia todo não muda
+  (~10 dias), então o VIP nunca passa da meta de 10 dias.
+- **Ainda não existe:** comprar Dólares com dinheiro real. Isso precisa de uma loja de verdade (Steam,
+  Google Play) e entra quando o jogo for publicado (M22-T17). Jogando, dá para juntar Dólares devagar (A-111).
+
+### A-111 · Dólares jogando: 10 a cada 10 níveis
+**Seção do GDD:** 15 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Decisão do proprietário (07/10/2026, OD-021): dá para ganhar Dólares jogando, "bem pouco, dá para juntar,
+mas vai demorar". Cada vez que o Pescador chega a um nível múltiplo de 10 (Nv.10, 20, … 100), ganha
+**10 Dólares**: 100 Dólares, o preço de um VIP, ao chegar ao Nv.100. Aviso na tela e linha no "Bem-vindo de
+volta". Valores em `config/progression.json` → `fisher.dollars_per_levels`. Saves que já passaram desses
+níveis não recebem os Dólares de trás.
+
+**Atualizado em 11/10/2026 (A-158):** esses Dólares passaram para a faixa grátis do Passe do Pescador (os mesmos 10
+a cada 10 níveis até o Nv.100); subir de nível não paga mais nada sozinho, o jogador resgata no Passe.
+
+### A-112 · Ranking da Arena: pódio e páginas até o top 100
+**Seção do GDD:** 29 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026). A aba Ranking da Arena mostra:
+
+- **Pódio** com os 3 primeiros na primeira página: 2º à esquerda, 1º no centro (mais alto) e 3º à direita, com
+  medalha, nome, e o peixe mais forte do Cardume de cada um.
+- **Lista em páginas de 10** (Anterior / Página X de 10 / Próxima), do 4º ao 100º. Nunca mais que o top 100.
+- **Minha posição** leva à página do jogador quando ele está no top 100; quem está abaixo vê "Sua posição: #N
+  (fora do top 100)".
+- Tamanho da página e do top em `config/arena.json` → `ranking`. Arte do pódio e das medalhas pedida
+  (`docs/ASSETS_PENDENTES.md`); até chegar, blocos limpos.
+
+### A-113 · Selos de raridade mais limpos
+**Seção do GDD:** 6 · **Situação:** No jogo (não aberto no Unity ainda)
+
+O proprietário viu um risco atravessando o nome da raridade (COMUM, RARO, LENDÁRIO…). O selo era uma caixa
+de 9 partes mais baixa que as próprias bordas, e o Unity a desenhava com uma linha no meio. Agora o selo é um
+retângulo arredondado de verdade: fundo na cor da raridade, contorno e texto um pouco maior. Lendário e Mítico
+ganham um brilho suave em volta. Gemas próprias de cada raridade foram pedidas para trocar a estrela.
+
+### A-114 · Expedições crescem com o mapa
+**Seção do GDD:** 26 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Decisão do proprietário (07/10/2026, OD-022): a Expedição acompanha o mapa. Na Força Recomendada, ela rende
+cerca de **metade** do que o mesmo tempo de pesca offline renderia no mapa de onde o Cardume saiu.
+
+- Os valores de `expeditions.json` passaram a ser os do Mapa 1 (Saída Rápida 300, Volta na Margem 650, Águas
+  Profundas 2.250, Viagem Longa 5.000 Moedas; antes 120, 260, 900 e 2.000).
+- Cada mapa tem um multiplicador em `maps.json` → `expedition_reward_multiplier`: Mapa 1 ×1, 2 ×8,5, 3 ×13,5,
+  4 ×29, 5 ×50, 6 ×113, 7 ×215, 8 ×485, 9 ×880, 10 ×2.000 (calculados pela venda esperada por tentativa).
+- Vale o mapa onde o jogador estava ao mandar o Cardume; trocar de mapa durante a Expedição não muda nada.
+- A chance de achar um peixe e a eficiência pela Força não mudaram.
+
+Na mesma decisão, o proprietário manteve as batalhas da Arena rápidas (~20 s, como estão).
+
+### A-115 · Loja da Arena: Conchas e Dólares por Honra
+**Seção do GDD:** 30 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Decisão do proprietário (07/10/2026, OD-009): a Loja da Arena vende Conchas e Dólares.
+
+- **Saco de Conchas:** 20 Conchas por 100 de Honra, sem limite.
+- **Bolsa de Dólares:** 5 Dólares por 300 de Honra, no máximo 2 a cada 7 dias (10 Dólares por semana: mais um
+  jeito lento de juntar o VIP).
+- Um jogador ativo ganha ~150–250 de Honra por dia. Itens, preços e limites em `config/arena.json` → `shop`.
+
+### A-116 · Defesa perdida tira um pouco de Honra
+**Seção do GDD:** 29 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Decisão do proprietário (07/10/2026, OD-024): quando outro jogador ataca e vence, você perde **2 de Honra**
+(metade dos 4 que perde atacando), nunca abaixo do saldo mínimo. Defesa vencida continua dando 8. O aviso
+de defesa perdida mostra a Honra perdida. Valor em `config/arena.json` → `honor.defense_defeat_loss`.
+
+### A-117 · Caixa de Pesca com limite de 1.500 peixes
+**Seção do GDD:** 11 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Decisão do proprietário (07/10/2026, OD-025): a Caixa guarda até **1.500 peixes** (cabe um dia inteiro de pesca
+offline, ~1.440). Cheia, a pesca não puxa mais peixes nem gasta isca até o jogador vender ou guardar algum.
+Peixes achados em Expedição e retirados do Mercado ainda entram.
+
+Avisos, a pedido dele: na Caixa ("X de 1.500 peixes", com aviso dourado a partir de 90% e quando cheia), no
+botão da Caixa e no painel de pesca ("Caixa cheia: venda peixes"), no "Bem-vindo de volta" (quantas tentativas
+ficaram sem pescar) e no tutorial (passo de abrir a Caixa). Valor em `config/economy.json` →
+`fishing_box.capacity`.
+
+### A-118 · Caixa de Pesca com cara de jogo
+**Seção do GDD:** 11 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026, no teste da pesca): os filtros pareciam um gerenciador. Inspirado nas
+bolsas de jogos de coleção (abas por categoria com contagem, filtros secundários em menus):
+
+- **Abas de raridade** com bolinha da cor e quantos peixes há de cada (Todos 44 · Comum 40 · Raro 4…); a aba
+  ativa ganha fundo e sublinhado na cor da raridade; raridades sem peixe ficam apagadas.
+- **Tamanho e Ordem viram dois menus** ("Tamanho: Todos ▾", "Ordem: Mais recentes ▾") à direita das abas;
+  em janela estreita, numa linha curta abaixo, com "N peixes neste filtro".
+- **Rodapé:** barra de quanto a Caixa está cheia (dourada a partir de 90%) com o aviso do limite, e as vagas do
+  Aquário à direita (antes os dois textos se sobrepunham).
+- A grade de peixes fica alinhada à esquerda com as abas.
+
+### A-119 · Ordens da Caixa de Pesca
+**Seção do GDD:** 11 · **Situação:** No jogo (não aberto no Unity ainda)
+
+O proprietário escolheu o "Exemplo 2" entre três montagens (07/10/2026): um botão com o ícone de ordenar e o
+nome da ordem ("Mais valiosos ▾") abre um menu com ícone e uma frase de explicação em cada opção:
+
+- **Mais recentes** (relógio): o último peixe pescado primeiro. É a ordem ao abrir a Caixa.
+- **Mais valiosos** (moeda): quem vale mais na venda primeiro.
+- **Maiores** (nível): pelo tamanho em relação à espécie (um Lambari grande vem antes de um Pirarucu pequeno).
+- **Mais raros** (estrela): Mítico → Comum, e dentro de cada raridade o maior primeiro.
+- **Por espécie** (peixe): mesmos peixes juntos, de A a Z; dentro da espécie, o mais valioso primeiro.
+
+Empates sempre caem no mais recente primeiro.
+
+### A-120 · Card de peixe sem textos sobrepostos
+**Seção do GDD:** 6, 44 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026): nenhum texto do card pode passar por cima de outro. O card agora é montado
+de baixo para cima (Moedas e rodapé, barra, linha do tamanho, nome) e o peixe fica com o espaço que sobra, em
+qualquer altura de card. Nome, linha do tamanho e rodapé que não cabem terminam em "…"; as Moedas nunca são
+cortadas e o rodapé fica com o que sobra ao lado delas. Se o selo de raridade e o selo "NOVA ESPÉCIE"/"RECORDE"
+não cabem juntos, o selo de raridade perde a estrela e, se ainda não couber, o outro selo desce para o canto do
+peixe. Na Enciclopédia o selo de raridade foi para a linha do mapa (não fica mais sob o nome) e, nos cards dos
+adversários da Arena, o nome do peixe para antes do selo.
+
+### A-121 · Perfil como central do jogador
+**Seção do GDD:** 37 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026, no teste do Perfil): o Perfil próprio é a central de informações do jogador,
+como um inventário, diferente do perfil que os outros vão ver. Montagem aprovada ("perfil_resumo.png"):
+
+- **Cabeçalho:** retrato com moldura, nome, selo do nível com a barra de XP, "XP x / y · mapa", selo do VIP com a
+  data e a carteira à direita (Moedas, Conchas, Dólares e Honra).
+- **Aba nova "Resumo"**, a primeira e a que abre: três colunas.
+  - **Arena:** posição (#N de N jogadores), Honra, Energia, última batalha; **Cardume:** Força e os 6 peixes com
+    nível e borda da raridade, e o bônus de Cardume completo.
+  - **Seu equipamento:** vara (com nível), barco e isca (tentativas) com o bônus de cada e o total;
+    **Espaço:** Caixa e Aquário com barra, e a Expedição em andamento com o tempo que falta.
+  - **Coleção:** espécies descobertas com barra e, a pedido dele, **todas as raridades com os números** (espécies
+    achadas / total e peixes pescados de cada); destaques: capturas, excepcionais, perfeições, maior peixe e
+    Moedas em vendas.
+- As outras abas (Equipamentos, Inventário, Cardume, Enciclopédia, Destaques) não mudaram.
+
+### A-122 · Cancelar a Expedição
+**Seção do GDD:** 32 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026): o jogador pode chamar o Cardume de volta antes da hora. O botão "Cancelar
+Expedição" fica na faixa da Expedição em andamento e pede confirmação ("O Cardume volta agora e não traz nada").
+Cancelada, a Expedição não paga Moedas nem acha peixe, e o Cardume fica livre na hora (formação, alimentar,
+Arena). Uma Expedição cujo tempo já acabou é paga normalmente, nunca cancelada.
+
+### A-123 · Ferramentas de teste do proprietário
+**Seção do GDD:** 5 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Pedido do proprietário (07/10/2026): comandos de administrador para testar tudo sem esperar. Painel flutuante
+"Ferramentas de teste", que só existe no Editor do Unity ou num build de desenvolvimento (nunca no jogo
+publicado). Abre com **F2** ou pelo botão "Testes (F2)" no canto de baixo à esquerda; dá para arrastar.
+
+- **Moedas e recursos:** +Moedas, +Conchas, +Dólares e +Honra em três quantidades.
+- **Avançar o tempo:** com o jogo aberto (+1 h, +6 h: pesca online a cada 30 s) ou fechado (+1 h, +8 h, +24 h:
+  pesca offline e o Bem-vindo de volta). Expedições, Energia e todos os outros tempos andam junto. O tempo
+  adiantado fica guardado no save, para o jogo nunca ver o relógio voltar.
+- **Nível do Pescador:** −10, −1, +1, +10 e atalhos Nv 10, 30, 50, 70, 90 e 100.
+- **Arena:** encher a Energia.
+- **Dar peixes:** busca por nome, tamanho aleatório ou fixo (Pequeno … Perfeição) e +1, +5 ou +20 de qualquer
+  espécie, direto na Caixa (sem XP; respeita o limite de 1.500).
+
+Tudo passa pelo serviço de jogo (TD-034); a tela nunca mexe no save.
+
+### A-124 · Números grandes em formato curto
+**Seção do GDD:** 44 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Aprovado pelo proprietário (07/10/2026). A partir de 1 milhão, os valores aparecem curtos: "12,4 mi", "3,2 bi",
+"1,5 tri" (uma casa decimal, nunca arredondada para cima). Vale nas Moedas, Conchas e Dólares do topo da tela e
+da carteira do Perfil, no preço dos cards de peixe, nos preços da Loja e no total selecionado da Caixa. Passando o
+mouse sobre as moedas do topo ou da carteira aparece o valor completo. Onde o número exato importa (Mercado,
+lances, confirmações) continua completo.
+
+### A-125 · Raridade sempre com o nome, não só a cor
+**Seção do GDD:** 6 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Aprovado pelo proprietário (07/10/2026), para quem tem dificuldade de distinguir cores. Onde a raridade aparecia
+só como cor, agora o nome vai junto: no Cardume do Perfil (selo da raridade em cada posição), no Resumo (ao passar
+o mouse num peixe do Cardume: espécie, raridade e nível), nos destaques do Bem-vindo de volta ("Raro · 35,2 cm")
+e no aviso de fuga ("Um peixe Lendário escapou!"). Cards, abas e tabelas já tinham o nome.
+
+### A-126 · Enciclopédia por mapa
+**Seção do GDD:** 38 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Aprovado pelo proprietário (07/10/2026). A Enciclopédia tem um botão por mapa com o progresso ("Lago Sereno ·
+7/10") e "Todos · 23/100". Espécie ainda não descoberta continua silhueta escura com "???", mas mostra o mapa onde
+vive e a raridade, para o jogador saber onde procurar. Depois de descoberta, o card mostra também quanto ela
+morde no mapa ("morde 3% das vezes", pelo peso de captura, sem os bônus da vara). Recompensa por completar um mapa
+não entrou (seria sistema novo).
+
+### A-127 · Avisos importantes ficam guardados
+**Seção do GDD:** 39 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Aprovado pelo proprietário (07/10/2026), com o ajuste dele: só os avisos **importantes** (subir de nível,
+capturas e acontecimentos importantes) continuam no sino depois de fechar o jogo, os 20 mais recentes. Ficam
+nas preferências do jogo neste PC, não no save. "Limpar" apaga também os guardados.
+
+Também aprovado (técnico, invisível ao jogador): capturas raras ou de tamanho especial, batalhas e Expedições
+gravam a versão do balanceamento com que saíram (M18-T07).
+
+### A-128 · Ver o perfil do adversário na Arena
+**Seção do GDD:** 28 · **Situação:** No jogo (não aberto no Unity ainda)
+
+Aprovado pelo proprietário (07/10/2026). Cada card de adversário tem o botão "Ver perfil", que abre o perfil
+público dele: nome, posição e o Cardume em formação (frente e trás), cada peixe como um card com nível e
+raridade. Nunca mostra a Força nem prevê o resultado (GDD §28). No jogo local é o adversário simulado; com o
+servidor, a pessoa real.
+
+### A-129 · Nome e avatar; Cardume com cara de jogo
+**Seção do GDD:** 37 · **Situação:** No jogo (não aberto no Unity ainda)
+
+**Nome e avatar** (aprovado em 07/10/2026): no Perfil, "Editar" ao lado do nome (ou clique no retrato) abre a
+escolha do nome (3 a 16 caracteres: letras, números, espaço, ponto, hífen, sublinhado) e de um entre 6 avatares
+(`progression.json` → `player_identity`). O avatar aparece no Perfil e no card do jogador na tela. Arte dos
+avatares pedida (`docs/ASSETS_PENDENTES.md`); até chegar, selo colorido.
+
+**Cardume** (pedido do proprietário com print, 07/10/2026): a aba virou uma linha de batalha. Painel em tons de
+água; no topo a Força em destaque, as 6 posições como bolinhas e o selo do bônus de Cardume completo. As fileiras
+FRENTE e TRÁS têm uma etiqueta vertical; cada posição tem o número num círculo (canto esquerdo), o selo de
+raridade (canto direito, não sobrepõe mais o número), o peixe grande, nome, nível e uma barra da parte dele na
+Força. Posição vazia: moldura suave com "+". A posição escolhida brilha.
+
+
+### A-130 · Aquário: venda em lote
+
+Pedido do proprietário (07/10/2026). No Aquário, o botão "Selecionar vários" (ao lado da ordenação), ou Ctrl +
+clique num peixe, troca a ficha do peixe por um painel de venda em lote: clicar nos cards marca e desmarca, o painel
+mostra quantos estão marcados, quanto o jogador recebe e a lista dos marcados (com "×" para tirar um). "Selecionar
+todos" marca os que estão visíveis (respeitando a busca). "Vender N" pede confirmação; se houver peixes valiosos ou
+do Cardume, eles aparecem listados no aviso. As regras de venda não mudam (o XP investido não volta; durante uma
+Expedição, peixes do Cardume não podem ser vendidos). Esc ou "Sair da seleção" volta ao modo normal.
+
+### A-131 · Revisão geral de textos e telas
+
+Pedido do proprietário (07/10/2026). Decisões visíveis tomadas na revisão:
+- "Tier" das varas aparece como "Categoria" (sem termos em inglês na tela). Moedas, Conchas e Dólares sempre com
+  maiúscula. Mensagens depois de um nome evitam particípio com gênero ("Compra feita: X", "A vara X foi destruída").
+- Com uma janela aberta, só o aviso mais recente aparece, no canto de baixo, para não cobrir o "Fechar".
+- Com um diálogo aberto dentro de uma janela, a barra de navegação fica desativada até ele fechar.
+- O resultado da batalha na Arena é uma faixa abaixo das formações, sem cobrir os peixes.
+- Um card selecionado mantém o selo de status (ex.: "Ganhando" no leilão), que desce para cima da arte.
+- No editor de nome, a regra de tamanho vem do config (`player_identity`).
+
+### A-132 · Evoluir um peixe: o mesmo padrão para todos
+
+Pedido do proprietário (07/10/2026): o jogo é PvP, então evoluir peixe segue um padrão igual para todos os jogadores,
+sem mudar com o mapa. Do Nv. 1 ao 10, um peixe precisa de 3.885 XP (antes 995). Como alimento, toda espécie vale a
+mesma base (39 XP); só a raridade (Raro ×2, Épico ×3,5, Lendário ×6, Mítico ×10) e o tamanho mudam o valor. Assim,
+cerca de 100 Comuns levam qualquer peixe ao Nv. 10, pescados em qualquer mapa. Peixes que já tinham subido de nível
+mantêm o nível.
+
+### A-133 · Arena: adversários do mais fácil ao mais forte
+
+Pedido do proprietário (07/10/2026). Os três adversários aparecem da esquerda para a direita do mais fácil (pior
+posição no ranking, número maior) para o mais forte (melhor posição). A ordem se mantém se as posições mudarem.
+
+### A-134 · Arena: Duelo, cabeçalho de jogador e tela VS
+
+Escolha do proprietário entre 3 exemplos (07/10/2026). Cabeçalho: avatar e nome, a posição numa medalha ("#198 de
+201"), Energia em segmentos com o tempo do próximo ponto e Honra. Aba Adversários: os 3 adversários em pedestais que
+sobem da esquerda (pior posição) para a direita (melhor), mostrando só avatar, nome e posição; o escolhido aparece
+com o Cardume dele de frente para o seu (FRENTE/TRÁS, espelhado, nunca a Força) e um "VS" no meio; o botão diz quanto
+de Energia o ataque gasta. Antes do replay, uma tela "VS" de cerca de 1,2 s com os dois lados; clique, Espaço ou Esc
+pulam. Adversários usam o retrato padrão enquanto não houver arte de avatar para eles.
+
+### A-135 · Inventário estilo mochila
+
+Escolha do proprietário entre 3 exemplos (07/10/2026). O Perfil tem uma aba Inventário só (Equipamentos entrou
+nela). À esquerda, EQUIPADO: vara, barco e isca em quadrados grandes, com nome e uma linha curta, e os bônus que o
+jogo já informa. À direita, a mochila: cada vara num quadrado com a moldura na cor da categoria, o nível e a marca de
+equipada; vagas vazias completam a grade só como visual (não existe limite de espaço). Passar o mouse mostra a
+ficha do item; clicar seleciona e mostra as ações de sempre. Barco e isca continuam sendo trocados na Loja.
+
+### A-136 · Barra superior e cartão do jogador
+
+Pedido do proprietário (07/10/2026). A barra de cima ficou cerca de 25% maior, com botões em relevo e o ativo em
+turquesa com brilho. O cartão do jogador saiu da esquerda e foi para a direita, e Moedas, Conchas e Dólares
+passaram a ficar dentro dele (saíram da barra). Os avisos aparecem abaixo do cartão. Arte definitiva pedida ao
+ChatGPT (docs/ASSETS_PENDENTES.md).
+
+### A-137 · Som ambiente com gravações reais
+
+Pedido do proprietário (08/10/2026). O loop sintetizado do mar e do vento saiu. Cada mapa toca uma gravação de
+2,5 minutos montada com sons reais de natureza, baixa e calma, combinando com o lugar: pássaros e um riacho no Lago
+Sereno; rio e pássaros no Rio Selvagem; sapos, pássaros e mata no Pantanal Dourado; ondas suaves e gaivotas no
+Estuário, na Costa de Coral e no Arquipélago; mar aberto e vento na Corrente Azul e no Talude Noturno; mar e cantos
+de baleia ao longe no Banco das Baleias e no Abismo Atlântico. O liga/desliga e o volume continuam em Opções.
+
+### A-138 · Abismo Atlântico mais claro
+
+Pedido do proprietário (08/10/2026). O céu não repete mais a Via Láctea em "V" nem tem listras no topo: a Via Láctea
+aparece uma vez, perto da lua, e o resto é céu estrelado. Céu, água e ondas ficaram mais claros (continua sendo
+noite), com um brilho azul no horizonte e o reflexo da lua na água.
+
+### A-139 · Ícones definitivos do menu
+
+Arte do proprietário (08/10/2026). Os ícones de Pesca, Mapa, Aquário, Arena, Ranking, Expedição, Mercado, Loja,
+Perfil, Avisos e Opções são os desenhos dele: formas cheias e arredondadas, brancas, que o jogo pinta conforme o
+estado (turquesa no menu ativo). Eles aparecem em todo lugar que usava os ícones antigos com o mesmo nome.
+
+### A-140 · Viagem em 10 segundos
+
+Pedido do proprietário (08/10/2026). Mudar de mapa leva 10 segundos (antes 30). O barquinho cruza a tela no mesmo
+tempo, então anda 3 vezes mais rápido; a chegada no mapa novo continua igual.
+
+### A-141 · Tela de Mapa: arquipélago
+
+Escolha do proprietário entre 3 exemplos (08/10/2026, "Exemplo 2 — Arquipélago"). A tela do Mapa deixou de ser uma
+lista de cards: é um mar que vai do turquesa (água doce, primeiros mapas) até o azul-noite com estrelas (últimos
+mapas). Cada mapa é uma ilha-medalhão redonda, na ordem do jogo (nível de desbloqueio), em zigue-zague, ligadas por
+uma rota pontilhada; o trecho já percorrido (até o mapa atual) fica claro e o resto apagado. Cada medalhão mostra a
+miniatura do mapa num círculo, o número numa medalha e o nome embaixo (cortado com "…" e o nome completo ao passar o
+mouse). Estados: mapa atual com moldura e brilho dourados, o barquinho ao lado e "Você está aqui"; liberado com
+moldura turquesa; bloqueado escurecido, com cadeado e "Nv. X". Clicar num medalhão seleciona (anel turquesa) e o
+painel de baixo mostra capítulo, nome, a frase do mapa, nível e vara necessários, espécies descobertas e o botão
+"Viajar · 10 s", ou o aviso de por que não dá para viajar, ou "Você está aqui". Passar o mouse no lado esquerdo do
+painel mostra a descrição do mapa. Durante a viagem o barquinho anda pela rota do mapa de origem até o destino,
+acompanhando o progresso da viagem. A tela cabe inteira, sem rolagem. Enquanto a arte própria não chega, o fundo é
+um degradê e as ilhas são as miniaturas dos mapas recortadas em círculo (docs/ASSETS_PENDENTES.md). Não há estrelas
+por mapa, fases, prêmio por completar mapa nem caminhos alternativos.
+
+### A-142 · Arte definitiva da barra superior e do cartão
+
+Arte do proprietário (08/10/2026). Botões do menu, barra, logo "Fishing Idle", moldura do avatar e as moedas são os
+desenhos dele. Detalhes decididos na implementação: no botão ativo (turquesa claro) texto e ícone ficam escuros para
+ler bem; a barra passa 10 px das laterais da tela para as pontas arredondadas não ficarem sob o sino e as Opções; a
+moeda pintada nova aparece em todo o jogo (preços, Mercado, Expedição), não só no cartão.
+
+### A-143 · Enciclopédia como álbum de cartas
+
+Decisão do proprietário (08/10/2026): "vai ter o álbum de cartas sim, sendo que vai ser a enciclopédia". A aba
+Enciclopédia do Perfil virou um álbum, a partir do Exemplo 2 (álbum de cartas) para as páginas e do Exemplo 3
+(ficha de herói) para os detalhes. As "cartas" são só a forma de mostrar as espécies da Enciclopédia que já existe:
+não há pacotes, raridade de carta, cartas repetidas nem carta como item.
+
+- **Abas de fichário** na lateral esquerda: "Todas" e uma por mapa, cada uma com "descobertas/total" (em dourado
+  quando o mapa está completo). Substituem os botões por mapa da A-126.
+- **Página de cartas**: título da aba, "x de y espécies" e uma barra de progresso; as cartas numa grade que se ajusta
+  ao espaço (8 na janela grande, cerca de 6 numa janela baixa); setas e "Página n de m" embaixo; a rodinha do mouse
+  também vira a página. Bolsos vazios tracejados completam a última página.
+- **Carta descoberta**: moldura fina na cor da raridade (mais apagada em Comum e Raro), selo da raridade, "Nº" da
+  espécie no catálogo, a arte do peixe, nome, mapa, "Recorde" (maior tamanho) e "Pescou" (quantas). Se o recorde é
+  de uma categoria especial (Excepcional, Perfeição), a carta leva o selo dessa categoria sobre a arte e uma luz
+  dourada discreta passa por ela de vez em quando.
+- **Carta não descoberta**: verso escuro com moldura tracejada, silhueta do peixe com "?", "???", a raridade e o mapa
+  (onde procurar) e "Ainda não pescada".
+- **Ficha** (clique numa carta; ao lado da página na janela grande, por cima dela com "Voltar" numa janela baixa, e
+  Esc volta para a página): o peixe grande num pedestal com aura da cor da raridade (bem fraca em Comum e Raro), a
+  posição na aba ("3 de 10"), setas ‹ › (e as setas do teclado) para a anterior e a próxima da aba, com a página
+  acompanhando; nome, selo de raridade e mapa; quantas pescou, maior exemplar com a categoria de tamanho, tamanho da
+  espécie (mínimo a máximo), chance de mordida no mapa, data da descoberta e os atributos base em barras. Não tem
+  Alimentar nem Vender.
+- **Atributos base**: os do peixe no Nv. 1 com o tamanho do meio da faixa da espécie (a conta de atributos que o
+  jogo já usa); as barras vão até o maior valor de todo o catálogo. A categoria do recorde é deduzida do tamanho (o
+  save guarda só o tamanho); num limite que o arredondamento deixa ambíguo, vale a categoria menor.
+- Antes de descobrir, a ficha mostra "?" nos números, a raridade, "Vive em <mapa>" e "Pesque em <mapa> para
+  descobrir esta espécie."
+- Moldura da carta, verso, aba do fichário, página, pedestal e aura são desenhos provisórios
+  (`docs/ASSETS_PENDENTES.md`).
+
+### A-144 · Aquário vivo
+
+Decisão do proprietário (08/10/2026): o Aquário passa a ser o "Exemplo 1 — Tanque vivo". O álbum de cartas foi para
+a Enciclopédia (A-143), então não há alternância de visual: o Aquário é só o tanque. Muda apenas a forma de mostrar;
+ficha, Alimentar, Vender, venda em lote (A-130), busca, ordenação e capacidade continuam iguais.
+
+- **O tanque** ocupa a janela abaixo da ordenação: água em degradê com raios de luz suaves vindos de cima, areia com
+  pedrinhas no fundo, plantas que já existem no jogo (junco e sargaço) balançando de leve e bolhas subindo.
+- **Os peixes nadam** de um lado para o outro e viram na volta. Cada peixe tem um caminho fixo (tirado do número do
+  peixe), então nada muda ao reabrir a janela; o relógio só o move ao longo do caminho. O tamanho na tela acompanha o
+  tamanho real (em escala logarítmica, entre um mínimo e um máximo), então um peixe grande parece maior que um
+  pequeno. Peixes Excepcional/Perfeição têm o brilho dourado lento; os de raridade acima de Comum, um brilho fraco na
+  cor da raridade (discreto, como pede a Bíblia).
+- **No máximo 24 peixes nadam**: os primeiros da ordenação e da busca atuais (buscar "pacu" enche o tanque de pacus).
+  Os outros ficam só na gaveta; a gaveta avisa "Nadando no tanque: 24 de N". Os peixes no tanque são só desenho: não
+  soltam moedas e não pedem comida.
+- **Clique num peixe** (no tanque ou na gaveta) abre a ficha num painel de vidro à direita, com os mesmos dados e
+  botões de antes. O peixe escolhido ganha um anel turquesa, uma etiqueta com nome e nível que nada com ele, e nada
+  mais devagar.
+- **A gaveta** fica embaixo, sobre a areia: "Todos os peixes (N)" e o botão Recolher / Mostrar todos. Aberta, mostra
+  uma fileira de miniaturas redondas (anel na cor da raridade, anel dourado extra em Excepcional/Perfeição, nome,
+  "Nv. X" e a posição no Cardume, C1–C6) com rolagem; recolhida, só a barra.
+- **Selecionar vários**: a gaveta abre e sobe para até 3 fileiras; o visto turquesa aparece na miniatura e no peixe
+  do tanque (nada junto com ele). Ctrl + clique continua começando a seleção, no tanque e na gaveta. O painel de
+  venda em lote fica no lugar da ficha, no mesmo vidro.
+- **Alimentar** continua com a grade de cartas atual para escolher a comida (é uma etapa à parte e sai do tanque).
+- Fundo do tanque, areia, bolha e vidro são desenhos provisórios (`docs/ASSETS_PENDENTES.md`).
+
+### A-145 · Aquário: modo cartas (ficha de herói)
+
+Decisão do proprietário (08/10/2026): o Aquário ganha um botão para mudar entre o "Tanque vivo" (A-144) e o "Modo
+cartas", com o visual do "Exemplo 3 — Ficha de herói". Isto substitui a frase do A-144 que dizia que não haveria
+alternância de visual. Muda só a forma de mostrar: os dados vêm do serviço e Alimentar, Vender, venda em lote (A-130),
+busca, ordenação e capacidade são os mesmos.
+
+- **Alternância** "Tanque | Cartas" no cabeçalho, à esquerda da busca (some enquanto se escolhe a comida). A escolha
+  fica guardada neste PC (preferência de tela, fora do save); o padrão é o Tanque. Trocar mantém o peixe escolhido e
+  uma seleção de venda em andamento.
+- **Lista de cartas** à esquerda, com rolagem, na ordem e na busca atuais: miniatura, nome, "Nv. X · tamanho",
+  moldura e faixa na cor da raridade (mais fracas em Comum e Raro), anel na cor do tamanho em Excepcional/Perfeição e
+  a posição no Cardume (C1–C6). A carta escolhida ganha o contorno turquesa.
+- **Ficha de herói** ao lado: o peixe grande flutuando num pedestal com aura da cor da raridade (bem fraca em Comum e
+  Raro; brilho lento na cor do tamanho em Excepcional/Perfeição), a posição na lista ("3 de 24") e setas ‹ › (e ← →
+  do teclado) para o anterior e o próximo da lista atual, com a lista rolando junto. À direita: nome, selo de
+  raridade, selo de tamanho, tamanho dentro da faixa da espécie, nível num disco com "Nível X de 10" e a barra de XP,
+  os atributos Vida/Ataque/Defesa/Velocidade em barras, valor de venda, valor como alimento, data da pesca e posição
+  no Cardume, e os botões grandes Alimentar e Vender (os mesmos fluxos e diálogos do tanque).
+- **Barras dos atributos**: o número é o do serviço; a barra vai até o maior valor daquele atributo entre os peixes
+  do Aquário ("comparado aos seus peixes"). É só a escala do desenho, não uma regra.
+- A ficha sempre mostra um peixe da lista: se a busca esconde o peixe escolhido, a ficha passa para o primeiro da
+  lista.
+- **Selecionar vários**: as cartas da lista são marcadas com o visto; o painel de venda em lote aparece no lugar da
+  ficha. Ctrl + clique numa carta também começa a seleção.
+- Atributos em barras, não em losango (mais limpo e mais simples de ler em IMGUI); nível em disco + barra, não em anel.
+- Pedestal, aura e setas são os mesmos da ficha da Enciclopédia (A-143), agora num desenho compartilhado; continuam
+  provisórios (`ui_enc_pedestal.png`, `ui_enc_aura.png` em `docs/ASSETS_PENDENTES.md`). Nenhuma arte nova.
+
+### A-146 · Ranking: palco e placar
+
+Escolha do proprietário (08/10/2026), com a arte dele (pacote `FISHING_IDLE_RANKING_20_ASSETS`): o menu Ranking da
+barra de cima (não a aba Ranking da Arena) vira uma **mistura** do "Exemplo 1 — Palco" com o "Exemplo 2 — Placar de
+campeonato". Muda só a forma de mostrar: as 4 listas, os valores e as posições vêm do serviço de ranking, e continua
+valendo o A-100 (só jogadores reais).
+
+- **Abas grandes** para Nível, Moedas, Conchas e Peixes pescados, cada uma com o emblema da categoria, o nome e
+  "Você #N" (a sua posição naquela lista); a aba ativa fica turquesa com brilho.
+- **Palco**: o píer à noite com lanternas e três pedestais por cima (2º à esquerda, 1º no meio e mais alto, 3º à
+  direita). Cada um tem o avatar com anel na cor da medalha (turquesa quando é você), o escudo de ouro, prata ou
+  bronze com o número, e o nome e o valor (com o emblema da categoria) na frente do pedestal. O 1º ganha a coroa e uma
+  luz dourada suave atrás. Ao abrir, os três sobem e aparecem em 0,45 s, uma vez. Sem confete (mais limpo).
+- **Pedestal vago**: bloco escuro com contorno tracejado, círculo vazio com "—", a posição ("2º") e "Vago". É o que
+  aparece hoje no jogo local, em que só você está no ranking, em 1º.
+- **Placar** do 4º em diante: escudo azul com o número, avatar pequeno, nome, "Nv. X" e o valor com o emblema, em
+  faixas alternadas; a sua linha fica em destaque turquesa. A lista rola quando o serviço devolver mais linhas do que
+  cabem.
+- **Sem jogadores além do pódio** (o jogo local de hoje), a nota "Por enquanto o jogo roda só neste computador…"
+  ocupa o lugar da lista.
+- **Barra "Sua posição #N"** fixa embaixo, em turquesa, com o seu escudo, o seu avatar e o seu valor na lista ativa;
+  fora da lista, "Sua posição: fora da lista".
+- **Avatares**: você aparece com o seu avatar do Perfil; os outros jogadores, com o retrato padrão (a linha do ranking
+  não traz o avatar de cada um).
+- **Taça** ao lado do título da janela, só como enfeite.
+- **Sem setas de Subiu/Desceu**, por decisão do proprietário (o jogo não guarda a posição anterior). Também ficam de
+  fora o "quanto falta para passar fulano" e o trecho em volta de você do Exemplo 2, que dependem do serviço online
+  devolver vizinhos.
+- Sem a arte, cada peça volta a um desenho simples (escudo em bloco colorido, emblema pelo ícone da categoria, linha
+  no lugar do píer, estrela no lugar da coroa).
+
+### A-147 · Expedição: carta náutica
+
+Escolha do proprietário (08/10/2026), com a arte dele: a tela de Expedição vira uma **mistura dos 3 exemplos** — a
+carta náutica do "Exemplo 1" para escolher, a carta de missão do "Exemplo 2" para os números e a bússola e o porto
+do "Exemplo 3" para o tempo e a chegada. Muda só a forma de mostrar: os números, o bloqueio e o tempo vêm do serviço
+de Expedições; continuam valendo uma Expedição por vez, Cancelar sem recompensa e o peixe indo para a Caixa de Pesca.
+
+- **Escolher**: a carta náutica à noite ocupa a esquerda e o centro. O píer fica no canto de baixo à esquerda (a
+  origem). Os destinos são medalhões de latão com a paisagem da Expedição recortada em círculo; quanto maior a
+  duração, mais longe do píer (mais à direita e mais alto). Cada um tem o nome e a duração **em cima** do medalhão, e
+  uma rota pontilhada sai do píer, corre pela parte de baixo da carta e sobe até ele (assim a rota nunca cruza um
+  nome). O escolhido ganha anel turquesa e a rota turquesa. A rosa dos ventos fica no canto de cima, só como enfeite.
+  "Força do seu Cardume" e x/6 continuam no cabeçalho.
+- **Painel da direita**: a moldura de carta de missão com a paisagem no topo, o nome, a duração e os números em
+  blocos — Força recomendada, Aproveitamento (com a barra), Moedas previstas em dourado e maiores, com a moeda, e o
+  selo turquesa com a chance de peixe escrita no centro ("Chance de peixe" embaixo). "Enviar o Cardume" vem logo
+  abaixo dos blocos, sem vão. Quando não dá para enviar, o motivo aparece no lugar do botão, com o cadeado.
+- **Em andamento**: a rota escolhida fica turquesa no trecho já percorrido e o marcador do Cardume anda do píer até o
+  destino conforme o progresso (só apresentação); os outros destinos ficam apagados com cadeado. No painel, a
+  bússola mostra "Volta em" e o tempo no mostrador, com um anel pontilhado que enche em volta; embaixo, o aviso do
+  Cardume travado e "Cancelar Expedição" (com a confirmação de sempre).
+- **Chegada**: o relatório de sempre (moedas, aproveitamento e o peixe) abre sobre a cena do porto ao entardecer,
+  com o porto escurecido e o relatório num painel escuro para o texto ler bem.
+- Sem a carta, a tela volta aos 4 cartões lado a lado; sem o porto, o relatório volta ao painel comum. Cada peça
+  menor tem um desenho simples de reserva.
+- A placa de destino do "Exemplo 3" foi recebida e ficou guardada, sem uso.
+
+### A-148 · Cabeçalho "Placa do Píer" em todos os menus
+
+*Atualizado em 12/10/2026 (A-170): a Placa do Píer saiu das janelas. O título fica numa etiqueta azul-noite no canto do papel (padrão "Diário de bordo"), sem cordas nem balanço; o "i" de "Como funciona" e os contadores continuam.*
+
+Escolha do proprietário (08/10/2026), o "Exemplo C — Placa do Píer", valendo para todos os menus que usam a moldura
+comum: Expedição, Ranking, Mercado, Loja, Arena, batalha da Arena, Mapa, Aquário e Caixa de Pesca. O Perfil e as
+Ferramentas de teste têm cabeçalho próprio e não mudam. Muda só a forma de mostrar; nenhum texto, número ou regra muda.
+
+- **A placa**: tábuas azul-escuras com borda turquesa e quatro parafusos, pendurada por duas cordas que sobem da
+  borda de cima da janela até a barra principal, com argolas onde a corda prende. Dentro, o ícone do menu e o título
+  grande. A placa tem a largura do título e nunca chega no "✕ Fechar", que continua à direita.
+- **Ao abrir**: a placa balança uma vez e para (menos de 1 segundo, amortecido, sem repetir). É só enfeite.
+- **Frase longa → "i"**: a frase que explicava o menu (Expedição, Ranking, Mercado, Loja, Arena e a nota do Mapa)
+  sai do cabeçalho. Um botão redondo turquesa "i" no canto da placa abre o balão **"Como funciona"** com o mesmo
+  texto, por cima do conteúdo da janela. Clicar no "i" de novo, clicar fora, apertar Esc, abrir uma confirmação ou
+  fechar a janela fecha o balão; o clique fora só fecha o balão, não aciona o que está embaixo.
+- **Contadores → fundo escuro**: o que é número curto ou tempo continua sempre à vista, num fundo escuro ao lado da
+  placa (o mesmo "poço" da carteira): Aquário "x / y peixes", Caixa de Pesca "x de y peixes", batalha da Arena
+  "Tempo: 0:42" e Mapa "Viagem: …". Critério: se o jogador precisa ver o valor enquanto usa a tela, é contador; se é
+  explicação de como o menu funciona, vai para o "i".
+- **Expedição**: "Força do seu Cardume" e x / 6 vão para o fundo escuro ao lado da placa, na mesma faixa do
+  cabeçalho; o aviso de Cardume vazio fica logo depois. A carta náutica e a carta de missão sobem e ganham essa
+  altura; o resto da tela não muda.
+- **Ranking**: a taça fica ao lado da placa.
+- O conteúdo de todas essas janelas começa 16 px mais alto (a placa ocupa menos que título + subtítulo); a margem de
+  baixo não muda.
+- Arte: a placa, a corda e a argola têm desenho de reserva no código; os arquivos finais estão pedidos em
+  `docs/ASSETS_PENDENTES.md`.
+
+### A-149 · Legibilidade: cores e tamanho do texto no jogo todo
+
+Pedido do proprietário (08/10/2026): "melhore um pouco a fonte e cor para visualização em todo jogo, para não ficar
+muito claro assim e também nem tão escuro, as coisas precisam estar bem legíveis". O exemplo foi a carta de missão
+da Expedição, com os rótulos ("Força recomendada", "Aproveitamento", "Moedas previstas", "Chance de peixe") finos,
+pequenos e apagados. A interface é desenhada numa tela virtual de 1080 px de altura e reduzida para a janela: numa
+janela de 600 px, 13 px viravam uns 7 px. Muda só a forma de mostrar; nenhum texto, número ou regra muda.
+
+- **Cores do texto** (`Resources/Visual/tema_visual.json`; a Bíblia de Arte lista `#EEF4FB` e `#9DB2C9`):
+  - Texto principal: `#EEF4FB` → `#EEF3F8`, um branco suave, um pouco mais quente, nunca o branco puro.
+  - Texto suave (rótulos, linhas secundárias): `#9DB2C9` → `#B4C6DB`, um azul-acinzentado claro, bem abaixo do
+    principal para manter a hierarquia.
+  - Contraste medido (WCAG), texto suave antes → depois: fundo da noite `#0A1422` 8,5 → 10,6:1; painel `#11223A`
+    7,3 → 9,2:1; painel elevado `#183050` 6,1 → 7,6:1; cartão 5,7 → 7,1:1; cartão com o mouse em cima 4,9 → 6,1:1;
+    cartão escolhido (turquesa) 4,1 → 5,1:1; botão com o mouse em cima 4,0 → 5,0:1; poço escuro 8,0 → 10,0:1; blocos
+    da carta de missão 7,2 → 9,0:1 e 7,4 → 9,2:1. Agora todos ficam acima de 4,5:1.
+  - Texto principal: de 7,7:1 (botão com o mouse em cima) a 16,6:1 (noite).
+  - Turquesa `#25C4C1` e dourado `#F6B93B` usados como rótulo pequeno não mudam: 5,7 a 8,6:1 e 7,0 a 10,5:1 nos
+    painéis e cartões.
+- **Tamanhos** (na tela virtual de 1080 px):
+  - Texto pequeno (rótulos, linhas secundárias, valores pequenos): 13 → 15 px.
+  - Chips, filtros, selos de raridade e tamanho: 12–13 → 14 px; "Volta em" na bússola da Expedição: 10 → 14 px.
+  - Etiquetas cheias em maiúsculas ("NOVA ESPÉCIE", "RECORDE", "EXCEPCIONAL"): 11 → 13 px, letra escura sobre a cor,
+    agora em etiquetas de 20 px de altura (antes 18).
+  - Balão "Como funciona" (o "i" da placa): 14 → 15 px.
+  - Títulos, números e botões não mudam.
+- **Peso**: o texto do corpo passa de Nunito Regular para **Nunito SemiBold** (rótulos, linhas secundárias e
+  descrições); o que já era negrito continua em Nunito Bold. Fredoka continua nos títulos e números.
+- **Sombra**: uma sombra escura de 1 px, a 50%, só no texto que fica direto sobre a arte, sem painel atrás: o nome do
+  mapa ao chegar e os nomes e danos dos peixes na batalha da Arena. Texto em painel, cartão ou pílula não ganha
+  sombra.
+- **Espaço para o texto maior**: cada linha do texto pequeno ganhou 20 px de altura (antes 18) e o que vinha embaixo
+  desceu o necessário. Onde o texto não cabia mais, a caixa cresceu ou o texto é encurtado com "…":
+  - Expedição: na carta de missão o bloco "Força recomendada" ficou um pouco mais largo que o "Aproveitamento",
+    para o rótulo caber inteiro; a pílula da duração dos destinos ficou mais alta; o aviso do Cardume travado
+    ganhou espaço para 4 linhas; a nota do relatório, para 2.
+  - Barra de cima e cartão do jogador: a bolinha de avisos do sino passou a 20 px; no cartão, o valor de cada linha
+    (vara, mapa…) ocupa o que o rótulo deixa e é encurtado com "…".
+  - Avisos (toasts) 40 px mais largos (480); o aviso de peixe que escapou, 80 px mais largo; o tutorial e a nota do
+    modo compacto ganharam altura.
+  - Mercado: rótulos dos filtros com 20 px; a nota do Leilão com espaço para 4 linhas e a de criar leilão, para 3
+    (a lista desce um pouco); a nota do anúncio com 3 linhas; nas linhas "rótulo: valor" o número fica inteiro e o
+    rótulo é encurtado só se ainda faltar espaço.
+  - Loja: a descrição dos barcos ficou mais larga (2 linhas); bônus "+x% → +y%" das varas sempre inteiros.
+  - Aquário, Caixa de Pesca, Perfil, Enciclopédia, Ranking, Mapa, Arena, boas-vindas e Ferramentas de teste:
+    alturas de linha ajustadas; na Enciclopédia, a parte de baixo da carta ganhou 4 px; no Mapa, a pílula do nome
+    das ilhas ficou mais alta e escura, com o espaço dos nomes ajustado; na Arena, as letras de "FRENTE"/"TRÁS"
+    acompanham a altura da fileira; os botões de filtro da Caixa encurtam o texto com "…".
+  - Cartões de peixe: as linhas de baixo (tamanho, rodapé e moedas) ganharam 1–2 px; a arte do peixe cede esse espaço.
+
+### A-150 · Loja: "Balcão do Píer"
+
+Escolha do proprietário (09/10/2026): a Loja vira a "Mescla B · Balcão do Píer" da página de mesclas (parede de
+ganchos do Exemplo 3 + ficha com pedestal do Exemplo 2 + moldura de corda do Exemplo 1). Muda só a forma de mostrar:
+preços, bônus, requisitos, bloqueios e chances vêm dos serviços da Loja e do Equipamento; Comprar, Pegar grátis,
+Usar e Guardar chamam os mesmos fluxos de antes. Nenhuma regra, número ou save muda.
+
+- **Quadro**: a janela comum de 1320×840 (antes 1200×730) com a Placa do Píer (A-148). Atrás de tudo, uma parede de
+  tábuas verticais azul-noite; no alto, uma viga turquesa.
+- **"i" da placa**: a frase da aba (Varas: Inventário no Perfil; Barcos e Iscas: as notas de sempre; VIP: a nota do
+  VIP), seguida da explicação da chance de puxar o peixe (mínimo e máximo). A nota da chance saiu de baixo das barras
+  e passou a morar aqui; continua sempre disponível.
+- **Abas** Varas | Barcos | Iscas | VIP como plaquinhas penduradas na viga por duas cordinhas; a ativa com borda
+  turquesa e brilho leve.
+- **Parede de ganchos** (esquerda): uma prateleira por item, na ordem do serviço, com plaquinha (nome; categoria nas
+  varas, "+x% de chance" nos barcos e iscas, faixa na cor da categoria), o item deitado em dois ganchos de latão (as
+  varas inclinadas 28°) e uma etiqueta pendurada por um barbante: preço em Moedas (e Conchas, na linha de baixo),
+  "Grátis", "JÁ É SUA" (vara) / "JÁ É SEU" (barco), "EM USO" (turquesa cheio) ou cadeado com "Nv. X". Item bloqueado
+  aparece só como sombra. Com mais itens do que cabem, a parede rola (aí as varas ficam sem inclinação).
+- **Escolher**: clicar numa prateleira ou nas setas ‹ › do balcão. O item escolhido sai do gancho — ali fica só a
+  marca apagada com "no balcão" num contorno tracejado — e faz um arco curto até o pedestal: 0,6 s, desacelerando,
+  com um rastro pontilhado turquesa que some em 0,25 s. Depois a aura acende (0,3 s) e a ficha desliza 24 px da
+  direita (0,35 s). Acontece ao abrir a Loja, ao trocar de aba e ao escolher outro item; nada fica em loop.
+- **Balcão** (centro): "4 de 6" com as setas, o item grande sobre o pedestal com aura na cor da categoria (fraca, como
+  a ficha do Aquário, A-145) e a tábua do balcão com filete turquesa.
+- **Ficha** (direita), na moldura de corda da carta de missão (esticada em 9 partes): nome, categoria, até que nível,
+  "Pesca peixes…", "Disponível no Nível X" (visto turquesa ou cadeado dourado) e:
+  - Varas: os 4 bônus (Sucesso da captura, Chance de raridade, Qualidade de tamanho, Conchas) com "+x% → +y%" e uma
+    barra com o Nível 1 cheio sobre o nível máximo claro; a barra vai até o maior valor daquele bônus entre as varas
+    da aba (só a escala do desenho). Preço (ou "Grátis") e Comprar / Pegar grátis; "EM USO" ou "JÁ É SUA" quando já
+    é dela; o motivo do bloqueio no lugar do botão.
+  - Barcos: descrição, "+x% de chance" grande com barra (escala: o maior barco), a nota dos barcos quando cabe,
+    preço e Comprar, Usar ou "EM USO".
+  - Iscas: descrição, bônus com barra, tentativas por compra, tentativas que restam (douradas se em uso), preço,
+    Comprar e, embaixo, Usar ou Guardar.
+- **Seu equipamento** numa caixa de pesca aberta (embaixo, à esquerda): três divisórias com vara, barco e isca (rótulo,
+  imagem, nome, bônus em turquesa), as tentativas que restam da isca e o Bônus total.
+- **Chance de puxar o peixe** na água (embaixo, à direita): uma boia por raridade, com a porcentagem em cima e o nome
+  embaixo, na cor da raridade. A raridade que não morde aqui fica com a boia deitada e cinza, a porcentagem apagada e
+  "não morde aqui". As boias ficam paradas (mais limpo).
+- **VIP**: o mesmo cartão de antes, sobre um fundo escuro para ler bem na parede, com a caixa e as boias embaixo.
+- **Concessões**: o rótulo de preço com Conchas usa duas linhas para a etiqueta não alargar a parede; a nota dos barcos
+  e das iscas aparece na ficha só quando cabe inteira (sempre está no "i"); o pedestal e a aura continuam os desenhos
+  provisórios da ficha de herói.
+- **Arte**: tudo tem desenho de reserva no código. Arquivos opcionais em `Resources/Arte/UI` (pedidos em
+  `docs/ASSETS_PENDENTES.md`, processados por `tools/Arte/processar_loja.py`): `ui_loja_parede_noite` (repete na
+  largura), `ui_loja_gancho`, `ui_loja_balcao_pier` (9 partes), `ui_loja_caixa` (9 partes) e `ui_loja_boia` (metade de
+  cima pintada na cor da raridade). A moldura da ficha reaproveita `ui_exp_moldura_carta`; varas, barcos e iscas usam
+  as imagens que já existem.
+
+Arte do proprietário recebida em 09/10/2026 (parede, gancho, balcão, caixa e boia): a parede repete com 2 tábuas por
+peça; a caixa mostra a tampa aberta em cima e o interior escuro; a boia é pintada na cor da raridade acima do anel
+(que fica a 63,5% da altura, não na metade).
+
+### A-151 · Sem zoom na cena
+
+Pedido do proprietário em 09/10/2026: o zoom da cena (A-102) saiu do jogo. A câmera mostra sempre a cena inteira; a
+roda do mouse não aproxima mais, e o controle "Aproximar" saiu das Configurações (o painel ficou 44 px mais baixo). O
+balanço lento da câmera continua. A preferência antiga (`fishingidle.zoom`) fica esquecida no PC e não é lida.
+
+### A-152 · Novo escopo: idle de crescimento rápido
+
+*Atualizado em 12/10/2026 (A-172): a Tripulação e as Melhorias saíram do jogo (decisão do proprietário). O crescimento vem da pesca, dos equipamentos, das roupas e do Passe; a meta de ~60 dias até o Nv.1000 continua (curva do Pescador versão 4).*
+
+Decisão do proprietário em 10/10/2026. A ilha 2D foi descartada e o jogo volta a ser idle puro, no estilo de
+crescimento rápido de dinheiro, experiência e níveis:
+
+- Números grandes, até bilhões (sem letras como "aa").
+- O Pescador vai até o Nv.1000 (antes Nv.100).
+- Sem Renascer (prestígio): o progresso é contínuo.
+- O crescimento vem de uma Tripulação automática (pescadores e barcos que rendem sozinhos) e de Melhorias compradas
+  que multiplicam a renda.
+
+- O jogo continua multiplayer. Um jogador "quebrar" a economia por sorte ou por investir dinheiro de verdade não é
+  visto como problema.
+- Varas, barcos e iscas não têm mais nível mínimo para comprar: basta ter o dinheiro.
+
+O proprietário preferiu implementar em etapas e ver no jogo como se comporta, em vez de aprovar uma proposta fechada
+antes (10/10/2026). Os números de cada etapa ficam em /config e são ajustados depois de ele jogar.
+
+### A-153 · Etapa 1 do novo escopo: itens sem nível, Pescador até o Nv.1000
+**Seção do GDD:** 7, 17, 19 · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 13/10/2026 (A-180): os mapas não pedem mais a categoria mínima de vara; abrem só pelo nível.*
+
+*Atualizado em 12/10/2026 (A-172): a Tripulação saiu do jogo; o XP do Pescador vem só da pesca. Os tempos com a Tripulação citados abaixo são históricos.*
+
+Decisão do proprietário em 10/10/2026 (M24-T09 e M24-T03), primeira etapa do A-152:
+
+- **Itens sem nível mínimo.** Varas, barcos e iscas podem ser comprados em qualquer nível: basta ter as Moedas e as
+  Conchas. Na Loja, a etiqueta do gancho não mostra mais o cadeado com "Nv. X", a ficha não tem mais a linha
+  "Disponível no Nível X" e nenhum item aparece escurecido por nível; o único motivo de bloqueio é faltar Moedas ou
+  Conchas (ou já ter o item). *Desde 12/10/2026 as varas não são vendidas: vêm de fragmentos (A-163).* "Categoria · Até o Nível 10" continua: é o nível máximo de melhoria da vara. Os mapas
+  continuam liberando nos mesmos níveis do Pescador (Nv.10, 20, … 90) e pedindo a categoria mínima de vara: comprar a
+  Vara 5 no Nv.1 não leva ninguém ao Mapa 10 antes do Nv.90.
+- **Pescador até o Nv.1000** (antes Nv.100), com uma curva de XP nova, mais rápida no começo. Os primeiros níveis
+  vêm vários por sessão: Nv.10 em ~1 hora pescando online (era ~2 horas, seção 17 do GDD). O XP dos peixes não mudou.
+  Tempo simulado até cada nível (`tools/Progressao/calibrar_xp.py`, valor esperado):
+
+  | Jeito de jogar | Nv.10 | Nv.50 | Nv.100 | Nv.250 | Nv.500 | Nv.750 | Nv.1000 |
+  |---|---|---|---|---|---|---|---|
+  | Jogo aberto o dia todo | ~1 h | ~9 h | ~1 dia | ~4,8 dias | ~17,5 dias | ~41 dias | ~75 dias |
+  | Abre 4 vezes por dia (30 min) | 12 h* | ~1,3 dia | ~2,3 dias | ~9,8 dias | ~34 dias | ~78 dias | ~144 dias |
+  | Abre 1 vez por dia (30 min) | 1,8 dia* | ~2,8 dias | ~4,8 dias | ~12,8 dias | ~41 dias | ~92 dias | ~168 dias |
+
+  \* Contado da meia-noite do primeiro dia; a primeira visita é às 8 h (4 vezes) ou às 20 h (1 vez).
+
+  *Atualizado em 12/10/2026 (A-162): a curva do Pescador foi esticada depois do Nv.100 para o Nv.1000 vir em ~60 dias
+  com o jogo aberto, a Tripulação e as Melhorias; a tabela e os números abaixo são os da curva versão 2.*
+
+  XP para o próximo nível: Nv.1 pede 10; Nv.10, 715; Nv.50, 2.200; Nv.100, 9.640; Nv.250, 80.000; Nv.500, 178.000;
+  Nv.750, 303.000; Nv.999, 408.000. Do Nv.1 ao Nv.1000 são 188.953.530 XP. A tabela sobe sem degraus grandes
+  (no máximo ~5% de um nível para o seguinte), menos no Nv.10, quando o jogador vai para o Mapa 2.
+- **Dólares por nível** (A-111): continuam 10 a cada 10 níveis só até o Nv.100 (100 Dólares no total). O que acontece
+  depois do Nv.100 é decisão do proprietário (OD-055). *Resolvido em 11/10/2026: os Dólares ficam no Passe do
+  Pescador (A-158).*
+- **Quem já joga** sobe para o nível que o XP total acumulado alcança na curva nova, ao abrir o jogo pela primeira vez
+  depois da mudança. Ninguém perde nível: se a curva nova pedir mais, o jogador fica no nível que tinha. Os marcos de
+  Dólares cruzados nessa subida (até o Nv.100) são pagos, como se tivessem sido alcançados pescando. Um jogador que
+  estava no Nv.100 (11,5 milhões de XP na curva antiga) passa para o Nv.304.
+- **Números grandes**: Moedas, XP e preços já guardam valores até bilhões e além. Onde o jogo mostra valores curtos
+  (A-124), abaixo de 1 milhão continua o número inteiro ("845.320") e acima vira "3,4 mi", "12 bi", "1,5 tri".
+- O Painel de Testes ganhou os atalhos "Nv. 500" e "Nv. 1000".
+
+
+### A-154 · Etapa 2 do novo escopo: a Tripulação automática
+**Seção do GDD:** 10, 17, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 12/10/2026 (A-160, A-169, A-170): a pesca offline citada abaixo faz 1 tentativa a cada 20 s (15 s com o VIP), não mais 1 por minuto. A Tripulação abre pela aba Tripulação do menu de cima e a janela usa o padrão "Diário de bordo"; a renda por segundo aparece na placa pendurada embaixo das abas.*
+
+*Atualizado em 12/10/2026 (A-172): **RETIRADO.** A Tripulação saiu do jogo por decisão do proprietário ("Não vai ter tripulação, retira isso do jogo"). Quem tinha tripulantes recebeu de volta as Moedas que gastou neles. O texto abaixo fica só como histórico.*
+
+Decisão do proprietário em 10/10/2026 (M24-T05 e M24-T08), segunda etapa do A-152. Números de partida aprovados por
+ele, em `config/crew.json`, para ajustar jogando.
+
+- **O que é.** Pescadores e barcos contratados com Moedas que rendem **Moedas e XP de Pescador por segundo**, com o
+  jogo aberto e fechado. A Tripulação **nunca pesca peixes**: não enche a Caixa, não descobre espécies, não bate
+  recordes nem dá Conchas.
+- **Os 10 tripulantes**, em ordem: Ajudante da Isca, Canoeiro, Tarrafeiro, Jangadeiro, Piloto da Voadeira, Mestre do
+  Barco de Linha, Saveiro do Porto, Traineira, Barco de Arrasto e Navio-Fábrica.
+
+  | # | Tripulante | 1ª unidade | Cada unidade a mais | Moedas/s por unidade | XP/s por unidade | Libera com |
+  |---|---|---|---|---|---|---|
+  | 1 | Ajudante da Isca | 15 | +10% | 0,006 | 0,0002 | desde o começo |
+  | 2 | Canoeiro | 160 | +9,7% | 0,039 | 0,0003 | 10 Ajudantes da Isca |
+  | 3 | Tarrafeiro | 1.800 | +9,3% | 0,25 | 0,00045 | 10 Canoeiros |
+  | 4 | Jangadeiro | 20.000 | +9% | 1,6 | 0,0007 | 10 Tarrafeiros |
+  | 5 | Piloto da Voadeira | 220.000 | +8,7% | 11 | 0,001 | 10 Jangadeiros |
+  | 6 | Mestre do Barco de Linha | 2,4 mi | +8,3% | 70 | 0,0015 | 10 Pilotos da Voadeira |
+  | 7 | Saveiro do Porto | 26 mi | +8% | 450 | 0,0023 | 10 Mestres do Barco de Linha |
+  | 8 | Traineira | 290 mi | +7,7% | 2.900 | 0,0034 | 10 Saveiros do Porto |
+  | 9 | Barco de Arrasto | 3,2 bi | +7,3% | 19.000 | 0,0051 | 10 Traineiras |
+  | 10 | Navio-Fábrica | 35 bi | +7% | 120.000 | 0,0077 | 10 Barcos de Arrasto |
+
+  A coluna "Moedas/s por unidade" foi recalibrada com as Melhorias (A-155); os valores atuais estão lá.
+
+  O preço de cada unidade sobe em relação à anterior (os caros sobem mais devagar). Comprar várias de uma vez custa
+  exatamente a soma das unidades: base × crescimento^tenho × (crescimento^quantas − 1) ÷ (crescimento − 1). Nenhum
+  tripulante pede nível do Pescador (como os itens, A-153): cada um libera quando o jogador tem 10 do anterior.
+- **Comprar ×1, ×10, ×100 ou Máx** (o máximo que as Moedas pagam). O preço que aparece é o do modo escolhido. Um
+  preço grande demais para caber num número aparece como "Preço fora de alcance" e não pode ser pago.
+- **Marcos de quantidade.** Com 25, 50, 100, 150, 200, 300 e 400 unidades de um tripulante, a renda de Moedas
+  **daquele** tripulante dobra a cada marco (×128 com os 7).
+- **Marco da frota.** Quando **todos os 10** tripulantes têm pelo menos 25 (e depois 50, 100, 150, 200, 300, 400), a
+  renda de Moedas de **toda** a Tripulação dobra, uma vez por marco. Como cada tripulante só libera com 10 do
+  anterior, "todos os liberados" e "todos os 10" dão no mesmo; o jogo conta os 10.
+- Os marcos **não** mexem no XP: o XP da Tripulação é sempre pequeno (unidades × XP por unidade).
+- **Com o jogo aberto** a renda cai na carteira a cada segundo, contada pelo relógio do jogo (o que sobra de fração de
+  Moeda fica guardado para o próximo segundo). O XP soma no XP total do Pescador e sobe de nível como a pesca (com os
+  Dólares dos marcos até o Nv.100, A-111), com o mesmo aviso e a mesma comemoração.
+- **Com o jogo fechado**: renda cheia nas primeiras **2 horas**, **50%** até **10 horas** fora no total; depois disso,
+  nada. É separado da pesca offline (1 tentativa por minuto até 24 h, A-034): os dois acontecem juntos. Um intervalo
+  de mais de 2 minutos sem o jogo dar notícia (PC suspenso, jogo travado) conta como fechado. Relógio do PC voltado
+  para trás não rende nada nem tira nada; quando volta à hora certa, só o tempo novo conta (TD-030).
+- **Tela de boas-vindas**: se a Tripulação rendeu enquanto o jogo estava fechado, o "Bem-vindo de volta" ganha a parte
+  "Sua Tripulação trabalhou" (Moedas, XP, nível alcançado, o aviso do limite de 10 h e a regra de 2 h / 50% / 10 h),
+  embaixo da pesca. Se a pesca estava parada, aparece só a parte da Tripulação.
+- **Tela "Tripulação"** (botão novo na barra de cima, logo depois de Pesca; a Placa do Píer com o "i" explicando
+  tudo, A-148, e o contador "+X/s" ao lado):
+  - Em cima, num quadro afundado: "Renda da Tripulação" com "+X/s" grande em dourado, o XP por segundo e quanto a
+    Tripulação já rendeu; à direita, o **marco da frota**: "Todos com 25: ×2 para a frota · 7 de 10 prontos", uma
+    barra dourada do marco anterior até o próximo e a pílula "Frota ×2" quando já há algum alcançado.
+  - Os modos "Contratar ×1 · ×10 · ×100 · Máx" em chips.
+  - Uma linha por tripulante: retrato (provisório), nome e quantidade, a renda dele por segundo (com "renda ×4"
+    quando tem marcos), o próximo marco ("×2 em 50", "25/50" e barra) ou "Todos os marcos", e o botão "Contratar ×N"
+    com o preço embaixo (dourado quando dá para pagar). Só aparecem os liberados e o **próximo bloqueado**, escurecido,
+    com cadeado e "Libera com 10 Canoeiros (você tem 7)". Lista com rolagem quando não cabe.
+  - Avisos: "Tripulação: +10 Canoeiros", "Marco de 25 Canoeiros: renda ×2!", "Marco da frota: todos com 25! A
+    Tripulação inteira rende ×2." e "Novo na Tripulação: Tarrafeiro".
+- **Barra do jogador**: no cartão aberto, um "+X/s" discreto à direita das Moedas (some enquanto aparece o "+N" de
+  uma venda). A renda da Tripulação conta na carteira sem o pulo e sem o "+N" a cada segundo.
+- Números por segundo: "0,006/s", "0,25/s", "12,5/s", "845.320/s", "3,4 mi/s", "1,1 bi/s".
+- **Ritmo simulado** (`tools/Progressao/simular_tripulacao.py`, resultado em `docs/propostas/tripulacao.json`; a
+  pesca como em `simular_progressao.py`, uma carteira só, compras de um jogador atento):
+
+  | Jeito de jogar | 1ª compra | 2º tripulante | Tripulação passa a pesca | 1 mil/s | 1 mi/s | 1 bi/s | Renda no Nv.500 | Renda no dia 75 |
+  |---|---|---|---|---|---|---|---|---|
+  | Jogo aberto o dia todo | 0,6 min | 7,1 min | 1,5 h | 1,3 dia | 12,7 dias | 62 dias | ~2,9 mi/s (dia 17,4) | ~1,1 bi/s |
+  | Abre 4 vezes por dia (30 min) | 0,6 min* | 7,1 min* | 10,3 h* | 2,8 dias | 19,8 dias | 90 dias | ~3,6 mi/s (dia 30) | ~260 mi/s |
+  | Abre 1 vez por dia (30 min) | 0,6 min* | 7,1 min* | 5 dias* | 5,8 dias | 48 dias | — (248 mi/s no dia 168) | ~670 mil/s (dia 45) | ~3,6 mi/s |
+
+  \* Contado da primeira vez que o jogo abre. A renda nunca passa de ~1,5 bi/s nos 168 dias simulados (bem abaixo de
+  1 trilhão/s). O XP da Tripulação adianta pouco o Nv.1000: ~71 em vez de ~75 dias (jogo aberto), ~132 em vez de
+  ~144 (4 vezes por dia), ~165 em vez de ~168 (1 vez por dia).
+- **Arte provisória** (`ASSET_PENDENTE`): os retratos são um quadrado com o ícone de pessoa (1 a 3) ou de barco
+  (4 a 10) e o número; o botão do menu usa o ícone do barco. Pedidos em `docs/ASSETS_PENDENTES.md`.
+- **Quem já joga** começa com a Tripulação vazia (save versão 13); o tempo de antes da atualização não rende nada.
+
+### A-155 · Etapa 3 do novo escopo: Melhorias compradas
+**Seção do GDD:** 10, 17, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 12/10/2026 (A-172): **RETIRADO.** As Melhorias (as da Tripulação e as gerais: Rádio do Porto, Freguesia na Feira, Caixa Térmica, Sonar de Cardume e Maré Boa) saíram do jogo junto com a Tripulação, por decisão do proprietário. Quem tinha comprado recebeu de volta as Moedas. A venda de peixe ao NPC voltou ao preço sem multiplicador. O texto abaixo fica só como histórico.*
+
+Decisão do proprietário em 10/10/2026 (M24-T06 e M24-T11), terceira etapa do A-152: Melhorias compradas com Moedas
+que multiplicam a renda. Números de partida em `config/upgrades.json`, para ajustar jogando. Nenhuma Melhoria pede
+nível do Pescador (como os itens, A-153).
+
+- **Melhorias da Tripulação** (estilo Cookie Clicker). Cada um dos 10 tripulantes tem 5, compradas **uma vez só**:
+
+  | Melhoria | Libera com (unidades do tripulante) | Preço | Efeito |
+  |---|---|---|---|
+  | Anzol Afiado | 1 | 10 × o preço da 1ª unidade a mais (base × crescimento¹) | ×2 na renda de Moedas daquele tripulante |
+  | Linha Reforçada | 10 | 50 × base × crescimento¹⁰ | ×2 |
+  | Rede Nova | 25 | 250 × base × crescimento²⁵ | ×2 |
+  | Motor Revisado | 50 | 1.250 × base × crescimento⁵⁰ | ×2 |
+  | Mapa dos Cardumes | 100 | 6.250 × base × crescimento¹⁰⁰ | ×2 |
+
+  O nome junta a Melhoria e o tripulante: "Anzol Afiado do Canoeiro", "Rede Nova da Traineira". Exemplos de preço:
+  Anzol Afiado do Ajudante da Isca 165 Moedas, do Canoeiro 1.755, do Navio-Fábrica ~375 bi; Mapa dos Cardumes do
+  Ajudante da Isca ~1,3 bi. As 5 juntas deixam o tripulante ×32. Não mexem no XP (como os marcos).
+- **Melhorias gerais**, compradas nível a nível (o nível N custa base × crescimento^(N−1)):
+
+  | Melhoria | Efeito por nível | Níveis | Nível 1 | Cada nível a mais | Último nível | Tudo |
+  |---|---|---|---|---|---|---|
+  | Rádio do Porto | +25% na renda de Moedas de toda a Tripulação | 10 | 20 mil | ×12 | ~103 tri | +250% (×3,5) |
+  | Freguesia na Feira | +10% no preço de venda ao NPC de todo peixe (Caixa e Aquário) | 10 | 1.500 | ×4 | ~393 mi | +100% |
+  | Caixa Térmica | +2 h no teto da Tripulação com o jogo fechado | 5 | 50 mil | ×15 | ~2,5 bi | +10 h (teto de 20 h) |
+  | Sonar de Cardume | +5% no XP da Tripulação | 10 | 100 mil | ×8 | ~13 tri | +50% |
+  | Maré Boa | +10% nas Moedas da venda da Caixa de Pesca | 10 | 2.500 | ×4 | ~655 mi | +100% |
+
+  Os "+%" de cada Melhoria somam por nível (+25% × 4 níveis = +100%) e multiplicam o resto. As horas da Caixa
+  Térmica entram na taxa reduzida (50%): com os 5 níveis, 100% nas 2 primeiras horas e 50% até 20 h fora.
+- **Venda de peixe.** A Freguesia na Feira entra no preço de venda ao NPC de cada peixe, o que aparece no cartão
+  da Caixa e do Aquário e o que a venda paga. A Maré Boa vale só para a Caixa de Pesca (o peixe recém-pescado): na
+  Caixa os dois multiplicam (+30% e +10% = ×1,43); no Aquário só a Freguesia. O **Mercado entre jogadores não muda**:
+  o valor de referência e o "valor no NPC" do Mercado continuam com o preço base. Como a pesca só rende Moedas pela
+  venda, a Maré Boa e a Freguesia fazem quase o mesmo; o que fazer com isso é decisão do proprietário (OD-056).
+- **Na janela da Tripulação** (abas "Tripulação | Melhorias" em chips no alto, como no Mercado; ficou no lugar de uma
+  janela própria para a Tripulação e o que a multiplica ficarem juntas e o menu não ganhar outro botão):
+  - O "i" da Placa do Píer explica a aba aberta.
+  - À esquerda, **"Próximas Melhorias da Tripulação"** com "12 de 50 da Tripulação": só as **3 mais baratas** já
+    liberadas (se faltarem, as próximas bloqueadas, escurecidas, com cadeado e "Libera com 25 Canoeiros (você tem
+    12)"), e "+N outras liberadas, mais caras" quando há mais. Cada linha: retrato do tripulante, nome, efeito
+    ("×2 Canoeiro") e Comprar com o preço embaixo (dourado quando dá para pagar).
+  - Embaixo, **"Compradas (N)"** recolhível (Mostrar / Esconder, começa fechada): uma linha por Melhoria com o que
+    ela dá agora ("+75% Tripulação · Nível 3/10").
+  - À direita, **"Melhorias gerais"**: as 5, cada uma com "Nível 3/10 · +25% Tripulação" (o próximo nível), "Agora:
+    +75% Tripulação" e Comprar com o preço, ou "Nível máximo".
+  - Avisos: "Melhoria comprada: Anzol Afiado do Canoeiro (×2 Canoeiro)" e "Rádio do Porto: nível 3 (+25% Tripulação)".
+  - Na aba Tripulação, o "renda ×N" de cada tripulante passa a contar também as Melhorias dele (marcos × Melhorias), e
+    o "i" e o "Bem-vindo de volta" mostram o teto offline com a Caixa Térmica.
+- **Renda recalibrada.** Com as Melhorias a renda subia rápido demais (1 bi/s no dia 6 e 4 tri/s no dia 30). A renda
+  por unidade de cada tripulante agora cresce ~4,6× de um para o próximo (antes ~6,5×); o Ajudante da Isca não mudou:
+
+  | Tripulante | Moedas/s por unidade (antes → agora) |
+  |---|---|
+  | Ajudante da Isca | 0,006 → 0,006 |
+  | Canoeiro | 0,039 → 0,028 |
+  | Tarrafeiro | 0,25 → 0,13 |
+  | Jangadeiro | 1,6 → 0,6 |
+  | Piloto da Voadeira | 11 → 3 |
+  | Mestre do Barco de Linha | 70 → 13,5 |
+  | Saveiro do Porto | 450 → 63 |
+  | Traineira | 2.900 → 290 |
+  | Barco de Arrasto | 19.000 → 1.370 |
+  | Navio-Fábrica | 120.000 → 6.240 |
+
+- **Ritmo simulado** (`tools/Progressao/simular_melhorias.py`, resultado em `docs/propostas/melhorias.json`; um
+  jogador atento que compra sempre o que dá mais renda por Moeda, entre tripulantes e Melhorias, e o Sonar e a Caixa
+  Térmica quando custam até 10 minutos de renda). "Antes" é a Tripulação do A-154, sem Melhorias:
+
+  | Jeito de jogar | 1 mi/s (antes → agora) | 1 bi/s | Renda no dia 75 | Renda máxima simulada | Nv.1000 |
+  |---|---|---|---|---|---|
+  | Jogo aberto o dia todo | 12,7 → 14,4 dias | 62 → 62,7 dias | ~1,1 → ~3,3 bi/s | ~3,6 bi/s (80 dias) | 71 → 70,5 dias |
+  | Abre 4 vezes por dia (30 min) | 19,8 → 22,3 dias | 90 → 91 dias | ~260 → ~345 mi/s | ~21 bi/s (170 dias) | 132 → 129,5 dias |
+  | Abre 1 vez por dia (30 min) | 48 → 38,8 dias | — → 145 dias | ~3,6 → ~4,1 mi/s | ~3,3 bi/s (170 dias) | 165 → 158 dias |
+
+  A renda nunca chega a 1 trilhão/s nos dias simulados. 1ª compra em 0,6 min e 1ª Melhoria em 5,6 min (o Anzol
+  Afiado do Ajudante da Isca). Na simulação, o jogador atento demora mais para o 2º tripulante (2,3 h em vez de 7
+  min), porque o Ajudante da Isca com Melhorias rende mais por Moeda que o primeiro Canoeiro; quem compra o novo
+  tripulante logo que ele libera continua tendo o Canoeiro nos primeiros minutos. A pesca chega a ~14 mil/s com a
+  Freguesia e a Maré Boa no máximo (era ~3,6 mil/s). Sem nenhuma Melhoria, com os números novos, a Tripulação não
+  passaria de ~1 mil/s em 4 dias e nem chegaria a 1 mi/s no jogo aberto: as Melhorias são parte da progressão.
+- **Arte provisória** (`ASSET_PENDENTE`): as Melhorias da Tripulação usam o retrato do tripulante (que também é
+  provisório); as gerais, um quadrado com um ícone que já existe (sino, vender, caixa, lupa, ondas). Pedidos em
+  `docs/ASSETS_PENDENTES.md`.
+- **Quem já joga** começa sem nenhuma Melhoria (save versão 14).
+
+### A-156 · Etapa 4 do novo escopo: varas, barcos e peixes até o Nv.100
+**Seção do GDD:** 13, 19, 22, 24 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 12/10/2026 (A-172): os tempos abaixo que contam com a Tripulação e as Melhorias são históricos; o ritmo de hoje (só a pesca) está no A-172.*
+
+Pedido do proprietário em 10/10/2026 (M24-T13): "o foco vai ser ter níveis mais altos nos peixes, nos barcos, nas
+varas, então diminuir preço para melhorar o nível das coisas, mas aumentar para até nv 100 e começar dando pequenas
+porcentagens de melhoria". Força no Nv.100: "crescimento mediano" (3× o máximo de hoje no Nv.10). Custo de cada
+nível: Moedas e Conchas. Tudo que já existia continua; números em `/config`, para ajustar jogando.
+
+- **Varas até o Nv.100** (antes Nv.10). O Nv.1 tem o mesmo bônus de antes; o Nv.100 tem 3× o bônus do Nv.10 de antes.
+  Cada nível soma um pouco, começando com passos pequenos (+0,1 a +0,3 ponto na chance de puxar) e crescendo devagar
+  até o fim. O que era o máximo de antes chega por volta do Nv.23 (Vara 5) ao Nv.41 (Vara 1). Exemplos:
+
+  | Vara | Nível | Puxar | Raridade | Tamanho | Conchas | Próximo nível custa | Gasto desde o Nv.1 |
+  |---|---|---|---|---|---|---|---|
+  | Ponta Selvagem (Vara 1) | 1 | +1,5% | +0% | +0% | +0% | 500 Moedas + 1 Concha (antes 1.500 + 2) | — |
+  | | 10 | +2,8% | +3,7% | +3,5% | +8,8% | 1.630 + 1 | 8.048 + 9 |
+  | | 30 | +6,7% | +15% | +14% | +36% | 22.300 + 2 | 156 mil + 44 |
+  | | 50 | +11,2% | +28% | +27% | +67% | 307 mil + 4 | 2,2 mi + 108 |
+  | | 100 | +24% | +66% | +63% | +156% | — | 1,5 bi + 588 |
+  | Corrente Mestra (Vara 3) | 1 | +8% | +52% | +44% | +115% | 36.700 + 5 (antes 110 mil + 21) | — |
+  | | 10 | +10,2% | +63% | +52% | +138% | 119 mil + 7 | 591 mil + 50 |
+  | | 30 | +17,2% | +95% | +77% | +209% | 1,64 mi + 12 | 11,5 mi + 226 |
+  | | 50 | +25,2% | +133% | +105% | +291% | 22,5 mi + 21 | 161 mi + 542 |
+  | | 100 | +48% | +240% | +186% | +525% | — | 113 bi + 2.941 |
+  | Soberana Abissal (Vara 5) | 1 | +16,7% | +115% | +85% | +260% | 663 mil + 41 (antes 1,99 mi + 162) | — |
+  | | 10 | +20,3% | +134% | +98% | +305% | 2,16 mi + 53 | 10,7 mi + 416 |
+  | | 30 | +31,2% | +192% | +138% | +441% | 29,6 mi + 97 | 207 mi + 1.853 |
+  | | 50 | +44% | +259% | +184% | +600% | 407 mi + 175 | 2,9 bi + 4.451 |
+  | | 100 | +80,1% | +450% | +315% | +1.050% | — | 2 tri + 24.136 |
+
+  O preço de cada nível é o do anterior × 1,14 em Moedas e × 1,03 em Conchas (o 1º nível custa um terço do 1º nível
+  de antes em Moedas e um quarto em Conchas). O preço de compra das varas não mudou. *Desde 12/10/2026 as varas não são
+  mais vendidas: vêm de fragmentos (A-163); os níveis continuam iguais.*
+- **Barcos com nível** (antes cada barco tinha um bônus fixo). Todo barco comprado começa no Nv.1, com o bônus de
+  antes, e vai até o Nv.100 com 3× esse bônus, na mesma curva das varas. O **barco inicial (Água Mansa) não tem
+  nível**: o bônus dele é 0. Comprar barco continua igual (sem nível mínimo, A-153; *desde 11/10/2026 os barcos não
+  são mais vendidos, vêm de fragmentos, A-157*). Cada nível custa o anterior ×
+  1,14 em Moedas e × 1,03 em Conchas; o 1º custa 5% do preço do barco. Exemplos:
+
+  | Barco | Nv.1 | Nv.10 | Nv.30 | Nv.50 | Nv.100 | 1º nível | Do Nv.1 ao 100 |
+  |---|---|---|---|---|---|---|---|
+  | Remo Valente | +2% | +2,2% | +2,9% | +3,7% | +6% | 600 + 1 Concha | 1,8 bi + 588 |
+  | Proa Selvagem | +6% | +6,7% | +8,8% | +11,2% | +18% | 8.000 + 1 | 24,6 bi + 588 |
+  | Horizonte Dourado | +10% | +11,1% | +14,6% | +18,6% | +30% | 125 mil + 25 | 384 bi + 14.718 |
+- **Teto da chance de puxar:** continua 95% (e o piso 5%), mesmo com Vara 5 e Horizonte Dourado no Nv.100 e a melhor
+  isca.
+- **Peixes até o Nv.100** (antes Nv.10). O bônus nos quatro atributos começa em 0 no Nv.1 e chega a **+108%** no
+  Nv.100 (3× os +36% do Nv.10 de antes), na mesma curva: +0,4% no Nv.2, +6,1% no Nv.10, +25% no Nv.30, +36% no Nv.41
+  (o máximo de antes), +46% no Nv.50, +76% no Nv.75. Subir de nível continua sendo só alimentar com outros peixes
+  (sem custo em Moedas ou Conchas; ver OD-057), com XP pequeno no começo: 5 XP por nível do Nv.1 ao Nv.9, 10 no Nv.10, 100
+  no Nv.30, 275 no Nv.50 e 1.080 no Nv.99. Do Nv.1 ao Nv.41 são 2.465 XP (~63 Comuns; antes 3.885 XP até o Nv.10) e
+  ao Nv.100, 36.160 XP (~930 Comuns). O aviso de "peixe valioso" ao alimentar passa a valer a partir do Nv.8 (o
+  equivalente ao Nv.2 de antes).
+- **Ritmo simulado** (`tools/Progressao/niveis_100.py simular`, resultado em `docs/propostas/niveis_100.json`; jogo
+  aberto o dia todo com a Tripulação e as Melhorias do A-155; o jogador compra o próximo nível da vara ou do barco em
+  uso quando tem Moedas e Conchas e o nível custa até 10 minutos da renda):
+
+  | Vara (só ela, sem comprar a seguinte) | Comprada em | Nv.10 | Nv.30 | Nv.50 | Nv.100 |
+  |---|---|---|---|---|---|
+  | Ponta Selvagem | 2,5 h | +10 min | +4,4 h | +21 h | +11,6 dias |
+  | Maré Dourada | 9 h | +3,2 h | +19 h | +1,5 dia | +21 dias |
+  | Corrente Mestra | 17 h | +9 h | +23,5 h | +3,2 dias | +42 dias |
+  | Atlântico Nobre | 1,3 dia | +9 h | +1,3 dia | +6,1 dias | +42 dias |
+  | Soberana Abissal | 2,7 dias | +1,3 dia | +2,9 dias | +9,3 dias | +56 dias (dia 59) |
+
+  Os primeiros níveis vêm em minutos; o Nv.30 de uma vara do meio, em ~1 dia; o Nv.100 da Vara 5, perto do dia 59. O
+  Horizonte Dourado chega ao Nv.100 por volta do dia 42. As Conchas (só da pesca) somam ~250 no 1º dia, ~1.160 até o
+  dia 3, ~19 mil até o dia 14 e ~55 mil até o dia 30, e não travaram nenhum nível na simulação. **Efeito colateral:**
+  com varas e barcos mais fortes a pesca rende mais XP, e o Pescador chega ao Nv.1000 mais cedo: ~50 dias com o jogo
+  aberto, a Tripulação e as Melhorias (eram ~70, A-155); só pescando (`simular_progressao.py`), ~54 dias com o jogo
+  aberto (eram ~75), ~101 abrindo 4 vezes por dia (eram ~144) e ~113 abrindo 1 vez por dia (eram ~168). O que fazer é
+  decisão do proprietário (OD-058).
+- **Na Loja ("Balcão do Píer").** Na ficha da vara que você tem aparece "Nível 37/100" (em dourado), as barras passam
+  a mostrar "No Nível 37 (agora)" → "No nível máximo" (com uma casa decimal no valor de agora, porque os passos são
+  pequenos), o preço do próximo nível em Moedas e Conchas e o botão "Melhorar → Nv. 38" (o mesmo melhorar do
+  Inventário, que continua lá); no nível máximo, "NÍVEL MÁXIMO". Vara que você não tem continua com "Até o Nível 100",
+  preço e Comprar. Na ficha do barco: "Nível 12/100" quando é seu, o bônus de agora com uma casa ("+6,7% de chance"),
+  "Próximo nível: +6,8% de chance" (ou "No Nível 100: +18,0% de chance" para quem ainda não tem), o preço do próximo
+  nível, "Melhorar → Nv. 13" e, acima, "Usar" ou "EM USO". Aviso: "Remo Valente agora está no Nível 13.".
+- **No Perfil**, o barco e a vara no equipamento mostram o bônus com uma casa quando não é inteiro ("+2,3%") e a dica
+  do barco diz o nível. **No Aquário**, "Nível 37 de 100" e a barra de XP do nível, como antes.
+- **Arena e Mercado.** Os adversários simulados mais fortes têm peixes no Nv.41 (a força do Nv.10 de antes); os
+  vendedores do Mercado oferecem peixes até o Nv.26 (o Nv.6 de antes) e varas até o Nv.41, e o valor de referência de
+  um peixe sobe 3,37% por nível (antes 15%), para o Nv.41 valer o que o Nv.10 valia.
+- **Quem já joga** (save versão 15): cada vara vai para o menor nível novo que tem bônus igual ou maior que o de
+  antes em tudo (nunca fica mais fraca): por exemplo, a Ponta Selvagem no Nv.10 vira Nv.41, no Nv.5 vira Nv.19; a
+  Soberana Abissal no Nv.10 vira Nv.23. Cada peixe vai para o nível com bônus igual ou maior (Nv.2 → 8, 3 → 13,
+  4 → 17, 5 → 22, 6 → 26, 7 → 30, 8 → 34, 9 → 37, 10 → 41), e o XP que ele tinha dentro do nível continua valendo. Os
+  barcos que o jogador tem começam no Nv.1. Varas e peixes anunciados no Mercado também passam.
+- **Painel de Desenvolvimento → Balanceamento:** na aba Varas, cada vara mostra "No Nível 1" e "No nível máximo" nos
+  quatro bônus e o custo (1º nível e × por nível, em Moedas e Conchas), mais o nível máximo e o expoente da curva; na
+  aba Sucesso da pesca, os barcos ganharam bônus máximo e custo de nível; em XP, o bônus do peixe no nível máximo e o
+  expoente.
+
+### A-157 · Barcos por fragmentos
+**Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 13/10/2026 (A-180): o barco não monta mais sozinho. Com os fragmentos **e** o barco anterior (o Barco 1 pede o Água Mansa), o jogador aperta Montar na Loja → Barcos; montar gasta só os fragmentos pedidos e o barco não entra em uso sozinho (o jogador aperta Usar).*
+
+*Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). As chances por mapa abaixo (0,43% a 0,67%) e "Caem no mapa …" na Loja são a regra de antes; o mapa de cada barco hoje só diz de qual barco o Boss Mundial dá fragmentos.*
+
+> **Atualizado em 12/10/2026 (A-168):** o jogo voltou para **5 barcos**. Os barcos 6 a 10 (Vela do Sol, Quilha Azul, Canto
+> da Baleia, Farol Noturno, Titã do Atlântico) saíram; os mapas 6 a 10 dão fragmentos dos barcos 1 a 5. A regra do
+> fragmento por barco continua a mesma. O texto abaixo é o de 11/10/2026.
+
+Decisão do proprietário em 11/10/2026 (M24-T16): "pra conseguir o barco vai ser por fragmentos que têm chance de vir
+na pesca, cada mapa dropa um tipo de fragmento de barco". 1 barco por mapa, 10 barcos (os 5 de antes ficam e entram 5
+novos); o barco **sai da Loja**. Números em `config/equipment.json`, gerados por
+`tools/Progressao/passe_fragmentos.py gerar`, para ajustar jogando.
+
+- **Os 10 barcos.** O barco inicial (Água Mansa) continua de todos, sem mapa e sem nível. Os nomes dos 5 novos são
+  **sugestões** temáticas do mapa (o proprietário pode trocar, OD-061). O bônus continua crescendo 2 pontos por
+  categoria e chega a 3× no Nv.100, na mesma curva de nível (TD-041); o teto de 95% na chance de puxar não muda.
+
+  | Barco | Mapa | Fragmentos | Chance por peixe puxado | Bônus Nv.1 | Bônus Nv.100 |
+  |---|---|---|---|---|---|
+  | Remo Valente | Lago Sereno | 20 | 0,64% | +2% | +6% |
+  | Rastro Azul | Rio Selvagem | 25 | 0,65% | +4% | +12% |
+  | Proa Selvagem | Pantanal Dourado | 35 | 0,72% | +6% | +18% |
+  | Costa Nobre | Estuário das Marés | 45 | 0,77% | +8% | +24% |
+  | Horizonte Dourado | Costa de Coral | 55 | 0,78% | +10% | +30% |
+  | Vela do Sol *(sugestão)* | Arquipélago do Sol | 70 | 0,81% | +12% | +36% |
+  | Quilha Azul *(sugestão)* | Corrente Azul | 90 | 0,88% | +14% | +42% |
+  | Canto da Baleia *(sugestão)* | Banco das Baleias | 120 | 0,93% | +16% | +48% |
+  | Farol Noturno *(sugestão)* | Talude Noturno | 155 | 1,02% | +18% | +54% |
+  | Titã do Atlântico *(sugestão)* | Abismo Atlântico | 200 | 1,03% | +20% | +60% |
+
+  *Desde 11/10/2026 (A-159) a chance por peixe é ~metade da de antes (era 1,3% a 2,4%): com o dobro de peixes por hora,
+  os barcos continuam chegando no mesmo ritmo.*
+
+  O 1º nível dos barcos novos custa ~3× o do anterior (375 mil, 1,13 mi, 3,38 mi, 10,1 mi e 30,4 mi Moedas; 40, 60,
+  90, 135 e 200 Conchas), com o mesmo crescimento por nível (× 1,14 em Moedas e × 1,03 em Conchas).
+- **Como cai.** Cada peixe **puxado** (não o que escapa) no mapa do barco tem a chance da tabela de dar **1
+  fragmento** daquele barco, sorteado pelo serviço do jogo na mesma tentativa, depois da captura (a captura em si não
+  muda). Vale para a **pesca offline** (A-034) com a mesma chance (`boat_fragments.drop_on_offline_fishing`);
+  **Expedições não dão** fragmentos. Com a Caixa cheia não há captura e nem fragmento.
+- **Montar é automático.** Com todos os fragmentos o barco é montado sozinho (entra no Nv.1) e, se for melhor que o
+  barco em uso, já passa a ser usado (quem escolheu um barco melhor continua com ele). Escolhido o automático em vez
+  de um botão "Montar" por ser o mais simples: não há nada para decidir no momento de montar.
+- **Fragmentos extras.** Depois de montado, os fragmentos daquele barco continuam caindo e ficam guardados como
+  extras; ainda não servem para nada. O que fazer com eles é decisão do proprietário (OD-060).
+- **Avisos.** Cada fragmento: "+1 fragmento de barco: Remo Valente (12/20)" (ou "(extra)"). Barco montado: aviso
+  grande "Barco montado: Remo Valente! Veja na Loja." e a comemoração. No "Bem-vindo de volta": "+3 fragmentos de
+  barco: Remo Valente" e "Barco montado: …". Trocar de barco agora avisa "Barco em uso: Vela do Sol." (antes "Agora você
+  pesca com o …", que não servia para os nomes femininos).
+- **Na Loja ("Balcão do Píer"), aba Barcos.** Os 10 barcos continuam na parede, mas sem preço: a etiqueta mostra
+  "12/20" com o ícone do barco enquanto não é seu, e "JÁ É SEU" / "EM USO" depois. A ficha mostra "Fragmentos 12/20 ·
+  Caem no mapa Lago Sereno", uma barra dourada, "0,64% de chance por peixe puxado" (duas casas abaixo de 1%, A-159) e, no lugar do Comprar, a pílula
+  dourada "MONTE COM FRAGMENTOS". Barco seu: "Fragmentos extras: N · Caem no mapa …", nível, Melhorar e Usar / EM USO, como
+  já era (A-156). O "i" explica os fragmentos.
+- **O Passe do Pescador** (A-158) também dá fragmentos.
+- **Ritmo simulado** (`tools/Progressao/passe_fragmentos.py simular`, resultado em `docs/propostas/passe_fragmentos.json`).
+  Dias para montar cada barco **pescando no mapa dele** (online e offline), com a vara e o barco que o jogador tem ao
+  chegar lá (meta: ~1–3 dias nos primeiros mapas, ~1–2 semanas nos últimos):
+
+  | Barco | Jogo aberto o dia todo | Abre 4 vezes por dia | Abre 1 vez por dia |
+  |---|---|---|---|
+  | Remo Valente | 1,1 dia | 2,0 dias | 2,1 dias |
+  | Proa Selvagem | 1,6 dia | 2,9 dias | 3,0 dias |
+  | Horizonte Dourado | 2,2 dias | 4,1 dias | 4,4 dias |
+  | Quilha Azul | 3,1 dias | 5,8 dias | 6,2 dias |
+  | Titã do Atlântico | 5,4 dias | 10,0 dias | 10,7 dias |
+
+  Quem sempre pesca no melhor mapa liberado e nunca volta a um mapa antigo monta o Titã do Atlântico em ~4 dias
+  (jogo aberto), ~8 (4 vezes por dia) ou ~13 (1 vez por dia); os outros 9 chegam pelos fragmentos do Passe grátis
+  entre ~24 e ~113 dias, ou em ~2 a ~13 dias com o Premium (ver A-158 e OD-062). *Números de 11/10/2026, já com o
+  dobro de peixes por hora (A-159); antes eram ~5,5 / ~11 / ~14 dias para o Titã e ~25 a ~100 (Passe grátis).*
+- **Quem já joga** (save versão 16): os barcos comprados continuam seus, com o nível; os fragmentos começam em 0.
+- **Arte provisória** (`ASSET_PENDENTE`): os 5 barcos novos usam o ícone do barco na Loja e a canoa inicial na cena;
+  o fragmento usa o ícone do barco. Pedidos em `docs/ASSETS_PENDENTES.md`.
+
+### A-158 · Passe do Pescador
+**Seção do GDD:** 15, 19 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 12/10/2026 (A-169, A-170): o Passe abre pelo atalho redondo "Passe" na lateral direita (com a contagem de recompensas prontas); o botão na barra de cima saiu. A janela usa o padrão "Diário de bordo".*
+
+*Atualizado em 12/10/2026 (A-172): as Moedas e as Conchas de cada marco foram regeradas pela renda da pesca, sem a Tripulação (`passe_fragmentos.py passe`): grátis no Nv.10 1.710 Moedas (eram 2.460), no Nv.100 230 mil (544 mil), no Nv.500 3,12 mi (981 mi) e no Nv.1000 3,24 mi (1,11 tri). Dólares e fragmentos não mudaram.*
+
+> **Atualizado em 12/10/2026 (A-168):** com a volta para 5 barcos, os fragmentos do Passe são só dos barcos 1 a 5: Nv.10
+> → Remo Valente, … Nv.50 → Horizonte Dourado, Nv.60 → Remo Valente de novo (o barco que o Mapa 6 dá), … Nv.100 →
+> Horizonte Dourado, e assim por diante. `config/pass.json` foi regerado pelo script.
+
+Decisão do proprietário em 11/10/2026 (M24-T17): "vai ter um passe de jogo que vai ter recompensas a cada 10 níveis".
+Sobe com o **nível do Pescador**; faixa **Grátis** e faixa **Premium**; **um passe só, permanente** (temporadas:
+"depois vejo isso", OD-059); o Premium é comprado com **Dólares**; as recompensas são Moedas e Conchas, Dólares e
+fragmentos de barco. Números em `config/pass.json`, gerados por `tools/Progressao/passe_fragmentos.py gerar`, são
+sugestões para ajustar jogando.
+
+- **100 marcos**: Nv.10, 20, … 1000, cada um com uma recompensa grátis e uma Premium.
+  - **Moedas**: ~10 minutos da renda (Tripulação + pesca) de quem chega àquele nível abrindo o jogo 4 vezes por dia;
+    **Conchas**: ~30 minutos das Conchas da pesca. O Premium dá o dobro.
+  - **Fragmentos**: do Nv.10 ao Nv.100, do barco do mapa daquele número (Nv.10 → Remo Valente, … Nv.100 → Titã do
+    Atlântico), 15% dos que o barco pede (o Premium, 30%); depois do Nv.100 os barcos se revezam (Nv.110 → Remo
+    Valente, … Nv.200 → Titã do Atlântico, Nv.210 → Remo Valente…), 10% (o Premium, 20%). Só o Passe grátis já
+    completa cada barco uma vez até o Nv.1000.
+  - **Dólares**: os 10 a cada 10 níveis até o Nv.100 do A-111 **passaram para a faixa grátis** (os mesmos 100 Dólares;
+    subir de nível não paga mais nada sozinho). Depois do Nv.100: grátis, 10 a cada 100 níveis (+90); Premium, 10 a cada
+    50 níveis desde o Nv.50 (200 no total). Total do Passe: 190 Dólares grátis e 200 Premium. *Sugestão ajustável;
+    resolve o OD-055 (o proprietário escolheu os Dólares no Passe).*
+
+  | Marco | Grátis | Premium |
+  |---|---|---|
+  | Nv.10 | 1.950 Moedas, 6 Conchas, 10 Dólares, 3 frag. Remo Valente | 3.900 Moedas, 12 Conchas, 6 frag. Remo Valente |
+  | Nv.50 | 110 mil, 11 Conchas, 10 Dólares, 9 frag. Horizonte Dourado | 220 mil, 22 Conchas, 10 Dólares, 18 frag. |
+  | Nv.100 | 822 mil, 15 Conchas, 10 Dólares, 30 frag. Titã do Atlântico | 1,64 mi, 30 Conchas, 10 Dólares, 60 frag. |
+  | Nv.250 | 61,9 mi, 65 Conchas, 6 frag. Horizonte Dourado | 124 mi, 130 Conchas, 10 Dólares, 12 frag. |
+  | Nv.500 | 979 mi, 91 Conchas, 10 Dólares, 20 frag. Titã do Atlântico | 1,96 bi, 182 Conchas, 10 Dólares, 40 frag. |
+  | Nv.1000 | 1,11 tri, 138 Conchas, 10 Dólares, 20 frag. Titã do Atlântico | 2,22 tri, 276 Conchas, 10 Dólares, 40 frag. |
+
+  *Regerado em 11/10/2026 (A-159) com o dobro de peixes por hora. O arquivo anterior não batia com o script do Nv.300
+  em diante (por exemplo 844 bi Moedas grátis no Nv.1000, quando o script dava 260 bi); agora `config/pass.json` é
+  exatamente o que `tools/Progressao/passe_fragmentos.py gerar` produz. Antes: Nv.10 930 Moedas e 3 Conchas, Nv.100
+  1,22 mi e 7 Conchas, Nv.500 982 mi e 45 Conchas. O Nv.100 dá menos Moedas porque o jogador de referência chega lá
+  mais cedo (com renda menor); as Conchas dobraram junto com os peixes.*
+
+  *Atualizado em 12/10/2026 (A-163 e A-164): o Passe também dá **fragmentos de vara** e **Fragmentos de Roupa**. Vara: no
+  marco do nível que libera o primeiro mapa que pede cada vara (Nv.10 = Ponta Selvagem, Nv.30 = Maré Dourada, Nv.50 =
+  Corrente Mestra, Nv.70 = Atlântico Nobre, Nv.90 = Soberana Abissal), 15% dos fragmentos que a vara pede (o Premium, 30%):
+  3, 4, 6, 7 e 9 grátis. Roupa: em todo marco, 2 grátis até o Nv.100 e 1 depois (o Premium, o dobro): 110 grátis e 220
+  Premium no total. Arquivo regerado pelo script; com as roupas o jogador de referência chega aos níveis altos mais cedo
+  (com a renda menor), então as Moedas dos marcos altos caem (Nv.1000: 1,95 tri → 1,11 tri grátis; total grátis 14,3 tri →
+  8,5 tri); as Conchas totais ficam parecidas (13.276 → 14.335). A célula do marco mostra uma linha a mais para a vara e
+  para a roupa.*
+
+  *Regerado de novo em 12/10/2026 (A-162, curva do Pescador com o Nv.1000 em ~60 dias). O arquivo de antes já não
+  batia com o script depois das iscas do A-161 (Nv.250 50,5 mi, o script dava 35,1 mi). Agora o jogador de referência
+  chega aos níveis altos mais tarde, com a renda maior: Nv.250 57,9 mi Moedas e 102 Conchas (eram 50,5 mi e 95); Nv.500
+  980 mi e 136 (eram 834 mi e 135); Nv.750 55,8 bi e 186 (eram 10,6 bi e 165); Nv.1000 1,95 tri e 206 (eram 838 bi e
+  206); o Premium, o dobro. Até o Nv.100, Dólares e fragmentos não mudaram. Total grátis: 4,2 tri → 14,3 tri Moedas e
+  12.622 → 13.276 Conchas.*
+
+- **Premium**: 100 Dólares (o preço do VIP), comprado uma vez, vale para sempre. Libera também as recompensas Premium
+  dos marcos que o jogador já passou (ficam "Resgatar"). Os Dólares grátis até o Nv.100 pagam exatamente um Premium
+  (ou um VIP): é escolha do jogador.
+- **Resgate**: nada é pago sozinho. Os marcos alcançados ficam com "Resgatar"; "Resgatar tudo" pega todos de uma vez.
+  Ao alcançar um marco aparece o aviso "Passe do Pescador: marco do Nv.20 alcançado. Resgate no Passe!". Aviso do
+  resgate: "Passe: +1.950 Moedas, +6 Conchas, +10 Dólares, +3 fragmentos de barco: Remo Valente".
+- **Tela "Passe do Pescador"**: botão novo na barra de cima, só com ícone, à esquerda do sino (os nove menus principais
+  continuam com espaço), com um ponto dourado contando as recompensas prontas. A janela usa a Placa do Píer com o "i"
+  (explica tudo) e o "Nv.37" no canto:
+  - Em cima, num quadro afundado: "Seu nível: 37", "Próximo marco: Nv.40" e a barra dourada; no meio, "Comprar
+    Premium (100 Dólares)" com "Você tem N Dólares" (ou a pílula dourada "Premium ativo"); à direita, "Resgatar tudo
+    (N)" (ou "Nada para resgatar").
+  - Embaixo, a trilha horizontal com rolagem (a roda do mouse rola para o lado), com duas fileiras, **Grátis** e
+    **Premium** (com cadeado até comprar). Cada coluna: "Nv.40" em cima (dourado quando alcançado, com brilho
+    turquesa quando é o próximo); cada célula com as linhas de Moedas, Conchas, Dólares e fragmentos e, embaixo,
+    "Resgatar", "Resgatado", o cadeado "Premium" ou o nível que falta. A janela abre na primeira recompensa pronta (ou
+    no próximo marco).
+  - Os Dólares de um marco que o jogador já recebeu pelo A-111 aparecem como "10 Dólares · já recebidos".
+- **Quem já joga** (save versão 16): pode resgatar os marcos até o nível que tem; os Dólares desses marcos até o Nv.100
+  contam como já pagos pelo A-111 (o resto da recompensa vem). Ninguém ganha os mesmos Dólares duas vezes, e o total até
+  o Nv.100 continua 100. Um save ainda na curva de XP antiga sobe de nível ao abrir (TD-038) e os marcos que ele cruza
+  nessa subida pagam os Dólares no Passe (antes eram pagos na hora).
+- **Arte provisória** (`ASSET_PENDENTE`): o botão usa a estrela (`ico_passe` pedido) e os fragmentos o ícone do barco
+  (`frag_boat_01` … `frag_boat_10` pedidos). Pedidos em `docs/ASSETS_PENDENTES.md`.
+
+### A-159 · Mais peixes, menos raros
+**Seção do GDD:** 7, 10, 17, 22 (novo escopo A-152) · **Situação:** No jogo (não compilado nem aberto no Unity ainda)
+
+*Atualizado em 12/10/2026 (A-160): o ciclo passou para 10 s online e 20 s offline (15 s com o VIP), o multiplicador
+para 0,233333, a Caixa para 8.640, as iscas para 180 e os fragmentos para 0,43%–0,67%. Os raros por hora continuam os
+deste item. Os números abaixo são os de 11/10/2026.*
+
+*Atualizado em 12/10/2026 (A-172): os números com a Tripulação e as Melhorias citados abaixo são históricos.*
+
+Decisão do proprietário em 11/10/2026 (M24-T22): "a ideia é aumentar a quantidade de peixes pescados e diminuir a
+chance de pegar mais raros". Respostas dele: **o dobro de peixes por hora**; peixes raros por hora **um pouco menos que
+hoje** (~70%); Moedas e XP por hora **sobem junto** (o valor e o XP de cada peixe não mudam). Números em `/config`.
+
+- **Ritmo da pesca na metade.** Uma tentativa a cada **15 s** online (era 30 s) e a cada **30 s** offline (era 60 s).
+  A chance de puxar cada peixe não mudou (nem o teto de 95%), e a pesca offline continua juntando até **24 h**. Na
+  tela, o pescador continua lançando, esperando a mordida, fisgando e mostrando o peixe: tudo isso leva ~7 s e cabe nos
+  15 s (a animação já se ajustava ao tempo da tentativa).
+- **Raros por peixe ~35% de antes.** Na pesca, a chance de um peixe Raro, Épico, Lendário ou Mítico morder é
+  multiplicada por **0,35** depois dos pesos do mapa e do bônus de raridade da vara; os Comuns ficam com o resto. Assim,
+  com o dobro de tentativas, cada raridade chega a **70% dos peixes por hora de antes**, em qualquer mapa, com qualquer
+  vara, barco, isca ou Melhoria (o número é exato, não depende do equipamento). Exemplos (online, por hora):
+
+  | Momento | Raridade | Morde, por peixe (antes → agora) | Puxados por hora (antes → agora) |
+  |---|---|---|---|
+  | Começo: Rio Selvagem, Ponta Selvagem Nv.10, Remo Valente | Raro | 1,03% → 0,36% | 0,53 → 0,37 |
+  | | Todos os peixes | | 66 → 131 |
+  | Meio: Costa de Coral, Corrente Mestra Nv.30, Horizonte Dourado Nv.10, isca Maré Viva | Raro | 13,5% → 4,7% | 11,9 → 8,3 |
+  | | Épico | 2,7% → 0,94% | 1,9 → 1,3 |
+  | | Todos os peixes | | 100 → 203 |
+  | Fim: Abismo Atlântico, Soberana Abissal Nv.100, Titã do Atlântico Nv.100, isca Ouro de Maré | Raro | 43,5% → 15,2% | 49,6 → 34,7 |
+  | | Épico | 27,8% → 9,7% | 31,8 → 22,2 |
+  | | Lendário | 11,8% → 4,1% | 13,5 → 9,4 |
+  | | Mítico | 0,35% → 0,12% | 0,40 → 0,28 |
+  | | Todos os peixes | | 114 → 228 |
+
+  Os Comuns, que antes eram só 16% das mordidas no fim, passam a ~71%.
+- **Só na pesca.** O peixe achado numa **Expedição** e os peixes dos vendedores do **Mercado** continuam com o sorteio de
+  antes (o número de Expedições não dobrou, então elas não ficam mais pobres em raros).
+- **Enciclopédia.** "Morde X% das vezes" passa a mostrar a chance na pesca (com o 0,35); abaixo de 0,1% aparece com
+  duas casas ("0,04%").
+- **Caixa de Pesca: 3.000 peixes** (era 1.500), para continuar cabendo um dia inteiro de pesca offline (24 h a cada
+  30 s = 2.880 tentativas) e as mesmas horas de pesca online antes de encher.
+- **Iscas: 120 tentativas por compra** (eram 60), pelo mesmo preço: continuam durando ~30 min de pesca online e
+  custando o mesmo por hora.
+- **Fragmentos de barco: chance por peixe ~metade** (0,64% no Lago Sereno a 1,03% no Abismo Atlântico; eram 1,3% a
+  2,4%). Recalculada pelo script para o mesmo ritmo de montagem de antes (A-157: ~2 dias no Mapa 1 e ~10 no Mapa 10
+  abrindo o jogo 4 vezes por dia): como agora há menos raros, um pouco mais de tentativas viram peixe puxado, e a
+  chance ficou um pouco abaixo da metade exata. Fragmentos por hora: entre ~97% e ~104% dos de antes com a vara mínima
+  do mapa, e entre ~88% e ~104% com vara e barco já fortes (o fim é um pouco mais lento).
+- **Passe do Pescador regerado** com a economia nova (A-158).
+- **Ganhos.** O valor de venda e o XP de cada peixe não mudaram. No começo e no meio do jogo a pesca rende bem mais
+  por hora; no fim, como os raros valem muito mais que os Comuns, rende um pouco **menos** (decisão aberta, OD-063):
+
+  | Momento | XP da pesca por hora | Moedas da pesca por hora | Conchas por hora |
+  |---|---|---|---|
+  | Começo (como acima) | ×1,9 | ×1,85 | ×2 |
+  | Meio | ×1,56 | ×1,45 | ×2 |
+  | Fim (tudo no Nv.100) | ×0,84 | ×0,80 | ×2 |
+
+- **Tempo até cada nível** (`tools/Progressao/simular_melhorias.py`, com a Tripulação e as Melhorias, sem o Passe;
+  antes → agora; a curva do Pescador **não** foi recalibrada):
+
+  | Jeito de jogar | Nv.10 | Nv.100 | Nv.500 | Nv.1000 |
+  |---|---|---|---|---|
+  | Jogo aberto o dia todo | ~1 h → ~29 min | 1,1 → 0,7 dia | 14,2 → 14,3 dias | 50,5 → 56,6 dias |
+  | Abre 4 vezes por dia (30 min) | 12 h* → 8,4 h* | 2,4 → 1,8 dias | 26,9 → 26,9 dias | 91,5 → 102,3 dias |
+  | Abre 1 vez por dia (30 min) | 1,8 dia* → 20 h* | 4,8 → 3,8 dias | 32,8 → 33,8 dias | 105,8 → 118,8 dias |
+
+  \* Contado da meia-noite do primeiro dia. Só pescando (`simular_progressao.py`): Nv.10 em 30 min online (era 1 h);
+  Nv.1000 em ~60 / ~113 / ~123 dias (eram ~53 / ~99 / ~110). A renda da pesca no fim do jogo fica em ~20 mil/s (era
+  ~25 mil/s) e a da Tripulação não muda. O Nv.1000 continua bem acima de 30 dias com o jogo sempre aberto.
+- **Efeitos que sobem junto com o dobro de peixes:** a Caixa enche no dobro da velocidade (por isso a capacidade
+  dobrou); há o dobro de peixes para alimentar o Aquário (os peixes sobem de nível mais rápido); os tamanhos
+  **Excepcional** e **Perfeição** são sorteados por peixe e por isso vêm o dobro por hora (decisão aberta, OD-064); as
+  Conchas da pesca dobram; o bônus de XP offline do VIP acompanha o XP da pesca offline. Expedições, Arena, Leilão,
+  Tripulação e Melhorias não mudam.
+- **Quem já joga**: nada a migrar. Ao abrir o jogo atualizado, o que foi pescado com o jogo aberto antes de fechar conta no
+  ritmo antigo, e o tempo fechado conta como pesca offline no ritmo novo (30 s); dali em diante, 15 s. A Caixa passa a
+  aceitar 3.000; as iscas compradas antes mantêm as tentativas que têm.
+- **Painel de Desenvolvimento → Balanceamento → Raridades:** a coluna nova "Na pesca" (o 0,35 de cada raridade). A
+  coluna "Chance" da aba Mapas continua mostrando a chance do mapa sem esse número.
+
+### A-160 · Pesca a cada 10 s, VIP a cada 15 s fora do jogo e Caixa para 1 dia
+**Seção do GDD:** 7, 10, 17, 22 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-161): as iscas passaram a ter 999 tentativas por compra; as 180 abaixo valeram só até o A-161.*
+
+*Atualizado em 12/10/2026 (A-172): os números com a Tripulação e as Melhorias citados abaixo são históricos. A Caixa de Pesca continua com 8.640 peixes.*
+
+Decisão do proprietário em 12/10/2026 (M24-T27): "Vamos mudar para pesca a cada 10 segundos on-line e 20 segundos
+off-line, mantendo o buff do vip off-line que vai ser 15 segundos cada pesca, a ideia é aumentar número de peixes
+pescados e diminuir porcentagem de chance deles morderem, de vir peixes mais raros, etc, caixa de pesca comporta 1 dia
+de pesca online". Números em `/config`.
+
+- **Ciclo.** Uma tentativa a cada **10 s** com o jogo aberto (era 15 s) e a cada **20 s** com o jogo fechado (era 30 s):
+  1,5× peixes por hora. A chance de puxar cada peixe, o teto de 95% e o limite de 24 h offline não mudaram.
+- **VIP.** Com o VIP ativo, a pesca com o jogo fechado faz **1 tentativa a cada 15 s** (em vez de 20 s). Interpretação
+  registrada de "mantendo o buff do vip off-line que vai ser 15 segundos cada pesca": o ciclo de 15 s passa a ser o
+  benefício do VIP fora do jogo, e o **bônus de +50% de XP de Pescador offline do A-110 continua junto** (o proprietário
+  disse "mantendo o buff"; a pergunta se os dois ficam juntos está na OD-065). Um VIP que acaba enquanto o jogador está
+  fora conta 15 s só até o fim dele: cada tentativa usa 15 s se termina antes do fim do VIP; dali em diante, 20 s (como
+  o bônus de XP, que é conferido na hora de cada peixe). O VIP não muda a pesca com o jogo aberto.
+  A aba VIP da Loja diz "Com o VIP, a pesca com o jogo fechado faz 1 tentativa a cada 15 segundos (sem VIP, a cada 20
+  segundos)…"; o "Bem-vindo de volta" diz "1 tentativa a cada 15 segundos com o VIP (20 segundos sem ele)" quando o VIP
+  valeu em alguma tentativa.
+- **Raros: menos por peixe, os mesmos por hora.** O multiplicador de mordida das raridades acima de Comum
+  (`fishing_bite_multiplier`, A-159) passou de **0,35 para 0,233333** (0,35 × 10/15). Com 1,5× tentativas, cada
+  raridade continua com **os mesmos peixes por hora online** de antes (e com o jogo fechado sem VIP também), em qualquer
+  mapa e equipamento; a chance de um peixe ser raro cai para 2/3. Exemplos (online, por hora):
+
+  | Momento | Raridade | Morde, por peixe (antes → agora) | Puxados por hora (antes → agora) |
+  |---|---|---|---|
+  | Começo: Rio Selvagem, Ponta Selvagem Nv.10, Remo Valente | Raro | 0,36% → 0,24% | 0,37 → 0,37 |
+  | | Todos os peixes | | 131 → 197 |
+  | Meio: Costa de Coral, Corrente Mestra Nv.30, Horizonte Dourado Nv.10, isca Maré Viva | Raro | 4,7% → 3,1% | 8,3 → 8,3 |
+  | | Épico | 0,94% → 0,63% | 1,3 → 1,3 |
+  | | Todos os peixes | | 203 → 305 |
+  | Fim: Abismo Atlântico, Soberana Abissal Nv.100, Titã do Atlântico Nv.100, isca Ouro de Maré | Raro | 15,2% → 10,2% | 34,7 → 34,7 |
+  | | Épico | 9,7% → 6,5% | 22,2 → 22,2 |
+  | | Lendário | 4,1% → 2,8% | 9,4 → 9,4 |
+  | | Mítico | 0,12% → 0,08% | 0,28 → 0,28 |
+  | | Todos os peixes | | 228 → 342 |
+
+  Com o VIP, fora do jogo são 240 tentativas por hora (sem VIP, 180): ali o VIP dá 1,33× peixes de cada raridade.
+  Expedições e os vendedores do Mercado continuam com o sorteio sem o multiplicador (A-159).
+- **Tamanhos especiais.** Excepcional e Perfeição continuam sorteados por peixe e por isso vêm **1,5× por hora**
+  (3× o de antes do A-159); não mudaram sem decisão (OD-064, aberta).
+- **Caixa de Pesca: 8.640 peixes** (era 3.000) = 1 dia de pesca online (24 h a cada 10 s). Cabe também um dia inteiro
+  fora do jogo: 4.320 tentativas sem VIP e 5.760 com o VIP (o limite offline continua 24 h). A Caixa aparece no HUD, na
+  própria Caixa e no Perfil com o número do config.
+- **Iscas: 180 tentativas por compra** (eram 120), pelo mesmo preço: continuam durando 30 min de pesca online e custando
+  o mesmo por hora.
+- **Fragmentos de barco: chance por peixe ÷1,5** (0,43% no Lago Sereno a 0,67% no Abismo Atlântico; eram 0,64% a 1,03%),
+  recalculada pelo script para o mesmo ritmo de montagem (A-157: ~2 dias no Mapa 1 e ~10 no Mapa 10 abrindo o jogo 4
+  vezes por dia; a simulação dá 2,0 e 10,0 dias, iguais aos de antes). Fragmentos por hora: 99% a 101% dos de antes.
+- **Passe do Pescador regerado** pelo script com a economia nova (Moedas e Conchas de cada marco seguem a renda do
+  jogador de referência quando ele chega ao nível): Nv.10 2.460 Moedas e 9 Conchas (era 1.950 e 6); Nv.100 554 mil e 23
+  (era 822 mil e 15); Nv.500 834 mi e 135 (era 979 mi e 91); Nv.1000 838 bi e 206 (era 1,11 tri e 138). As Moedas dos
+  níveis altos caem porque o jogador chega lá mais cedo, com a Tripulação ainda menor. Dólares e fragmentos não mudaram.
+- **Ganhos sobem junto** (decisão do A-159): o valor de venda e o XP de cada peixe não mudaram. Por hora de pesca online:
+
+  | Momento | XP da pesca por hora | Moedas da pesca por hora | Conchas por hora |
+  |---|---|---|---|
+  | Começo | ×1,49 | ×1,48 | ×1,5 |
+  | Meio | ×1,42 | ×1,40 | ×1,5 |
+  | Fim (tudo no Nv.100) | ×1,13 | ×1,10 | ×1,5 |
+
+  No fim do jogo a renda da pesca vai de ~20 mil/s para ~22 mil/s (a da Tripulação não muda). Comparado com antes do
+  A-159 (ciclo de 30 s), o fim fica em ~95% do XP e ~88% das Moedas por hora (OD-063 continua aberta).
+- **Tempo até cada nível** (`tools/Progressao/simular_melhorias.py`, com a Tripulação e as Melhorias, sem o Passe e sem
+  VIP; antes → agora; a curva do Pescador não foi recalibrada):
+
+  | Jeito de jogar | Nv.10 | Nv.100 | Nv.500 | Nv.1000 |
+  |---|---|---|---|---|
+  | Jogo aberto o dia todo | ~29 min → ~14 min | 0,7 → 0,5 dia | 14,3 → 12,5 dias | 56,6 → 50,5 dias |
+  | Abre 4 vezes por dia (30 min) | 8,4 h* → 8,4 h* | 1,8 → 1,3 dia | 26,9 → 23,5 dias | 102,3 → 91,3 dias |
+  | Abre 1 vez por dia (30 min) | 20 h* → 20 h* | 3,8 → 3,8 dias | 33,8 → 29,8 dias | 118,8 → 105,8 dias |
+
+  \* Contado da meia-noite do primeiro dia (a primeira sessão começa às 8 h ou às 20 h). Só pescando
+  (`simular_progressao.py`): Nv.10 em ~20 min online; Nv.1000 em ~53 / ~99 / ~109 dias (eram ~60 / ~113 / ~123). Com o
+  VIP o tempo todo (`simular_progressao.py --vip`, só pescando), abrindo 4 vezes por dia o Nv.1000 vem em ~55 dias (era
+  ~81 com o VIP do A-159 e ~99 sem VIP agora). O Nv.1000 continua bem acima de 30 dias com o jogo sempre aberto.
+- **Na tela.** O pescador lança, espera a mordida, fisga e mostra o peixe: a sequência mais longa (mostrar e guardar o
+  peixe 2,8 s, lançar 1,3 s, mordida 2,5 s e recolher 1,2 s, com a espera no meio) leva ~7 s e cabe nos 10 s; a
+  animação já se ajusta ao tempo da tentativa. Nada mudou no visual.
+- **Quem já joga**: nada a migrar. O que foi pescado com o jogo aberto antes de fechar conta no ritmo antigo; o tempo
+  fechado conta no ritmo novo (20 s, ou 15 s com VIP); dali em diante, 10 s. A Caixa passa a aceitar 8.640; as iscas
+  compradas antes mantêm as tentativas que têm.
+
+### A-161 · Três iscas (+5%, +10%, +15%) com 999 tentativas
+**Seção do GDD:** 7, 22 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-172): a simulação citada abaixo contava com a Tripulação e as Melhorias, que saíram do jogo.*
+
+Decisão do proprietário em 12/10/2026 (M24-T30): "A ideia é o jogador conseguir ir aumentando essa chance de pesca com
+barco, vara, equipamentos e iscas, todo nível precisa ser gasto moedas e coral, iscas vai ter 3 modelos 5-10-15% de
+chance a mais de capturar/morder, vão ser 999x por compra e vão ficar um pouquinho mais caro, não tanto". Respostas
+dele: "coral" = **Conchas** (a moeda que já existe); as 3 iscas novas **substituem** as de antes. Números em
+`config/equipment.json`.
+
+- **O que a isca faz.** Continua somando pontos à **chance de puxar o peixe** depois que ele morde (Chance de Sucesso da
+  Captura, A-090), junto com a vara e o barco, até o teto de 95%. É o "capturar/morder" do proprietário: não existe outro
+  eixo de chance de mordida que a isca pudesse mexer (a mordida de cada raridade vem do mapa, da vara e do
+  `fishing_bite_multiplier`, A-159), e a isca nunca traz raridade nova.
+- **As três iscas** (Loja → Iscas, no Balcão do Píer). Os nomes são os de antes, na mesma ordem de categoria; nenhum
+  nome novo.
+
+  | Isca | Bônus | Tentativas por compra | Preço | Por tentativa (antes → agora) |
+  |---|---|---|---|---|
+  | Terra Viva | +5% (era +3%) | 999 (eram 180) | 23.000 Moedas + 13 Conchas (era 1.500 + 1) | 8,33 → 23,02 Moedas; 0,0056 → 0,0130 Concha |
+  | Maré Viva | +10% (era +7%) | 999 | 100.000 Moedas + 33 Conchas (era 6.000 + 3) | 33,33 → 100,10 Moedas; 0,0167 → 0,0330 Concha |
+  | Ouro de Maré | +15% (era +10%) | 999 | 200.000 Moedas + 55 Conchas (era 15.000 + 5) | 83,33 → 200,20 Moedas; 0,0278 → 0,0551 Concha |
+
+- **"Um pouquinho mais caro, não tanto".** Pelo mesmo bônus, a tentativa ficou **~10% a 20% mais cara** que antes: +10%
+  custava 83,33 Moedas por tentativa (Ouro de Maré) e agora custa 100,10 (Maré Viva, +20%); +5% ficava em ~20,8 entre as
+  duas primeiras de antes e agora custa 23,02 (+11%); +15% não existia: segue a reta das duas de cima de antes (166,7) +
+  20%. Conchas: +17% a +19% pelo mesmo bônus. Como cada compra rende 999 tentativas, o pacote custa mais (o de Terra Viva
+  ~15× o de antes), mas dura **2,8 h de pesca online** ou **5,5 h offline**.
+- **Sem nível.** Iscas não têm nível nem nível mínimo (A-153): basta ter as Moedas e as Conchas. Comprar de novo soma
+  999 tentativas; só uma isca fica em uso; Usar/Guardar e as tentativas restantes como antes. A pesca offline gasta as
+  tentativas do mesmo jeito; quando acabam, a pesca continua sem isca e o aviso "A isca … acabou" aparece.
+- **"Todo nível custa Moedas e Conchas".** Já era assim: cada nível de cada vara (Nv.1 a 100) e de cada barco com nível
+  custa Moedas e pelo menos 1 Concha (A-099, A-156). Agora isso é regra do config: um `upgrade_cost` com
+  `shells_first` 0 é recusado. Iscas e peixes não ganharam níveis (o nível do peixe vem da alimentação, OD-057).
+- **Vale a pena comprar?** (`tools/Progressao/simular_iscas.py`, relatório em `docs/propostas/iscas_retorno.md`;
+  "retorno" = Moedas a mais da pesca ÷ Moedas gastas na isca, por hora online; não conta o XP a mais nem a Tripulação):
+
+  | Momento | Terra Viva | Maré Viva | Ouro de Maré |
+  |---|---|---|---|
+  | Começo: Lago Sereno, Ponta Selvagem Nv.1, sem barco (~10,6 mil Moedas/h) | 0,12 | 0,06 | 0,04 |
+  | Começo: Rio Selvagem, Ponta Selvagem Nv.10, Remo Valente Nv.1 | 0,95 | 0,44 | 0,33 |
+  | Meio: Costa de Coral, Corrente Mestra Nv.30, Horizonte Dourado Nv.10 | 5,1 | 2,3 | 1,75 |
+  | Meio: Corrente Azul, Atlântico Nobre Nv.30, Quilha Azul Nv.10 | 18 | 6,5 | 4,3 |
+  | Fim: Abismo Atlântico, Soberana Abissal Nv.1, sem barco | 98 | 45 | 34 |
+  | Fim: tudo no Nv.100 | 0 | 0 | 0 |
+
+  No começo a isca não se paga em Moedas (com as iscas de antes também não: Terra Viva dava 0,21 no Lago Sereno); ela
+  dá peixes e XP a mais (+18 a +54 peixes por hora). Do meio em diante as três se pagam várias vezes; a melhor isca traz
+  ~+2 raros ou melhores por hora no meio (8,7 → 10,7) e +8 no fim sem barco (26 → 34). Com a vara e o barco no Nv.100
+  todas as raridades já estão no teto de 95% e a isca não muda nada.
+- **Quem já tinha isca** (save versão 17): ao abrir o jogo atualizado, cada isca antiga com tentativas vira a isca nova
+  de **bônus igual ou o mais próximo acima**: Terra Viva +3% → Terra Viva +5%; Maré Viva +7% → Maré Viva +10%; Ouro de
+  Maré +10% → **Maré Viva +10%**. As tentativas mantêm o **valor em Moedas**, arredondado para cima: tentativas novas =
+  tentativas antigas × preço antigo por tentativa ÷ preço novo por tentativa (por exemplo, 180 de Terra Viva antiga =
+  1.500 Moedas → 66 da nova; 180 de Ouro de Maré antiga = 15.000 → 150 de Maré Viva). A isca em uso continua em uso (a
+  nova equivalente). Não há aviso na tela: a troca aparece na aba Iscas e no Perfil.
+
+### A-162 · Curva do Pescador: Nv.1000 em ~60 dias
+**Seção do GDD:** 17, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-172): a curva passou para a **versão 4**: os níveis 1 a 249 iguais e o resto recalibrado sem a Tripulação e as Melhorias, para o Nv.1000 continuar em ~60 dias com o jogo aberto (sem roupas). Números no A-172.*
+
+Decisão do proprietário em 12/10/2026 (M24-T31): "60 dias pro lvl 1000". Depois da pesca a cada 10 s (A-160) e das
+iscas novas (A-161), o Nv.1000 chegava em ~50 dias com o jogo sempre aberto. Números em `config/progression.json`
+(`fisher.xp_table`, curva versão 3), gerados por `tools/Progressao/calibrar_xp.py --gravar`.
+
+- **Perfil de referência** (o mesmo do A-153, A-155 e A-160): o jogo aberto o dia todo, com a Tripulação e as
+  Melhorias, **sem o Passe do Pescador e sem VIP** (`simular_melhorias.py`, perfil "sempre aberto"). O script agora mede
+  com a economia de hoje: pesca a cada 10 s, Tripulação, Melhorias, níveis de vara e de barco, barcos por fragmentos e as
+  iscas do A-161 (antes media só a pesca).
+- **O começo não mudou**: os níveis 1 a 99 pedem o mesmo XP de antes (Nv.10 em ~20 min, Nv.100 em ~0,5 dia com o jogo
+  aberto). Do Nv.100 em diante cada nível pede um pouco mais, subindo aos poucos até os tempos ficarem ~1,2× os de antes
+  a partir do Nv.250 (o Nv.500 vem em ~14,6 dias). Sem degraus: no máximo 4,5% de um nível para o seguinte.
+- **Tempo até cada nível** (antes → agora; Tripulação e Melhorias, sem Passe e sem VIP):
+
+  | Jeito de jogar | Nv.10 | Nv.100 | Nv.250 | Nv.500 | Nv.750 | Nv.1000 |
+  |---|---|---|---|---|---|---|
+  | Jogo aberto o dia todo | ~20 min (igual) | 0,5 dia (igual) | 3,1 → 3,7 dias | 12,2 → 14,6 dias | 27,9 → 33,3 dias | 50,2 → 60,0 dias |
+  | Abre 4 vezes por dia (30 min) | 8,3 h* (igual) | 1,3 dia (igual) | 6,3 → 7,3 dias | 23,3 → 27,3 dias | 51,5 → 61,3 dias | 90,9 → 108,3 dias |
+  | Abre 1 vez por dia (30 min) | 20 h* (igual) | 3,8 dias (igual) | 9,8 → 10,8 dias | 28,8 → 33,8 dias | 59,8 → 70,8 dias | 104,8 → 123,8 dias |
+
+  \* Contado da meia-noite do primeiro dia (a primeira sessão começa às 8 h ou às 20 h). Só pescando
+  (`simular_progressao.py`, sem Tripulação): Nv.1000 em ~52 → ~63 dias com o jogo aberto, ~98 → ~118 abrindo 4 vezes
+  por dia e ~107 → ~128 abrindo 1 vez. Com o Passe grátis (que dá Moedas), o jogo aberto chega ao Nv.1000 em ~59,5 dias.
+- **XP para o próximo nível** (antes → agora): Nv.1 10, Nv.10 715, Nv.50 2.200 e Nv.99 9.330 (iguais); Nv.100
+  9.640 → 9.750; Nv.250 80.000 → 92.300; Nv.500 178.000 → 224.000; Nv.750 303.000 → 360.000; Nv.999 408.000 →
+  504.000. Do Nv.1 ao Nv.1000: 188.953.530 → **229.596.770 XP** (até o Nv.100 continua 309.220).
+- **Quem já joga** (curva versão 2 → 3, TD-038): ao abrir o jogo, o XP total já ganho vira o nível que ele alcança na
+  curva nova; **ninguém perde nível**. Até o Nv.100 nada muda. Acima, a curva nova pede mais, então quem está lá fica no
+  nível que tinha, com o XP dentro do nível (por exemplo, um Nv.500 tem 39,2 milhões de XP, que na curva nova só chegam
+  ao Nv.458: ele continua no Nv.500), e os próximos níveis pedem o XP novo. Um save da curva 1 (o Nv.1 ao Nv.100 de antes
+  do A-153) vai direto para a 3: o Nv.100 antigo (11,5 milhões de XP) vira **Nv.282** (na curva 2 virava Nv.304). Não
+  há aviso na tela.
+- **Passe do Pescador** (A-158): os marcos e os Dólares não mudaram (10 a cada 10 níveis até o Nv.100; depois, grátis
+  a cada 100 níveis e Premium a cada 50); só chegam mais tarde. Com o jogo aberto, os 100 Dólares grátis até o Nv.100
+  continuam em ~0,5 dia; os 10 do Nv.500 vêm no dia ~14,6 (era ~12,2) e os do Nv.1000 no dia ~60 (era ~50). Abrindo 4
+  vezes por dia: Nv.500 no dia ~27 (era ~23), Nv.1000 no dia ~108 (era ~91). Como as Moedas e as Conchas de cada marco
+  seguem a renda de quem chega ao nível (4 vezes por dia), e agora ele chega mais tarde, com a Tripulação maior, os
+  marcos altos pagam mais: `config/pass.json` foi regerado pelo script.
+- O XP dos peixes e da Tripulação não mudou; nada mudou nas telas.
+
+### A-163 · Varas por fragmentos
+**Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 13/10/2026 (A-180): a vara não monta mais sozinha nem é equipada sozinha. Com os fragmentos **e** a vara anterior no Inventário (a Vara 1 pede o Caniço Manso), o jogador aperta Montar na Loja → Varas. Os mapas não pedem mais vara: "Onde cada vara cai" e "a progressão nunca trava" abaixo são a regra de antes.*
+
+*Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). O mapa de cada vara (Vara 1 no Mapa 1, 2 no 3 …) e as chances de 1,63% a 7% abaixo são a regra de antes; a Loja diz "Caem em todos os mapas".*
+
+*Atualizado em 12/10/2026 (A-172): os dias citados abaixo foram simulados com a Tripulação e as Melhorias; as chances de fragmento não mudaram.*
+
+Decisão do proprietário em 12/10/2026 (M24-T32): "Vai dropar fragmentos de equipamentos. Então vai dropar fragmento de
+barco, vai dropar fragmento de vara, …". As varas **saem da Loja**, como os barcos (A-157): cada vara (menos o Caniço
+Manso, que todos têm) é montada com fragmentos que caem pescando. Quem já tem varas fica com elas, com o nível. As varas
+continuam subindo de nível com Moedas e Conchas (A-156). Números em `config/rods.json`, gerados por
+`tools/Progressao/fragmentos_equipamento.py gerar`, para ajustar jogando.
+
+- **Onde cada vara cai: no último mapa que a vara anterior alcança.** Cada mapa pede uma categoria mínima de vara; a
+  vara que libera o próximo mapa cai no mapa que o jogador já pesca com a vara que tem. Assim a progressão **nunca
+  trava** (o jogo confere isso ao abrir o config e recusa um config que travaria).
+
+  | Vara | Cai no mapa | Fragmentos | Chance por peixe puxado | Preço de antes na Loja |
+  |---|---|---|---|---|
+  | Ponta Selvagem (Vara 1) | Lago Sereno (Mapa 1) | 15 | 3,7% | 2.500 Moedas + 5 Conchas |
+  | Maré Dourada (Vara 2) | Pantanal Dourado (Mapa 3) | 25 | 4,05% | 90.000 + 40 |
+  | Corrente Mestra (Vara 3) | Costa de Coral (Mapa 5) | 35 | 7% | 730.000 + 85 |
+  | Atlântico Nobre (Vara 4) | Corrente Azul (Mapa 7) | 45 | 3,6% | 3,28 mi + 180 |
+  | Soberana Abissal (Vara 5) | Talude Noturno (Mapa 9) | 60 | 1,63% | 15,6 mi + 650 |
+
+  Os Mapas 2, 4, 6, 8 e 10 não dão fragmento de vara (dão os de barco e de roupa).
+- **Mesmo ritmo de antes.** A chance foi calibrada para quem abre o jogo 4 vezes por dia montar cada vara no mesmo dia
+  em que tinha dinheiro para comprá-la na Loja. Dia em que o jogador tem cada vara (simulação com a pesca, a Tripulação e
+  as Melhorias, sem Passe; antes → agora):
+
+  | Vara | Jogo aberto o dia todo | Abre 4 vezes por dia | Abre 1 vez por dia |
+  |---|---|---|---|
+  | Ponta Selvagem | 1,4 h → 2,3 h | 12 h → 12 h | 1,8 dia → 1,8 dia |
+  | Maré Dourada | 3,5 h → 5,3 h | 18 h → 18 h | 2,8 → 2,8 dias |
+  | Corrente Mestra | 6,9 h → 7,4 h | 22 h → 22 h | 3,8 → 3,8 dias |
+  | Atlântico Nobre | 14,5 h → 12,6 h | 1,3 → 1,3 dia | 4,8 → 4,8 dias |
+  | Soberana Abissal | 1,1 → 1,1 dia | 2,3 → 2,3 dias | 5,8 → 5,8 dias |
+
+  As Moedas que iam para as varas (19,7 milhões no total) ficam para os níveis, a Tripulação e as Melhorias.
+- **Como cai.** Cada peixe **puxado** no mapa da vara tem a chance da tabela de dar **1 fragmento** dela, sorteado pelo
+  serviço do jogo na mesma tentativa, depois da captura e do fragmento de barco (a captura não muda). Vale para a pesca
+  offline (`rods.json → fragment_rules.drop_on_offline_fishing`); Expedições não dão.
+- **Montar é automático**, como o barco: com todos os fragmentos a vara vai para o Inventário no Nv.1 e, se for de
+  categoria maior que a vara em uso, já passa a ser usada. Fragmentos que caem depois ficam guardados como **extras**; se
+  a vara for vendida ou destruída, os extras montam outra.
+- **Na Loja ("Balcão do Píer"), aba Varas.** Sem preço: a etiqueta mostra "12/25" com o ícone da vara até montar, e "JÁ É
+  SUA" / "EM USO" depois. A ficha mostra "Fragmentos 12/25 · Caem no mapa Pantanal Dourado", a barra dourada, "4,05% de
+  chance por peixe puxado" e a pílula dourada "MONTE COM FRAGMENTOS" no lugar do Comprar. Vara sua: "Fragmentos extras:
+  N · Caem no mapa …", o nível e "Melhorar → Nv. 38", como já era. O Caniço Manso continua "Pegar grátis" no tutorial.
+- **Avisos.** "+1 fragmento de vara: Ponta Selvagem (12/15)"; vários seguidos viram um aviso só a cada 8 segundos ("+3
+  fragmentos de vara: …"). Vara montada: aviso grande "Vara montada e equipada: Ponta Selvagem!" (ou "… Veja na Loja.")
+  e a comemoração. No "Bem-vindo de volta": "+N fragmentos de vara: …" e "Vara montada: …!".
+- **Mercado e revenda.** A vara continua negociável no Mercado e vendível ao NPC; o valor de referência dela é o preço que
+  tinha na Loja (`acquisition.market_reference_coins`). Uma vara montada custou 0 Moedas, então a revenda ao NPC devolve
+  só 25% do que foi gasto nos níveis. Os vendedores simulados do Mercado continuam oferecendo varas (OD-066).
+- **O Passe do Pescador** também dá fragmentos de vara (A-158).
+- **Quem já joga** (save versão 18): as varas que tem continuam suas, com o nível; os fragmentos começam em 0.
+- **Arte provisória** (`ASSET_PENDENTE`): o fragmento usa o ícone da vara; pedidos em `docs/ASSETS_PENDENTES.md`.
+
+### A-164 · Roupas
+**Seção do GDD:** 7, 13, 19 (novo escopo A-152) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). A chance do Fragmento de Roupa passou de 0,17% para 0,1%; o resto das roupas não mudou.*
+
+*Atualizado em 12/10/2026: a OD-067 foi resolvida; o proprietário manteve a Calça como está (opção a) e a curva do Pescador não muda.*
+
+*Atualizado em 12/10/2026 (A-172): sem a Tripulação e com a curva versão 4, com as roupas o Nv.1000 vem em ~54 dias com o jogo aberto (era ~55).*
+
+Decisão do proprietário em 12/10/2026 (M24-T33): "… coloca fragmento de roupa. Fragmento de roupa já vai englobar tudo
+isso. Vai ter luva, calça, bota, chapéu, camiseta." Respostas dele: **um** fragmento de roupa serve para qualquer peça (o
+jogador escolhe qual montar); cada peça dá um **bônus diferente** (luva = chance de puxar, chapéu = raridade, bota =
+tamanho, camiseta = Conchas, calça = XP); a roupa "sobe usando ela, upa com o tempo, igual nível", sem custo. Números em
+`config/equipment.json → clothing`, gerados por `tools/Progressao/fragmentos_equipamento.py gerar`.
+
+- **As 5 peças**, uma de cada, todas vestidas ao mesmo tempo (um espaço por peça). Peça montada fica vestida para sempre.
+
+  | Peça | Bônus | Nv.1 | Nv.10 | Nv.30 | Nv.50 | Nv.75 | Nv.100 |
+  |---|---|---|---|---|---|---|---|
+  | Luvas | chance de puxar o peixe (pontos, como vara, barco e isca) | +0,5% | +1,3% | +3,8% | +6,7% | +10,7% | +15% |
+  | Chapéu | raridade (soma à da vara) | +2% | +6,4% | +19,9% | +35,5% | +57% | +80% |
+  | Botas | tamanho (soma ao da vara) | +2% | +5,3% | +15,3% | +26,9% | +42,9% | +60% |
+  | Camiseta | Conchas (soma ao da vara) | +5% | +14,6% | +44% | +78,1% | +124,9% | +175% |
+  | Calça | XP de Pescador de cada peixe pescado | +0,5% | +1% | +2,7% | +4,6% | +7,2% | +10% |
+
+  No Nv.100 cada peça dá cerca de **1/3 da Corrente Mestra (a vara do meio) no Nv.100** no mesmo eixo (ela tem +48% de
+  chance, +240% de raridade, +186% de tamanho e +525% de Conchas). O bônus segue a mesma curva das varas (TD-041). O teto
+  de **95%** na chance de puxar não muda: com a Soberana Abissal e o Titã do Atlântico no Nv.100, a melhor isca e as Luvas
+  no Nv.100, todas as raridades continuam em 95%.
+- **Fragmento de Roupa.** Um tipo só, que cai em **todos os mapas**: cada peixe puxado tem **0,17%** de chance de dar 1
+  (online e offline; Expedições não dão). Também vem do Passe.
+- **Montar.** O jogador escolhe a peça. A 1ª peça montada custa **15** fragmentos, a 2ª **25**, a 3ª **40**, a 4ª **60** e a
+  5ª **80** (crescente na ordem em que ele monta, qualquer peça: escolhido por ser o mais simples e dar uma peça logo no
+  começo). Os fragmentos que sobram depois das 5 peças ficam guardados (como os extras de barco, OD-060).
+- **Nível por uso, sem custo.** Cada peixe puxado (online ou offline) dá **1 ponto de uso** a cada peça montada. Do Nv.1
+  para o Nv.2 são 10 peixes, e cada nível pede 8,68% a mais (Nv.10: 21 peixes; Nv.30: 112; Nv.50: 591; Nv.75: 4.730; Nv.99:
+  34.900). Do Nv.1 ao Nv.100: 436.679 peixes. Escolhido "peixes pescados" em vez de "tempo pescando" por ser o mais
+  simples e seguir o mesmo ritmo da pesca (o tempo parado com a Caixa cheia não conta).
+- **Ritmo simulado** (sem Passe; o jogador da simulação monta Luvas, Chapéu, Calça, Botas e Camiseta, nessa ordem, assim
+  que tem os fragmentos):
+
+  | Jeito de jogar | 1ª peça | 2ª | 3ª | 4ª | 5ª | Níveis no dia 30 | Níveis no dia 60 |
+  |---|---|---|---|---|---|---|---|
+  | Jogo aberto o dia todo | 1,4 dia | 3,2 | 6,1 | 10,4 | 16,1 | 92 / 91 / 90 / 88 / 83 | 100 / 99 / 98 / 97 / 96 (dia 55) |
+  | Abre 4 vezes por dia | 2,9 dias | 6,3 | 11,8 | 19,8 | 30,3 | 84 / 83 / 80 / 73 / 24 | 93 / 92 / 91 / 89 / 85 |
+  | Abre 1 vez por dia | 4,8 dias | 8,8 | 14,8 | 22,8 | 33,8 | 83 / 81 / 78 / 69 / — | 92 / 91 / 90 / 88 / 83 |
+
+  Os primeiros níveis vêm em minutos (a 1ª peça de quem deixa o jogo aberto está no Nv.58 no dia 3); depois ficam cada
+  vez mais lentos.
+- **Efeito no Pescador.** Com a Calça e as outras peças, o Pescador sobe mais rápido: com o jogo aberto, a Tripulação e
+  as Melhorias, o Nv.1000 vem em **~55 dias** (era ~60, A-162) e o Nv.500 em ~13,5 (era ~14,6); abrindo 4 vezes por dia, o
+  Nv.500 em ~25,3 dias (era ~27,3). O que fazer é decisão do proprietário (OD-067).
+- **Tela: aba "Roupas" na Loja** (entre Barcos e Iscas), escolhida por ser o mais limpo: o jogador já monta barcos e varas
+  ali e vê "Seu equipamento" e a chance de puxar embaixo. As 5 peças ficam na parede de ganchos com a silhueta (ícone)
+  até a arte existir; a etiqueta mostra "Fragmentos de Roupa x/N" até montar e "VESTIDA" depois. A ficha mostra "Roupa ·
+  Nível 12/100" (ou "Até o Nível 100"), a descrição, o bônus de agora em letras grandes ("+6,7% de chance de puxar") com a
+  barra até o Nv.100, "No Nível 100: +15% de chance de puxar" e: peça montada, "Uso: 3/11 peixes para o próximo nível" com
+  a barra (ou "Nível máximo: não sobe mais") e a pílula "VESTIDA"; peça não montada, "Fragmentos de Roupa 8/15 · Caem em
+  todos os mapas", a barra, "0,17% de chance por peixe puxado" e o botão **"Montar (15 fragmentos de roupa)"** (ou "Faltam
+  Fragmentos de Roupa para montar esta peça."). O "i" explica as roupas. Em "Seu equipamento", com as Luvas o total passa a
+  dizer "Total com Luvas".
+- **Avisos.** "+1 Fragmento de Roupa (8/15)", agrupados (um aviso a cada 8 segundos, "+3 Fragmentos de Roupa (10/15)");
+  quando os fragmentos chegam ao custo da próxima peça, "Você já pode montar uma roupa (15 Fragmentos de Roupa). Veja na
+  Loja → Roupas."; ao montar, "Roupa montada e vestida: Luvas!" e a comemoração; ao subir de nível, "Luvas subiu para o
+  Nível 12." (agrupado, um por peça a cada 8 segundos). No "Bem-vindo de volta": "+N Fragmentos de Roupa" e "Roupas
+  subiram de nível: Luvas Nv.40, Chapéu Nv.22".
+- **Quem já joga** (save versão 18): fragmentos de roupa começam em 0 e nenhuma peça montada.
+- **Arte provisória** (`ASSET_PENDENTE`): as peças e o fragmento usam o ícone da estrela; pedidos em
+  `docs/ASSETS_PENDENTES.md` (ícones das 5 peças, do Fragmento de Roupa e dos fragmentos de vara).
+
+### A-165 · Boss Mundial (todo dia às 19:00, 10 minutos)
+**Seção do GDD:** 24–30 (Cardume e Arena), 7 (HUD) · novo escopo pedido pelo proprietário · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-167, A-169): o botão do Boss e a pílula de contagem saíram da barra de cima. O Boss Mundial fica dentro do menu Eventos; durante o evento, o atalho redondo Eventos (lateral direita) vira "Boss Mundial", dourado, e abre direto a janela do Boss.*
+
+*Atualizado em 12/10/2026 (A-172): a renda de referência das faixas foi regerada a partir do Passe novo (só a pesca): Nv.1 10.260 Moedas/h (eram 14.760), Nv.1000 19,4 mi/h (eram 6,7 tri/h).*
+
+Pedido do proprietário em 12/10/2026 (M24-T29): "quero criar um Boss mundial para todos conseguirem atacar, todo dia às
+19:00, ele tem vida infinita, a ideia é todos conseguirem atacar com seu cardume e conseguir recompensas de acordo com o
+dano que aquele cardume infligiu, top 1 ao 10 ganham recompensas em dólares também". Respostas dele: 10 minutos por dia
+(19:00–19:10, horário de Brasília); ataque automático contínuo só com o jogo aberto; Dólares do top 1–10: 50, 40, 30, 25,
+20, 15, 10, 10, 5, 5; no jogo local a regra fica pronta, o ranking mostra só o jogador e os Dólares só pagam com servidor.
+Números em `config/world_boss.json`.
+
+- **Horário.** Todo dia das **19:00 às 19:10, horário de Brasília** (UTC−3 fixo, sem horário de verão). O dia do evento
+  vira à meia-noite de Brasília. O relógio é o do serviço do jogo, que nunca volta (TD-030).
+- **O Boss.** Vida infinita. Nome **sugerido** "Leviatã do Abismo" (o nome é decisão do proprietário, OD-069). Arte
+  provisória (`ASSET_PENDENTE`): um disco escuro com borda vermelha e o ícone de ataque; pedido em
+  `docs/ASSETS_PENDENTES.md`.
+- **Ataque automático.** Com o evento aberto e o **jogo aberto** (não precisa estar com a janela do Boss aberta), o
+  Cardume ataca sozinho **a cada 3 segundos** — até **200 ataques** no dia. Com o jogo fechado nada conta, nem depois:
+  ao reabrir no meio do evento, os ataques recomeçam dali e o dano de antes continua. Um travamento curto com o jogo
+  aberto recupera no máximo 3 ataques atrasados.
+- **Dano.** Cada peixe do Cardume bate com a **mesma regra da Arena** (Ataque × sorteio de 0,97 a 1,03, com o bônus 6/6;
+  o Boss não tem defesa), vezes os golpes que a Velocidade dele dá em 3 s (na Velocidade 100, 1,5 golpe). Cardume
+  **vazio não ataca** (aviso na janela e ao começar); Cardume **em Expedição** também não (a mesma trava da Arena).
+- **Faixas de recompensa** (6, crescentes). Para valer do começo ao fim do jogo sem tabela por nível, a faixa é uma
+  porcentagem do **dano máximo do dia**: o que o Cardume mais forte que o jogador usou naquele dia faria nos 10 minutos
+  inteiros. Ficar os 10 minutos dá a Faixa 6; ficar 6 minutos dá a Faixa 4. Recebe a recompensa da **maior faixa
+  alcançada** (não soma). Moedas e Conchas são minutos da renda de referência do nível do Pescador (a renda de quem abre
+  o jogo 4 vezes por dia, tirada do Passe: Moedas/h = 6 × as Moedas grátis do marco; Conchas/h = 2 × as Conchas); os
+  fragmentos de barco são do **barco do mapa mais alto liberado** pelo nível (extras se já montado, OD-060).
+
+  | Faixa | Dano do dia | Moedas | Conchas | Frag. de Roupa | Frag. de barco | Nv.10 | Nv.100 | Nv.1000 |
+  |---|---|---|---|---|---|---|---|---|
+  | 1 | 5% | 5 min de renda | 5 min | — | — | 1.230 | 272 mil | 555 bi |
+  | 2 | 15% | 10 min | 10 min | 1 | — | 2.460 | 544 mil | 1,11 tri |
+  | 3 | 30% | 20 min | 20 min | 1 | 1 | 4.920 | 1,09 mi | 2,22 tri |
+  | 4 | 50% | 30 min | 30 min | 2 | 1 | 7.380 | 1,63 mi | 3,33 tri |
+  | 5 | 75% | 45 min | 45 min | 2 | 2 | 11.070 | 2,45 mi | 5 tri |
+  | 6 | 95% | 60 min | 60 min | 3 | 3 | 14.760 | 3,26 mi | 6,66 tri |
+
+  (Moedas por nível nas três últimas colunas; Conchas da Faixa 6: 18 no Nv.10, 50 no Nv.100, 472 no Nv.1000.) Os 10
+  minutos valem ~1 hora de renda normal, dentro do alvo de 30 a 60 minutos. Provisório: o proprietário ajusta jogando.
+- **Pagamento.** Às 19:10, ou na próxima vez que o jogo abrir; **uma vez só** por dia. Quem não abriu o jogo no horário
+  não ganha nada.
+- **Ranking do dia** por dano. **Top 1 a 10 ganham Dólares**: 50, 40, 30, 25, 20, 15, 10, 10, 5 e 5. No jogo local só o
+  jogador está no ranking (regra A-100), então os Dólares ficam **desligados** (`online_rewards_enabled`) até existir
+  servidor com jogadores reais; as recompensas por faixa pagam normalmente.
+- **HUD.** Botão "Boss Mundial" na barra de cima, à esquerda do Passe, com uma pílula embaixo contando até as 19:00;
+  durante o evento o botão brilha e a pílula fica dourada com o tempo que falta.
+- **Janela "Boss Mundial"** (Placa do Píer com o "i" explicando tudo; contador "Começa em 2:14:33" ou "Termina em 7:12"):
+  em cima, o Cardume à esquerda (dois grupos de três, a fila da frente avançando a cada ataque) e o Boss à direita com o
+  nome e "Vida infinita", com os números de dano subindo como na Arena; embaixo, "Dano de hoje" em letras grandes, "N de
+  200 ataques", a barra com a marca de cada faixa, "Próxima: Faixa 3 com 12.345 de dano", os 6 cartões de faixa com a
+  recompensa (o alcançado em dourado com o visto) e "Sua recompensa (paga quando o evento acabar)". À direita, "Ranking de
+  hoje" (local: só você) com a nota "Ranking com outros jogadores quando o jogo estiver online" e a tabela "Dólares do top
+  10" ("Pagos quando o jogo estiver online."). Fora do horário: "O Boss aparece em …", "Todo dia às 19:00 (horário de
+  Brasília), por 10 minutos" e o **último resultado** (data, dano, ataques, faixa, posição e o que pagou).
+- **Avisos.** "O Boss Mundial apareceu: Leviatã do Abismo! Seu Cardume já está atacando." (com o aviso do Cardume vazio
+  ou em Expedição, se for o caso); "Boss Mundial: você chegou à Faixa 3!"; e no pagamento "Boss Mundial: +14.760 Moedas,
+  +18 Conchas, +3 Fragmentos de Roupa, +3 frag. · Rastro Azul" (com a comemoração se o barco for montado).
+- **Quem já joga** (save versão 19): começa sem participação; o primeiro evento é o das 19:00 seguintes.
+
+### A-166 · Tela de erro com o motivo
+**Seção do GDD:** 5 (painel e ferramentas) · correção pedida pelo proprietário · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+O proprietário avisou em 12/10/2026 que o jogo "não está abrindo" no Unity (M24-T38). Para nunca mais ficar uma janela
+vazia ou travada sem explicação:
+
+- **Qualquer falha vira a tela de erro**, também as da montagem da cena e de um quadro da interface (antes, só as da
+  abertura do serviço e das sincronizações). O jogo para ali, sem gravar nada depois da falha.
+- A tela diz **"O jogo encontrou um erro inesperado"**, pede um print ("Tire um print desta tela e mande junto com o pedido
+  de correção") e lista: **Erro** (a mensagem e o tipo), **Momento** (abertura do jogo, montagem da cena, desenho da tela
+  ou jogo em andamento), **Onde** (os três primeiros pontos do código do jogo envolvidos) e a pasta do **Save**.
+- Se nem o visual da interface puder ser montado, a mesma lista aparece no estilo simples do Unity.
+- O erro de balanceamento (arquivos de `/config` com problemas) continua com a tela própria e a lista dos itens a corrigir.
+
+### A-167 · Menu Eventos (o Boss Mundial dentro dele)
+**Seção do GDD:** 7 (menus) · pedido do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-169): o botão Eventos saiu da fileira da barra de cima. Eventos abre pela sub-aba da aba Aventura (Expedição | Arena | Eventos) e pelo atalho redondo da lateral direita.*
+
+"Boss mundial vai virar um submenu do menu EVENTOS, que vai ficar na parte superior escrito com seu próprio ícone."
+
+- **Barra de cima:** o botão **Eventos** (ícone + texto) é o último do menu, depois de Perfil. Quando um evento está
+  acontecendo, ele ganha um **ponto dourado** e um brilho dourado suave. O botão só de ícone do Boss e a pílula de
+  contagem (A-165) saíram da barra; à direita ficam Passe, avisos e opções.
+- **Espaço:** com 11 menus, se a fileira não couber, os botões ficam mais justos (menos margem e espaço entre eles); se
+  ainda não couber, aparecem só os ícones, como antes.
+- **Janela Eventos** (Placa do Píer com "i"; durante um evento o cabeçalho diz "1 acontecendo agora"): os eventos em
+  cartões, numa lista rolável. Hoje só existe o **Boss Mundial**: ícone do Boss, nome do Boss (do config), "Todo dia às
+  19:00 (Brasília), 10 minutos", o estado ("Começa em hh:mm:ss" ou, dourado com o selo AGORA, "Acontecendo agora ·
+  faltam mm:ss"), "Sua faixa de hoje", o último resultado (fora do evento) e **Abrir**, que abre a janela do Boss.
+- **Janela do Boss:** o botão **‹ Eventos** no cabeçalho volta à lista; o botão Eventos da barra também. Esc fecha.
+- **Avisos do Boss:** continuam iguais (os avisos do jogo não têm ação de clique).
+- **Ícone:** provisório (o relógio) até existir `ico_eventos.png` (`ASSET_PENDENTE`, pedido em `docs/ASSETS_PENDENTES.md`).
+- Nenhuma regra do Boss mudou; nenhum evento novo foi criado.
+
+### A-168 · Volta para 5 barcos (os mapas 6 a 10 dão os barcos 1 a 5)
+**Seção do GDD:** 7, 13, 19 · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 13/10/2026 (A-180): os barcos são montados pelo jogador (Montar), em ordem, cada um pedindo o anterior.*
+
+*Atualizado em 13/10/2026 (A-173): desde o M24-T47 todos os fragmentos caem em qualquer mapa, com 0,1% por peixe puxado para cada barco, cada vara e o Fragmento de Roupa (sorteios independentes). A tabela de mapas e chances e o "Caem nos mapas …" da Loja abaixo são a regra de antes; os dois mapas de cada barco hoje só dizem de qual barco o Boss Mundial dá fragmentos.*
+
+"Vamos voltar para 5 barcos por enquanto." "Só voltar a 5 barcos." Muda o A-157 e o A-158; o fragmento por barco continua.
+
+- **Os barcos:** o inicial (Água Mansa) e os 5 de sempre: Remo Valente, Rastro Azul, Proa Selvagem, Costa Nobre e
+  Horizonte Dourado. Os barcos 6 a 10 saíram do jogo (OD-061 resolvido).
+- **Onde caem os fragmentos:** cada barco cai em dois mapas. Os mapas 1 a 5 continuam com a chance de antes; os mapas 6 a
+  10 ficaram com a chance que já tinham (era a do barco 6 a 10 daquele mapa).
+
+  | Barco | Mapas | Chance por peixe puxado |
+  |---|---|---|
+  | Remo Valente | Lago Sereno · Arquipélago do Sol | 0,43% · 0,53% |
+  | Rastro Azul | Rio Selvagem · Corrente Azul | 0,43% · 0,58% |
+  | Proa Selvagem | Pantanal Dourado · Banco das Baleias | 0,48% · 0,61% |
+  | Costa Nobre | Estuário das Marés · Talude Noturno | 0,51% · 0,66% |
+  | Horizonte Dourado | Costa de Coral · Abismo Atlântico | 0,52% · 0,67% |
+
+- **Loja:** a ficha do barco diz "Caem nos mapas Lago Sereno e Arquipélago do Sol" (os nomes dos mapas do jogo) e mostra a
+  chance do mapa em que o jogador está, se ele dá aquele barco; senão, a do primeiro mapa.
+- **Passe e Boss:** o Passe só dá fragmentos dos 5 barcos (veja a nota no A-158). O Boss Mundial dá fragmentos do barco que
+  o mapa mais alto liberado dá (no Mapa 10, o Horizonte Dourado).
+- **Quem já tinha os barcos 6 a 10** (ao abrir o jogo, uma vez só):
+  - os fragmentos de um barco removido viram fragmentos do barco que aquele mapa passa a dar (6→Remo Valente, 7→Rastro
+    Azul, 8→Proa Selvagem, 9→Costa Nobre, 10→Horizonte Dourado);
+  - um barco removido já montado vira **Moedas e Conchas** no valor do que custou subir do Nv.1 ao nível dele, e os
+    fragmentos que ele custou para montar (70, 90, 120, 155 ou 200) viram fragmentos do barco do mesmo mapa, como acima;
+  - se esses fragmentos completam um barco, ele é montado na hora (e passa a ser usado se for melhor);
+  - se o barco removido estava em uso, o jogador passa a usar o **melhor barco que tem**.
+
+### A-169 · Menu de cima: abas grandes, placa embaixo e atalhos redondos à direita
+**Seção do GDD:** 7 e 8 (menus e tela) · escolha do proprietário em 12/10/2026 (exemplo 2, "Abas em cima, placa embaixo
+delas") · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-172): a aba Tripulação saiu: são **4 abas** (Pesca, Aventura, Comércio, Perfil), um pouco mais largas (160 px), centralizadas, com as cores de antes. A placa pendurada mostra só "MOEDAS" e o total contando (não há mais renda por segundo).*
+
+Muda o A-100, o A-139 e o A-167 (a fileira de 11 botões da barra de cima). Nenhum menu, moeda ou regra nova.
+
+- **Faixa de cima** (escura, 80 px, com acabamento de madeira embaixo): à esquerda o **cartão do jogador** (retrato, nome,
+  Nv., Moedas, Conchas e Dólares; passar o mouse num valor grande mostra o número exato; clicar no cartão abre o
+  **Perfil**). No centro, **5 abas grandes coloridas** (ícone em cima, nome embaixo): **Pesca** (turquesa), **Tripulação**
+  (azul), **Aventura** (roxo), **Comércio** (laranja), **Perfil** (cinza-azulado). A aba ativa cresce um pouco e ganha
+  borda branca. À direita, o **sino** e as **opções** (só ícones, como antes), o lugar mais limpo para eles.
+- **O que cada aba abre:** Pesca fecha as janelas e mostra a cena. Tripulação abre a janela Tripulação (Tripulantes e
+  Melhorias são as abas de dentro dela). Aventura abre a **Expedição**; Comércio abre o **Mercado** (durante o passo
+  "Pegue sua primeira vara" do tutorial, abre a **Loja**). Perfil abre o Perfil.
+- **Sub-abas** (a forma mais simples): com uma janela de Aventura ou Comércio aberta, as janelas irmãs aparecem como
+  botões pequenos pendurados logo abaixo da aba ativa: **Expedição | Arena | Eventos** e **Mercado | Loja**. Dentro da
+  janela do Boss, Eventos (na aba ou na sub-aba) volta à lista de eventos.
+- **Placa pendurada** (madeira, por duas cordas, no centro, embaixo da faixa; só sem janela aberta): "RENDA DA
+  TRIPULAÇÃO", a renda por segundo grande em dourado e o total de Moedas (contando, com o "+N" de um ganho). Com uma
+  janela aberta, a placa some (a janela ocupa esse espaço) e a faixa continua visível e clicável.
+- **Atalhos redondos** em coluna na lateral direita: **Mapa**, **Aquário** (com "ocupados/capacidade" numa pílula),
+  **Passe** (verde-água, com a contagem de recompensas prontas em vermelho), **Eventos** e **Ranking**. Durante o Boss
+  Mundial, o atalho Eventos vira **Boss Mundial**: dourado, pulsando, com o tempo que falta em cima, e abre direto a
+  janela do Boss. Com uma janela aberta, eles ficam cobertos e não respondem. Nada novo na lateral esquerda.
+- **Sinais:** ponto vermelho na aba Aventura (e na sub-aba Expedição) quando o Cardume voltou da Expedição; ponto
+  dourado na aba Aventura durante um evento; contagem vermelha no Passe e no sino. São os sinais que já existiam.
+- **Saíram da faixa:** o logo e o nome do mapa (o mapa continua no Perfil, na janela Mapa e no título de chegada) e o
+  cartão grande do jogador à direita (vara, mapa, capturas e espécies continuam no Perfil).
+- **Avisos** à direita, embaixo da faixa, à esquerda dos atalhos; o **tutorial** à esquerda, embaixo da faixa. Os
+  destaques do tutorial apontam para a aba Comércio (primeira vara), Perfil (Cardume) e Aventura (Expedição); os textos
+  do tutorial dizem "aba Comércio → Loja", "aba Perfil → Cardume" e "aba Aventura → Expedição".
+- **Tela pequena:** se as 5 abas não couberem entre o cartão e o sino, ficam mais estreitas; se nem assim, só ícones.
+- **Arte:** ícones das abas e dos atalhos e a moldura redonda são provisórios (os ícones atuais do jogo e um desenho
+  limpo), `ASSET_PENDENTE`, com pedidos em `docs/ASSETS_PENDENTES.md`. Quando cada arquivo existir, o jogo passa a usá-lo.
+
+### A-170 · Janelas no padrão "Diário de bordo"
+**Seção do GDD:** 21 (interface) · Bíblia de Arte, seções 3 e 13 · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 12/10/2026 (A-172): a janela Tripulação saiu do jogo.*
+
+*Atualizado em 20/10/2026 (A-184): a pele "Diário de bordo" saiu com a troca para o Estilo ARC (A-182). A moldura de
+madeira, o papel, a etiqueta, o lacre e os marcadores deram lugar ao painel azul-noite com moldura dourada fina, à
+etiqueta ARC, ao "✕" em pixel e às abas ARC; o texto volta a ser claro sobre fundo escuro. A organização descrita abaixo
+(etiqueta com "i", contador, faixa livre, sub-abas na lateral direita, rodapé) continua igual.*
+
+O proprietário escolheu o padrão 3 "Diário de bordo" para todas as janelas internas. **Isto troca, nas janelas, o painel
+azul-marinho da Bíblia de Arte (seções 3 e 13) por papel claro numa moldura de madeira** — decisão dele, registrada
+aqui porque a Bíblia não se edita. A barra de cima, a cena, os avisos e os diálogos de confirmação continuam como a
+Bíblia pede.
+
+- **Moldura:** madeira em tábuas verticais com uma folha de papel claro por dentro (#F2E4C4 → #EFDFBB). A cena fica
+  atrás, escurecida por um véu escuro com um leve tom quente (desfoque de verdade ficou de fora: custa caro no IMGUI).
+- **Título:** numa etiqueta azul-noite (#16304E) com borda dourada, presa no canto de cima à esquerda, com o ícone do
+  menu e o "i" de "Como funciona" (que abre um bilhete de papel). Não há mais cordas nem balanço (A-148 substituído).
+- **Fechar:** um lacre vermelho redondo com "✕" no canto de cima à direita. Esc continua fechando.
+- **Sub-abas viram marcadores** coloridos saindo da lateral direita (turquesa, azul, âmbar, roxo, vermelho, verde, na
+  ordem das abas); o aberto fica para fora e com borda branca. Ranking (Nível, Moedas, Conchas, Peixes pescados, com
+  "Você #N"), Aquário (Tanque, Cartas), Arena (Oponentes, Ranking, Histórico, Loja), Tripulação (Tripulação,
+  Melhorias), Mercado (as 6 abas; as Moedas e as vagas do Aquário foram para a faixa do título), Loja (Varas, Barcos,
+  Roupas, Iscas, VIP; antes eram plaquinhas na viga) e Perfil (Resumo, Inventário, Cardume, Enciclopédia, Recordes).
+  Os filtros de raridade da Caixa de Pesca continuam no topo: são filtros, não sub-abas.
+- **Contador** (peixes, tempo) fica num rebaixo do papel ao lado da etiqueta. **Rodapé:** linha tracejada acima da
+  ação principal (no Ranking, a faixa "Sua posição").
+- **Texto no papel** (legibilidade, A-149): tinta escura no lugar do texto claro. Contrastes calculados (WCAG) sobre o
+  papel #F2E4C4 e sobre o rebaixo #E8D7B2:
+
+  | Uso | Cor | No papel | No rebaixo |
+  |---|---|---|---|
+  | Tinta (texto) | #3A2A18 | 10,9:1 | 9,7:1 |
+  | Tinta suave (texto secundário) | #6A4A2A | 6,4:1 | 5,6:1 |
+  | Turquesa escurecido (ações) | #12605D | 5,8:1 | 5,2:1 |
+  | Dourado escurecido (só recompensa) | #7A4E0A | 5,7:1 | 5,1:1 |
+  | Vermelho escurecido | #9C3022 | 5,8:1 | 5,2:1 |
+  | Verde escurecido | #17603A | 6,0:1 | 5,3:1 |
+
+  As cores de raridade e de tamanho, quando viram texto no papel, são escurecidas no mesmo tom até 5:1. Fichas e
+  cartões viram papel branco (#FFFAF0, tinta a 13,2:1); botões secundários e chips viram papel; o botão principal
+  continua turquesa. Título branco na etiqueta: 13,4:1; texto branco nos marcadores: 4,8:1 ou mais.
+- **Cenas próprias** continuam com a sua arte, como uma foto presa na folha (borda branca e sombra) e com texto claro
+  dentro: tanque do Aquário e o peixe em destaque das Cartas, arquipélago do Mapa, carta náutica da Expedição, parede da
+  Loja, palco do Ranking, formações da Arena e do Cardume, batalha, Boss Mundial contra o Cardume e o peixe da
+  Enciclopédia.
+- **Arte provisória** (`ASSET_PENDENTE`): madeira, papel, etiqueta, lacre e marcador são desenhados pelo código até
+  chegarem `ui_diario_madeira`, `ui_diario_papel`, `ui_diario_etiqueta`, `ui_diario_lacre` e `ui_diario_marcador`
+  (pedidos em `docs/ASSETS_PENDENTES.md`).
+
+
+*Atualizado em 12/10/2026 (A-171, revisão de integridade): os atalhos redondos da direita ficam clicáveis com uma janela aberta, em vez de cobertos — o clique fecha a janela e abre a do atalho. As janelas nunca cobrem a coluna de atalhos.*
+
+### A-171 · Revisão de integridade: regras da tela com janela aberta
+
+Decidido na revisão de integridade de 12/10/2026 (M24-T45).
+
+- **Atalhos com janela aberta:** continuam clicáveis (trocam de janela). Ficam inertes só quando a janela tem um
+  diálogo próprio aberto, no "Bem-vindo de volta" e na tela de boas-vindas do tutorial. A largura das janelas é
+  limitada para não cobrir a coluna de atalhos.
+- **Faixa de baixo com janela aberta:** o último aviso fica à esquerda do botão da Caixa; a dica do tutorial, à esquerda
+  do aviso. Se não couberem os dois, o aviso espera e continua no histórico do sino.
+- **Faixa de comemoração:** sem janela, os avisos começam abaixo dela; com janela aberta, ela desce para baixo das
+  sub-abas e da etiqueta.
+- **Relógio atrasado:** quando o relógio do computador está mais de 5 minutos atrás do horário salvo, aparece uma nota
+  discreta no canto de baixo à esquerda (só sem janela aberta) dizendo quanto falta para o jogo voltar a andar.
+- **Selos** ("Nv. X", "NOVA ESPÉCIE", "RECORDE", posição no Cardume) usam sempre as cores da noite, com texto escuro
+  sobre o turquesa (cerca de 9:1), para ficarem legíveis tanto no papel quanto nas cenas.
+
+### A-172 · A Tripulação e as Melhorias saíram do jogo
+**Seção do GDD:** 10, 17, 19 (novo escopo A-152) · decisão do proprietário em 12/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Decisão do proprietário em 12/10/2026 (M24-T46): "Não vai ter tripulação, retira isso do jogo". Perguntado, ele escolheu
+tirar também as **Melhorias gerais** e **manter a meta de ~60 dias até o Nv.1000** (sem roupas; ~55 com roupas, OD-067),
+que a Tripulação ajudava a cumprir. Nenhum sistema, moeda ou raridade novo.
+
+- **O que saiu:** a Tripulação (os 10 tripulantes, a renda de Moedas e de XP por segundo com o jogo aberto e fechado, os
+  marcos e o marco da frota), as 50 Melhorias da Tripulação e as 5 Melhorias gerais (Rádio do Porto, Freguesia na Feira,
+  Caixa Térmica, Sonar de Cardume e Maré Boa). Com elas saíram a janela Tripulação (abas Tripulantes e Melhorias), a aba
+  Tripulação do menu de cima, a parte "Sua Tripulação trabalhou" do "Bem-vindo de volta" e os avisos de contratação, de
+  marco e de compra. `config/crew.json` e `config/upgrades.json` não existem mais.
+- **Venda de peixe ao NPC:** sem a Freguesia na Feira e a Maré Boa, a Caixa de Pesca, o Aquário e o peixe achado na
+  Expedição vendem pelo preço de `economy.json` (sem multiplicador). O Mercado entre jogadores não mudou.
+- **Mercado e Leilão simulados:** o menor preço de um vendedor simulado agora é o **preço de venda ao NPC + 1 Moeda**
+  (antes era o preço com a Freguesia na Feira no máximo + 1). O objetivo continua: comprar peixe de um vendedor simulado e
+  revender ao jogo nunca dá lucro (TD-052, TD-053).
+- **Menu de cima:** 4 abas (Pesca, Aventura, Comércio, Perfil), centralizadas, 160 px cada (eram 140) com 14 px entre
+  elas; as cores de cada aba não mudaram (saiu o azul da Tripulação). A placa pendurada embaixo das abas mostra
+  **"MOEDAS"** e o total contando, com o "+N" de um ganho (antes: "RENDA DA TRIPULAÇÃO", a renda por segundo e as Moedas).
+- **Quem já jogava** (save versão 20 ou mais antigo, TD-053): ao abrir o jogo, recebe de volta **todas as Moedas que gastou**
+  na Tripulação e nas Melhorias, calculadas pelos números salvos e pelas curvas de preço de antes (guardadas em
+  `economy.json → crew_removal_refund` só para essa conta): cada tripulante, o preço das unidades que tinha; cada Melhoria
+  da Tripulação comprada, o preço dela; cada Melhoria geral, a soma dos níveis comprados. Nenhuma das duas custava Conchas.
+  Aparece **um aviso** (uma vez): "A Tripulação e as Melhorias saíram do jogo. Você recebeu de volta N Moedas, tudo o que
+  gastou nelas." Quem nunca contratou ninguém vê "Você não tinha gastado nada nelas." O XP e os níveis que a Tripulação deu
+  ficam; a renda da Tripulação do tempo em que o jogo ficou fechado desde a última vez não é paga.
+- **Ritmo do Pescador** (o jogador de referência de `tools/Progressao/jogador.py`: só a pesca, níveis de vara e de barco,
+  barcos e varas por fragmentos e iscas; sem Passe e sem VIP). A curva do Pescador passou para a **versão 4**
+  (`calibrar_xp.py --manter-ate 250 --metas 500:14.6d,750:33.3d,1000:60d`): os níveis 1 a 249 pedem o mesmo XP de antes
+  e os seguintes foram recalibrados; do Nv.1 ao Nv.1000 são **217.677.170 XP** (eram 229.596.770).
+
+  | Nv.1000 (dias) | Com Tripulação (antes) | Sem Tripulação, curva 3 | **Agora (curva 4)** |
+  |---|---|---|---|
+  | Jogo aberto, sem roupas | 59,6 | 63,2 | **60,0** |
+  | Jogo aberto, com roupas | 54,6 | 57,1 | **54,3** |
+  | 4 vezes por dia (30 min), sem roupas | 107,8 | 117,9 | **112,3** |
+  | 4 vezes por dia, com roupas | 99,3 | 106,3 | **100,9** |
+  | 1 vez por dia (30 min), sem roupas | 123,8 | 129,9 | **123,8** |
+  | 1 vez por dia, com roupas | 112,8 | 115,8 | **110,8** |
+
+  Com o jogo aberto e sem roupas: Nv.10 em ~20 min, Nv.100 em ~0,5 dia, Nv.250 em ~3,3 dias (iguais), Nv.500 em ~14,6
+  dias (era 14,2), Nv.750 em ~33,3 dias (era 32,9). Quem abre 4 vezes por dia chega um pouco depois do que chegava com a
+  Tripulação (ela rendia também com o jogo fechado). XP para o próximo nível: Nv.250 94.500 (era 92.300), Nv.500 223.000
+  (224.000), Nv.750 337.000 (360.000), Nv.999 457.000 (504.000).
+- **Quem já joga** (curva 3 → 4, TD-038): até o Nv.249 nada muda. Acima, o XP total já ganho vira o nível equivalente na
+  curva nova, **sem nunca baixar o nível**: um Nv.500 continua Nv.500 (com o XP dentro do nível); um Nv.750 sobe para o
+  Nv.757. Não há aviso na tela.
+- **Passe do Pescador e Boss Mundial:** as Moedas e Conchas de cada marco do Passe eram ~10 min da renda com a Tripulação
+  (no Nv.1000, 1,11 tri de Moedas); foram regeradas pela renda da pesca (`passe_fragmentos.py passe`): Nv.10 1.710, Nv.100
+  230 mil, Nv.500 3,12 mi, Nv.1000 3,24 mi. A renda de referência das faixas do Boss vem do Passe (`boss_mundial.py`).
+  Dólares e fragmentos do Passe não mudaram.
+- **Arte:** os ícones `ico_tripulacao` e `ico_aba_tripulacao` saíram do jogo; os pedidos de arte da Tripulação e das
+  Melhorias em `docs/ASSETS_PENDENTES.md` estão marcados RETIRADO (não pedir).
+
+### A-173 · Todos os fragmentos em qualquer mapa (0,1% cada)
+**Seção do GDD:** 7, 13, 19 (novo escopo A-152) · decisão do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+*Atualizado em 13/10/2026 (A-180): "montagem sozinha", "vara de categoria maior entra em uso" e "barco melhor entra em uso" abaixo deixaram de valer: o jogador monta com Montar, em ordem, e escolhe o que usar. Os mapas abrem só pelo nível (a vara não trava mais nenhum mapa). Os dias abaixo são os de antes; os de hoje estão no A-180.*
+
+Decisão do proprietário em 13/10/2026 (M24-T47): "A ideia é os jogadores conseguirem todos esses fragmentos enquanto
+pescam, mas com uma porcentagem bem pequena." Perguntado, escolheu: "Todos em qualquer mapa 0,1%". Muda o A-157, o A-163,
+o A-164 e o A-168 só em **onde** os fragmentos caem e na chance; o resto continua (montagem sozinha, extras guardados,
+vara de categoria maior entra em uso, barco melhor entra em uso, Passe e Boss Mundial dando fragmentos, Expedições sem
+fragmentos).
+
+- **A regra:** em **qualquer mapa**, cada peixe puxado (online e offline; o que escapa não conta) tem **0,1%** de chance
+  de dar 1 fragmento de **cada** um destes, em sorteios separados: os 5 barcos, as 5 varas e o Fragmento de Roupa. Um
+  mesmo peixe pode dar mais de um fragmento. As chances ficam em `/config` (uma por item, todas 0,001).
+- **Loja:** a ficha de cada barco, de cada vara e das roupas diz "Fragmentos 12/20 · **Caem em todos os mapas**" e a
+  chance ("0,10% de chance por peixe puxado"). Os textos "Caem no mapa …" e "cada mapa tem o seu barco" saíram; as notas
+  da Loja dizem "em qualquer mapa".
+- **Boss Mundial e Passe:** não mudaram. O Boss continua dando fragmentos do barco do mapa mais alto liberado (o mapa de
+  cada barco no config ficou só para isso) e o Passe continua com os mesmos marcos.
+- **A progressão nunca trava:** como toda vara cai em todo mapa, o jogo só confere que a vara que cada mapa pede tenha
+  chance maior que 0.
+- **Quanto tempo leva** (o jogador de referência de `tools/Progressao/jogador.py`: só a pesca, sempre no melhor mapa
+  liberado, com o **Passe grátis** e sem Premium; **sem o Boss Mundial**, que só adiantaria; valor médio, sem sorte;
+  dias contados da meia-noite do primeiro dia; `tools/Progressao/fragmentos_qualquer_mapa.py`, resultado em
+  `docs/propostas/fragmentos_qualquer_mapa.json`). "Antes" é a regra de 12/10/2026.
+
+  | Dia em que monta, em dias (h = horas): antes → **agora** | Jogo aberto | 4 vezes por dia | 1 vez por dia |
+  |---|---|---|---|
+  | Barco 1 · Remo Valente | 8,7 → **2,9** | 16,8 → **5,9** | 7,8 → **6,8** |
+  | Barco 2 · Rastro Azul | 3,5 → **3,4** | 7,3 → **6,8** | 4,8 → **7,8** |
+  | Barco 3 · Proa Selvagem | 7,3 → **3,7** | 14,3 → **7,5** | 8,8 → **9,8** |
+  | Barco 4 · Costa Nobre | 2,7 → **4,6** | 2,3 → **8,9** | 5,8 → **10,8** |
+  | Barco 5 · Horizonte Dourado | 1,4 → **5,2** | 3,3 → **10,3** | 6,8 → **11,8** |
+  | Vara 1 · Ponta Selvagem | 1,9 h → **2,6** | 12,0 h → **5,3** | 1,8 → **6,8** |
+  | Vara 2 · Maré Dourada | 4,6 h → **4,0** | 18,0 h → **7,8** | 2,8 → **8,8** |
+  | Vara 3 · Corrente Mestra | 6,2 h → **5,0** | 22,1 h → **9,8** | 3,8 → **11,8** |
+  | Vara 4 · Atlântico Nobre | 10,1 h → **6,1** | 1,3 → **11,8** | 4,8 → **13,8** |
+  | Vara 5 · Soberana Abissal | 20,2 h → **7,7** | 2,3 → **14,8** | 5,8 → **16,8** |
+  | 1ª roupa (Luvas, 15 frag.) | 6,2 h → **1,0** | 22,1 h → **2,3** | 2,8 → **2,8** |
+  | 2ª roupa (Chapéu, 25) | 1,2 → **3,5** | 2,8 → **6,9** | 4,8 → **8,8** |
+  | 3ª roupa (Calça, 40) | 3,4 → **7,2** | 6,8 → **13,8** | 8,8 → **15,8** |
+  | 4ª roupa (Botas, 60) | 6,9 → **12,6** | 13,3 → **23,8** | 15,8 → **26,8** |
+  | 5ª roupa (Camiseta, 80) | 11,9 → **20,5** | 22,5 → **38,3** | 25,8 → **41,8** |
+  | **Todos os 15 itens** | 11,9 → **20,5** | 22,5 → **38,3** | 25,8 → **41,8** |
+
+  O que mais demora são as roupas: as 5 peças pedem 220 fragmentos de um tipo só (15 + 25 + 40 + 60 + 80). Os barcos e as
+  varas chegam em 3 a 17 dias.
+- **Efeito na progressão:** com 0,1%, as varas chegam bem mais tarde, e são elas que abrem os mapas (`minimum_rod_tier`).
+  O jogo não trava, mas o jogador fica mais tempo nos primeiros mapas:
+
+  | Dia em que o mapa abre (h = horas): antes → **agora** | Jogo aberto | 4 vezes por dia | 1 vez por dia |
+  |---|---|---|---|
+  | Mapa 2 · Rio Selvagem (Nv.10, Vara 1) | 1,9 h → **2,6** | 12,0 h → **5,3** | 1,8 → **6,8** |
+  | Mapa 4 · Estuário das Marés (Nv.30, Vara 2) | 4,6 h → **4,0** | 18,0 h → **7,8** | 2,8 → **8,8** |
+  | Mapa 6 · Arquipélago do Sol (Nv.50, Vara 3) | 6,2 h → **5,0** | 22,1 h → **9,8** | 3,8 → **11,8** |
+  | Mapa 8 · Banco das Baleias (Nv.70, Vara 4) | 10,1 h → **6,1** | 1,3 → **11,8** | 4,8 → **13,8** |
+  | Mapa 10 · Abismo Atlântico (Nv.90, Vara 5) | 20,2 h → **7,7** | 2,3 → **14,8** | 5,8 → **16,8** |
+  | Pescador Nv.100 | 10,1 h → **2,9** | 1,3 → **5,8** | 3,8 → **7,8** |
+  | Pescador Nv.500 | 13,2 → **17,9** | 25,3 → **33,9** | 29,8 → **37,8** |
+  | Pescador Nv.1000 | 53,8 → **58,5** | 100,3 → **108,8** | 109,8 → **117,8** |
+
+  Com o jogo aberto, o Mapa 2 abre no dia ~2,6 (antes em ~2 horas) e o Mapa 10 no dia ~7,7 (antes em ~20 horas); o
+  Nv.1000 vem ~5 a 8 dias depois (+7% a +9%). Nada foi rebalanceado além da chance; as opções estão no OD-070.
+
+*Atualizado em 13/10/2026 (OD-070, opção c; M24-T48): as varas pedem menos fragmentos.* O proprietário escolheu a opção
+(c) do OD-070: a chance continua **0,1% por peixe em qualquer mapa**, mas as varas 1 a 5 pedem **5 / 8 / 12 / 15 / 20
+fragmentos** (eram 15 / 25 / 35 / 45 / 60). Barcos e roupas não mudaram.
+
+- **Passe do Pescador:** continua dando os mesmos fragmentos de vara de antes (grátis 3 / 4 / 6 / 7 / 9 nos Nv.10 / 30
+  / 50 / 70 / 90; premium o dobro). Foi com eles que a opção (c) foi simulada; agora o grátis do Nv.10 já é mais da metade
+  da Vara 1.
+- **Quem já tinha fragmentos de vara:** ao abrir o jogo, cada vara cujos fragmentos guardados já chegam ao número novo
+  é montada sozinha (entra no Inventário no Nv.1 e, se for de categoria maior, passa a ser usada). Gasta só o número
+  novo; o que sobra fica guardado como extra. Só uma vara de cada é montada (34 fragmentos da Vara 3 montam uma e ficam
+  22 extras). Uma vara que o jogador já tinha não muda e os extras dela ficam iguais. Não há aviso além do de sempre.
+- **Quanto tempo leva agora** (o mesmo jogador de referência e a mesma simulação de cima, refeita;
+  `docs/propostas/fragmentos_qualquer_mapa.json` traz as três regras: 12/10, "varas 15 a 60" e agora):
+
+  | Dia em que monta (h = horas): varas 15 a 60 → **agora** | Jogo aberto | 4 vezes por dia | 1 vez por dia |
+  |---|---|---|---|
+  | Barco 1 · Remo Valente | 2,9 → **1,8** | 5,9 → **3,9** | 6,8 → **5,8** |
+  | Barco 2 · Rastro Azul | 3,4 → **2,0** | 6,8 → **4,3** | 7,8 → **5,8** |
+  | Barco 3 · Proa Selvagem | 3,7 → **2,3** | 7,5 → **4,8** | 9,8 → **6,8** |
+  | Barco 4 · Costa Nobre | 4,6 → **3,1** | 8,9 → **6,3** | 10,8 → **7,8** |
+  | Barco 5 · Horizonte Dourado | 5,2 → **3,5** | 10,3 → **7,3** | 11,8 → **8,8** |
+  | Vara 1 · Ponta Selvagem (5 frag.) | 2,6 → **11,0 h** | 5,3 → **1,3** | 6,8 → **1,8** |
+  | Vara 2 · Maré Dourada (8) | 4,0 → **19,7 h** | 7,8 → **1,9** | 8,8 → **2,8** |
+  | Vara 3 · Corrente Mestra (12) | 5,0 → **1,1** | 9,8 → **2,5** | 11,8 → **3,8** |
+  | Vara 4 · Atlântico Nobre (15) | 6,1 → **1,4** | 11,8 → **3,3** | 13,8 → **4,8** |
+  | Vara 5 · Soberana Abissal (20) | 7,7 → **1,8** | 14,8 → **3,8** | 16,8 → **5,8** |
+  | 1ª roupa (Luvas, 15 frag.) | 1,0 → **15,6 h** | 2,3 → **1,8** | 2,8 → **2,8** |
+  | 2ª roupa (Chapéu, 25) | 3,5 → **2,1** | 6,9 → **4,3** | 8,8 → **5,8** |
+  | 3ª roupa (Calça, 40) | 7,2 → **5,4** | 13,8 → **10,5** | 15,8 → **12,8** |
+  | 4ª roupa (Botas, 60) | 12,6 → **11,1** | 23,8 → **21,3** | 26,8 → **23,8** |
+  | 5ª roupa (Camiseta, 80) | 20,5 → **19,0** | 38,3 → **35,8** | 41,8 → **39,8** |
+  | **Todos os 15 itens** | 20,5 → **19,0** | 38,3 → **35,8** | 41,8 → **39,8** |
+
+  | Dia em que o mapa abre (h = horas): 12/10 → varas 15 a 60 → **agora** | Jogo aberto | 4 vezes por dia | 1 vez por dia |
+  |---|---|---|---|
+  | Mapa 2 · Rio Selvagem (Nv.10, Vara 1) | 1,9 h → 2,6 → **11,0 h** | 12,0 h → 5,3 → **1,3** | 1,8 → 6,8 → **1,8** |
+  | Mapa 4 · Estuário das Marés (Nv.30, Vara 2) | 4,6 h → 4,0 → **19,7 h** | 18,0 h → 7,8 → **1,9** | 2,8 → 8,8 → **2,8** |
+  | Mapa 6 · Arquipélago do Sol (Nv.50, Vara 3) | 6,2 h → 5,0 → **1,1** | 22,1 h → 9,8 → **2,5** | 3,8 → 11,8 → **3,8** |
+  | Mapa 8 · Banco das Baleias (Nv.70, Vara 4) | 10,1 h → 6,1 → **1,4** | 1,3 → 11,8 → **3,3** | 4,8 → 13,8 → **4,8** |
+  | Mapa 10 · Abismo Atlântico (Nv.90, Vara 5) | 20,2 h → 7,7 → **1,8** | 2,3 → 14,8 → **3,8** | 5,8 → 16,8 → **5,8** |
+  | Pescador Nv.100 | 10,1 h → 2,9 → **23,3 h** | 1,3 → 5,8 → **2,3** | 3,8 → 7,8 → **3,8** |
+  | Pescador Nv.500 | 13,2 → 17,9 → **14,2** | 25,3 → 33,9 → **26,9** | 29,8 → 37,8 → **30,8** |
+  | Pescador Nv.1000 | 53,8 → 58,5 → **54,8** | 100,3 → 108,8 → **102,3** | 109,8 → 117,8 → **109,8** |
+
+  Os mapas voltam a abrir cedo (Mapa 10 no dia ~1,8 / ~3,8 / ~5,8) e o Nv.1000 fica quase como em 12/10 (~54,8 / ~102,3
+  / ~109,8 dias). Barcos e roupas também chegam antes, porque com as varas mais cedo o jogador puxa mais peixes por hora
+  (a vara soma na Chance de Sucesso da Captura). As 5 roupas continuam sendo o mais demorado.
+
+### A-174 · Clãs
+
+*Atualizado em 13/10/2026 (decisão do proprietário): o **primeiro clã de cada jogador é grátis**. Se ele apagar o clã (saindo dele vazio) e quiser criar outro, aí paga os 50 Dólares. É por jogador: todo jogador tem o seu primeiro clã grátis. O botão mostra "Criar clã · Grátis" e, embaixo, "O primeiro clã de cada jogador é grátis; os próximos custam Dólares."*
+**Seção do GDD:** novo (pedido do proprietário) · decisão do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário em 13/10/2026 (M24-T49): "Vamos adicionar os clans, jogadores podem entrar ou criar um clan,
+máximo de 10 jogadores por enquanto (pode comprar + espaço), jogadores ganham bônus padrão de 1% de xp por estarem em
+um clan (nível 100 pra cima), top 3, 2, 1 ganha recompensas em dólares, conchas, fragmentos, moedas todos os dias às
+00:00, para ser o melhor clan precisa ser o que tem o cardume mais forte em conjunto, cada membro tem oportunidade de
+colocar 1 peixe no cardume do clan (esse peixe também pode ficar no seu cardume)." Perguntado, respondeu: tudo pronto
+nas regras, mas o ranking entre clãs e os prêmios ficam desligados no jogo local até haver servidor, sem clãs de bots;
+só Pescador Nv.100+ cria ou entra; criar e comprar vagas custam Dólares. TD-055.
+
+- **Onde fica:** sub-aba **"Clã"** do Perfil. Com o Perfil ou o Clã aberto, aparece embaixo da aba Perfil "Perfil | Clã"
+  (como "Expedição | Arena | Eventos" na Aventura). Janela no padrão "Diário de bordo" (A-170), com o "i" que explica
+  tudo e, no cabeçalho, "N/M membros". Ícone provisório: o da Honra (`ASSET_PENDENTE: ico_cla`).
+- **Abaixo do Nv.100:** a janela mostra "Clãs a partir do Nv.100", quanto falta (barra Nv.X de 100) e o bônus de +1%.
+  Criar e entrar são recusados ("Só Pescadores do Nv.100 para cima podem criar ou entrar num clã.").
+- **Sem clã (Nv.100+):** "Criar um clã": o nome (3 a 20 caracteres: letras, números, espaço, ponto, hífen e sublinhado;
+  espaços repetidos viram um; não pode repetir o nome de outro clã, sem diferença entre maiúsculas e minúsculas) e o botão
+  "Criar clã · 50 Dólares" (desligado sem Dólares; "Você tem N Dólares" embaixo). Quem cria vira o **dono**. "Entrar num
+  clã": "A lista de clãs para entrar aparece quando o jogo estiver online. Por enquanto, crie o seu." A regra de entrar (por
+  id do clã, que serve de convite) está pronta no serviço: precisa do Nv.100, de não estar em outro clã e de vaga livre;
+  entrar é de graça.
+- **No clã:** em cima, o nome, o dono, a **Força do clã** e "Bônus do clã: +1% de XP de Pescador"; à direita "Comprar
+  vaga · N Dólares" (só o dono; "Só o dono compra vagas." para os outros; "O clã já tem o máximo de vagas." no limite) e
+  "Sair do clã" (com confirmação). No meio, o **Cardume do Clã**: o seu peixe (espécie, nível, Força e "Também no seu
+  Cardume (posição N)" quando estiver lá) com "Trocar" e "Tirar", ou "Escolher peixe". A escolha abre a lista do Aquário,
+  os mais fortes primeiro. Embaixo, os **membros** ("N/M membros" e "10 vagas + X compradas (máximo 50)"), o dono
+  primeiro, cada um com o nível e o peixe que colocou (ou "Sem peixe no Cardume do Clã").
+- **Vagas:** todo clã começa com 10. O dono compra vagas extras com Dólares: a 1ª custa 20 e cada uma seguinte 1,5 vez a
+  anterior, arredondado (20, 30, 45, 68, 101), até 15 vagas no total (10 + até 5 compradas; *atualizado em 13/10/2026, decisão do proprietário: antes eram 50*).
+- **Bônus de XP:** quem está num clã ganha **+1% de XP de Pescador** em cada peixe pescado, com o jogo aberto e fechado.
+  A fração de ponto é guardada e somada no próximo peixe, para ser +1% exato mesmo nos peixes de pouco XP. Sair do clã
+  tira o bônus. Não vale para Expedições nem para as recompensas.
+- **Cardume do Clã:** cada membro coloca **1 peixe** do Aquário. O peixe **não sai** do Aquário nem do Cardume pessoal.
+  Vendido, usado como alimento ou anunciado no Mercado/Leilão, ele sai do Cardume do Clã (aviso: "Seu peixe saiu do
+  Aquário e deixou o Cardume do Clã."). A **Força de um peixe** é a mesma do Cardume (Ataque, Defesa, Vida e Velocidade
+  com os pesos da Arena), sem o bônus de Cardume completo, que é de 6 peixes; a **Força do clã** é a soma dos peixes dos
+  membros.
+- **Ranking diário e prêmios:** o ranking dos clãs é pela Força do clã e fecha **todo dia às 00:00 (horário de
+  Brasília)**. Um clã sem peixe no Cardume não entra. Os 3 primeiros ganham, para **cada membro** (números provisórios):
+  1º 25 Dólares, 60 minutos de renda em Moedas e em Conchas, 3 Fragmentos de Roupa e 3 fragmentos de barco; 2º 15
+  Dólares, 45 min, 2 e 2; 3º 10 Dólares, 30 min, 1 e 1. As Moedas e Conchas seguem a renda de referência do nível de cada
+  um (a mesma do Boss Mundial); os fragmentos de barco são do barco do mapa mais alto que o nível libera (o mesmo do Boss).
+  Fragmentos de vara não entram (o Boss também não dá). A janela mostra esse bloco e o tempo até as 00:00.
+- **Desligado no jogo local:** o ranking entre clãs e os prêmios (`clans.json → ranking.online_rewards_enabled: false`,
+  como o top 10 do Boss Mundial). A janela diz "O ranking entre clãs e os prêmios ligam quando o jogo estiver online." O
+  dia fecha às 00:00 sem pagar nada e nada fica guardado para pagar depois. Com a chave ligada (servidor), o jogo mostra a
+  lista dos clãs e o último prêmio, e o aviso "Clã em Nº lugar no ranking de ontem: …".
+- **Sair:** o dono que sai sozinho fecha o clã (o nome fica livre; os Dólares não voltam). Com outros membros, o clã passa
+  para o membro mais antigo.
+- **Decisões pequenas tomadas na implementação** (registradas aqui): sub-aba no Perfil; nome de 3 a 20 caracteres com
+  as regras do nome do jogador; 1 vaga extra por compra; máximo de 15 vagas (10 + 5 compradas, decidido pelo proprietário em 13/10/2026); clã sem peixe fora do ranking; empate
+  decidido pelo clã mais antigo; o +1% com a fração guardada; prêmio do 3º lugar é o mínimo e não há prêmio do 4º em
+  diante; o jogo local paga no máximo um dia (o último) se ficar fechado vários dias; dono que sai passa o clã ao membro
+  mais antigo; entrar é de graça. Os números (preços, máximo, prêmios) são provisórios e estão no OD-071.
+- **Quem já jogava** (save v21): abre sem clã (save v22).
+
+### A-175 · Relatório "Bem-vindo de volta"
+**Seção do GDD:** 10 (pesca offline) · Bíblia de Arte, seção 16.8 · pedido do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário (M24-T51): "Relatório de quando ficou fora já existe, não? Se existir pode melhorar ele." A tela
+de retorno (A-035) era uma lista de linhas de texto; virou um relatório de jogo idle, para ler num relance. Nenhum
+sistema novo: ela mostra o que a pesca offline já dava.
+
+- **Janela:** padrão "Diário de bordo" (A-170): moldura de madeira, papel, etiqueta "Bem-vindo de volta!" com o ícone do
+  relógio e o lacre que fecha (igual a "Continuar"; Esc também fecha). No quadro de 1080 de altura do HUD (A-149) a janela tem
+  920 de largura (texto em 864) em qualquer tela, de ~1200×600 a ~1320×840; a altura acompanha o relatório até 960 e,
+  quando ele é mais longo (muitos fragmentos e avisos), o corpo rola e o rodapé com os botões fica parado.
+- **Faixa de cena** no topo, presa no papel como uma foto: "Você ficou fora por 8 h 12 min" em letra grande e, embaixo,
+  "Contaram as primeiras 24 h, o limite da pesca offline." quando passou do limite (senão "O pescador continuou na água
+  enquanto você esteve fora."). Altura 124. Arte `bemvindo_cena` (1600×700,
+  `ASSET_PENDENTE`); até ela chegar, o código desenha um lago ao entardecer com o sol baixo e reflexos que se mexem
+  devagar. Uma sombra escura à esquerda mantém o texto claro legível sobre qualquer arte.
+- **Cartões de números grandes** (uma fileira, 2 a 4 cartões de papel branco): **Peixes pescados** (com "N espécies
+  novas"), **Valor da pesca** em Moedas ("se vender tudo": a soma do preço de venda ao NPC de cada peixe
+  pescado fora, calculada pelo serviço), **XP de Pescador** (com "Nv. 12 → 14!" em dourado e brilho no cartão quando
+  subiu de nível, ou "+N do VIP") e **Conchas**. Os números sobem de 0 até o valor em 0,9 s ao abrir (só apresentação);
+  um número que não cabe no cartão usa a forma curta (1,2 mi).
+- **Peixes por raridade:** uma barra dividida nas cores de raridade (só as que vieram, na ordem das raridades), que cresce
+  ao abrir; cada raridade tem pelo menos 8 px, para um Lendário no meio de centenas de Comuns aparecer. Embaixo, a
+  legenda "● Comum 532 ● Raro 7 …".
+- **Destaques:** até 4 cartas de peixe (a mesma carta da Caixa de Pesca), as capturas importantes de maior valor, com os
+  selos "NOVA ESPÉCIE" e "RECORDE"; ao lado do título, "2 espécies novas · 1 recorde de tamanho".
+- **Fragmentos e equipamento** (2 colunas): um cartão por barco e por vara que soltou fragmentos e um para os
+  Fragmentos de Roupa, com o ícone do fragmento (`frag_boat_NN`, `frag_rod_NN`, `frag_roupa`), "+N" em dourado e a
+  barrinha até montar ("12/40"). Montou: borda dourada, selo "MONTADO!" / "MONTADA!" e "Barco montado!". Já tinha o
+  item: "Já é seu · N de sobra". Roupa: "Já dá para montar uma roupa!" quando os fragmentos alcançam o custo da próxima
+  peça, ou "Todas as roupas montadas". Embaixo, as roupas que subiram de nível ("Luvas Nv.3, Botas Nv.2").
+- **Avisos:** Caixa de Pesca cheia ou quase (a partir de 90% do limite; "Caixa de Pesca cheia (8.640/8.640): a pesca
+  para até você vender.") com a barra de ocupação e o botão "Abrir a Caixa"; as tentativas que pararam por Caixa cheia; a
+  isca que acabou; e, numa linha discreta, os peixes que escaparam.
+- **Rodapé:** linha tracejada, "Abrir a Caixa de Pesca" (quando a Caixa tem peixe) e "Continuar". A explicação da pesca
+  offline (1 tentativa a cada 20 s, 15 s com o VIP, até 24 h) fica no fim do relatório, em letra pequena.
+- **Números do serviço** (no `OfflineReport`, calculados quando o relatório é feito): valor da pesca, nível do Pescador
+  antes e depois, ocupação e limite da Caixa, peixes por raridade e Fragmentos de Roupa (os que tem e o custo da próxima
+  peça). A tela só soma o que já vem por fragmento (o último de cada barco ou vara diz o progresso).
+
+### A-176 · Genes: cada peixe é único
+
+*Atualizado em 13/10/2026 (decisão do proprietário: "se vier algo ruim precisa ser realmente ruim e se for bom, realmente bom"): cada gene agora vai de **×0,80 (gene 0, −20%)** a **×1,30 (gene 31, +30%)**, em duas retas que se encontram no gene 16 (×1,00). Os peixes migrados (16 em tudo) ficam exatamente neutros. Na média de todos os peixes os atributos sobem ~2%. As linhas abaixo que falam em ×0,90 a ×1,10 são o histórico.*
+**Seção do GDD:** 13 (atributos do peixe), 11 (Caixa de Pesca), 12 (Aquário), 33 (Mercado) · pedido do proprietário em 13/10/2026 · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário (M24-T52): "caçar exemplares melhores é o que prendia no jogo. Vamos adicionar os genes." Antes,
+dois peixes da mesma espécie só diferiam pelo tamanho e pelo nível. Agora cada peixe nasce com genes e é único.
+
+- **4 genes por peixe**, um para cada atributo de combate: **Vida, Ataque, Defesa e Velocidade**. Cada um vai de **0 a
+  31**, sorteado na captura de forma uniforme e independente (pelo sorteio do serviço). Os genes são **permanentes**:
+  ficam no peixe na Caixa de Pesca, no Aquário, no Cardume, no Clã e no Mercado, e nunca mudam.
+- **Efeito:** cada gene multiplica o seu atributo entre **×0,90 (gene 0)** e **×1,10 (gene 31)**, em linha reta. A média
+  de todos os peixes fica em ×1,00, então a Arena, o Boss Mundial, os Clãs e as Expedições não mudam na média; o que
+  muda é que agora existem peixes melhores e piores da mesma espécie. Entra na mesma conta da espécie, da raridade, do
+  tamanho e do nível.
+- **Qualidade:** a soma dos 4 genes (0 a 124) vira um percentual de 0% a 100% e **estrelas de 1 a 5**: 1★ abaixo de
+  30%, 2★ de 30%, 3★ de 55%, 4★ de 75% e 5★ de 90%. Com o sorteio uniforme, sai 1★ em 9,6% dos peixes, 2★ em 53,7%,
+  3★ em 31,7%, 4★ em 4,8% e **5★ em 0,17% (cerca de 1 a cada 575 peixes)**.
+- **Gene perfeito** é um gene 31 (aparece em dourado; ~12% dos peixes têm pelo menos um). Os 4 genes em 31 são o
+  **Exemplar perfeito** (~1 em 1 milhão): é o sonho da caça.
+- **Preço de venda ao jogo (NPC) não muda** com os genes: a economia fica igual. No Mercado entre jogadores, as estrelas
+  e os genes aparecem no anúncio para o comprador decidir (e o Mercado ganhou a ordem "Melhor qualidade").
+- **Onde aparece:**
+  - **Cartão do peixe** (Caixa de Pesca, Aquário, Mercado, destaques do "Bem-vindo de volta", peixe achado na Expedição,
+    escolha de alimento): 5 estrelinhas sob o selo de raridade, as ganhas em dourado e as outras apagadas.
+  - **Ficha do peixe** (Aquário no Tanque e nas Cartas, Mercado): o título "Atributos" ganha as estrelas e "Qualidade
+    72%" (ou o selo dourado "EXEMPLAR PERFEITO"); cada atributo mostra uma barrinha com o seu gene, "27/31", e o valor;
+    o gene 31 fica em dourado. No Cardume do Perfil, as estrelas aparecem ao lado do nível.
+  - **Caixa de Pesca:** ordem "Melhor qualidade" (genes mais altos primeiro) e o menu "Qualidade: Todas / 5 estrelas / 4
+    estrelas ou mais / 3 estrelas ou mais / 2 estrelas ou mais", que combina com raridade, tamanho e busca.
+  - **Aquário:** a ordem "Qualidade" e um botão "Qualidade: …" que a cada clique mostra menos peixes e melhores (Todas →
+    5 → 4+ → 3+ → 2+ → Todas).
+  - **Avisos:** pescar um peixe de 5 estrelas (ou o Exemplar perfeito) dá um aviso com som e a celebração dourada
+    "Exemplar de 5 estrelas!" (ou "Exemplar perfeito!") com o peixe e "genes 93%". Um gene perfeito sozinho não tem aviso
+    próprio (seria 1 peixe em 8): só aparece no fim da linha da captura ("· gene perfeito: Ataque").
+  - **"Bem-vindo de volta":** os peixes de 5 estrelas entram nos destaques primeiro, e o título diz "1 exemplar de 5
+    estrelas".
+  - **"Como funciona"** (o "i") da Caixa de Pesca e do Aquário explica os genes em 3 frases; o do Mercado também.
+- **Proteção:** um peixe de 5 estrelas na Caixa de Pesca pede a confirmação "Revisar peixes / Confirmar" antes de uma
+  venda em lote, como os raros e os de tamanho especial. No Aquário, um peixe de 5 estrelas pede confirmação antes de
+  virar alimento ou de ser vendido em lote.
+- **Peixes que já existiam** (saves de antes) recebem genes neutros **16/16/16/16**: ×1,003 em cada atributo, 2 estrelas,
+  quase exatamente a força que tinham. Não ganham nem perdem nada relevante.
+- **Peixes dos jogadores simulados** (Mercado, Leilão e adversários da Arena) também têm genes sorteados, com a mesma regra.
+- **Números em `/config`:** `progression.json → genes` (máximo 31, ×0,90 a ×1,10, valor neutro 16, faixas das estrelas,
+  estrelas que celebram), `feeding.valuable_feed_rules.gene_stars_at_or_above` e `economy.json →
+  fishing_box.bulk_sale_protection.gene_stars_at_or_above` (5).
+- **Próximo passo proposto:** o Temperamento (OD-072), à espera da decisão do proprietário.
+
+### A-177 · Missões: 100 missões do começo ao fim do jogo
+
+**Seção do GDD:** nenhuma específica (o GDD não tem missões; pedido direto do proprietário em 13/10/2026) · **Situação:** No jogo (verificado no CI, não aberto no Unity); prêmios a confirmar (OD-073)
+
+Pedido do proprietário (M24-T54): "Vamos agora adicionar missões ao jogo, 100 missões envolvendo tudo que tem no jogo …
+início, meio e fim de jogo … sem especificar de qual parte do jogo ela é", mais "10 missões sociais". A lista aprovada é
+`docs/propostas/missoes_100.txt` (100 itens, na ordem natural do jogo). Prêmios: "Moedas e Conchas (Dólares para missões
+difíceis), crescendo ao longo do jogo."
+
+- **Onde fica:** um atalho redondo novo, **"Missões"**, na coluna da direita, logo abaixo do Passe (Mapa, Aquário, Passe,
+  Missões, Eventos, Ranking), com a bolinha vermelha do número de missões prontas para resgatar (como o Passe). Ícone
+  provisório (✓) até chegar o `ico_atalho_missoes` (ASSET_PENDENTE, pedido em `docs/ASSETS_PENDENTES.md`).
+- **Janela "Missões"** no padrão Diário de bordo, com o "i" explicando e o contador "X / 100 concluídas". Três marcadores
+  laterais: **Em andamento**, **Prontas** e **Concluídas** (cada um com quantas tem); abre em "Prontas" quando há alguma.
+  Em cima, **"Resgatar todas (N)"**. A lista rola; cada cartão mostra o número ("Nº 12"), o que fazer ("Pesque 100
+  peixes"), uma barra com **"X / Y"**, o prêmio com os ícones de Moeda, Concha e Dólar e, à direita, **Resgatar** (pronta,
+  com borda dourada) ou o selo **Concluída** (já resgatada).
+- **Todas as 100 aparecem desde o começo**, sem fases nem desbloqueio: o jogador vê o caminho inteiro. Elas não dizem
+  de que parte do jogo são.
+- **Concluída fica concluída.** Ao alcançar o alvo a missão fica pronta e continua pronta mesmo que o estado volte (gastar
+  as Moedas de "Junte 1 milhão", vender o peixe do Nv.100, tirar um peixe do Cardume). O prêmio é pago **uma vez**, ao
+  apertar Resgatar. Ao ficar pronta, um aviso: "Missão concluída: … Resgate em Missões!" (várias de uma vez: "N missões
+  concluídas").
+- **O que conta** (decidido na implementação, dentro do que a lista diz):
+  - "Pesque N peixes", espécies, raridades, tamanhos e genes contam **toda captura posta na Caixa de Pesca**: online,
+    offline e o peixe achado na Expedição (o mesmo que a estatística "peixes pescados"). Raridade e tamanho contam a
+    exata ("peixe Raro" é Raro; "tamanho Grande" é Grande). "Um peixe 4 estrelas" aceita 4 ou 5 estrelas.
+  - "Venda N peixes da Caixa de Pesca" conta a venda da Caixa ao jogo; "Guarde 1 peixe no Aquário" conta todo peixe que
+    já entrou no Aquário.
+  - "Libere o mapa" é chegar ao nível que libera o mapa (o jogo libera por nível). "Monte a vara/o barco" vale também
+    para uma vara comprada no Mercado.
+  - "Vença um jogador mais forte que você na Arena" = vencer quem está **acima** de você no Ranking da Arena (a força dos
+    adversários não aparece no jogo; a posição é o que mostra quem é mais forte). "Top 100/top 10 do Ranking da Arena" =
+    a melhor posição que você já teve.
+  - "Coloque o primeiro anúncio no Mercado" conta anúncio de preço fixo e leilão. "Venda N peixes no Mercado" conta só
+    peixes (anúncio ou leilão vendido). "Ganhe um Leilão contra outros jogadores" = um leilão que você ganhou e em que
+    mais alguém deu lance.
+  - "Gaste 100 Dólares": VIP, Premium do Passe, criar clã e vagas do clã. Pôr Dólares à venda não é gastar.
+  - "Bata o recorde de tamanho de 20 espécies diferentes" = 20 espécies em que você pescou um peixe maior que o seu
+    recorde anterior.
+  - "Chegue à faixa 3 / máxima de dano do Boss Mundial" = a melhor faixa de um dia; "faixa máxima" é a última do config.
+- **Missões sociais no jogo local** (decisão registrada aqui): enquanto o jogo é local, os adversários da Arena, os
+  vendedores e compradores do Mercado e os licitantes do Leilão são **jogadores simulados**, e contam como "outro
+  jogador": visitar o perfil de um adversário da Arena ("Ver perfil"), comprar um peixe anunciado por outro jogador,
+  vender um peixe para outro jogador e ganhar um leilão contra outros jogadores funcionam já. Criar ou entrar num clã e
+  pôr um peixe no Cardume do Clã também (o clã local existe). Só duas dependem de outras pessoas de verdade, que o jogo
+  local não tem: **"Ataque o Boss Mundial no mesmo dia que outro membro do seu Clã"** e **"Fique no top 3 de Clãs no
+  ranking diário"** (no jogo local o seu clã é o único e seria sempre o 1º). Elas ficam marcadas **"Liga quando o jogo
+  estiver online"**, aparecem na lista e nunca concluem no jogo local.
+- **Prêmios (provisórios, OD-073):** Moedas e Conchas em todas, crescendo ao longo da lista (nenhuma paga menos que a de
+  cima); **Dólares em 18 missões difíceis** (primeiro Épico, Excepcional, 5 estrelas, gene perfeito, primeiro Lendário,
+  Perfeição, faixa máxima do Boss, top 10 da Arena, os 5 barcos, todas as roupas no máximo, Nv.500, todas as espécies,
+  todas as Lendárias, o Mítico, Cardume completo no Nv.100, 1 milhão de peixes, Exemplar perfeito e Nv.1000), **170
+  Dólares no total** (o Passe grátis dá 100 até o Nv.100). As Moedas de cada missão são de ~10 minutos (a 1ª) a ~60
+  minutos (a 100ª) da renda da pesca do jogador de referência ao chegar àquela missão; as Conchas, o triplo desses
+  minutos em Conchas (o mesmo jeito do Passe). Exemplos: "Pesque 10 peixes" 1.700 Moedas e 9 Conchas; "Chegue ao Nv.100"
+  230.000 Moedas e 72 Conchas; "Chegue ao Nv.1000" 19 milhões de Moedas, 1.000 Conchas e 20 Dólares.
+- **Quem já jogava** (save de antes): as missões que o save já prova aparecem **prontas para resgatar** ao abrir — nível,
+  Moedas, Conchas, Enciclopédia, mapas, equipamentos montados, Aquário, Cardume, Passe, clã — e também o que dá para
+  contar do que o save guarda (peixes vendidos, Expedições, os últimos 30 duelos, o último dia do Boss, os peixes
+  Excepcionais e Perfeição, os genes dos peixes que você tem). O resto começa do zero.
+- **Números em `/config`:** `missions.json` (tipo, alvo, parâmetros, `online_only` e prêmio de cada missão), gerado por
+  `tools/Progressao/missoes.py gerar`.
+
+
+### A-178 · Boss Mundial animado
+
+**Seção do GDD:** nenhuma específica (complementa o A-165; pedido do proprietário em 13/10/2026) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário (M24-T56): "deixar o Boss Mundial meio animado". As artes vieram do ChatGPT
+(`Resources/Arte/Boss/`: 3 poses, fundo do abismo, estouro de água e bolhas). É só apresentação: o Boss não muda
+nenhuma regra, e o momento do golpe é o mesmo que a janela já recebia do serviço (o número de ataques subindo).
+
+- **Cena:** o fundo do abismo ocupa a cena inteira do Boss (Cardume e Boss), recortado para caber, como uma foto presa
+  na folha do Diário de bordo (A-170), com um véu azul-noite leve por cima para o texto ler bem.
+- **Parado:** o Boss alterna devagar entre a pose parada e a pose "respirando" (boca entreaberta, luzes mais acesas),
+  um ciclo de **2,4 s** com passagem suave (uma pose se dissolve na outra, nunca troca seca), e balança na água o tempo
+  todo: sobe e desce ~4 px (3,6 s) e inclina ~1,6° (5,2 s).
+- **Golpe do Cardume** (durante o evento, a cada ataque): a pose de ataque aparece por **0,6 s** com um bote de ~16 px
+  para a esquerda e volta, um **lampejo avermelhado** curto no corpo (~0,2 s, com um brilho vermelho atrás), o
+  **estouro de água** no corpo, um pouco atrás da cabeça (cresce de 0,6 a 1,1 e some em 0,5 s), e um tremor curto e
+  suave (~2,5 px, antes 4 px). Os números de dano continuam subindo como antes.
+- **Bolhas:** 4 grupos de bolhas sobem devagar em volta do Boss, em loop, quase transparentes, cada um numa posição e
+  velocidade; um passa na frente do Boss.
+- **Fora do horário:** o Boss só respira e balança, **mais escuro**, sem bote, lampejo nem estouro; as bolhas ficam
+  mais fracas e o fundo mais escuro.
+- **Poses alinhadas:** as três poses vieram com enquadramentos um pouco diferentes; o jogo mede, uma vez ao abrir, a
+  parte visível de cada uma e desenha todas com a mesma largura e o mesmo centro, para o Boss não "pular" ao trocar.
+- **Sem os arquivos:** sem as poses, volta ao Boss parado (`boss_mundial`) com o tremor; sem ele, ao disco escuro com o
+  ícone de ataque. Sem o fundo, a cena fica azul-noite como antes. O jogo não tem opção de "movimento reduzido"; se um
+  dia tiver, o Boss deve respeitá-la.
+
+### A-179 · Artes dos menus: Mercado, Arena, Caixa de Pesca, Passe, Eventos, Clã e Perfil
+
+**Seção do GDD:** 21 (interface) · Bíblia de Arte, seções 3 e 13 · artes mandadas pelo proprietário em 13/10/2026 (M24-T57) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+As 11 artes de prioridade B entraram no padrão "Diário de bordo" (A-170): cena própria vira foto presa na folha (borda
+branca e sombra), recortada para caber (nunca esticada). Nada que já existia saiu da tela; sem um arquivo, a janela
+volta ao visual anterior. Texto claro sobre foto ganha véu ou placa azul-noite, com contraste medido na própria arte
+(4,5:1 ou mais para texto pequeno).
+
+- **Mercado** (`merc_feira_porto`): faixa de 110 px no topo do conteúdo, à esquerda do painel lateral. O painel lateral
+  (detalhe, preço, lance) agora tem a altura inteira em todas as abas. No Leilão, a faixa "Seu leilão" fica à esquerda
+  do painel, com as Moedas reservadas na linha de cima.
+- **Leilão** (`ico_leilao`): no marcador Leilão, em "Seu leilão", no botão de dar lance e no de leiloar.
+- **Caixa de Pesca** (`caixa_cena`): faixa de 110 px acima das abas de raridade (72 px se os menus precisarem de uma
+  linha própria); a grade continua com duas linhas de cartas.
+- **Passe** (`passe_faixa`): o resumo (nível, próximo marco, Premium, Resgatar tudo) fica sobre o pôr do sol, com 150 px
+  e véu azul-noite forte sob o texto e mais leve sob o botão da direita. **Selo Premium** (`passe_premium_selo`): no
+  rótulo da fileira Premium, acima da palavra; apagado e com cadeado até o Premium ser comprado.
+- **Arena** (`arena_fundo`): fundo da batalha, com véu leve e placas escuras sob os nomes e os números de dano; e fundo
+  da tela VS, com o azul e o vermelho por cima, mais escuros. **Emblema** (`arena_vs`): no lugar do disco dourado entre
+  os Cardumes da aba Adversários e atrás do "VS" grande da tela VS; o "VS" é texto do jogo, contornado em azul-noite.
+- **Eventos** (`eventos_quadro`): o quadro de avisos cobre a janela; os cartões dos eventos ficam pregados na cortiça,
+  no centro, um pouco mais altos (o "Abrir" vai para baixo, à direita, e o texto usa a largura toda).
+- **Clã** (`cla_fundo` e `cla_brasao`): o porto à noite como foto no topo da coluna do clã, com o brasão à esquerda,
+  nos três estados (nível insuficiente, sem clã, no clã). No clã, o resumo (nome, dono, Força, bônus e ações) fica
+  sobre a foto, e o nome também vai na fita do brasão quando cabe inteiro.
+- **Perfil** (`perfil_carteira`): o cartão de couro é o cartão do jogador no cabeçalho de todas as abas (inclusive o
+  Resumo): avatar na moldura da esquerda, nome com "Editar", nível com a barra de XP e a linha de XP/mapa/VIP escritos
+  por cima. O meio do couro estica conforme a largura; a moldura e a âncora mantêm a forma. As moedas continuam à
+  direita.
+
+### A-180 · Montar barco e vara pelo botão, um depois do outro; mapas só pelo nível
+
+**Seção do GDD:** 7, 13, 17, 18, 19 (novo escopo A-152) · decisão do proprietário em 13/10/2026 (M24-T58) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+Pedido do proprietário: "Para montar o próximo barco, precisa ter o barco anterior (não monta automático, jogador pode
+querer vender), para montar a próxima vara precisa da vara anterior, não tem mais bloqueio para ir para o próximo mapa a
+não ser o NÍVEL do jogador." Muda o A-157, o A-163, o A-168 e o A-173 (montagem) e o A-028, o A-030 e o A-093 (mapas).
+
+- **Nada monta sozinho.** Os fragmentos continuam caindo como no A-173 (0,1% por peixe puxado, em qualquer mapa, também
+  offline) e vindo do Passe e do Boss Mundial, e se acumulam sem limite. Juntar os fragmentos pedidos não monta mais o
+  item: o jogador aperta **Montar** na ficha do item (Loja → Barcos ou Loja → Varas).
+- **Um depois do outro.** Para montar um barco é preciso ter o **barco anterior** (o Barco 1, Remo Valente, pede o Água
+  Mansa, que todo jogador tem). Para montar uma vara é preciso ter a **vara anterior no Inventário** (a Vara 1, Ponta
+  Selvagem, pede o Caniço Manso). Uma vara anunciada no Mercado, em leilão ou esperando em Itens a Retirar não está no
+  Inventário: o jogador retira ou cancela antes de montar a seguinte.
+- **Montar gasta só o pedido.** Os fragmentos acima do pedido ficam guardados. O barco entra no Nv.1 e **não** passa a
+  ser usado sozinho (o jogador aperta Usar); a vara vai para o Inventário no Nv.1 e **não** é equipada sozinha (o jogador
+  equipa quando quiser). Assim, montar nunca troca o que o jogador escolheu.
+- **Loja:** no lugar do botão aparece, conforme o caso: **Montar** (pode montar); "**Precisa do barco X**" / "**Precisa
+  da vara X**" (com cadeado, quando falta o anterior); ou "Monte com fragmentos" (faltam fragmentos). A barra
+  "Fragmentos 12/20" continua. Os avisos da pesca e do Passe dizem "Fragmentos completos: X! Monte na Loja → Barcos" (ou
+  "Para montar, precisa do barco Y"); o relatório "Bem-vindo de volta" marca "COMPLETO!" / "Pronto para montar na Loja".
+  A comemoração "Barco montado!" / "Vara montada!" aparece quando o jogador monta.
+- **Vender:** as varas montadas continuam podendo ser vendidas ao NPC, destruídas e vendidas no Mercado e no Leilão (o
+  Caniço Manso não). Os barcos nunca puderam ser vendidos, e os fragmentos também não. Se o jogador vender a vara
+  anterior, não monta a seguinte até ter de novo (os fragmentos dela, que continuam caindo, montam outra). Vender
+  fragmentos ou barcos é uma decisão pendente (OD-074).
+- **Roupas:** já eram montadas pelo jogador, com a peça que ele escolhe (A-164). Continuam iguais, sem ordem.
+- **Mapas só pelo nível.** Um mapa abre só com o nível do Pescador que ele pede (Nv.10, 20 … 90). A vara não trava mais
+  nenhum mapa, a viagem nem a troca de vara. A vara em uso só decide quais raridades ela pesca: na tela do Mapa, a
+  linha "Vara necessária" virou "**Sua vara aqui**: Pesca todas as raridades" ou "Não pesca Raro, Épico…" (em dourado),
+  só como informação. Todo mapa tem Comuns, então qualquer vara pesca em qualquer mapa. O Inventário não mostra mais "Não
+  serve neste mapa".
+- **Missões:** "Monte a vara X" / "Monte o barco X" contam quando o jogador monta; "Libere o mapa X" conta pelo nível.
+- **Saves antigos:** o que já estava montado fica. Fragmentos acima do pedido continuam guardados; ao abrir, nada é
+  montado sozinho. Não muda o formato do save (continua v24).
+- **Ritmo** (o jogador de referência monta assim que pode, em ordem, e usa o que monta; só a pesca e o Passe grátis,
+  sem o Boss Mundial; `tools/Progressao/fragmentos_qualquer_mapa.py`, em `docs/propostas/fragmentos_qualquer_mapa.json`).
+  Nenhum número de balanceamento mudou; "antes" é a regra do M24-T48 (montagem sozinha e mapas pedindo vara).
+
+  | Dias (h = horas): antes → **agora** | Jogo aberto | 4 vezes por dia | 1 vez por dia |
+  |---|---|---|---|
+  | Mapa 2 abre (Nv.10) | 11,0 h → **14 min** | 1,3 → **8,4 h** | 1,8 → **20,4 h** |
+  | Mapa 4 abre (Nv.30) | 19,7 h → **1,7 h** | 1,9 → **12,0 h** | 2,8 → **1,8** |
+  | Mapa 6 abre (Nv.50) | 1,1 → **3,1 h** | 2,5 → **18,0 h** | 3,8 → **1,8** |
+  | Mapa 8 abre (Nv.70) | 1,4 → **4,8 h** | 3,3 → **18,0 h** | 4,8 → **1,8** |
+  | Mapa 10 abre (Nv.90) | 1,8 → **8,2 h** | 3,8 → **1,3** | 5,8 → **2,8** |
+  | Nv.100 | 23,3 h → **9,6 h** | 2,3 → **1,3** | 3,8 → **2,8** |
+  | Nv.500 | 14,2 → **13,6** | 26,9 → **25,9** | 30,8 → **28,8** |
+  | Nv.1000 | 54,8 → **54,2** | 102,3 → **101,3** | 109,8 → **108,8** |
+  | Último barco (Horizonte Dourado) | 3,6 → **3,2** | 7,3 → **6,5** | 8,8 → **8,8** |
+  | Última vara (Soberana Abissal) | 1,8 → **1,6** | 3,8 → **3,5** | 5,8 → **4,8** |
+  | Todos os 15 itens (as roupas fecham) | 19,0 → **18,8** | 35,8 → **35,3** | 39,8 → **38,8** |
+
+  Os mapas abrem bem antes (o nível chega antes da vara). O jogador pesca mais cedo em mapas melhores, mesmo com uma vara
+  que não pega todas as raridades, e por isso tudo chega um pouco antes; o Nv.1000 muda menos de 1%.
+
+### A-181 · Artes das telas antigas: Mapa, Enciclopédia, Aquário, pódio da Arena e avatares
+
+**Seção do GDD:** 18, 20, 21, 28 (interface) · Bíblia de Arte, seções 3, 8 e 13 · artes mandadas pelo proprietário em 15/10/2026 (M24-T60) · **Situação:** No jogo (verificado no CI, não aberto no Unity)
+
+As 31 artes de prioridade C substituem os desenhos provisórios de A-141, A-143, A-144, A-112 e M18-T03. Nada que o
+jogo escreve (números, nomes, cadeados, selos de raridade, posições) saiu da tela; sem um arquivo, cada tela volta ao
+desenho provisório. A arte é carregada uma vez e guardada; nada novo é criado a cada quadro.
+
+- **Mapa** (`ui_map_sea_bg`): o mar pintado cobre a cena, recortado para caber (nunca esticado), no lugar do degradê;
+  as estrelas desenhadas saíram, porque o mar já tem o brilho da noite. **Ilhas** (`ui_map_island_01` a `_10`, uma por
+  mapa: `map_03` usa a `_03`): no medalhão e no painel do mapa escolhido, no lugar da miniatura recortada. O jogo
+  continua desenhando por cima o halo dourado, a moldura (turquesa, dourada ou cinza), o número e o cadeado; a ilha de
+  um mapa fechado fica apagada. Um disco de água fica sob a borda transparente da ilha, para a moldura sempre fechar.
+  **Barco** (`ui_map_boat`): parado, ao lado do mapa atual com a proa para a direita; viajando, vira para o lado em que
+  a rota segue (também na volta). Ele é desenhado um pouco maior que o ícone antigo e se afasta da ilha o mesmo tanto.
+- **Enciclopédia — álbum**: a **página** (`ui_enc_album_page`, 9-slice de 32 px) é azul-marinho; como as cenas do
+  "Diário de bordo" (A-170), o conteúdo dela passa às cores da noite (título, progresso, cartas e setas claros sobre o
+  azul). As **abas** (`ui_enc_binder_tab`, 9-slice 14/4/12 px: redonda à esquerda, reta onde encosta na página) são
+  pintadas com a mesma cor de antes (clara na ativa). A **moldura da carta** (`ui_enc_card_frame`, 9-slice de 24 px)
+  é pintada na cor da raridade, com a força de antes (fraca em Comum e Raro); ela é desenhada 7 px para fora da carta,
+  para a linha de fora cair logo dentro da borda (a linha dupla já é da arte). O **verso** (`ui_enc_card_back`) é o
+  fundo das cartas de espécie não descoberta, recortado para caber e com cantos de 12 px; a silhueta, o "?", o nome
+  provisório, o mapa e o aviso de ainda não pescado continuam por cima. Sem a página azul (folha clara), o verso não é
+  usado, para o texto escuro continuar legível.
+- **Ficha de herói** (Enciclopédia e modo cartas do Aquário): a **aura** (`ui_enc_aura`) é um brilho só, pintado na cor
+  da raridade com a mesma força dos quatro discos de antes. O **pedestal** (`ui_enc_pedestal`) mantém a proporção da
+  arte: até 44 px de altura (ele fica mais estreito se a fileira for baixa), começando 10 px acima da fileira para o
+  peixe pousar no disco. A borda na cor da raridade saiu do pedestal; a aura já mostra a raridade.
+- **Aquário**: a **água** (`ui_aquarium_bg`) cobre o tanque, recortada para caber. A **areia** (`ui_aquarium_sand`)
+  fica presa embaixo e começa 56 px acima da linha do fundo; ela é recortada (nas laterais, ou poucas linhas do topo
+  transparente), nunca esticada, e sobe junto quando a gaveta abre. As **bolhas** (`ui_aquarium_bubble`) sobem nas
+  mesmas colunas de antes. O **vidro** (`ui_aquarium_glass`, 9-slice de 36 px, porque os cantos da arte têm cerca de
+  34 px) forma a ficha, o painel de venda, a gaveta e os avisos; em painéis baixos (a gaveta fechada tem 38 px) os
+  cantos diminuem em vez de achatar.
+- **Pódio da Arena** (`Arena/podio_1` a `_3`): os três degraus usam a mesma escala, dada pelo 1º (até 45% da altura do
+  pódio e a largura da coluna), apoiados embaixo; as alturas seguem a própria arte, sem achatar. "1º/2º/3º lugar" fica
+  numa pílula azul-noite sobre a faixa de metal, na cor da medalha (legível no ouro, na prata e no bronze); medalha,
+  peixe e nome continuam acima do degrau.
+- **Avatares** (`Avatares/avatar_01` a `_06`): bustos de fundo transparente, inteiros, sobre um disco azul-mar calmo
+  em todas as molduras (redondas ou arredondadas): barra de cima, Perfil, Ranking, Arena e a escolha de avatar. No
+  círculo, só a ponta dos chapéus encosta na borda.
+
+### A-182 · Novo estilo visual: pixel art "Estilo ARC" para o jogo inteiro
+
+**Seção do GDD:** visual do jogo inteiro · `docs/ART_BIBLE_PIXEL.md` (nova fonte visual) · M25 · **Situação:**
+Decidido pelo proprietário (19/10/2026); só documentação e plano nesta etapa, nada mudou no jogo ainda
+
+Depois de ver três propostas lado a lado (ARC, Dark Clean e White Clean), o proprietário escolheu em 19/10/2026 o
+**Estilo 1 "ARC"** para o jogo inteiro: pixel art no traço das artes do ARC MMO, com cena pastel (céu creme, névoa,
+água verde-água no Lago Sereno, uma paleta por mapa), pescador chibi e peixes com contorno escuro de 1 px puxado para a
+cor, e interface azul-noite com moldura dourada fina, botões-pílula e as fontes Press Start 2P e VT323. O jogo é só
+para PC (16:9, interface no quadro virtual de 1080 de altura).
+
+- **Fonte de verdade visual:** `docs/ART_BIBLE_PIXEL.md` passa a ser a Bíblia de Arte. A `docs/ART_BIBLE_V0_1.md`
+  continua no repositório, travada e sem edições, como histórico da V0.1; os princípios dela que valem para qualquer
+  estilo continuam (o jogo antes da interface, brilho é recompensa, raridade é acento, tamanho e raridade nunca se
+  confundem, mais limpo na dúvida).
+- **O que não muda:** regras, números, sorteios, recompensas, save, textos, menus e as cores das raridades e dos
+  tamanhos (`tema_visual.json`). O dourado de recompensa continua só para recompensa; a moldura dourada da pele ARC é
+  um dourado envelhecido de estrutura, sem brilho.
+- **Cena:** grade de 216 px de altura (384 em 16:9), 20 pixels por unidade, a mesma câmera de 10,8 unidades; 5× no
+  1080p. Céu e água passam a ser faixas de cor desenhadas pelo código na paleta do mapa; as 30 nuvens antigas viram 6
+  nuvens comuns tingidas por mapa.
+- **Pescador:** chibi sentado, quadro de 64 px (figura de ~48 px), com animações por fase da pesca (esperando 4
+  quadros, arremesso 4, recolher 4, fisgada 2, mostrando 1, escapou 1). A vara e a linha são desenhadas pelo código
+  nas cores da vara; as mãos separadas saem.
+- **Peixes:** até 120 × 60 px, virados para a direita, com uma versão pequena (metade) gerada sozinha; a raridade
+  aparece só como um brilho de 1 px na cor da raridade (Épico, Lendário, Mítico).
+- **Interface:** pele ARC desenhada pelo código (painéis, moldura, pílulas, abas, barras); ícones coloridos em pixel
+  (24 e 32 px), exceto 12 símbolos simples desenhados pelo código; tudo em escala inteira (2× no quadro de 1080).
+  As peças do "Diário de bordo" (A-170) saem.
+- **Produção:** 77 pedidos ao ChatGPT (339 imagens), agrupados em folhas e em 7 lotes, listados em
+  `docs/ASSETS_PIXEL.md`; o Lote 1 (kit de teste) monta a cena piloto do Lago Sereno antes do resto. Das 659 imagens
+  de hoje, 316 são refeitas pelos pedidos, 240 são convertidas da arte atual (paisagem viva, miniaturas, frente dos
+  barcos), 60 passam a ser desenhadas pelo código e 43 saem.
+- **Pendente de Play:** a legibilidade da VT323 em janela pequena (~600 px de altura) e o tamanho maior do pescador na
+  cena só ficam confirmados quando o proprietário apertar Play.
+
+### A-183 · Pixel art recebida: tamanhos e âncoras fixados no recorte (20/10/2026)
+
+O proprietário mandou as 77 folhas dos lotes 1 a 7. Ao recortar, ficaram fixados estes detalhes de apresentação (nada
+de regra, número ou save muda; a arte ainda não está ligada no jogo):
+
+- **Pescador:** figura de 48 px de altura em todos os quadros de 64 × 64, com os pés na última linha menos uma e o
+  centro dos pés sempre na **coluna 40**, em todas as animações. Assim trocar de animação (esperando, arremesso,
+  recolher, fisgada, mostrando, escapou) nunca faz o personagem pular de lugar.
+- **Peixes:** cada um ocupa até 112 px de comprimento ou 100 px de altura (o que vier primeiro), sempre virado para a
+  direita; os altos (peixe-lua, raias, opah, pampo) usam a altura.
+- **Retratos e avatares:** busto no quadro de 64 × 64, encostado embaixo, todos na mesma escala.
+- **Ícones e objetos:** cada desenho preenche a própria célula (32, 24, 48 ou 64 px) com 1 px de folga; os pódios da
+  Arena guardam a diferença de altura entre 1º, 2º e 3º.
+- **Cenários:** as faixas do fundo ocupam os 384 px de largura da cena; as laterais ficam com ~128 × 96 e os cantos da
+  frente com ~96 × 80; nuvens e cenários sem contorno.
+- **Boia:** 12 × 16 (um pouco maior que os ~8 × 14 da Bíblia, para a listra branca e vermelha aparecer).
+
+As folhas que vieram trocadas ou ruins estão em `docs/ASSETS_PIXEL.md` (seção "Recebimento de 20/10/2026").
+
+### A-184 · A pele ARC da interface e as fontes pixel (20/10/2026)
+
+**Seção do GDD:** 21 (interface) · `docs/ART_BIBLE_PIXEL.md`, seções 6.1 e 7 · M25-T03 · **Situação:** No jogo
+(verificado no CI, não aberto no Unity)
+
+A interface inteira passou para a pele do Estilo ARC (A-182), desenhada pelo código, sem arquivo de imagem. **Só
+apresentação:** nenhuma regra, número, sorteio, recompensa ou save mudou, e nenhuma tela mudou de organização.
+
+- **Fontes:** Press Start 2P nos títulos de janela, nome do mapa na chegada, números dourados e faixas de celebração;
+  VT323 em todo o resto. Tamanhos no quadro de 1080: títulos 24, números 16 e 24, faixas 32 e 40 (múltiplos de 8);
+  corpo 28, cabeçalhos de seção 32, pequeno 24, chips, selos e contadores 22 (o mínimo). A VT323 tem uma espessura só:
+  o "negrito" passa a ser só a cor.
+- **Acentos:** na Press Start 2P as maiúsculas acentuadas (Á É Í Ó Ú Â Ê Ô Ã Õ À) saem espremidas e parecem minúsculas
+  ("ÉPICO" vira "éPICO"). Todo título com uma delas é escrito em VT323 no mesmo tamanho visual (1,75×). As minúsculas
+  acentuadas e o "Ç" da Press Start 2P estão certos. Na VT323 todos os acentos do PT-BR estão certos.
+- **Painéis e janelas:** fundo `#0D0F20` a 93%, moldura de 3 linhas de 1 pixel de interface (2 px do quadro): dourado
+  `#D6AD57` por fora, linha escura `#0A0C1A`, dourado escuro `#7D6127` por dentro, cantos com chanfro de 2 pixels em
+  degrau; sombra dura de 2 pixels, sem desfoque. Véu atrás das janelas `#0A0C1C` a 45%.
+- **Cabeçalho da janela:** a etiqueta do título fica dentro da moldura (painel elevado `#161A35`, linha dourada), com o
+  ícone, o título em Press Start 2P cor `#FFE3A0` e o "i" turquesa; o contador num campo rebaixado; o fechar é uma
+  pílula com "✕" em pixel, dentro do canto de cima à direita. O espaço do conteúdo não mudou.
+- **Sub-abas na lateral:** a aberta é painel elevado com a moldura dourada e texto cor de título; as outras, campo com
+  linha azul-escura e texto suave (dourada ao passar o mouse).
+- **Botões-pílula:** secundário = campo com linha dourada e texto `#FFE3A0`; **principal (ação) = escuro com linha
+  turquesa** e texto turquesa claro (turquesa = ação); **recompensa = face dourada em 2 faixas** (`#FFD977`/`#D6A440`,
+  texto `#2A1A08`), só onde se recebe um prêmio; perigo = escuro com linha vermelha. A Bíblia (6.1) descreve o botão
+  principal dourado; como o dourado vivo é reservado a recompensa (Bíblia, seção 2 e checklist "dourado vivo só em
+  recompensa"), "Vender", "Iniciar pesca" e "Resgatar" ficam turquesa e a face dourada fica com o botão de recompensa.
+- **Chips e filtros:** campo com linha `#2A2E50` e texto suave; escolhido = `#1D2244` com linha dourada e texto cor de
+  título; o ponto de cor do filtro de raridade/tamanho vira um quadradinho de 3 pixels.
+- **Cartões:** fundo `#141832` com linha interna `#0B0D1E`; selecionado com contorno ouro de recompensa `#FFD667`
+  (Bíblia 7); a borda de raridade continua sendo desenhada pela janela, de 1 pixel.
+- **Barras:** quadradas, fundo `#22264A`, linha dourada escura quando têm 10 px ou mais, preenchimento em blocos de 6
+  pixels com uma luz de 1 pixel em cima; XP do pescador em listras `#7FD6C2`/`#62C0AD`; atributos e genes `#7FC4EA`
+  (o gene perfeito continua dourado).
+- **Menu de cima:** faixa `#0D0F20` fechada pelas 3 linhas da moldura; aba aberta = pílula elevada com linha dourada e
+  texto cor de título, as outras só ícone e texto suave; sino e opções em pílulas; carteira e retrato em campos com
+  linha dourada (o anel pintado saiu). A plaquinha de Moedas é uma pílula com a moldura (as cordas saíram).
+- **Atalhos redondos:** disco `#0D0F20` com a moldura de 3 linhas e o ícone colorido; o rótulo numa pílula escura
+  embaixo; o do Boss Mundial tem linha ouro de recompensa e um anel de 1 pixel que pisca (sem brilho difuso nem pulsar
+  de tamanho). Contadores de aviso: vermelho `#E0473A` com linha `#FFD667` e o número escuro.
+- **Brilho:** todo "brilho" (selo Lendário/Mítico, botão "Iniciar pesca" parado, aba ativa) virou um anel de 1 pixel em
+  volta, sem desfoque (Bíblia 4.10).
+- **Avisos, dicas e "Bem-vindo de volta":** avisos no painel ARC com a faixa de cor de 2 pixels; dicas (valor exato,
+  "Como funciona") em caixa escura com linha dourada escura; o relatório "Bem-vindo de volta" usa a moldura ARC, cartões
+  ARC e a barra de raridades em segmentos quadrados.
+- **Contraste sobre o painel escuro** (WCAG; o pior fundo é o cartão `#141832`): texto `#F4ECD6` 14,8:1; texto suave
+  `#A7A28F` 6,8:1; título `#FFE3A0` 13,9:1; dourado `#FFD667` 12,5:1; turquesa `#25C4C1` 8,1:1; vermelho `#EF6B5B`
+  5,7:1; verde 8,3:1; texto escuro no botão dourado 7,4:1 ou mais; número escuro no contador vermelho 4,6:1. As cores de
+  raridade usadas como texto são clareadas no mesmo tom até 4,6:1 (Épico e Lendário precisam: 4,4:1 sem clarear).
+- **Fica para depois (M25-T13 a T15):** os desenhos que cada janela ainda faz por conta própria com cantos arredondados
+  (fundos de ícone, discos, molduras internas) seguem como estão até a revisão de cada tela; os arquivos da pele antiga
+  (`ui_diario_*`, `ui_atalho_moldura`, `ui_avatar_frame`, `ui_topbar_frame`, `ui_nav_button_*`, `ui_wallet_inset`)
+  não são mais lidos e saem no M25-T17.
+- **Pendente de Play:** a legibilidade da VT323 e da Press Start 2P em janela pequena (~1200×600, o quadro a ~0,56×) e
+  textos que passem a quebrar ou a ser cortados com "…" por causa das letras mais largas só ficam confirmados quando o
+  proprietário apertar Play.
+
+### A-185 · Cena de pesca em pixel art: composição, céu e água (20/10/2026)
+
+**Seção do GDD:** cena de pesca · `docs/ART_BIBLE_PIXEL.md` 3.1, 5 e 6.2 · M25-T05 a T07, T12 · **Situação:** no jogo
+(compila; visual só fica verificado quando o proprietário apertar Play)
+
+Detalhes de apresentação decididos ao ligar a pixel art (nenhuma regra, número, sorteio ou save muda):
+
+- **Grade:** a cena é desenhada em 216 px de altura e ampliada sem suavizar (5× em 1080p; em janela de altura que não é
+  múltipla de 216, amplia pelo inteiro de cima e reduz suave). O horizonte fica na linha 104 (104 px de céu, 112 de
+  água), como antes (y = 0,2).
+- **Céu e água pelo código** nas paletas da Bíblia: 4 faixas de céu com uma linha de pontilhado em cada troca; 6 faixas
+  de água, mais finas perto do horizonte, **sem pontilhado** (mais limpo; os brilhos já quebram as faixas). Estrelas de
+  1 px nos mapas 9 e 10 e uma lua pequena só no 10 (o Talude Noturno já traz a lua pintada na faixa do fundo).
+- **Nuvens:** as 6 comuns, tingidas por mapa (creme no Pantanal, pêssego no Estuário, azul-noite nos mapas de noite),
+  2 a 4 por mapa, deslizando devagar de pixel em pixel.
+- **Faixas do fundo** apoiadas no horizonte (a distante um pouco acima), com cópias espelhadas nas pontas para
+  janelas largas. **Laterais** presas às bordas da tela, com a base de 10 a 16 px dentro da água. **Cantos** presos
+  embaixo.
+- **Reflexos:** cada faixa e lateral espelhada embaixo de si, na cor da água, sem achatar nem balançar. Nos mapas de mar
+  aberto (Corrente Azul, Talude Noturno, Abismo Atlântico) as faixas já são o próprio mar e **não** ganham reflexo.
+- **Brilhos na água:** traços de 1 px de altura, de 1 a 6 px de largura (maiores perto de quem olha), que trocam de
+  lugar a cada 0,25–0,5 s; com correnteza, andam 1 px por vez.
+- **Sem brilhos suaves na cena pixel:** saem o brilho do sol, raios, névoa, poeira dourada, libélulas e a aura em volta
+  da captura (a recompensa continua com as faíscas). Ficam as sombras de peixe, os peixes pulando ao longe e a paisagem
+  viva.
+- **Plantas e vitórias-régias** não giram: numa rajada a planta encosta 1 px para a direita; a vitória-régia só deriva.
+- **Píer:** a cena continua com o pescador no barco (não há píer na cena de pesca; nenhuma arte de píer foi pedida
+  para ela).
+
+### A-186 · Pescador, barco, boia e Caixa em pixel art (20/10/2026)
+
+**Seção do GDD:** cena de pesca (seção 8) · `docs/ART_BIBLE_PIXEL.md` 3.3 e 5 · M25-T07, T08, T10 · **Situação:** no
+jogo (compila; verificado só no Play)
+
+- **Animação por fase** (a fase que o jogo já mostrava, sem regra nova): parado e esperando = 4 quadros a 4 por segundo;
+  arremesso = 2 quadros puxando a vara para trás e 2 lançando, acompanhando o tempo do arremesso; fisgada = 2 quadros a
+  10 por segundo e fica no último; recolher = 4 quadros a 8 por segundo; mostrando o peixe = 1 quadro; escapou = a
+  fisgada durante a briga e 1 quadro quando a linha solta.
+- **Vara e linha pelo código**, 1 px de grade, a vara com 60 px, nas cores da vara equipada (tiradas da figura da vara);
+  ela gira em volta do ponto das mãos de cada quadro, então acompanha os braços.
+- **Peixe na mão:** a versão pequena `_p` a 1×, junto das mãos, sem girar nem crescer; o balanço vira 1 px para cima e
+  para baixo, e ele voa para a Caixa sem encolher. O tamanho do exemplar continua nas telas (não na cena).
+- **Barco:** a figura em pixel inteira atrás do pescador e a borda da frente cortada pelo código na frente dele; ele senta
+  com os pés no assento de cada barco. Balança 1 px, sem inclinar. Sem a sombra suave embaixo.
+- **Caixa de Pesca:** na popa do barco inicial (atrás do pescador, parte escondida pela borda); some nos barcos da Loja,
+  como antes.
+- **Boia:** a boia 12 × 16 com a linha d'água na linha 11. **Isca:** um ponto de 2 × 1 px na cor da isca, embaixo da boia.
+
+### A-187 · Peixes, itens e ícones em pixel nas telas (20/10/2026)
+
+**Seção do GDD:** telas · `docs/ART_BIBLE_PIXEL.md` 3.2 · M25-T09 a T11 · **Situação:** no jogo (compila; verificado só no Play)
+
+- Toda figura em pixel nas telas aparece na **maior escala inteira** que cabe no espaço dela, em pixels da tela; quando
+  nem 1× cabe, o peixe usa a versão pequena `_p`; quando nem ela cabe, reduz como antes (fica legível, mas não nítida).
+  Por isso um peixe pode aparecer um pouco menor que o quadro em que antes era esticado.
+- Nada em pixel gira: o peixe do Aquário balança subindo e descendo 2 px; o barquinho do Mapa vira de lado (espelhado)
+  em vez de girar; as varas da Loja já vêm na diagonal; a boia deitada da Loja gira só um quarto de volta.
+- **Ícones coloridos não são tingidos** (só a transparência segue a cor pedida, para o desativado continuar apagado);
+  os 12 símbolos simples (+, ✕, ✓, setas, iniciar, pausa, parar, ordenar, compacto, i, !) são desenhos brancos de
+  12 × 12 px tingidos pelo código, como antes.
+
+### A-188 · Telas de comércio, social e perfil na pele ARC e em pixel (20/10/2026)
+
+**Seção do GDD:** telas · `docs/ART_BIBLE_PIXEL.md` 3.3 e 7 · M25-T15 · **Situação:** no jogo (compila; verificado só no Play)
+
+Loja, Mercado, Caixa de Pesca, Passe, Eventos, Clã, Missões, Ranking, Perfil e Bem-vindo de volta. Só apresentação:
+nenhuma regra, número, recompensa ou save mudou.
+
+- **Fundos e faixas cortando as bordas:** as cenas das telas (feira do porto no Mercado, convés na Caixa, pôr do sol no
+  Passe, porto à noite no Clã, quadro de avisos nos Eventos, barco no Bem-vindo) aparecem na menor escala inteira que
+  cobre o espaço, cortadas nas bordas, nunca esticadas. Cada faixa fica centrada na parte que importa: as caixas de
+  peixe (Mercado), a caixa térmica cheia (Caixa), o sol e as boias (Passe), a água sob a lua (Clã), o barco
+  (Bem-vindo). Nos Eventos o cartão do Boss fica preso na cortiça do quadro em pixel.
+- **Cantos em pixel:** o que era retângulo arredondado nas telas virou forma em pixel: pílula quando o canto era meia
+  altura, chanfro de 1 ou 2 pixels de arte nos outros, quadrado abaixo de 12 px (pontos e linhas). Contornos têm um
+  pixel de arte (2 px), qualquer que fosse a espessura antes; sombras são deslocamentos duros.
+- **Loja pelo código:** parede de tábuas (44 pixels de arte cada, com pregos), viga, ganchos de latão pequenos,
+  plaquinhas, etiquetas, balcão, carta do item (agora a moldura ARC, no lugar da corda pintada) e caixa de equipamento
+  desenhados em pixel. A caixa ganha a caixinha pixel (`ui_loja_caixa`) ao lado de "Seu equipamento". As boias de
+  chance são a boia pixel sem tinta; a raridade aparece no percentual e no nome (o nome no tamanho de chip para caber
+  "Lendário"); quando alguma raridade não morde no mapa, uma linha só, "Boia deitada: não morde aqui", fica embaixo de
+  todas (as colunas ficaram estreitas para as fontes pixel). `ui_loja_gancho` (50 px) é maior que o gancho da
+  prateleira (18 px): o código desenha o gancho, o arquivo fica guardado.
+- **Ranking:** o palco pixel na maior escala inteira que caiba em 160 px de altura (2× na janela grande, 1× na
+  pequena), com os pedestais no meio do deque; escudos de posição a 1× (50 × 46) no pódio, na lista e na barra "Sua
+  posição"; troféu e coroa a 1×; os emblemas de categoria viraram os ícones pixel (moeda, concha, peixe, nível); linhas
+  da lista alternando o azul do cartão e o do campo. O desenho dos avatares não mudou (fica com a M25-T16).
+- **Perfil:** a carteira do jogador é o painel elevado com a moldura dourada, desenhado pelo código (sai o couro pintado),
+  com o retrato à esquerda como antes; a carteira de moedas no alto usa campos ARC e os ícones pixel a 1×; selo de
+  nível em pílula. A Enciclopédia fica com a M25-T13.
+- **Clã:** o brasão pixel na maior escala inteira, com o nome do clã na faixa clara dele quando cabe; o botão de comprar
+  vaga usa "Vaga · N Dólares" quando "Comprar vaga · N Dólares" não cabe.
+- **Missões e Ranking:** Moedas, Conchas e Dólares a 1× (24 px).
+
+### A-189 · Aquário, Enciclopédia, Mapa, Expedição, Arena, Boss Mundial e retratos em pixel (20/10/2026)
+
+**Seção do GDD:** telas · `docs/ART_BIBLE_PIXEL.md` 3.2, 3.3, 4.9, 4.10 e 7 · M25-T13, T14 e T16 · **Situação:** no jogo
+(compila; verificado só no Play)
+
+Só apresentação: nenhuma regra, número, recompensa ou save mudou; as telas continuam organizadas como antes.
+
+- **Aquário:** a água e a areia pixel na menor escala inteira que cobre o tanque, cortadas nas bordas (a luz da superfície
+  fica à vista; a areia começa na linha do fundo e acompanha a gaveta); o vidro do tanque, da ficha e da gaveta e as
+  bolhas são desenhados pelo código (bolha = anel de pixels com um ponto de luz, 4 ou 6 pixels de arte, sobe balançando
+  em pixels inteiros). Os peixes nadam sem girar: o balanço vira 1 pixel para cima ou para baixo e a virada vira espelho.
+  Nas miniaturas da gaveta a posição no Cardume ("C1") passou para um selinho no canto, porque "Nv. 12 · C1" não cabe
+  com a VT323.
+- **Ficha do peixe (Aquário em cartas e Enciclopédia):** fundo de água em duas faixas com uma linha pontilhada entre elas,
+  aura da raridade em pixel (disco pontilhado em padrão ordenado, mais denso no meio, na cor da raridade que o serviço
+  informa, sempre em escala inteira), pedestal pixel a 2× sob o peixe, setas ‹ › em disco pixel com a seta pixel.
+- **Enciclopédia:** abas do álbum na pele ARC (a aberta elevada com a linha dourada, as outras no campo), um pouco mais
+  largas para caber "Estuário das Marés 6/10"; a página é o cartão com linha dourada escura; as cartas são cartões ARC com
+  borda na cor da raridade, a escolhida com o contorno ouro por fora; a carta ainda não achada é o verso desenhado pelo
+  código (campo escuro com um bolso pontilhado na cor da raridade). Saem a aba, a página, a moldura e o verso pintados.
+- **Mapa:** o mar visto de cima em escala inteira; as ilhas pixel já trazem a borda de pedra, então perdem a moldura
+  desenhada: o mapa atual ganha o anel dourado de 1 pixel que pulsa devagar e o escolhido o anel turquesa; o número em
+  disco pixel; nome e estado em pílulas; rota em pontos quadrados; o barco não gira (indo para a esquerda, espelha).
+- **Expedição:** a carta náutica e o porto do relatório em escala inteira; o medalhão pixel com a paisagem em escala
+  inteira num quadrado sob o furo (os cantos ficam escondidos pelo aro: pixel art não é recortada por círculo suave); a
+  chance de peixe numa pílula sobre a borda de baixo do selo (o peixe desenhado no selo fica à vista); a bússola pixel
+  com um disco escuro sob o anel de progresso e o tempo; o cartão da missão é o painel ARC (sai a moldura pintada).
+- **Arena:** o fundo de ruínas em escala inteira; o "VS" é só texto do código em Press Start 2P com sombra dura (sai o
+  emblema pintado), em disco ARC entre as formações; a divisão azul e vermelha da abertura em degraus de pixel; o "VS"
+  da abertura cresce em passos inteiros (3×, 2×, 1×); na vitória, no lugar dos raios girando, o anel dourado pisca;
+  pódios pixel numa escala inteira comum.
+- **Boss Mundial:** o abismo em escala inteira; o Boss na maior escala inteira que cabe (3× na janela grande), sem girar:
+  as poses se alternam (parado, respira, ataque) em vez de se misturar, balanço e investida em pixels inteiros, o golpe
+  é um anel vermelho de 1 pixel, e o respingo do impacto e as bolhas são desenhados pelo código.
+- **Retratos e avatares:** o retrato do pescador e os 6 avatares (64 px) em escala inteira (1× na barra de cima, 2× no
+  Perfil e na Arena, a versão de 32 px nas linhas do Ranking), sempre apoiados na base da moldura; em moldura redonda
+  usa a versão já recortada em círculo de pixels, sobre o disco azul-mar.
+
+### A-190 · Revisão visual: paleta A "Ardósia", pescador de 35 px, barcos de 100 px e regras de layout (20/10/2026)
+
+**Seção do GDD:** telas e cena · `docs/ART_BIBLE_PIXEL.md` 3.3, 6.1, 7 e 7.1 · M25-T19 a T21 · **Situação:** no jogo
+(compila; verificado só no Play)
+
+O proprietário jogou a versão pixel e pediu fontes melhores, cores menos escuras, nada sobreposto, menus mais limpos e
+barco e boneco menores. Decisões dele (20/10/2026), sobre a pesquisa `revisao_visual/pesquisa.md`. Só apresentação:
+nenhuma regra, número, recompensa ou save mudou.
+
+- **Paleta A "Ardósia"** no lugar do azul-noite quase preto (troca a tabela da Bíblia 6.1): painel `#283050` sólido
+  (opacidade 1), cartão `#1E2541` (um tom mais escuro, "afundado"), elevado `#36406A`, texto creme `#F4ECD6`, texto
+  suave `#C9C0A4`, moldura `#D6AD57` e `#8A6C30`, ação turquesa `#5ED6D2` (barras, XP e atributos usam a mesma), perigo e
+  aviso `#FF7A6B`, ganho `#5BDB9A`, véu `#0A0C1C` a 35%. O **título é creme**, igual ao texto: o amarelo `#FFD667` fica
+  só para recompensa. O tema tem 14 cores de interface e 5 de raridade (eram 38); as outras peças saem dessas pelo código.
+- **Raridades um tom mais claras** (mesma família, para ler a 4,5:1 sobre o painel): Raro `#7AAEFF`, Épico `#C084FC`,
+  Lendário `#FF6B6E`, Mítico `#F472B6`; Comum continua `#F2F5F8`.
+- **Cartão sem a linha interna**: uma linha de 1 pixel de arte em volta do fundo do cartão (no máximo 2 níveis de caixa).
+- **Pescador com figura de 35 px** (era 48) no mesmo quadro de 64 × 64, pés na coluna 40, e **barcos de ~100 px** de
+  largura (eram 124; o `boat_05` tem 84) e a Caixa de Pesca no barco com 40 × 28 (era 48 × 33). Tudo recortado de novo das
+  folhas originais (não reduzido do sprite pequeno); mãos, borda do barco, assento e caixa recalculados; a vara desenhada
+  pelo código tem 48 px (era 60).
+- **Fontes:** continuam a Press Start 2P e a VT323 até o proprietário escolher outra (M25-T22). Fontes e tamanhos ficam
+  num lugar só (`UiSkin`), para a troca ser só de arquivo e números.
+- **Escala da interface:** o quadro de 1080 de altura passa a usar uma escala "limpa" (0,5 · 1 · 1,5 · 2) quando ela
+  deixa o quadro entre 1080 e 1280 de altura (janelas de 600, de 1080 a 1280 e de 2160 px). Nessas a letra pixel não
+  borra; nas outras alturas a escala continua a fração exata, como antes (TD-066).
+- **Regras de layout** (valem para as telas novas e as revisadas): grade de 8 (8 entre peças pequenas, 16 entre
+  elementos, 32 entre seções); no máximo 2 níveis de caixa (janela → cartão de uma linha; título, contador e "i" são
+  texto e ícone sem caixa); recurso e estado em ícone + número, ação em verbo; o nome de um botão sem rótulo aparece ao
+  passar o mouse; texto medido com o maior texto real em PT-BR, e o que não cabe encurta pelo `GameTexts` ou termina em
+  "…" (nunca corte seco nem texto sobre texto); nada gira; brilho só em recompensa.
+- **HUD:** as Moedas aparecem só no cartão do jogador (contando até o novo total, com o "+N" logo abaixo dele); a placa
+  "MOEDAS" que as repetia saiu. O painel de pesca virou uma linha ("Esperando o peixe morder… · 0:07"), a isca com as
+  tentativas à direita, a barra e um botão de ícone para parar (480 × 96; era 620 × 152); o ciclo e as chances aparecem
+  ao passar o mouse sobre o painel. Atalhos de 64 px a cada 80 (eram 72 a cada 116), sem rótulo embaixo. No máximo 2
+  avisos ao mesmo tempo sobre a cena. O botão da Caixa ficou só com o ícone e "128/300" ("Cheia" em dourado), na mesma
+  linha de baixo do painel de pesca.
+- **Moldura das janelas:** título e ícone direto no painel, contador em texto suave ao lado, "✕" sem círculo (o círculo
+  aparece ao passar o mouse); abas laterais de 128 (eram 96), com "…" se uma palavra não couber.
+- **Loja:** lista à esquerda (linhas de 64 a 80: desenho, nome, classe e etiqueta), o item escolhido grande no meio e a
+  ficha à direita num cartão de uma linha; "Seu equipamento" em 3 cartões e as chances de puxar como pílulas sólidas da
+  raridade com o percentual dentro ("Épico 10%"; as que não mordem aqui em cinza). Saíram a parede de tábuas, a viga, os
+  ganchos, a etiqueta pendurada, o pedestal com aura, o voo do item até o balcão (e o giro), a caixa de pesca e as boias.
+  "Fragmentos 12/25" com a barra e, embaixo, "Caem em todos os mapas · 0,8% por peixe".
+- **Aquário:** os peixes nunca giram (o balanço é 1 pixel para cima ou para baixo; a virada é espelho).
+- **Ranking:** o nível não se repete na linha da lista de Nível; o troféu ao lado do título e a moldura em volta do pódio
+  saíram; os avatares são o retrato em pixel num quadrado com linha de 1 pixel (os círculos lisos pareciam vazios).
+- **Missões:** linha de 88 (era 104) com o objetivo, a barra e o progresso (coluna fixa, as barras se alinham) e a
+  recompensa em linha (ícone + número); saíram o "Nº 13" de cada linha e a caixa do topo que repetia o nome da aba.
+- **Enciclopédia:** a coluna de mapas tem 264 (nomes inteiros, "Arquipélago do Sol 3/10"); o cartão mostra o selo, o
+  nome, o mapa só em "Todas" e "37×" (o recorde e o mapa ficam na ficha); "Não pescada" no lugar de "Ainda não pescada".
+  Cada aba do Perfil tem o seu ícone.
+- **Eventos:** sem o quadro de cortiça; o cartão do Boss tem um título só (o nome do Boss, com o selo "AGORA") e
+  "Boss Mundial" em texto suave embaixo; nada pisca em repouso.
+- **Ficou para o proprietário decidir:** tirar a cor de Pequeno, Adulto e Grande (só Excepcional e Perfeição coloridos)
+  e as fontes novas (M25-T22). As outras telas que a pesquisa aponta (Caixa de Pesca, Mercado, Arena, Passe, Clã e
+  Bem-vindo de volta) ficam para a M25-T24.
+
+
+### A-191 · Nunito em todo o texto; a arte continua em pixel (20/10/2026)
+
+**Seção do GDD:** telas · `docs/ART_BIBLE_PIXEL.md` 7.1 (fontes) · M25-T22 e M25-T24 · **Situação:** no jogo (compila;
+verificado só no Play)
+
+Decisão do proprietário (20/10/2026): "o visual dos ícones, bonecos, peixes pode ser pixel art, mas para leituras e tudo
+mais eu prefiro algo mais tranquilo". Troca a seção 7.1 da Bíblia (Press Start 2P e VT323). Só apresentação: nenhuma
+regra, número, recompensa ou save mudou.
+
+- **Nunito** (lisa, arredondada, OFL) em **todo** o texto: títulos, números, botões, corpo, HUD, abas e selos. A Press
+  Start 2P e a VT323 saíram do jogo. Ícones, personagens, peixes, cenas e as formas da pele ARC continuam em pixel art.
+- **Cada peso é um arquivo:** Medium no corpo, listas e textos pequenos; SemiBold em botões, abas, chips e pílulas; Bold
+  em títulos, números, nomes e ênfase. O "negrito falso" do Unity não é usado.
+- **Tamanhos no quadro de 1080:** corpo 24, pequeno 21 (o mínimo, também em chips e selos), botão 24, título de janela 40,
+  nome numa ficha 32, número de destaque 42 (Honra, totais do Bem-vindo, "VS"), faixa grande 52 (o nome do mapa na
+  chegada). **No máximo 4 tamanhos numa tela.** Títulos de seção usam o corpo em Bold (sem um 5º tamanho).
+- **Sem maiúsculas forçadas:** selos e etiquetas como "Nova espécie", "Recorde", "Excepcional", "Em uso", "Agora",
+  "Capítulo 2", "Completo!" ficam em caixa normal; a troca de fonte que existia só para os acentos da Press Start 2P saiu.
+- **Texto nítido em qualquer tamanho de janela:** o texto é desenhado pelo contorno da fonte (campo de distância), então
+  sai no tamanho final da tela; a arte pixel continua em escala inteira (TD-067).
+- **O título de chegada** ganhou uma faixa escura de verdade atrás (o creme liso some no céu claro do dia).
+- **Telas revistas com as larguras novas** (nada cortado onde caberia, nada sobreposto):
+  - **Caixa de Pesca:** abas de raridade com ponto, nome e quantidade; um botão **"Filtros"** abre Ordem, Tamanho e
+    Qualidade em três colunas (eram 3 menus); o cartão sem a barra de tamanho (a linha já diz o tamanho);
+    "Selecionar todos" e "Limpar seleção" viraram **um botão que alterna**; o valor dos selecionados vai em moeda +
+    número.
+  - **Mercado:** **"Meus anúncios" e "Itens a Retirar" viraram uma aba só**, com dois blocos ("Seus anúncios · 2/5" e
+    "Para retirar · 2" com "Retirar tudo"); a aba mostra "2 a retirar" ou "2/5"; a ilustração do porto só na aba Comprar;
+    as vagas do Aquário em ícone + número; os textos que falavam de "Itens a Retirar" passaram a dizer "Meus anúncios".
+  - **Arena:** a posição em texto ("#198 de 500"), sem a medalha; sem brilho nos adversários e no botão; as filas
+    "Frente" e "Trás" escritas acima dos lugares (as letras em pé que encolhiam abaixo do mínimo saíram); o aviso "a
+    Força não é mostrada" foi para o "i"; nome e nível do peixe em duas linhas quando não cabem numa.
+  - **Passe:** a faixa do pôr do sol só no cabeçalho; cada célula com **ícone + número** e **um estado**: o botão
+    Resgatar, um visto apagado depois de resgatado ou um cadeado pequeno enquanto o Premium não foi comprado (sem
+    "Resgatado" e "Premium" escritos, sem repetir o "Nv.40" da coluna); o próximo marco sem brilho.
+  - **Clã:** o porto só na faixa do topo; as seções separadas por espaço, sem painel afundado em volta (janela →
+    cartão); o aviso do jogo online numa linha de texto suave ("Ranking e prêmios ligam com o jogo online.");
+    o número de membros só no contador do título.
+  - **Bem-vindo de volta:** a faixa da cena; os números grandes com o ícone, sem cartão em volta (peixes, valor, XP e
+    Conchas quando vierem); a barra por raridade; **3 destaques** (eram 4: o selo da raridade e o "Nova espécie" cabem
+    na mesma linha do cartão); fragmentos e avisos **em linhas**; **um botão principal**
+    ("Abrir a Caixa de Pesca" quando há peixes nela, senão "Continuar") e o "Abrir" repetido no aviso da Caixa saiu.
+  - **Outras:** miniaturas do Aquário 112 × 112; abas laterais 136 (era 128); "Todos os mapas · 0,8% por peixe" na Loja.
+- **Continua para o proprietário decidir:** tirar a cor de Pequeno, Adulto e Grande (a cor ficou como estava).
+
+### A-192 · O pescador fica parado quando não está pescando (20/10/2026)
+
+Pedido do proprietário: "o boneco tá se mexendo mesmo sem pescar". Sem pesca ativa, o pescador mostra só o primeiro
+quadro da animação "parado", a vara fica no ângulo de descanso e a boia pendurada, sem balançar. O balanço de 4 quadros
+continua só enquanto ele espera o peixe morder, com a pesca ligada.
+
+### A-193 · Pixel art descartada: o jogo volta ao visual Lago Dourado (20/10/2026)
+
+Decisão do proprietário, 20/10/2026, 23h: "Acho que o jogo piorou, conseguimos voltar para a versão antes de começarmos
+essas mudanças visuais?" — escolheu **"Antes da pixel art"** e disse "pode esquecer essa versão que fizemos, ficou ruim".
+
+- **O Estilo ARC em pixel art (A-182 a A-192, M25) foi descartado.** O jogo volta ao visual **"Lago Dourado — Clean
+  Premium"** (`docs/ART_BIBLE_V0_1.md`, de novo a fonte de verdade visual), exatamente como estava no commit `f1ae044`
+  (último antes de a pele ARC entrar): cenário pintado, pescador, peixes, ícones, as telas no padrão "Diário de bordo"
+  (A-170) e as artes das telas do M24-T60 (A-181), com as fontes Fredoka e Nunito daquela época.
+- **Saem do jogo:** a pele ARC, a cena e a câmera pixel, as fontes Press Start 2P e VT323, a Nunito em quatro pesos da
+  A-191, a paleta "Ardósia", as telas reorganizadas da A-188 a A-191 e o pescador parado da A-192 (feito para o pescador
+  em pixel), a pasta `Resources/ArtePixel` e as ferramentas `tools/Arte/pixel_*`. Ficam só no histórico do git.
+- **Continuam (correções que não são visuais, feitas no checkup da M25-T17):**
+  - a duração do leilão ("1 hora" / "6 horas") vem do `GameTexts.Market.AuctionDuration`, não do código da tela;
+  - o Cardume dos adversários da Arena tem o tamanho do `cardume.max_fish` (era 6 fixo no código);
+  - a variação sorteada no tamanho dos peixes dos adversários está em `config/arena_bots.json`
+    (`strength_by_rank.size_percentile_spread`, o mesmo 0,1 de antes, validado entre 0 e 1);
+  - a viagem entre mapas usa só o `travel.duration_seconds` do `maps.json` (os 30 s escondidos no código saíram) e o
+    validador exige o campo, com pelo menos 1 s.
+- **Nada de regra, número ou save muda** em relação ao que o proprietário jogou: o save continua o mesmo.
+- `docs/ART_BIBLE_PIXEL.md` e `docs/ASSETS_PIXEL.md` ficam guardados só como histórico; as A-182 a A-192 acima também.
+- Visual só fica verificado quando o proprietário apertar Play.
+
+### A-194 · O pescador fica parado quando não está pescando (20/10/2026)
+
+Pedido do proprietário: "o boneco tá se mexendo mesmo sem pescar". Com a pesca parada, a vara fica no ângulo de
+descanso e a boia pendurada, sem balançar; o movimento volta quando a pesca é ligada. (A A-192 fazia o mesmo no
+pescador em pixel, descartado na A-193; esta vale para o pescador do visual Lago Dourado.)

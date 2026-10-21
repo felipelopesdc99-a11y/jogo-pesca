@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Compile check for the Unity presentation code (Assets/Scripts/Game) without the Unity Editor.
+    It builds against Unity's public reference assemblies from NuGet (UnityEngine 2021.3 modules),
+    so it catches typos, wrong types and missing members. It cannot catch runtime behaviour, and
+    APIs newer than 2021.3 would show up here as errors — the code deliberately avoids them.
+    Nothing here ships; the sources stay in client-unity.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <AssemblyName>FishingIdle.Game</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Nullable>disable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- CS0649: fields assigned by Unity serialization. -->
+    <NoWarn>$(NoWarn);CS0649</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../client-unity/Assets/Scripts/Game/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../GameService.Build/GameService.Build.csproj" />
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

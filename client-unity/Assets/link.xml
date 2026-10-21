@@ -1,0 +1,7 @@
+<!--
+  Keeps the game-service types intact in IL2CPP builds. The save file and the /config files are
+  read with Newtonsoft.Json through reflection, which managed code stripping cannot see.
+-->
+<linker>
+  <assembly fullname="FishingIdle.GameService" preserve="all" />
+</linker>

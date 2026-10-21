@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Compile check for the Unity Editor code (Assets/Scripts/Editor: Dev Panel, project setup,
+    build step) without the Unity Editor. Uses the public UnityEditor reference assembly from
+    NuGet (2021.1) on top of the UnityEngine 2021.3 modules. Nothing here ships.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <AssemblyName>FishingIdle.Editor</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Nullable>disable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- CS1701/1702: version unification between the 2021.1 editor and 2021.3 engine references. -->
+    <NoWarn>$(NoWarn);CS1701;CS1702;NU1701</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../client-unity/Assets/Scripts/Editor/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../UnityCheck.Game/UnityCheck.Game.csproj" />
+    <ProjectReference Include="../GameService.Build/GameService.Build.csproj" />
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" PrivateAssets="all" />
+    <PackageReference Include="Unity3D.SDK" Version="2021.1.14.1" PrivateAssets="all" ExcludeAssets="all" GeneratePathProperty="true" />
+    <Reference Include="UnityEditor">
+      <HintPath>$(PkgUnity3D_SDK)/lib/UnityEditor.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>
